@@ -1,0 +1,394 @@
+syntax = "proto3";
+
+
+message Scalar {
+  oneof value {
+    int32 int = 1;
+    float float = 2;
+    string string = 3;
+    bool bool = 4;
+  }
+}
+
+
+message Array {
+  message ArrayBool {repeated bool bools = 1;}
+  message ArrayInt {repeated int32 ints = 2;}
+  message ArrayFloat {repeated float floats = 3;}
+  message ArrayString {repeated string strings = 4;}
+
+  oneof values {
+    ArrayBool bools = 1;
+    ArrayInt ints = 2;
+    ArrayFloat floats = 3;
+    ArrayString strings = 4;
+  }
+}
+
+
+message ValueOrValues {
+  oneof value_or_values {
+    Scalar value = 1;
+    Array values = 2;
+  }
+}
+
+
+/* "Column" works well for tables but is awkward when dealing with objects, "attribute" works well for objects but is awkward for tables, 
+we chose to use "data_field" which is a good middle ground */
+message NestedDataField {
+    string root_table_name = 1;
+    repeated string link_names = 2;
+    string final_data_field = 3;
+    bool multiple_values = 4;
+}
+
+
+message NestedVariant {
+  string root_table_name = 1;
+  repeated string nested_data_fields = 2;
+  string variant_field = 3;
+}
+
+
+message AggregationEntryPoint {
+  string root_table_name = 1;
+  repeated string link_names = 2;
+}
+
+
+message NestedDataFieldEvaluated {
+  NestedDataField nested_data_field = 1;
+  Scalar value = 2;
+}
+
+
+// message NestedDataFieldSplitEvaluated {
+//   NestedDataFieldSplit nested_data_field_split = 1;
+//   Array array = 2;
+// }
+
+
+message Data {
+  oneof value {
+      Scalar constant = 1;
+      NestedDataField nested_data_field = 2;
+      // NestedDataFieldSplit nested_data_field_split = 3;
+  }
+}
+  
+
+message DataValue {
+  oneof value {
+      Scalar constant = 1;
+      NestedDataFieldEvaluated nested_data_field_value = 2;
+      // NestedDataFieldSplitEvaluated nested_data_field_split_values = 3;
+  }
+}
+
+
+message OperatorUnary {}
+enum OperatorBinary {
+  EQUAL = 0;
+  NOT_EQUAL = 1;
+
+  GREATER = 2;
+  GREATER_EQUAL = 3;
+  LOWER = 4;
+  LOWER_EQUAL = 5;
+
+  ADD = 6;
+  SUBTRACT = 7;
+  MULTIPLY = 8;
+  DIVIDE = 9;
+}
+
+
+enum Aggregation {
+  COUNT = 0;
+  SUM = 1;
+  MEAN = 2;
+  MAX = 3;
+  MIN = 4;
+}
+
+
+message Formula {
+    oneof value {
+      Data data = 1;
+      FormulaUnary formula_unary = 2;
+      FormulaBinary formula_binary = 3;
+      FormulaAggregation formula_aggregation = 4;
+      FormulaVariant formula_variant = 5;
+  }
+}
+
+
+message FormulaUnary {
+  Formula sub_formula = 1;
+  OperatorUnary operator = 2;
+}
+
+
+message FormulaBinary {
+  Formula left = 1;
+  OperatorBinary operator = 2;
+  Formula right = 3;
+}
+
+
+message FormulaFilter {
+  Formula condition = 1;
+}
+
+
+message FormulaAggregation {
+  AggregationEntryPoint aggregation_entry_point = 1;
+  repeated Formula filters = 2;
+  Formula sub_formula = 3;
+  Aggregation aggregation = 4;
+}
+
+
+message FormulaVariant {
+  NestedVariant variant_field = 1;
+  map<string, Formula> cases = 2; 
+}
+
+
+message FormulaSelect {
+  Formula formula_selection_criterion = 1;
+  bool select_max = 2;
+  Formula formula_on_selected = 3;
+}
+
+
+message FormulaEvaluation {
+  oneof value {
+    DataValue data = 1;
+    FormulaUnaryEvaluation unary = 2;
+    FormulaBinaryEvaluation binary = 3;
+    FormulaAggregationEvaluation aggregation = 4;
+  }
+}
+
+message FormulaUnaryEvaluation {
+  FormulaEvaluation sub_formula = 1;
+  OperatorUnary operator = 2;
+  ValueOrValues evaluation = 3;
+}
+
+
+
+message FormulaBinaryEvaluation {
+  FormulaEvaluation left = 1;
+  OperatorBinary operator = 2;
+  FormulaEvaluation right = 3;
+  ValueOrValues evaluation = 4;
+}
+
+
+message FormulaAggregationEvaluation {
+  FormulaEvaluation sub_formula = 1;
+  Aggregation aggregation = 2;
+  ValueOrValues evaluation = 3;
+}
+
+
+message Scope {
+    repeated Formula conditions = 1;
+  }
+  
+  
+message ScopeEvaluation {
+  repeated FormulaEvaluation conditions = 1;
+  bool result = 2;
+}
+
+
+enum Decision {
+    Accept = 0;
+    Warning = 1;
+    Refuse = 2;
+}
+
+
+message Consequence {
+  optional int32 score_increase = 1;
+  optional Decision decision = 2;
+}
+
+
+message OrGroup {
+  repeated Formula conditions = 1;
+}
+
+
+message OrGroupEvaluation {
+  repeated FormulaEvaluation conditions = 1;
+  bool result = 2;
+}
+
+
+message Rule {
+  repeated OrGroup or_groups= 1;
+  Consequence consequence = 3;
+}
+
+
+message RuleEvaluation {
+  repeated OrGroupEvaluation or_groups= 1;
+  Consequence consequence = 3;
+  bool result = 4;
+}
+
+
+message Trigger {}
+
+
+message ScenarioVersion {
+  string id = 1;
+  Scope scope = 2;
+  repeated Rule rules = 3;
+}
+
+
+message ScenarioResult {
+  string id = 1;
+  ScopeEvaluation scope = 2;
+  repeated RuleEvaluation rules = 3;
+  Consequence consequence = 4;
+}
+
+
+message Scenario {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string main_table = 4;
+  Trigger trigger = 5;
+  repeated ScenarioVersion versions = 6;
+  optional ScenarioVersion active_version = 7;
+}
+
+
+enum DataType {
+  BOOL = 0;
+  INT = 1;
+  FLOAT = 2;
+  STRING = 3;
+  TIMESTAMP = 4;
+}
+
+message DataField {
+  string name = 1;
+  DataType data_type = 2;
+}
+
+
+message DataFieldOrTable {
+  oneof value {
+    DataField data_field = 1;
+    string table_name = 2;  // join_column_name is the key in variant, maybe reciprocal attribute name
+  }
+}
+
+
+message Variant {
+  bool nullable = 1;
+  map<string, DataFieldOrTable> cases = 2;
+}
+
+
+message DataFieldOrVariant {
+  oneof value {
+    DataField data_field = 1;
+    Variant variant = 2;
+  }
+}
+
+
+message RelationshipOneToOneHomogeneousSymmetric {
+  string join_column_name = 1;
+  string link_name = 2;
+}
+
+
+message RelationshipOneToOneHomogeneousAsymmetric {
+  string join_column_name = 1;
+  string link_name_direct = 2;
+  string link_name_reverse = 3;
+}
+
+
+message RelationshipOneToManyHomogeneous {
+  string children_join_column_name = 1;
+  string link_name_parent_to_children = 2;
+  string link_name_children_to_parent = 3;
+}
+
+
+message RelationshipManyToManyHomogeneousSymmetric {
+  string association_table_name = 1;
+  string column_name_to_join_on_left = 2;
+  string column_name_to_join_on_right = 3;
+  string link_name = 4;
+}
+
+
+message RelationshipManyToManyHomogeneousAsymmetric {
+  string association_table_name = 1;
+  string column_name_to_join_on_left = 2;
+  string column_name_to_join_on_right = 3;
+  string link_name_table_left_to_table_right = 4;
+  string link_name_table_right_to_table_left = 5;
+}
+
+
+message TableStructure {
+  string name = 1;
+  map<string, DataField> columns = 2;
+  repeated RelationshipOneToOneHomogeneousAsymmetric relationships_one_to_one_asymmetric = 3;
+  repeated RelationshipOneToOneHomogeneousSymmetric relationships_one_to_one_symmetric = 4;
+  repeated RelationshipOneToManyHomogeneous relationships_one_to_many = 5;
+  repeated RelationshipManyToManyHomogeneousAsymmetric relationships_many_to_many_asymmetric = 6;
+  repeated RelationshipManyToManyHomogeneousSymmetric relationships_many_to_many_symmetric = 7;
+}
+
+
+message RelationshipOneToOne {
+  string table_containing_join_column = 1;
+  string join_column_name = 2;
+  string table_referenced = 3;
+  string link_name_table_containing_join_column_to_table_referenced = 4;
+  string link_name_table_referenced_to_table_containing_join_column = 5;
+}
+
+
+
+message RelationshipOneToMany {
+  string parent_table_name = 1;
+  string children_table_name = 2;
+  string children_join_column_name = 3;
+  string link_name_parent_to_children = 4;
+  string link_name_children_to_parent = 5;
+}
+
+
+message RelationshipManyToMany {
+  string table_left_name = 1;
+  string table_right_name = 2;
+  string association_table_name = 3;
+  string column_name_to_join_on_left = 4;
+  string column_name_to_join_on_right = 5;
+  string link_name_table_left_to_table_right = 6;
+  string link_name_table_right_to_table_left = 7;
+}
+
+
+message UserDataStructure {
+  map <string, TableStructure> tables = 1;
+  repeated RelationshipOneToOne relationships_one_to_one = 2;
+  repeated RelationshipOneToMany relationships_one_to_many = 3;
+  repeated RelationshipManyToMany relationships_many_to_many = 4;
+}
