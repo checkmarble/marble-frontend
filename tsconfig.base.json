@@ -15,10 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@marble-front/api/marble": ["packages/api/marble/src/index.ts"],
-      "@marble-front/ui/design-system": [
-        "packages/ui/design-system/src/index.ts"
-      ]
+      "@marble-front/api/marble": ["libs/api/marble/src/index.ts"],
+      "@marble-front/ui/design-system": ["libs/ui/design-system/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

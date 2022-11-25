@@ -1,21 +1,21 @@
 {
-  "name": "api--marble",
+  "name": "api-marble",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/api/marble/src",
+  "sourceRoot": "libs/api/marble/src",
   "projectType": "library",
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/api/marble/**/*.ts"]
+        "lintFilePatterns": ["libs/api/marble/**/*.ts"]
       }
     },
     "protoc-gen-es": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx ts-node -P tsconfig.lib.json src/scripts/generate.ts",
-        "cwd": "./packages/api/marble"
+        "cwd": "./libs/api/marble"
       }
     }
   },
