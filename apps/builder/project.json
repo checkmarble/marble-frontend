@@ -1,0 +1,45 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "builder",
+  "sourceRoot": "apps/builder",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "generate-css": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/builder",
+        "command": "npx tailwindcss -i ./styles/tailwind.css -o ./app/tailwind.css"
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/builder",
+        "commands": [
+          "npx nx run builder:generate-css --watch",
+          "npx remix dev"
+        ],
+        "parallel": true
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/builder",
+        "commands": [
+          "npx nx run builder:generate-css --minify",
+          "npx remix build"
+        ],
+        "parallel": false
+      }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx remix-serve build",
+        "cwd": "apps/builder"
+      }
+    }
+  }
+}
