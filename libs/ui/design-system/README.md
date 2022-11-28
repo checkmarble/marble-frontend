@@ -1,7 +1,13 @@
 # ui-design-system
 
-This library was generated with [Nx](https://nx.dev).
+This library regroup the Marble design system implementation.
 
-## Running unit tests
+## Develop
 
-Run `nx test ui-design-system` to execute the unit tests via [Jest](https://jestjs.io).
+To develop locally, lauch the Storybook :
+
+```sh
+npx nx run ui-design-system:storybook
+```
+
+You can start editing / add components in isolation
