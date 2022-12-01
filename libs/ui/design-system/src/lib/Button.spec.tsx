@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import UiDesignSystem from './UiDesignSystem';
+import UiDesignSystem from './Button';
 
 describe('UiDesignSystem', () => {
   it('should render successfully', () => {

@@ -3,7 +3,7 @@
   "name": "builder",
   "sourceRoot": "apps/builder",
   "projectType": "application",
-  "tags": [],
+  "tags": ["type:app", "scope:webapp"],
   "targets": {
     "generate-css": {
       "executor": "nx:run-commands",

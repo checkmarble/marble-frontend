@@ -1,1 +1,1 @@
-export * from './lib/UiDesignSystem';
+export * from './lib/Button';

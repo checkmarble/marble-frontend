@@ -26,3 +26,9 @@ Change the generation script by editing `src/scripts/generate.ts`
 ### Lint
 
 Run `npx nx lint api-marble` to execute the lint via [ESLint](https://eslint.org/).
+
+## Documentation
+
+| Type              | Label                                                | Description                                            |
+| ----------------- | ---------------------------------------------------- | ------------------------------------------------------ |
+| `NestedDataField` | `rootTableName.[linkNames.join('.')].finalDataField` | `multipleValues` is used to describe aggregated values |

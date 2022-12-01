@@ -1,23 +1,23 @@
 {
-  "name": "api-marble",
+  "name": "ui-icons",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/api/marble/src",
+  "sourceRoot": "libs/ui/icons/src",
   "projectType": "library",
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/api/marble/**/*.ts"]
+        "lintFilePatterns": ["libs/ui/icons/**/*.ts"]
       }
     },
-    "protoc-gen-es": {
+    "icons-gen": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx ts-node -P tsconfig.lib.json src/scripts/generate.ts",
-        "cwd": "./libs/api/marble"
+        "cwd": "./libs/ui/icons"
       }
     }
   },
-  "tags": ["type:util", "scope:shared"]
+  "tags": ["type:ui", "scope:shared"]
 }
