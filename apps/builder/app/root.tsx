@@ -8,14 +8,30 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 
-import styles from './tailwind.css';
+import tailwindStyles from './tailwind.css';
 
 export const links: LinksFunction = () => [
-  { rel: 'stylesheet', href: styles },
-  { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' },
-  { rel: 'icon', href: '/favicon-32x32.png', sizes: '32x32' },
-  { rel: 'icon', href: '/favicon-16x16.png', sizes: '16x16' },
+  { rel: 'stylesheet', href: tailwindStyles },
+  { rel: 'stylesheet', href: 'fonts/Inter/inter.css' },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '180x180',
+    href: '/favicons/apple-touch-icon.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '32x32',
+    href: '/favicons/favicon-32x32.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '16x16',
+    href: '/favicons/favicon-16x16.png',
+  },
   { rel: 'manifest', href: '/site.webmanifest' },
+  { rel: 'icon', href: '/favicons/favicon.ico' },
 ];
 
 export const meta: MetaFunction = () => ({

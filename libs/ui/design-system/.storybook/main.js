@@ -15,6 +15,7 @@ module.exports = {
     '@nrwl/react/plugins/storybook',
     'storybook-addon-swc',
   ],
+  staticDirs: ['./public'],
   webpackFinal: async (config, { configType }) => {
     // apply any global webpack configs that might have been specified in .storybook/main.js
     if (rootMain.webpackFinal) {
