@@ -2,13 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "ESNext",
-    "types": ["node"],
-    "esModuleInterop": true
-  },
-  "ts-node": {
-    "esm": true,
-    "moduleTypes": { "src/scripts/**": "esm" },
-    "require": ["dotenv/config", "tsconfig-paths/register"]
+    "types": ["node"]
   },
   "include": [
     "**/*.js",

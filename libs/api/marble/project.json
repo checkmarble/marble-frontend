@@ -14,7 +14,7 @@
     "protoc-gen-es": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx ts-node -P tsconfig.lib.json src/scripts/generate.ts",
+        "command": "node -r esbuild-register src/scripts/generate.ts",
         "cwd": "./libs/api/marble"
       }
     }
