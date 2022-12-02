@@ -10,11 +10,17 @@ import {
 
 import styles from './tailwind.css';
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
+export const links: LinksFunction = () => [
+  { rel: 'stylesheet', href: styles },
+  { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' },
+  { rel: 'icon', href: '/favicon-32x32.png', sizes: '32x32' },
+  { rel: 'icon', href: '/favicon-16x16.png', sizes: '16x16' },
+  { rel: 'manifest', href: '/site.webmanifest' },
+];
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
-  title: 'New Remix App',
+  title: 'Marble',
   viewport: 'width=device-width,initial-scale=1',
 });
 
