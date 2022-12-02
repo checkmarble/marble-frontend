@@ -10,6 +10,7 @@
           "lint",
           "test",
           "e2e",
+          "type-check",
           "build-storybook"
         ]
       }

@@ -17,6 +17,12 @@
         "command": "node -r esbuild-register src/scripts/generate.ts",
         "cwd": "./libs/ui/icons"
       }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc --noEmit -p libs/ui/icons/tsconfig.lib.json"
+      }
     }
   },
   "tags": ["type:ui", "scope:shared"]

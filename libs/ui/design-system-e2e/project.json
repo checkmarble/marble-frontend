@@ -23,6 +23,12 @@
       "options": {
         "lintFilePatterns": ["libs/ui/design-system-e2e/**/*.{js,ts}"]
       }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc --noEmit -p libs/ui/design-system-e2e/tsconfig.json"
+      }
     }
   },
   "tags": [],

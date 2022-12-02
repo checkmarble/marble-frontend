@@ -5,6 +5,13 @@
   "projectType": "application",
   "tags": ["type:app", "scope:webapp"],
   "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/builder/**/*.{ts,tsx}"]
+      }
+    },
     "generate-css": {
       "executor": "nx:run-commands",
       "options": {
@@ -39,6 +46,13 @@
       "options": {
         "command": "npx remix-serve build",
         "cwd": "apps/builder"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npx tsc --noEmit -p apps/builder/tsconfig.json"],
+        "parallel": false
       }
     }
   }

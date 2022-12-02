@@ -32,6 +32,17 @@
         "lintFilePatterns": ["libs/ui/design-system/**/*.{ts,tsx,js,jsx}"]
       }
     },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx tsc --noEmit -p libs/ui/design-system/tsconfig.lib.json",
+          "npx tsc --noEmit -p libs/ui/design-system/tsconfig.spec.json",
+          "npx tsc --noEmit -p libs/ui/design-system/.storybook/tsconfig.json"
+        ],
+        "parallel": false
+      }
+    },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],

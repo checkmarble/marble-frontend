@@ -4,7 +4,7 @@
     "@remix-run/eslint-config",
     "@remix-run/eslint-config/node",
     "@remix-run/eslint-config/jest-testing-library",
-    "../../../.eslintrc.json"
+    "../../.eslintrc.json"
   ],
   "ignorePatterns": ["!**/*"],
   "overrides": [
