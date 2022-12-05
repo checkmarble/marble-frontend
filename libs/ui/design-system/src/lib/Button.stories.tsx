@@ -1,18 +1,70 @@
-import type { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Button } from './Button';
+import { Plus } from '@marble-front/ui/icons';
+import type { Story, Meta } from '@storybook/react';
+import { Button, type ButtonProps, variantColors } from './Button';
 
-const Story: ComponentMeta<typeof Button> = {
+type StoryProps = ButtonProps;
+
+const Story: Meta<StoryProps> = {
   component: Button,
   title: 'Button',
   argTypes: {
-    disabled: { control: 'boolean' },
+    disabled: { control: 'boolean', defaultValue: false },
+    variant: {
+      table: {
+        disable: true,
+      },
+    },
+    children: {
+      type: 'string',
+      defaultValue: 'Button label',
+    },
   },
 };
 export default Story;
 
-const Template: ComponentStory<typeof Button> = (args) => (
-  <Button children="Button label" {...args} />
-);
+const Template: Story<StoryProps> = (args) => {
+  return <Button {...args} />;
+};
+
+const TemplateWithIcon: Story<StoryProps> = ({ children, ...args }) => {
+  return (
+    <Button {...args}>
+      <Plus width={24} height={24} />
+      {children}
+    </Button>
+  );
+};
+
+const primaryArgTypes = {
+  variant: {
+    defaultValue: 'primary',
+  },
+  color: {
+    control: { type: 'select' },
+    options: variantColors['primary'],
+    defaultValue: variantColors['primary'][0],
+  },
+};
 
 export const Primary = Template.bind({});
-Primary.args = {};
+Primary.argTypes = primaryArgTypes;
+
+export const PrimaryWithIcon = TemplateWithIcon.bind({});
+PrimaryWithIcon.argTypes = primaryArgTypes;
+
+const secondaryArgTypes = {
+  variant: {
+    defaultValue: 'secondary',
+  },
+  color: {
+    control: { type: 'select' },
+    options: variantColors['secondary'],
+    defaultValue: variantColors['secondary'][0],
+  },
+};
+
+export const Secondary = Template.bind({});
+Secondary.argTypes = secondaryArgTypes;
+
+export const SecondaryWithIcon = TemplateWithIcon.bind({});
+SecondaryWithIcon.argTypes = secondaryArgTypes;
