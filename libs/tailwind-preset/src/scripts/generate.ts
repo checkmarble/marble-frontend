@@ -8,7 +8,20 @@ import rimraf from 'rimraf';
 
 type DesignTokens = {
   colors: Record<string, { value: string }>;
-  text_styles: Record<string, unknown>;
+  text_styles: Record<
+    string,
+    {
+      value: {
+        font: {
+          family: string;
+          size: number;
+          weight: number;
+          stretch: number;
+        };
+        line_height: number;
+      };
+    }
+  >;
   spacing: Record<string, unknown>;
 };
 
@@ -37,8 +50,15 @@ async function downloadDesignTokens() {
   return result;
 }
 
+async function saveFile(fileName: string, data: Record<string, unknown>) {
+  await writeFile(
+    join(OUT_DIR, fileName),
+    prettier.format(JSON.stringify(data), { parser: 'json' })
+  );
+}
+
 async function buildColors(data: DesignTokens) {
-  const spinner = ora('Building colors.js...').start();
+  const spinner = ora('Building colors...').start();
   try {
     const colors = R.pipe(
       Object.entries(data.colors),
@@ -58,13 +78,30 @@ async function buildColors(data: DesignTokens) {
         );
       })
     );
-    await writeFile(
-      join(OUT_DIR, 'colors.json'),
-      prettier.format(JSON.stringify(colors), { parser: 'json' })
-    );
+    await saveFile('colors.json', colors);
     spinner.succeed('colors succesfully built');
   } catch (error) {
     spinner.fail('Failed to build colors');
+    throw error;
+  }
+}
+
+async function buildFontSize(data: DesignTokens) {
+  const spinner = ora('Building fontSize...').start();
+  try {
+    const fontSize = R.pipe(
+      data.text_styles,
+      R.mapValues(({ value: { font, line_height } }) => {
+        return [
+          `${font.size}px`,
+          { lineHeight: `${line_height}px`, fontWeight: font.weight },
+        ];
+      })
+    );
+    await saveFile('fontSize.json', fontSize);
+    spinner.succeed('fontSize succesfully built');
+  } catch (error) {
+    spinner.fail('Failed to build fontSize');
     throw error;
   }
 }
@@ -75,7 +112,7 @@ async function main() {
 
     const data = await downloadDesignTokens();
 
-    await Promise.all([buildColors(data)]);
+    await Promise.all([buildColors(data), buildFontSize(data)]);
   } catch (error) {
     console.error('\n', error);
     process.exit(1);

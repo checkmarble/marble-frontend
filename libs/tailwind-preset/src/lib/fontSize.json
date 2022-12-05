@@ -1,0 +1,18 @@
+{
+  "display-l-regular": ["20px", { "lineHeight": "30px", "fontWeight": 400 }],
+  "display-l-medium": ["20px", { "lineHeight": "30px", "fontWeight": 500 }],
+  "display-l-semibold": ["20px", { "lineHeight": "30px", "fontWeight": 600 }],
+  "display-l-bold": ["20px", { "lineHeight": "30px", "fontWeight": 700 }],
+  "text-m-regular": ["16px", { "lineHeight": "24px", "fontWeight": 400 }],
+  "text-m-medium": ["16px", { "lineHeight": "24px", "fontWeight": 500 }],
+  "text-m-semibold": ["16px", { "lineHeight": "24px", "fontWeight": 600 }],
+  "text-m-bold": ["16px", { "lineHeight": "24px", "fontWeight": 700 }],
+  "text-s-regular": ["14px", { "lineHeight": "21px", "fontWeight": 400 }],
+  "text-s-medium": ["14px", { "lineHeight": "21px", "fontWeight": 500 }],
+  "text-s-semibold-cta": ["14px", { "lineHeight": "21px", "fontWeight": 600 }],
+  "text-s-bold": ["14px", { "lineHeight": "21px", "fontWeight": 700 }],
+  "text-xs-regular": ["12px", { "lineHeight": "18px", "fontWeight": 400 }],
+  "text-xs-medium": ["12px", { "lineHeight": "18px", "fontWeight": 500 }],
+  "text-xs-semibold": ["12px", { "lineHeight": "18px", "fontWeight": 600 }],
+  "text-xs-bold": ["12px", { "lineHeight": "18px", "fontWeight": 700 }]
+}
