@@ -4,6 +4,26 @@
   "sourceRoot": "libs/ui/icons/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nrwl/web:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/ui/icons",
+        "tsConfig": "libs/ui/icons/tsconfig.lib.json",
+        "project": "libs/ui/icons/package.json",
+        "entryFile": "libs/ui/icons/src/index.ts",
+        "external": ["react/jsx-runtime"],
+        "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+        "compiler": "swc",
+        "assets": [
+          {
+            "glob": "libs/ui/icons/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

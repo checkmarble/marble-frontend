@@ -9,7 +9,10 @@ const Filters = (props: SVGProps<SVGSVGElement>) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <path d="M2 6h20v2H2V6zM6 11h12v2H6v-2zM10 16h4v2h-4v-2z" fill="#080525" />
+    <path
+      d="M2 6h20v2H2V6zM6 11h12v2H6v-2zM10 16h4v2h-4v-2z"
+      fill="currentColor"
+    />
   </svg>
 );
 export default Filters;

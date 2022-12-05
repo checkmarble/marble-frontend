@@ -13,7 +13,7 @@ const Plus = (props: SVGProps<SVGSVGElement>) => (
       fillRule="evenodd"
       clipRule="evenodd"
       d="M12 6a1 1 0 00-1 1v4H7a1 1 0 100 2h4v4a1 1 0 102 0v-4h4a1 1 0 100-2h-4V7a1 1 0 00-1-1z"
-      fill="#080525"
+      fill="currentColor"
     />
   </svg>
 );

@@ -9,7 +9,7 @@ const Arrow2Down = (props: SVGProps<SVGSVGElement>) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <path d="M12 14l-4-4h8l-4 4z" fill="#080525" />
+    <path d="M12 14l-4-4h8l-4 4z" fill="currentColor" />
   </svg>
 );
 export default Arrow2Down;

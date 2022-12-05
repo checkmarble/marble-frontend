@@ -11,7 +11,7 @@ const Tick = (props: SVGProps<SVGSVGElement>) => (
   >
     <path
       d="M17.879 7.914l-8.172 8.172L6.121 12.5"
-      stroke="#080525"
+      stroke="currentColor"
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"

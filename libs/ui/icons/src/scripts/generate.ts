@@ -33,6 +33,9 @@ async function buildIcon(svgFileName: string) {
         '@svgr/plugin-prettier',
       ],
       prettier: true,
+      replaceAttrValues: {
+        '#080525': 'currentColor',
+      },
     },
     { componentName }
   );
