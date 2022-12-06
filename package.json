@@ -73,6 +73,7 @@
     "url-loader": "^3.0.0"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.0.2",
     "@remix-run/node": "^1.7.6",
     "@remix-run/react": "^1.7.6",
     "@remix-run/serve": "^1.7.6",
@@ -86,6 +87,7 @@
     "react-dom": "^18.2.0",
     "regenerator-runtime": "0.13.7",
     "remix": "^1.7.6",
+    "tailwindcss-radix": "^2.6.1",
     "tslib": "^2.3.0"
   }
 }

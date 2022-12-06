@@ -5,13 +5,32 @@ const fontSize = require('./src/lib/fontSize.json');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   theme: {
-    colors,
+    colors: {
+      transparent: 'transparent',
+      current: 'currentColor',
+      ...colors,
+    },
     fontSize,
     extend: {
       fontFamily: {
         sans: ['Inter', ...defaultTheme.fontFamily.sans],
       },
+      keyframes: {
+        slideUpAndFade: {
+          from: {
+            opacity: 0,
+            transform: 'translateY(2px)',
+          },
+          to: {
+            opacity: 1,
+            transform: 'translateY(0)',
+          },
+        },
+      },
+      animation: {
+        slideUpAndFade: 'slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
+      },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-radix')()],
 };

@@ -33,7 +33,6 @@ export function Button({
   className,
   ...props
 }: ButtonProps) {
-  console.log(variant, color);
   return (
     <button
       className={clsx(
