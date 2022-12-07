@@ -54,6 +54,12 @@
         "commands": ["npx tsc --noEmit -p apps/builder/tsconfig.json"],
         "parallel": false
       }
+    },
+    "build-docker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build --tag 'marble-builder-app' -f ./apps/builder/Dockerfile --rm ."
+      }
     }
   }
 }

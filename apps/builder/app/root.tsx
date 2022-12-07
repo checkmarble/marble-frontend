@@ -1,4 +1,5 @@
-import type { MetaFunction, LinksFunction } from '@remix-run/node';
+import type { MetaFunction, LinksFunction, LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import {
   Links,
   LiveReload,
@@ -6,13 +7,16 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
+import { remixI18next } from './i18n/i18next.server';
 
 import tailwindStyles from './tailwind.css';
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindStyles },
-  { rel: 'stylesheet', href: 'fonts/Inter/inter.css' },
+  { rel: 'stylesheet', href: '/fonts/Inter/inter.css' },
   {
     rel: 'apple-touch-icon',
     sizes: '180x180',
@@ -34,6 +38,16 @@ export const links: LinksFunction = () => [
   { rel: 'icon', href: '/favicons/favicon.ico' },
 ];
 
+export const loader = async ({ request }: LoaderArgs) => {
+  const locale = await remixI18next.getLocale(request);
+
+  return json({ locale });
+};
+
+export const handle = {
+  i18n: 'translation',
+};
+
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
   title: 'Marble',
@@ -41,8 +55,12 @@ export const meta: MetaFunction = () => ({
 });
 
 export default function App() {
+  const { locale } = useLoaderData<typeof loader>();
+
+  const { i18n } = useTranslation();
+
   return (
-    <html lang="en">
+    <html lang={locale} dir={i18n.dir()}>
       <head>
         <Meta />
         <Links />
