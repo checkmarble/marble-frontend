@@ -10,13 +10,13 @@ const Duplicate = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      d="M19 15V5H7a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2v-2z"
+      d="M19 15V5H7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2v-2Z"
       fill="currentColor"
     />
     <path
       fillRule="evenodd"
       clipRule="evenodd"
-      d="M5 19h10V9H5v10zm10 2a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10z"
+      d="M5 19h10V9H5v10Zm10 2a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10Z"
       fill="currentColor"
     />
   </svg>

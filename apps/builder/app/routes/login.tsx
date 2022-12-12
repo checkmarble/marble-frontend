@@ -1,6 +1,10 @@
 import type { LoaderFunction } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
 
+/**
+ * TODO(auth): protect routes in __builder
+ */
+
 export const loader: LoaderFunction = async ({ request }) => {
   /**
    * TODO(data): get the real user data
@@ -10,7 +14,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     companyName: 'Acme.',
     name: 'D. Brown',
   };
-  if (user) return redirect('/builder');
+  if (user) return redirect('/home');
 };
 
 export default function Login() {

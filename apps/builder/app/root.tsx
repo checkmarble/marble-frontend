@@ -10,7 +10,7 @@ import {
   useLoaderData,
 } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { remixI18next } from './i18n/i18next.server';
+import { remixI18next } from './config/i18n/i18next.server';
 
 import tailwindStyles from './tailwind.css';
 
@@ -35,7 +35,7 @@ export const links: LinksFunction = () => [
     href: '/favicons/favicon-16x16.png',
   },
   { rel: 'manifest', href: '/site.webmanifest' },
-  { rel: 'icon', href: '/favicons/favicon.ico' },
+  { rel: 'icon', href: '/favicon.ico' },
 ];
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -45,7 +45,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const handle = {
-  i18n: 'translation',
+  i18n: ['common', 'navigation'],
 };
 
 export const meta: MetaFunction = () => ({
@@ -57,7 +57,7 @@ export const meta: MetaFunction = () => ({
 export default function App() {
   const { locale } = useLoaderData<typeof loader>();
 
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation('common');
 
   return (
     <html lang={locale} dir={i18n.dir()}>

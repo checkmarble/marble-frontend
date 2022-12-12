@@ -12,7 +12,7 @@ const History = (props: SVGProps<SVGSVGElement>) => (
     <path
       fillRule="evenodd"
       clipRule="evenodd"
-      d="M11 12.414V5h2v6.586l3.707 3.707-1.414 1.414L11 12.414zM12 21a9 9 0 100-18 9 9 0 000 18zm0 2c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11z"
+      d="M11 12.414V5h2v6.586l3.707 3.707-1.414 1.414L11 12.414ZM12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 2c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11Z"
       fill="currentColor"
     />
   </svg>
