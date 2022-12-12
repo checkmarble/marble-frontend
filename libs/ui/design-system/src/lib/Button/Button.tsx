@@ -11,7 +11,6 @@ export const variantColors: Record<Variant, readonly string[]> = {
 export type PrimaryColor = typeof variantColors['primary'][number];
 export type SecondaryColor = typeof variantColors['secondary'][number];
 
-/* eslint-disable-next-line */
 export type ButtonProps = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
@@ -56,5 +55,3 @@ export function Button({
     />
   );
 }
-
-export default Button;

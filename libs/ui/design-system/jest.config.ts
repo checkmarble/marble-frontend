@@ -2,6 +2,7 @@
 export default {
   displayName: 'ui-design-system',
   preset: '../../../jest.preset.js',
+  setupFilesAfterEnv: ['./jest-setup.js'],
   transform: {
     '^.+\\.[tj]sx?$': [
       '@swc/jest',

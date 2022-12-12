@@ -11,7 +11,7 @@ import {
   Scenarios,
   Settings,
 } from '@marble-front/ui/icons';
-import { Button } from '@marble-front/ui/design-system';
+import { Avatar, Button } from '@marble-front/ui/design-system';
 import { NavLink } from '@remix-run/react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -87,7 +87,7 @@ export default function Builder() {
 
   return (
     <div className="flex flex-1 flex-row">
-      <header className="bg-grey-02 sticky top-0 flex max-h-screen w-full max-w-[235px] flex-col px-2">
+      <header className="bg-grey-02 border-r-grey-10 sticky top-0 flex max-h-screen w-full max-w-[235px] flex-col border-r px-2">
         <div className="pb-9 pt-3">
           <Popover.Root>
             <Popover.Trigger asChild>
@@ -113,9 +113,11 @@ export default function Builder() {
                 sideOffset={4}
               >
                 <div className="flex flex-col items-center">
-                  <div className="bg-grey-10 mb-2 flex h-16 w-16 items-center justify-center rounded-[64px] text-center">
-                    <p className="text-display-l-semibold text-center uppercase">{`${user.firstName?.[0]}${user.lastName?.[0]}`}</p>
-                  </div>
+                  <Avatar
+                    className="mb-2"
+                    firstName={user.firstName}
+                    lastName={user.lastName}
+                  />
                   <p className="text-text-m-semibold mb-1 capitalize">{`${user.firstName} ${user.lastName}`}</p>
                   <p className="text-text-s-regular">{user.email}</p>
                 </div>
