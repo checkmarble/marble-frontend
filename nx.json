@@ -52,6 +52,13 @@
     "@nrwl/react": {
       "application": {
         "babel": true
+      },
+      "component": {
+        "project": "ui-design-system",
+        "style": "none",
+        "pascalCaseDirectory": true,
+        "pascalCaseFiles": true,
+        "export": true
       }
     }
   }
