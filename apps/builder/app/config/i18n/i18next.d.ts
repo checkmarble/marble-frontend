@@ -2,6 +2,7 @@ import type defaultNS from './i18n-config';
 
 import type common from '../../../public/locales/en/common.json';
 import type navigation from '../../../public/locales/en/navigation.json';
+import type lists from '../../../public/locales/en/lists.json';
 
 declare module 'i18next' {
   interface CustomTypeOptions {
@@ -9,6 +10,7 @@ declare module 'i18next' {
     resources: {
       common: typeof common;
       navigation: typeof navigation;
+      lists: typeof lists;
     };
   }
 }
