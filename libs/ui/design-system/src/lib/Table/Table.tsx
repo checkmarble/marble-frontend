@@ -11,26 +11,27 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Arrow2Down, Arrow2Up } from '@marble-front/ui/icons';
 
-const TableContainer = forwardRef<
-  HTMLDivElement,
-  Pick<
-    React.DetailedHTMLProps<
-      React.HTMLAttributes<HTMLDivElement>,
-      HTMLDivElement
-    >,
-    'children' | 'className'
-  >
->(({ children, className }, ref) => {
-  return (
-    <div className="border-grey-10 overflow-hidden rounded-lg border">
-      <div ref={ref} className={clsx('h-96 overflow-auto', className)}>
-        <table className="w-full table-fixed border-separate border-spacing-0">
-          {children}
-        </table>
+type TableContainerProps = Pick<
+  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
+  'children' | 'className'
+> & { table: TableT<any> };
+
+const TableContainer = forwardRef<HTMLDivElement, TableContainerProps>(
+  ({ table, children, className }, ref) => {
+    return (
+      <div className="border-grey-10 w-fit overflow-hidden rounded-lg border">
+        <div ref={ref} className={clsx('h-96 overflow-auto', className)}>
+          <table
+            className="w-full table-fixed border-separate border-spacing-0"
+            style={{ width: table.getTotalSize() }}
+          >
+            {children}
+          </table>
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 function TableTHead({
   className,
@@ -57,7 +58,7 @@ function TableTH<TData extends RowData, TValue>({
       colSpan={header.colSpan}
       style={{ width: header.getSize() }}
       className={clsx(
-        'bg-grey-02 border-grey-10 h-12 w-full border-b border-r pl-4 pr-4 last:border-r-0',
+        'bg-grey-02 border-grey-10 relative h-12 w-full border-b border-r pl-4 pr-4 last:border-r-0',
         {
           'cursor-pointer select-none': header.column.getCanSort(),
         },
@@ -84,8 +85,8 @@ function DefaultHeader<TData extends RowData>({
             return (
               <Table.TH header={header}>
                 {header.isPlaceholder ? null : (
-                  <div className="text-text-s-semibold-cta flex flex-row items-center justify-between">
-                    <p>
+                  <div className="text-text-s-semibold-cta text-grey-100 flex flex-row items-center">
+                    <p className="flex flex-1">
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
@@ -95,6 +96,14 @@ function DefaultHeader<TData extends RowData>({
                       asc: <Arrow2Up width="24px" height="24px" />,
                       desc: <Arrow2Down width="24px" height="24px" />,
                     }[header.column.getIsSorted() as string] ?? null}
+                    <div
+                      className="hover:bg-grey-10 active:bg-grey-50 absolute right-0 h-full w-1 cursor-col-resize touch-none select-none"
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                      }}
+                    />
                   </div>
                 )}
               </Table.TH>
@@ -174,7 +183,7 @@ function DefaultTable<TData extends RowData>({
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <Table.Container ref={tableContainerRef}>
+    <Table.Container ref={tableContainerRef} table={table}>
       <Table.DefaultHeader headerGroups={table.getHeaderGroups()} />
       <Table.DefaultBody table={table} tableContainerRef={tableContainerRef} />
     </Table.Container>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { Page } from '@marble-front/builder/components/Page';
 import { useTranslation } from 'react-i18next';
 
@@ -43,7 +43,7 @@ export default function Lists() {
       {
         accessorKey: 'name',
         header: t('lists:name'),
-        size: 50,
+        size: 200,
         sortingFn: 'text',
         enableSorting: true,
       },
@@ -51,6 +51,7 @@ export default function Lists() {
         id: 'description',
         accessorFn: (row) => row.description,
         header: t('lists:description'),
+        size: 800,
       },
     ],
     [t]
@@ -59,6 +60,7 @@ export default function Lists() {
   const table = useReactTable({
     data,
     columns,
+    columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
