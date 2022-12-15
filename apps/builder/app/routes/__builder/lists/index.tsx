@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { Page } from '@marble-front/builder/components/Page';
 import { useTranslation } from 'react-i18next';
 

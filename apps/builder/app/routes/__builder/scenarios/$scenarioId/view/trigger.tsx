@@ -1,15 +1,7 @@
-import { useTranslation } from 'react-i18next';
-
-export const handle = {
-  i18n: 'navigation',
-};
-
-export default function Scenarios() {
-  const { t } = useTranslation('navigation');
-
+export default function Trigger() {
   return (
-    <div className="p-4">
-      <h1>{t('analytics')}</h1>
+    <div>
+      <h1>Trigger</h1>
       <p>
         Ipsa doloremque voluptate velit et sint dolores amet ullam. Incidunt ut
         consequatur. Vel ullam cupiditate repudiandae a voluptatem laboriosam

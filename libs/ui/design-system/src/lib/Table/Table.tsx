@@ -54,7 +54,6 @@ function TableTH<TData extends RowData, TValue>({
 > & { header: Header<TData, TValue> }) {
   return (
     <th
-      key={header.id}
       colSpan={header.colSpan}
       style={{ width: header.getSize() }}
       className={clsx(
@@ -83,7 +82,7 @@ function DefaultHeader<TData extends RowData>({
         <tr key={headerGroup.id}>
           {headerGroup.headers.map((header) => {
             return (
-              <Table.TH header={header}>
+              <Table.TH header={header} key={header.id}>
                 {header.isPlaceholder ? null : (
                   <div className="text-text-s-semibold-cta text-grey-100 flex flex-row items-center">
                     <p className="flex flex-1">

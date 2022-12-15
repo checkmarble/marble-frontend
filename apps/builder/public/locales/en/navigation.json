@@ -5,5 +5,8 @@
   "analytics": "Analytics",
   "history": "History",
   "settings": "Settings",
-  "help-center": "Help Center"
+  "help-center": "Help Center",
+  "scenario.trigger": "Trigger",
+  "scenario.rules": "Rules",
+  "scenario.decision": "Decision"
 }
