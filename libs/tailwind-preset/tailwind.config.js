@@ -16,6 +16,14 @@ module.exports = {
         sans: ['Inter', ...defaultTheme.fontFamily.sans],
       },
       keyframes: {
+        overlayShow: {
+          from: {
+            opacity: 0,
+          },
+          to: {
+            opacity: 1,
+          },
+        },
         slideUpAndFade: {
           from: {
             opacity: 0,
@@ -29,6 +37,7 @@ module.exports = {
       },
       animation: {
         slideUpAndFade: 'slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
+        overlayShow: 'overlayShow 200ms cubic-bezier(0.16, 1, 0.3, 1)',
       },
     },
   },

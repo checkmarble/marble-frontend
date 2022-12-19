@@ -1,13 +1,9 @@
 import type { Story, Meta } from '@storybook/react';
 import { useMemo } from 'react';
-import { Table } from './Table';
+import { Table, useVirtualTable } from './Table';
 import { faker } from '@faker-js/faker';
 import type { ColumnDef } from '@tanstack/react-table';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
+import { getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 
 type StoryProps = {
   count: number;
@@ -26,7 +22,8 @@ const Template: Story<StoryProps> = ({ count }) => {
   const data = useMemo(
     () =>
       Array.from({ length: count }).map(() => ({
-        name: faker.name.fullName(),
+        firstName: faker.name.firstName(),
+        lastName: faker.name.lastName(),
         description: faker.lorem.sentences(),
       })),
     [count]
@@ -34,33 +31,41 @@ const Template: Story<StoryProps> = ({ count }) => {
 
   const columns = useMemo<
     ColumnDef<{
-      name: string;
+      firstName: string;
+      lastName: string;
       description: string;
     }>[]
   >(
     () => [
       {
-        accessorKey: 'name',
-        header: 'Name',
-        size: 50,
+        accessorKey: 'firstName',
+        header: 'firstName',
+        size: 200,
+      },
+      {
+        accessorKey: 'lastName',
+        header: 'lastName',
+        size: 200,
       },
       {
         accessorKey: 'description',
         header: 'Description',
+        size: 400,
       },
     ],
     []
   );
 
-  const table = useReactTable({
+  const virtualTable = useVirtualTable({
     data,
     columns,
+    enableColumnResizing: true,
+    columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
   });
 
-  return <Table.Default table={table} />;
+  return <Table.Default {...virtualTable} />;
 };
 
 export const Primary = Template.bind({});

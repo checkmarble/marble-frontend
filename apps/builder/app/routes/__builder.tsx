@@ -6,7 +6,7 @@ import {
   Logout,
   Scenarios,
 } from '@marble-front/ui/icons';
-import { Avatar, Button } from '@marble-front/ui/design-system';
+import { Avatar, Button, ScrollArea } from '@marble-front/ui/design-system';
 import { useTranslation } from 'react-i18next';
 import { Outlet } from '@remix-run/react';
 import {
@@ -92,13 +92,20 @@ export default function Builder() {
             </Popover.Portal>
           </Popover.Root>
         </div>
-        <Sidebar.Nav className="flex flex-1 flex-col overflow-y-auto p-2">
-          {LINKS.map((linkProps) => (
-            <li key={linkProps.labelTKey}>
-              <Sidebar.Link {...linkProps} />
-            </li>
-          ))}
-        </Sidebar.Nav>
+        <ScrollArea.Root className="flex flex-1 flex-col p-2" type="auto">
+          <ScrollArea.Viewport>
+            <Sidebar.Nav>
+              {LINKS.map((linkProps) => (
+                <li key={linkProps.labelTKey}>
+                  <Sidebar.Link {...linkProps} />
+                </li>
+              ))}
+            </Sidebar.Nav>
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar>
+            <ScrollArea.Thumb />
+          </ScrollArea.Scrollbar>
+        </ScrollArea.Root>
         <Sidebar.Nav className="p-2 pb-4">
           {BOTTOM_LINKS.map((linkProps) => (
             <li key={linkProps.labelTKey}>

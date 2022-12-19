@@ -17,6 +17,7 @@ export { default as Filters } from './Filters';
 export { default as Helpcenter } from './Helpcenter';
 export { default as History } from './History';
 export { default as Home } from './Home';
+export { default as Lightbulb } from './Lightbulb';
 export { default as Lists } from './Lists';
 export { default as LogoFavicon } from './LogoFavicon';
 export { default as LogoStandard } from './LogoStandard';

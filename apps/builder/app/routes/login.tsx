@@ -14,7 +14,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     companyName: 'Acme.',
     name: 'D. Brown',
   };
-  if (user) return redirect('/');
+  if (user) return redirect('/home');
 };
 
 export default function Login() {

@@ -42,12 +42,9 @@ export default function ScenarioLayout() {
     <Page.Container>
       <Page.Header>
         <Link to="./..">
-          <Page.BackButton />
+          <Page.BackButton className="mr-4" />
         </Link>
         {data.name}
-        <select>
-          
-        </select>
       </Page.Header>
       <Outlet />
     </Page.Container>

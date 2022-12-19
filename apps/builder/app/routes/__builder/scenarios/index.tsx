@@ -2,6 +2,7 @@ import { Page } from '@marble-front/builder/components/Page';
 import { useTranslation } from 'react-i18next';
 import { json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
+import { Scenarios } from '@marble-front/ui/icons';
 
 import type { Scenario } from '@marble-front/api/marble';
 
@@ -39,13 +40,16 @@ export const handle = {
   i18n: ['scenarios', 'navigation'],
 };
 
-export default function Scenarios() {
+export default function ScenariosPage() {
   const { t } = useTranslation(['navigation', 'scenarios']);
   const data = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
-      <Page.Header>{t('navigation:scenarios')}</Page.Header>
+      <Page.Header>
+        <Scenarios className="mr-2" height="24px" width="24px" />
+        {t('navigation:scenarios')}
+      </Page.Header>
       <Page.Content className="gap-4">
         {data.length ? (
           data.map(({ id, name, description, activeVersion }) => (
