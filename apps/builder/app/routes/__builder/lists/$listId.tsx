@@ -163,7 +163,7 @@ export default function ScenarioLayout() {
         </Link>
         {data.name}
       </Page.Header>
-      <Page.Content className="gap-8">
+      <Page.Content className="max-w-3xl gap-8">
         <div className="bg-grey-02  flex w-fit flex-row gap-2 rounded border-l-2 border-l-purple-100 p-2">
           <Lightbulb height="24px" width="24px" className="flex-shrink-0" />
           <p className="text-text-s-regular text-grey-100">
@@ -171,7 +171,8 @@ export default function ScenarioLayout() {
           </p>
         </div>
         <ScenariosList scenarios={scenarios} />
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-4">
+          <input className="border" />
           <Table.Default {...virtualTable} />
         </div>
       </Page.Content>

@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { createContext, useContext, useRef } from 'react';
+import { useRef } from 'react';
 
 import {
   Header,
@@ -34,15 +34,12 @@ function TableContainer<TData extends RowData>({
   className,
 }: TableContainerProps<TData>) {
   return (
-    <ScrollArea.Root className="border-grey-10 w-fit overflow-hidden rounded-lg border">
+    <ScrollArea.Root className="border-grey-10 overflow-hidden rounded-lg border">
       <ScrollArea.Viewport
         ref={tableContainerRef}
-        className={clsx('h-96 overflow-auto', className)}
+        className={clsx('flex h-96 overflow-auto', className)}
       >
-        <table
-          className="w-full table-fixed border-separate border-spacing-0"
-          style={{ width: table.getTotalSize() }}
-        >
+        <table className="w-full table-fixed border-separate border-spacing-0">
           {children}
         </table>
       </ScrollArea.Viewport>
