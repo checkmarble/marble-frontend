@@ -54,7 +54,7 @@ export default function ScenariosPage() {
         {data.length ? (
           data.map(({ id, name, description, activeVersion }) => (
             <Link key={id} to={`/scenarios/${id}/view/trigger`}>
-              <div className="bg-grey-00 border-grey-10 flex max-w-3xl flex-col gap-1 rounded-lg border border-solid p-4 hover:drop-shadow-md">
+              <div className="bg-grey-00 border-grey-10 flex max-w-3xl flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
                 <div className="text-text-m-bold flex flex-row gap-2">
                   {name}
                   {activeVersion && (

@@ -96,7 +96,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
                 </Dialog.Title>
                 <ScrollArea.Root>
                   <ScrollArea.Viewport className="max-h-72">
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 pr-4">
                       {scenarios.map((scenario) => (
                         <div
                           key={scenario}
