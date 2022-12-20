@@ -1,4 +1,12 @@
 {
   "live": "live",
-  "empty_scenario_list": "Reach out to  Marble to create your first scenario."
+  "empty_scenario_list": "Reach out to  Marble to create your first scenario.",
+  "decision.score_based.title": "Score based decision",
+  "decision.score_based.callout": "The decision is made by comparing the total score computed by the rules to the thresholds defined below.",
+  "decision.score_based.approve": "Approve",
+  "decision.score_based.approve_condition": "When the score is equal to or below",
+  "decision.score_based.review": "Review",
+  "decision.score_based.review_condition": "When the score is between the two thresholds.",
+  "decision.score_based.decline": "Decline",
+  "decision.score_based.decline_condition": "When the score is equal to or above"
 }

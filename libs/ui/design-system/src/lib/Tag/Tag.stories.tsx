@@ -1,5 +1,5 @@
 import type { Story, Meta } from '@storybook/react';
-import { Tag, type TagProps, tagColors } from './Tag';
+import { Tag, type TagProps, tagColors, tagSize, tagBorder } from './Tag';
 
 type StoryProps = TagProps;
 
@@ -15,6 +15,16 @@ const Story: Meta<StoryProps> = {
       control: { type: 'select' },
       options: tagColors,
       defaultValue: tagColors[0],
+    },
+    border: {
+      control: { type: 'select' },
+      options: tagBorder,
+      defaultValue: tagBorder[0],
+    },
+    size: {
+      control: { type: 'select' },
+      options: tagSize,
+      defaultValue: tagSize[0],
     },
   },
 };

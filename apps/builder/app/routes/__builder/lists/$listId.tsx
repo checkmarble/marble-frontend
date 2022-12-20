@@ -6,7 +6,7 @@ import { Link, useLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
 
 import { faker } from '@faker-js/faker';
-import { Cross, Lightbulb, Scenarios } from '@marble-front/ui/icons';
+import { Cross, Scenarios } from '@marble-front/ui/icons';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -18,6 +18,7 @@ import {
 import { type ColumnDef } from '@tanstack/react-table';
 import { getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
+import Callout from '@marble-front/builder/components/Callout';
 
 function getFakeList(id: string) {
   const values = Array.from({ length: Math.floor(Math.random() * 100) }).map(
@@ -164,12 +165,7 @@ export default function ScenarioLayout() {
         {data.name}
       </Page.Header>
       <Page.Content className="max-w-3xl gap-8">
-        <div className="bg-grey-02  flex w-fit flex-row gap-2 rounded border-l-2 border-l-purple-100 p-2">
-          <Lightbulb height="24px" width="24px" className="flex-shrink-0" />
-          <p className="text-text-s-regular text-grey-100">
-            {data.description}
-          </p>
-        </div>
+        <Callout>{data.description}</Callout>
         <ScenariosList scenarios={scenarios} />
         <div className="flex flex-col gap-4">
           <input className="border" />
