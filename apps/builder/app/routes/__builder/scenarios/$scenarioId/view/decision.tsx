@@ -19,7 +19,7 @@ export default function Decision() {
       <p className="text-text-m-semibold text-grey-100">
         {t('scenarios:decision.score_based.title')}
       </p>
-      <Callout>{t('decision.score_based.callout')}</Callout>
+      <Callout>{t('scenarios:decision.score_based.callout')}</Callout>
       <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-y-4 gap-x-2">
         <Tag border="square" size="big" color="green">
           {t('scenarios:decision.score_based.approve')}
