@@ -65,7 +65,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="h-screen w-full overflow-hidden">
+      <body className="h-screen w-full overflow-hidden antialiased">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

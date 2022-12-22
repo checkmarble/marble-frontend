@@ -8,6 +8,7 @@ import {
   type ScrollAreaScrollbarProps,
   type ScrollAreaThumbProps,
   type ScrollAreaCornerProps,
+  type ScrollAreaViewportProps,
 } from '@radix-ui/react-scroll-area';
 import clsx from 'clsx';
 import { forwardRef, type RefAttributes } from 'react';
@@ -56,9 +57,24 @@ const ScrollAreaCorner = forwardRef<
 ));
 ScrollAreaCorner.displayName = Corner?.displayName;
 
+/**
+ * Override hardcoded style to bypass https://github.com/radix-ui/primitives/issues/926
+ */
+const ScrollAreaViewport = forwardRef<
+  HTMLDivElement,
+  ScrollAreaViewportProps & RefAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <Viewport
+    ref={ref}
+    className={clsx('[&>:first-of-type]:!block', className)}
+    {...props}
+  />
+));
+ScrollAreaViewport.displayName = Viewport?.displayName;
+
 export const ScrollArea = {
   Root: ScrollAreaRoot,
-  Viewport,
+  Viewport: ScrollAreaViewport,
   Scrollbar: ScrollAreaScrollbar,
   Thumb: ScrollAreaThumb,
   Corner: ScrollAreaCorner,

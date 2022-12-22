@@ -1,3 +1,4 @@
+import { ScrollArea } from '@marble-front/ui/design-system';
 import { ArrowLeft } from '@marble-front/ui/icons';
 import clsx from 'clsx';
 
@@ -43,14 +44,17 @@ function PageContent({
   HTMLDivElement
 >) {
   return (
-    <div
-      className={clsx(
-        'flex flex-1 flex-col overflow-y-auto',
-        'p-4 lg:p-8',
-        className
-      )}
-      {...props}
-    />
+    <ScrollArea.Root>
+      <ScrollArea.Viewport className="h-full">
+        <div
+          className={clsx('flex flex-1 flex-col', 'p-4 lg:p-8', className)}
+          {...props}
+        />
+      </ScrollArea.Viewport>
+      <ScrollArea.Scrollbar>
+        <ScrollArea.Thumb />
+      </ScrollArea.Scrollbar>
+    </ScrollArea.Root>
   );
 }
 
