@@ -8,7 +8,12 @@ function PageContainer({
   React.HTMLAttributes<HTMLDivElement>,
   HTMLDivElement
 >) {
-  return <div className={clsx('flex flex-1 flex-col', className)} {...props} />;
+  return (
+    <main
+      className={clsx('flex flex-1 flex-col overflow-hidden', className)}
+      {...props}
+    />
+  );
 }
 
 function PageHeader({
@@ -21,7 +26,8 @@ function PageHeader({
   return (
     <div
       className={clsx(
-        'border-b-grey-10 bg-grey-00 text-display-l-bold text-grey-100 sticky top-0 flex h-20 flex-row items-center border-b pr-8 pl-8',
+        'border-b-grey-10 bg-grey-00 text-display-l-bold text-grey-100 flex shrink-0 flex-row items-center border-b',
+        'h-16 px-4 lg:h-20 lg:px-8',
         className
       )}
       {...props}
@@ -37,7 +43,14 @@ function PageContent({
   HTMLDivElement
 >) {
   return (
-    <div className={clsx('flex flex-1 flex-col p-8', className)} {...props} />
+    <div
+      className={clsx(
+        'flex flex-1 flex-col overflow-y-auto',
+        'p-4 lg:p-8',
+        className
+      )}
+      {...props}
+    />
   );
 }
 

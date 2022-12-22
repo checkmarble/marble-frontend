@@ -14,6 +14,7 @@ import {
   type SidebarLinkProps,
   navigationI18n,
 } from '../components/Navigation';
+import clsx from 'clsx';
 
 const LINKS: SidebarLinkProps[] = [
   // { labelTKey: 'home', to: 'home', Icon: Home },
@@ -45,8 +46,13 @@ export default function Builder() {
   };
 
   return (
-    <div className="flex flex-1 flex-row">
-      <header className="bg-grey-02 border-r-grey-10 sticky top-0 flex max-h-screen w-full max-w-[235px] flex-col border-r">
+    <div className="flex h-full flex-1 flex-row overflow-hidden">
+      <header
+        className={clsx(
+          'bg-grey-02 border-r-grey-10 flex max-h-screen w-full shrink-0 flex-col border-r',
+          'max-w-min md:max-w-[235px]'
+        )}
+      >
         <div className="px-2 pb-9 pt-3">
           <Popover.Root>
             <Popover.Trigger asChild>
@@ -115,9 +121,7 @@ export default function Builder() {
         </Sidebar.Nav>
       </header>
 
-      <main className="flex flex-1 flex-col">
-        <Outlet />
-      </main>
+      <Outlet />
     </div>
   );
 }

@@ -11,7 +11,6 @@
     "@babel/preset-typescript": "7.12.13",
     "@bufbuild/protobuf": "^0.4.0",
     "@bufbuild/protoc-gen-es": "^0.4.0",
-    "@faker-js/faker": "^7.6.0",
     "@nrwl/cli": "15.2.1",
     "@nrwl/cypress": "15.2.1",
     "@nrwl/eslint-plugin-nx": "15.2.1",
@@ -84,6 +83,7 @@
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.0.1",
+    "@faker-js/faker": "^7.6.0",
     "@radix-ui/react-dialog": "^1.0.2",
     "@radix-ui/react-popover": "^1.0.2",
     "@radix-ui/react-scroll-area": "^1.0.2",
