@@ -41,7 +41,16 @@ export const links: LinksFunction = () => [
 export const loader = async ({ request }: LoaderArgs) => {
   const locale = await remixI18next.getLocale(request);
 
-  return json({ locale });
+  return json({
+    /**
+     * Browser env vars :
+     * - define browser env vars here
+     * - access it using window.ENV.MY_ENV_VAR
+     * https://remix.run/docs/en/v1/guides/envvars#browser-environment-variables
+     */
+    ENV: {},
+    locale,
+  });
 };
 
 export const handle = {
@@ -55,7 +64,7 @@ export const meta: MetaFunction = () => ({
 });
 
 export default function App() {
-  const { locale } = useLoaderData<typeof loader>();
+  const { locale, ENV } = useLoaderData<typeof loader>();
 
   const { i18n } = useTranslation('common');
 
@@ -67,6 +76,11 @@ export default function App() {
       </head>
       <body className="h-screen w-full overflow-hidden antialiased">
         <Outlet />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(ENV)}`,
+          }}
+        />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
