@@ -6,10 +6,12 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { faker } from '@faker-js/faker';
 
+import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { Table, useVirtualTable } from '@marble-front/ui/design-system';
 import { Lists } from '@marble-front/ui/icons';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 
 type List = {
   name: string;
@@ -21,7 +23,10 @@ const fakeLists = Array.from({ length: 2500 }).map(() => ({
   description: faker.lorem.sentences(),
 }));
 
-export async function loader() {
+export async function loader({ request }: LoaderArgs) {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
   /** TODO(data): get lists from API */
 
   return json<List[]>(fakeLists);

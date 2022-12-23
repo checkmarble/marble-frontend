@@ -1,6 +1,9 @@
-import type { LoaderFunction } from '@remix-run/node';
-import { redirect } from '@remix-run/node';
+import type { LoaderArgs } from '@remix-run/node';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 
-export const loader: LoaderFunction = async () => {
-  return redirect('/scenarios');
-};
+export async function loader({ request }: LoaderArgs) {
+  return authenticator.isAuthenticated(request, {
+    successRedirect: '/scenarios',
+    failureRedirect: '/login',
+  });
+}

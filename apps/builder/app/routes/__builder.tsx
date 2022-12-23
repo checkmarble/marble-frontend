@@ -8,12 +8,12 @@ import {
 } from '@marble-front/ui/icons';
 import { Avatar, Button, ScrollArea } from '@marble-front/ui/design-system';
 import { useTranslation } from 'react-i18next';
-import { Outlet } from '@remix-run/react';
+import { Form, Outlet } from '@remix-run/react';
 import {
   Sidebar,
   type SidebarLinkProps,
   navigationI18n,
-} from '../components/Navigation';
+} from '@marble-front/builder/components/Navigation';
 import clsx from 'clsx';
 
 const LINKS: SidebarLinkProps[] = [
@@ -88,11 +88,12 @@ export default function Builder() {
                 </div>
 
                 <div className="mt-6 flex flex-col items-center">
-                  {/* TODO(auth): implement the user logout feature */}
-                  <Button variant="secondary">
-                    <Logout height="24px" width="24px" />
-                    {t('auth.logout')}
-                  </Button>
+                  <Form action="/auth/logout" method="post">
+                    <Button variant="secondary">
+                      <Logout height="24px" width="24px" />
+                      {t('auth.logout')}
+                    </Button>
+                  </Form>
                 </div>
               </Popover.Content>
             </Popover.Portal>

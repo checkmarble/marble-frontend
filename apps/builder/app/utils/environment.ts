@@ -1,5 +1,5 @@
 type ServerEnvVarName =
-  | 'NODE_ENV'
+  | 'ENV'
   | 'APP_DOMAIN'
   | 'SESSION_SECRET'
   | 'GOOGLE_CLIENT_ID'
