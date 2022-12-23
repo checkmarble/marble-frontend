@@ -12,7 +12,7 @@ const Calendar = (props: SVGProps<SVGSVGElement>) => (
     <path
       fillRule="evenodd"
       clipRule="evenodd"
-      d="M6 3H4a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2V1h-2v2H8V1H6v2ZM4 5v2.95h16V5H4Zm16 4.95H4V20h16V9.95Z"
+      d="M6 3H4a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2V1h-2v2H8V1H6v2zM4 5v2.95h16V5H4zm16 4.95H4V20h16V9.95z"
       fill="currentColor"
     />
   </svg>

@@ -10,7 +10,7 @@ const Filters = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      d="M2 6h20v2H2V6ZM6 11h12v2H6v-2ZM10 16h4v2h-4v-2Z"
+      d="M2 6h20v2H2V6zm4 5h12v2H6v-2zm4 5h4v2h-4v-2z"
       fill="currentColor"
     />
   </svg>

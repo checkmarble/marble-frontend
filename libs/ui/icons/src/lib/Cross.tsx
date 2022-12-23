@@ -10,7 +10,7 @@ const Cross = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      d="m16.086 7.914-8.172 8.172M16.086 16.086 7.914 7.914"
+      d="m16.086 7.914-8.172 8.172m8.172 0L7.914 7.914"
       stroke="currentColor"
       strokeWidth={2}
       strokeLinecap="round"
