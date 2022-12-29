@@ -42,11 +42,11 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['scenarios', 'navigation'],
+  i18n: ['scenarios', 'navigation'] as const,
 };
 
 export default function ScenariosPage() {
-  const { t } = useTranslation(['navigation', 'scenarios']);
+  const { t } = useTranslation(handle.i18n);
   const data = useLoaderData<typeof loader>();
 
   return (

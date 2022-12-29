@@ -13,17 +13,15 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const handle = {
-  i18n: ['lists'],
+  i18n: ['lists'] as const,
 };
 
 export default function Rules() {
-  const { t } = useTranslation('lists');
+  const { t } = useTranslation(handle.i18n);
   const matches = useMatches();
   const scenario = matches.find(
     ({ id }) => id === `routes/__builder/scenarios/$scenarioId`
   )?.data as Scenario;
-
-  scenario.activeVersion
 
   const columns = useMemo<ColumnDef<List>[]>(
     () => [

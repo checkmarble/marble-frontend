@@ -41,11 +41,11 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['common', ...navigationI18n],
+  i18n: ['common', ...navigationI18n] as const,
 };
 
 export default function Builder() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(handle.i18n);
   const { user } = useLoaderData<typeof loader>();
 
   return (
@@ -97,7 +97,7 @@ export default function Builder() {
                   <Form action="/auth/logout" method="post">
                     <Button variant="secondary">
                       <Logout height="24px" width="24px" />
-                      {t('auth.logout')}
+                      {t('common:auth.logout')}
                     </Button>
                   </Form>
                 </div>

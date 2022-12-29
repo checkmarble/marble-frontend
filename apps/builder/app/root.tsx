@@ -54,7 +54,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const handle = {
-  i18n: ['common', 'navigation'],
+  i18n: ['common', 'navigation'] as const,
 };
 
 export const meta: MetaFunction = () => ({
@@ -66,7 +66,7 @@ export const meta: MetaFunction = () => ({
 export default function App() {
   const { locale, ENV } = useLoaderData<typeof loader>();
 
-  const { i18n } = useTranslation('common');
+  const { i18n } = useTranslation(handle.i18n);
 
   return (
     <html lang={locale} dir={i18n.dir()}>

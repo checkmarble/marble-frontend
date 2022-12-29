@@ -46,13 +46,13 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['lists', 'navigation'],
+  i18n: ['lists'] as const,
 };
 
 const MAX_SCENARIOS = 4;
 
 function ScenariosList({ scenarios }: { scenarios: string[] }) {
-  const { t } = useTranslation(['lists']);
+  const { t } = useTranslation(handle.i18n);
 
   return (
     <div className="flex flex-col gap-4">
@@ -128,7 +128,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
 
 export default function ScenarioLayout() {
   const data = useLoaderData<typeof loader>();
-  const { t } = useTranslation(['lists']);
+  const { t } = useTranslation(handle.i18n);
 
   const scenarios = [
     'Check transactions',

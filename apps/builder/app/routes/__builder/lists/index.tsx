@@ -33,11 +33,11 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['lists', 'navigation'],
+  i18n: ['lists', 'navigation'] as const,
 };
 
 export default function ListsPage() {
-  const { t } = useTranslation(['navigation', 'lists']);
+  const { t } = useTranslation(handle.i18n);
   const data = useLoaderData<typeof loader>();
 
   const columns = useMemo<ColumnDef<List>[]>(
