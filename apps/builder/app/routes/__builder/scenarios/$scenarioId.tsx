@@ -8,6 +8,7 @@ import type { Scenario } from '@marble-front/api/marble';
 
 import { faker } from '@faker-js/faker';
 import type { PlainMessage } from '@bufbuild/protobuf';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 
 function getFakeScenario(id: string): PlainMessage<Scenario> {
   const versions = Array.from({ length: Math.floor(Math.random() * 10) }).map(
@@ -27,7 +28,10 @@ function getFakeScenario(id: string): PlainMessage<Scenario> {
   };
 }
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderArgs) {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
   invariant(params.scenarioId, `params.scenarioId is required`);
   /** TODO(data): get scenario from API */
   const scenario = getFakeScenario(params.scenarioId);

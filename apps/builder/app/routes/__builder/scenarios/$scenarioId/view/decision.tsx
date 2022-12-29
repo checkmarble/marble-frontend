@@ -3,11 +3,11 @@ import { Tag } from '@marble-front/ui/design-system';
 import { useTranslation } from 'react-i18next';
 
 export const handle = {
-  i18n: ['scenarios'],
+  i18n: ['scenarios'] as const,
 };
 
 export default function Decision() {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation(handle.i18n);
 
   const values = {
     approve: -30,

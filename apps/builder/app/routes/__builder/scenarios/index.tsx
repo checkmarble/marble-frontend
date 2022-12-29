@@ -1,5 +1,6 @@
 import { Page } from '@marble-front/builder/components/Page';
 import { useTranslation } from 'react-i18next';
+import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { Scenarios } from '@marble-front/ui/icons';
@@ -9,6 +10,7 @@ import type { Scenario } from '@marble-front/api/marble';
 import { faker } from '@faker-js/faker';
 import type { PlainMessage } from '@bufbuild/protobuf';
 import { Tag } from '@marble-front/ui/design-system';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 
 const fakeScenarios: PlainMessage<Scenario>[] = Array.from({
   length: 25,
@@ -30,18 +32,21 @@ const fakeScenarios: PlainMessage<Scenario>[] = Array.from({
   };
 });
 
-export async function loader() {
+export async function loader({ request }: LoaderArgs) {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
   /** TODO(data): get list from API */
 
   return json(fakeScenarios);
 }
 
 export const handle = {
-  i18n: ['scenarios', 'navigation'],
+  i18n: ['scenarios', 'navigation'] as const,
 };
 
 export default function ScenariosPage() {
-  const { t } = useTranslation(['navigation', 'scenarios']);
+  const { t } = useTranslation(handle.i18n);
   const data = useLoaderData<typeof loader>();
 
   return (

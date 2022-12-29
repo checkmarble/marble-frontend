@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import type { NavigationTKey } from '../config/navigation';
 
-export const navigationI18n = ['navigation'];
+export const navigationI18n = ['navigation'] as const;
 
 export type SidebarLinkProps = {
   Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
@@ -12,7 +12,7 @@ export type SidebarLinkProps = {
 };
 
 function SidebarLink({ Icon, labelTKey, to }: SidebarLinkProps) {
-  const { t } = useTranslation('navigation');
+  const { t } = useTranslation(navigationI18n);
 
   return (
     <NavLink
@@ -55,7 +55,7 @@ export type ScenariosLinkProps = {
 };
 
 function ScenariosLink({ Icon, labelTKey, to }: SidebarLinkProps) {
-  const { t } = useTranslation('navigation');
+  const { t } = useTranslation(navigationI18n);
 
   return (
     <NavLink

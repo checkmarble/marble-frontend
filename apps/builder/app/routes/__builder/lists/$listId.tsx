@@ -19,6 +19,7 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import Callout from '@marble-front/builder/components/Callout';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 
 function getFakeList(id: string) {
   const values = Array.from({ length: Math.floor(Math.random() * 100) }).map(
@@ -32,7 +33,11 @@ function getFakeList(id: string) {
   };
 }
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderArgs) {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
+
   invariant(params.listId, `params.listId is required`);
   /** TODO(data): get list from API */
   const scenario = getFakeList(params.listId);
@@ -41,13 +46,13 @@ export async function loader({ params }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['lists', 'navigation'],
+  i18n: ['lists'] as const,
 };
 
 const MAX_SCENARIOS = 4;
 
 function ScenariosList({ scenarios }: { scenarios: string[] }) {
-  const { t } = useTranslation(['lists']);
+  const { t } = useTranslation(handle.i18n);
 
   return (
     <div className="flex flex-col gap-4">
@@ -123,7 +128,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
 
 export default function ScenarioLayout() {
   const data = useLoaderData<typeof loader>();
-  const { t } = useTranslation(['lists']);
+  const { t } = useTranslation(handle.i18n);
 
   const scenarios = [
     'Check transactions',

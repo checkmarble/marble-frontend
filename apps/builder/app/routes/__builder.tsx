@@ -1,3 +1,5 @@
+import type { LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import * as Popover from '@radix-ui/react-popover';
 import {
   Arrow2Down,
@@ -8,13 +10,14 @@ import {
 } from '@marble-front/ui/icons';
 import { Avatar, Button, ScrollArea } from '@marble-front/ui/design-system';
 import { useTranslation } from 'react-i18next';
-import { Outlet } from '@remix-run/react';
+import { Form, Outlet, useLoaderData } from '@remix-run/react';
 import {
   Sidebar,
   type SidebarLinkProps,
   navigationI18n,
-} from '../components/Navigation';
+} from '@marble-front/builder/components/Navigation';
 import clsx from 'clsx';
+import { authenticator } from '../services/auth/auth.server';
 
 const LINKS: SidebarLinkProps[] = [
   // { labelTKey: 'home', to: 'home', Icon: Home },
@@ -29,21 +32,21 @@ const BOTTOM_LINKS: SidebarLinkProps[] = [
   // { labelTKey: 'help-center', to: 'help-center', Icon: Helpcenter },
 ];
 
+export async function loader({ request }: LoaderArgs) {
+  const user = await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
+
+  return json({ user });
+}
+
 export const handle = {
-  i18n: ['common', ...navigationI18n],
+  i18n: ['common', ...navigationI18n] as const,
 };
 
 export default function Builder() {
-  const { t } = useTranslation('common');
-
-  /**
-   * TODO(auth): get the real user data
-   */
-  const user = {
-    firstName: 'pierre',
-    lastName: 'lemaire',
-    email: 'plemaire@logicfounders.com',
-  };
+  const { t } = useTranslation(handle.i18n);
+  const { user } = useLoaderData<typeof loader>();
 
   return (
     <div className="flex h-full flex-1 flex-row overflow-hidden">
@@ -80,19 +83,23 @@ export default function Builder() {
                 <div className="flex flex-col items-center">
                   <Avatar
                     className="mb-2"
-                    firstName={user.firstName}
-                    lastName={user.lastName}
+                    firstName={user.name.givenName}
+                    lastName={user.name.familyName}
+                    src={user.photos?.[0]?.value}
                   />
-                  <p className="text-text-m-semibold mb-1 capitalize">{`${user.firstName} ${user.lastName}`}</p>
-                  <p className="text-text-s-regular">{user.email}</p>
+                  <p className="text-text-m-semibold mb-1 capitalize">{`${user.name.givenName} ${user.name.familyName}`}</p>
+                  <p className="text-text-s-regular">
+                    {user.emails?.[0]?.value}
+                  </p>
                 </div>
 
                 <div className="mt-6 flex flex-col items-center">
-                  {/* TODO(auth): implement the user logout feature */}
-                  <Button variant="secondary">
-                    <Logout height="24px" width="24px" />
-                    {t('auth.logout')}
-                  </Button>
+                  <Form action="/auth/logout" method="post">
+                    <Button variant="secondary">
+                      <Logout height="24px" width="24px" />
+                      {t('common:auth.logout')}
+                    </Button>
+                  </Form>
                 </div>
               </Popover.Content>
             </Popover.Portal>
