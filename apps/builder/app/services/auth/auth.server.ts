@@ -4,7 +4,28 @@ import { sessionStorage } from './session.server';
 import { getServerEnv } from '@marble-front/builder/utils/environment';
 
 export interface User {
-  userId?: string;
+  id: string;
+  displayName: string;
+  name: {
+    familyName: string;
+    givenName: string;
+  };
+  emails: [{ value: string }];
+  photos: [{ value: string }];
+}
+
+const authErrors = ['NoAccount', 'Unknown'] as const;
+export type AuthErrors = typeof authErrors[number];
+
+export function isAuthErrors(error: string): error is AuthErrors {
+  return authErrors.includes(error as AuthErrors);
+}
+
+export class AuthError extends Error {
+  constructor(message: AuthErrors) {
+    super(message);
+    this.name = 'AuthError';
+  }
 }
 
 // Create an instance of the authenticator, pass a generic with what
@@ -20,7 +41,8 @@ authenticator.use(
     },
     async ({ profile }) => {
       //TODO(auth): get the real userId from Marble API
-      return { userId: profile.id };
+      // throw new AuthError('NoAccount');
+      return profile;
     }
   )
 );
