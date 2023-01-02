@@ -8,5 +8,8 @@
   "decision.score_based.review": "Review",
   "decision.score_based.review_condition": "When the score is between the two thresholds.",
   "decision.score_based.decline": "Decline",
-  "decision.score_based.decline_condition": "When the score is equal to or above"
+  "decision.score_based.decline_condition": "When the score is equal to or above",
+  "rules.name": "Name",
+  "rules.description": "Description",
+  "rules.empty": "Reach out to  Marble to create your first rule."
 }
