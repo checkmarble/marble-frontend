@@ -1,16 +1,18 @@
 import { getServerEnv } from '@marble-front/builder/utils/environment';
-import { createCookieSessionStorage } from '@remix-run/node';
+import { createCookie, createCookieSessionStorage } from '@remix-run/node';
+
+export const sessionCookie = createCookie('user_session', {
+  maxAge: Number(getServerEnv('SESSION_MAX_AGE')),
+  sameSite: 'lax', // this helps with CSRF
+  path: '/', // remember to add this so the cookie will work in all routes
+  httpOnly: true,
+  secrets: [getServerEnv('SESSION_SECRET')],
+  secure: process.env.NODE_ENV !== 'development',
+});
 
 // export the whole sessionStorage object
 export const sessionStorage = createCookieSessionStorage({
-  cookie: {
-    name: 'user_session', // use any name you want here
-    sameSite: 'lax', // this helps with CSRF
-    path: '/', // remember to add this so the cookie will work in all routes
-    httpOnly: true, // for security reasons, make this cookie http only
-    secrets: [getServerEnv('SESSION_SECRET')], // replace this with an actual secret
-    secure: process.env.NODE_ENV !== 'development', // not enabled in dev so cookie get sent to server
-  },
+  cookie: sessionCookie,
 });
 
 // you can also export the methods individually for your own usage

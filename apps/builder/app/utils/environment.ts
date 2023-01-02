@@ -2,6 +2,7 @@ type ServerEnvVarName =
   | 'ENV'
   | 'APP_DOMAIN'
   | 'SESSION_SECRET'
+  | 'SESSION_MAX_AGE'
   | 'GOOGLE_CLIENT_ID'
   | 'GOOGLE_CLIENT_SECRET';
 
