@@ -65,7 +65,6 @@ export default function ListsPage() {
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
   });
 
   const navigate = useNavigate();

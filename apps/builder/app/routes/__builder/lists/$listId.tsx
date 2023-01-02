@@ -55,7 +55,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
   const { t } = useTranslation(handle.i18n);
 
   return (
-    <div className="flex flex-col gap-4">
+    <>
       <div className="flex flex-row gap-2">
         <Scenarios height="24px" width="24px" className="flex-shrink-0" />
         <p className="text-text-m-semibold text-grey-100">
@@ -122,7 +122,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
           </Dialog.Root>
         )}
       </div>
-    </div>
+    </>
   );
 }
 
@@ -158,7 +158,6 @@ export default function ScenarioLayout() {
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
   });
 
   return (
@@ -169,10 +168,10 @@ export default function ScenarioLayout() {
         </Link>
         {data.name}
       </Page.Header>
-      <Page.Content className="max-w-3xl gap-8">
+      <Page.Content className="max-w-3xl">
         <Callout>{data.description}</Callout>
         <ScenariosList scenarios={scenarios} />
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2 lg:gap-4">
           <input className="border" />
           <Table.Default {...virtualTable} />
         </div>

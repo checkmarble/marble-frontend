@@ -20,7 +20,7 @@ export default function ScenariosPage() {
         {t('navigation:scenarios')}
       </Page.Header>
       <Page.Content>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 lg:gap-4">
           {scenarios.length ? (
             scenarios.map(({ id, name, description, activeVersion }) => (
               <Link

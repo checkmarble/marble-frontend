@@ -20,7 +20,7 @@ const LINKS: ScenariosLinkProps[] = [
 export default function ScenarioLayout() {
   return (
     <Page.Content>
-      <Scenarios.Nav className="pb-8">
+      <Scenarios.Nav>
         {LINKS.map((linkProps) => (
           <li key={linkProps.labelTKey}>
             <Scenarios.Link {...linkProps} />

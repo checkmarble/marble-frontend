@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
 export const handle = {
   i18n: ['scenarios'] as const,
 };
