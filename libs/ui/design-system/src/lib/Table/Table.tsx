@@ -37,7 +37,7 @@ function TableContainer<TData extends RowData>({
     <ScrollArea.Root className="border-grey-10 overflow-hidden rounded-lg border">
       <ScrollArea.Viewport
         ref={tableContainerRef}
-        className={clsx('flex h-96 overflow-auto', className)}
+        className={clsx('flex h-full max-h-96 overflow-auto', className)}
       >
         <table className="w-full table-fixed border-separate border-spacing-0">
           {children}
