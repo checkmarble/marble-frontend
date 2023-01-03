@@ -1,4 +1,5 @@
 import Callout from '@marble-front/builder/components/Callout';
+import { Paper } from '@marble-front/builder/components/Paper';
 import { Tag } from '@marble-front/ui/design-system';
 import { useTranslation } from 'react-i18next';
 
@@ -15,16 +16,14 @@ export default function Decision() {
   };
 
   return (
-    <div className="border-grey-10 flex w-fit max-w-3xl flex-col gap-8 rounded-lg border p-8">
-      <p className="text-text-m-semibold text-grey-100">
-        {t('scenarios:decision.score_based.title')}
-      </p>
+    <Paper.Container>
+      <Paper.Title>{t('scenarios:decision.score_based.title')}</Paper.Title>
       <Callout>{t('scenarios:decision.score_based.callout')}</Callout>
-      <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-y-4 gap-x-2">
+      <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-y-2 gap-x-1 lg:gap-y-4 lg:gap-x-2">
         <Tag border="square" size="big" color="green">
           {t('scenarios:decision.score_based.approve')}
         </Tag>
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center gap-1 lg:gap-2">
           {t('scenarios:decision.score_based.approve_condition')}
           <Tag border="square" size="big" color="grey">
             {values.approve}
@@ -39,13 +38,13 @@ export default function Decision() {
         <Tag border="square" size="big" color="red">
           {t('scenarios:decision.score_based.decline')}
         </Tag>
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center gap-1 lg:gap-2">
           {t('scenarios:decision.score_based.decline_condition')}
           <Tag border="square" size="big" color="grey">
             {values.decline}
           </Tag>
         </div>
       </div>
-    </div>
+    </Paper.Container>
   );
 }
