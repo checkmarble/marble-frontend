@@ -6,17 +6,22 @@ import { Link, useLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
 
 import { faker } from '@faker-js/faker';
-import { Cross, Scenarios } from '@marble-front/ui/icons';
+import { Cross, Scenarios, Search } from '@marble-front/ui/icons';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
+  Input,
   ScrollArea,
   Table,
   useVirtualTable,
 } from '@marble-front/ui/design-system';
 
 import { type ColumnDef } from '@tanstack/react-table';
-import { getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+} from '@tanstack/react-table';
 import { useMemo } from 'react';
 import Callout from '@marble-front/builder/components/Callout';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
@@ -46,7 +51,7 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['lists'] as const,
+  i18n: ['lists', 'common'] as const,
 };
 
 const MAX_SCENARIOS = 4;
@@ -157,6 +162,7 @@ export default function ScenarioLayout() {
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
@@ -172,7 +178,18 @@ export default function ScenarioLayout() {
         <Callout>{data.description}</Callout>
         <ScenariosList scenarios={scenarios} />
         <div className="flex flex-col gap-2 lg:gap-4">
-          <input className="border" />
+          <form className="flex items-center">
+            <Input
+              type="search"
+              aria-label={t('common:search')}
+              placeholder={t('common:search')}
+              startAdornment={<Search />}
+              onChange={(event) => {
+                virtualTable.table.setGlobalFilter(event.target.value);
+              }}
+            />
+          </form>
+
           <Table.Default {...virtualTable} />
         </div>
       </Page.Content>

@@ -1,5 +1,6 @@
 {
   "auth.logout": "Log out",
   "auth.login": "Login",
+  "search": "Search",
   "errors.unknown": "An unknown error as occured"
 }
