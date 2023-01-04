@@ -166,6 +166,11 @@ export enum DataType {
    * @generated from enum value: TIMESTAMP = 4;
    */
   TIMESTAMP = 4,
+
+  /**
+   * @generated from enum value: ID = 5;
+   */
+  ID = 5,
 }
 // Retrieve enum metadata with: proto3.getEnumType(DataType)
 proto3.util.setEnumType(DataType, "DataType", [
@@ -174,6 +179,7 @@ proto3.util.setEnumType(DataType, "DataType", [
   { no: 2, name: "FLOAT" },
   { no: 3, name: "STRING" },
   { no: 4, name: "TIMESTAMP" },
+  { no: 5, name: "ID" },
 ]);
 
 /**
@@ -503,9 +509,8 @@ export class ValueOrValues extends Message<ValueOrValues> {
 }
 
 /**
- * "Column" works well for tables but is awkward when dealing with objects,
- * "attribute" works well for objects but is awkward for tables, we chose to use
- * "data_field" which is a good middle ground 
+ * "Column" works well for tables but is awkward when dealing with objects, "attribute" works well for objects but is awkward for tables, 
+ * we chose to use "data_field" which is a good middle ground 
  *
  * @generated from message NestedDataField
  */
@@ -1603,7 +1608,12 @@ export class OrGroupEvaluation extends Message<OrGroupEvaluation> {
  */
 export class Rule extends Message<Rule> {
   /**
-   * @generated from field: repeated OrGroup or_groups = 1;
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: repeated OrGroup or_groups = 2;
    */
   orGroups: OrGroup[] = [];
 
@@ -1611,16 +1621,6 @@ export class Rule extends Message<Rule> {
    * @generated from field: Consequence consequence = 3;
    */
   consequence?: Consequence;
-
-  /**
-   * @generated from field: string name = 4;
-   */
-  name = "";
-
-  /**
-   * @generated from field: string description = 5;
-   */
-  description = "";
 
   constructor(data?: PartialMessage<Rule>) {
     super();
@@ -1630,10 +1630,9 @@ export class Rule extends Message<Rule> {
   static readonly runtime = proto3;
   static readonly typeName = "Rule";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "or_groups", kind: "message", T: OrGroup, repeated: true },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "or_groups", kind: "message", T: OrGroup, repeated: true },
     { no: 3, name: "consequence", kind: "message", T: Consequence },
-    { no: 4, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 5, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Rule {
@@ -1734,14 +1733,9 @@ export class Trigger extends Message<Trigger> {
 }
 
 /**
- * @generated from message ScenarioVersion
+ * @generated from message ScenarioVersionBody
  */
-export class ScenarioVersion extends Message<ScenarioVersion> {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id = "";
-
+export class ScenarioVersionBody extends Message<ScenarioVersionBody> {
   /**
    * @generated from field: Scope scope = 2;
    */
@@ -1752,33 +1746,32 @@ export class ScenarioVersion extends Message<ScenarioVersion> {
    */
   rules: Rule[] = [];
 
-  constructor(data?: PartialMessage<ScenarioVersion>) {
+  constructor(data?: PartialMessage<ScenarioVersionBody>) {
     super();
     proto3.util.initPartial(data, this);
   }
 
   static readonly runtime = proto3;
-  static readonly typeName = "ScenarioVersion";
+  static readonly typeName = "ScenarioVersionBody";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "scope", kind: "message", T: Scope },
     { no: 3, name: "rules", kind: "message", T: Rule, repeated: true },
   ]);
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ScenarioVersion {
-    return new ScenarioVersion().fromBinary(bytes, options);
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ScenarioVersionBody {
+    return new ScenarioVersionBody().fromBinary(bytes, options);
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ScenarioVersion {
-    return new ScenarioVersion().fromJson(jsonValue, options);
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ScenarioVersionBody {
+    return new ScenarioVersionBody().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ScenarioVersion {
-    return new ScenarioVersion().fromJsonString(jsonString, options);
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ScenarioVersionBody {
+    return new ScenarioVersionBody().fromJsonString(jsonString, options);
   }
 
-  static equals(a: ScenarioVersion | PlainMessage<ScenarioVersion> | undefined, b: ScenarioVersion | PlainMessage<ScenarioVersion> | undefined): boolean {
-    return proto3.util.equals(ScenarioVersion, a, b);
+  static equals(a: ScenarioVersionBody | PlainMessage<ScenarioVersionBody> | undefined, b: ScenarioVersionBody | PlainMessage<ScenarioVersionBody> | undefined): boolean {
+    return proto3.util.equals(ScenarioVersionBody, a, b);
   }
 }
 
@@ -1834,79 +1827,6 @@ export class ScenarioResult extends Message<ScenarioResult> {
 
   static equals(a: ScenarioResult | PlainMessage<ScenarioResult> | undefined, b: ScenarioResult | PlainMessage<ScenarioResult> | undefined): boolean {
     return proto3.util.equals(ScenarioResult, a, b);
-  }
-}
-
-/**
- * @generated from message Scenario
- */
-export class Scenario extends Message<Scenario> {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id = "";
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name = "";
-
-  /**
-   * @generated from field: string description = 3;
-   */
-  description = "";
-
-  /**
-   * @generated from field: string main_table = 4;
-   */
-  mainTable = "";
-
-  /**
-   * @generated from field: Trigger trigger = 5;
-   */
-  trigger?: Trigger;
-
-  /**
-   * @generated from field: repeated ScenarioVersion versions = 6;
-   */
-  versions: ScenarioVersion[] = [];
-
-  /**
-   * @generated from field: optional ScenarioVersion active_version = 7;
-   */
-  activeVersion?: ScenarioVersion;
-
-  constructor(data?: PartialMessage<Scenario>) {
-    super();
-    proto3.util.initPartial(data, this);
-  }
-
-  static readonly runtime = proto3;
-  static readonly typeName = "Scenario";
-  static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: "main_table", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 5, name: "trigger", kind: "message", T: Trigger },
-    { no: 6, name: "versions", kind: "message", T: ScenarioVersion, repeated: true },
-    { no: 7, name: "active_version", kind: "message", T: ScenarioVersion, opt: true },
-  ]);
-
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Scenario {
-    return new Scenario().fromBinary(bytes, options);
-  }
-
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Scenario {
-    return new Scenario().fromJson(jsonValue, options);
-  }
-
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Scenario {
-    return new Scenario().fromJsonString(jsonString, options);
-  }
-
-  static equals(a: Scenario | PlainMessage<Scenario> | undefined, b: Scenario | PlainMessage<Scenario> | undefined): boolean {
-    return proto3.util.equals(Scenario, a, b);
   }
 }
 
@@ -1968,7 +1888,7 @@ export class DataFieldOrTable extends Message<DataFieldOrTable> {
     case: "dataField";
   } | {
     /**
-     * join_column_name is the key in variant, maybe
+     * join_column_name is the key in variant, maybe reciprocal attribute name
      *
      * @generated from field: string table_name = 2;
      */
