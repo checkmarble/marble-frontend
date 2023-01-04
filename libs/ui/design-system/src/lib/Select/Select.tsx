@@ -1,63 +1,151 @@
-import * as ScrollArea from '@radix-ui/react-scroll-area';
+import { Arrow2Down, Arrow2Up, SmallarrowDown } from '@marble-front/ui/icons';
+import {
+  Root,
+  Portal,
+  Trigger,
+  Viewport,
+  Content,
+  Item,
+  ItemText,
+  ScrollUpButton,
+  ScrollDownButton,
+  Icon,
+  Value,
+  type SelectContentProps,
+  type SelectViewportProps,
+  type SelectTriggerProps as PrimitiveSelectTriggerProps,
+  type SelectItemProps,
+  type SelectValueProps,
+  type SelectProps as RawSelectProps,
+} from '@radix-ui/react-select';
 import clsx from 'clsx';
-import { useSelect, type UseSelectProps } from 'downshift';
+import { forwardRef } from 'react';
 
-/* eslint-disable-next-line */
-export interface SelectProps {}
-
-export function Select(
-  props: UseSelectProps<{ author: string; title: string }>
-) {
-  const {
-    isOpen,
-    selectedItem,
-    getToggleButtonProps,
-    getLabelProps,
-    getMenuProps,
-    highlightedIndex,
-    getItemProps,
-  } = useSelect(props);
-
+export function SelectContent({
+  children,
+  className,
+  ...props
+}: React.PropsWithChildren<SelectContentProps>) {
   return (
-    <div>
-      <div className="flex flex-col gap-1">
-        <label {...getLabelProps()}>Choose your favorite book:</label>
-        <div
-          className="border-grey-10 bg-grey-00 flex w-fit cursor-pointer justify-between gap-2 rounded border p-2"
-          {...getToggleButtonProps()}
-        >
-          <span>{selectedItem ? selectedItem.title : 'Elements'}</span>
-          <span>{isOpen ? <>&#8593;</> : <>&#8595;</>}</span>
-        </div>
-      </div>
-      <ScrollArea.Root className="bg-grey-00 absolute w-fit overflow-hidden shadow-md">
-        <ScrollArea.Viewport>
-          <ul {...getMenuProps()} className="max-h-72">
-            {isOpen &&
-              props.items.map((item, index) => (
-                <li
-                  className={clsx('flex flex-col py-2 px-3 shadow-sm', {
-                    'bg-purple-50': highlightedIndex === index,
-                    'font-bold': selectedItem === item,
-                  })}
-                  key={`${props.itemToString?.(item)}${index}`}
-                  {...getItemProps({ item, index })}
-                >
-                  <span>{item.title}</span>
-                  <span className="text-sm text-gray-700">{item.author}</span>
-                </li>
-              ))}
-          </ul>
-        </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar
-          className="bg-grey-02 flex w-2 touch-none select-none p-0.5 transition"
-          orientation="vertical"
-        >
-          <ScrollArea.Thumb className="bg-grey-10 relative flex-1 rounded-lg" />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
-    </div>
+    <Portal>
+      <Content
+        className={clsx(
+          'bg-grey-00 border-grey-10 rounded border shadow-md',
+          className
+        )}
+        {...props}
+      >
+        <ScrollUpButton className="flex justify-center">
+          <Arrow2Up />
+        </ScrollUpButton>
+        {children}
+        <ScrollDownButton className="flex justify-center">
+          <Arrow2Down />
+        </ScrollDownButton>
+      </Content>
+    </Portal>
   );
 }
 
-export default Select;
+export function SelectViewport({
+  children,
+  className,
+  ...props
+}: React.PropsWithChildren<SelectViewportProps>) {
+  return (
+    <Viewport className={clsx('flex flex-col gap-2 p-2', className)} {...props}>
+      {children}
+    </Viewport>
+  );
+}
+
+export const tagBorder = ['rounded', 'square'] as const;
+
+export interface SelectTriggerProps extends PrimitiveSelectTriggerProps {
+  border?: typeof tagBorder[number];
+}
+
+export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
+  ({ children, className, border = 'square', ...props }, ref) => {
+    return (
+      <Trigger
+        ref={ref}
+        className={clsx(
+          'bg-grey-00 border-grey-10 text-text-s-medium text-grey-100 group flex h-10 items-center justify-between border outline-none',
+          'radix-state-open:border-purple-100 radix-state-open:text-purple-100',
+          'radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
+          {
+            'rounded px-2': border === 'square',
+            'rounded-full pl-4 pr-2': border === 'rounded',
+          },
+          className
+        )}
+        {...props}
+      >
+        {children}
+        <Icon className="group-radix-state-open:rotate-180">
+          <SmallarrowDown height="24px" width="24px" />
+        </Icon>
+      </Trigger>
+    );
+  }
+);
+
+export const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
+  ({ children, className, ...props }, ref) => {
+    return (
+      <Item
+        ref={ref}
+        className={clsx(
+          'text-color text-text-s-medium rounded-sm p-2 outline-none',
+          'radix-highlighted:bg-purple-05 radix-highlighted:text-purple-100',
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </Item>
+    );
+  }
+);
+
+export type SelectProps = RawSelectProps &
+  Pick<SelectValueProps, 'placeholder'> &
+  Pick<SelectTriggerProps, 'border' | 'className'>;
+
+const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
+  ({ children, placeholder, border, className, ...props }, triggerRef) => {
+    return (
+      <Root {...props}>
+        <Select.Trigger ref={triggerRef} border={border} className={className}>
+          <Select.Value placeholder={placeholder} />
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Viewport>{children}</Select.Viewport>
+        </Select.Content>
+      </Root>
+    );
+  }
+);
+
+const SelectDefaultItem = forwardRef<HTMLDivElement, SelectItemProps>(
+  ({ children, className, ...props }, ref) => {
+    return (
+      <SelectItem ref={ref} className={clsx('h-10', className)} {...props}>
+        <Select.ItemText>{children}</Select.ItemText>
+      </SelectItem>
+    );
+  }
+);
+
+export const Select = {
+  Default: SelectDefault,
+  Root,
+  Trigger: SelectTrigger,
+  Content: SelectContent,
+  Viewport: SelectViewport,
+  Item: SelectItem,
+  DefaultItem: SelectDefaultItem,
+  ItemText,
+  Value,
+};
