@@ -2,13 +2,9 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { faker } from '@faker-js/faker';
 import type { ColumnDef } from '@tanstack/react-table';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
+import { getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 
-import { Table } from './Table';
+import { Table, useVirtualTable } from './Table';
 import { useMemo } from 'react';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 
@@ -39,7 +35,7 @@ function TestTable({
     []
   );
 
-  const table = useReactTable({
+  const virtualTable = useVirtualTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -47,7 +43,7 @@ function TestTable({
     debugTable: true,
   });
 
-  return <Table.Default table={table} />;
+  return <Table.Default {...virtualTable} />;
 }
 
 describe('Table', () => {

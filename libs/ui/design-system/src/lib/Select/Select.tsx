@@ -20,6 +20,7 @@ import {
 } from '@radix-ui/react-select';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+import { tagBorder } from './Select.constants';
 
 export function SelectContent({
   children,
@@ -58,8 +59,6 @@ export function SelectViewport({
     </Viewport>
   );
 }
-
-export const tagBorder = ['rounded', 'square'] as const;
 
 export interface SelectTriggerProps extends PrimitiveSelectTriggerProps {
   border?: typeof tagBorder[number];

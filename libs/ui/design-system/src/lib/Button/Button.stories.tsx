@@ -2,7 +2,7 @@ import { Plus } from '@marble-front/ui/icons';
 import type { Story, Meta } from '@storybook/react';
 import { Button, type ButtonProps, variantColors } from './Button';
 
-type StoryProps = ButtonProps;
+type StoryProps = Omit<ButtonProps, 'ref'>;
 
 const Story: Meta<StoryProps> = {
   component: Button,

@@ -1,8 +1,5 @@
 import clsx from 'clsx';
-
-export const tagColors = ['purple', 'green', 'red', 'yellow', 'grey'] as const;
-export const tagSize = ['small', 'big'] as const;
-export const tagBorder = ['rounded', 'square'] as const;
+import { tagBorder, tagColors, tagSize } from './Tag.constants';
 
 /* eslint-disable-next-line */
 export interface TagProps
