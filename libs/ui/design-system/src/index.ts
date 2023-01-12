@@ -1,3 +1,4 @@
+export * from './lib/Checkbox/Checkbox';
 export * from './lib/Input/Input';
 export * from './lib/ScrollArea/ScrollArea';
 export * from './lib/Select/Select';

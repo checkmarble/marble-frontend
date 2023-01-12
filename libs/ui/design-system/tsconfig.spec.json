@@ -7,7 +7,7 @@
   },
   "include": [
     "jest.config.ts",
-    "jest-setup.js",
+    "jest-setup.ts",
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.test.tsx",
