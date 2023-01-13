@@ -5,8 +5,17 @@ import { getServerEnv } from '@marble-front/builder/utils/environment';
 import type { UserForFront } from '@marble-front/api/marble';
 import { usersApi } from '../marble-api';
 
-export interface User extends UserForFront {
+/**
+ * TODO(auth): when provided, use real data model from API
+ * - extends UserForFront
+ * - remove eventual data transformation in GoogleStrategy
+ * - look for other TS issues (e.g. in screens)
+ */
+export interface User extends Pick<UserForFront, 'id' | 'email'> {
+  firstName: string;
+  lastName: string;
   photo?: string;
+  locale?: string;
 }
 
 const authErrors = ['NoAccount', 'Unknown'] as const;
@@ -46,7 +55,14 @@ authenticator.use(
           // userEmail: profile.emails[0].value,
           userEmail: 'alice.vance@fintech.com',
         });
-        return { ...user, photo: profile.photos?.[0].value };
+        return {
+          id: user.id,
+          email: user.email,
+          firstName: 'alice',
+          lastName: 'vance',
+          photo: profile.photos?.[0].value,
+          locale: 'en',
+        };
       } catch (error) {
         console.log(error);
         throw error;
