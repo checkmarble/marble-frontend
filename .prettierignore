@@ -4,4 +4,4 @@
 /coverage
 
 # Generated API
-/libs/api/marble/src/lib/
+/libs/api/marble/src/lib/generated

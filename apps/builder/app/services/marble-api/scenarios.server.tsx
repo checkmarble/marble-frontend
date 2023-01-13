@@ -1,6 +1,8 @@
 import type { PlainMessage } from '@bufbuild/protobuf';
 import { faker } from '@faker-js/faker';
-import type { Scenario } from '@marble-front/api/marble';
+import { Configuration, ScenariosApi } from '@marble-front/api/marble';
+import { getServerEnv } from '@marble-front/builder/utils/environment';
+import { AuthorizationMiddleware } from './authorization.server';
 
 function generateFakeScenarios(): PlainMessage<Scenario>[] {
   return Array.from({
@@ -5197,3 +5199,10 @@ const fakeScenarios = [
 export async function getScenarios() {
   return Promise.resolve(fakeScenarios);
 }
+
+const scenariosApiConf = new Configuration({
+  basePath: getServerEnv('MARBLE_API_DOMAIN'),
+  middleware: [AuthorizationMiddleware],
+});
+
+export const scenariosApi = new ScenariosApi(scenariosApiConf);

@@ -105,6 +105,7 @@
     "@swc/helpers": "~0.4.11",
     "@tanstack/react-table": "^8.7.6",
     "@tanstack/react-virtual": "^3.0.0-beta.36",
+    "async-mutex": "^0.4.0",
     "clsx": "^1.2.1",
     "core-js": "^3.6.5",
     "dotenv": "^16.0.3",

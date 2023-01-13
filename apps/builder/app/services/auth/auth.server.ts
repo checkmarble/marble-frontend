@@ -2,16 +2,11 @@ import { Authenticator } from 'remix-auth';
 import { GoogleStrategy } from './strategies';
 import { sessionStorage } from './session.server';
 import { getServerEnv } from '@marble-front/builder/utils/environment';
+import type { UserForFront } from '@marble-front/api/marble';
+import { usersApi } from '../marble-api';
 
-export interface User {
-  id: string;
-  displayName: string;
-  name: {
-    familyName: string;
-    givenName: string;
-  };
-  emails: [{ value: string }];
-  photos: [{ value: string }];
+export interface User extends UserForFront {
+  photo?: string;
 }
 
 const authErrors = ['NoAccount', 'Unknown'] as const;
@@ -40,9 +35,22 @@ authenticator.use(
       callbackURL: `${getServerEnv('APP_DOMAIN')}/auth/google/callback`,
     },
     async ({ profile }) => {
-      //TODO(auth): get the real userId from Marble API
-      // throw new AuthError('NoAccount');
-      return profile;
+      /**
+       * TODO(auth): get the real userId from Marble API
+       * - use the google user email to get data from marble
+       * - look with the product to see which update we want to save (if there is some diff between Google data and marble one, what do we want to do ?)
+       * - conditionnal error throwing (eg: throw new AuthError('NoAccount'))
+       */
+      try {
+        const user = await usersApi.getUsersByUserEmail({
+          // userEmail: profile.emails[0].value,
+          userEmail: 'alice.vance@fintech.com',
+        });
+        return { ...user, photo: profile.photos?.[0].value };
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
     }
   )
 );

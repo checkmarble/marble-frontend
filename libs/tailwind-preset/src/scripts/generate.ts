@@ -1,4 +1,3 @@
-import got from 'got';
 import ora from 'ora';
 import { writeFile } from 'fs/promises';
 import * as R from 'remeda';
@@ -29,19 +28,18 @@ const OUT_DIR = 'src/lib';
 
 async function downloadDesignTokens() {
   const spinner = ora('Downloading design tokens...').start();
-  let result;
+  let result: DesignTokens;
   try {
-    result = await got
-      .get(
-        'https://api.zeplin.dev/v1/projects/6386281f1a052582d335e9ff/design_tokens?include_linked_styleguides=true',
-        {
-          headers: {
-            Accept: 'application/json',
-            Authorization: `Bearer ${process.env['PERSONAL_ACCESS_TOKEN']}`,
-          },
-        }
-      )
-      .json<DesignTokens>();
+    result = await fetch(
+      'https://api.zeplin.dev/v1/projects/6386281f1a052582d335e9ff/design_tokens?include_linked_styleguides=true',
+      {
+        method: 'GET',
+        headers: new Headers({
+          Accept: 'application/json',
+          Authorization: `Bearer ${process.env['PERSONAL_ACCESS_TOKEN']}`,
+        }),
+      }
+    ).then(({ json }) => json());
     spinner.succeed('Design tokens succesfully downloaded');
   } catch (error) {
     spinner.succeed('Failed to download design tokens');
