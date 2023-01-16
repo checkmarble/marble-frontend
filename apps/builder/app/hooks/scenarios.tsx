@@ -1,10 +1,11 @@
 import type { Scenario } from '@marble-front/api/marble';
-import { useParams } from '@remix-run/react';
-import { useRouteData } from 'remix-utils';
+import { useParams, useRouteLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
 
 export function useScenarios() {
-  const scenarios = useRouteData<Scenario[]>('routes/__builder/scenarios');
+  const scenarios = useRouteLoaderData(
+    'routes/__builder/scenarios'
+  ) as Scenario[];
   invariant(scenarios, 'No scenarios');
 
   return scenarios;
