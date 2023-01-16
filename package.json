@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "postinstall": "remix setup node"
+    "postinstall": "patch-package"
   },
   "private": true,
   "devDependencies": {
@@ -113,6 +113,7 @@
     "i18next-fs-backend": "^2.1.1",
     "i18next-http-backend": "^2.1.1",
     "isbot": "^3.6.5",
+    "patch-package": "^6.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^12.1.4",
