@@ -12,10 +12,11 @@ export default function ScenarioLayout() {
         <Link to="./..">
           <Page.BackButton className="mr-4" />
         </Link>
-        {rule.name}
+        {rule.name ?? rule.id}
       </Page.Header>
       <Page.Content>
         <Callout>{rule.description}</Callout>
+        <pre>{JSON.stringify(rule, undefined, 2)}</pre>
       </Page.Content>
     </Page.Container>
   );

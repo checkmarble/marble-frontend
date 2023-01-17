@@ -3,14 +3,31 @@ import {
   useCurrentScenario,
   useCurrentScenarioVersion,
 } from '@marble-front/builder/hooks/scenarios';
+import { createScenario } from '@marble-front/builder/services/business-logic';
 import { Select } from '@marble-front/ui/design-system';
 import { Link, Outlet, useLocation, useNavigate } from '@remix-run/react';
+import * as R from 'remeda';
 
 export default function ScenarioLayout() {
-  const scenario = useCurrentScenario();
+  const scenario = createScenario(useCurrentScenario());
   const currentScenarioVersion = useCurrentScenarioVersion();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const scenarioVersions = R.pipe(
+    scenario.versions,
+    R.sortBy<typeof scenario.versions[number]>([
+      ({ creationDate }) => creationDate,
+      'desc',
+    ]),
+    //TODO(scenario): remove this to use version from model
+    R.map.indexed((version, index) => ({
+      ...version,
+      versionLabel: `V${scenario.versions.length - index} (${
+        version.creationDate
+      })`,
+    }))
+  );
 
   return (
     <Page.Container>
@@ -30,12 +47,12 @@ export default function ScenarioLayout() {
               );
             }}
           >
-            {scenario.versions.map(({ id }, index) => {
+            {scenarioVersions.map(({ id, versionLabel }, index) => {
               return (
                 <Select.DefaultItem key={id} value={id}>
                   <p className="text-text-s-semibold-cta flex flex-row gap-1">
-                    <span className="text-grey-100">{`V${index}`}</span>
-                    {id === scenario.activeVersion?.id && (
+                    <span className="text-grey-100">{versionLabel}</span>
+                    {id === scenario.lastDeployment?.scenarioVersionId && (
                       <span className="text-purple-100">Live</span>
                     )}
                   </p>

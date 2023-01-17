@@ -1,4 +1,4 @@
-import type { Rule } from '@marble-front/api/marble';
+import { Decision } from '@marble-front/api/marble';
 import { useCurrentScenarioVersion } from '@marble-front/builder/hooks/scenarios';
 import { Table, useVirtualTable } from '@marble-front/ui/design-system';
 import { useNavigate } from '@remix-run/react';
@@ -19,22 +19,64 @@ export default function Rules() {
 
   const navigate = useNavigate();
 
-  const { rules } = useCurrentScenarioVersion();
+  const {
+    body: { rules },
+  } = useCurrentScenarioVersion();
 
-  const columns = useMemo<ColumnDef<Rule>[]>(
+  const columns = useMemo<ColumnDef<typeof rules[number]>[]>(
     () => [
       {
-        accessorKey: 'name',
-        header: t('scenarios:rules.name'),
+        id: 'id',
+        accessorFn: (row) => row.id,
+        header: t('scenarios:rules.id_TEMP'),
         size: 200,
         sortingFn: 'text',
         enableSorting: true,
       },
       {
+        id: 'name',
+        //@ts-expect-error waiting for name to be added on model
+        accessorFn: (row) => row.name,
+        header: t('scenarios:rules.name'),
+        size: 200,
+      },
+      {
         id: 'description',
+        //@ts-expect-error waiting for name to be added on model
         accessorFn: (row) => row.description,
         header: t('scenarios:rules.description'),
-        size: 800,
+        size: 600,
+      },
+      {
+        id: 'score',
+        accessorFn: (row) => {
+          const scoreIncrease = row.consequence?.scoreIncrease;
+
+          if (!scoreIncrease) return '';
+
+          return scoreIncrease >= 0 ? `+${scoreIncrease}` : `-${scoreIncrease}`;
+        },
+        header: t('scenarios:rules.score'),
+        size: 100,
+      },
+      {
+        id: 'decision',
+        accessorFn: (row) => {
+          const decision = row.consequence?.decision;
+
+          switch (decision) {
+            case Decision.Accept:
+              return 'Accept';
+            case Decision.Warning:
+              return 'Warn';
+            case Decision.Refuse:
+              return 'Refuse';
+            default:
+              return '';
+          }
+        },
+        header: t('scenarios:rules.decision'),
+        size: 100,
       },
     ],
     [t]
