@@ -4,6 +4,7 @@ import {
   useCurrentScenarioVersion,
 } from '@marble-front/builder/hooks/scenarios';
 import { createScenario } from '@marble-front/builder/services/business-logic';
+import { fromUUID } from '@marble-front/builder/utils/short-uuid';
 import { Select } from '@marble-front/ui/design-system';
 import { Link, Outlet, useLocation, useNavigate } from '@remix-run/react';
 import * as R from 'remeda';
@@ -43,7 +44,10 @@ export default function ScenarioLayout() {
             className="min-w-[126px]"
             onValueChange={(versionId) => {
               navigate(
-                location.pathname.replace(currentScenarioVersion.id, versionId)
+                location.pathname.replace(
+                  fromUUID(currentScenarioVersion.id),
+                  fromUUID(versionId)
+                )
               );
             }}
           >

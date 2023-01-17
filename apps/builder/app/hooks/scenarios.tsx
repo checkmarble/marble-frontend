@@ -1,6 +1,7 @@
 import { useParams, useRouteLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
 import type { ScenariosLoaderData } from '../routes/__builder/scenarios';
+import { toUUID } from '../utils/short-uuid';
 
 export function useScenarios() {
   const scenarios = useRouteLoaderData('routes/__builder/scenarios') as
@@ -17,7 +18,7 @@ export function useCurrentScenario() {
   const { scenarioId } = useParams();
   invariant(scenarioId, 'scenarioId is required');
 
-  const scenario = scenarios?.find(({ id }) => id === scenarioId);
+  const scenario = scenarios?.find(({ id }) => id === toUUID(scenarioId));
   invariant(scenario, `Unknown scenario`);
 
   return scenario;
@@ -29,7 +30,9 @@ export function useCurrentScenarioVersion() {
   const { versionId } = useParams();
   invariant(versionId, 'versionId is required');
 
-  const scenarioVersion = scenario.versions.find(({ id }) => id === versionId);
+  const scenarioVersion = scenario.versions.find(
+    ({ id }) => id === toUUID(versionId)
+  );
   invariant(scenarioVersion, `Unknown scenarioVersion`);
 
   return scenarioVersion;
@@ -43,7 +46,7 @@ export function useCurrentRule() {
   const { ruleId } = useParams();
   invariant(ruleId, 'ruleId is required');
 
-  const rule = rules.find(({ id }) => id === ruleId);
+  const rule = rules.find(({ id }) => id === toUUID(ruleId));
   invariant(rule, `Unknown rule`);
 
   return rule;

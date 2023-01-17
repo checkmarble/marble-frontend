@@ -1,5 +1,6 @@
 import { Decision } from '@marble-front/api/marble';
 import { useCurrentScenarioVersion } from '@marble-front/builder/hooks/scenarios';
+import { fromUUID } from '@marble-front/builder/utils/short-uuid';
 import { Table, useVirtualTable } from '@marble-front/ui/design-system';
 import { useNavigate } from '@remix-run/react';
 import {
@@ -27,7 +28,7 @@ export default function Rules() {
     () => [
       {
         id: 'id',
-        accessorFn: (row) => row.id,
+        accessorFn: (row) => fromUUID(row.id),
         header: t('scenarios:rules.id_TEMP'),
         size: 200,
         sortingFn: 'text',
@@ -104,7 +105,7 @@ export default function Rules() {
               className="hover:bg-grey-02 cursor-pointer"
               row={row}
               onClick={() => {
-                navigate(`./${row.original.id}`);
+                navigate(`./${fromUUID(row.original.id)}`);
               }}
             />
           ))
