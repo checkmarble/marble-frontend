@@ -19,7 +19,7 @@ const Story: Meta<StoryProps> = {
 };
 export default Story;
 
-const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple'];
+const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple', 'pear'];
 
 export const Default: Story<StoryProps> = (args) => (
   <Select.Default {...args}>
@@ -59,7 +59,7 @@ export const Complex: Story<StoryProps> = ({
     <Select.Trigger border={border}>
       <Select.Value placeholder={placeholder} />
     </Select.Trigger>
-    <Select.Content>
+    <Select.Content className="max-h-60 w-full">
       <Select.Viewport>
         {bookKeys.map((bookKey) => {
           const book = books.get(bookKey);

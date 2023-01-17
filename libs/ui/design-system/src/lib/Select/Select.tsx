@@ -31,9 +31,10 @@ export function SelectContent({
     <Portal>
       <Content
         className={clsx(
-          'bg-grey-00 border-grey-10 rounded border shadow-md',
+          'bg-grey-00 border-grey-10 mt-2 rounded border shadow-md',
           className
         )}
+        position="popper"
         {...props}
       >
         <ScrollUpButton className="flex justify-center">
@@ -119,7 +120,10 @@ const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
         <Select.Trigger ref={triggerRef} border={border} className={className}>
           <Select.Value placeholder={placeholder} />
         </Select.Trigger>
-        <Select.Content>
+        <Select.Content
+          className="max-h-60"
+          align={border === 'rounded' ? 'center' : 'start'}
+        >
           <Select.Viewport>{children}</Select.Viewport>
         </Select.Content>
       </Root>
