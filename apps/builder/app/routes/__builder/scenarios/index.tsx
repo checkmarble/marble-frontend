@@ -9,6 +9,7 @@ import {
   ScenarioPredicates,
 } from '@marble-front/builder/services/business-logic';
 import * as R from 'remeda';
+import { fromUUID } from '@marble-front/builder/utils/short-uuid';
 
 export const handle = {
   i18n: ['scenarios', 'navigation'] as const,
@@ -37,7 +38,9 @@ export default function ScenariosPage() {
               return (
                 <Link
                   key={scenario.id}
-                  to={`/scenarios/${scenario.id}/v/${scenario.versionIdToOpen}/view/trigger`}
+                  to={`/scenarios/${fromUUID(scenario.id)}/v/${fromUUID(
+                    scenario.versionIdToOpen
+                  )}/view/trigger`}
                 >
                   <div className="bg-grey-00 border-grey-10 flex max-w-3xl flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
                     <div className="text-text-m-bold flex flex-row gap-2">
