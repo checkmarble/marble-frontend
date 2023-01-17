@@ -1,1 +1,1 @@
-export * from './lib/marble_pb';
+export * from './lib';

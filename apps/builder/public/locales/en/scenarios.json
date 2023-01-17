@@ -11,7 +11,10 @@
   "decision.score_based.review_condition": "When the score is between the two thresholds.",
   "decision.score_based.decline": "Decline",
   "decision.score_based.decline_condition": "When the score is equal to or above",
+  "rules.id_TEMP": "ID (temp)",
   "rules.name": "Name",
   "rules.description": "Description",
+  "rules.score": "Score",
+  "rules.decision": "Decision",
   "rules.empty": "Reach out to  Marble to create your first rule."
 }

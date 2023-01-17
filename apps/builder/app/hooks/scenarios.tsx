@@ -1,10 +1,11 @@
-import type { Scenario } from '@marble-front/api/marble';
-import { useParams } from '@remix-run/react';
-import { useRouteData } from 'remix-utils';
+import { useParams, useRouteLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
+import type { ScenariosLoaderData } from '../routes/__builder/scenarios';
 
 export function useScenarios() {
-  const scenarios = useRouteData<Scenario[]>('routes/__builder/scenarios');
+  const scenarios = useRouteLoaderData('routes/__builder/scenarios') as
+    | ScenariosLoaderData
+    | undefined;
   invariant(scenarios, 'No scenarios');
 
   return scenarios;
@@ -35,12 +36,14 @@ export function useCurrentScenarioVersion() {
 }
 
 export function useCurrentRule() {
-  const scenarioVersion = useCurrentScenarioVersion();
+  const {
+    body: { rules },
+  } = useCurrentScenarioVersion();
 
   const { ruleId } = useParams();
   invariant(ruleId, 'ruleId is required');
 
-  const rule = scenarioVersion.rules.find(({ id }) => id === ruleId);
+  const rule = rules.find(({ id }) => id === ruleId);
   invariant(rule, `Unknown rule`);
 
   return rule;

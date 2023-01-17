@@ -1,0 +1,680 @@
+{
+  "openapi": "3.0.2",
+  "info": { "title": "FastAPI", "version": "0.1.0" },
+  "paths": {
+    "/token-admin": {
+      "post": {
+        "tags": ["authorization"],
+        "summary": " Get Admin Token",
+        "operationId": "post__token_admin",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post__token_admin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Token" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBasic": [] }]
+      }
+    },
+    "/token-bff": {
+      "post": {
+        "tags": ["authorization"],
+        "summary": " Get Bff Token",
+        "operationId": "post__token_bff",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/Body_post__token_bff" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Token" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBasic": [] }]
+      }
+    },
+    "/token-user-agent": {
+      "post": {
+        "tags": ["authorization"],
+        "summary": " Get User Agent Token",
+        "operationId": "post__token_user_agent",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post__token_user_agent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Token" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBasic": [] }]
+      }
+    },
+    "/users/by/{user_email}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Get User By Email",
+        "operationId": "get__users_by__user_email_",
+        "parameters": [
+          {
+            "required": true,
+            "schema": { "title": "User Email", "type": "string" },
+            "name": "user_email",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserForFront" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      }
+    },
+    "/scenarios/": {
+      "get": {
+        "tags": ["scenarios"],
+        "summary": "Get Scenarios",
+        "operationId": "get__scenarios_",
+        "parameters": [
+          {
+            "required": true,
+            "schema": { "title": "User Id", "type": "string" },
+            "name": "user_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get  Scenarios ",
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ScenarioForFront" }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      },
+      "post": {
+        "tags": ["scenarios"],
+        "summary": " Create Scenario",
+        "operationId": "post__scenarios_",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/_ScenarioToCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      }
+    },
+    "/bff-agent/": {
+      "post": {
+        "tags": ["admin"],
+        "summary": " Create Bff",
+        "operationId": "post__bff_agent_",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BFFToCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      }
+    },
+    "/organizations/": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Create Org",
+        "operationId": "post__organizations_",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OrgToCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      }
+    },
+    "/users/": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Add Users To Org",
+        "operationId": "post__users_",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/_UserToCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      }
+    },
+    "/user-agents/": {
+      "post": {
+        "tags": ["admin"],
+        "summary": " Add User Agent To Org",
+        "operationId": "post__user_agents_",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/_UserAgentToCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      }
+    },
+    "/scenarios/{scenario_id}/versions/": {
+      "post": {
+        "tags": ["scenarios"],
+        "summary": " Create Scenario Version",
+        "operationId": "post__scenarios__scenario_id__versions_",
+        "parameters": [
+          {
+            "required": true,
+            "schema": { "title": "Scenario Id", "type": "string" },
+            "name": "scenario_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_ScenarioVersionToCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      }
+    },
+    "/scenarios/{scenario_id}/deployments/": {
+      "post": {
+        "tags": ["scenarios"],
+        "summary": " Deploy Scenario Version",
+        "operationId": "post__scenarios__scenario_id__deployments_",
+        "parameters": [
+          {
+            "required": true,
+            "schema": { "title": "Scenario Id", "type": "string" },
+            "name": "scenario_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_ScenarioDeploymentToCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BFFToCreate": {
+        "title": "BFFToCreate",
+        "required": ["name", "hashed_secret"],
+        "type": "object",
+        "properties": {
+          "name": { "title": "Name", "type": "string" },
+          "hashed_secret": { "title": "Hashed Secret", "type": "string" }
+        }
+      },
+      "Body_post__token_admin": {
+        "title": "Body_post__token_admin",
+        "type": "object",
+        "properties": {
+          "grant_type": {
+            "title": "Grant Type",
+            "pattern": "client_credentials",
+            "type": "string"
+          },
+          "scope": { "title": "Scope", "type": "string", "default": "" },
+          "client_id": { "title": "Client Id", "type": "string" },
+          "client_secret": { "title": "Client Secret", "type": "string" }
+        }
+      },
+      "Body_post__token_bff": {
+        "title": "Body_post__token_bff",
+        "type": "object",
+        "properties": {
+          "grant_type": {
+            "title": "Grant Type",
+            "pattern": "client_credentials",
+            "type": "string"
+          },
+          "scope": { "title": "Scope", "type": "string", "default": "" },
+          "client_id": { "title": "Client Id", "type": "string" },
+          "client_secret": { "title": "Client Secret", "type": "string" }
+        }
+      },
+      "Body_post__token_user_agent": {
+        "title": "Body_post__token_user_agent",
+        "type": "object",
+        "properties": {
+          "grant_type": {
+            "title": "Grant Type",
+            "pattern": "client_credentials",
+            "type": "string"
+          },
+          "scope": { "title": "Scope", "type": "string", "default": "" },
+          "client_id": { "title": "Client Id", "type": "string" },
+          "client_secret": { "title": "Client Secret", "type": "string" }
+        }
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ValidationError" }
+          }
+        }
+      },
+      "OrgToCreate": {
+        "title": "OrgToCreate",
+        "required": [
+          "org_name",
+          "user_data_structure_serialized",
+          "connection_string_to_user_data"
+        ],
+        "type": "object",
+        "properties": {
+          "org_name": { "title": "Org Name", "type": "string" },
+          "user_data_structure_serialized": {
+            "title": "User Data Structure Serialized",
+            "type": "string"
+          },
+          "connection_string_to_user_data": {
+            "title": "Connection String To User Data",
+            "type": "string"
+          }
+        }
+      },
+      "ScenarioDeployment": {
+        "title": "ScenarioDeployment",
+        "required": ["id", "creation_date", "author_id"],
+        "type": "object",
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "creation_date": {
+            "title": "Creation Date",
+            "type": "string",
+            "format": "date-time"
+          },
+          "author_id": { "title": "Author Id", "type": "string" },
+          "scenario_version_id": {
+            "title": "Scenario Version Id",
+            "type": "string"
+          }
+        }
+      },
+      "ScenarioForFront": {
+        "title": "ScenarioForFront",
+        "required": [
+          "id",
+          "creation_date",
+          "author_id",
+          "name",
+          "description",
+          "main_table",
+          "versions",
+          "deployments"
+        ],
+        "type": "object",
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "creation_date": {
+            "title": "Creation Date",
+            "type": "string",
+            "format": "date-time"
+          },
+          "author_id": { "title": "Author Id", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
+          "description": { "title": "Description", "type": "string" },
+          "main_table": { "title": "Main Table", "type": "string" },
+          "versions": {
+            "title": "Versions",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ScenarioVersionForFront" }
+          },
+          "deployments": {
+            "title": "Deployments",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ScenarioDeployment" }
+          }
+        }
+      },
+      "ScenarioVersionForFront": {
+        "title": "ScenarioVersionForFront",
+        "required": [
+          "id",
+          "creation_date",
+          "author_id",
+          "name",
+          "description",
+          "body_encoded_with_protobuf"
+        ],
+        "type": "object",
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "creation_date": {
+            "title": "Creation Date",
+            "type": "string",
+            "format": "date-time"
+          },
+          "author_id": { "title": "Author Id", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
+          "description": { "title": "Description", "type": "string" },
+          "body_encoded_with_protobuf": {
+            "title": "Body Encoded With Protobuf",
+            "type": "string"
+          }
+        }
+      },
+      "Token": {
+        "title": "Token",
+        "required": ["access_token", "token_type"],
+        "type": "object",
+        "properties": {
+          "access_token": { "title": "Access Token", "type": "string" },
+          "token_type": { "title": "Token Type", "type": "string" }
+        }
+      },
+      "UserForFront": {
+        "title": "UserForFront",
+        "required": ["id", "name", "email"],
+        "type": "object",
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
+          "email": { "title": "Email", "type": "string" }
+        }
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": ["loc", "msg", "type"],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] }
+          },
+          "msg": { "title": "Message", "type": "string" },
+          "type": { "title": "Error Type", "type": "string" }
+        }
+      },
+      "_ScenarioDeploymentToCreate": {
+        "title": "_ScenarioDeploymentToCreate",
+        "required": ["author_id"],
+        "type": "object",
+        "properties": {
+          "author_id": { "title": "Author Id", "type": "string" },
+          "scenario_version_to_activate_id": {
+            "title": "Scenario Version To Activate Id",
+            "type": "string"
+          }
+        }
+      },
+      "_ScenarioToCreate": {
+        "title": "_ScenarioToCreate",
+        "required": ["author_id", "main_table", "name", "description"],
+        "type": "object",
+        "properties": {
+          "author_id": { "title": "Author Id", "type": "string" },
+          "main_table": { "title": "Main Table", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
+          "description": { "title": "Description", "type": "string" }
+        }
+      },
+      "_ScenarioVersionToCreate": {
+        "title": "_ScenarioVersionToCreate",
+        "required": [
+          "author_id",
+          "name",
+          "description",
+          "body_serialized_protobuf"
+        ],
+        "type": "object",
+        "properties": {
+          "author_id": { "title": "Author Id", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
+          "description": { "title": "Description", "type": "string" },
+          "body_serialized_protobuf": {
+            "title": "Body Serialized Protobuf",
+            "type": "string"
+          }
+        }
+      },
+      "_UserAgentToCreate": {
+        "title": "_UserAgentToCreate",
+        "required": ["org_id", "name", "hashed_secret"],
+        "type": "object",
+        "properties": {
+          "org_id": { "title": "Org Id", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
+          "hashed_secret": { "title": "Hashed Secret", "type": "string" }
+        }
+      },
+      "_UserToCreate": {
+        "title": "_UserToCreate",
+        "required": ["org_id", "email", "name"],
+        "type": "object",
+        "properties": {
+          "org_id": { "title": "Org Id", "type": "string" },
+          "email": { "title": "Email", "type": "string" },
+          "name": { "title": "Name", "type": "string" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "HTTPBasic": { "type": "http", "scheme": "basic" },
+      "Oauth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": { "scopes": {}, "tokenUrl": "token-bff" }
+        }
+      }
+    }
+  }
+}

@@ -83,14 +83,12 @@ export default function Builder() {
                 <div className="flex flex-col items-center">
                   <Avatar
                     className="mb-2"
-                    firstName={user.name.givenName}
-                    lastName={user.name.familyName}
-                    src={user.photos?.[0]?.value}
+                    firstName={user.firstName}
+                    lastName={user.lastName}
+                    src={user.photo}
                   />
-                  <p className="text-text-m-semibold mb-1 capitalize">{`${user.name.givenName} ${user.name.familyName}`}</p>
-                  <p className="text-text-s-regular">
-                    {user.emails?.[0]?.value}
-                  </p>
+                  <p className="text-text-m-semibold mb-1 capitalize">{`${user.firstName} ${user.lastName}`}</p>
+                  <p className="text-text-s-regular">{user.email}</p>
                 </div>
 
                 <div className="mt-6 flex flex-col items-center">
