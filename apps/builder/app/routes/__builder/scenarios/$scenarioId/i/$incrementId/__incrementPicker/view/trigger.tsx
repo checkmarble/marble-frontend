@@ -1,5 +1,4 @@
-import Callout from '@marble-front/builder/components/Callout';
-import { Paper } from '@marble-front/builder/components/Paper';
+import { Paper, Callout } from '@marble-front/builder/components';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
@@ -29,7 +28,7 @@ export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
 
   return (
-    <Paper.Container>
+    <Paper.Container className="w-fit">
       <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
       <Callout>{t('scenarios:trigger.trigger_object.callout')}</Callout>
 

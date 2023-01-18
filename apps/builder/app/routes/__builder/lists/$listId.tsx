@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { Page } from '@marble-front/builder/components/Page';
+import { Page, Callout } from '@marble-front/builder/components';
 import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
@@ -23,7 +23,6 @@ import {
   getFilteredRowModel,
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
-import Callout from '@marble-front/builder/components/Callout';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 
 function getFakeList(id: string) {

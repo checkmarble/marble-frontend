@@ -11,7 +11,7 @@ function PaperContainer({
   return (
     <div
       className={clsx(
-        'border-grey-10 flex w-fit max-w-3xl flex-col rounded-lg border',
+        'border-grey-10 flex max-w-3xl flex-col rounded-lg border',
         'gap-4 p-4 lg:gap-8 lg:p-8',
         className
       )}

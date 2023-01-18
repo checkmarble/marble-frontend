@@ -1,6 +1,5 @@
-import { Page } from '@marble-front/builder/components/Page';
+import { Page, Callout } from '@marble-front/builder/components';
 import { Link, useParams } from '@remix-run/react';
-import Callout from '@marble-front/builder/components/Callout';
 import { fromUUID, toUUID } from '@marble-front/builder/utils/short-uuid';
 import { useCurrentScenarioIncrement } from '../$incrementId';
 import invariant from 'tiny-invariant';

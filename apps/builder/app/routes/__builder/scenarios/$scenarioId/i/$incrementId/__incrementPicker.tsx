@@ -1,4 +1,4 @@
-import { Page } from '@marble-front/builder/components/Page';
+import { Page } from '@marble-front/builder/components';
 import { fromUUID, toUUID } from '@marble-front/builder/utils/short-uuid';
 import { Select } from '@marble-front/ui/design-system';
 import {

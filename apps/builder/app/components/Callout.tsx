@@ -1,7 +1,7 @@
 import { Lightbulb } from '@marble-front/ui/icons';
 import React from 'react';
 
-function Callout({ children }: { children: React.ReactNode }) {
+export function Callout({ children }: { children: React.ReactNode }) {
   if (!children) return null;
 
   return (
@@ -11,5 +11,3 @@ function Callout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-export default Callout;

@@ -9,7 +9,7 @@ export const handle = {
   i18n: ['scenarios'] as const,
 };
 
-export function useCurrentScenarioValue() {
+function useCurrentScenarioValue() {
   const scenarios = useScenarios();
 
   const { scenarioId } = useParams();

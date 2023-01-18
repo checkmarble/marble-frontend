@@ -11,7 +11,7 @@ export const handle = {
   i18n: ['scenarios'] as const,
 };
 
-export function useCurrentScenarioIncrementValue() {
+function useCurrentScenarioIncrementValue() {
   const currentScenario = useCurrentScenario();
 
   const { incrementId } = useParams();

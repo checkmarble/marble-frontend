@@ -1,4 +1,4 @@
-import { Page } from '@marble-front/builder/components/Page';
+import { Page } from '@marble-front/builder/components';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@remix-run/react';
 import { Scenarios } from '@marble-front/ui/icons';

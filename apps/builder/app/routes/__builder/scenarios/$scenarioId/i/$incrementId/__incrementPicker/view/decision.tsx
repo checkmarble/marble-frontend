@@ -1,5 +1,4 @@
-import Callout from '@marble-front/builder/components/Callout';
-import { Paper } from '@marble-front/builder/components/Paper';
+import { Paper, Callout } from '@marble-front/builder/components';
 import { Tag } from '@marble-front/ui/design-system';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +15,7 @@ export default function Decision() {
   };
 
   return (
-    <Paper.Container>
+    <Paper.Container className="w-fit">
       <Paper.Title>{t('scenarios:decision.score_based.title')}</Paper.Title>
       <Callout>{t('scenarios:decision.score_based.callout')}</Callout>
       <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-y-2 gap-x-1 lg:gap-y-4 lg:gap-x-2">
