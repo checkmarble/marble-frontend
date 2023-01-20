@@ -17,21 +17,24 @@ import * as runtime from '../runtime';
 import type {
   BFFToCreate,
   HTTPValidationError,
-  OrgToCreate,
+  OrgCreationRequest,
   UserAgentToCreate,
-  UserToCreate,
+  UserCreationRequest,
+  UserResponse,
 } from '../models';
 import {
     BFFToCreateFromJSON,
     BFFToCreateToJSON,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
-    OrgToCreateFromJSON,
-    OrgToCreateToJSON,
+    OrgCreationRequestFromJSON,
+    OrgCreationRequestToJSON,
     UserAgentToCreateFromJSON,
     UserAgentToCreateToJSON,
-    UserToCreateFromJSON,
-    UserToCreateToJSON,
+    UserCreationRequestFromJSON,
+    UserCreationRequestToJSON,
+    UserResponseFromJSON,
+    UserResponseToJSON,
 } from '../models';
 
 export interface PostBffAgentRequest {
@@ -39,7 +42,7 @@ export interface PostBffAgentRequest {
 }
 
 export interface PostOrganizationsRequest {
-    orgToCreate: OrgToCreate;
+    orgCreationRequest: OrgCreationRequest;
 }
 
 export interface PostUserAgentsRequest {
@@ -47,7 +50,7 @@ export interface PostUserAgentsRequest {
 }
 
 export interface PostUsersRequest {
-    userToCreate: UserToCreate;
+    userCreationRequest: UserCreationRequest;
 }
 
 /**
@@ -97,8 +100,8 @@ export class AdminApi extends runtime.BaseAPI {
      * Create Org
      */
     async postOrganizationsRaw(requestParameters: PostOrganizationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
-        if (requestParameters.orgToCreate === null || requestParameters.orgToCreate === undefined) {
-            throw new runtime.RequiredError('orgToCreate','Required parameter requestParameters.orgToCreate was null or undefined when calling postOrganizations.');
+        if (requestParameters.orgCreationRequest === null || requestParameters.orgCreationRequest === undefined) {
+            throw new runtime.RequiredError('orgCreationRequest','Required parameter requestParameters.orgCreationRequest was null or undefined when calling postOrganizations.');
         }
 
         const queryParameters: any = {};
@@ -117,7 +120,7 @@ export class AdminApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: OrgToCreateToJSON(requestParameters.orgToCreate),
+            body: OrgCreationRequestToJSON(requestParameters.orgCreationRequest),
         }, initOverrides);
 
         return new runtime.TextApiResponse(response) as any;
@@ -172,9 +175,9 @@ export class AdminApi extends runtime.BaseAPI {
     /**
      * Add Users To Org
      */
-    async postUsersRaw(requestParameters: PostUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
-        if (requestParameters.userToCreate === null || requestParameters.userToCreate === undefined) {
-            throw new runtime.RequiredError('userToCreate','Required parameter requestParameters.userToCreate was null or undefined when calling postUsers.');
+    async postUsersRaw(requestParameters: PostUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>> {
+        if (requestParameters.userCreationRequest === null || requestParameters.userCreationRequest === undefined) {
+            throw new runtime.RequiredError('userCreationRequest','Required parameter requestParameters.userCreationRequest was null or undefined when calling postUsers.');
         }
 
         const queryParameters: any = {};
@@ -193,16 +196,16 @@ export class AdminApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: UserToCreateToJSON(requestParameters.userToCreate),
+            body: UserCreationRequestToJSON(requestParameters.userCreationRequest),
         }, initOverrides);
 
-        return new runtime.TextApiResponse(response) as any;
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserResponseFromJSON(jsonValue));
     }
 
     /**
      * Add Users To Org
      */
-    async postUsers(requestParameters: PostUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+    async postUsers(requestParameters: PostUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse> {
         const response = await this.postUsersRaw(requestParameters, initOverrides);
         return await response.value();
     }

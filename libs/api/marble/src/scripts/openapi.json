@@ -70,41 +70,6 @@
         "security": [{ "HTTPBasic": [] }]
       }
     },
-    "/token-user-agent": {
-      "post": {
-        "tags": ["authorization"],
-        "summary": " Get User Agent Token",
-        "operationId": "post__token_user_agent",
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_post__token_user_agent"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Token" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        },
-        "security": [{ "HTTPBasic": [] }]
-      }
-    },
     "/users/by/{user_email}": {
       "get": {
         "tags": ["users"],
@@ -123,7 +88,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserForFront" }
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
               }
             }
           },
@@ -243,7 +208,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/OrgToCreate" }
+              "schema": { "$ref": "#/components/schemas/OrgCreationRequest" }
             }
           },
           "required": true
@@ -273,7 +238,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/_UserToCreate" }
+              "schema": { "$ref": "#/components/schemas/UserCreationRequest" }
             }
           },
           "required": true
@@ -281,7 +246,53 @@
         "responses": {
           "201": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Oauth2ClientCredentials": [] }]
+      }
+    },
+    "/users/{user_id}": {
+      "put": {
+        "tags": ["users"],
+        "summary": " Update User Preferences",
+        "operationId": "put__users__user_id_",
+        "parameters": [
+          {
+            "required": true,
+            "schema": { "title": "User Id", "type": "string" },
+            "name": "user_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserPreferences" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
+              }
+            }
           },
           "422": {
             "description": "Validation Error",
@@ -445,20 +456,6 @@
           "client_secret": { "title": "Client Secret", "type": "string" }
         }
       },
-      "Body_post__token_user_agent": {
-        "title": "Body_post__token_user_agent",
-        "type": "object",
-        "properties": {
-          "grant_type": {
-            "title": "Grant Type",
-            "pattern": "client_credentials",
-            "type": "string"
-          },
-          "scope": { "title": "Scope", "type": "string", "default": "" },
-          "client_id": { "title": "Client Id", "type": "string" },
-          "client_secret": { "title": "Client Secret", "type": "string" }
-        }
-      },
       "HTTPValidationError": {
         "title": "HTTPValidationError",
         "type": "object",
@@ -470,28 +467,28 @@
           }
         }
       },
-      "OrgToCreate": {
-        "title": "OrgToCreate",
+      "OrgCreationRequest": {
+        "title": "OrgCreationRequest",
         "required": [
-          "org_name",
+          "name",
           "user_data_structure_serialized",
-          "connection_string_to_user_data"
+          "user_data_db_connection_string_location"
         ],
         "type": "object",
         "properties": {
-          "org_name": { "title": "Org Name", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
           "user_data_structure_serialized": {
             "title": "User Data Structure Serialized",
             "type": "string"
           },
-          "connection_string_to_user_data": {
-            "title": "Connection String To User Data",
+          "user_data_db_connection_string_location": {
+            "title": "User Data Db Connection String Location",
             "type": "string"
           }
         }
       },
-      "ScenarioDeployment": {
-        "title": "ScenarioDeployment",
+      "ScenarioDeploymentResponse": {
+        "title": "ScenarioDeploymentResponse",
         "required": ["id", "creation_date", "author_id"],
         "type": "object",
         "properties": {
@@ -504,6 +501,10 @@
           "author_id": { "title": "Author Id", "type": "string" },
           "scenario_version_id": {
             "title": "Scenario Version Id",
+            "type": "string"
+          },
+          "frontend_serial_name": {
+            "title": "Frontend Serial Name",
             "type": "string"
           }
         }
@@ -540,7 +541,9 @@
           "deployments": {
             "title": "Deployments",
             "type": "array",
-            "items": { "$ref": "#/components/schemas/ScenarioDeployment" }
+            "items": {
+              "$ref": "#/components/schemas/ScenarioDeploymentResponse"
+            }
           }
         }
       },
@@ -580,14 +583,57 @@
           "token_type": { "title": "Token Type", "type": "string" }
         }
       },
-      "UserForFront": {
-        "title": "UserForFront",
-        "required": ["id", "name", "email"],
+      "UserCreationRequest": {
+        "title": "UserCreationRequest",
+        "required": ["org_id", "email", "first_name", "last_name"],
+        "type": "object",
+        "properties": {
+          "org_id": { "title": "Org Id", "type": "string" },
+          "email": { "title": "Email", "type": "string" },
+          "first_name": { "title": "First Name", "type": "string" },
+          "last_name": { "title": "Last Name", "type": "string" },
+          "preferred_language": {
+            "title": "Preferred Language",
+            "type": "string"
+          },
+          "profile_picture_url": {
+            "title": "Profile Picture Url",
+            "type": "string"
+          }
+        }
+      },
+      "UserPreferences": {
+        "title": "UserPreferences",
+        "type": "object",
+        "properties": {
+          "preferred_language": {
+            "title": "Preferred Language",
+            "type": "string"
+          },
+          "profile_picture_url": {
+            "title": "Profile Picture Url",
+            "type": "string"
+          }
+        }
+      },
+      "UserResponse": {
+        "title": "UserResponse",
+        "required": ["id", "org_id", "email", "first_name", "last_name"],
         "type": "object",
         "properties": {
           "id": { "title": "Id", "type": "string" },
-          "name": { "title": "Name", "type": "string" },
-          "email": { "title": "Email", "type": "string" }
+          "org_id": { "title": "Org Id", "type": "string" },
+          "email": { "title": "Email", "type": "string" },
+          "first_name": { "title": "First Name", "type": "string" },
+          "last_name": { "title": "Last Name", "type": "string" },
+          "preferred_language": {
+            "title": "Preferred Language",
+            "type": "string"
+          },
+          "profile_picture_url": {
+            "title": "Profile Picture Url",
+            "type": "string"
+          }
         }
       },
       "ValidationError": {
@@ -654,16 +700,6 @@
           "org_id": { "title": "Org Id", "type": "string" },
           "name": { "title": "Name", "type": "string" },
           "hashed_secret": { "title": "Hashed Secret", "type": "string" }
-        }
-      },
-      "_UserToCreate": {
-        "title": "_UserToCreate",
-        "required": ["org_id", "email", "name"],
-        "type": "object",
-        "properties": {
-          "org_id": { "title": "Org Id", "type": "string" },
-          "email": { "title": "Email", "type": "string" },
-          "name": { "title": "Name", "type": "string" }
         }
       }
     },

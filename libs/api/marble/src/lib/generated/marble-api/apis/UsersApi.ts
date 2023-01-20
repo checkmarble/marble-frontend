@@ -16,17 +16,25 @@
 import * as runtime from '../runtime';
 import type {
   HTTPValidationError,
-  UserForFront,
+  UserPreferences,
+  UserResponse,
 } from '../models';
 import {
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
-    UserForFrontFromJSON,
-    UserForFrontToJSON,
+    UserPreferencesFromJSON,
+    UserPreferencesToJSON,
+    UserResponseFromJSON,
+    UserResponseToJSON,
 } from '../models';
 
 export interface GetUsersByUserEmailRequest {
     userEmail: string;
+}
+
+export interface PutUsersUserIdRequest {
+    userId: string;
+    userPreferences: UserPreferences;
 }
 
 /**
@@ -37,7 +45,7 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Get User By Email
      */
-    async getUsersByUserEmailRaw(requestParameters: GetUsersByUserEmailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserForFront>> {
+    async getUsersByUserEmailRaw(requestParameters: GetUsersByUserEmailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>> {
         if (requestParameters.userEmail === null || requestParameters.userEmail === undefined) {
             throw new runtime.RequiredError('userEmail','Required parameter requestParameters.userEmail was null or undefined when calling getUsersByUserEmail.');
         }
@@ -58,14 +66,56 @@ export class UsersApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserForFrontFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserResponseFromJSON(jsonValue));
     }
 
     /**
      * Get User By Email
      */
-    async getUsersByUserEmail(requestParameters: GetUsersByUserEmailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserForFront> {
+    async getUsersByUserEmail(requestParameters: GetUsersByUserEmailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse> {
         const response = await this.getUsersByUserEmailRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     *  Update User Preferences
+     */
+    async putUsersUserIdRaw(requestParameters: PutUsersUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>> {
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling putUsersUserId.');
+        }
+
+        if (requestParameters.userPreferences === null || requestParameters.userPreferences === undefined) {
+            throw new runtime.RequiredError('userPreferences','Required parameter requestParameters.userPreferences was null or undefined when calling putUsersUserId.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("Oauth2ClientCredentials", []);
+        }
+
+        const response = await this.request({
+            path: `/users/{user_id}`.replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters.userId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UserPreferencesToJSON(requestParameters.userPreferences),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserResponseFromJSON(jsonValue));
+    }
+
+    /**
+     *  Update User Preferences
+     */
+    async putUsersUserId(requestParameters: PutUsersUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse> {
+        const response = await this.putUsersUserIdRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
