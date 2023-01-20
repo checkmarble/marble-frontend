@@ -1,6 +1,5 @@
 import Callout from '@marble-front/builder/components/Callout';
 import { Paper } from '@marble-front/builder/components/Paper';
-import { useCurrentScenarioVersion } from '@marble-front/builder/hooks/scenarios';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +27,6 @@ function Box({
 
 export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
-  const { scope } = useCurrentScenarioVersion();
 
   return (
     <Paper.Container>
