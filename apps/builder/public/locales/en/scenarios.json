@@ -1,5 +1,6 @@
 {
   "live": "live",
+  "draft": "draft",
   "empty_scenario_list": "Reach out to  Marble to create your first scenario.",
   "trigger.trigger_object.title": "Trigger object",
   "trigger.trigger_object.callout": "The object the scenario will make decisions on.",

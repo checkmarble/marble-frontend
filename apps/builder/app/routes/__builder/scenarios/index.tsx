@@ -3,13 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from '@remix-run/react';
 import { Scenarios } from '@marble-front/ui/icons';
 import { Tag } from '@marble-front/ui/design-system';
-import { useScenarios } from '@marble-front/builder/hooks/scenarios';
-import {
-  createScenario,
-  ScenarioPredicates,
-} from '@marble-front/builder/services/business-logic';
-import * as R from 'remeda';
 import { fromUUID } from '@marble-front/builder/utils/short-uuid';
+import { useScenarios } from '../scenarios';
 
 export const handle = {
   i18n: ['scenarios', 'navigation'] as const,
@@ -19,12 +14,6 @@ export default function ScenariosPage() {
   const { t } = useTranslation(handle.i18n);
   const scenarios = useScenarios();
 
-  const scenariosList = R.pipe(
-    scenarios,
-    R.map(createScenario),
-    R.filter(ScenarioPredicates.hasVersionToOpen)
-  );
-
   return (
     <Page.Container>
       <Page.Header>
@@ -33,19 +22,20 @@ export default function ScenariosPage() {
       </Page.Header>
       <Page.Content>
         <div className="flex flex-col gap-2 lg:gap-4">
-          {scenariosList.length ? (
-            scenariosList.map((scenario) => {
+          {scenarios.length ? (
+            scenarios.map((scenario) => {
               return (
                 <Link
                   key={scenario.id}
-                  to={`/scenarios/${fromUUID(scenario.id)}/v/${fromUUID(
-                    scenario.versionIdToOpen
+                  to={`/scenarios/${fromUUID(scenario.id)}/i/${fromUUID(
+                    scenario.lastIncrementId
                   )}/view/trigger`}
                 >
                   <div className="bg-grey-00 border-grey-10 flex max-w-3xl flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
                     <div className="text-text-m-bold flex flex-row gap-2">
                       {scenario.name}
-                      {ScenarioPredicates.isLive(scenario) && (
+                      {scenario.lastDeployment?.scenarioVersionId !==
+                        undefined && (
                         <Tag color="purple" className="capitalize">
                           {t('scenarios:live')}
                         </Tag>

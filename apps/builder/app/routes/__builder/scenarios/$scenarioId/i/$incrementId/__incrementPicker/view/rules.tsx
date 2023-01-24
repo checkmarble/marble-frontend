@@ -1,5 +1,4 @@
 import { Decision } from '@marble-front/api/marble';
-import { useCurrentScenarioVersion } from '@marble-front/builder/hooks/scenarios';
 import { fromUUID } from '@marble-front/builder/utils/short-uuid';
 import { Table, useVirtualTable } from '@marble-front/ui/design-system';
 import { useNavigate } from '@remix-run/react';
@@ -10,6 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrentScenarioIncrement } from '../../../$incrementId';
 
 export const handle = {
   i18n: ['scenarios'] as const,
@@ -22,9 +22,9 @@ export default function Rules() {
 
   const {
     body: { rules },
-  } = useCurrentScenarioVersion();
+  } = useCurrentScenarioIncrement();
 
-  const columns = useMemo<ColumnDef<typeof rules[number]>[]>(
+  const columns = useMemo<ColumnDef<(typeof rules)[number]>[]>(
     () => [
       {
         id: 'id',

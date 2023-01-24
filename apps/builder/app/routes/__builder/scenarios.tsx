@@ -1,9 +1,22 @@
-import type { LoaderArgs, SerializeFrom } from '@remix-run/node';
+import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Outlet } from '@remix-run/react';
+import { Outlet, useLoaderData } from '@remix-run/react';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { scenariosApi } from '@marble-front/builder/services/marble-api/scenarios.server';
-import { ScenarioVersionBody } from '@marble-front/api/marble';
+import * as R from 'remeda';
+import type { RequiredKeys } from '@marble-front/builder/utils/utility-types';
+import { createSimpleContext } from '@marble-front/builder/utils/create-context';
+import invariant from 'tiny-invariant';
+
+function getLast<T extends { creationDate: string }>(elements: T[]) {
+  return elements.reduce(
+    (lastDeployment: T | undefined, deployment) =>
+      lastDeployment && lastDeployment?.creationDate > deployment.creationDate
+        ? lastDeployment
+        : deployment,
+    undefined
+  );
+}
 
 export async function loader({ request }: LoaderArgs) {
   const user = await authenticator.isAuthenticated(request, {
@@ -11,31 +24,59 @@ export async function loader({ request }: LoaderArgs) {
   });
   const scenarios = await scenariosApi.getScenarios({ userId: user.id });
 
-  /**
-   * Decode the protobuf body on the server, using Buffer.from
-   *
-   * In case we need to decode on the browser, use abab package :
-   * - robust implementation of atob / btoa
-   * - same logic on browser and nodejs server (to ensure SSR consistance)
-   */
-  const decodedScenarios = scenarios.map((scenario) => ({
-    ...scenario,
-    versions: scenario.versions.map(
-      ({ bodyEncodedWithProtobuf, ...version }) => {
-        const scenarioVersionBody = ScenarioVersionBody.fromBinary(
-          Buffer.from(bodyEncodedWithProtobuf, 'base64')
-        );
-
-        return { ...version, body: { ...scenarioVersionBody } };
-      }
-    ),
-  }));
-
-  return json(decodedScenarios);
+  return json(scenarios);
 }
+
+function useScenariosValue() {
+  const scenariosData = useLoaderData<typeof loader>();
+
+  invariant(scenariosData, 'No scenarios data');
+
+  return R.pipe(
+    scenariosData,
+    R.map((scenarioData) => {
+      return {
+        id: scenarioData.id,
+        creationDate: scenarioData.creationDate,
+        authorId: scenarioData.authorId,
+        name: scenarioData.name,
+        description: scenarioData.description,
+        mainTable: scenarioData.mainTable,
+        deployments: scenarioData.deployments,
+        versions: scenarioData.versions,
+        get lastDeployment() {
+          return getLast(this.deployments);
+        },
+        get lastVersion() {
+          return getLast(this.versions);
+        },
+        get lastIncrementId() {
+          return this.lastDeployment?.id ?? this.lastVersion?.id;
+        },
+      };
+    }),
+    R.filter(
+      (
+        scenario
+      ): scenario is RequiredKeys<typeof scenario, 'lastIncrementId'> => {
+        return scenario?.lastIncrementId !== undefined;
+      }
+    )
+  );
+}
+
+export type Scenarios = ReturnType<typeof useScenariosValue>;
+
+const { Provider, useValue: useScenarios } =
+  createSimpleContext<Scenarios>('Scenarios');
 
 export default function ScenariosPage() {
-  return <Outlet />;
+  const value = useScenariosValue();
+  return (
+    <Provider value={value}>
+      <Outlet />
+    </Provider>
+  );
 }
 
-export type ScenariosLoaderData = SerializeFrom<typeof loader>;
+export { useScenarios };

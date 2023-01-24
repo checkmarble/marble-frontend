@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ScenarioDeployment } from './ScenarioDeployment';
+import type { ScenarioDeploymentResponse } from './ScenarioDeploymentResponse';
 import {
-    ScenarioDeploymentFromJSON,
-    ScenarioDeploymentFromJSONTyped,
-    ScenarioDeploymentToJSON,
-} from './ScenarioDeployment';
+    ScenarioDeploymentResponseFromJSON,
+    ScenarioDeploymentResponseFromJSONTyped,
+    ScenarioDeploymentResponseToJSON,
+} from './ScenarioDeploymentResponse';
 import type { ScenarioVersionForFront } from './ScenarioVersionForFront';
 import {
     ScenarioVersionForFrontFromJSON,
@@ -76,10 +76,10 @@ export interface ScenarioForFront {
     versions: Array<ScenarioVersionForFront>;
     /**
      * 
-     * @type {Array<ScenarioDeployment>}
+     * @type {Array<ScenarioDeploymentResponse>}
      * @memberof ScenarioForFront
      */
-    deployments: Array<ScenarioDeployment>;
+    deployments: Array<ScenarioDeploymentResponse>;
 }
 
 /**
@@ -116,7 +116,7 @@ export function ScenarioForFrontFromJSONTyped(json: any, ignoreDiscriminator: bo
         'description': json['description'],
         'mainTable': json['main_table'],
         'versions': ((json['versions'] as Array<any>).map(ScenarioVersionForFrontFromJSON)),
-        'deployments': ((json['deployments'] as Array<any>).map(ScenarioDeploymentFromJSON)),
+        'deployments': ((json['deployments'] as Array<any>).map(ScenarioDeploymentResponseFromJSON)),
     };
 }
 
@@ -136,7 +136,7 @@ export function ScenarioForFrontToJSON(value?: ScenarioForFront | null): any {
         'description': value.description,
         'main_table': value.mainTable,
         'versions': ((value.versions as Array<any>).map(ScenarioVersionForFrontToJSON)),
-        'deployments': ((value.deployments as Array<any>).map(ScenarioDeploymentToJSON)),
+        'deployments': ((value.deployments as Array<any>).map(ScenarioDeploymentResponseToJSON)),
     };
 }
 
