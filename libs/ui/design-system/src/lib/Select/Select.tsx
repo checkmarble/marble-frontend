@@ -22,7 +22,7 @@ import clsx from 'clsx';
 import { forwardRef } from 'react';
 import { tagBorder } from './Select.constants';
 
-export function SelectContent({
+function SelectContent({
   children,
   className,
   ...props
@@ -49,7 +49,7 @@ export function SelectContent({
   );
 }
 
-export function SelectViewport({
+function SelectViewport({
   children,
   className,
   ...props
@@ -62,10 +62,10 @@ export function SelectViewport({
 }
 
 export interface SelectTriggerProps extends PrimitiveSelectTriggerProps {
-  border?: typeof tagBorder[number];
+  border?: (typeof tagBorder)[number];
 }
 
-export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
+const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
   ({ children, className, border = 'square', ...props }, ref) => {
     return (
       <Trigger
@@ -91,7 +91,7 @@ export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
   }
 );
 
-export const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
+const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
   ({ children, className, ...props }, ref) => {
     return (
       <Item
