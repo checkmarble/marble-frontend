@@ -17,7 +17,7 @@ const LINKS: ScenariosLinkProps[] = [
   { labelTKey: 'scenario.decision', to: './decision', Icon: Decision },
 ];
 
-export default function ScenarioLayout() {
+export default function ScenarioViewLayout() {
   return (
     <Page.Content>
       <Scenarios.Nav>

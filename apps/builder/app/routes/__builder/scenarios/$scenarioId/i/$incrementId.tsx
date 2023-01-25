@@ -45,7 +45,7 @@ type CurrentScenarioIncrement = ReturnType<
 const { Provider, useValue: useCurrentScenarioIncrement } =
   createSimpleContext<CurrentScenarioIncrement>('CurrentScenarioIncrement');
 
-export default function ScenarioLayout() {
+export default function CurrentScenarioIncrementProvider() {
   const value = useCurrentScenarioIncrementValue();
   return (
     <Provider value={value}>

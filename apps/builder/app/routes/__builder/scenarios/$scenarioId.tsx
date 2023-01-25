@@ -77,7 +77,7 @@ type CurrentScenario = ReturnType<typeof useCurrentScenarioValue>;
 const { Provider, useValue: useCurrentScenario } =
   createSimpleContext<CurrentScenario>('CurrentScenario');
 
-export default function ScenarioLayout() {
+export default function CurrentScenarioContextProvider() {
   const value = useCurrentScenarioValue();
   return (
     <Provider value={value}>

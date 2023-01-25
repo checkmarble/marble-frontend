@@ -131,7 +131,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
   );
 }
 
-export default function ScenarioLayout() {
+export default function Lists() {
   const data = useLoaderData<typeof loader>();
   const { t } = useTranslation(handle.i18n);
 

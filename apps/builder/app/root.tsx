@@ -1,3 +1,4 @@
+import { Tooltip } from '@marble-front/ui/design-system';
 import type { MetaFunction, LinksFunction, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import {
@@ -75,7 +76,9 @@ export default function App() {
         <Links />
       </head>
       <body className="h-screen w-full overflow-hidden antialiased">
-        <Outlet />
+        <Tooltip.Provider>
+          <Outlet />
+        </Tooltip.Provider>
         <script
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(ENV)}`,

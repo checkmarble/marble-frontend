@@ -16,7 +16,7 @@ export const handle = {
   i18n: ['scenarios'] as const,
 };
 
-export default function ScenarioLayout() {
+export default function ScenarioHeaderLayout() {
   const { t } = useTranslation(handle.i18n);
   const { name, increments, lastDeployment } = useCurrentScenario();
   const navigate = useNavigate();
