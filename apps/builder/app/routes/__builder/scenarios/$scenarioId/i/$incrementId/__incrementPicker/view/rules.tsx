@@ -1,4 +1,3 @@
-import { Decision } from '@marble-front/api/marble';
 import { fromUUID } from '@marble-front/builder/utils/short-uuid';
 import { Table, useVirtualTable } from '@marble-front/ui/design-system';
 import { useNavigate } from '@remix-run/react';
@@ -58,25 +57,6 @@ export default function Rules() {
           return scoreIncrease >= 0 ? `+${scoreIncrease}` : `-${scoreIncrease}`;
         },
         header: t('scenarios:rules.score'),
-        size: 100,
-      },
-      {
-        id: 'decision',
-        accessorFn: (row) => {
-          const decision = row.consequence?.decision;
-
-          switch (decision) {
-            case Decision.Accept:
-              return 'Accept';
-            case Decision.Warning:
-              return 'Warn';
-            case Decision.Refuse:
-              return 'Refuse';
-            default:
-              return '';
-          }
-        },
-        header: t('scenarios:rules.decision'),
         size: 100,
       },
     ],

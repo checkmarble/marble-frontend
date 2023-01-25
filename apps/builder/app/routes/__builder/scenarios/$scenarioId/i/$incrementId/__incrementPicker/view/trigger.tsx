@@ -28,7 +28,7 @@ export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
 
   return (
-    <Paper.Container className="w-fit">
+    <Paper.Container>
       <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
       <Callout>{t('scenarios:trigger.trigger_object.callout')}</Callout>
 
