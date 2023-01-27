@@ -4,7 +4,7 @@ import { Outlet, useLoaderData } from '@remix-run/react';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { scenariosApi } from '@marble-front/builder/services/marble-api/scenarios.server';
 import * as R from 'remeda';
-import type { RequiredKeys } from '@marble-front/builder/utils/utility-types';
+import { hasRequiredKeys } from '@marble-front/builder/utils/utility-types';
 import { createSimpleContext } from '@marble-front/builder/utils/create-context';
 import invariant from 'tiny-invariant';
 
@@ -55,13 +55,7 @@ function useScenariosValue() {
         },
       };
     }),
-    R.filter(
-      (
-        scenario
-      ): scenario is RequiredKeys<typeof scenario, 'lastIncrementId'> => {
-        return scenario?.lastIncrementId !== undefined;
-      }
-    )
+    R.filter(hasRequiredKeys(['lastIncrementId']))
   );
 }
 
