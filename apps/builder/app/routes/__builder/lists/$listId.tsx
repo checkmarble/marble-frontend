@@ -169,8 +169,8 @@ export default function Lists() {
   return (
     <Page.Container>
       <Page.Header>
-        <Link to="./..">
-          <Page.BackButton className="mr-4" />
+        <Link to="./.." className="mr-4">
+          <Page.BackButton />
         </Link>
         {data.name}
       </Page.Header>
