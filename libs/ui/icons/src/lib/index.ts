@@ -41,3 +41,4 @@ export { default as SmallarrowUp } from './SmallarrowUp';
 export { default as Stop } from './Stop';
 export { default as Tick } from './Tick';
 export { default as Trigger } from './Trigger';
+export { default as Variable } from './Variable';

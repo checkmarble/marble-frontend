@@ -32,7 +32,7 @@ export function DefaultTooltip({
       <TooltipPrimitive.Content
         side="top"
         align="center"
-        className={clsx('bg-grey-00 rounded p-2 shadow', className)}
+        className={clsx('bg-grey-00 rounded p-2 drop-shadow', className)}
         {...props}
       >
         {content}

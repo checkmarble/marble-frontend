@@ -33,11 +33,11 @@ module.exports = {
         slideRightAndFadeOut: {
           from: {
             opacity: 1,
-            transform: 'translate(0, +100%)',
+            transform: 'translate(0, 0)',
           },
           to: {
             opacity: 0,
-            transform: 'translate(0, 0)',
+            transform: 'translate(+100%, 0)',
           },
         },
         slideUpAndFade: {
