@@ -52,7 +52,7 @@ export default function ScenarioHeaderLayout() {
                   key={increment.id}
                   value={increment.id}
                 >
-                  <p className="text-text-s-semibold-cta flex flex-row gap-1">
+                  <p className="text-s flex flex-row gap-1 font-semibold">
                     <span className="text-grey-100 capitalize">
                       {increment.label ?? t('scenarios:draft')}
                     </span>

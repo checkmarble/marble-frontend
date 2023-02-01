@@ -34,29 +34,27 @@ export default function Trigger() {
 
       {/* Top + bottom line */}
       <div className="grid grid-cols-[8px_16px_repeat(2,max-content)]">
-        <Box className="text-text-s-semibold-cta col-span-4 w-fit text-purple-100">
+        <Box className="text-s col-span-4 w-fit font-semibold text-purple-100">
           Transaction
         </Box>
         <div className="border-r-grey-10 col-span-4 h-4 w-2 border-r " />
 
         <div className="border-r-grey-10 border-r" />
         <div className="border-b-grey-10 h-5 border-b" />
-        <Box className="text-text-s-semibold-cta text-grey-25 mr-2">Where</Box>
+        <Box className="text-s text-grey-25 mr-2 font-semibold">Where</Box>
         <div className="mb-2 flex flex-row gap-2">
-          <Box className="text-text-s-semibold-cta text-purple-100">type</Box>
-          <Box className="text-text-s-semibold-cta text-grey-100">is</Box>
-          <Box className="text-text-s-medium text-grey-100 ">sepa</Box>
+          <Box className="text-s font-semibold text-purple-100">type</Box>
+          <Box className="text-s text-grey-100 font-semibold">is</Box>
+          <Box className="text-s text-grey-100 font-medium ">sepa</Box>
         </div>
 
         <div className="border-r-grey-10 h-5 border-r" />
         <div className="border-b-grey-10 h-5 border-b" />
-        <Box className="text-text-s-semibold-cta text-grey-25 mr-2">and</Box>
+        <Box className="text-s text-grey-25 mr-2 font-semibold">and</Box>
         <div className="flex flex-row gap-2">
-          <Box className="text-text-s-semibold-cta text-purple-100">
-            direction
-          </Box>
-          <Box className="text-text-s-semibold-cta text-grey-100">is</Box>
-          <Box className="text-text-s-medium text-grey-100 ">payout</Box>
+          <Box className="text-s font-semibold text-purple-100">direction</Box>
+          <Box className="text-s text-grey-100 font-semibold">is</Box>
+          <Box className="text-s text-grey-100 font-medium ">payout</Box>
         </div>
       </div>
     </Paper.Container>

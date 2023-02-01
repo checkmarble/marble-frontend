@@ -2,15 +2,15 @@ import clsx from 'clsx';
 import { forwardRef } from 'react';
 
 export const variants = ['primary', 'secondary'] as const;
-export type Variant = typeof variants[number];
+export type Variant = (typeof variants)[number];
 
 export const variantColors: Record<Variant, readonly string[]> = {
   primary: ['purple', 'green', 'red'],
   secondary: ['grey'],
 } as const;
 
-export type PrimaryColor = typeof variantColors['primary'][number];
-export type SecondaryColor = typeof variantColors['secondary'][number];
+export type PrimaryColor = (typeof variantColors)['primary'][number];
+export type SecondaryColor = (typeof variantColors)['secondary'][number];
 
 export type ButtonProps = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -41,7 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          'text-text-s-semibold-cta  flex flex-row items-center gap-1 rounded py-2 px-4 text-base font-semibold',
+          'text-s flex flex-row items-center gap-1 rounded py-2 px-4 text-base font-semibold',
           {
             'hover:bg-green-110 active:bg-green-120 text-grey-00 bg-green-100 disabled:bg-green-50':
               variant === 'primary' && color === 'green',

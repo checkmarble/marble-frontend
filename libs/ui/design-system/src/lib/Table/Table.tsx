@@ -105,7 +105,7 @@ function Header<TData extends RowData>({
             return (
               <Table.TH header={header} key={header.id}>
                 {header.isPlaceholder ? null : (
-                  <div className="text-text-s-semibold-cta text-grey-100 flex flex-row items-center">
+                  <div className="text-s text-grey-100 flex flex-row items-center font-semibold">
                     <p className="flex flex-1">
                       {flexRender(
                         header.column.columnDef.header,
@@ -221,7 +221,7 @@ function Row<TData extends RowData>({
             key={cell.id}
             className="border-grey-10 w-full border-b pl-4 pr-4 group-last:border-b-0"
           >
-            <p className="line-clamp-2 text-text-s-regular">
+            <p className="line-clamp-2 text-s font-normal">
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
             </p>
           </td>

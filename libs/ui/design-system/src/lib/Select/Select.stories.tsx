@@ -68,10 +68,10 @@ export const Complex: Story<StoryProps> = ({
           return (
             <Select.Item key={bookKey} value={bookKey} className="group">
               <Select.ItemText>
-                <p className="text-text-s-semibold-cta text-grey-100 group-radix-highlighted:text-blue-100 group-radix-state-open:text-blue-100 text-left">
+                <p className="text-s text-grey-100 group-radix-highlighted:text-blue-100 group-radix-state-open:text-blue-100 text-left font-semibold">
                   {book.title}
                 </p>
-                <p className="text-text-xs-regular text-grey-50 group-radix-highlighted:text-blue-50 group-radix-state-open:text-blue-50 text-left">
+                <p className="text-grey-50 group-radix-highlighted:text-blue-50 group-radix-state-open:text-blue-50 text-left text-xs font-normal ">
                   {book.author}
                 </p>
               </Select.ItemText>

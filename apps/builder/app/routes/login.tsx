@@ -53,26 +53,26 @@ export default function Login() {
           />
         </div>
         <div className="bg-grey-00 flex w-full max-w-xs flex-shrink-0 flex-col items-center rounded-2xl p-10 shadow-md">
-          <h1 className="text-display-l-semibold mb-12">{t('login:title')}</h1>
+          <h1 className="text-l mb-12 font-semibold">{t('login:title')}</h1>
 
           <Form action={`/auth/google`} method="post" className="mb-1 w-full">
             <button className="flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)]">
               <div className="bg-grey-00 flex h-full w-10 items-center justify-center rounded-l-[3px]">
                 <GoogleLogo height="24px" width="24px" />
               </div>
-              <span className="text-text-s-medium text-grey-00 w-full text-center align-middle">
+              <span className="text-s text-grey-00 w-full text-center align-middle font-medium">
                 {t('login:sign_in.google')}
               </span>
             </button>
           </Form>
 
           {authError && (
-            <p className="text-text-xs-regular text-red-100">
+            <p className="text-xs font-normal text-red-100">
               {t(errorLabels[authError])}
             </p>
           )}
 
-          <p className="text-text-s-medium mt-12">
+          <p className="text-s mt-12 font-medium">
             {t('login:help.no_account')} {t('login:help.contact_us')}
           </p>
         </div>

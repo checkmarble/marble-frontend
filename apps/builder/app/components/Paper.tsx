@@ -29,7 +29,7 @@ function PaperTitle({
 >) {
   return (
     <p
-      className={clsx('text-text-m-semibold text-grey-100', className)}
+      className={clsx('text-m text-grey-100 font-semibold', className)}
       {...props}
     />
   );

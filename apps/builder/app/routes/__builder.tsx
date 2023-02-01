@@ -87,8 +87,8 @@ export default function Builder() {
                     lastName={user.lastName}
                     src={user.profilePictureUrl}
                   />
-                  <p className="text-text-m-semibold mb-1 capitalize">{`${user.firstName} ${user.lastName}`}</p>
-                  <p className="text-text-s-regular">{user.email}</p>
+                  <p className="text-m mb-1 font-semibold capitalize">{`${user.firstName} ${user.lastName}`}</p>
+                  <p className="text-s font-normal">{user.email}</p>
                 </div>
 
                 <div className="mt-6 flex flex-col items-center">

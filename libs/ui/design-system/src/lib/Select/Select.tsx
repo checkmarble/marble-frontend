@@ -71,7 +71,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
       <Trigger
         ref={ref}
         className={clsx(
-          'bg-grey-00 border-grey-10 text-text-s-medium text-grey-100 group flex h-10 items-center justify-between border outline-none',
+          'bg-grey-00 border-grey-10 text-s text-grey-100 group flex h-10 items-center justify-between border font-medium outline-none',
           'radix-state-open:border-purple-100 radix-state-open:text-purple-100',
           'radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
           {
@@ -97,7 +97,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
       <Item
         ref={ref}
         className={clsx(
-          'text-color text-text-s-medium rounded-sm p-2 outline-none',
+          'text-color text-s rounded-sm p-2 font-medium outline-none',
           'radix-highlighted:bg-purple-05 radix-highlighted:text-purple-100',
           className
         )}
