@@ -2,24 +2,11 @@ import { Authenticator } from 'remix-auth';
 import { GoogleStrategy } from './strategies';
 import { sessionStorage } from './session.server';
 import { getServerEnv } from '@marble-front/builder/utils/environment';
-import type { UserForFront } from '@marble-front/api/marble';
+import type { UserResponse } from '@marble-front/api/marble';
 import { usersApi } from '../marble-api';
 
-/**
- * TODO(auth): when provided, use real data model from API
- * - extends UserForFront
- * - remove eventual data transformation in GoogleStrategy
- * - look for other TS issues (e.g. in screens)
- */
-export interface User extends Pick<UserForFront, 'id' | 'email'> {
-  firstName: string;
-  lastName: string;
-  photo?: string;
-  locale?: string;
-}
-
 const authErrors = ['NoAccount', 'Unknown'] as const;
-export type AuthErrors = typeof authErrors[number];
+export type AuthErrors = (typeof authErrors)[number];
 
 export function isAuthErrors(error: string): error is AuthErrors {
   return authErrors.includes(error as AuthErrors);
@@ -34,7 +21,7 @@ export class AuthError extends Error {
 
 // Create an instance of the authenticator, pass a generic with what
 // strategies will return and will store in the session
-export const authenticator = new Authenticator<User>(sessionStorage);
+export const authenticator = new Authenticator<UserResponse>(sessionStorage);
 
 authenticator.use(
   new GoogleStrategy(
@@ -55,14 +42,7 @@ authenticator.use(
           // userEmail: profile.emails[0].value,
           userEmail: 'alice.vance@fintech.com',
         });
-        return {
-          id: user.id,
-          email: user.email,
-          firstName: 'alice',
-          lastName: 'vance',
-          photo: profile.photos?.[0].value,
-          locale: 'en',
-        };
+        return { ...user, profilePictureUrl: profile.photos[0].value };
       } catch (error) {
         console.log(error);
         throw error;

@@ -1,4 +1,4 @@
-import { Page } from '@marble-front/builder/components/Page';
+import { Page } from '@marble-front/builder/components';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@remix-run/react';
 import { Scenarios } from '@marble-front/ui/icons';
@@ -32,7 +32,7 @@ export default function ScenariosPage() {
                   )}/view/trigger`}
                 >
                   <div className="bg-grey-00 border-grey-10 flex max-w-3xl flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
-                    <div className="text-text-m-bold flex flex-row gap-2">
+                    <div className="text-m flex flex-row gap-2 font-bold">
                       {scenario.name}
                       {scenario.lastDeployment?.scenarioVersionId !==
                         undefined && (
@@ -41,7 +41,7 @@ export default function ScenariosPage() {
                         </Tag>
                       )}
                     </div>
-                    <p className="text-text-s-medium line-clamp-2">
+                    <p className="text-s line-clamp-2 font-medium">
                       {scenario.description}
                     </p>
                   </div>
@@ -50,7 +50,7 @@ export default function ScenariosPage() {
             })
           ) : (
             <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-              <p className="text-text-s-medium">
+              <p className="text-s font-medium">
                 {t('scenarios:empty_scenario_list')}
               </p>
             </div>

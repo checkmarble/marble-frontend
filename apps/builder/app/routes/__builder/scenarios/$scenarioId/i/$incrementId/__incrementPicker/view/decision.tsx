@@ -1,5 +1,4 @@
-import Callout from '@marble-front/builder/components/Callout';
-import { Paper } from '@marble-front/builder/components/Paper';
+import { Paper, Callout } from '@marble-front/builder/components';
 import { Tag } from '@marble-front/ui/design-system';
 import { useTranslation } from 'react-i18next';
 

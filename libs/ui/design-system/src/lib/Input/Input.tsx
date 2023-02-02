@@ -19,7 +19,7 @@ export function Input({
     <div className="relative h-10 w-full">
       <input
         className={clsx(
-          'bg-grey-00 border-grey-10 text-text-s-medium text-grey-100 placeholder:text-grey-50 peer block h-full w-full rounded border px-2 outline-none focus:border-purple-100',
+          'bg-grey-00 border-grey-10 text-s text-grey-100 placeholder:text-grey-50 peer block h-full w-full rounded border px-2 font-medium outline-none focus:border-purple-100',
           startAdornment && 'pl-10',
           endAdornment && 'pr-10',
           className

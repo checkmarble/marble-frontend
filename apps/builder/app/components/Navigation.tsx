@@ -18,7 +18,7 @@ function SidebarLink({ Icon, labelTKey, to }: SidebarLinkProps) {
     <NavLink
       className={({ isActive }) =>
         clsx(
-          'text-text-s-medium text-grey-100 hover:bg-purple-10 flex flex-row items-center gap-2 rounded-sm p-2 hover:text-purple-100',
+          'text-s font-medium text-grey-100 hover:bg-purple-10 flex flex-row items-center gap-2 rounded-sm p-2 hover:text-purple-100',
           {
             'bg-purple-10 text-purple-100': isActive,
           }
@@ -61,7 +61,7 @@ function ScenariosLink({ Icon, labelTKey, to }: SidebarLinkProps) {
     <NavLink
       className={({ isActive }) =>
         clsx(
-          'text-text-s-medium text-grey-100 hover:bg-purple-10 flex flex-row items-center gap-2 rounded py-2 px-4 hover:text-purple-100',
+          'text-s font-medium text-grey-100 hover:bg-purple-10 flex flex-row items-center gap-2 rounded py-2 px-4 hover:text-purple-100',
           {
             'bg-purple-10 text-purple-100': isActive,
           }

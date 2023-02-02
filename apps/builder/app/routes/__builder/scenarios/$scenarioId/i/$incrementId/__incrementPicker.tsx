@@ -1,4 +1,4 @@
-import { Page } from '@marble-front/builder/components/Page';
+import { Page } from '@marble-front/builder/components';
 import { fromUUID, toUUID } from '@marble-front/builder/utils/short-uuid';
 import { Select } from '@marble-front/ui/design-system';
 import {
@@ -16,9 +16,9 @@ export const handle = {
   i18n: ['scenarios'] as const,
 };
 
-export default function ScenarioLayout() {
+export default function ScenarioHeaderLayout() {
   const { t } = useTranslation(handle.i18n);
-  const { name, increments, lastDeployment } = useCurrentScenario();
+  const { name, increments, isLive } = useCurrentScenario();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -52,12 +52,11 @@ export default function ScenarioLayout() {
                   key={increment.id}
                   value={increment.id}
                 >
-                  <p className="text-text-s-semibold-cta flex flex-row gap-1">
+                  <p className="text-s flex flex-row gap-1 font-semibold">
                     <span className="text-grey-100 capitalize">
                       {increment.label ?? t('scenarios:draft')}
                     </span>
-                    {increment.versionId ===
-                      lastDeployment?.scenarioVersionId && (
+                    {isLive(increment) && (
                       <span className="capitalize text-purple-100">
                         {t('scenarios:live')}
                       </span>

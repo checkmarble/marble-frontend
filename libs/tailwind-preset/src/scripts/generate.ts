@@ -39,7 +39,8 @@ async function downloadDesignTokens() {
           Authorization: `Bearer ${process.env['PERSONAL_ACCESS_TOKEN']}`,
         }),
       }
-    ).then(({ json }) => json());
+    ).then((response) => response.json());
+
     spinner.succeed('Design tokens succesfully downloaded');
   } catch (error) {
     spinner.succeed('Failed to download design tokens');
@@ -88,11 +89,16 @@ async function buildFontSize(data: DesignTokens) {
   const spinner = ora('Building fontSize...').start();
   try {
     const fontSize = R.pipe(
-      data.text_styles,
-      R.mapValues(({ value: { font, line_height } }) => {
+      R.keys(data.text_styles),
+      R.filter((key) => key.includes('regular')),
+      R.mapToObj((key) => {
+        const {
+          value: { font, line_height },
+        } = data.text_styles[key];
+
         return [
-          `${font.size}px`,
-          { lineHeight: `${line_height}px`, fontWeight: font.weight },
+          key.match(/-(.*)-regular/)?.[1] ?? key,
+          [`${font.size}px`, `${line_height}px`],
         ];
       })
     );

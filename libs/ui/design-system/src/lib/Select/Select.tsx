@@ -22,7 +22,7 @@ import clsx from 'clsx';
 import { forwardRef } from 'react';
 import { tagBorder } from './Select.constants';
 
-export function SelectContent({
+function SelectContent({
   children,
   className,
   ...props
@@ -49,7 +49,7 @@ export function SelectContent({
   );
 }
 
-export function SelectViewport({
+function SelectViewport({
   children,
   className,
   ...props
@@ -62,16 +62,16 @@ export function SelectViewport({
 }
 
 export interface SelectTriggerProps extends PrimitiveSelectTriggerProps {
-  border?: typeof tagBorder[number];
+  border?: (typeof tagBorder)[number];
 }
 
-export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
+const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
   ({ children, className, border = 'square', ...props }, ref) => {
     return (
       <Trigger
         ref={ref}
         className={clsx(
-          'bg-grey-00 border-grey-10 text-text-s-medium text-grey-100 group flex h-10 items-center justify-between border outline-none',
+          'bg-grey-00 border-grey-10 text-s text-grey-100 group flex h-10 items-center justify-between border font-medium outline-none',
           'radix-state-open:border-purple-100 radix-state-open:text-purple-100',
           'radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
           {
@@ -91,13 +91,13 @@ export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
   }
 );
 
-export const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
+const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
   ({ children, className, ...props }, ref) => {
     return (
       <Item
         ref={ref}
         className={clsx(
-          'text-color text-text-s-medium rounded-sm p-2 outline-none',
+          'text-color text-s rounded-sm p-2 font-medium outline-none',
           'radix-highlighted:bg-purple-05 radix-highlighted:text-purple-100',
           className
         )}

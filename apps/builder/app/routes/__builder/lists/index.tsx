@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Page } from '@marble-front/builder/components/Page';
+import { Page } from '@marble-front/builder/components';
 import { useTranslation } from 'react-i18next';
 
 import { type ColumnDef } from '@tanstack/react-table';

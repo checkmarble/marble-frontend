@@ -9,7 +9,7 @@ export const handle = {
   i18n: ['scenarios'] as const,
 };
 
-export function useCurrentScenarioValue() {
+function useCurrentScenarioValue() {
   const scenarios = useScenarios();
 
   const { scenarioId } = useParams();
@@ -61,8 +61,12 @@ export function useCurrentScenarioValue() {
     scenarioIncrements.map((increment) => [increment.id, increment])
   );
 
+  const isLive = (increment: (typeof scenarioIncrements)[number]) =>
+    currentScenario.liveVersion?.id === increment.id;
+
   return {
     ...currentScenario,
+    isLive,
     increments: {
       values: scenarioIncrements,
       get(id: string) {
@@ -77,7 +81,7 @@ type CurrentScenario = ReturnType<typeof useCurrentScenarioValue>;
 const { Provider, useValue: useCurrentScenario } =
   createSimpleContext<CurrentScenario>('CurrentScenario');
 
-export default function ScenarioLayout() {
+export default function CurrentScenarioContextProvider() {
   const value = useCurrentScenarioValue();
   return (
     <Provider value={value}>

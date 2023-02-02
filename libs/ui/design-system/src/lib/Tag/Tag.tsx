@@ -7,9 +7,9 @@ export interface TagProps
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
   > {
-  border?: typeof tagBorder[number];
-  color?: typeof tagColors[number];
-  size?: typeof tagSize[number];
+  border?: (typeof tagBorder)[number];
+  color?: (typeof tagColors)[number];
+  size?: (typeof tagSize)[number];
 }
 
 export function Tag({
@@ -35,8 +35,8 @@ export function Tag({
           rounded: border === 'square',
         },
         {
-          'text-text-xs-medium h-6 px-2': size === 'small',
-          'text-text-s-semibold-cta h-8 px-2': size === 'big',
+          'h-6 px-2 text-xs font-medium': size === 'small',
+          'text-s h-8 px-2 font-semibold': size === 'big',
         },
         className
       )}

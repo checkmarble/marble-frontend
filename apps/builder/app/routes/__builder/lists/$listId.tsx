@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { Page } from '@marble-front/builder/components/Page';
+import { Page, Callout } from '@marble-front/builder/components';
 import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
@@ -23,7 +23,6 @@ import {
   getFilteredRowModel,
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
-import Callout from '@marble-front/builder/components/Callout';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 
 function getFakeList(id: string) {
@@ -63,7 +62,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
     <>
       <div className="flex flex-row gap-2">
         <Scenarios height="24px" width="24px" className="flex-shrink-0" />
-        <p className="text-text-m-semibold text-grey-100">
+        <p className="text-m text-grey-100 font-semibold">
           {t('lists:used_in_scenarios')}
         </p>
       </div>
@@ -71,7 +70,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
         {scenarios.slice(0, MAX_SCENARIOS).map((scenario) => (
           <div
             key={scenario}
-            className="border-grey-10 text-text-s-medium text-grey-100 flex h-10 items-center rounded border px-4 align-middle"
+            className="border-grey-10 text-s text-grey-100 flex h-10 items-center rounded border px-4 align-middle font-medium"
           >
             {scenario}
           </div>
@@ -95,7 +94,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
                     width="24px"
                     className="flex-shrink-0"
                   />
-                  <p className="text-text-m-semibold text-grey-100 flex-1">
+                  <p className="text-m text-grey-100 flex-1 font-semibold">
                     {t('lists:used_in_scenarios')}
                   </p>
                   <Dialog.Close aria-label="Close">
@@ -112,7 +111,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
                       {scenarios.map((scenario) => (
                         <div
                           key={scenario}
-                          className="border-grey-10 text-text-s-medium text-grey-100 flex h-14 items-center rounded border px-4 align-middle"
+                          className="border-grey-10 text-s text-grey-100 flex h-14 items-center rounded border px-4 align-middle font-medium"
                         >
                           {scenario}
                         </div>
@@ -132,7 +131,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
   );
 }
 
-export default function ScenarioLayout() {
+export default function Lists() {
   const data = useLoaderData<typeof loader>();
   const { t } = useTranslation(handle.i18n);
 
@@ -170,8 +169,8 @@ export default function ScenarioLayout() {
   return (
     <Page.Container>
       <Page.Header>
-        <Link to="./..">
-          <Page.BackButton className="mr-4" />
+        <Link to="./.." className="mr-4">
+          <Page.BackButton />
         </Link>
         {data.name}
       </Page.Header>

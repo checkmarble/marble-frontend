@@ -1,22 +1,22 @@
+import { ScrollArea } from '@marble-front/ui/design-system';
 import clsx from 'clsx';
 import React from 'react';
 
-function PaperContainer({
-  className,
-  ...props
-}: React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
->) {
+function PaperContainer({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className={clsx(
-        'border-grey-10 flex w-fit max-w-3xl flex-col rounded-lg border',
-        'gap-4 p-4 lg:gap-8 lg:p-8',
-        className
-      )}
-      {...props}
-    />
+    <ScrollArea.Root
+      className="border-grey-10 max-w-3xl rounded-lg border"
+      type="auto"
+    >
+      <ScrollArea.Viewport>
+        <div className="flex flex-col gap-4 p-4 lg:gap-8 lg:p-8">
+          {children}
+        </div>
+      </ScrollArea.Viewport>
+      <ScrollArea.Scrollbar orientation="horizontal">
+        <ScrollArea.Thumb />
+      </ScrollArea.Scrollbar>
+    </ScrollArea.Root>
   );
 }
 
@@ -29,7 +29,7 @@ function PaperTitle({
 >) {
   return (
     <p
-      className={clsx('text-text-m-semibold text-grey-100', className)}
+      className={clsx('text-m text-grey-100 font-semibold', className)}
       {...props}
     />
   );

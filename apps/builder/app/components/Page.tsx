@@ -27,7 +27,7 @@ function PageHeader({
   return (
     <div
       className={clsx(
-        'border-b-grey-10 bg-grey-00 text-display-l-bold text-grey-100 flex shrink-0 flex-row items-center border-b',
+        'border-b-grey-10 bg-grey-00 text-l text-grey-100 flex shrink-0 flex-row items-center border-b font-bold',
         'h-16 px-4 lg:h-20 lg:px-8',
         className
       )}

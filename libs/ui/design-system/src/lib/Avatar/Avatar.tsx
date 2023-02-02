@@ -34,7 +34,7 @@ export function Avatar({
         alt={`${firstName} ${lastName}`}
       />
       <Fallback
-        className="text-display-l-semibold text-grey-00 flex h-full w-full items-center justify-center"
+        className="text-l text-grey-00 flex h-full w-full items-center justify-center font-semibold"
         delayMs={src ? 400 : 0}
       >
         {`${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`}

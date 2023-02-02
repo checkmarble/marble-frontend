@@ -99,6 +99,7 @@
     "@radix-ui/react-popover": "^1.0.3",
     "@radix-ui/react-scroll-area": "^1.0.2",
     "@radix-ui/react-select": "^1.2.0",
+    "@radix-ui/react-tooltip": "^1.0.3",
     "@remix-run/node": "^1.11.1",
     "@remix-run/react": "^1.11.1",
     "@remix-run/serve": "^1.11.1",

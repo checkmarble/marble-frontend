@@ -1,11 +1,11 @@
-import { Page } from '@marble-front/builder/components/Page';
 import { Outlet } from '@remix-run/react';
 import { Decision, Rules, Trigger } from '@marble-front/ui/icons';
 import {
+  Page,
   type ScenariosLinkProps,
   Scenarios,
   navigationI18n,
-} from '@marble-front/builder/components/Navigation';
+} from '@marble-front/builder/components';
 
 export const handle = {
   i18n: [...navigationI18n],
@@ -17,7 +17,7 @@ const LINKS: ScenariosLinkProps[] = [
   { labelTKey: 'scenario.decision', to: './decision', Icon: Decision },
 ];
 
-export default function ScenarioLayout() {
+export default function ScenarioViewLayout() {
   return (
     <Page.Content>
       <Scenarios.Nav>

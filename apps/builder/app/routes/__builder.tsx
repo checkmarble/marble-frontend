@@ -15,7 +15,7 @@ import {
   Sidebar,
   type SidebarLinkProps,
   navigationI18n,
-} from '@marble-front/builder/components/Navigation';
+} from '@marble-front/builder/components';
 import clsx from 'clsx';
 import { authenticator } from '../services/auth/auth.server';
 
@@ -85,10 +85,10 @@ export default function Builder() {
                     className="mb-2"
                     firstName={user.firstName}
                     lastName={user.lastName}
-                    src={user.photo}
+                    src={user.profilePictureUrl}
                   />
-                  <p className="text-text-m-semibold mb-1 capitalize">{`${user.firstName} ${user.lastName}`}</p>
-                  <p className="text-text-s-regular">{user.email}</p>
+                  <p className="text-m mb-1 font-semibold capitalize">{`${user.firstName} ${user.lastName}`}</p>
+                  <p className="text-s font-normal">{user.email}</p>
                 </div>
 
                 <div className="mt-6 flex flex-col items-center">
