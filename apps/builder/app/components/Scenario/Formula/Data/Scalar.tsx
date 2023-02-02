@@ -3,7 +3,7 @@ import type { Scalar as ScalarMessage } from '@marble-front/api/marble';
 import { assertNever } from '@marble-front/builder/utils/assert-never';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { ruleI18n } from '../../rule-i18n';
+import { scenarioI18n } from '../../scenario-i18n';
 
 /**
  * only-of-type:w-full is necessary to handle text center in Formula 'data' case :
@@ -19,7 +19,7 @@ export function Scalar({
 }: {
   scalar: PlainMessage<ScalarMessage>;
 }) {
-  const { t, i18n } = useTranslation(ruleI18n);
+  const { t, i18n } = useTranslation(scenarioI18n);
 
   switch (value.case) {
     case 'string':
@@ -34,7 +34,7 @@ export function Scalar({
     case 'bool':
       return (
         <span className={clsx(commonScalarClass, 'uppercase')}>
-          {t(`rule:${value.value}`)}
+          {t(`scenarios:${value.value}`)}
         </span>
       );
     case undefined:

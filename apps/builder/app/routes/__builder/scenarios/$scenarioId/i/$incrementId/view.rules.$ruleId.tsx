@@ -1,8 +1,8 @@
 import {
-  Page,
+  ScenarioPage,
   Callout,
   Rule,
-  ruleI18n,
+  scenarioI18n,
 } from '@marble-front/builder/components';
 import { Link, useParams } from '@remix-run/react';
 import { fromUUID, toUUID } from '@marble-front/builder/utils/short-uuid';
@@ -10,7 +10,7 @@ import { useCurrentScenarioIncrement } from '../$incrementId';
 import invariant from 'tiny-invariant';
 
 export const handle = {
-  i18n: [...ruleI18n] as const,
+  i18n: [...scenarioI18n] as const,
 };
 
 export default function RuleView() {
@@ -25,17 +25,17 @@ export default function RuleView() {
   invariant(rule, `Unknown rule`);
 
   return (
-    <Page.Container>
-      <Page.Header>
+    <ScenarioPage.Container>
+      <ScenarioPage.Header>
         <Link to="./.." className="mr-4">
-          <Page.BackButton />
+          <ScenarioPage.BackButton />
         </Link>
         {rule.name ?? fromUUID(rule.id)}
-      </Page.Header>
-      <Page.Content>
+      </ScenarioPage.Header>
+      <ScenarioPage.Content>
         <Callout>{rule.description}</Callout>
         <Rule rule={rule} />
-      </Page.Content>
-    </Page.Container>
+      </ScenarioPage.Content>
+    </ScenarioPage.Container>
   );
 }

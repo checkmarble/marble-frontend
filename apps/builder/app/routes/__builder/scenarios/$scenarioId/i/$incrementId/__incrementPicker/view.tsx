@@ -1,7 +1,7 @@
 import { Outlet } from '@remix-run/react';
 import { Decision, Rules, Trigger } from '@marble-front/ui/icons';
 import {
-  Page,
+  ScenarioPage,
   type ScenariosLinkProps,
   Scenarios,
   navigationI18n,
@@ -19,7 +19,7 @@ const LINKS: ScenariosLinkProps[] = [
 
 export default function ScenarioViewLayout() {
   return (
-    <Page.Content>
+    <ScenarioPage.Content>
       <Scenarios.Nav>
         {LINKS.map((linkProps) => (
           <li key={linkProps.labelTKey}>
@@ -28,6 +28,6 @@ export default function ScenarioViewLayout() {
         ))}
       </Scenarios.Nav>
       <Outlet />
-    </Page.Content>
+    </ScenarioPage.Content>
   );
 }

@@ -1,4 +1,4 @@
-import { Page } from '@marble-front/builder/components';
+import { ScenarioPage } from '@marble-front/builder/components';
 import { fromUUID, toUUID } from '@marble-front/builder/utils/short-uuid';
 import { Select } from '@marble-front/ui/design-system';
 import {
@@ -26,11 +26,11 @@ export default function ScenarioHeaderLayout() {
   invariant(incrementId, 'incrementId is required');
 
   return (
-    <Page.Container>
-      <Page.Header className="justify-between">
+    <ScenarioPage.Container>
+      <ScenarioPage.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Link to="./..">
-            <Page.BackButton />
+            <ScenarioPage.BackButton />
           </Link>
           {name}
           <Select.Default
@@ -67,8 +67,8 @@ export default function ScenarioHeaderLayout() {
             })}
           </Select.Default>
         </div>
-      </Page.Header>
+      </ScenarioPage.Header>
       <Outlet />
-    </Page.Container>
+    </ScenarioPage.Container>
   );
 }

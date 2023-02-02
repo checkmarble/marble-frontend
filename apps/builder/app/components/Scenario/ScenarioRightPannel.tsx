@@ -4,7 +4,7 @@ import { Cross, Variable } from '@marble-front/ui/icons';
 import { useCallback, useReducer } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useTranslation } from 'react-i18next';
-import { ruleI18n } from './rule-i18n';
+import { scenarioI18n } from './scenario-i18n';
 import { noop } from '@marble-front/builder/utils/utility-types';
 import { createSimpleContext } from '@marble-front/builder/utils/create-context';
 import clsx from 'clsx';
@@ -31,7 +31,7 @@ const initialState: State = {
   open: false,
 };
 
-function ruleRightPannelReducer(prevState: State, action: Actions) {
+function scenarioRightPannelReducer(prevState: State, action: Actions) {
   switch (action.type) {
     case 'triggerClicked': {
       return {
@@ -50,15 +50,15 @@ function ruleRightPannelReducer(prevState: State, action: Actions) {
 const { Provider, useValue: useActions } = createSimpleContext<{
   onTriggerClick: (data: State['data']) => void;
   onClose: () => void;
-}>('RuleRightPannel');
+}>('ScenarioRightPannel');
 
-function RuleRightPannelProvider({
+function ScenarioRightPannelProvider({
   children,
   ...props
 }: Omit<Dialog.DialogProps, 'open' | 'onOpenChange' | 'modal'>) {
   const getTitle = useGetTitle();
   const [{ open, data }, dispatch] = useReducer(
-    ruleRightPannelReducer,
+    scenarioRightPannelReducer,
     initialState
   );
 
@@ -110,16 +110,16 @@ function RuleRightPannelProvider({
 }
 
 function useGetTitle() {
-  const { t } = useTranslation(ruleI18n);
+  const { t } = useTranslation(scenarioI18n);
 
   return useCallback(
     (data: State['data']) => {
       if (!data) return null;
       switch (data.type) {
         case 'formulaAggregation':
-          return t('rule:variable.title');
+          return t('scenarios:rules.variable.title');
         default:
-          assertNever('[RuleRightPannel] unknwon data case:', data.type);
+          assertNever('[ScenarioRightPannel] unknwon data case:', data.type);
       }
     },
     [t]
@@ -137,11 +137,11 @@ function Content({ data }: { data: State['data'] }) {
         />
       );
     default:
-      assertNever('[RuleRightPannel] unknwon data case:', data.type);
+      assertNever('[ScenarioRightPannel] unknwon data case:', data.type);
   }
 }
 
-function RuleRightPannelTrigger({
+function ScenarioRightPannelTrigger({
   children,
   data,
 }: {
@@ -161,7 +161,7 @@ function RuleRightPannelTrigger({
   );
 }
 
-export const RuleRightPannel = {
-  Provider: RuleRightPannelProvider,
-  Trigger: RuleRightPannelTrigger,
+export const ScenarioRightPannel = {
+  Provider: ScenarioRightPannelProvider,
+  Trigger: ScenarioRightPannelTrigger,
 };

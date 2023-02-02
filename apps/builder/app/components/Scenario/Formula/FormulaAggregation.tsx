@@ -5,26 +5,26 @@ import { assertNever } from '@marble-front/builder/utils/assert-never';
 import { Variable } from '@marble-front/ui/icons';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ruleI18n } from '../rule-i18n';
+import { scenarioI18n } from '../scenario-i18n';
 import { NotImplemented } from './NotImplemented';
 import { Formula } from './Formula';
-import { RuleRightPannel } from '../RuleRightPannel';
+import { ScenarioRightPannel } from '../ScenarioRightPannel';
 
 function useGetAggregation() {
-  const { t } = useTranslation(ruleI18n);
+  const { t } = useTranslation(scenarioI18n);
   return useCallback(
     (aggregation: AggregationEnum) => {
       switch (aggregation) {
         case AggregationEnum.COUNT:
-          return t('rule:aggregation.count');
+          return t('scenarios:rules.aggregation.count');
         case AggregationEnum.SUM:
-          return t('rule:aggregation.sum');
+          return t('scenarios:rules.aggregation.sum');
         case AggregationEnum.MEAN:
-          return t('rule:aggregation.mean');
+          return t('scenarios:rules.aggregation.mean');
         case AggregationEnum.MAX:
-          return t('rule:aggregation.max');
+          return t('scenarios:rules.aggregation.max');
         case AggregationEnum.MIN:
-          return t('rule:aggregation.min');
+          return t('scenarios:rules.aggregation.min');
         default:
           assertNever('unknwon Aggregation :', aggregation);
       }
@@ -38,7 +38,7 @@ function FormulaAggregationPannelContent({
 }: {
   formulaAggregation: PlainMessage<FormulaAggregationMessage>;
 }) {
-  const { t } = useTranslation(ruleI18n);
+  const { t } = useTranslation(scenarioI18n);
   const getAggregation = useGetAggregation();
 
   return (
@@ -63,10 +63,10 @@ function FormulaAggregationPannelContent({
           <div key={index}>
             <p className="text-grey-25 font-medium">
               {index === 0
-                ? t('rule:logical_operator.where')
-                : t('rule:logical_operator.and')}
+                ? t('scenarios:logical_operator.where')
+                : t('scenarios:logical_operator.and')}
             </p>
-            <div className="felx-row flex gap-1">
+            <div className="flex flex-row gap-1">
               <Formula formula={filter} />
             </div>
           </div>
@@ -82,14 +82,14 @@ function FormulaAggregationTrigger({
   formulaAggregation: PlainMessage<FormulaAggregationMessage>;
 }) {
   return (
-    <RuleRightPannel.Trigger
+    <ScenarioRightPannel.Trigger
       data={{ type: 'formulaAggregation', formulaAggregation }}
     >
       <span className="flex flex-row items-center font-medium text-purple-100">
         <Variable height="16px" width="16px" />
         <NotImplemented value="variable name" />
       </span>
-    </RuleRightPannel.Trigger>
+    </ScenarioRightPannel.Trigger>
   );
 }
 
