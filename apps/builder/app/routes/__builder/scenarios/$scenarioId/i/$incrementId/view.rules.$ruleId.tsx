@@ -1,10 +1,19 @@
-import { Page, Callout } from '@marble-front/builder/components';
+import {
+  Page,
+  Callout,
+  Rule,
+  ruleI18n,
+} from '@marble-front/builder/components';
 import { Link, useParams } from '@remix-run/react';
 import { fromUUID, toUUID } from '@marble-front/builder/utils/short-uuid';
 import { useCurrentScenarioIncrement } from '../$incrementId';
 import invariant from 'tiny-invariant';
 
-export default function RuleViewer() {
+export const handle = {
+  i18n: [...ruleI18n] as const,
+};
+
+export default function RuleView() {
   const {
     body: { rules },
   } = useCurrentScenarioIncrement();
@@ -18,14 +27,14 @@ export default function RuleViewer() {
   return (
     <Page.Container>
       <Page.Header>
-        <Link to="./..">
-          <Page.BackButton className="mr-4" />
+        <Link to="./.." className="mr-4">
+          <Page.BackButton />
         </Link>
         {rule.name ?? fromUUID(rule.id)}
       </Page.Header>
       <Page.Content>
         <Callout>{rule.description}</Callout>
-        <pre>{JSON.stringify(rule, undefined, 2)}</pre>
+        <Rule rule={rule} />
       </Page.Content>
     </Page.Container>
   );
