@@ -61,8 +61,12 @@ function useCurrentScenarioValue() {
     scenarioIncrements.map((increment) => [increment.id, increment])
   );
 
+  const isLive = (increment: (typeof scenarioIncrements)[number]) =>
+    currentScenario.liveVersion?.id === increment.id;
+
   return {
     ...currentScenario,
+    isLive,
     increments: {
       values: scenarioIncrements,
       get(id: string) {

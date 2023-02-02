@@ -18,7 +18,7 @@ export const handle = {
 
 export default function ScenarioHeaderLayout() {
   const { t } = useTranslation(handle.i18n);
-  const { name, increments, lastDeployment } = useCurrentScenario();
+  const { name, increments, isLive } = useCurrentScenario();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -56,8 +56,7 @@ export default function ScenarioHeaderLayout() {
                     <span className="text-grey-100 capitalize">
                       {increment.label ?? t('scenarios:draft')}
                     </span>
-                    {increment.versionId ===
-                      lastDeployment?.scenarioVersionId && (
+                    {isLive(increment) && (
                       <span className="capitalize text-purple-100">
                         {t('scenarios:live')}
                       </span>

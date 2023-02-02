@@ -53,6 +53,12 @@ function useScenariosValue() {
         get lastIncrementId() {
           return this.lastDeployment?.id ?? this.lastVersion?.id;
         },
+        // Live version <=> lastDeployment is defined with a scenarioVersionId
+        get liveVersion() {
+          return this.lastDeployment?.scenarioVersionId
+            ? this.lastDeployment
+            : undefined;
+        },
       };
     }),
     R.filter(hasRequiredKeys(['lastIncrementId']))
