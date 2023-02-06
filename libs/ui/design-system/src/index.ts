@@ -1,3 +1,4 @@
+export * from './lib/Modal/Modal';
 export * from './lib/Tooltip/Tooltip';
 export * from './lib/Checkbox/Checkbox';
 export * from './lib/Input/Input';
