@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useCurrentScenarioIncrement } from '../../../$incrementId';
+import { useCurrentScenarioIncrement } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId/i/$incrementId';
 
 export const handle = {
   i18n: ['scenarios'] as const,

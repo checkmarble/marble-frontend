@@ -20,16 +20,16 @@ import clsx from 'clsx';
 import { authenticator } from '../services/auth/auth.server';
 
 const LINKS: SidebarLinkProps[] = [
-  // { labelTKey: 'home', to: 'home', Icon: Home },
-  { labelTKey: 'scenarios', to: 'scenarios', Icon: Scenarios },
-  { labelTKey: 'lists', to: 'lists', Icon: Lists },
-  // { labelTKey: 'analytics', to: 'analytics', Icon: Analytics },
-  // { labelTKey: 'history', to: 'history', Icon: History },
+  // { labelTKey: 'navigation:home', to: 'home', Icon: Home },
+  { labelTKey: 'navigation:scenarios', to: 'scenarios', Icon: Scenarios },
+  { labelTKey: 'navigation:lists', to: 'lists', Icon: Lists },
+  // { labelTKey: 'navigation:analytics', to: 'analytics', Icon: Analytics },
+  // { labelTKey: 'navigation:history', to: 'history', Icon: History },
 ];
 
 const BOTTOM_LINKS: SidebarLinkProps[] = [
-  // { labelTKey: 'settings', to: 'settings', Icon: Settings },
-  // { labelTKey: 'help-center', to: 'help-center', Icon: Helpcenter },
+  // { labelTKey: 'navigation:settings', to: 'settings', Icon: Settings },
+  // { labelTKey: 'navigation:help-center', to: 'help-center', Icon: Helpcenter },
 ];
 
 export async function loader({ request }: LoaderArgs) {

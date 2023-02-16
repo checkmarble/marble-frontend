@@ -7,18 +7,16 @@ export const ModalContent = forwardRef<
   Dialog.DialogContentProps
 >(({ className, ...props }, ref) => {
   return (
-    <Dialog.Portal>
-      <Dialog.Overlay className="animate-overlayShow bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Content
-          ref={ref}
-          {...props}
-          className={clsx(
-            'border-grey-10 flex h-fit w-full max-w-lg flex-col overflow-hidden rounded-lg border drop-shadow-xl',
-            className
-          )}
-        />
-      </Dialog.Overlay>
-    </Dialog.Portal>
+    <Dialog.Overlay className="animate-overlayShow bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4">
+      <Dialog.Content
+        ref={ref}
+        {...props}
+        className={clsx(
+          'border-grey-10 flex h-fit w-full max-w-lg flex-col overflow-hidden rounded-lg border drop-shadow-xl',
+          className
+        )}
+      />
+    </Dialog.Overlay>
   );
 });
 
@@ -35,6 +33,7 @@ export const Modal = {
   Root: Dialog.Root,
   Trigger: Dialog.Trigger,
   Close: Dialog.Close,
+  Portal: Dialog.Portal,
   Description: Dialog.Description,
   Content: ModalContent,
   Title: ModalTitle,

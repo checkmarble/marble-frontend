@@ -2,5 +2,7 @@
   "auth.logout": "Log out",
   "auth.login": "Login",
   "search": "Search",
-  "errors.unknown": "An unknown error as occured"
+  "errors.unknown": "An unknown error as occured",
+  "cancel": "Cancel",
+  "close": "Close"
 }

@@ -94,10 +94,7 @@ function ScenarioRightPannelProvider({
             <Variable height="24px" width="24px" />
             <span className="w-full capitalize">{getTitle(data)}</span>
             <Dialog.Close asChild onClick={value.onClose}>
-              <button
-                className="IconButton animate-overlayShow"
-                aria-label="Close"
-              >
+              <button aria-label="Close">
                 <Cross height="24px" width="24px" />
               </button>
             </Dialog.Close>

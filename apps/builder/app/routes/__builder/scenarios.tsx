@@ -51,7 +51,12 @@ function useScenariosValue() {
           return getLast(this.versions);
         },
         get lastIncrementId() {
-          return this.lastDeployment?.id ?? this.lastVersion?.id;
+          return getLast([
+            ...this.deployments.filter(
+              ({ scenarioVersionId }) => scenarioVersionId !== undefined
+            ),
+            ...this.versions,
+          ])?.id;
         },
         // Live version <=> lastDeployment is defined with a scenarioVersionId
         get liveVersion() {
