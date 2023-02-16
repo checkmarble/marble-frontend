@@ -60,6 +60,13 @@
       "options": {
         "command": "docker build --tag 'marble-builder-app' -f ./apps/builder/Dockerfile --rm ."
       }
+    },
+    "generate-routes": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node -r esbuild-register scripts/generateRoutes.ts",
+        "cwd": "apps/builder"
+      }
     }
   }
 }
