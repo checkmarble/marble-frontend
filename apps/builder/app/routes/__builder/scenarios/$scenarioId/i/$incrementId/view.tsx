@@ -39,7 +39,12 @@ const LINKS: ScenariosLinkProps[] = [
 ];
 
 export default function ScenarioViewLayout() {
-  const { name, increments, id: scenarioId } = useCurrentScenario();
+  const {
+    name,
+    increments,
+    id: scenarioId,
+    liveVersion,
+  } = useCurrentScenario();
 
   const { incrementId } = useParams();
   invariant(incrementId, 'incrementId is required');
@@ -62,6 +67,7 @@ export default function ScenarioViewLayout() {
         </div>
         <DeploymentModal
           scenarioId={scenarioId}
+          liveVersionId={liveVersion?.scenarioVersionId}
           currentIncrement={currentIncrement}
         />
       </ScenarioPage.Header>

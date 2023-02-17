@@ -80,6 +80,6 @@ export function getRoute<Path extends Paths[number]>(
     .join('/');
 }
 
-export function getReferer(request: Request) {
-  return request.headers.get('referer');
+export function getReferer(request: Request, options: { fallback: string }) {
+  return request.headers.get('referer') ?? options.fallback;
 }

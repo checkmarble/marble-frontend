@@ -8,15 +8,13 @@ describe('Modal', () => {
     render(
       <Modal.Root>
         <Modal.Trigger>Trigger</Modal.Trigger>
-        <Modal.Portal>
-          <Modal.Content>
-            <Modal.Title>Modal title</Modal.Title>
-            <Modal.Description>
-              This is the the modal description
-            </Modal.Description>
-            <Modal.Close>Cancel</Modal.Close>
-          </Modal.Content>
-        </Modal.Portal>
+        <Modal.Content>
+          <Modal.Title>Modal title</Modal.Title>
+          <Modal.Description>
+            This is the the modal description
+          </Modal.Description>
+          <Modal.Close>Cancel</Modal.Close>
+        </Modal.Content>
       </Modal.Root>
     );
 

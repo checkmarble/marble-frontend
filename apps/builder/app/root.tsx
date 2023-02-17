@@ -12,6 +12,8 @@ import {
 } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { remixI18next } from './config/i18n/i18next.server';
+import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
+import { commitSession, getSession } from './services/auth/session.server';
 
 import tailwindStyles from './tailwind.css';
 
@@ -42,16 +44,25 @@ export const links: LinksFunction = () => [
 export const loader = async ({ request }: LoaderArgs) => {
   const locale = await remixI18next.getLocale(request);
 
-  return json({
-    /**
-     * Browser env vars :
-     * - define browser env vars here
-     * - access it using window.ENV.MY_ENV_VAR
-     * https://remix.run/docs/en/v1/guides/envvars#browser-environment-variables
-     */
-    ENV: {},
-    locale,
-  });
+  const session = await getSession(request.headers.get('cookie'));
+  const toastMessage = getToastMessage(session);
+
+  return json(
+    {
+      /**
+       * Browser env vars :
+       * - define browser env vars here
+       * - access it using window.ENV.MY_ENV_VAR
+       * https://remix.run/docs/en/v1/guides/envvars#browser-environment-variables
+       */
+      ENV: {},
+      locale,
+      toastMessage,
+    },
+    {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    }
+  );
 };
 
 export const handle = {
@@ -65,7 +76,7 @@ export const meta: MetaFunction = () => ({
 });
 
 export default function App() {
-  const { locale, ENV } = useLoaderData<typeof loader>();
+  const { locale, ENV, toastMessage } = useLoaderData<typeof loader>();
 
   const { i18n } = useTranslation(handle.i18n);
 
@@ -87,6 +98,7 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <MarbleToaster toastMessage={toastMessage} />
       </body>
     </html>
   );
