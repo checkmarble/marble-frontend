@@ -12,33 +12,18 @@
         "lintFilePatterns": ["apps/builder/**/*.{ts,tsx}"]
       }
     },
-    "generate-css": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "apps/builder",
-        "command": "npx tailwindcss -i ./styles/tailwind.css -o ./app/tailwind.css"
-      }
-    },
     "dev": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/builder",
-        "commands": [
-          "npx nx run builder:generate-css --watch",
-          "npx remix dev"
-        ],
-        "parallel": true
+        "command": "npx remix dev"
       }
     },
     "build": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/builder",
-        "commands": [
-          "npx nx run builder:generate-css --minify",
-          "npx remix build"
-        ],
-        "parallel": false
+        "command": "npx remix build"
       }
     },
     "start": {
@@ -58,7 +43,14 @@
     "build-docker": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "docker build --tag 'marble-builder-app' -f ./apps/builder/Dockerfile --rm ."
+        "command": "docker build --tag 'marble-builder-app' -f ./apps/builder/Dockerfile ."
+      }
+    },
+    "generate-routes": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node -r esbuild-register scripts/generateRoutes.ts",
+        "cwd": "apps/builder"
       }
     }
   }

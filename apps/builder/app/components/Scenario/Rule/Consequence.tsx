@@ -14,7 +14,7 @@ export function Consequence({ scoreIncrease }: ConsequenceProps) {
         t={t}
         i18nKey="scenarios:rules.consequence.score_increase"
         components={{
-          score: <span className="font-semibold" />,
+          Score: <span className="font-semibold" />,
         }}
         values={{
           score: Intl.NumberFormat(i18n.language, {

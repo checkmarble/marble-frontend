@@ -16,8 +16,11 @@ export default function Decision() {
 
   return (
     <Paper.Container>
-      <Paper.Title>{t('scenarios:decision.score_based.title')}</Paper.Title>
-      <Callout>{t('scenarios:decision.score_based.callout')}</Callout>
+      <div className="flex flex-col gap-2 lg:gap-4">
+        <Paper.Title>{t('scenarios:decision.score_based.title')}</Paper.Title>
+        <Callout>{t('scenarios:decision.score_based.callout')}</Callout>
+      </div>
+
       <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-y-2 gap-x-1 lg:gap-y-4 lg:gap-x-2">
         <Tag border="square" size="big" color="green">
           {t('scenarios:decision.score_based.approve')}

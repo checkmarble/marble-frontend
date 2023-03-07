@@ -1,5 +1,5 @@
 import { PassThrough } from 'stream';
-import type { EntryContext, HandleDataRequestFunction } from '@remix-run/node';
+import type { EntryContext } from '@remix-run/node';
 import { Response } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import isbot from 'isbot';
@@ -31,15 +31,6 @@ export default async function handleRequest(
     ? handleBotRequest(responseStatusCode, responseHeaders, App)
     : handleBrowserRequest(responseStatusCode, responseHeaders, App);
 }
-
-export const handleDataRequest: HandleDataRequestFunction = async (
-  response,
-  { request }
-) => {
-  await rollingCookie(sessionCookie, request, response.headers);
-
-  return response;
-};
 
 function handleBotRequest(
   responseStatusCode: number,

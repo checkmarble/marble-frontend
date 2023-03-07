@@ -2,5 +2,9 @@
   "auth.logout": "Log out",
   "auth.login": "Login",
   "search": "Search",
-  "errors.unknown": "An unknown error as occured"
+  "errors.unknown": "An unknown error as occured",
+  "errors.deployment.version_id_currently_deployed": "The current live version has the same configuration",
+  "cancel": "Cancel",
+  "close": "Close",
+  "clipboard.copy": "Copied in clipboard: {{value}}"
 }

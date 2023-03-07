@@ -31,6 +31,10 @@ function useCurrentScenarioValue() {
     ),
     R.map((deployment) => ({
       id: deployment.id,
+      type:
+        currentScenario.liveVersion?.id === deployment.id
+          ? ('live version' as const)
+          : ('past version' as const),
       creationDate: deployment.creationDate,
       versionId: deployment.scenarioVersionId,
       label: deployment.frontendSerialName,
@@ -46,6 +50,7 @@ function useCurrentScenarioValue() {
     R.filter(({ id }) => !publishedVersionIds.has(id)),
     R.map((draft) => ({
       id: draft.id,
+      type: 'draft' as const,
       creationDate: draft.creationDate,
       versionId: draft.id,
       label: undefined,
@@ -60,13 +65,8 @@ function useCurrentScenarioValue() {
   const map = new Map(
     scenarioIncrements.map((increment) => [increment.id, increment])
   );
-
-  const isLive = (increment: (typeof scenarioIncrements)[number]) =>
-    currentScenario.liveVersion?.id === increment.id;
-
   return {
     ...currentScenario,
-    isLive,
     increments: {
       values: scenarioIncrements,
       get(id: string) {
@@ -91,3 +91,5 @@ export default function CurrentScenarioContextProvider() {
 }
 
 export { useCurrentScenario };
+export type Increments = ReturnType<typeof useCurrentScenario>['increments'];
+export type Increment = Increments['values'][number];

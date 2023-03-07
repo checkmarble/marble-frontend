@@ -1,7 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { mockResizeObserver } from 'jsdom-testing-mocks';
 
 import { Select } from './Select';
+
+mockResizeObserver();
 
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple'];
 
@@ -23,9 +26,11 @@ describe('Select', () => {
       </Select.Default>
     );
 
-    expect(screen.getByText('Select a value...')).toBeInTheDocument();
+    const combobox = screen.getByRole('combobox');
 
-    await userEvent.click(screen.getByRole('combobox'));
+    expect(within(combobox).getByText('Select a value...')).toBeInTheDocument();
+
+    await userEvent.click(combobox);
 
     fruits.forEach((fruit) =>
       expect(screen.getByText(fruit)).toBeInTheDocument()

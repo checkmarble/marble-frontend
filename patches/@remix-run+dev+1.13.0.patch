@@ -1,8 +1,8 @@
 diff --git a/node_modules/@remix-run/dev/dist/devServer/liveReload.js b/node_modules/@remix-run/dev/dist/devServer/liveReload.js
-index 2d86138..fdaf21a 100644
+index 6a3ea5e..eac7cf3 100644
 --- a/node_modules/@remix-run/dev/dist/devServer/liveReload.js
 +++ b/node_modules/@remix-run/dev/dist/devServer/liveReload.js
-@@ -37,6 +37,14 @@ var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
+@@ -52,6 +52,13 @@ var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
  var prettyMs__default = /*#__PURE__*/_interopDefaultLegacy(prettyMs);
  var WebSocket__default = /*#__PURE__*/_interopDefaultLegacy(WebSocket);
  
@@ -13,11 +13,10 @@ index 2d86138..fdaf21a 100644
 +    }
 +  }
 +}
-+
  const relativePath = file => path__default["default"].relative(process.cwd(), file);
- async function liveReload(config, options = {}) {
-   let wss = new WebSocket__default["default"].Server({
-@@ -66,6 +74,7 @@ async function liveReload(config, options = {}) {
+ let clean = config => {
+   try {
+@@ -90,6 +97,7 @@ async function liveReload(config, options = {}) {
        log("Rebuilding...");
      },
      onRebuildFinish(durationMs) {
@@ -26,7 +25,7 @@ index 2d86138..fdaf21a 100644
        broadcast({
          type: "RELOAD"
 diff --git a/node_modules/@remix-run/dev/dist/devServer/serve.js b/node_modules/@remix-run/dev/dist/devServer/serve.js
-index 1216834..1cd4fb4 100644
+index 5ddac26..35381e3 100644
 --- a/node_modules/@remix-run/dev/dist/devServer/serve.js
 +++ b/node_modules/@remix-run/dev/dist/devServer/serve.js
 @@ -22,13 +22,6 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
