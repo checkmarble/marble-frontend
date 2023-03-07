@@ -64,6 +64,9 @@ function useScenariosValue() {
             ? this.lastDeployment
             : undefined;
         },
+        get isLive() {
+          return this.liveVersion !== undefined;
+        },
       };
     }),
     R.filter(hasRequiredKeys(['lastIncrementId']))

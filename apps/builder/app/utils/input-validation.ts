@@ -10,7 +10,10 @@ import type {
   ZodTypeAny,
 } from 'zod';
 
-const defaultQsConfig: IParseOptions = { allowDots: true, arrayLimit: 200 };
+const defaultQsConfig: IParseOptions = {
+  allowDots: true,
+  arrayLimit: 200,
+};
 
 export function inputFromSearch(
   queryString: URLSearchParams,

@@ -261,7 +261,10 @@ export function DeploymentModal({
         <Button
           {...buttonConfig.props}
           onClick={(e) => {
-            if (liveVersionId === currentIncrement.versionId) {
+            if (
+              deploymentType !== 'deactivate' &&
+              liveVersionId === currentIncrement.versionId
+            ) {
               e.preventDefault();
               toast.error(
                 t('common:errors.deployment.version_id_currently_deployed')
@@ -374,3 +377,12 @@ function getButtonConfig(type: DeploymentType): {
       };
   }
 }
+
+// Pour le déploiement, honnêtement si tu n'as pas fait beaucoup d'infra ça va te prendre pas mal de temps.
+
+// En supposant que c'est effectivement le cas, je te conseille de faire les étapes suivantes pour t'onboarder:
+// - lancer une EC2 + une PostgreSQL dans AWS avec la console (= l'interface graphique) en suivant les tutos
+// - refaire la même chose cette fois ci en code avec un SDK AWS de ton choix (Node ou Python ou n'importe)
+// -  refaire la même chose cette fois-ci en Terraform
+
+// Une fois que tu as fait tout ça, si tu veux on prend 30mins et tu m'expliqueras exactement quels buts tu souhaites atteindre sur le déploiement et je te donnerai des conseils pertinents + t'expliquerai quelle partie du code terraform tu peux réutiliser pour ça.
