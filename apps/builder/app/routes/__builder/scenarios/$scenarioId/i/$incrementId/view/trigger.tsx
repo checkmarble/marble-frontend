@@ -6,8 +6,8 @@ import { triggerFixture } from '@marble-front/builder/fixtures/trigger';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useCurrentScenarioIncrement } from '../../$incrementId';
 import { toast } from 'react-hot-toast';
+import { useCurrentScenario } from '../../../../$scenarioId';
 
 export const handle = {
   i18n: ['scenarios', 'common'] as const,
@@ -16,7 +16,7 @@ export const handle = {
 export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
 
-  const { id } = useCurrentScenarioIncrement();
+  const { id } = useCurrentScenario();
 
   const trigger = triggerFixture.complex;
 
@@ -50,14 +50,14 @@ export default function Trigger() {
                 <code
                   className="border-grey-10 cursor-pointer select-none rounded-sm border px-1"
                   onClick={() => {
-                    navigator.clipboard.writeText(id).then(() =>
+                    navigator.clipboard.writeText(id).then(() => {
                       toast.success(
                         t('common:clipboard.copy', {
                           ns: 'common',
                           replace: { value: id },
                         })
-                      )
-                    );
+                      );
+                    });
                   }}
                 />
               ),
