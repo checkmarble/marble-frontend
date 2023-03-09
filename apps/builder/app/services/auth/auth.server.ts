@@ -21,7 +21,9 @@ export class AuthError extends Error {
 
 // Create an instance of the authenticator, pass a generic with what
 // strategies will return and will store in the session
-export const authenticator = new Authenticator<UserResponse>(sessionStorage);
+export const authenticator = new Authenticator<
+  Pick<UserResponse, 'id' | 'email'>
+>(sessionStorage);
 
 authenticator.use(
   new GoogleStrategy(
@@ -42,7 +44,19 @@ authenticator.use(
           // userEmail: profile.emails[0].value,
           userEmail: 'alice.vance@fintech.com',
         });
-        return { ...user, profilePictureUrl: profile.photos[0].value };
+
+        // Save profile picture from SSO if no existing profile picture
+        if (!user.profilePictureUrl && profile.photos[0].value) {
+          await usersApi.putUsersUserId({
+            userId: user.id,
+            userPreferences: {
+              ...user,
+              profilePictureUrl: profile.photos[0].value,
+            },
+          });
+        }
+
+        return { id: user.id, email: user.email };
       } catch (error) {
         console.log(error);
         throw error;

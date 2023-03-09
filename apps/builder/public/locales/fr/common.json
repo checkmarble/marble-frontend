@@ -1,3 +1,10 @@
 {
-  "auth.logout": "Se déconnecter"
+  "auth.logout": "Se déconnecter",
+  "auth.login": "Connexion",
+  "cancel": "Annuler",
+  "clipboard.copy": "Copié dans le presse-papier : {{value}}",
+  "close": "Fermer",
+  "errors.deployment.version_id_currently_deployed": "La version live actuelle a la même configuration",
+  "errors.unknown": "Une erreur inconnue s'est produite",
+  "search": "Recherche"
 }

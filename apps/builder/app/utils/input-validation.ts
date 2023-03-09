@@ -116,3 +116,20 @@ export async function parseFormSafe<
   }
   return result;
 }
+
+/**
+ * Parse and validate FormData from a Request. Throws if validation fails.
+ */
+export async function parseForm<
+  T extends ZodRawShape,
+  UnknownKeys extends UnknownKeysParam = 'strip',
+  Catchall extends ZodTypeAny = ZodTypeAny,
+  Output = objectOutputType<T, Catchall>,
+  Input = objectInputType<T, Catchall>
+>(
+  request: Request,
+  schema: ZodObject<T, UnknownKeys, Catchall, Output, Input>
+) {
+  const formData = await inputFromForm(request);
+  return schema.parseAsync(formData);
+}

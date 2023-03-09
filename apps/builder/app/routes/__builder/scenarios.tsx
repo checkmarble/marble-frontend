@@ -19,10 +19,10 @@ function getLast<T extends { creationDate: string }>(elements: T[]) {
 }
 
 export async function loader({ request }: LoaderArgs) {
-  const user = await authenticator.isAuthenticated(request, {
+  const { id: userId } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  const scenarios = await scenariosApi.getScenarios({ userId: user.id });
+  const scenarios = await scenariosApi.getScenarios({ userId });
 
   return json(scenarios);
 }

@@ -63,7 +63,7 @@ const formSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  const user = await authenticator.isAuthenticated(request, {
+  const { id: userId } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -88,7 +88,7 @@ export async function action({ request }: ActionArgs) {
     const result = await scenariosApi.postScenariosScenarioIdDeployments({
       scenarioId,
       scenarioDeploymentToCreate: {
-        authorId: user.id,
+        authorId: userId,
         scenarioVersionToActivateId:
           deploymentType === 'deactivate'
             ? undefined

@@ -1,0 +1,8 @@
+{
+  "description": "Description",
+  "name": "Nom",
+  "other_scenarios_one": "{{count}} autre",
+  "other_scenarios_other": "{{count}} autres",
+  "show_less": "Montrer moins",
+  "used_in_scenarios": "Utilisé dans les scénarios suivants :"
+}

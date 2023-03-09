@@ -18,6 +18,8 @@ import {
 } from '@marble-front/builder/components';
 import clsx from 'clsx';
 import { authenticator } from '../services/auth/auth.server';
+import { usersApi } from '../services/marble-api';
+import { LanguagePicker } from './ressources/user/language';
 
 const LINKS: SidebarLinkProps[] = [
   // { labelTKey: 'navigation:home', to: 'home', Icon: Home },
@@ -33,10 +35,13 @@ const BOTTOM_LINKS: SidebarLinkProps[] = [
 ];
 
 export async function loader({ request }: LoaderArgs) {
-  const user = await authenticator.isAuthenticated(request, {
+  const { email } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
+  const user = await usersApi.getUsersByUserEmail({
+    userEmail: email,
+  });
   return json({ user });
 }
 
@@ -88,7 +93,8 @@ export default function Builder() {
                     src={user.profilePictureUrl}
                   />
                   <p className="text-m mb-1 font-semibold capitalize">{`${user.firstName} ${user.lastName}`}</p>
-                  <p className="text-s font-normal">{user.email}</p>
+                  <p className="text-s mb-2 font-normal">{user.email}</p>
+                  <LanguagePicker />
                 </div>
 
                 <div className="mt-6 flex flex-col items-center">

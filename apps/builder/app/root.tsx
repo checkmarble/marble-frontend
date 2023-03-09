@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Tooltip } from '@marble-front/ui/design-system';
 import type { MetaFunction, LinksFunction, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
@@ -79,6 +80,10 @@ export default function App() {
   const { locale, ENV, toastMessage } = useLoaderData<typeof loader>();
 
   const { i18n } = useTranslation(handle.i18n);
+
+  useEffect(() => {
+    i18n.changeLanguage(locale);
+  }, [locale, i18n]);
 
   return (
     <html lang={locale} dir={i18n.dir()}>

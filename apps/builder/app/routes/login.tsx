@@ -8,6 +8,7 @@ import { GoogleLogo, LogoStandard } from '@marble-front/ui/icons';
 import { useTranslation } from 'react-i18next';
 import { getSession } from '@marble-front/builder/services/auth/session.server';
 import type { TFuncKey } from 'i18next';
+import { LanguagePicker } from './ressources/user/language';
 
 export async function loader({ request }: LoaderArgs) {
   await authenticator.isAuthenticated(request, {
@@ -52,7 +53,7 @@ export default function Login() {
             preserveAspectRatio="xMinYMid meet"
           />
         </div>
-        <div className="bg-grey-00 flex w-full max-w-xs flex-shrink-0 flex-col items-center rounded-2xl p-10 shadow-md">
+        <div className="bg-grey-00 min-w-xs mb-10 flex flex-shrink-0 flex-col items-center rounded-2xl p-10 text-center shadow-md">
           <h1 className="text-l mb-12 font-semibold">{t('login:title')}</h1>
 
           <Form action={`/auth/google`} method="post" className="mb-1 w-full">
@@ -60,7 +61,7 @@ export default function Login() {
               <div className="bg-grey-00 flex h-full w-10 items-center justify-center rounded-l-[3px]">
                 <GoogleLogo height="24px" width="24px" />
               </div>
-              <span className="text-s text-grey-00 w-full text-center align-middle font-medium">
+              <span className="text-s text-grey-00 w-full whitespace-nowrap text-center align-middle font-medium">
                 {t('login:sign_in.google')}
               </span>
             </button>
@@ -76,6 +77,7 @@ export default function Login() {
             {t('login:help.no_account')} {t('login:help.contact_us')}
           </p>
         </div>
+        <LanguagePicker />
       </div>
     </div>
   );
