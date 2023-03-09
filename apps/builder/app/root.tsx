@@ -86,7 +86,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="h-screen w-full overflow-hidden antialiased">
+      <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
         <Tooltip.Provider>
           <Outlet />
         </Tooltip.Provider>

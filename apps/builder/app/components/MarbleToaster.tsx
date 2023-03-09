@@ -26,15 +26,13 @@ export async function setToastMessage(
 export function getToastMessage(session: Session) {
   try {
     return toastMessageScema.parse(session.get(toastMessageKey));
-  } catch (err) {
-    return null;
-  }
+  } catch (err) {}
 }
 
 export function MarbleToaster({
   toastMessage,
 }: {
-  toastMessage: ToastMessage;
+  toastMessage?: ToastMessage;
 }) {
   const { t } = useTranslation(['common']);
   useEffect(() => {
