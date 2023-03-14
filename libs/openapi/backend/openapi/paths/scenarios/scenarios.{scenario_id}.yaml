@@ -1,0 +1,22 @@
+parameters:
+  - $ref: ../../components/parameters/scenario_id.yaml
+get:
+  tags:
+    - Scenarios
+  summary: Get scenario by id
+  operationId: getScenario
+  security:
+    - Oauth2ClientCredentials: []
+  responses:
+    '200':
+      description: Successful Response
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/Scenario.yaml
+    '401':
+      $ref: ../../components/responses/401.yaml
+    '403':
+      $ref: ../../components/responses/403.yaml
+    '404':
+      $ref: ../../components/responses/404.yaml

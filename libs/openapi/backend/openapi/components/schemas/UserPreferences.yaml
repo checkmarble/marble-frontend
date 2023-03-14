@@ -1,0 +1,9 @@
+type: object
+properties:
+  preferred_language:
+    type: string
+    example: fr
+  profile_picture_url:
+    type: string
+    format: uri
+    example: https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/412.jpg

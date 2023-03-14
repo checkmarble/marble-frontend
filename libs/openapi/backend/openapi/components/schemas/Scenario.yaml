@@ -1,0 +1,12 @@
+type: object
+allOf:
+  - $ref: ScenarioInfo.yaml
+properties:
+  deployments:
+    type: array
+    items:
+      $ref: ScenarioDeployment.yaml
+  versions:
+    type: array
+    items:
+      $ref: ScenarioVersion.yaml

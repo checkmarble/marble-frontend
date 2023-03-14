@@ -1,0 +1,30 @@
+parameters:
+  - $ref: ../../components/parameters/list_id.yaml
+post:
+  tags:
+    - Lists
+  summary: Create a new list version
+  description: (TBC) If possible, duplicate the buisness logic of scenario versionning for lists
+  operationId: postListVersion
+  security:
+    - Oauth2ClientCredentials: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/ListVersion.yaml
+  responses:
+    '201':
+      description: Successful creation of a new list version
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/ListVersion.yaml
+    '401':
+      $ref: ../../components/responses/401.yaml
+    '403':
+      $ref: ../../components/responses/403.yaml
+    '404':
+      $ref: ../../components/responses/404.yaml
+    '422':
+      $ref: ../../components/responses/422.yaml

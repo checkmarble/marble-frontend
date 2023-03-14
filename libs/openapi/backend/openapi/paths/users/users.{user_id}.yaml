@@ -1,0 +1,59 @@
+get:
+  tags:
+    - Users
+  summary: Get User by id
+  operationId: getUser
+  security:
+    - Oauth2ClientCredentials: []
+  parameters:
+    - required: true
+      name: user_id
+      in: path
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successful Response
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/User.yaml
+    '401':
+      $ref: ../../components/responses/401.yaml
+    '403':
+      $ref: ../../components/responses/403.yaml
+    '404':
+      $ref: ../../components/responses/404.yaml
+put:
+  tags:
+    - Users
+  summary: Update User Preferences
+  description: (TBC) To delete/reset a user preference, set a preference value to `undefined` / `""` / `null`
+  operationId: putUserPreferences
+  security:
+    - Oauth2ClientCredentials: []
+  parameters:
+    - required: true
+      name: user_id
+      in: path
+      schema:
+        type: string
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/UserPreferences.yaml
+    required: true
+  responses:
+    '200':
+      description: Successful Response
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/User.yaml
+    '401':
+      $ref: ../../components/responses/401.yaml
+    '403':
+      $ref: ../../components/responses/403.yaml
+    '422':
+      $ref: ../../components/responses/422.yaml

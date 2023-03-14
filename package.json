@@ -22,6 +22,7 @@
     "@nrwl/web": "15.5.1",
     "@nrwl/workspace": "15.5.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
+    "@redocly/cli": "^1.0.0-beta.123",
     "@remix-run/dev": "^1.13.0",
     "@remix-run/eslint-config": "^1.13.0",
     "@storybook/addon-essentials": "6.5.16",

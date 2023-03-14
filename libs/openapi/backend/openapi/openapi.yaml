@@ -1,0 +1,47 @@
+openapi: 3.1.0
+info:
+  version: 0.0.1
+  title: Marble backend API
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  x-logo:
+    url: './logo.svg'
+  description:
+    $ref: ./info-description.md
+tags:
+  - name: Authorization
+    description: Regroup the authorization endpoints to access the API
+  - name: Users
+    description: Operations about users.
+  - name: Scenarios
+    description: Operations about scenarios.
+servers:
+  - url: 'http://127.0.0.1:8001'
+paths:
+  '/token-bff':
+    $ref: paths/authorization/token-bff.yaml
+  '/users/{user_id}':
+    $ref: paths/users/users.{user_id}.yaml
+  '/users/by-email/{user_email}':
+    $ref: paths/users/users.by-email.{user_email}.yaml
+  '/scenarios':
+    $ref: paths/scenarios/scenarios.yaml
+  '/scenarios/{scenario_id}':
+    $ref: paths/scenarios/scenarios.{scenario_id}.yaml
+  '/scenarios/{scenario_id}/versions':
+    $ref: paths/scenarios/scenarios.{scenario_id}.versions.yaml
+  '/scenarios/{scenario_id}/deployments':
+    $ref: paths/scenarios/scenarios.{scenario_id}.deployments.yaml
+  '/lists':
+    $ref: paths/lists/lists.yaml
+  '/lists/{list_id}':
+    $ref: paths/lists/lists.{list_id}.yaml
+  '/lists/{list_id}/versions':
+    $ref: paths/lists/lists.{list_id}.versions.yaml
+  '/lists/{list_id}/deployments':
+    $ref: paths/lists/lists.{list_id}.deployments.yaml
+components:
+  securitySchemes:
+    Oauth2ClientCredentials:
+      $ref: components/securitySchemes/Oauth2ClientCredentials.yaml

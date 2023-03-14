@@ -1,0 +1,31 @@
+parameters:
+  - $ref: ../../components/parameters/list_id.yaml
+post:
+  tags:
+    - Lists
+  summary: Create a new list deployment
+  description: (TBC) If possible, duplicate the buisness logic of scenrio versionning for lists
+  operationId: postListDeployment
+  security:
+    - Oauth2ClientCredentials: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/ListDeployment.yaml
+  responses:
+    '201':
+      description: Successful creation of a new list deployment
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/ListDeployment.yaml
+    '401':
+      $ref: ../../components/responses/401.yaml
+    '403':
+      $ref: ../../components/responses/403.yaml
+    '404':
+      $ref: ../../components/responses/404.yaml
+    '422':
+      description: One validation rule
+      $ref: ../../components/responses/422.yaml

@@ -1,0 +1,42 @@
+post:
+  tags:
+    - Authorization
+  summary: Get Bff Token
+  operationId: postTokenBff
+  security: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            grant_type:
+              type: string
+            scope:
+              type: string
+              default: ''
+            client_id:
+              type: string
+              example: a71b1d73-eef9-4f53-a6e4-a20946751bc1
+            client_secret:
+              type: string
+              example: CLIENT_SECRET
+  responses:
+    '200':
+      description: Successful Response
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - access_token
+              - token_type
+            properties:
+              access_token:
+                type: string
+                example: ACCESS_TOKEN
+              token_type:
+                type: string
+                example: Bearer
+    '401':
+      $ref: ../../components/responses/401.yaml

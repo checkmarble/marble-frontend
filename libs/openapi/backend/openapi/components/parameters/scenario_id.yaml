@@ -1,0 +1,5 @@
+required: true
+name: scenario_id
+in: path
+schema:
+  type: string

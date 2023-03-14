@@ -1,0 +1,6 @@
+description: Unauthorized
+content:
+  application/json:
+    schema:
+      type: string
+      example: Unauthorized

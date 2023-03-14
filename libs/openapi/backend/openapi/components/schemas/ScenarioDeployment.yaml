@@ -1,0 +1,24 @@
+type: object
+required:
+  - id
+  - creation_date
+  - author_id
+properties:
+  id:
+    type: string
+    format: uuid
+    readOnly: true
+  creation_date:
+    type: string
+    format: date-time
+    readOnly: true
+  author_id:
+    type: string
+    format: uuid
+  scenario_version_id:
+    type: string
+    format: uuid
+  frontend_serial_name:
+    type: string
+    format: uuid
+    readOnly: true

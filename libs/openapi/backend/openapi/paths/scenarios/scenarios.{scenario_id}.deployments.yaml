@@ -1,0 +1,30 @@
+parameters:
+  - $ref: ../../components/parameters/scenario_id.yaml
+post:
+  tags:
+    - Scenarios
+  summary: Create a new scenario deployment
+  description: (TBC) We have a huge painpoint on naming convention here (deployment)
+  operationId: postScenarioDeployment
+  security:
+    - Oauth2ClientCredentials: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/ScenarioDeployment.yaml
+  responses:
+    '201':
+      description: Successful creation of a new scenario deployment
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/ScenarioDeployment.yaml
+    '401':
+      $ref: ../../components/responses/401.yaml
+    '403':
+      $ref: ../../components/responses/403.yaml
+    '404':
+      $ref: ../../components/responses/404.yaml
+    '422':
+      $ref: ../../components/responses/422.yaml

@@ -1,0 +1,53 @@
+get:
+  tags:
+    - Lists
+  summary: Get all lists for a user
+  description: (TBC) At some time, we may handle pagination.
+  operationId: getLists
+  security:
+    - Oauth2ClientCredentials: []
+  parameters:
+    - required: true
+      name: user_id
+      in: query
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successful Response
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../../components/schemas/ListInfo.yaml
+    '401':
+      $ref: ../../components/responses/401.yaml
+    '403':
+      $ref: ../../components/responses/403.yaml
+post:
+  tags:
+    - Lists
+  summary: Create a new list
+  operationId: postList
+  security:
+    - Oauth2ClientCredentials: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/ListInfo.yaml
+    required: true
+  responses:
+    '201':
+      description: Successful creation of a new list
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/ListInfo.yaml
+    '401':
+      $ref: ../../components/responses/401.yaml
+    '403':
+      $ref: ../../components/responses/403.yaml
+    '422':
+      $ref: ../../components/responses/422.yaml

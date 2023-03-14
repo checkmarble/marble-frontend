@@ -1,0 +1,27 @@
+type: object
+required:
+  - id
+  - creation_date
+  - author_id
+  - name
+  - description
+  - body_encoded_with_protobuf
+properties:
+  id:
+    type: string
+    format: uuid
+    readOnly: true
+  creation_date:
+    type: string
+    format: date-time
+    readOnly: true
+  author_id:
+    type: string
+    format: uuid
+  name:
+    type: string
+  description:
+    type: string
+  body_encoded_with_protobuf:
+    description: Protobuf here, we may need to remove this in favor of a structured DTO
+    type: string
