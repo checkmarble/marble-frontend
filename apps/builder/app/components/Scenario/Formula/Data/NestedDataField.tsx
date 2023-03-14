@@ -1,5 +1,5 @@
-import type { PlainMessage } from '@bufbuild/protobuf';
-import type { NestedDataField as NestedDataFieldMessage } from '@marble-front/api/marble';
+import { type PlainMessage } from '@bufbuild/protobuf';
+import { type NestedDataField as NestedDataFieldMessage } from '@marble-front/api/marble';
 import { Tooltip } from '@marble-front/ui/design-system';
 
 export function NestedDataField({

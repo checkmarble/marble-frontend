@@ -1,5 +1,5 @@
-import type { Story, Meta } from '@storybook/react';
-import { Select, SelectProps } from './Select';
+import { Story, type Meta } from '@storybook/react';
+import { Select, type SelectProps } from './Select';
 import { tagBorder } from './Select.constants';
 
 type StoryProps = Pick<SelectProps, 'disabled' | 'placeholder' | 'border'>;

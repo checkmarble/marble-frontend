@@ -1,5 +1,4 @@
-import type { LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, type LoaderArgs } from '@remix-run/node';
 import * as Popover from '@radix-ui/react-popover';
 import {
   Arrow2Down,

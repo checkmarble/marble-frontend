@@ -3,7 +3,7 @@ import {
   Root,
   Fallback,
   Image,
-  AvatarProps as RootAvatarProps,
+  type AvatarProps as RootAvatarProps,
 } from '@radix-ui/react-avatar';
 
 export type AvatarProps = RootAvatarProps & {

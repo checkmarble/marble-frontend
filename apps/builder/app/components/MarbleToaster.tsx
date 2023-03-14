@@ -1,5 +1,5 @@
 import { toast, Toaster } from 'react-hot-toast';
-import type { Session } from '@remix-run/node';
+import { type Session } from '@remix-run/node';
 import { useEffect } from 'react';
 import * as z from 'zod';
 import { useTranslation } from 'react-i18next';

@@ -12,11 +12,11 @@ import {
   Scenarios,
   navigationI18n,
 } from '@marble-front/builder/components';
-import type {
-  Increment,
-  Increments,
+import {
+  type Increment,
+  type Increments,
+  useCurrentScenario,
 } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
-import { useCurrentScenario } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
 import { toUUID, fromUUID } from '@marble-front/builder/utils/short-uuid';
 import invariant from 'tiny-invariant';
 import { Select } from '@marble-front/ui/design-system';

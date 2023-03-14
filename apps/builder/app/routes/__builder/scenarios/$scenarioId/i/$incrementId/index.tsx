@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/node';
+import { type LoaderArgs } from '@remix-run/node';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 
 export async function loader({ request }: LoaderArgs) {

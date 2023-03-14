@@ -1,5 +1,5 @@
-import type { PlainMessage } from '@bufbuild/protobuf';
-import type { Data as DataMessage } from '@marble-front/api/marble';
+import { type PlainMessage } from '@bufbuild/protobuf';
+import { type Data as DataMessage } from '@marble-front/api/marble';
 import { assertNever } from '@marble-front/builder/utils/assert-never';
 import { NestedDataField } from './NestedDataField';
 import { Scalar } from './Scalar';

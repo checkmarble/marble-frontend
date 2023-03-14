@@ -1,5 +1,5 @@
-import type { PlainMessage } from '@bufbuild/protobuf';
-import type { Formula as FormulaMessage } from '@marble-front/api/marble';
+import { type PlainMessage } from '@bufbuild/protobuf';
+import { type Formula as FormulaMessage } from '@marble-front/api/marble';
 import { assertNever } from '@marble-front/builder/utils/assert-never';
 import { Data } from './Data';
 import { Condition } from './Condition';

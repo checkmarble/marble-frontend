@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { RemixI18Next } from 'remix-i18next';
 import { i18nConfig } from './i18n-config';
 import { sessionStorage } from '@marble-front/builder/services/auth/session.server';
-import type { EntryContext, Session } from '@remix-run/node';
+import { type EntryContext, type Session } from '@remix-run/node';
 
 export const remixI18next = new RemixI18Next({
   detection: {

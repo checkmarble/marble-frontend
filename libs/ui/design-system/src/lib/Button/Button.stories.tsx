@@ -1,5 +1,5 @@
 import { Plus } from '@marble-front/ui/icons';
-import type { Story, Meta } from '@storybook/react';
+import { Story, type Meta } from '@storybook/react';
 import { Button, type ButtonProps, variantColors } from './Button';
 
 type StoryProps = Omit<ButtonProps, 'ref'>;

@@ -1,6 +1,5 @@
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
-import type { ActionArgs } from '@remix-run/node';
-import { redirect } from '@remix-run/node';
+import { redirect, type ActionArgs } from '@remix-run/node';
 
 export async function loader() {
   return redirect('/login');

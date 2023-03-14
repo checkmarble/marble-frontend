@@ -2,7 +2,7 @@ import { Authenticator } from 'remix-auth';
 import { GoogleStrategy } from './strategies';
 import { sessionStorage } from './session.server';
 import { getServerEnv } from '@marble-front/builder/utils/environment';
-import type { UserResponse } from '@marble-front/api/marble';
+import { type UserResponse } from '@marble-front/api/marble';
 import { usersApi } from '../marble-api';
 
 const authErrors = ['NoAccount', 'Unknown'] as const;

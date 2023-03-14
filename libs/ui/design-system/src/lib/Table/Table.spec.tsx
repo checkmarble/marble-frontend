@@ -1,8 +1,11 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { faker } from '@faker-js/faker';
-import type { ColumnDef } from '@tanstack/react-table';
-import { getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import {
+  type ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+} from '@tanstack/react-table';
 
 import { Table, useVirtualTable } from './Table';
 import { useMemo } from 'react';

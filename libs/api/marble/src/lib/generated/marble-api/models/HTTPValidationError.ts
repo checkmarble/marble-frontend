@@ -13,7 +13,7 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ValidationError } from './ValidationError';
+import { ValidationError } from './ValidationError';
 import {
     ValidationErrorFromJSON,
     ValidationErrorFromJSONTyped,

@@ -1,9 +1,9 @@
-import type { StrategyVerifyCallback } from 'remix-auth';
-import type {
-  OAuth2Profile,
-  OAuth2StrategyVerifyParams,
+import { type StrategyVerifyCallback } from 'remix-auth';
+import {
+  OAuth2Strategy,
+  type OAuth2Profile,
+  type OAuth2StrategyVerifyParams,
 } from 'remix-auth-oauth2';
-import { OAuth2Strategy } from 'remix-auth-oauth2';
 
 export type GoogleScope = 'openid' | 'email' | 'profile';
 export const GoogleScopeSeperator = ' ';

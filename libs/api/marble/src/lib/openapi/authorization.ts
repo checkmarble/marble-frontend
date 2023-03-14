@@ -1,5 +1,5 @@
 import { Mutex } from 'async-mutex';
-import { Middleware } from '../generated/marble-api';
+import { type Middleware } from '../generated/marble-api';
 
 export class TokenService<Token> {
   private _token: Promise<Token>;

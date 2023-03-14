@@ -1,5 +1,5 @@
-import type { PlainMessage } from '@bufbuild/protobuf';
-import type { Scalar as ScalarMessage } from '@marble-front/api/marble';
+import { type PlainMessage } from '@bufbuild/protobuf';
+import { type Scalar as ScalarMessage } from '@marble-front/api/marble';
 import { assertNever } from '@marble-front/builder/utils/assert-never';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';

@@ -1,5 +1,4 @@
-import type { LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, type LoaderArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { scenariosApi } from '@marble-front/builder/services/marble-api/scenarios.server';

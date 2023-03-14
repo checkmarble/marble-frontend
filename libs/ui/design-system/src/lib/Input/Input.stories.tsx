@@ -1,5 +1,5 @@
 import { Search, Calendar, Help, Scenarios } from '@marble-front/ui/icons';
-import type { Story, Meta } from '@storybook/react';
+import { Story, type Meta } from '@storybook/react';
 import { Input, type InputProps } from './Input';
 
 const adornmentOptions = [
@@ -9,7 +9,7 @@ const adornmentOptions = [
   'help',
   'scenarios',
 ] as const;
-type AdornmentOption = typeof adornmentOptions[number];
+type AdornmentOption = (typeof adornmentOptions)[number];
 const adornments: Record<AdornmentOption, JSX.Element | undefined> = {
   none: undefined,
   search: <Search />,

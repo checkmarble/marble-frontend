@@ -2,9 +2,9 @@ import { useFetcher } from '@remix-run/react';
 import { Play, Pushtolive, Stop, Tick } from '@marble-front/ui/icons';
 import { navigationI18n } from '@marble-front/builder/components';
 import { fromUUID } from '@marble-front/builder/utils/short-uuid';
-import type { ButtonProps } from '@marble-front/ui/design-system';
 import {
   Button,
+  type ButtonProps,
   Checkbox,
   HiddenInputs,
   Modal,
@@ -13,15 +13,14 @@ import { useTranslation } from 'react-i18next';
 import { Label } from '@radix-ui/react-label';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { scenariosApi } from '@marble-front/builder/services/marble-api';
-import type { ActionArgs } from '@remix-run/node';
-import { redirect, json } from '@remix-run/node';
+import { redirect, json, type ActionArgs } from '@remix-run/node';
 
 import * as z from 'zod';
 
 import { parseFormSafe } from '@marble-front/builder/utils/input-validation';
-import type { Increment } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
+import { type Increment } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
 import { getReferer, getRoute } from '@marble-front/builder/services/routes';
-import type { TFuncKey } from 'i18next';
+import { type TFuncKey } from 'i18next';
 import {
   commitSession,
   getSession,

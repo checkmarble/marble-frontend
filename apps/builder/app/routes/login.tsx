@@ -1,13 +1,14 @@
 import { Form, useLoaderData } from '@remix-run/react';
-import type { LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
-import type { AuthErrors } from '@marble-front/builder/services/auth/auth.server';
-import { isAuthErrors } from '@marble-front/builder/services/auth/auth.server';
-import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { type LoaderArgs, json } from '@remix-run/node';
+import {
+  isAuthErrors,
+  authenticator,
+  type AuthErrors,
+} from '@marble-front/builder/services/auth/auth.server';
 import { GoogleLogo, LogoStandard } from '@marble-front/ui/icons';
 import { useTranslation } from 'react-i18next';
 import { getSession } from '@marble-front/builder/services/auth/session.server';
-import type { TFuncKey } from 'i18next';
+import { type TFuncKey } from 'i18next';
 import { LanguagePicker } from './ressources/user/language';
 
 export async function loader({ request }: LoaderArgs) {

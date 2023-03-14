@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/node';
+import { type LoaderArgs } from '@remix-run/node';
 
 async function isServerLive(request: LoaderArgs['request']) {
   const host =

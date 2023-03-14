@@ -1,4 +1,4 @@
-import type { ComponentStory, ComponentMeta } from '@storybook/react';
+import { type ComponentStory, type ComponentMeta } from '@storybook/react';
 import clsx from 'clsx';
 import { ScrollArea } from './ScrollArea';
 

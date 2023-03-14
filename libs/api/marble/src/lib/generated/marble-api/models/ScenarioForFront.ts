@@ -13,13 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ScenarioDeploymentResponse } from './ScenarioDeploymentResponse';
+import { ScenarioDeploymentResponse } from './ScenarioDeploymentResponse';
 import {
     ScenarioDeploymentResponseFromJSON,
     ScenarioDeploymentResponseFromJSONTyped,
     ScenarioDeploymentResponseToJSON,
 } from './ScenarioDeploymentResponse';
-import type { ScenarioVersionForFront } from './ScenarioVersionForFront';
+import { ScenarioVersionForFront } from './ScenarioVersionForFront';
 import {
     ScenarioVersionForFrontFromJSON,
     ScenarioVersionForFrontFromJSONTyped,

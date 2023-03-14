@@ -1,5 +1,5 @@
-import type { PlainMessage } from '@bufbuild/protobuf';
-import type { FormulaAggregation as FormulaAggregationMessage } from '@marble-front/api/marble';
+import { type PlainMessage } from '@bufbuild/protobuf';
+import { type FormulaAggregation as FormulaAggregationMessage } from '@marble-front/api/marble';
 import { Cross, Variable } from '@marble-front/ui/icons';
 import { useCallback, useReducer } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';

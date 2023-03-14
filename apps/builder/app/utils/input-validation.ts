@@ -1,13 +1,12 @@
-import type { Params } from '@remix-run/react';
-import type { IParseOptions } from 'qs';
-import qs from 'qs';
-import type {
-  objectInputType,
-  objectOutputType,
-  UnknownKeysParam,
-  ZodObject,
-  ZodRawShape,
-  ZodTypeAny,
+import { type Params } from '@remix-run/react';
+import qs, { type IParseOptions } from 'qs';
+import {
+  type objectInputType,
+  type objectOutputType,
+  type UnknownKeysParam,
+  type ZodObject,
+  type ZodRawShape,
+  type ZodTypeAny,
 } from 'zod';
 
 const defaultQsConfig: IParseOptions = {

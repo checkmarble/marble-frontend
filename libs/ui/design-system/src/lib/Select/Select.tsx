@@ -20,7 +20,7 @@ import {
 } from '@radix-ui/react-select';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
-import { tagBorder } from './Select.constants';
+import { type tagBorder } from './Select.constants';
 
 function SelectContent({
   children,

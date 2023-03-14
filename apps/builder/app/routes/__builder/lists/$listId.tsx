@@ -1,7 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { Page, Callout } from '@marble-front/builder/components';
-import type { LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, type LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
 
@@ -16,9 +15,9 @@ import {
   useVirtualTable,
 } from '@marble-front/ui/design-system';
 
-import { type ColumnDef } from '@tanstack/react-table';
 import {
   getCoreRowModel,
+  type ColumnDef,
   getSortedRowModel,
   getFilteredRowModel,
 } from '@tanstack/react-table';

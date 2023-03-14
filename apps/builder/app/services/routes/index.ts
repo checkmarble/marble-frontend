@@ -1,4 +1,4 @@
-import type { routes } from './routes';
+import { type routes } from './routes';
 
 /**
  * Inspiration and some utility types are taken from https://github.com/swan-io/chicane/blob/main/src/types.ts

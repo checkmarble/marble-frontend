@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
 import { Tooltip } from '@marble-front/ui/design-system';
-import type { MetaFunction, LinksFunction, LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import {
+  json,
+  type MetaFunction,
+  type LinksFunction,
+  type LoaderArgs,
+} from '@remix-run/node';
 import {
   Links,
   LiveReload,

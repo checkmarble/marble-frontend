@@ -1,8 +1,8 @@
-import type { Rule as RuleData } from '@marble-front/api/marble';
+import { type Rule as RuleData } from '@marble-front/api/marble';
 import { Consequence } from './Consequence';
 import { LogicalOperator } from '../LogicalOperator';
 import { Formula } from '../Formula';
-import type { PlainMessage } from '@bufbuild/protobuf';
+import { type PlainMessage } from '@bufbuild/protobuf';
 import { Fragment } from 'react';
 import { Paper } from '../../Paper';
 

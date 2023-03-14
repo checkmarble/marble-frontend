@@ -1,9 +1,12 @@
-import type { Story, Meta } from '@storybook/react';
+import { Story, type Meta } from '@storybook/react';
 import { useMemo } from 'react';
 import { Table, useVirtualTable } from './Table';
 import { faker } from '@faker-js/faker';
-import type { ColumnDef } from '@tanstack/react-table';
-import { getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import {
+  type ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+} from '@tanstack/react-table';
 
 type StoryProps = {
   count: number;

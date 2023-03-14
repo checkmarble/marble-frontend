@@ -3,13 +3,13 @@ import { useRef } from 'react';
 
 import {
   Header,
-  Table as TableT,
-  RowData,
+  type Table as TableT,
+  type RowData,
   Row,
   flexRender,
-  TableOptions,
+  type TableOptions,
   useReactTable,
-  HeaderGroup,
+  type HeaderGroup,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Arrow2Down, Arrow2Up } from '@marble-front/ui/icons';

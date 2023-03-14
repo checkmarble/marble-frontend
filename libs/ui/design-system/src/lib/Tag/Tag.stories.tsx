@@ -1,4 +1,4 @@
-import type { Story, Meta } from '@storybook/react';
+import { Story, type Meta } from '@storybook/react';
 import { Tag, type TagProps } from './Tag';
 import { tagBorder, tagColors, tagSize } from './Tag.constants';
 

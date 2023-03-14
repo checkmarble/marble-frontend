@@ -1,6 +1,8 @@
-import type { PlainMessage } from '@bufbuild/protobuf';
-import type { FormulaAggregation as FormulaAggregationMessage } from '@marble-front/api/marble';
-import { Aggregation as AggregationEnum } from '@marble-front/api/marble';
+import { type PlainMessage } from '@bufbuild/protobuf';
+import {
+  type FormulaAggregation as FormulaAggregationMessage,
+  Aggregation as AggregationEnum,
+} from '@marble-front/api/marble';
 import { assertNever } from '@marble-front/builder/utils/assert-never';
 import { Variable } from '@marble-front/ui/icons';
 import { useCallback } from 'react';

@@ -13,7 +13,7 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { LocationInner } from './LocationInner';
+import { LocationInner } from './LocationInner';
 import {
     LocationInnerFromJSON,
     LocationInnerFromJSONTyped,
