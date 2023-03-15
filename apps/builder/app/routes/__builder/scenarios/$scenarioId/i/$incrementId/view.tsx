@@ -21,11 +21,12 @@ import {
   useNavigate,
   useParams,
 } from '@remix-run/react';
+import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 
 export const handle = {
-  i18n: [...navigationI18n, 'scenarios', 'common'] as const,
+  i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
 };
 
 const LINKS: ScenariosLinkProps[] = [

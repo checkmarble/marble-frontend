@@ -1,13 +1,14 @@
 import { createSimpleContext } from '@marble-front/builder/utils/create-context';
 import { toUUID } from '@marble-front/builder/utils/short-uuid';
 import { Outlet, useParams } from '@remix-run/react';
+import { type Namespace } from 'i18next';
 import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 
 import { useScenarios } from '../scenarios';
 
 export const handle = {
-  i18n: ['scenarios'] as const,
+  i18n: ['scenarios'] satisfies Namespace,
 };
 
 function useCurrentScenarioValue() {

@@ -7,7 +7,7 @@ import { getSession } from '@marble-front/builder/services/auth/session.server';
 import { GoogleLogo, LogoStandard } from '@marble-front/ui/icons';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import { type TFuncKey } from 'i18next';
+import { type Namespace, type TFuncKey } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { LanguagePicker } from './ressources/user/language';
@@ -32,7 +32,7 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['login', 'common'] as const,
+  i18n: ['login', 'common'] satisfies Namespace,
 };
 
 const errorLabels: Record<AuthErrors, TFuncKey<['login', 'common']>> = {

@@ -20,7 +20,7 @@ import { Play, Pushtolive, Stop, Tick } from '@marble-front/ui/icons';
 import { Label } from '@radix-ui/react-label';
 import { type ActionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { type TFuncKey } from 'i18next';
+import { type Namespace, type TFuncKey } from 'i18next';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
@@ -28,7 +28,7 @@ import * as z from 'zod';
 import { setToastMessage } from '../../../components/MarbleToaster';
 
 export const handle = {
-  i18n: [...navigationI18n, 'scenarios', 'common'] as const,
+  i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
 };
 
 /**

@@ -10,6 +10,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
+import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +34,7 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['lists', 'navigation'] as const,
+  i18n: ['lists', 'navigation'] satisfies Namespace,
 };
 
 export default function ListsPage() {

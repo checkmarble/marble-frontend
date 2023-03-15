@@ -1,9 +1,10 @@
 import { Callout, Paper } from '@marble-front/builder/components';
 import { Tag } from '@marble-front/ui/design-system';
+import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 export const handle = {
-  i18n: ['scenarios'] as const,
+  i18n: ['scenarios'] satisfies Namespace,
 };
 
 export default function Decision() {

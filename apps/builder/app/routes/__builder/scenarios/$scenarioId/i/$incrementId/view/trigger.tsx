@@ -4,6 +4,7 @@ import { LogicalOperator } from '@marble-front/builder/components/Scenario/Logic
 import { ScenarioBox } from '@marble-front/builder/components/Scenario/ScenarioBox';
 import { triggerFixture } from '@marble-front/builder/fixtures/trigger';
 import clsx from 'clsx';
+import { type Namespace } from 'i18next';
 import { Fragment } from 'react';
 import { toast } from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
@@ -11,7 +12,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useCurrentScenario } from '../../../../$scenarioId';
 
 export const handle = {
-  i18n: ['scenarios', 'common'] as const,
+  i18n: ['scenarios', 'common'] satisfies Namespace,
 };
 
 export default function Trigger() {

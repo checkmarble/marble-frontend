@@ -7,11 +7,12 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
+import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const handle = {
-  i18n: ['scenarios'] as const,
+  i18n: ['scenarios'] satisfies Namespace,
 };
 
 export default function Rules() {

@@ -14,6 +14,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from '@remix-run/react';
+import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -71,7 +72,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const handle = {
-  i18n: ['common', 'navigation'] as const,
+  i18n: ['common', 'navigation'] satisfies Namespace,
 };
 
 export const meta: MetaFunction = () => ({

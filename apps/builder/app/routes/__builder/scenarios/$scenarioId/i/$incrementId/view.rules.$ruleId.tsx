@@ -6,12 +6,13 @@ import {
 } from '@marble-front/builder/components';
 import { fromUUID, toUUID } from '@marble-front/builder/utils/short-uuid';
 import { Link, useParams } from '@remix-run/react';
+import { type Namespace } from 'i18next';
 import invariant from 'tiny-invariant';
 
 import { useCurrentScenarioIncrement } from '../$incrementId';
 
 export const handle = {
-  i18n: [...scenarioI18n] as const,
+  i18n: [...scenarioI18n] satisfies Namespace,
 };
 
 export default function RuleView() {

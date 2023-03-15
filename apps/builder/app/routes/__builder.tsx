@@ -15,6 +15,7 @@ import * as Popover from '@radix-ui/react-popover';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Form, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
+import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { authenticator } from '../services/auth/auth.server';
@@ -46,7 +47,7 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['common', ...navigationI18n] as const,
+  i18n: ['common', ...navigationI18n] satisfies Namespace,
 };
 
 export default function Builder() {

@@ -18,6 +18,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
+import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
@@ -47,7 +48,7 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export const handle = {
-  i18n: ['lists', 'common'] as const,
+  i18n: ['lists', 'common'] satisfies Namespace,
 };
 
 const MAX_SCENARIOS = 4;
