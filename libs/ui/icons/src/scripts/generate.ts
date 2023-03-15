@@ -1,8 +1,8 @@
-import ora from 'ora';
-import { readFile, writeFile, readdir } from 'fs/promises';
 import { transform } from '@svgr/core';
-import { parse, join } from 'path';
+import { readdir, readFile, writeFile } from 'fs/promises';
+import ora from 'ora';
 import pMap from 'p-map';
+import { join, parse } from 'path';
 import prettier from 'prettier';
 import rimraf from 'rimraf';
 
@@ -46,6 +46,7 @@ async function buildIcon(svgFileName: string) {
 async function buildIndex(svgFileNames: string[]) {
   const indexFileContent = svgFileNames
     .map(getComponentName)
+    .sort()
     .map(
       (componentName) =>
         `export { default as ${componentName} } from './${componentName}';`

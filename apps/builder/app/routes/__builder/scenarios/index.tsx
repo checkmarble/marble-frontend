@@ -1,9 +1,10 @@
 import { Page } from '@marble-front/builder/components';
-import { useTranslation } from 'react-i18next';
-import { Link } from '@remix-run/react';
-import { Scenarios } from '@marble-front/ui/icons';
-import { Tag } from '@marble-front/ui/design-system';
 import { fromUUID } from '@marble-front/builder/utils/short-uuid';
+import { Tag } from '@marble-front/ui/design-system';
+import { Scenarios } from '@marble-front/ui/icons';
+import { Link } from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
+
 import { useScenarios } from '../scenarios';
 
 export const handle = {

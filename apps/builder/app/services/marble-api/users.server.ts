@@ -1,5 +1,6 @@
-import { UsersApi, Configuration } from '@marble-front/api/marble';
+import { Configuration, UsersApi } from '@marble-front/api/marble';
 import { getServerEnv } from '@marble-front/builder/utils/environment';
+
 import { AuthorizationMiddleware } from './authorization.server';
 
 const usersApiConf = new Configuration({

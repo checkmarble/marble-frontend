@@ -1,14 +1,14 @@
 import {
-  Root,
-  Viewport,
-  Scrollbar,
-  Thumb,
   Corner,
+  Root,
+  type ScrollAreaCornerProps,
   type ScrollAreaProps,
   type ScrollAreaScrollbarProps,
   type ScrollAreaThumbProps,
-  type ScrollAreaCornerProps,
   type ScrollAreaViewportProps,
+  Scrollbar,
+  Thumb,
+  Viewport,
 } from '@radix-ui/react-scroll-area';
 import clsx from 'clsx';
 import { forwardRef, type RefAttributes } from 'react';

@@ -1,9 +1,10 @@
-import { initReactI18next } from 'react-i18next';
-import Backend from 'i18next-http-backend';
 import i18next from 'i18next';
-import { i18nConfig } from './i18n-config';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import Backend from 'i18next-http-backend';
+import { initReactI18next } from 'react-i18next';
 import { getInitialNamespaces } from 'remix-i18next';
+
+import { i18nConfig } from './i18n-config';
 
 export async function getI18nextClientInstance() {
   await i18next

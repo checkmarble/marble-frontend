@@ -1,9 +1,11 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx"],
+  "plugins": ["@nrwl/nx", "simple-import-sort"],
   "rules": {
-    "no-duplicate-imports": ["error", { "includeExports": true }]
+    "no-duplicate-imports": ["error", { "includeExports": true }],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   },
   "overrides": [
     {

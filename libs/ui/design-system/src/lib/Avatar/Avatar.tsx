@@ -1,10 +1,10 @@
-import clsx from 'clsx';
 import {
-  Root,
+  type AvatarProps as RootAvatarProps,
   Fallback,
   Image,
-  type AvatarProps as RootAvatarProps,
+  Root,
 } from '@radix-ui/react-avatar';
+import clsx from 'clsx';
 
 export type AvatarProps = RootAvatarProps & {
   firstName: string;

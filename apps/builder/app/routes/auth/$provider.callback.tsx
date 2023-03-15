@@ -5,7 +5,7 @@ import {
   getSession,
 } from '@marble-front/builder/services/auth/session.server';
 import { usersApi } from '@marble-front/builder/services/marble-api';
-import { redirect, type LoaderArgs } from '@remix-run/node';
+import { type LoaderArgs, redirect } from '@remix-run/node';
 
 export async function loader({ request, params }: LoaderArgs) {
   const { provider } = params;

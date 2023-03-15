@@ -3,6 +3,7 @@ import { type Scalar as ScalarMessage } from '@marble-front/api/marble';
 import { assertNever } from '@marble-front/builder/utils/assert-never';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+
 import { scenarioI18n } from '../../scenario-i18n';
 
 /**

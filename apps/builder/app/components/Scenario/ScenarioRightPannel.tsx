@@ -1,15 +1,16 @@
 import { type PlainMessage } from '@bufbuild/protobuf';
 import { type FormulaAggregation as FormulaAggregationMessage } from '@marble-front/api/marble';
-import { Cross, Variable } from '@marble-front/ui/icons';
-import { useCallback, useReducer } from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
-import { useTranslation } from 'react-i18next';
-import { scenarioI18n } from './scenario-i18n';
-import { noop } from '@marble-front/builder/utils/utility-types';
-import { createSimpleContext } from '@marble-front/builder/utils/create-context';
-import clsx from 'clsx';
-import { FormulaAggregation } from './Formula';
 import { assertNever } from '@marble-front/builder/utils/assert-never';
+import { createSimpleContext } from '@marble-front/builder/utils/create-context';
+import { noop } from '@marble-front/builder/utils/utility-types';
+import { Cross, Variable } from '@marble-front/ui/icons';
+import * as Dialog from '@radix-ui/react-dialog';
+import clsx from 'clsx';
+import { useCallback, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { FormulaAggregation } from './Formula';
+import { scenarioI18n } from './scenario-i18n';
 
 type State = {
   open: boolean;

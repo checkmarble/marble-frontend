@@ -1,5 +1,9 @@
-import { json, type LoaderArgs } from '@remix-run/node';
-import * as Popover from '@radix-ui/react-popover';
+import {
+  navigationI18n,
+  Sidebar,
+  type SidebarLinkProps,
+} from '@marble-front/builder/components';
+import { Avatar, Button, ScrollArea } from '@marble-front/ui/design-system';
 import {
   Arrow2Down,
   Lists,
@@ -7,15 +11,12 @@ import {
   Logout,
   Scenarios,
 } from '@marble-front/ui/icons';
-import { Avatar, Button, ScrollArea } from '@marble-front/ui/design-system';
-import { useTranslation } from 'react-i18next';
+import * as Popover from '@radix-ui/react-popover';
+import { json, type LoaderArgs } from '@remix-run/node';
 import { Form, Outlet, useLoaderData } from '@remix-run/react';
-import {
-  Sidebar,
-  type SidebarLinkProps,
-  navigationI18n,
-} from '@marble-front/builder/components';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
+
 import { authenticator } from '../services/auth/auth.server';
 import { usersApi } from '../services/marble-api';
 import { LanguagePicker } from './ressources/user/language';

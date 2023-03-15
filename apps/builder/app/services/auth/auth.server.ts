@@ -1,9 +1,10 @@
-import { Authenticator } from 'remix-auth';
-import { GoogleStrategy } from './strategies';
-import { sessionStorage } from './session.server';
-import { getServerEnv } from '@marble-front/builder/utils/environment';
 import { type UserResponse } from '@marble-front/api/marble';
+import { getServerEnv } from '@marble-front/builder/utils/environment';
+import { Authenticator } from 'remix-auth';
+
 import { usersApi } from '../marble-api';
+import { sessionStorage } from './session.server';
+import { GoogleStrategy } from './strategies';
 
 const authErrors = ['NoAccount', 'Unknown'] as const;
 export type AuthErrors = (typeof authErrors)[number];

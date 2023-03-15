@@ -6,6 +6,7 @@ import { hasRequiredKeys } from '@marble-front/builder/utils/utility-types';
 import { Outlet, useParams } from '@remix-run/react';
 import { useMemo } from 'react';
 import invariant from 'tiny-invariant';
+
 import { useCurrentScenario } from '../../$scenarioId';
 
 export const handle = {

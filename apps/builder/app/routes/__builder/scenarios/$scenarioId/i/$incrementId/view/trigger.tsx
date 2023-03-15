@@ -1,12 +1,13 @@
-import { Paper, Callout } from '@marble-front/builder/components';
-import { ScenarioBox } from '@marble-front/builder/components/Scenario/ScenarioBox';
+import { Callout, Paper } from '@marble-front/builder/components';
 import { Formula } from '@marble-front/builder/components/Scenario/Formula';
 import { LogicalOperator } from '@marble-front/builder/components/Scenario/LogicalOperator';
+import { ScenarioBox } from '@marble-front/builder/components/Scenario/ScenarioBox';
 import { triggerFixture } from '@marble-front/builder/fixtures/trigger';
 import clsx from 'clsx';
 import { Fragment } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
+import { Trans, useTranslation } from 'react-i18next';
+
 import { useCurrentScenario } from '../../../../$scenarioId';
 
 export const handle = {

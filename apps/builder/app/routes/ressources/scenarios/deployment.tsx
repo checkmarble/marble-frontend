@@ -1,6 +1,13 @@
-import { useFetcher } from '@remix-run/react';
-import { Play, Pushtolive, Stop, Tick } from '@marble-front/ui/icons';
 import { navigationI18n } from '@marble-front/builder/components';
+import { type Increment } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import {
+  commitSession,
+  getSession,
+} from '@marble-front/builder/services/auth/session.server';
+import { scenariosApi } from '@marble-front/builder/services/marble-api';
+import { getReferer, getRoute } from '@marble-front/builder/services/routes';
+import { parseFormSafe } from '@marble-front/builder/utils/input-validation';
 import { fromUUID } from '@marble-front/builder/utils/short-uuid';
 import {
   Button,
@@ -9,24 +16,16 @@ import {
   HiddenInputs,
   Modal,
 } from '@marble-front/ui/design-system';
-import { useTranslation } from 'react-i18next';
+import { Play, Pushtolive, Stop, Tick } from '@marble-front/ui/icons';
 import { Label } from '@radix-ui/react-label';
-import { authenticator } from '@marble-front/builder/services/auth/auth.server';
-import { scenariosApi } from '@marble-front/builder/services/marble-api';
-import { redirect, json, type ActionArgs } from '@remix-run/node';
-
+import { type ActionArgs, json, redirect } from '@remix-run/node';
+import { useFetcher } from '@remix-run/react';
+import { type TFuncKey } from 'i18next';
+import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 
-import { parseFormSafe } from '@marble-front/builder/utils/input-validation';
-import { type Increment } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
-import { getReferer, getRoute } from '@marble-front/builder/services/routes';
-import { type TFuncKey } from 'i18next';
-import {
-  commitSession,
-  getSession,
-} from '@marble-front/builder/services/auth/session.server';
 import { setToastMessage } from '../../../components/MarbleToaster';
-import { toast } from 'react-hot-toast';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] as const,

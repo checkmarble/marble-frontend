@@ -1,5 +1,6 @@
-import { type ComponentStory, type ComponentMeta } from '@storybook/react';
 import * as Label from '@radix-ui/react-label';
+import { type ComponentMeta, type ComponentStory } from '@storybook/react';
+
 import { Checkbox } from './Checkbox';
 
 const Story: ComponentMeta<typeof Checkbox> = {

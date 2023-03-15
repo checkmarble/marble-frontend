@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+
 import { ScenarioBox } from '../ScenarioBox';
 
 function ConditionContainer({

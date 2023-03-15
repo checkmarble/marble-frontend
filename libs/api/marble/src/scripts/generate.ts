@@ -1,15 +1,15 @@
 import { exec } from 'child_process';
-import { promisify } from 'util';
-import { writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { mkdirSync, writeFileSync } from 'fs';
 import ora from 'ora';
+import { join } from 'path';
 import rimraf from 'rimraf';
+import { promisify } from 'util';
 
 import {
   GENERATED_FOLDER,
   OPENAPI_OPTIONS,
-  PROTOC_GEN_ES_OPTIONS,
   PROTO_FILE,
+  PROTOC_GEN_ES_OPTIONS,
 } from './config';
 
 const execAsync = promisify(exec);

@@ -1,5 +1,6 @@
-import { Search, Calendar, Help, Scenarios } from '@marble-front/ui/icons';
-import { Story, type Meta } from '@storybook/react';
+import { Calendar, Help, Scenarios, Search } from '@marble-front/ui/icons';
+import { type Meta, Story } from '@storybook/react';
+
 import { Input, type InputProps } from './Input';
 
 const adornmentOptions = [

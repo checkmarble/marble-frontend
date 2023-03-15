@@ -1,8 +1,8 @@
 import { exec } from 'child_process';
-import { promisify } from 'util';
 import { writeFile } from 'fs/promises';
 import ora from 'ora';
 import prettier from 'prettier';
+import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 

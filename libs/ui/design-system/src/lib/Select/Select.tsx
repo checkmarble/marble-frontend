@@ -1,25 +1,26 @@
 import { Arrow2Down, Arrow2Up, SmallarrowDown } from '@marble-front/ui/icons';
 import {
-  Root,
-  Portal,
-  Trigger,
-  Viewport,
   Content,
+  Icon,
   Item,
   ItemText,
-  ScrollUpButton,
+  Portal,
+  Root,
   ScrollDownButton,
-  Icon,
-  Value,
+  ScrollUpButton,
   type SelectContentProps,
-  type SelectViewportProps,
-  type SelectTriggerProps as PrimitiveSelectTriggerProps,
   type SelectItemProps,
-  type SelectValueProps,
   type SelectProps as RawSelectProps,
+  type SelectTriggerProps as PrimitiveSelectTriggerProps,
+  type SelectValueProps,
+  type SelectViewportProps,
+  Trigger,
+  Value,
+  Viewport,
 } from '@radix-ui/react-select';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+
 import { type tagBorder } from './Select.constants';
 
 function SelectContent({

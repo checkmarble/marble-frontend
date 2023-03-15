@@ -1,2 +1,2 @@
-export * from './FormulaAggregation';
 export * from './Formula';
+export * from './FormulaAggregation';

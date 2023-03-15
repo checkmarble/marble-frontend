@@ -1,5 +1,6 @@
-import { type ComponentStory, type ComponentMeta } from '@storybook/react';
+import { type ComponentMeta, type ComponentStory } from '@storybook/react';
 import clsx from 'clsx';
+
 import { ScrollArea } from './ScrollArea';
 
 const Story: ComponentMeta<typeof ScrollArea.Root> = {

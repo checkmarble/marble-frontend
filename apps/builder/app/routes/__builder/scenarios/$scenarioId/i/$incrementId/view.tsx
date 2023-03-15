@@ -1,28 +1,28 @@
 import {
-  Link,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-} from '@remix-run/react';
-import { Decision, Rules, Trigger } from '@marble-front/ui/icons';
-import {
-  ScenarioPage,
-  type ScenariosLinkProps,
-  Scenarios,
   navigationI18n,
+  ScenarioPage,
+  Scenarios,
+  type ScenariosLinkProps,
 } from '@marble-front/builder/components';
 import {
   type Increment,
   type Increments,
   useCurrentScenario,
 } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
-import { toUUID, fromUUID } from '@marble-front/builder/utils/short-uuid';
-import invariant from 'tiny-invariant';
-import { Select } from '@marble-front/ui/design-system';
-import { useTranslation } from 'react-i18next';
 import { DeploymentModal } from '@marble-front/builder/routes/ressources/scenarios/deployment';
 import { getRoute } from '@marble-front/builder/services/routes';
+import { fromUUID, toUUID } from '@marble-front/builder/utils/short-uuid';
+import { Select } from '@marble-front/ui/design-system';
+import { Decision, Rules, Trigger } from '@marble-front/ui/icons';
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+} from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
+import invariant from 'tiny-invariant';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] as const,

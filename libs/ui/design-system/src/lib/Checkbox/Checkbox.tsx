@@ -1,6 +1,6 @@
-import clsx from 'clsx';
-import { Root, Indicator, type CheckboxProps } from '@radix-ui/react-checkbox';
 import { Tick } from '@marble-front/ui/icons';
+import { type CheckboxProps, Indicator, Root } from '@radix-ui/react-checkbox';
+import clsx from 'clsx';
 import { forwardRef } from 'react';
 
 export const Checkbox = forwardRef<

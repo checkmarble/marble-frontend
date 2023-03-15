@@ -1,8 +1,8 @@
 import {
   AuthorizationApi,
   Configuration,
-  TokenService,
   getAuthorizationMiddleware,
+  TokenService,
 } from '@marble-front/api/marble';
 import { getServerEnv } from '@marble-front/builder/utils/environment';
 

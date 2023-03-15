@@ -1,7 +1,8 @@
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { ScenarioBox } from './ScenarioBox';
+
 import { scenarioI18n } from './scenario-i18n';
+import { ScenarioBox } from './ScenarioBox';
 
 interface LogicalOperatorProps {
   operator: 'if' | 'and' | 'or' | 'where';

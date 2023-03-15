@@ -1,15 +1,15 @@
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { faker } from '@faker-js/faker';
 import {
   type ColumnDef,
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { mockResizeObserver } from 'jsdom-testing-mocks';
+import { useMemo } from 'react';
 
 import { Table, useVirtualTable } from './Table';
-import { useMemo } from 'react';
-import { mockResizeObserver } from 'jsdom-testing-mocks';
 
 mockResizeObserver();
 

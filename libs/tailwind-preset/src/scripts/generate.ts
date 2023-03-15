@@ -1,8 +1,8 @@
-import ora from 'ora';
 import { writeFile } from 'fs/promises';
-import * as R from 'remeda';
-import prettier from 'prettier';
+import ora from 'ora';
 import { join } from 'path';
+import prettier from 'prettier';
+import * as R from 'remeda';
 import rimraf from 'rimraf';
 
 type DesignTokens = {

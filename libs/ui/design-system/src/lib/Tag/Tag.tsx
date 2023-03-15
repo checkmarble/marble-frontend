@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+
 import { type tagBorder, type tagColors, type tagSize } from './Tag.constants';
 
 /* eslint-disable-next-line */

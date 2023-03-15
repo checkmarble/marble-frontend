@@ -1,21 +1,20 @@
-import { useFetcher } from '@remix-run/react';
-import { Select } from '@marble-front/ui/design-system';
+import { supportedLngs } from '@marble-front/builder/config/i18n/i18n-config';
+import { setLanguage } from '@marble-front/builder/config/i18n/i18next.server';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
-import { usersApi } from '@marble-front/builder/services/marble-api';
-import { json, type ActionArgs } from '@remix-run/node';
-
-import * as z from 'zod';
-
-import { parseForm } from '@marble-front/builder/utils/input-validation';
 import {
   commitSession,
   getSession,
 } from '@marble-front/builder/services/auth/session.server';
-import { setToastMessage } from '../../../components/MarbleToaster';
-import { supportedLngs } from '@marble-front/builder/config/i18n/i18n-config';
-import { redirectBack } from 'remix-utils';
-import { setLanguage } from '@marble-front/builder/config/i18n/i18next.server';
+import { usersApi } from '@marble-front/builder/services/marble-api';
+import { parseForm } from '@marble-front/builder/utils/input-validation';
+import { Select } from '@marble-front/ui/design-system';
+import { type ActionArgs, json } from '@remix-run/node';
+import { useFetcher } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
+import { redirectBack } from 'remix-utils';
+import * as z from 'zod';
+
+import { setToastMessage } from '../../../components/MarbleToaster';
 
 const formSchema = z.object({
   preferredLanguage: z.enum(supportedLngs),

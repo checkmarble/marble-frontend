@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Tooltip } from './Tooltip';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
+
+import { Tooltip } from './Tooltip';
 
 mockResizeObserver();
 

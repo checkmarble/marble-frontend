@@ -1,18 +1,18 @@
+import { Arrow2Down, Arrow2Up } from '@marble-front/ui/icons';
+import {
+  flexRender,
+  Header,
+  type HeaderGroup,
+  Row,
+  type RowData,
+  type Table as TableT,
+  type TableOptions,
+  useReactTable,
+} from '@tanstack/react-table';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
 import { useRef } from 'react';
 
-import {
-  Header,
-  type Table as TableT,
-  type RowData,
-  Row,
-  flexRender,
-  type TableOptions,
-  useReactTable,
-  type HeaderGroup,
-} from '@tanstack/react-table';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { Arrow2Down, Arrow2Up } from '@marble-front/ui/icons';
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 
 interface TableContainerProps<TData extends RowData>

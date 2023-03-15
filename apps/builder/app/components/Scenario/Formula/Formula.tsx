@@ -1,11 +1,12 @@
 import { type PlainMessage } from '@bufbuild/protobuf';
 import { type Formula as FormulaMessage } from '@marble-front/api/marble';
 import { assertNever } from '@marble-front/builder/utils/assert-never';
-import { Data } from './Data';
+
 import { Condition } from './Condition';
+import { Data } from './Data';
+import { FormulaAggregation } from './FormulaAggregation';
 import { NotImplemented } from './NotImplemented';
 import { OperatorBinary } from './OperatorBinary';
-import { FormulaAggregation } from './FormulaAggregation';
 
 interface FormulaProps {
   formula: PlainMessage<FormulaMessage>;

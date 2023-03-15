@@ -1,4 +1,5 @@
 import { Trans, useTranslation } from 'react-i18next';
+
 import { scenarioI18n } from '../scenario-i18n';
 
 interface ConsequenceProps {
