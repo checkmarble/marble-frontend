@@ -1,0 +1,763 @@
+openapi: '3.0.3'
+info:
+  version: '1.0.0'
+  title: 'Marble API'
+  description: 'Consume Marble internal endpoints'
+tags:
+  - name: Scenarios
+    description: Operations about scenarios.
+  - name: Scenario Iterations
+    description: Operations about scenario iterations.
+  - name: Scenario Iteration Rules
+    description: Operations about scenario iteration rules.
+  - name: Scenario Publications
+    description: Operations about scenario publications.
+servers:
+  - url: 'http://localhost:8080'
+    description: Local devlopment server
+paths:
+  /token:
+    post:
+      tags:
+        - Authorization
+      summary: Get an access token
+      operationId: postToken
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+        required: true
+      responses:
+        200:
+          description: New access token
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          $ref: '#/components/responses/401'
+  /scenarios:
+    get:
+      tags:
+        - Scenarios
+      summary: List scenarios
+      operationId: listScenarios
+      security:
+        - Oauth2ClientCredentials: []
+      responses:
+        200:
+          description: List of corresponding scenario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Scenario'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      tags:
+        - Scenarios
+      summary: Create a scenario
+      operationId: createScenario
+      security:
+        - Oauth2ClientCredentials: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateScenarioBody'
+        required: true
+      responses:
+        200:
+          description: Created scenario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        422:
+          $ref: '#/components/responses/422'
+        500:
+          $ref: '#/components/responses/500'
+  /scenarios/{scenarioId}:
+    parameters:
+      - $ref: '#/components/parameters/scenarioId'
+    get:
+      tags:
+        - Scenarios
+      summary: Get a scenario by id
+      operationId: getScenario
+      security:
+        - Oauth2ClientCredentials: []
+      responses:
+        200:
+          description: The scenario corresponding to the provided `scenarioId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      tags:
+        - Scenarios
+      summary: Update a scenario
+      operationId: updateScenario
+      security:
+        - Oauth2ClientCredentials: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScenarioBody'
+        required: true
+      responses:
+        200:
+          description: The updated scenario corresponding to the provided `scenarioId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  /scenario-iterations:
+    get:
+      tags:
+        - Scenario Iterations
+      summary: List iterations
+      description: List iterations corresponding to filters
+      operationId: listScenarioIterations
+      security:
+        - Oauth2ClientCredentials: []
+      parameters:
+        - name: scenarioId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Scenario iterations corresponding to filters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScenarioIteration'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      tags:
+        - Scenario Iterations
+      summary: Create a scenario iteration
+      description: Create a scenario iteration for a given `scenarioId`
+      operationId: createScenarioIteration
+      security:
+        - Oauth2ClientCredentials: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateScenarioIterationBody'
+        required: true
+      responses:
+        200:
+          description: The created scenario iteration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioIterationWithBody'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  /scenario-iterations/{scenarioIterationId}:
+    parameters:
+      - $ref: '#/components/parameters/scenarioIterationId'
+    get:
+      tags:
+        - Scenario Iterations
+      summary: Get a scenario iteration by id
+      operationId: getScenarioIteration
+      security:
+        - Oauth2ClientCredentials: []
+      responses:
+        200:
+          description: The scenario iteration corresponding to the provided `scenarioIterationId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioIterationWithBody'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      tags:
+        - Scenario Iterations
+      summary: Update a scenario iteration
+      operationId: updateScenarioIteration
+      security:
+        - Oauth2ClientCredentials: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScenarioIterationBody'
+        required: true
+      responses:
+        200:
+          description: The updated scenario iteration corresponding to the provided `scenarioIterationId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioIterationWithBody'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  /scenario-iteration-rules:
+    get:
+      tags:
+        - Scenario Iteration Rules
+      summary: List rules
+      description: List rules using provided filters
+      operationId: listScenarioIterationRules
+      security:
+        - Oauth2ClientCredentials: []
+      parameters:
+        - name: scenarioIterationId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Scenario iterations rules corresponding to filters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScenarioIterationRule'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      tags:
+        - Scenario Iteration Rules
+      summary: Create a scenario iteration rule
+      description: Create a scenario iteration rule for a given `scenarioIterationId`
+      operationId: createScenarioIterationRule
+      security:
+        - Oauth2ClientCredentials: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateScenarioIterationRuleBody'
+        required: true
+      responses:
+        200:
+          description: The created scenario iteration rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioIterationRule'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  /scenario-iteration-rules/{ruleId}:
+    parameters:
+      - $ref: '#/components/parameters/ruleId'
+    get:
+      tags:
+        - Scenario Iteration Rules
+      summary: Get a scenario iteration rule by id
+      operationId: getScenarioIterationRule
+      security:
+        - Oauth2ClientCredentials: []
+      responses:
+        200:
+          description: The scenario iteration rule corresponding to the provided `ruleId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioIterationRule'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      tags:
+        - Scenario Iteration Rules
+      summary: Update a scenario iteration rule
+      operationId: updateScenarioIterationRule
+      security:
+        - Oauth2ClientCredentials: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScenarioIterationRuleBody'
+        required: true
+      responses:
+        200:
+          description: The updated scenario iteration rule corresponding to the provided `ruleId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioIterationRule'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  /scenario-publications:
+    get:
+      tags:
+        - Scenario Publications
+      summary: List scenario publications
+      description: List scenario publications using provided filters
+      operationId: listScenarioPublications
+      security:
+        - Oauth2ClientCredentials: []
+      parameters:
+        - name: scenarioId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: scenarioIterationId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: publicationAction
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/PublicationAction'
+      responses:
+        200:
+          description: Scenario publications corresponding to filters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScenarioPublication'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      tags:
+        - Scenario Publications
+      summary: Create a scenario publication
+      operationId: createScenarioPublication
+      security:
+        - Oauth2ClientCredentials: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateScenarioPublicationBody'
+        required: true
+      responses:
+        200:
+          description: The list of created scenario publication actions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScenarioPublication'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  /scenario-publications/{scenarioPublicationId}:
+    parameters:
+      - $ref: '#/components/parameters/scenarioPublicationId'
+    get:
+      tags:
+        - Scenario Publications
+      summary: Get a scenario publication by id
+      operationId: getScenarioPublication
+      security:
+        - Oauth2ClientCredentials: []
+      responses:
+        200:
+          description: The scenario publication corresponding to the provided `scenarioPublicationId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioPublication'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+components:
+  parameters:
+    scenarioId:
+      name: scenarioId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    scenarioIterationId:
+      name: scenarioIterationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ruleId:
+      name: ruleId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    scenarioPublicationId:
+      name: scenarioPublicationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    Scenario:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - triggerObjectType
+        - createdAt
+        - isLive
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        triggerObjectType:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        isLive:
+          type: boolean
+    CreateScenarioBody:
+      type: object
+      required:
+        - name
+        - description
+        - triggerObjectType
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        triggerObjectType:
+          type: string
+    UpdateScenarioBody:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    ScenarioIteration:
+      type: object
+      required:
+        - id
+        - scenarioId
+        - version
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        scenarioId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ScenarioIterationBody:
+      type: object
+      properties:
+        triggerCondition:
+          type: object
+          description: Valid marshalled operator
+        scoreReviewThreshold:
+          type: integer
+          minimum: 0
+        scoreRejectThreshold:
+          type: integer
+          minimum: 0
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioIterationRule'
+    ScenarioIterationWithBody:
+      allOf:
+        - $ref: '#/components/schemas/ScenarioIteration'
+        - type: object
+          required:
+            - body
+          properties:
+            body:
+              allOf:
+                - $ref: '#/components/schemas/ScenarioIterationBody'
+                - required:
+                    - triggerCondition
+                    - scoreReviewThreshold
+                    - scoreRejectThreshold
+    CreateScenarioIterationBody:
+      type: object
+      required:
+        - scenarioId
+      properties:
+        scenarioId:
+          type: string
+          format: uuid
+        body:
+          type: object
+          properties:
+            triggerCondition:
+              type: object
+              description: Valid marshalled operator
+            scoreReviewThreshold:
+              type: integer
+              minimum: 0
+            scoreRejectThreshold:
+              type: integer
+              minimum: 0
+            rules:
+              type: array
+              minLength: 1
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/UpdateScenarioIterationRuleBody'
+                  - type: object
+                    required:
+                      - displayOrder
+                      - name
+                      - description
+                      - formula
+                      - scoreModifier
+    UpdateScenarioIterationBody:
+      type: object
+      properties:
+        body:
+          $ref: '#/components/schemas/ScenarioIterationBody'
+    ScenarioIterationRule:
+      allOf:
+        - $ref: '#/components/schemas/UpdateScenarioIterationRuleBody'
+        - type: object
+          required:
+            - id
+            - createdAt
+            - displayOrder
+            - name
+            - description
+            - formula
+            - scoreModifier
+          properties:
+            id:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+    CreateScenarioIterationRuleBody:
+      allOf:
+        - $ref: '#/components/schemas/UpdateScenarioIterationRuleBody'
+        - type: object
+          required:
+            - scenarioIterationId
+            - displayOrder
+            - name
+            - description
+            - formula
+            - scoreModifier
+          properties:
+            scenarioIterationId:
+              type: string
+              format: uuid
+    UpdateScenarioIterationRuleBody:
+      type: object
+      properties:
+        displayOrder:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        formula:
+          type: object
+          description: Valid marshalled operator
+        scoreModifier:
+          type: integer
+    ScenarioPublication:
+      allOf:
+        - $ref: '#/components/schemas/CreateScenarioPublicationBody'
+        - type: object
+          required:
+            - id
+            - createdAt
+          properties:
+            id:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+    CreateScenarioPublicationBody:
+      type: object
+      required:
+        - scenarioIterationId
+        - publicationAction
+      properties:
+        scenarioIterationId:
+          type: string
+          format: uuid
+        publicationAction:
+          $ref: '#/components/schemas/PublicationAction'
+    PublicationAction:
+      type: string
+      enum: ['publish', 'unpublish']
+  securitySchemes:
+    Oauth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: token-bff
+          scopes: {}
+  responses:
+    401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Unauthorized
+    403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Forbidden
+    404:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Not found
+    422:
+      description: Unprocessable Content
+      content:
+        application/json:
+          schema:
+            type: object
+            description: To be defined
+    500:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Unexpected error

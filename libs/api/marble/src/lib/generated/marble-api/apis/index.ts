@@ -1,6 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './AdminApi';
 export * from './AuthorizationApi';
+export * from './ScenarioIterationRulesApi';
+export * from './ScenarioIterationsApi';
+export * from './ScenarioPublicationsApi';
 export * from './ScenariosApi';
-export * from './UsersApi';
