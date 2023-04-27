@@ -1,10 +1,9 @@
 import { transform } from '@svgr/core';
-import { readdir, readFile, writeFile } from 'fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'fs/promises';
 import ora from 'ora';
 import pMap from 'p-map';
 import { join, parse } from 'path';
 import prettier from 'prettier';
-import rimraf from 'rimraf';
 
 const OUT_DIR = join(process.cwd(), '/src/lib');
 const IN_DIR = join(process.cwd(), '/src/svgs');
@@ -84,7 +83,8 @@ async function generateIcons() {
 
 async function main() {
   try {
-    rimraf.sync(`${OUT_DIR}/*`);
+    await rm(OUT_DIR, { recursive: true, force: true });
+    await mkdir(OUT_DIR);
 
     await generateIcons();
   } catch (error) {

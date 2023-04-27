@@ -1,8 +1,8 @@
 import { exec } from 'child_process';
 import { mkdirSync, writeFileSync } from 'fs';
+import { mkdir, rm } from 'fs/promises';
 import ora from 'ora';
 import { join } from 'path';
-import rimraf from 'rimraf';
 import { promisify } from 'util';
 
 import {
@@ -78,7 +78,8 @@ async function openapiGenerator() {
 
 async function main() {
   try {
-    rimraf.sync(`${GENERATED_FOLDER}/*`);
+    await rm(GENERATED_FOLDER, { recursive: true, force: true });
+    await mkdir(GENERATED_FOLDER);
 
     await downloadProtoFile();
     await protocGenEs();

@@ -1,9 +1,8 @@
-import { writeFile } from 'fs/promises';
+import { mkdir, rm, writeFile } from 'fs/promises';
 import ora from 'ora';
 import { join } from 'path';
 import prettier from 'prettier';
 import * as R from 'remeda';
-import rimraf from 'rimraf';
 
 type DesignTokens = {
   colors: Record<string, { value: string }>;
@@ -112,7 +111,8 @@ async function buildFontSize(data: DesignTokens) {
 
 async function main() {
   try {
-    rimraf.sync(`${OUT_DIR}/*`);
+    await rm(OUT_DIR, { recursive: true, force: true });
+    await mkdir(OUT_DIR);
 
     const data = await downloadDesignTokens();
 
