@@ -1,5 +1,0 @@
-required: true
-name: user_email
-in: path
-schema:
-  type: string

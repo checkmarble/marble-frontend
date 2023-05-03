@@ -1,9 +1,13 @@
+import { type Opts } from 'oazapfts/lib/codegen/index';
 import { join } from 'path';
 
-export const GENERATED_FOLDER = join('src', 'lib', 'generated');
+export const OPENAPI_SPEC = join('src', 'scripts', 'openapi.yaml');
 
-export const OPENAPI_OPTIONS = {
-  'input-spec': 'local/src/scripts/openapi.yaml',
-  'generator-name': 'typescript-fetch',
-  output: join('local', GENERATED_FOLDER, 'marble-api'),
+export const GENERATED_FOLDER = join('src', 'lib', 'generated');
+export const GENERATED_API = join(GENERATED_FOLDER, 'marble-api.ts');
+
+export const OPENAPI_OPTIONS: Opts = {
+  optimistic: true,
+  useEnumType: false,
+  unionUndefined: false,
 };

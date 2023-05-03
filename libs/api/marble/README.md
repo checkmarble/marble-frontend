@@ -4,31 +4,23 @@ This library was generated with [Nx](https://nx.dev).
 
 ## Getting started
 
-This library generates ECMAScript classes based on the `src/scripts/marble.proto`.
-The generated code can be found in `src/lib/marble_pb.ts`
+This library generates Marble API client based on `src/scripts/openapi.yaml`.
+The generated code can be found in `src/lib/generated/marble-api.ts`
 
-1. Make sure to have `protoc` installed and available in your PATH
+1. Make sure to have `openapi.yaml` up to date
+2. Run `npx nx api-marble:generate-api` to generate the client
+3. Review generated code and commit changes
 
-   > On macOS, you can do it using `brew instal protobuf`
-
-2. Run `npx nx api-marble:protoc-gen-es` to generate the client
+> NB: in case update introduced breaking changes, you may need to resolve TS issues in places the client is used
 
 ## Development
-
-### Edit protocol buffer
-
-Update the protocol buffer by editing / copy paste the file `src/scripts/marble.proto`
 
 ### Edit ECMAScript generation process
 
 Change the generation script by editing `src/scripts/generate.ts`
 
-### Lint
+### Expose some usefull helpers
 
-Run `npx nx lint api-marble` to execute the lint via [ESLint](https://eslint.org/).
+Change or add files in `src/lib/openapi`
 
-## Documentation
-
-| Type              | Label                                                | Description                                            |
-| ----------------- | ---------------------------------------------------- | ------------------------------------------------------ |
-| `NestedDataField` | `rootTableName.[linkNames.join('.')].finalDataField` | `multipleValues` is used to describe aggregated values |
+> don't forget to explicitly expose public interface in `src/lib/index.ts`

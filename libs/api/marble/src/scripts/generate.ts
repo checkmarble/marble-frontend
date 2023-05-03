@@ -1,22 +1,20 @@
-import { exec } from 'child_process';
-import { mkdir, rm } from 'fs/promises';
+import { mkdir, rm, writeFile } from 'fs/promises';
+import { generateSource } from 'oazapfts/lib/codegen/index';
 import ora from 'ora';
-import { promisify } from 'util';
 
-import { GENERATED_FOLDER, OPENAPI_OPTIONS } from './config';
-
-const execAsync = promisify(exec);
+import {
+  GENERATED_API,
+  GENERATED_FOLDER,
+  OPENAPI_OPTIONS,
+  OPENAPI_SPEC,
+} from './config';
 
 async function openapiGenerator() {
   const spinner = ora('Start to generate OpenAPI client...').start();
   try {
-    const stringifiedOptions = Object.entries(OPENAPI_OPTIONS)
-      .map(([name, value]) => `--${name} ${value}`)
-      .join(' ');
+    const code = await generateSource(OPENAPI_SPEC, OPENAPI_OPTIONS);
 
-    await execAsync(
-      `docker run --rm -v $PWD:/local openapitools/openapi-generator-cli generate ${stringifiedOptions}`
-    );
+    await writeFile(GENERATED_API, code);
 
     spinner.succeed('Succesfully generated OpenAPI client');
   } catch (error) {

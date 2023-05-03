@@ -13,6 +13,13 @@
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
+    },
+    {
+      "files": ["src/lib/generated/marble-api.ts"],
+      "rules": {
+        "@typescript-eslint/ban-types": "off", // oazapfts generate {} instead of Record<string,empy>
+        "@typescript-eslint/no-explicit-any": "error" // you should change OAS spec to generate non any types
+      }
     }
   ]
 }

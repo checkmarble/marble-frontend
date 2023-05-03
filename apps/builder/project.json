@@ -17,6 +17,11 @@
       "options": {
         "cwd": "apps/builder",
         "command": "npx remix dev"
+      },
+      "configurations": {
+        "debug": {
+          "command": "npx remix dev --debug"
+        }
       }
     },
     "build": {
