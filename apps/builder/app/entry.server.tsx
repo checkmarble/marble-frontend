@@ -1,3 +1,10 @@
+import {
+  defaults,
+  fetchWithAuthMiddleware,
+  postToken,
+  TokenService,
+} from '@marble-front/api/marble';
+import { getServerEnv } from '@marble-front/builder/utils/environment';
 import { type EntryContext, Response } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import isbot from 'isbot';
@@ -10,6 +17,20 @@ import { getI18nextServerInstance } from './config/i18n/i18next.server';
 import { sessionCookie } from './services/auth/session.server';
 
 const ABORT_DELAY = 5000;
+
+defaults.baseUrl = getServerEnv('MARBLE_API_DOMAIN');
+
+const bffTokenService = new TokenService({
+  refreshToken: () => postToken({ refresh_token: 'token12345' }),
+});
+
+defaults.fetch = fetchWithAuthMiddleware({
+  bffTokenService,
+  getAuthorizationHeader: (token) => ({
+    name: 'Authorization',
+    value: `${token.token_type} ${token.access_token}`,
+  }),
+});
 
 export default async function handleRequest(
   request: Request,

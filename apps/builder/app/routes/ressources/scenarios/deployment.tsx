@@ -1,14 +1,11 @@
+import { createScenarioPublication } from '@marble-front/api/marble';
 import { navigationI18n } from '@marble-front/builder/components';
-import { type Increment } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import {
   commitSession,
   getSession,
 } from '@marble-front/builder/services/auth/session.server';
-import { scenariosApi } from '@marble-front/builder/services/marble-api';
-import { getReferer, getRoute } from '@marble-front/builder/services/routes';
 import { parseFormSafe } from '@marble-front/builder/utils/input-validation';
-import { fromUUID } from '@marble-front/builder/utils/short-uuid';
 import {
   Button,
   type ButtonProps,
@@ -18,14 +15,15 @@ import {
 } from '@marble-front/ui/design-system';
 import { Play, Pushtolive, Stop, Tick } from '@marble-front/ui/icons';
 import { Label } from '@radix-ui/react-label';
-import { type ActionArgs, json, redirect } from '@remix-run/node';
+import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace, type TFuncKey } from 'i18next';
-import { toast } from 'react-hot-toast';
+import { LoaderIcon } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 
 import { setToastMessage } from '../../../components/MarbleToaster';
+import { type SortedScenarioIteration } from '../../__builder/scenarios/$scenarioId/i/$incrementId/view';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -45,10 +43,7 @@ type DeploymentType = (typeof Deployment)[number];
 
 const formSchema = z.object({
   deploymentType: z.enum(Deployment),
-  scenarioId: z.string().uuid(),
-  liveVersionId: z.union([z.undefined(), z.string().uuid()]),
   incrementId: z.string().uuid(),
-  scenarioVersionToActivateId: z.string().uuid(),
 
   // TODO: factorize common FormData parser, add superRefine to cast on known errors (ex: "required" in this context)
   replaceCurrentLiveVersion: z.coerce
@@ -61,7 +56,7 @@ const formSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  const { id: userId } = await authenticator.isAuthenticated(request, {
+  await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -77,56 +72,31 @@ export async function action({ request }: ActionArgs) {
   }
 
   try {
-    const {
-      scenarioId,
-      scenarioVersionToActivateId,
-      incrementId,
-      deploymentType,
-    } = parsedForm.data;
-    const result = await scenariosApi.postScenariosScenarioIdDeployments({
-      scenarioId,
-      scenarioDeploymentToCreate: {
-        authorId: userId,
-        scenarioVersionToActivateId:
-          deploymentType === 'deactivate'
-            ? undefined
-            : scenarioVersionToActivateId,
-      },
+    const { incrementId, deploymentType } = parsedForm.data;
+
+    await createScenarioPublication({
+      publicationAction:
+        deploymentType === 'deactivate' ? 'unpublish' : 'publish',
+      scenarioIterationId: incrementId,
     });
 
-    //TODO: fix when better OpenAPIv3 spec is provided
-    const newIncrementId = JSON.parse(result).id;
-    const referer = getReferer(request, {
-      fallback: getRoute('/scenarios/:scenarioId/i/:incrementId/view/trigger', {
-        incrementId: fromUUID(incrementId),
-        scenarioId: fromUUID(scenarioId),
-      }),
+    return json({
+      success: true as const,
+      error: null,
+      values: parsedForm.data,
     });
-
-    return redirect(
-      deploymentType === 'deactivate'
-        ? referer
-        : referer.replace(fromUUID(incrementId), fromUUID(newIncrementId))
-    );
   } catch (error) {
     const session = await getSession(request.headers.get('cookie'));
     setToastMessage(session, {
       type: 'error',
-      messageKey:
-        /**
-         * TODO: handle server errors properly (narrow based on error code from the server when availbale):
-         */
-        parsedForm.data.scenarioVersionToActivateId ===
-        parsedForm.data.liveVersionId
-          ? 'common:errors.deployment.version_id_currently_deployed'
-          : 'common:errors.unknown',
+      messageKey: 'common:errors.unknown',
     });
 
     return json(
       {
         success: false as const,
         error: null,
-        values: parsedForm,
+        values: parsedForm.data,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -140,19 +110,22 @@ function ModalContent({
 }: {
   scenarioId: string;
   liveVersionId?: string;
-  currentIncrement: Increment;
+  currentIncrement: SortedScenarioIteration;
 }) {
   const { t } = useTranslation(handle.i18n);
+
+  //TODO(transition): add loading during form submission
   const fetcher = useFetcher<typeof action>();
 
   const deploymentType = getDeploymentType(currentIncrement.type);
-  const translationKeys = getTranslationKeys(deploymentType);
   const buttonConfig = getButtonConfig(deploymentType);
 
+  const isSuccess = fetcher.type === 'done' && fetcher.data?.success === true;
+
   const error = fetcher.data?.error;
-  const isSuccess = fetcher.type === 'done' && fetcher.data?.success !== false;
 
   return isSuccess ? (
+    // In success modal, use fetcher.data.values.deploymentType (action will update deploymentType to the new state)
     <div className="flex flex-col items-center p-8 text-center">
       <Tick
         width="108px"
@@ -160,10 +133,14 @@ function ModalContent({
         className="bg-purple-10 border-purple-10 mb-8 rounded-full border-8 text-purple-100"
       />
       <Modal.Title className="text-l text-grey-100 mb-2 font-semibold">
-        {t(translationKeys.success_title)}
+        {t(
+          `scenarios:deployment_modal_success.${fetcher.data.values.deploymentType}.title`
+        )}
       </Modal.Title>
       <p className="text-s text-grey-100 mb-8 font-normal">
-        {t(translationKeys.success_description)}
+        {t(
+          `scenarios:deployment_modal_success.${fetcher.data.values.deploymentType}.description`
+        )}
       </p>
       <Modal.Close asChild autoFocus>
         <Button variant="secondary">{t('common:close')}</Button>
@@ -171,7 +148,9 @@ function ModalContent({
     </div>
   ) : (
     <>
-      <Modal.Title>{t(translationKeys.title)}</Modal.Title>
+      <Modal.Title>
+        {t(`scenarios:deployment_modal.${deploymentType}.title`)}
+      </Modal.Title>
       <fetcher.Form
         className="bg-grey-00 flex-col p-8"
         method="post"
@@ -182,10 +161,11 @@ function ModalContent({
           scenarioId={scenarioId}
           liveVersionId={liveVersionId}
           incrementId={currentIncrement.id}
-          scenarioVersionToActivateId={currentIncrement.versionId}
         />
         <div className="text-s mb-8 flex flex-col gap-6 font-medium">
-          <p className="font-semibold">{t(translationKeys.confirm)}</p>
+          <p className="font-semibold">
+            {t(`scenarios:deployment_modal.${deploymentType}.confirm`)}
+          </p>
           <div className="flex flex-col ">
             <div className="flex flex-row items-center gap-2">
               <Checkbox
@@ -194,7 +174,9 @@ function ModalContent({
                 color={error?.replaceCurrentLiveVersion?._errors && 'red'}
               />
               <Label htmlFor="replaceCurrentLiveVersion">
-                {t(translationKeys.replace_current_live_version)}
+                {t(
+                  `scenarios:deployment_modal.${deploymentType}.replace_current_live_version`
+                )}
               </Label>
             </div>
           </div>
@@ -206,15 +188,17 @@ function ModalContent({
                 color={error?.changeIsImmediate?._errors && 'red'}
               />
               <Label htmlFor="changeIsImmediate">
-                {t(translationKeys.change_is_immediate)}
+                {t(
+                  `scenarios:deployment_modal.${deploymentType}.change_is_immediate`
+                )}
               </Label>
             </div>
           </div>
         </div>
 
-        {translationKeys.helper && (
+        {deploymentType === 'deactivate' && (
           <p className="text-grey-25 mb-4 text-xs font-medium">
-            {t(translationKeys.helper)}
+            {t(`scenarios:deployment_modal.${deploymentType}.helper`)}
           </p>
         )}
 
@@ -246,7 +230,7 @@ export function DeploymentModal({
 }: {
   scenarioId: string;
   liveVersionId?: string;
-  currentIncrement: Increment;
+  currentIncrement: SortedScenarioIteration;
 }) {
   const { t } = useTranslation(handle.i18n);
 
@@ -256,20 +240,7 @@ export function DeploymentModal({
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button
-          {...buttonConfig.props}
-          onClick={(e) => {
-            if (
-              deploymentType !== 'deactivate' &&
-              liveVersionId === currentIncrement.versionId
-            ) {
-              e.preventDefault();
-              toast.error(
-                t('common:errors.deployment.version_id_currently_deployed')
-              );
-            }
-          }}
-        >
+        <Button {...buttonConfig.props}>
           <buttonConfig.icon.trigger height="24px" width="24px" />
           {t(buttonConfig.label)}
         </Button>
@@ -285,7 +256,9 @@ export function DeploymentModal({
   );
 }
 
-function getDeploymentType(type: Increment['type']): DeploymentType {
+function getDeploymentType(
+  type: SortedScenarioIteration['type']
+): DeploymentType {
   switch (type) {
     case 'draft':
       return 'activate';
@@ -293,56 +266,6 @@ function getDeploymentType(type: Increment['type']): DeploymentType {
       return 'deactivate';
     case 'past version':
       return 'reactivate';
-  }
-}
-
-function getTranslationKeys(type: DeploymentType): {
-  title: TFuncKey<['scenarios']>;
-  confirm: TFuncKey<['scenarios']>;
-  replace_current_live_version: TFuncKey<['scenarios']>;
-  change_is_immediate: TFuncKey<['scenarios']>;
-  helper?: TFuncKey<['scenarios']>;
-  success_title: TFuncKey<['scenarios']>;
-  success_description: TFuncKey<['scenarios']>;
-} {
-  switch (type) {
-    case 'activate':
-      return {
-        title: 'scenarios:deployment_modal.activate.title',
-        confirm: 'scenarios:deployment_modal.activate.confirm',
-        replace_current_live_version:
-          'scenarios:deployment_modal.activate.replace_current_live_version',
-        change_is_immediate:
-          'scenarios:deployment_modal.activate.change_is_immediate',
-        success_title: 'scenarios:deployment_modal_success.activate.title',
-        success_description:
-          'scenarios:deployment_modal_success.activate.description',
-      };
-    case 'deactivate':
-      return {
-        title: 'scenarios:deployment_modal.deactivate.title',
-        confirm: 'scenarios:deployment_modal.deactivate.confirm',
-        replace_current_live_version:
-          'scenarios:deployment_modal.deactivate.replace_current_live_version',
-        helper: 'scenarios:deployment_modal.deactivate.helper',
-        change_is_immediate:
-          'scenarios:deployment_modal.deactivate.change_is_immediate',
-        success_title: 'scenarios:deployment_modal_success.deactivate.title',
-        success_description:
-          'scenarios:deployment_modal_success.deactivate.description',
-      };
-    case 'reactivate':
-      return {
-        title: 'scenarios:deployment_modal.reactivate.title',
-        confirm: 'scenarios:deployment_modal.reactivate.confirm',
-        replace_current_live_version:
-          'scenarios:deployment_modal.reactivate.replace_current_live_version',
-        change_is_immediate:
-          'scenarios:deployment_modal.reactivate.change_is_immediate',
-        success_title: 'scenarios:deployment_modal_success.reactivate.title',
-        success_description:
-          'scenarios:deployment_modal_success.reactivate.description',
-      };
   }
 }
 
@@ -375,12 +298,3 @@ function getButtonConfig(type: DeploymentType): {
       };
   }
 }
-
-// Pour le déploiement, honnêtement si tu n'as pas fait beaucoup d'infra ça va te prendre pas mal de temps.
-
-// En supposant que c'est effectivement le cas, je te conseille de faire les étapes suivantes pour t'onboarder:
-// - lancer une EC2 + une PostgreSQL dans AWS avec la console (= l'interface graphique) en suivant les tutos
-// - refaire la même chose cette fois ci en code avec un SDK AWS de ton choix (Node ou Python ou n'importe)
-// -  refaire la même chose cette fois-ci en Terraform
-
-// Une fois que tu as fait tout ça, si tu veux on prend 30mins et tu m'expliqueras exactement quels buts tu souhaites atteindre sur le déploiement et je te donnerai des conseils pertinents + t'expliquerai quelle partie du code terraform tu peux réutiliser pour ça.

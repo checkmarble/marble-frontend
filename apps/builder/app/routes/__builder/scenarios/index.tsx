@@ -1,20 +1,37 @@
+import { listScenarios } from '@marble-front/api/marble';
 import { Page } from '@marble-front/builder/components';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { getRoute } from '@marble-front/builder/services/routes';
 import { fromUUID } from '@marble-front/builder/utils/short-uuid';
 import { Tag } from '@marble-front/ui/design-system';
 import { Scenarios } from '@marble-front/ui/icons';
-import { Link } from '@remix-run/react';
+import { json, type LoaderArgs } from '@remix-run/node';
+import { Link, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-
-import { useScenarios } from '../scenarios';
+import * as R from 'remeda';
 
 export const handle = {
   i18n: ['scenarios', 'navigation'] satisfies Namespace,
 };
 
+export async function loader({ request }: LoaderArgs) {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
+  const scenarios = await listScenarios();
+
+  const sortedScenarios = R.sortBy(scenarios, [
+    ({ createdAt }) => createdAt,
+    'desc',
+  ]);
+
+  return json(sortedScenarios);
+}
+
 export default function ScenariosPage() {
   const { t } = useTranslation(handle.i18n);
-  const scenarios = useScenarios();
+  const scenarios = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -29,14 +46,14 @@ export default function ScenariosPage() {
               return (
                 <Link
                   key={scenario.id}
-                  to={`/scenarios/${fromUUID(scenario.id)}/i/${fromUUID(
-                    scenario.lastIncrementId
-                  )}/view/trigger`}
+                  to={getRoute('/scenarios/:scenarioId', {
+                    scenarioId: fromUUID(scenario.id),
+                  })}
                 >
                   <div className="bg-grey-00 border-grey-10 flex max-w-3xl flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
                     <div className="text-m flex flex-row gap-2 font-bold">
                       {scenario.name}
-                      {scenario.isLive && (
+                      {scenario.liveVersionId && (
                         <Tag color="purple" className="capitalize">
                           {t('scenarios:live')}
                         </Tag>

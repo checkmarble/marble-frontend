@@ -19,7 +19,6 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { authenticator } from '../services/auth/auth.server';
-import { usersApi } from '../services/marble-api';
 import { LanguagePicker } from './ressources/user/language';
 
 const LINKS: SidebarLinkProps[] = [
@@ -35,14 +34,29 @@ const BOTTOM_LINKS: SidebarLinkProps[] = [
   // { labelTKey: 'navigation:help-center', to: 'help-center', Icon: Helpcenter },
 ];
 
+export interface UserResponse {
+  id: string;
+  orgId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  preferredLanguage?: string;
+  profilePictureUrl?: string;
+}
+
 export async function loader({ request }: LoaderArgs) {
-  const { email } = await authenticator.isAuthenticated(request, {
+  await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
-  const user = await usersApi.getUsersByUserEmail({
-    userEmail: email,
-  });
+  //TODO(user): retrieve the logged in user information
+  const user: UserResponse = {
+    id: 'fakeUserId',
+    orgId: 'fakeUserOrgid',
+    email: 'fakeUserEmail',
+    firstName: 'fakeUserFirstname',
+    lastName: 'fakeUserLastname',
+  };
   return json({ user });
 }
 

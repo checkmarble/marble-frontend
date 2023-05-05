@@ -1,66 +1,29 @@
-import { protoBase64 } from '@bufbuild/protobuf';
-import { ScenarioVersionBody } from '@marble-front/api/marble';
-import { createSimpleContext } from '@marble-front/builder/utils/create-context';
-import { toUUID } from '@marble-front/builder/utils/short-uuid';
-import { hasRequiredKeys } from '@marble-front/builder/utils/utility-types';
-import { Outlet, useParams } from '@remix-run/react';
+import { getScenarioIteration } from '@marble-front/api/marble';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { fromParams } from '@marble-front/builder/utils/short-uuid';
+import { json, type LoaderArgs } from '@remix-run/node';
+import { Outlet, useRouteLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { useMemo } from 'react';
-import invariant from 'tiny-invariant';
-
-import { useCurrentScenario } from '../../$scenarioId';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,
 };
 
-function useCurrentScenarioIncrementValue() {
-  const currentScenario = useCurrentScenario();
+export async function loader({ request, params }: LoaderArgs) {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
 
-  const { incrementId } = useParams();
-  invariant(incrementId, 'incrementId is required');
+  const incrementId = fromParams(params, 'incrementId');
 
-  const incrementUUID = toUUID(incrementId);
+  const scenarioIteration = await getScenarioIteration(incrementId);
 
-  const currentScenarioVersionId =
-    currentScenario.deployments.find(({ id }) => id === incrementUUID)
-      ?.scenarioVersionId ?? incrementUUID;
-
-  const currentScenarioVersion = currentScenario.versions.find(
-    ({ id }) => id === currentScenarioVersionId
-  );
-  invariant(currentScenarioVersion, `Unknown scenarioVersion`);
-
-  const { bodyEncodedWithProtobuf, ...rest } = currentScenarioVersion;
-
-  const body = useMemo(() => {
-    const { rules, ...rest } = ScenarioVersionBody.fromBinary(
-      protoBase64.dec(bodyEncodedWithProtobuf)
-    );
-
-    return {
-      ...rest,
-      rules: rules.filter(hasRequiredKeys(['consequence'])),
-    };
-  }, [bodyEncodedWithProtobuf]);
-
-  return { ...rest, body };
+  return json(scenarioIteration);
 }
 
-type CurrentScenarioIncrement = ReturnType<
-  typeof useCurrentScenarioIncrementValue
->;
+export const useCurrentScenarioIteration = () =>
+  useRouteLoaderData('routes/__builder/scenarios/$scenarioId/i/$incrementId');
 
-const { Provider, useValue: useCurrentScenarioIncrement } =
-  createSimpleContext<CurrentScenarioIncrement>('CurrentScenarioIncrement');
-
-export default function CurrentScenarioIncrementProvider() {
-  const value = useCurrentScenarioIncrementValue();
-  return (
-    <Provider value={value}>
-      <Outlet />
-    </Provider>
-  );
+export default function CurrentScenarioIterationProvider() {
+  return <Outlet />;
 }
-
-export { useCurrentScenarioIncrement };

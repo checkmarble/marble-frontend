@@ -4,7 +4,7 @@ import { Authenticator } from 'remix-auth';
 
 import { usersApi } from '../marble-api';
 import { sessionStorage } from './session.server';
-import { GoogleStrategy } from './strategies';
+import { type GoogleProfile, GoogleStrategy } from './strategies';
 
 const authErrors = ['NoAccount', 'Unknown'] as const;
 export type AuthErrors = (typeof authErrors)[number];
@@ -22,9 +22,7 @@ export class AuthError extends Error {
 
 // Create an instance of the authenticator, pass a generic with what
 // strategies will return and will store in the session
-export const authenticator = new Authenticator<
-  Pick<UserResponse, 'id' | 'email'>
->(sessionStorage);
+export const authenticator = new Authenticator<GoogleProfile>(sessionStorage);
 
 authenticator.use(
   new GoogleStrategy(
@@ -41,23 +39,23 @@ authenticator.use(
        * - conditionnal error throwing (eg: throw new AuthError('NoAccount'))
        */
       try {
-        const user = await usersApi.getUsersByUserEmail({
-          // userEmail: profile.emails[0].value,
-          userEmail: 'alice.vance@fintech.com',
-        });
+        // const user = await usersApi.getUsersByUserEmail({
+        //   // userEmail: profile.emails[0].value,
+        //   userEmail: 'alice.vance@fintech.com',
+        // });
 
-        // Save profile picture from SSO if no existing profile picture
-        if (!user.profilePictureUrl && profile.photos[0].value) {
-          await usersApi.putUsersUserId({
-            userId: user.id,
-            userPreferences: {
-              ...user,
-              profilePictureUrl: profile.photos[0].value,
-            },
-          });
-        }
+        // // Save profile picture from SSO if no existing profile picture
+        // if (!user.profilePictureUrl && profile.photos[0].value) {
+        //   await usersApi.putUsersUserId({
+        //     userId: user.id,
+        //     userPreferences: {
+        //       ...user,
+        //       profilePictureUrl: profile.photos[0].value,
+        //     },
+        //   });
+        // }
 
-        return { id: user.id, email: user.email };
+        return profile;
       } catch (error) {
         console.log(error);
         throw error;

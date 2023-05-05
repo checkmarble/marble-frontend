@@ -1,28 +1,36 @@
 import {
+  listScenarioIterations,
+  type ScenarioIteration,
+} from '@marble-front/api/marble';
+import {
   navigationI18n,
   ScenarioPage,
   Scenarios,
   type ScenariosLinkProps,
 } from '@marble-front/builder/components';
-import {
-  type Increment,
-  type Increments,
-  useCurrentScenario,
-} from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
+import { useCurrentScenario } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@marble-front/builder/routes/ressources/scenarios/deployment';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { getRoute } from '@marble-front/builder/services/routes';
-import { fromUUID, toUUID } from '@marble-front/builder/utils/short-uuid';
+import {
+  fromParams,
+  fromUUID,
+  toUUID,
+} from '@marble-front/builder/utils/short-uuid';
 import { Select } from '@marble-front/ui/design-system';
 import { Decision, Rules, Trigger } from '@marble-front/ui/icons';
+import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
 import {
   Link,
   Outlet,
+  useLoaderData,
   useLocation,
   useNavigate,
   useParams,
 } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 
 export const handle = {
@@ -39,18 +47,70 @@ const LINKS: ScenariosLinkProps[] = [
   },
 ];
 
+export async function loader({ request, params }: LoaderArgs) {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
+
+  const scenarioId = fromParams(params, 'scenarioId');
+
+  const scenarioIterations = await listScenarioIterations({ scenarioId });
+
+  return json(scenarioIterations);
+}
+
+function sortScenarioIterations(
+  scenarioIterations: ScenarioIteration[],
+  liveVersionId?: string
+) {
+  return R.pipe(
+    scenarioIterations,
+    R.partition(({ version }) => version === undefined),
+    ([drafts, versions]) => {
+      const sortedDrafts = R.pipe(
+        drafts,
+        R.map((draft) => ({ ...draft, type: 'draft' as const })),
+        R.sortBy([({ createdAt }) => createdAt, 'desc'])
+      );
+
+      const sortedVersions = R.pipe(
+        versions,
+        R.map((version) => ({
+          ...version,
+          type:
+            version.id === liveVersionId
+              ? ('live version' as const)
+              : ('past version' as const),
+        })),
+        R.sortBy([({ createdAt }) => createdAt, 'desc'])
+      );
+
+      return [...sortedDrafts, ...sortedVersions];
+    }
+  );
+}
+
+export type SortedScenarioIteration = ReturnType<
+  typeof sortScenarioIterations
+> extends Array<infer ItemT>
+  ? ItemT
+  : unknown;
+
 export default function ScenarioViewLayout() {
-  const {
-    name,
-    increments,
-    id: scenarioId,
-    liveVersion,
-  } = useCurrentScenario();
+  const currentScenario = useCurrentScenario();
+  const scenarioIterations = useLoaderData<typeof loader>();
+
+  const sortedScenarioIterations = sortScenarioIterations(
+    scenarioIterations,
+    currentScenario.liveVersionId
+  );
 
   const { incrementId } = useParams();
   invariant(incrementId, 'incrementId is required');
 
-  const currentIncrement = increments.get(toUUID(incrementId));
+  const currentIncrement = sortedScenarioIterations.find(
+    ({ id }) => id === toUUID(incrementId)
+  );
   invariant(currentIncrement, 'currentIncrement is required');
 
   return (
@@ -60,15 +120,15 @@ export default function ScenarioViewLayout() {
           <Link to={getRoute('/scenarios')}>
             <ScenarioPage.BackButton />
           </Link>
-          {name}
+          {currentScenario.name}
           <VersionSelect
-            increments={increments}
+            scenarioIterations={sortedScenarioIterations}
             currentIncrement={currentIncrement}
           />
         </div>
         <DeploymentModal
-          scenarioId={scenarioId}
-          liveVersionId={liveVersion?.scenarioVersionId}
+          scenarioId={currentScenario.id}
+          liveVersionId={currentScenario.liveVersionId}
           currentIncrement={currentIncrement}
         />
       </ScenarioPage.Header>
@@ -88,10 +148,10 @@ export default function ScenarioViewLayout() {
 
 function VersionSelect({
   currentIncrement,
-  increments,
+  scenarioIterations,
 }: {
-  currentIncrement: Increment;
-  increments: Increments;
+  currentIncrement: SortedScenarioIteration;
+  scenarioIterations: SortedScenarioIteration[];
 }) {
   const { t } = useTranslation(handle.i18n);
   const navigate = useNavigate();
@@ -102,8 +162,8 @@ function VersionSelect({
       value={currentIncrement.id}
       border="rounded"
       className="min-w-[126px]"
-      onValueChange={(id) => {
-        const elem = increments.get(id);
+      onValueChange={(selectedId) => {
+        const elem = scenarioIterations.find(({ id }) => id === selectedId);
         if (!elem?.id) return;
         navigate(
           location.pathname.replace(
@@ -113,20 +173,20 @@ function VersionSelect({
         );
       }}
     >
-      {increments.values.map((increment) => {
+      {scenarioIterations.map((iteration) => {
         return (
           <Select.DefaultItem
             className="min-w-[110px]"
-            key={increment.id}
-            value={increment.id}
+            key={iteration.id}
+            value={iteration.id}
           >
             <p className="text-s flex flex-row gap-1 font-semibold">
               <span className="text-grey-100 capitalize">
-                {increment.type === 'draft'
-                  ? t('scenarios:draft')
-                  : increment.label}
+                {iteration.version
+                  ? `V${iteration.version}`
+                  : t('scenarios:draft')}
               </span>
-              {increment.type === 'live version' && (
+              {iteration.type === 'live version' && (
                 <span className="capitalize text-purple-100">
                   {t('scenarios:live')}
                 </span>

@@ -1,97 +1,31 @@
-import { createSimpleContext } from '@marble-front/builder/utils/create-context';
-import { toUUID } from '@marble-front/builder/utils/short-uuid';
-import { Outlet, useParams } from '@remix-run/react';
+import { getScenario } from '@marble-front/api/marble';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { fromParams } from '@marble-front/builder/utils/short-uuid';
+import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
+import { Outlet, useRouteLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import * as R from 'remeda';
-import invariant from 'tiny-invariant';
-
-import { useScenarios } from '../scenarios';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,
 };
 
-function useCurrentScenarioValue() {
-  const scenarios = useScenarios();
+export async function loader({ request, params }: LoaderArgs) {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
 
-  const { scenarioId } = useParams();
-  invariant(scenarioId, 'scenarioId is required');
+  const scenarioId = fromParams(params, 'scenarioId');
 
-  const currentScenario = scenarios?.find(
-    ({ id }) => id === toUUID(scenarioId)
-  );
-  invariant(currentScenario, `Unknown current scenario`);
+  const scenario = await getScenario(scenarioId);
 
-  const publishedVersions = R.pipe(
-    currentScenario.deployments,
-    R.filter(
-      (
-        deployments
-      ): deployments is Required<
-        (typeof currentScenario.deployments)[number]
-      > => deployments.scenarioVersionId !== undefined
-    ),
-    R.map((deployment) => ({
-      id: deployment.id,
-      type:
-        currentScenario.liveVersion?.id === deployment.id
-          ? ('live version' as const)
-          : ('past version' as const),
-      creationDate: deployment.creationDate,
-      versionId: deployment.scenarioVersionId,
-      label: deployment.frontendSerialName,
-    }))
-  );
-
-  const publishedVersionIds = new Set(
-    publishedVersions.map(({ versionId }) => versionId)
-  );
-
-  const drafts = R.pipe(
-    currentScenario.versions,
-    R.filter(({ id }) => !publishedVersionIds.has(id)),
-    R.map((draft) => ({
-      id: draft.id,
-      type: 'draft' as const,
-      creationDate: draft.creationDate,
-      versionId: draft.id,
-      label: undefined,
-    }))
-  );
-
-  const scenarioIncrements = R.sortBy(
-    [...publishedVersions, ...drafts],
-    [({ creationDate }) => creationDate, 'desc']
-  );
-
-  const map = new Map(
-    scenarioIncrements.map((increment) => [increment.id, increment])
-  );
-  return {
-    ...currentScenario,
-    increments: {
-      values: scenarioIncrements,
-      get(id: string) {
-        return map.get(id);
-      },
-    },
-  };
+  return json(scenario);
 }
 
-type CurrentScenario = ReturnType<typeof useCurrentScenarioValue>;
+export const useCurrentScenario = () =>
+  useRouteLoaderData('routes/__builder/scenarios/$scenarioId') as SerializeFrom<
+    typeof loader
+  >;
 
-const { Provider, useValue: useCurrentScenario } =
-  createSimpleContext<CurrentScenario>('CurrentScenario');
-
-export default function CurrentScenarioContextProvider() {
-  const value = useCurrentScenarioValue();
-  return (
-    <Provider value={value}>
-      <Outlet />
-    </Provider>
-  );
+export default function CurrentScenarioProvider() {
+  return <Outlet />;
 }
-
-export { useCurrentScenario };
-export type Increments = ReturnType<typeof useCurrentScenario>['increments'];
-export type Increment = Increments['values'][number];

@@ -3,8 +3,8 @@
   "auth.login": "Login",
   "search": "Search",
   "errors.unknown": "An unknown error as occured",
-  "errors.deployment.version_id_currently_deployed": "The current live version has the same configuration",
   "cancel": "Cancel",
   "close": "Close",
-  "clipboard.copy": "Copied in clipboard: {{value}}"
+  "clipboard.copy": "Copied in clipboard: {{value}}",
+  "empty_scenario_iteration_list": "Reach out to  Marble to create your first scenario draft."
 }
