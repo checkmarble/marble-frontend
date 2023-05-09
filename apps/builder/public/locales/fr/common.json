@@ -4,7 +4,7 @@
   "cancel": "Annuler",
   "clipboard.copy": "Copié dans le presse-papier : {{value}}",
   "close": "Fermer",
-  "errors.deployment.version_id_currently_deployed": "La version live actuelle a la même configuration",
   "errors.unknown": "Une erreur inconnue s'est produite",
-  "search": "Recherche"
+  "search": "Recherche",
+  "empty_scenario_iteration_list": "Contactez Marble pour créer votre premier brouillon de scénario."
 }

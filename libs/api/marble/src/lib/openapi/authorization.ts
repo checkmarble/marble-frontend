@@ -1,7 +1,5 @@
 import { Mutex } from 'async-mutex';
 
-import { type Middleware } from '../generated/marble-api';
-
 export class TokenService<Token> {
   private _token: Promise<Token>;
   private _refreshToken: () => Promise<Token>;
@@ -28,35 +26,30 @@ export class TokenService<Token> {
   }
 }
 
-export function getAuthorizationMiddleware<Token>({
+export function fetchWithAuthMiddleware<Token>({
   bffTokenService,
   getAuthorizationHeader,
 }: {
   bffTokenService: TokenService<Token>;
   getAuthorizationHeader: (token: Token) => { name: string; value: string };
-}): Middleware {
-  return {
-    pre: async ({ url, init }) => {
-      const token = await bffTokenService.getToken();
-      const { name, value } = getAuthorizationHeader(token);
-      const headers = new Headers(init.headers);
-      headers.set(name, value);
+}): typeof fetch {
+  async function setAuthorizationHeader(init?: RequestInit) {
+    const token = await bffTokenService.getToken();
+    const { name, value } = getAuthorizationHeader(token);
+    const headers = new Headers(init?.headers);
+    headers.set(name, value);
+    return { ...init, headers };
+  }
 
-      return {
-        url,
-        init: {
-          ...init,
-          headers,
-        },
-      };
-    },
-    post: async ({ fetch, url, init, response }) => {
-      if (response.status === 401) {
-        await bffTokenService.refreshToken();
+  return async (input, init) => {
+    const initWithAuth = await setAuthorizationHeader(init);
+    const response = await fetch(input, initWithAuth);
 
-        return fetch(url, init);
-      }
-      return response;
-    },
+    if (response.status === 401) {
+      await bffTokenService.refreshToken();
+      return fetch(input, await setAuthorizationHeader(init));
+    }
+
+    return response;
   };
 }

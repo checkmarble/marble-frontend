@@ -10,7 +10,7 @@ const toastMessageScema = z.object({
   type: z.enum(['success', 'error', 'loading', 'custom']),
   messageKey: z.enum([
     'common:errors.unknown',
-    'common:errors.deployment.version_id_currently_deployed',
+    'common:empty_scenario_iteration_list',
   ]),
 });
 

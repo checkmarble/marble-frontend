@@ -64,17 +64,17 @@ export type GetPathParams<
 
 export function getRoute<Path extends Paths[number]>(
   path: Path,
-  ...params: GetPathParams<Path> extends Record<string, never>
+  ...args: GetPathParams<Path> extends Record<string, never>
     ? []
     : [params: GetPathParams<Path>]
 ) {
+  const params = args.length === 1 ? args[0] : {};
   return path
     .split('/')
-    .filter((value) => value !== '')
     .map((part) => {
       const isParam = part.startsWith(':');
       //@ts-expect-error part is ensured by TS to be present in params here
-      return isParam ? params[part] : part;
+      return isParam ? params[part.slice(1)] : part;
     })
     .map(encodeURIComponent)
     .join('/');

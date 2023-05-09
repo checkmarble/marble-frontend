@@ -1,6 +1,0 @@
-description: Forbidden
-content:
-  application/json:
-    schema:
-      type: string
-      example: Forbidden

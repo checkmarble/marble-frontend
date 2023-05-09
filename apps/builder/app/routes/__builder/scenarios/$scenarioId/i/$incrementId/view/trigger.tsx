@@ -1,8 +1,7 @@
 import { Callout, Paper } from '@marble-front/builder/components';
-import { Formula } from '@marble-front/builder/components/Scenario/Formula';
+import { NotImplemented } from '@marble-front/builder/components/Scenario/Formula/NotImplemented';
 import { LogicalOperator } from '@marble-front/builder/components/Scenario/LogicalOperator';
 import { ScenarioBox } from '@marble-front/builder/components/Scenario/ScenarioBox';
-import { triggerFixture } from '@marble-front/builder/fixtures/trigger';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { Fragment } from 'react';
@@ -20,7 +19,7 @@ export default function Trigger() {
 
   const { id } = useCurrentScenario();
 
-  const trigger = triggerFixture.complex;
+  //   const trigger = triggerFixture.complex;
 
   return (
     <Paper.Container>
@@ -77,7 +76,8 @@ export default function Trigger() {
       </div>
 
       <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">
-        <ScenarioBox className="bg-grey-02 col-span-4 w-fit font-semibold text-purple-100">
+        <NotImplemented value="Trigger" />
+        {/* <ScenarioBox className="bg-grey-02 col-span-4 w-fit font-semibold text-purple-100">
           {trigger.rootTableName}
         </ScenarioBox>
         {trigger.conditions.map((condition, index) => {
@@ -108,7 +108,7 @@ export default function Trigger() {
               </div>
             </Fragment>
           );
-        })}
+        })} */}
       </div>
     </Paper.Container>
   );
