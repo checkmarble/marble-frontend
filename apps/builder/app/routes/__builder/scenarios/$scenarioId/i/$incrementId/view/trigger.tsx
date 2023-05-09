@@ -9,6 +9,7 @@ import { toast } from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useCurrentScenario } from '../../../../$scenarioId';
+import { useCurrentScenarioIteration } from '../../$incrementId';
 
 export const handle = {
   i18n: ['scenarios', 'common'] satisfies Namespace,
@@ -17,9 +18,12 @@ export const handle = {
 export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
 
-  const { id } = useCurrentScenario();
+  const {
+    scenarioId,
+    body: { triggerCondition },
+  } = useCurrentScenarioIteration();
 
-  //   const trigger = triggerFixture.complex;
+  const { triggerObjectType } = useCurrentScenario();
 
   return (
     <Paper.Container>
@@ -51,11 +55,11 @@ export default function Trigger() {
                 <code
                   className="border-grey-10 cursor-pointer select-none rounded-sm border px-1"
                   onClick={() => {
-                    navigator.clipboard.writeText(id).then(() => {
+                    navigator.clipboard.writeText(scenarioId).then(() => {
                       toast.success(
                         t('common:clipboard.copy', {
                           ns: 'common',
-                          replace: { value: id },
+                          replace: { value: scenarioId },
                         })
                       );
                     });
@@ -64,7 +68,7 @@ export default function Trigger() {
               ),
             }}
             values={{
-              scenarioId: id,
+              scenarioId: scenarioId,
             }}
           />
         </p>
@@ -76,11 +80,17 @@ export default function Trigger() {
       </div>
 
       <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">
-        <NotImplemented value="Trigger" />
-        {/* <ScenarioBox className="bg-grey-02 col-span-4 w-fit font-semibold text-purple-100">
-          {trigger.rootTableName}
+        <ScenarioBox className="bg-grey-02 col-span-4 w-fit font-semibold text-purple-100">
+          {triggerObjectType}
         </ScenarioBox>
-        {trigger.conditions.map((condition, index) => {
+        <NotImplemented
+          value={`TriggerConditions: ${JSON.stringify(
+            triggerCondition,
+            null,
+            '  '
+          )}`}
+        />
+        {/* {trigger.conditions.map((condition, index) => {
           const isFirstCondition = index === 0;
           const isLastCondition = index === trigger.conditions.length - 1;
           return (
