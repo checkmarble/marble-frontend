@@ -1,103 +1,110 @@
-// import { useCurrentScenarioIncrement } from '@marble-front/builder/routes/__builder/scenarios/$scenarioId/i/$incrementId';
-// import { fromUUID } from '@marble-front/builder/utils/short-uuid';
-// import { Table, useVirtualTable } from '@marble-front/ui/design-system';
-// import { useNavigate } from '@remix-run/react';
-// import {
-//   type ColumnDef,
-//   getCoreRowModel,
-//   getSortedRowModel,
-// } from '@tanstack/react-table';
-// import { type Namespace } from 'i18next';
-// import { useMemo } from 'react';
-// import { useTranslation } from 'react-i18next';
+import {
+  listScenarioIterationRules,
+  type ScenarioIterationRule,
+} from '@marble-front/api/marble';
+import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { fromParams, fromUUID } from '@marble-front/builder/utils/short-uuid';
+import { Table, useVirtualTable } from '@marble-front/ui/design-system';
+import { json, type LoaderArgs } from '@remix-run/node';
+import { useLoaderData, useNavigate } from '@remix-run/react';
+import {
+  type ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+} from '@tanstack/react-table';
+import { type Namespace } from 'i18next';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-// export const handle = {
-//   i18n: ['scenarios'] satisfies Namespace,
-// };
+export const handle = {
+  i18n: ['scenarios'] satisfies Namespace,
+};
 
-// export default function Rules() {
-//   const { t } = useTranslation(handle.i18n);
+export async function loader({ request, params }: LoaderArgs) {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
 
-//   const navigate = useNavigate();
+  const scenarioIterationId = fromParams(params, 'incrementId');
 
-//   const {
-//     body: { rules },
-//   } = useCurrentScenarioIncrement();
+  const scenarioIterationRules = await listScenarioIterationRules({
+    scenarioIterationId,
+  });
 
-//   const columns = useMemo<ColumnDef<(typeof rules)[number]>[]>(
-//     () => [
-//       {
-//         id: 'id',
-//         accessorFn: (row) => fromUUID(row.id),
-//         header: t('scenarios:rules.id_TEMP'),
-//         size: 200,
-//         sortingFn: 'text',
-//         enableSorting: true,
-//       },
-//       {
-//         id: 'name',
-//         //@ts-expect-error waiting for name to be added on model
-//         accessorFn: (row) => row.name,
-//         header: t('scenarios:rules.name'),
-//         size: 200,
-//       },
-//       {
-//         id: 'description',
-//         //@ts-expect-error waiting for name to be added on model
-//         accessorFn: (row) => row.description,
-//         header: t('scenarios:rules.description'),
-//         size: 600,
-//       },
-//       {
-//         id: 'score',
-//         accessorFn: (row) => {
-//           const scoreIncrease = row.consequence?.scoreIncrease;
+  return json(scenarioIterationRules);
+}
 
-//           if (!scoreIncrease) return '';
+export default function Rules() {
+  const { t } = useTranslation(handle.i18n);
 
-//           return scoreIncrease >= 0 ? `+${scoreIncrease}` : `-${scoreIncrease}`;
-//         },
-//         header: t('scenarios:rules.score'),
-//         size: 100,
-//       },
-//     ],
-//     [t]
-//   );
+  const navigate = useNavigate();
 
-//   const hasRules = rules.length > 0;
+  const rules = useLoaderData<typeof loader>();
 
-//   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
-//     data: rules,
-//     columns,
-//     columnResizeMode: 'onChange',
-//     enableSorting: hasRules,
-//     getCoreRowModel: getCoreRowModel(),
-//     getSortedRowModel: getSortedRowModel(),
-//   });
+  const columns = useMemo<ColumnDef<ScenarioIterationRule>[]>(
+    () => [
+      {
+        id: 'name',
+        accessorFn: (row) => row.name,
+        header: t('scenarios:rules.name'),
+        size: 200,
+      },
+      {
+        id: 'description',
+        accessorFn: (row) => row.description,
+        header: t('scenarios:rules.description'),
+        size: 600,
+      },
+      {
+        id: 'score',
+        accessorFn: (row) => {
+          const scoreIncrease = row.scoreModifier;
 
-//   return (
-//     <Table.Container {...getContainerProps()}>
-//       <Table.Header headerGroups={table.getHeaderGroups()} />
-//       <Table.Body {...getBodyProps()}>
-//         {hasRules ? (
-//           rows.map((row) => (
-//             <Table.Row
-//               key={row.id}
-//               className="hover:bg-grey-02 cursor-pointer"
-//               row={row}
-//               onClick={() => {
-//                 navigate(`./${fromUUID(row.original.id)}`);
-//               }}
-//             />
-//           ))
-//         ) : (
-//           <tr className="h-28">
-//             <td colSpan={columns.length}>
-//               <p className="text-center">{t('scenarios:rules.empty')}</p>
-//             </td>
-//           </tr>
-//         )}
-//       </Table.Body>
-//     </Table.Container>
-//   );
-// }
+          if (!scoreIncrease) return '';
+
+          return scoreIncrease >= 0 ? `+${scoreIncrease}` : `-${scoreIncrease}`;
+        },
+        header: t('scenarios:rules.score'),
+        size: 100,
+      },
+    ],
+    [t]
+  );
+
+  const hasRules = rules.length > 0;
+
+  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
+    data: rules,
+    columns,
+    columnResizeMode: 'onChange',
+    enableSorting: hasRules,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  return (
+    <Table.Container {...getContainerProps()}>
+      <Table.Header headerGroups={table.getHeaderGroups()} />
+      <Table.Body {...getBodyProps()}>
+        {hasRules ? (
+          rows.map((row) => (
+            <Table.Row
+              key={row.id}
+              className="hover:bg-grey-02 cursor-pointer"
+              row={row}
+              onClick={() => {
+                navigate(`./${fromUUID(row.original.id)}`);
+              }}
+            />
+          ))
+        ) : (
+          <tr className="h-28">
+            <td colSpan={columns.length}>
+              <p className="text-center">{t('scenarios:rules.empty')}</p>
+            </td>
+          </tr>
+        )}
+      </Table.Body>
+    </Table.Container>
+  );
+}
