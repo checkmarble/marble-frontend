@@ -10,6 +10,11 @@ export const routes = [
         file: "routes/ressources/scenarios/deployment.tsx",
       },
       {
+        id: "routes/ressources/user/language",
+        path: "ressources/user/language",
+        file: "routes/ressources/user/language.tsx",
+      },
+      {
         id: "routes/auth/$provider.callback",
         path: "auth/:provider/callback",
         file: "routes/auth/$provider.callback.tsx",
@@ -34,6 +39,68 @@ export const routes = [
         file: "routes/__builder.tsx",
         children: [
           {
+            id: "routes/__builder/scenarios/$scenarioId",
+            path: "scenarios/:scenarioId",
+            file: "routes/__builder/scenarios/$scenarioId.tsx",
+            children: [
+              {
+                id: "routes/__builder/scenarios/$scenarioId/i/$iterationId",
+                path: "i/:iterationId",
+                file: "routes/__builder/scenarios/$scenarioId/i/$iterationId.tsx",
+                children: [
+                  {
+                    id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view.rules.$ruleId",
+                    path: "view/rules/:ruleId",
+                    file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view.rules.$ruleId.tsx",
+                  },
+                  {
+                    id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/index",
+                    index: true,
+                    file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/index.tsx",
+                  },
+                  {
+                    id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view",
+                    path: "view",
+                    file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view.tsx",
+                    children: [
+                      {
+                        id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/decision",
+                        path: "decision",
+                        file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/decision.tsx",
+                      },
+                      {
+                        id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/trigger",
+                        path: "trigger",
+                        file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/trigger.tsx",
+                      },
+                      {
+                        id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/index",
+                        index: true,
+                        file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/index.tsx",
+                      },
+                      {
+                        id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/rules",
+                        path: "rules",
+                        file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/rules.tsx",
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                id: "routes/__builder/scenarios/$scenarioId/index",
+                index: true,
+                file: "routes/__builder/scenarios/$scenarioId/index.tsx",
+              },
+            ],
+          },
+          {
+            id: "routes/__builder/scenarios/index",
+            index: true,
+            path: "scenarios",
+            file: "routes/__builder/scenarios/index.tsx",
+          },
+          {
             id: "routes/__builder/lists/$listId",
             path: "lists/:listId",
             file: "routes/__builder/lists/$listId.tsx",
@@ -43,74 +110,6 @@ export const routes = [
             index: true,
             path: "lists",
             file: "routes/__builder/lists/index.tsx",
-          },
-          {
-            id: "routes/__builder/scenarios",
-            path: "scenarios",
-            file: "routes/__builder/scenarios.tsx",
-            children: [
-              {
-                id: "routes/__builder/scenarios/$scenarioId",
-                path: ":scenarioId",
-                file: "routes/__builder/scenarios/$scenarioId.tsx",
-                children: [
-                  {
-                    id: "routes/__builder/scenarios/$scenarioId/i/$incrementId",
-                    path: "i/:incrementId",
-                    file: "routes/__builder/scenarios/$scenarioId/i/$incrementId.tsx",
-                    children: [
-                      {
-                        id: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view.rules.$ruleId",
-                        path: "view/rules/:ruleId",
-                        file: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view.rules.$ruleId.tsx",
-                      },
-                      {
-                        id: "routes/__builder/scenarios/$scenarioId/i/$incrementId/index",
-                        index: true,
-                        file: "routes/__builder/scenarios/$scenarioId/i/$incrementId/index.tsx",
-                      },
-                      {
-                        id: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view",
-                        path: "view",
-                        file: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view.tsx",
-                        children: [
-                          {
-                            id: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view/decision",
-                            path: "decision",
-                            file: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view/decision.tsx",
-                          },
-                          {
-                            id: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view/trigger",
-                            path: "trigger",
-                            file: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view/trigger.tsx",
-                          },
-                          {
-                            id: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view/index",
-                            index: true,
-                            file: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view/index.tsx",
-                          },
-                          {
-                            id: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view/rules",
-                            path: "rules",
-                            file: "routes/__builder/scenarios/$scenarioId/i/$incrementId/view/rules.tsx",
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    id: "routes/__builder/scenarios/$scenarioId/index",
-                    index: true,
-                    file: "routes/__builder/scenarios/$scenarioId/index.tsx",
-                  },
-                ],
-              },
-              {
-                id: "routes/__builder/scenarios/index",
-                index: true,
-                file: "routes/__builder/scenarios/index.tsx",
-              },
-            ],
           },
           {
             id: "routes/__builder/$",

@@ -19,7 +19,7 @@ import {
 } from '@marble-front/builder/utils/short-uuid';
 import { Select } from '@marble-front/ui/design-system';
 import { Decision, Rules, Trigger } from '@marble-front/ui/icons';
-import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
+import { json, type LoaderArgs } from '@remix-run/node';
 import {
   Link,
   Outlet,
@@ -105,13 +105,13 @@ export default function ScenarioViewLayout() {
     currentScenario.liveVersionId
   );
 
-  const { incrementId } = useParams();
-  invariant(incrementId, 'incrementId is required');
+  const { iterationId } = useParams();
+  invariant(iterationId, 'iterationId is required');
 
-  const currentIncrement = sortedScenarioIterations.find(
-    ({ id }) => id === toUUID(incrementId)
+  const currentIteration = sortedScenarioIterations.find(
+    ({ id }) => id === toUUID(iterationId)
   );
-  invariant(currentIncrement, 'currentIncrement is required');
+  invariant(currentIteration, 'currentIteration is required');
 
   return (
     <ScenarioPage.Container>
@@ -123,13 +123,13 @@ export default function ScenarioViewLayout() {
           {currentScenario.name}
           <VersionSelect
             scenarioIterations={sortedScenarioIterations}
-            currentIncrement={currentIncrement}
+            currentIteration={currentIteration}
           />
         </div>
         <DeploymentModal
           scenarioId={currentScenario.id}
           liveVersionId={currentScenario.liveVersionId}
-          currentIncrement={currentIncrement}
+          currentIteration={currentIteration}
         />
       </ScenarioPage.Header>
       <ScenarioPage.Content>
@@ -147,10 +147,10 @@ export default function ScenarioViewLayout() {
 }
 
 function VersionSelect({
-  currentIncrement,
+  currentIteration,
   scenarioIterations,
 }: {
-  currentIncrement: SortedScenarioIteration;
+  currentIteration: SortedScenarioIteration;
   scenarioIterations: SortedScenarioIteration[];
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -159,7 +159,7 @@ function VersionSelect({
 
   return (
     <Select.Default
-      value={currentIncrement.id}
+      value={currentIteration.id}
       border="rounded"
       className="min-w-[126px]"
       onValueChange={(selectedId) => {
@@ -167,7 +167,7 @@ function VersionSelect({
         if (!elem?.id) return;
         navigate(
           location.pathname.replace(
-            fromUUID(currentIncrement.id),
+            fromUUID(currentIteration.id),
             fromUUID(elem?.id)
           )
         );

@@ -9,7 +9,7 @@ import { toast } from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useCurrentScenario } from '../../../../$scenarioId';
-import { useCurrentScenarioIteration } from '../../$incrementId';
+import { useCurrentScenarioIteration } from '../../$iterationId';
 
 export const handle = {
   i18n: ['scenarios', 'common'] satisfies Namespace,
