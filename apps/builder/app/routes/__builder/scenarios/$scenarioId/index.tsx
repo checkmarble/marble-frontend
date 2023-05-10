@@ -43,9 +43,9 @@ export async function loader({ request, params }: LoaderArgs) {
   ])[0];
 
   return redirect(
-    getRoute('/scenarios/:scenarioId/i/:incrementId', {
+    getRoute('/scenarios/:scenarioId/i/:iterationId', {
       scenarioId: fromUUID(lastScenarioIteration.scenarioId),
-      incrementId: fromUUID(lastScenarioIteration.id),
+      iterationId: fromUUID(lastScenarioIteration.id),
     })
   );
 }

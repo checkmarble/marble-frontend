@@ -14,16 +14,16 @@ export async function loader({ request, params }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const incrementId = fromParams(params, 'incrementId');
+  const iterationId = fromParams(params, 'iterationId');
 
-  const scenarioIteration = await getScenarioIteration(incrementId);
+  const scenarioIteration = await getScenarioIteration(iterationId);
 
   return json(scenarioIteration);
 }
 
 export const useCurrentScenarioIteration = () =>
   useRouteLoaderData(
-    'routes/__builder/scenarios/$scenarioId/i/$incrementId'
+    'routes/__builder/scenarios/$scenarioId/i/$iterationId'
   ) as SerializeFrom<typeof loader>;
 
 export default function CurrentScenarioIterationProvider() {
