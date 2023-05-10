@@ -25,7 +25,7 @@ export async function loader({ request, params }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const scenarioIterationId = fromParams(params, 'incrementId');
+  const scenarioIterationId = fromParams(params, 'iterationId');
 
   const scenarioIterationRules = await listScenarioIterationRules({
     scenarioIterationId,

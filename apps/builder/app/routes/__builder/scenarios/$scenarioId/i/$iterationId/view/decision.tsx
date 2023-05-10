@@ -3,7 +3,7 @@ import { Tag } from '@marble-front/ui/design-system';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { useCurrentScenarioIteration } from '../../$incrementId';
+import { useCurrentScenarioIteration } from '../../$iterationId';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,

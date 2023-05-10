@@ -18,12 +18,11 @@ import { Label } from '@radix-ui/react-label';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace, type TFuncKey } from 'i18next';
-import { LoaderIcon } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 
 import { setToastMessage } from '../../../components/MarbleToaster';
-import { type SortedScenarioIteration } from '../../__builder/scenarios/$scenarioId/i/$incrementId/view';
+import { type SortedScenarioIteration } from '../../__builder/scenarios/$scenarioId/i/$iterationId/view';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -43,7 +42,7 @@ type DeploymentType = (typeof Deployment)[number];
 
 const formSchema = z.object({
   deploymentType: z.enum(Deployment),
-  incrementId: z.string().uuid(),
+  iterationId: z.string().uuid(),
 
   // TODO: factorize common FormData parser, add superRefine to cast on known errors (ex: "required" in this context)
   replaceCurrentLiveVersion: z.coerce
@@ -72,12 +71,12 @@ export async function action({ request }: ActionArgs) {
   }
 
   try {
-    const { incrementId, deploymentType } = parsedForm.data;
+    const { iterationId, deploymentType } = parsedForm.data;
 
     await createScenarioPublication({
       publicationAction:
         deploymentType === 'deactivate' ? 'unpublish' : 'publish',
-      scenarioIterationId: incrementId,
+      scenarioIterationId: iterationId,
     });
 
     return json({
@@ -87,6 +86,7 @@ export async function action({ request }: ActionArgs) {
     });
   } catch (error) {
     const session = await getSession(request.headers.get('cookie'));
+
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
@@ -106,18 +106,18 @@ export async function action({ request }: ActionArgs) {
 function ModalContent({
   scenarioId,
   liveVersionId,
-  currentIncrement,
+  currentIteration,
 }: {
   scenarioId: string;
   liveVersionId?: string;
-  currentIncrement: SortedScenarioIteration;
+  currentIteration: SortedScenarioIteration;
 }) {
   const { t } = useTranslation(handle.i18n);
 
   //TODO(transition): add loading during form submission
   const fetcher = useFetcher<typeof action>();
 
-  const deploymentType = getDeploymentType(currentIncrement.type);
+  const deploymentType = getDeploymentType(currentIteration.type);
   const buttonConfig = getButtonConfig(deploymentType);
 
   const isSuccess = fetcher.type === 'done' && fetcher.data?.success === true;
@@ -160,7 +160,7 @@ function ModalContent({
           deploymentType={deploymentType}
           scenarioId={scenarioId}
           liveVersionId={liveVersionId}
-          incrementId={currentIncrement.id}
+          iterationId={currentIteration.id}
         />
         <div className="text-s mb-8 flex flex-col gap-6 font-medium">
           <p className="font-semibold">
@@ -226,15 +226,15 @@ function ModalContent({
 export function DeploymentModal({
   scenarioId,
   liveVersionId,
-  currentIncrement,
+  currentIteration,
 }: {
   scenarioId: string;
   liveVersionId?: string;
-  currentIncrement: SortedScenarioIteration;
+  currentIteration: SortedScenarioIteration;
 }) {
   const { t } = useTranslation(handle.i18n);
 
-  const deploymentType = getDeploymentType(currentIncrement.type);
+  const deploymentType = getDeploymentType(currentIteration.type);
   const buttonConfig = getButtonConfig(deploymentType);
 
   return (
@@ -249,7 +249,7 @@ export function DeploymentModal({
         <ModalContent
           scenarioId={scenarioId}
           liveVersionId={liveVersionId}
-          currentIncrement={currentIncrement}
+          currentIteration={currentIteration}
         />
       </Modal.Content>
     </Modal.Root>

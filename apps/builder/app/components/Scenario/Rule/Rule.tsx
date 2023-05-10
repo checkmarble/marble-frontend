@@ -1,19 +1,21 @@
-import { type PlainMessage } from '@bufbuild/protobuf';
-import { type Rule as RuleData } from '@marble-front/api/marble';
+import { type ScenarioIterationRule } from '@marble-front/api/marble';
 import { Fragment } from 'react';
 
 import { Paper } from '../../Paper';
 import { Formula } from '../Formula';
+import { NotImplemented } from '../Formula/NotImplemented';
 import { LogicalOperator } from '../LogicalOperator';
 import { Consequence } from './Consequence';
 
-export function Rule({ rule }: { rule: PlainMessage<RuleData> }) {
+export function Rule({ rule }: { rule: ScenarioIterationRule }) {
   return (
     <div className="flex flex-col gap-4">
-      {/* @ts-expect-error should disapear when V1 rules selector is finished */}
-      <Consequence scoreIncrease={rule.consequence.scoreIncrease} />
+      <Consequence scoreIncrease={rule.scoreModifier} />
       <Paper.Container>
-        <div className="text-s grid grid-cols-[40px_1fr] gap-2">
+        <NotImplemented
+          value={`Rule: ${JSON.stringify(rule.formula, null, '  ')}`}
+        />
+        {/* <div className="text-s grid grid-cols-[40px_1fr] gap-2">
           {rule.orGroups.map((orGroup, groupIndex) => {
             const isLastGroup = groupIndex === rule.orGroups.length - 1;
             return (
@@ -43,7 +45,7 @@ export function Rule({ rule }: { rule: PlainMessage<RuleData> }) {
               </Fragment>
             );
           })}
-        </div>
+        </div> */}
       </Paper.Container>
     </div>
   );
