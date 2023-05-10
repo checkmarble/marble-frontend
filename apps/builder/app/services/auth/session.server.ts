@@ -7,7 +7,7 @@ export const sessionCookie = createCookie('user_session', {
   path: '/', // remember to add this so the cookie will work in all routes
   httpOnly: true,
   secrets: [getServerEnv('SESSION_SECRET')],
-  secure: process.env.NODE_ENV !== 'development',
+  secure: getServerEnv('NODE_ENV') !== 'development',
 });
 
 // export the whole sessionStorage object
