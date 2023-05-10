@@ -46,7 +46,6 @@
   "rules.decision": "Décision",
   "rules.description": "Description",
   "rules.empty": "Contactez Marble pour créer votre première règle.",
-  "rules.id_TEMP": "ID (température)",
   "rules.name": "Nom",
   "rules.score": "Score",
   "rules.variable.title": "variable",

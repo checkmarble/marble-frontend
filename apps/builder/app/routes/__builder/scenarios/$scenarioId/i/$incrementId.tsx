@@ -1,7 +1,7 @@
 import { getScenarioIteration } from '@marble-front/api/marble';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { fromParams } from '@marble-front/builder/utils/short-uuid';
-import { json, type LoaderArgs } from '@remix-run/node';
+import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
 import { Outlet, useRouteLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 
@@ -22,7 +22,9 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export const useCurrentScenarioIteration = () =>
-  useRouteLoaderData('routes/__builder/scenarios/$scenarioId/i/$incrementId');
+  useRouteLoaderData(
+    'routes/__builder/scenarios/$scenarioId/i/$incrementId'
+  ) as SerializeFrom<typeof loader>;
 
 export default function CurrentScenarioIterationProvider() {
   return <Outlet />;
