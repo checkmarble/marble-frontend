@@ -1,22 +1,18 @@
-import { type PlainMessage } from '@bufbuild/protobuf';
-import { type FormulaAggregation as FormulaAggregationMessage } from '@marble-front/api/marble';
-import { assertNever } from '@marble-front/builder/utils/assert-never';
 import { createSimpleContext } from '@marble-front/builder/utils/create-context';
-import { noop } from '@marble-front/builder/utils/utility-types';
+import { assertNever, noop } from '@marble-front/typescript-utils';
 import { Cross, Variable } from '@marble-front/ui/icons';
 import * as Dialog from '@radix-ui/react-dialog';
 import clsx from 'clsx';
 import { useCallback, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormulaAggregation } from './Formula';
 import { scenarioI18n } from './scenario-i18n';
 
 type State = {
   open: boolean;
   data?: {
     type: 'formulaAggregation';
-    formulaAggregation: PlainMessage<FormulaAggregationMessage>;
+    formulaAggregation: unknown;
   };
 };
 type Actions =
@@ -129,11 +125,7 @@ function Content({ data }: { data: State['data'] }) {
 
   switch (data.type) {
     case 'formulaAggregation':
-      return (
-        <FormulaAggregation.PannelContent
-          formulaAggregation={data.formulaAggregation}
-        />
-      );
+      return null;
     default:
       assertNever('[ScenarioRightPannel] unknwon data case:', data.type);
   }

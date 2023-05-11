@@ -28,6 +28,12 @@
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
+    },
+    {
+      "files": ["*.jsx", "*.tsx"],
+      "rules": {
+        "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }]
+      }
     }
   ]
 }

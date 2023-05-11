@@ -1,7 +1,8 @@
 import { Callout, Paper } from '@marble-front/builder/components';
-import { NotImplemented } from '@marble-front/builder/components/Scenario/Formula/NotImplemented';
+import { Formula } from '@marble-front/builder/components/Scenario/Formula';
 import { LogicalOperator } from '@marble-front/builder/components/Scenario/LogicalOperator';
 import { ScenarioBox } from '@marble-front/builder/components/Scenario/ScenarioBox';
+import { type Operator } from '@marble-front/operators';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { Fragment } from 'react';
@@ -83,43 +84,66 @@ export default function Trigger() {
         <ScenarioBox className="bg-grey-02 col-span-4 w-fit font-semibold text-purple-100">
           {triggerObjectType}
         </ScenarioBox>
-        <NotImplemented
-          value={`TriggerConditions: ${JSON.stringify(
-            triggerCondition,
-            null,
-            '  '
-          )}`}
-        />
-        {/* {trigger.conditions.map((condition, index) => {
-          const isFirstCondition = index === 0;
-          const isLastCondition = index === trigger.conditions.length - 1;
-          return (
-            <Fragment key={`condition_${index}`}>
-              <div
-                className={clsx(
-                  'border-grey-10 col-span-4 w-2 border-r ',
-                  isFirstCondition ? 'h-4' : 'h-2'
-                )}
-              />
-
-              <div
-                className={clsx(
-                  'border-grey-10 border-r',
-                  isLastCondition && 'h-5'
-                )}
-              />
-              <div className="border-grey-10 h-5 border-b" />
-              <LogicalOperator
-                className="bg-grey-02 mr-2"
-                operator={isFirstCondition ? 'where' : 'and'}
-              />
-              <div className="flex flex-row gap-2">
-                <Formula isRoot formula={condition} />
-              </div>
-            </Fragment>
-          );
-        })} */}
+        {triggerCondition && (
+          <TriggerCondition condition={triggerCondition as Operator} />
+        )}
       </div>
     </Paper.Container>
+  );
+}
+
+/**
+ * Design is opinionated: it assumes a trigger condition will often be an AND operator.
+ *
+ * ex: condition is an AND operator
+ *
+ *    Transaction
+ *        |-> Where <Formula condition={condition.children[0]} />
+ *        |-> And   <Formula condition={condition.children[1]} />
+ *        |-> And   <Formula condition={condition.children[2]} />
+ *
+ * ex: condition is another Boolean operator
+ *
+ *    Transaction
+ *        |-> Where <Formula condition={condition} />
+ *
+ * In case this is not an AND operator, we simulate an AND operator with a single operand
+ */
+function TriggerCondition({ condition }: { condition: Operator }) {
+  const andOperands: Operator[] =
+    condition.type === 'AND' ? condition.children : [condition];
+
+  return (
+    <Fragment>
+      {andOperands.map((andOperand, index) => {
+        const isFirstCondition = index === 0;
+        const isLastCondition = index === andOperands.length - 1;
+        return (
+          <Fragment key={`condition_${index}`}>
+            <div
+              className={clsx(
+                'border-grey-10 col-span-4 w-2 border-r ',
+                isFirstCondition ? 'h-4' : 'h-2'
+              )}
+            />
+
+            <div
+              className={clsx(
+                'border-grey-10 border-r',
+                isLastCondition && 'h-5'
+              )}
+            />
+            <div className="border-grey-10 h-5 border-b" />
+            <LogicalOperator
+              className="bg-grey-02 mr-2"
+              operator={isFirstCondition ? 'where' : 'and'}
+            />
+            <div className="flex flex-row gap-2">
+              <Formula isRoot formula={andOperand} />
+            </div>
+          </Fragment>
+        );
+      })}
+    </Fragment>
   );
 }
