@@ -1,0 +1,47 @@
+{
+  "name": "operators",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/operators/src",
+  "projectType": "library",
+  "tags": [
+    "type:service",
+    "scope:shared"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:swc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/libs/operators",
+        "main": "libs/operators/src/index.ts",
+        "tsConfig": "libs/operators/tsconfig.lib.json",
+        "assets": [
+          "libs/operators/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "libs/operators/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "libs/operators/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}
