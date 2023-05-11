@@ -23,7 +23,15 @@
               },
               {
                 "sourceTag": "type:app",
-                "onlyDependOnLibsWithTags": ["type:ui", "type:util"]
+                "onlyDependOnLibsWithTags": [
+                  "type:ui",
+                  "type:util",
+                  "type:service"
+                ]
+              },
+              {
+                "sourceTag": "type:service",
+                "onlyDependOnLibsWithTags": ["type:util"]
               },
               {
                 "sourceTag": "type:ui",
