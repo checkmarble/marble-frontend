@@ -13,3 +13,19 @@ For VS Code users, we higlhy recommand the [official extension](https://nx.dev/c
 ## Environment variables in Nx
 
 Nx task runner comes with [a built in opinionated way to handle env variables](https://nx.dev/recipes/environment-variables/define-environment-variables)
+
+## Developer
+
+### Run locally
+
+Vscode command: NX Console: Focus On Debug Console View
+
+```
+NX Project Tab > builder > dev > debug
+```
+
+Manually:
+
+```
+npx nx run builder:dev --configuration=debug
+```

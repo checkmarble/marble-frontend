@@ -1,0 +1,9 @@
+version: '3'
+services:
+  marble-frontend:
+    env_file: ./apps/builder/.env.docker-compose
+    build:
+      context: .
+      dockerfile: ./apps/builder/Dockerfile
+    ports:
+      - "8080:8080"
