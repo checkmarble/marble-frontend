@@ -48,7 +48,7 @@
     "build-docker": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "docker build --tag 'marble-builder-app' -f ./apps/builder/Dockerfile ."
+        "command": "docker build --platform linux/amd64 --tag 'marble-builder-app' -f ./apps/builder/Dockerfile ."
       }
     },
     "generate-routes": {
