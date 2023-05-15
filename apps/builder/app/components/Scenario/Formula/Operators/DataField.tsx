@@ -1,6 +1,6 @@
 import {
   type DataFieldOperator,
-  isDBFieldOperator,
+  isDbFieldOperator,
 } from '@marble-front/operators';
 import { Tooltip } from '@marble-front/ui/design-system';
 
@@ -12,7 +12,7 @@ interface DBFieldProps {
 }
 
 function getFields(operator: DataFieldOperator) {
-  if (isDBFieldOperator(operator)) {
+  if (isDbFieldOperator(operator)) {
     return [...operator.staticData.path, operator.staticData.fieldName];
   }
   return [operator.staticData.fieldName];

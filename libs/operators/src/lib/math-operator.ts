@@ -3,7 +3,7 @@ import {
   type EqualBoolOperator,
   type Operator,
   type OrOperator,
-} from './operators';
+} from '@marble-front/api/marble';
 
 export type MathOperator = AndOperator | OrOperator | EqualBoolOperator;
 

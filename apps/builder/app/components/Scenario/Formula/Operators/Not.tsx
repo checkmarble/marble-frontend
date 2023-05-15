@@ -1,4 +1,4 @@
-import { type NotOperator } from '@marble-front/operators';
+import { type NotOperator } from '@marble-front/api/marble';
 
 import { Formula } from '../Formula';
 import { Condition } from './Condition';

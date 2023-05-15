@@ -1,5 +1,4 @@
 import { type ScenarioIterationRule } from '@marble-front/api/marble';
-import { type Operator } from '@marble-front/operators';
 import { Fragment } from 'react';
 import * as R from 'remeda';
 
@@ -33,10 +32,8 @@ import { Consequence } from './Consequence';
  * In case this is not an OR operator, we simulate an OR operator with a single operand
  */
 export function Rule({ rule }: { rule: ScenarioIterationRule }) {
-  const formula = rule.formula as Operator;
-
   const orOperands = R.pipe(
-    formula,
+    rule.formula,
     (formula) => (formula.type === 'OR' ? formula.children : [formula]),
     R.map((orOperand) =>
       orOperand.type === 'AND' ? orOperand.children : [orOperand]

@@ -19,6 +19,15 @@
         "jestConfig": "libs/typescript-utils/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx tsc --noEmit -p libs/typescript-utils/tsconfig.lib.json"
+        ],
+        "parallel": false
+      }
     }
   }
 }

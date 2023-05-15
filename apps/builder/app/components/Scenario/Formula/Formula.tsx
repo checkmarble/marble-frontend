@@ -1,8 +1,8 @@
+import { type Operator } from '@marble-front/api/marble';
 import {
   isConstantOperator,
   isDataFieldOperator,
   isMathOperator,
-  type Operator,
 } from '@marble-front/operators';
 import { assertNever } from '@marble-front/typescript-utils';
 

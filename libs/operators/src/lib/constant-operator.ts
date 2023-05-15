@@ -2,7 +2,7 @@ import {
   type FalseOperator,
   type Operator,
   type TrueOperator,
-} from './operators';
+} from '@marble-front/api/marble';
 
 export type ConstantOperator = FalseOperator | TrueOperator;
 

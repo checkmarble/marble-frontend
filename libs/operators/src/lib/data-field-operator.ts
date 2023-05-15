@@ -1,14 +1,14 @@
 import {
-  type DBFieldBoolOperator,
+  type DbFieldBoolOperator,
   type Operator,
   type PayloadFieldBoolOperator,
-} from './operators';
+} from '@marble-front/api/marble';
 
-export type DBFieldOperator = DBFieldBoolOperator;
+export type DbFieldOperator = DbFieldBoolOperator;
 
-export function isDBFieldOperator(
+export function isDbFieldOperator(
   operator: Operator
-): operator is DBFieldOperator {
+): operator is DbFieldOperator {
   switch (operator.type) {
     case 'DB_FIELD_BOOL':
       return true;
@@ -30,10 +30,10 @@ export function isPayloadFieldOperator(
   }
 }
 
-export type DataFieldOperator = DBFieldOperator | PayloadFieldOperator;
+export type DataFieldOperator = DbFieldOperator | PayloadFieldOperator;
 
 export function isDataFieldOperator(
   operator: Operator
 ): operator is DataFieldOperator {
-  return isDBFieldOperator(operator) || isPayloadFieldOperator(operator);
+  return isDbFieldOperator(operator) || isPayloadFieldOperator(operator);
 }

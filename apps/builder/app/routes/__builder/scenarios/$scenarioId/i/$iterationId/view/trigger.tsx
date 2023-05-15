@@ -1,8 +1,8 @@
+import { type Operator } from '@marble-front/api/marble';
 import { Callout, Paper } from '@marble-front/builder/components';
 import { Formula } from '@marble-front/builder/components/Scenario/Formula';
 import { LogicalOperator } from '@marble-front/builder/components/Scenario/LogicalOperator';
 import { ScenarioBox } from '@marble-front/builder/components/Scenario/ScenarioBox';
-import { type Operator } from '@marble-front/operators';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { Fragment } from 'react';
@@ -84,9 +84,7 @@ export default function Trigger() {
         <ScenarioBox className="bg-grey-02 col-span-4 w-fit font-semibold text-purple-100">
           {triggerObjectType}
         </ScenarioBox>
-        {triggerCondition && (
-          <TriggerCondition condition={triggerCondition as Operator} />
-        )}
+        {triggerCondition && <TriggerCondition condition={triggerCondition} />}
       </div>
     </Paper.Container>
   );
