@@ -56,6 +56,7 @@ export type OrOperator = {
 export type DbFieldBoolOperator = {
     "type": "DB_FIELD_BOOL";
     staticData: {
+        triggerTableName: string;
         path: string[];
         fieldName: string;
     };

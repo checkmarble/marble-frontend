@@ -808,9 +808,12 @@ components:
         staticData:
           type: object
           required:
+            - triggerTableName
             - path
             - fieldName
           properties:
+            triggerTableName:
+              type: string
             path:
               type: array
               items:

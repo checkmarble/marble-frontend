@@ -11,24 +11,35 @@ interface DBFieldProps {
   isRoot?: boolean;
 }
 
-function getFields(operator: DataFieldOperator) {
+function format(operator: DataFieldOperator) {
   if (isDbFieldOperator(operator)) {
-    return [...operator.staticData.path, operator.staticData.fieldName];
+    const fields = [
+      operator.staticData.triggerTableName,
+      ...operator.staticData.path,
+      operator.staticData.fieldName,
+    ];
+
+    return {
+      tooltip: fields.join('.'),
+      inline: fields.slice(1).join('.'),
+    };
   }
-  return [operator.staticData.fieldName];
+
+  return {
+    tooltip: operator.staticData.fieldName,
+    inline: operator.staticData.fieldName,
+  };
 }
 
 export function DataField({ operator, isRoot }: DBFieldProps) {
-  const fields = getFields(operator);
+  const { tooltip, inline } = format(operator);
 
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>
         <Tooltip.Default
           content={
-            <span className="font-medium text-purple-100">
-              {fields.join('.')}
-            </span>
+            <span className="font-medium text-purple-100">{tooltip}</span>
           }
         >
           <span
@@ -36,7 +47,7 @@ export function DataField({ operator, isRoot }: DBFieldProps) {
             dir="rtl"
             className="max-w-[250px] overflow-hidden text-ellipsis font-medium text-purple-100 max-md:max-w-[150px]"
           >
-            {fields.slice(1).join('.')}
+            {inline}
           </span>
         </Tooltip.Default>
       </Condition.Item>
