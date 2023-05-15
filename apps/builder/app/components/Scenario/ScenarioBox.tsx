@@ -11,7 +11,7 @@ export function ScenarioBox({
   return (
     <div
       className={clsx(
-        'flex h-fit min-h-[40px] min-w-[40px] flex-wrap items-center gap-1 rounded p-2',
+        'flex h-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded',
         className
       )}
     >

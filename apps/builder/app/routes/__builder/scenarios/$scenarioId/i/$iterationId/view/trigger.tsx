@@ -80,44 +80,58 @@ export default function Trigger() {
         <Callout>{t('scenarios:trigger.trigger_object.callout')}</Callout>
       </div>
 
-      <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">
-        <ScenarioBox className="bg-grey-02 col-span-4 w-fit font-semibold text-purple-100">
-          {triggerObjectType}
-        </ScenarioBox>
-        {triggerCondition && <TriggerCondition condition={triggerCondition} />}
-      </div>
+      <TriggerCondition
+        triggerObjectType={triggerObjectType}
+        triggerCondition={triggerCondition}
+      />
     </Paper.Container>
   );
 }
 
 /**
- * Design is opinionated: it assumes a trigger condition will often be an AND operator.
+ * Design is opinionated: it assumes a trigger condition will often be an AND/OR operator.
  *
- * ex: condition is an AND operator
+ * 1. condition is an AND operator
  *
  *    Transaction
  *        |-> Where <Formula condition={condition.children[0]} />
  *        |-> And   <Formula condition={condition.children[1]} />
  *        |-> And   <Formula condition={condition.children[2]} />
  *
- * ex: condition is another Boolean operator
+ * 2. condition is an OR operator
+ *
+ *    Transaction
+ *        |-> Where <Formula condition={condition.children[0]} />
+ *        |-> Or    <Formula condition={condition.children[1]} />
+ *        |-> Or    <Formula condition={condition.children[2]} />
+ *
+ * 3. condition is another Boolean operator
  *
  *    Transaction
  *        |-> Where <Formula condition={condition} />
  *
- * In case this is not an AND operator, we simulate an AND operator with a single operand
  */
-function TriggerCondition({ condition }: { condition: Operator }) {
-  const andOperands: Operator[] =
-    condition.type === 'AND' ? condition.children : [condition];
+function TriggerCondition({
+  triggerObjectType,
+  triggerCondition,
+}: {
+  triggerObjectType: string;
+  triggerCondition?: Operator;
+}) {
+  const conditions = getNestedConditions(triggerCondition);
 
   return (
-    <Fragment>
-      {andOperands.map((andOperand, index) => {
+    <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">
+      <ScenarioBox className="bg-grey-02 col-span-4 w-fit p-2 font-semibold text-purple-100">
+        {triggerObjectType}
+      </ScenarioBox>
+      {conditions.map(({ condition, logicalOperator }, index) => {
         const isFirstCondition = index === 0;
-        const isLastCondition = index === andOperands.length - 1;
+        const isLastCondition = index === conditions.length - 1;
+
         return (
           <Fragment key={`condition_${index}`}>
+            {/* Row 1 */}
             <div
               className={clsx(
                 'border-grey-10 col-span-4 w-2 border-r ',
@@ -125,6 +139,7 @@ function TriggerCondition({ condition }: { condition: Operator }) {
               )}
             />
 
+            {/* Row 2 */}
             <div
               className={clsx(
                 'border-grey-10 border-r',
@@ -133,15 +148,44 @@ function TriggerCondition({ condition }: { condition: Operator }) {
             />
             <div className="border-grey-10 h-5 border-b" />
             <LogicalOperator
-              className="bg-grey-02 mr-2"
-              operator={isFirstCondition ? 'where' : 'and'}
+              className="bg-grey-02 mr-2 p-2"
+              operator={logicalOperator}
             />
             <div className="flex flex-row gap-2">
-              <Formula isRoot formula={andOperand} />
+              <Formula isRoot formula={condition} />
             </div>
           </Fragment>
         );
       })}
-    </Fragment>
+    </div>
   );
+}
+
+function getNestedConditions(triggerCondition?: Operator) {
+  if (!triggerCondition) return [];
+  switch (triggerCondition.type) {
+    case 'AND':
+      return triggerCondition.children.map(
+        (operator, index) =>
+          ({
+            logicalOperator: index === 0 ? 'where' : 'and',
+            condition: operator,
+          } as const)
+      );
+    case 'OR':
+      return triggerCondition.children.map(
+        (operator, index) =>
+          ({
+            logicalOperator: index === 0 ? 'where' : 'or',
+            condition: operator,
+          } as const)
+      );
+    default:
+      return [
+        {
+          logicalOperator: 'where',
+          condition: triggerCondition,
+        } as const,
+      ];
+  }
 }

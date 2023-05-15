@@ -32,7 +32,9 @@ function ConditionItem({
 
   if (!children) return null;
   return (
-    <ScenarioBox className={clsx('bg-grey-02 w-fit only:w-full', className)}>
+    <ScenarioBox
+      className={clsx('bg-grey-02 w-fit p-2 only:w-full', className)}
+    >
       {children}
     </ScenarioBox>
   );

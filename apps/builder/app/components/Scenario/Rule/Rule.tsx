@@ -1,6 +1,5 @@
 import { type ScenarioIterationRule } from '@marble-front/api/marble';
 import { Fragment } from 'react';
-import * as R from 'remeda';
 
 import { Paper } from '../../Paper';
 import { Formula } from '../Formula';
@@ -8,62 +7,57 @@ import { LogicalOperator } from '../LogicalOperator';
 import { Consequence } from './Consequence';
 
 /**
- * Design is opinionated: it assumes a rule will often be an OR operator with AND operands.
+ * Design is opinionated: it assumes a rule will often be an OR operator with AND operands / AND operator with OR operands.
  *
- * ex: rule.formula is an an OR operator with AND operands.
+ * 1. rule.formula is an OR operator with AND operands (same for AND with OR).
  *
  *      if  <Formula condition={rule.formula.children[0].children[0]} />
  *      and <Formula condition={rule.formula.children[0].children[1]} />
  *    OR
  *      if  <Formula condition={rule.formula.children[1].children[0]} />
  *
- * ex: rule.formula is an OR operator with other Boolean operators
+ * 2. rule.formula is an OR operator with other Boolean operators (same with AND)
  *
  *      if  <Formula condition={rule.formula.children[0]} />
  *    OR
  *      if  <Formula condition={rule.formula.children[1]} />
  *
- * In case this is not an AND operator, we simulate an AND operator with a single operand
- *
- * ex: rule.formula is another Boolean operators
+ * 3. rule.formula is another Boolean operators
  *
  *      if  <Formula condition={rule.formula} />
  *
- * In case this is not an OR operator, we simulate an OR operator with a single operand
+ * In case this is not an OR/AND operator, we simulate an OR operator with a single operand
  */
 export function Rule({ rule }: { rule: ScenarioIterationRule }) {
-  const orOperands = R.pipe(
-    rule.formula,
-    (formula) => (formula.type === 'OR' ? formula.children : [formula]),
-    R.map((orOperand) =>
-      orOperand.type === 'AND' ? orOperand.children : [orOperand]
-    )
-  );
+  const nestedConditions = getNestedConditions(rule.formula);
 
   return (
     <div className="flex flex-col gap-4">
       <Consequence scoreIncrease={rule.scoreModifier} />
       <Paper.Container>
         <div className="text-s grid grid-cols-[40px_1fr] gap-2">
-          {orOperands.map((andOperands, orOperandIndex) => {
-            const isLastOperand = orOperandIndex === orOperands.length - 1;
+          {nestedConditions.map((rootOperand, rootOperandIndex) => {
+            const isLastOperand =
+              rootOperandIndex === nestedConditions.length - 1;
+
             return (
-              <Fragment key={`or_operand_${orOperandIndex}`}>
-                {andOperands.map((andOperand, andOperandIndex) => {
-                  const isFirstCondition = andOperandIndex === 0;
-                  return (
-                    <Fragment key={`and_operand_${andOperandIndex}`}>
-                      <LogicalOperator
-                        operator={isFirstCondition ? 'if' : 'and'}
-                      />
-                      <Formula formula={andOperand} isRoot />
-                    </Fragment>
-                  );
-                })}
+              <Fragment key={`root_operand_${rootOperandIndex}`}>
+                {rootOperand.operator.map(
+                  (nestedOperand, nestedOperandIndex) => {
+                    return (
+                      <Fragment key={`nested_operand_${nestedOperandIndex}`}>
+                        <LogicalOperator
+                          operator={nestedOperand.logicalOperator}
+                        />
+                        <Formula formula={nestedOperand.operator} isRoot />
+                      </Fragment>
+                    );
+                  }
+                )}
                 {!isLastOperand && (
                   <>
                     <LogicalOperator
-                      operator="or"
+                      operator={rootOperand.logicalOperator}
                       className="bg-grey-02 uppercase"
                     />
                     <div className="flex items-center">
@@ -78,4 +72,71 @@ export function Rule({ rule }: { rule: ScenarioIterationRule }) {
       </Paper.Container>
     </div>
   );
+}
+
+function getNestedConditions(formula: ScenarioIterationRule['formula']) {
+  switch (formula.type) {
+    case 'AND': {
+      const andOperands = formula.children;
+
+      return andOperands.map((andOperand) => {
+        return {
+          logicalOperator: 'and',
+          operator:
+            andOperand.type === 'OR'
+              ? andOperand.children.map(
+                  (orOperand, orOperandIndex) =>
+                    ({
+                      logicalOperator: orOperandIndex === 0 ? 'if' : 'or',
+                      operator: orOperand,
+                    } as const)
+                )
+              : [
+                  {
+                    logicalOperator: 'if',
+                    operator: andOperand,
+                  } as const,
+                ],
+        } as const;
+      });
+    }
+
+    case 'OR': {
+      const orOperands = formula.children;
+
+      return orOperands.map((orOperand) => {
+        return {
+          logicalOperator: 'or',
+          operator:
+            orOperand.type === 'AND'
+              ? orOperand.children.map(
+                  (andOperand, andOperandIndex) =>
+                    ({
+                      logicalOperator: andOperandIndex === 0 ? 'if' : 'and',
+                      operator: andOperand,
+                    } as const)
+                )
+              : [
+                  {
+                    logicalOperator: 'if',
+                    operator: orOperand,
+                  } as const,
+                ],
+        } as const;
+      });
+    }
+
+    default:
+      return [
+        {
+          logicalOperator: 'or',
+          operator: [
+            {
+              logicalOperator: 'if',
+              operator: formula,
+            } as const,
+          ],
+        } as const,
+      ];
+  }
 }
