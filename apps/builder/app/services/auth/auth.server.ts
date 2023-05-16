@@ -1,8 +1,6 @@
-import { type UserResponse } from '@marble-front/api/marble';
 import { getServerEnv } from '@marble-front/builder/utils/environment';
 import { Authenticator } from 'remix-auth';
 
-import { usersApi } from '../marble-api';
 import { sessionStorage } from './session.server';
 import { type GoogleProfile, GoogleStrategy } from './strategies';
 

@@ -5,7 +5,6 @@ import {
   commitSession,
   getSession,
 } from '@marble-front/builder/services/auth/session.server';
-import { usersApi } from '@marble-front/builder/services/marble-api';
 import { parseForm } from '@marble-front/builder/utils/input-validation';
 import { Select } from '@marble-front/ui/design-system';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -26,13 +25,13 @@ export async function action({ request }: ActionArgs) {
     const { preferredLanguage } = await parseForm(request, formSchema);
 
     const user = await authenticator.isAuthenticated(request);
-    if (user)
-      await usersApi.putUsersUserId({
-        userId: user.id,
-        userPreferences: {
-          preferredLanguage,
-        },
-      });
+    // if (user)
+    //   await usersApi.putUsersUserId({
+    //     userId: user.id,
+    //     userPreferences: {
+    //       preferredLanguage,
+    //     },
+    //   });
 
     setLanguage(session, preferredLanguage);
 
