@@ -1,18 +1,21 @@
-import { type ComponentMeta, type ComponentStory } from '@storybook/react';
+import { type Meta, type StoryFn } from '@storybook/react';
 
 import { Button } from '../Button/Button';
 import { HiddenInputs } from './HiddenInputs';
 
-const Story: ComponentMeta<typeof HiddenInputs> = {
+const Story: Meta<typeof HiddenInputs> = {
   component: HiddenInputs,
   title: 'HiddenInputs',
+  args: {
+    value: 'Hidden value...',
+  },
   argTypes: {
-    value: { type: 'string', defaultValue: 'Hidden value...' },
+    value: { type: 'string' },
   },
 };
 export default Story;
 
-const Template: ComponentStory<typeof HiddenInputs> = (args) => (
+const Template: StoryFn<typeof HiddenInputs> = (args) => (
   <form
     onSubmit={(e) => {
       e.preventDefault();

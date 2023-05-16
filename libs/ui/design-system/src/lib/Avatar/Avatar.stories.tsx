@@ -1,4 +1,4 @@
-import { type Meta, Story } from '@storybook/react';
+import { type Meta, type StoryFn } from '@storybook/react';
 
 import { Avatar, type AvatarProps } from './Avatar';
 
@@ -7,9 +7,11 @@ type StoryProps = AvatarProps;
 const Story: Meta<StoryProps> = {
   component: Avatar,
   title: 'Avatar',
+  args: {
+    firstName: 'Pierre',
+    lastName: 'Lemaire',
+  },
   argTypes: {
-    firstName: { defaultValue: 'Pierre' },
-    lastName: { defaultValue: 'Lemaire' },
     src: {
       control: 'select',
       options: [
@@ -23,7 +25,7 @@ const Story: Meta<StoryProps> = {
 };
 export default Story;
 
-const Template: Story<StoryProps> = (args) => {
+const Template: StoryFn<StoryProps> = (args) => {
   return <Avatar {...args} />;
 };
 

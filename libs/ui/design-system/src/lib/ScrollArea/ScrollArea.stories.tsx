@@ -1,15 +1,15 @@
-import { type ComponentMeta, type ComponentStory } from '@storybook/react';
+import { type Meta, type StoryFn } from '@storybook/react';
 import clsx from 'clsx';
 
 import { ScrollArea } from './ScrollArea';
 
-const Story: ComponentMeta<typeof ScrollArea.Root> = {
+const Story: Meta<typeof ScrollArea.Root> = {
   component: ScrollArea.Root,
   title: 'ScrollView',
 };
 export default Story;
 
-const Template: ComponentStory<typeof ScrollArea.Root> = () => (
+const Template: StoryFn<typeof ScrollArea.Root> = () => (
   <ScrollArea.Root className="border-grey-50 w-fit rounded border shadow-md">
     <ScrollArea.Viewport className="max-h-72 max-w-[100px]">
       <ul>

@@ -1,22 +1,13 @@
 import { Calendar, Help, Scenarios, Search } from '@marble-front/ui/icons';
-import { type Meta, Story } from '@storybook/react';
+import { type Meta, type StoryFn } from '@storybook/react';
 
 import { Input, type InputProps } from './Input';
 
-const adornmentOptions = [
-  'none',
-  'search',
-  'calendar',
-  'help',
-  'scenarios',
-] as const;
-type AdornmentOption = (typeof adornmentOptions)[number];
-const adornments: Record<AdornmentOption, JSX.Element | undefined> = {
-  none: undefined,
-  search: <Search />,
-  calendar: <Calendar />,
-  help: <Help />,
-  scenarios: <Scenarios />,
+const adornments = {
+  Calendar: <Calendar />,
+  Help: <Help />,
+  Scenarios: <Scenarios />,
+  Search: <Search />,
 };
 
 const Story: Meta<InputProps> = {
@@ -24,31 +15,24 @@ const Story: Meta<InputProps> = {
   title: 'Input',
   argTypes: {
     startAdornment: {
-      control: { type: 'select' },
-      options: adornmentOptions,
-      defaultValue: adornmentOptions[0],
+      options: Object.keys(adornments),
+      mapping: adornments,
+      control: {
+        type: 'select',
+      },
     },
     endAdornment: {
-      control: { type: 'select' },
-      options: adornmentOptions,
-      defaultValue: adornmentOptions[0],
+      options: Object.keys(adornments),
+      mapping: adornments,
+      control: {
+        type: 'select',
+      },
     },
   },
 };
 export default Story;
 
-const Template: Story<
-  Omit<InputProps, 'startAdornment' | 'endAdornment'> & {
-    startAdornment: AdornmentOption;
-    endAdornment: AdornmentOption;
-  }
-> = ({ startAdornment, endAdornment, ...args }) => (
-  <Input
-    {...args}
-    startAdornment={adornments[startAdornment]}
-    endAdornment={adornments[endAdornment]}
-  />
-);
+const Template: StoryFn<InputProps> = (args) => <Input {...args} />;
 
 export const Primary = Template.bind({});
 Primary.args = {};

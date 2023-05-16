@@ -1,4 +1,4 @@
-import { type Meta, Story } from '@storybook/react';
+import { type Meta, type StoryFn } from '@storybook/react';
 
 import { Select, type SelectProps } from './Select';
 import { tagBorder } from './Select.constants';
@@ -8,13 +8,17 @@ type StoryProps = Pick<SelectProps, 'disabled' | 'placeholder' | 'border'>;
 const Story: Meta<StoryProps> = {
   component: Select.Default,
   title: 'Select',
+  args: {
+    placeholder: 'Select a value...',
+    disabled: false,
+    border: tagBorder[0],
+  },
   argTypes: {
-    placeholder: { type: 'string', defaultValue: 'Select a value...' },
-    disabled: { type: 'boolean', defaultValue: false },
+    placeholder: { type: 'string' },
+    disabled: { type: 'boolean' },
     border: {
       control: { type: 'radio' },
       options: tagBorder,
-      defaultValue: tagBorder[0],
     },
   },
 };
@@ -22,7 +26,7 @@ export default Story;
 
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple', 'pear'];
 
-export const Default: Story<StoryProps> = (args) => (
+export const Default: StoryFn<StoryProps> = (args) => (
   <Select.Default {...args}>
     {fruits.map((fruit) => {
       return (
@@ -51,7 +55,7 @@ const books = new Map(
 
 const bookKeys = Array.from(books.keys());
 
-export const Complex: Story<StoryProps> = ({
+export const Complex: StoryFn<StoryProps> = ({
   placeholder,
   border,
   ...args

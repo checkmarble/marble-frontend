@@ -28,7 +28,12 @@
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
     },
     "build-storybook": {
-      "inputs": ["default", "^production", "{workspaceRoot}/.storybook/**/*"]
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/.storybook/**/*",
+        "!{projectRoot}/.storybook/**/*"
+      ]
     }
   },
   "namedInputs": {
@@ -49,13 +54,13 @@
     "libsDir": "libs"
   },
   "generators": {
-    "@nrwl/react": {
+    "@nx/react": {
       "application": {
         "babel": true
       },
       "component": {
-        "project": "ui-design-system",
         "style": "none",
+        "project": "ui-design-system",
         "pascalCaseDirectory": true,
         "pascalCaseFiles": true,
         "export": true
