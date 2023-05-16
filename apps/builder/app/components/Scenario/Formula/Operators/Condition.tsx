@@ -1,14 +1,17 @@
 import clsx from 'clsx';
 
-import { ScenarioBox } from '../ScenarioBox';
+import { ScenarioBox } from '../../ScenarioBox';
 
 function ConditionContainer({
   children,
   className,
+  isRoot,
 }: {
   children: React.ReactNode;
   className?: string;
+  isRoot?: boolean;
 }) {
+  if (!isRoot) return <>{children}</>;
   return (
     <div className={clsx('flex w-fit flex-row gap-2', className)}>
       {children}
@@ -19,13 +22,19 @@ function ConditionContainer({
 function ConditionItem({
   children,
   className,
+  isRoot,
 }: {
   children: React.ReactNode;
   className?: string;
+  isRoot?: boolean;
 }) {
+  if (!isRoot) return <>{children}</>;
+
   if (!children) return null;
   return (
-    <ScenarioBox className={clsx('bg-grey-02 w-fit only:w-full', className)}>
+    <ScenarioBox
+      className={clsx('bg-grey-02 w-fit p-2 only:w-full', className)}
+    >
       {children}
     </ScenarioBox>
   );

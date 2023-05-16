@@ -1,90 +1,34 @@
-import { type PlainMessage } from '@bufbuild/protobuf';
-import { type Formula as FormulaMessage } from '@marble-front/api/marble';
-import { assertNever } from '@marble-front/builder/utils/assert-never';
+import { type Operator } from '@marble-front/api/marble';
+import {
+  isConstantOperator,
+  isDataFieldOperator,
+  isMathOperator,
+} from '@marble-front/operators';
+import { assertNever } from '@marble-front/typescript-utils';
 
-import { Condition } from './Condition';
-import { Data } from './Data';
-import { FormulaAggregation } from './FormulaAggregation';
-import { NotImplemented } from './NotImplemented';
-import { OperatorBinary } from './OperatorBinary';
+import { Constant, DataField, Math, Not } from './Operators';
 
 interface FormulaProps {
-  formula: PlainMessage<FormulaMessage>;
+  formula: Operator;
   isRoot?: boolean;
 }
 
-export function Formula({ formula: { value }, isRoot = false }: FormulaProps) {
-  switch (value.case) {
-    case 'data': {
-      if (isRoot) {
-        return (
-          <Condition.Container>
-            <Condition.Item>
-              <Data data={value.value} />
-            </Condition.Item>
-          </Condition.Container>
-        );
-      }
-
-      return <Data data={value.value} />;
-    }
-
-    case 'formulaBinary': {
-      const { left, operator, right } = value.value;
-      const Left = left && <Formula formula={left} />;
-      const Operator = <OperatorBinary operator={operator} />;
-      const Right = right && <Formula formula={right} />;
-
-      if (isRoot) {
-        return (
-          <Condition.Container>
-            <Condition.Item>{Left}</Condition.Item>
-            <Condition.Item className="px-4">{Operator}</Condition.Item>
-            <Condition.Item>{Right}</Condition.Item>
-          </Condition.Container>
-        );
-      }
-
-      return (
-        <>
-          {Left}
-          {Operator}
-          {Right}
-        </>
-      );
-    }
-
-    case 'formulaAggregation': {
-      if (isRoot) {
-        return (
-          <Condition.Container>
-            <Condition.Item>
-              <FormulaAggregation.Trigger formulaAggregation={value.value} />
-            </Condition.Item>
-          </Condition.Container>
-        );
-      }
-
-      return <FormulaAggregation.Trigger formulaAggregation={value.value} />;
-    }
-
-    case 'formulaUnary':
-    case 'formulaVariant': {
-      if (isRoot) {
-        return (
-          <Condition.Container>
-            <Condition.Item>
-              <NotImplemented value={value.case} />
-            </Condition.Item>
-          </Condition.Container>
-        );
-      }
-
-      return <NotImplemented value={value.case} />;
-    }
-    case undefined:
-      return null;
-    default:
-      assertNever('unknwon Formula case:', value);
+export function Formula({ formula, isRoot = false }: FormulaProps) {
+  if (isConstantOperator(formula)) {
+    return <Constant operator={formula} isRoot={isRoot} />;
   }
+
+  if (isDataFieldOperator(formula)) {
+    return <DataField operator={formula} isRoot={isRoot} />;
+  }
+
+  if (isMathOperator(formula)) {
+    return <Math operator={formula} isRoot={isRoot} />;
+  }
+
+  if (formula.type === 'NOT') {
+    return <Not operator={formula} isRoot={isRoot} />;
+  }
+
+  assertNever('unknwon Operator:', formula);
 }

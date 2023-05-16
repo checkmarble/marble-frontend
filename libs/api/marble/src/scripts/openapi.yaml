@@ -606,7 +606,7 @@ components:
                 - rules
               properties:
                 triggerCondition:
-                  type: object
+                  $ref: '#/components/schemas/Operator'
                   description: Valid marshalled operator
                 scoreReviewThreshold:
                   type: integer
@@ -630,7 +630,7 @@ components:
           type: object
           properties:
             triggerCondition:
-              type: object
+              $ref: '#/components/schemas/Operator'
               description: Valid marshalled operator
             scoreReviewThreshold:
               type: integer
@@ -649,7 +649,7 @@ components:
           type: object
           properties:
             triggerCondition:
-              type: object
+              $ref: '#/components/schemas/Operator'
               description: Valid marshalled operator
             scoreReviewThreshold:
               type: integer
@@ -682,7 +682,7 @@ components:
         description:
           type: string
         formula:
-          type: object
+          $ref: '#/components/schemas/Operator'
           description: Valid marshalled operator
         scoreModifier:
           type: integer
@@ -709,7 +709,7 @@ components:
         description:
           type: string
         formula:
-          type: object
+          $ref: '#/components/schemas/Operator'
           description: Valid marshalled operator
         scoreModifier:
           type: integer
@@ -760,6 +760,124 @@ components:
     PublicationAction:
       type: string
       enum: ['publish', 'unpublish']
+    Operator:
+      oneOf:
+        - $ref: '#/components/schemas/AndOperator'
+        - $ref: '#/components/schemas/OrOperator'
+        - $ref: '#/components/schemas/DbFieldBoolOperator'
+        - $ref: '#/components/schemas/EqualBoolOperator'
+        - $ref: '#/components/schemas/FalseOperator'
+        - $ref: '#/components/schemas/TrueOperator'
+        - $ref: '#/components/schemas/NotOperator'
+        - $ref: '#/components/schemas/PayloadFieldBoolOperator'
+    AndOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['AND']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    OrOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['OR']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    DbFieldBoolOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['DB_FIELD_BOOL']
+        staticData:
+          type: object
+          required:
+            - triggerTableName
+            - path
+            - fieldName
+          properties:
+            triggerTableName:
+              type: string
+            path:
+              type: array
+              items:
+                type: string
+            fieldName:
+              type: string
+    EqualBoolOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['EQUAL_BOOL']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    FalseOperator:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: ['FALSE']
+    TrueOperator:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: ['TRUE']
+    NotOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['NOT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    PayloadFieldBoolOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['PAYLOAD_FIELD_BOOL']
+        staticData:
+          type: object
+          required:
+            - fieldName
+          properties:
+            fieldName:
+              type: string
   securitySchemes:
     Oauth2ClientCredentials:
       type: oauth2

@@ -45,18 +45,55 @@ export type ScenarioIteration = {
     createdAt: string;
     updatedAt: string;
 };
+export type AndOperator = {
+    "type": "AND";
+    children: Operator[];
+};
+export type OrOperator = {
+    "type": "OR";
+    children: Operator[];
+};
+export type DbFieldBoolOperator = {
+    "type": "DB_FIELD_BOOL";
+    staticData: {
+        triggerTableName: string;
+        path: string[];
+        fieldName: string;
+    };
+};
+export type EqualBoolOperator = {
+    "type": "EQUAL_BOOL";
+    children: Operator[];
+};
+export type FalseOperator = {
+    "type": "FALSE";
+};
+export type TrueOperator = {
+    "type": "TRUE";
+};
+export type NotOperator = {
+    "type": "NOT";
+    children: Operator[];
+};
+export type PayloadFieldBoolOperator = {
+    "type": "PAYLOAD_FIELD_BOOL";
+    staticData: {
+        fieldName: string;
+    };
+};
+export type Operator = AndOperator | OrOperator | DbFieldBoolOperator | EqualBoolOperator | FalseOperator | TrueOperator | NotOperator | PayloadFieldBoolOperator;
 export type CreateScenarioIterationRuleBody = {
     scenarioIterationId: string;
     displayOrder: number;
     name: string;
     description: string;
-    formula: object;
+    formula: Operator;
     scoreModifier: number;
 };
 export type CreateScenarioIterationBody = {
     scenarioId: string;
     body?: {
-        triggerCondition?: object;
+        triggerCondition?: Operator;
         scoreReviewThreshold?: number;
         scoreRejectThreshold?: number;
         rules?: CreateScenarioIterationRuleBody[];
@@ -68,13 +105,13 @@ export type ScenarioIterationRule = {
     displayOrder: number;
     name: string;
     description: string;
-    formula: object;
+    formula: Operator;
     scoreModifier: number;
     createdAt: string;
 };
 export type ScenarioIterationWithBody = ScenarioIteration & {
     body: {
-        triggerCondition?: object;
+        triggerCondition?: Operator;
         scoreReviewThreshold?: number;
         scoreRejectThreshold?: number;
         rules: ScenarioIterationRule[];
@@ -82,7 +119,7 @@ export type ScenarioIterationWithBody = ScenarioIteration & {
 };
 export type UpdateScenarioIterationBody = {
     body?: {
-        triggerCondition?: object;
+        triggerCondition?: Operator;
         scoreReviewThreshold?: number;
         scoreRejectThreshold?: number;
     };
