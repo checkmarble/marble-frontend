@@ -1,6 +1,6 @@
 {
   "extends": [
-    "plugin:@nrwl/nx/react",
+    "plugin:@nx/react",
     "@remix-run/eslint-config",
     "@remix-run/eslint-config/node",
     "@remix-run/eslint-config/jest-testing-library",

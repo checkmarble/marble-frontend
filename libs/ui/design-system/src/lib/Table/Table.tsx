@@ -1,9 +1,9 @@
 import { Arrow2Down, Arrow2Up } from '@marble-front/ui/icons';
 import {
   flexRender,
-  Header,
+  type Header,
   type HeaderGroup,
-  Row,
+  type Row,
   type RowData,
   type Table as TableT,
   type TableOptions,

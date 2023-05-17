@@ -1,4 +1,4 @@
-const { createGlobPatternsForDependencies } = require('@nrwl/react/tailwind');
+const { createGlobPatternsForDependencies } = require('@nx/react/tailwind');
 const sharedTailwindConfig = require('../../libs/tailwind-preset/tailwind.config');
 const { join } = require('path');
 
