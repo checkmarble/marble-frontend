@@ -8,4 +8,7 @@ concurrency:
 
 jobs:
   check:
+    permissions:
+      contents: read
+      actions: read
     uses: ./.github/workflows/check.yaml
