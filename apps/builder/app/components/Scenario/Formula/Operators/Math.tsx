@@ -41,6 +41,8 @@ function useGetOperatorLabel() {
     (type: MathOperatorType['type']) => {
       switch (type) {
         case 'EQUAL_BOOL':
+        case 'EQUAL_FLOAT':
+        case 'EQUAL_STRING':
           return '=';
         // case 'NOT_EQUAL_BOOL':
         //   return '≠';

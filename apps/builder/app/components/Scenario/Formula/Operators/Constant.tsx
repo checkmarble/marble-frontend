@@ -47,8 +47,10 @@ export function Constant({
 
   const constantType = operator.type;
   switch (constantType) {
-    // case 'string':
-    //   return <DefaultConstant>{`"${value.value}"`}</DefaultConstant>;
+    case 'STRING_SCALAR':
+      return (
+        <DefaultConstant>{`"${operator.staticData.value}"`}</DefaultConstant>
+      );
     case 'FLOAT_SCALAR':
       return (
         <DefaultConstant>

@@ -2,6 +2,8 @@ import {
   type AndOperator,
   type DivideFloatOperator,
   type EqualBoolOperator,
+  type EqualFloatOperator,
+  type EqualStringOperator,
   type Operator,
   type OrOperator,
   type ProductFloatOperator,
@@ -14,6 +16,8 @@ export type MathOperator =
   | AndOperator
   | OrOperator
   | EqualBoolOperator
+  | EqualFloatOperator
+  | EqualStringOperator
   | SumFloatOperator
   | DivideFloatOperator
   | SubstractFloatOperator
@@ -25,6 +29,8 @@ export function isMathOperator(operator: Operator): operator is MathOperator {
     case 'AND':
     case 'OR':
     case 'EQUAL_BOOL':
+    case 'EQUAL_FLOAT':
+    case 'EQUAL_STRING':
     case 'SUM_FLOAT':
     case 'DIVIDE_FLOAT':
     case 'SUBTRACT_FLOAT':
