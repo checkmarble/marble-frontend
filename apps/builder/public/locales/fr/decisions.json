@@ -3,5 +3,10 @@
   "outcome": "Résultat",
   "scenario.name": "Scénario",
   "score": "Score",
-  "trigger_object": "Objet déclencheur"
+  "trigger_object.type": "Objet déclencheur",
+  "outcome.approve": "Approuver",
+  "outcome.review": "A revoir",
+  "outcome.reject": "Rejeter",
+  "outcome.null": "Null",
+  "outcome.unknown": "Unknown"
 }

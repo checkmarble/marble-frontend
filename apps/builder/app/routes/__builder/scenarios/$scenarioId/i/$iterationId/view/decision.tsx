@@ -1,4 +1,9 @@
-import { Callout, Paper } from '@marble-front/builder/components';
+import {
+  Callout,
+  decisionI18n,
+  Outcome,
+  Paper,
+} from '@marble-front/builder/components';
 import { Tag } from '@marble-front/ui/design-system';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useCurrentScenarioIteration } from '../../$iterationId';
 
 export const handle = {
-  i18n: ['scenarios'] satisfies Namespace,
+  i18n: [...decisionI18n, 'scenarios'] satisfies Namespace,
 };
 
 export default function Decision() {
@@ -24,9 +29,7 @@ export default function Decision() {
       </div>
 
       <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-y-2 gap-x-1 lg:gap-y-4 lg:gap-x-2">
-        <Tag border="square" size="big" color="green">
-          {t('scenarios:decision.score_based.approve')}
-        </Tag>
+        <Outcome border="square" size="big" outcome="approve" />
         <div className="flex flex-row items-center gap-1 lg:gap-2">
           {t('scenarios:decision.score_based.approve_condition')}
           <Tag border="square" size="big" color="grey">
@@ -34,14 +37,10 @@ export default function Decision() {
           </Tag>
         </div>
 
-        <Tag border="square" size="big" color="yellow">
-          {t('scenarios:decision.score_based.review')}
-        </Tag>
+        <Outcome border="square" size="big" outcome="review" />
         {t('scenarios:decision.score_based.review_condition')}
 
-        <Tag border="square" size="big" color="red">
-          {t('scenarios:decision.score_based.decline')}
-        </Tag>
+        <Outcome border="square" size="big" outcome="reject" />
         <div className="flex flex-row items-center gap-1 lg:gap-2">
           {t('scenarios:decision.score_based.decline_condition')}
           <Tag border="square" size="big" color="grey">

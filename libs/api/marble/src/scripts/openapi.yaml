@@ -610,6 +610,7 @@ components:
           type: object
         outcome:
           type: string
+          enum: ['approve', 'review', 'reject', 'null', 'unknown']
         scenario:
           type: string
           required:

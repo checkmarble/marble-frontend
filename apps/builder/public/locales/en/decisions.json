@@ -1,7 +1,12 @@
 {
   "scenario.name": "Scenario",
-  "trigger_object": "Trigger object",
+  "trigger_object.type": "Trigger object",
   "score": "Score",
   "outcome": "Outcome",
-  "created_at": "Created at"
+  "created_at": "Created at",
+  "outcome.approve": "Approve",
+  "outcome.review": "Review",
+  "outcome.reject": "Reject",
+  "outcome.null": "Null",
+  "outcome.unknown": "Unknown"
 }

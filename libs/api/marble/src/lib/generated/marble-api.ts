@@ -29,7 +29,7 @@ export type Decision = {
     id: string;
     created_at: string;
     trigger_object: object;
-    outcome: string;
+    outcome: "approve" | "review" | "reject" | "null" | "unknown";
     scenario: {
         id: string;
         name: string;
