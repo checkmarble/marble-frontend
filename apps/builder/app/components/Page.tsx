@@ -38,13 +38,14 @@ function PageHeader({
 
 function PageContent({
   className,
+  scrollable = true,
   ...props
 }: React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
   HTMLDivElement
->) {
-  return (
-    <ScrollArea.Root>
+> & { scrollable?: boolean }) {
+  return scrollable ? (
+    <ScrollArea.Root className="flex flex-1 flex-col">
       <ScrollArea.Viewport className="h-full">
         <div
           className={clsx(
@@ -59,6 +60,16 @@ function PageContent({
         <ScrollArea.Thumb />
       </ScrollArea.Scrollbar>
     </ScrollArea.Root>
+  ) : (
+    <div
+      className={clsx(
+        'flex flex-1 flex-col',
+        'gap-4 p-4 lg:gap-8 lg:p-8',
+        'overflow-auto',
+        className
+      )}
+      {...props}
+    />
   );
 }
 

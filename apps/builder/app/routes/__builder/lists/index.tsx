@@ -76,7 +76,7 @@ export default function ListsPage() {
         <Lists className="mr-2" height="24px" width="24px" />
         {t('navigation:lists')}
       </Page.Header>
-      <Page.Content>
+      <Page.Content scrollable={false}>
         <Table.Container {...getContainerProps()}>
           <Table.Header headerGroups={table.getHeaderGroups()} />
           <Table.Body {...getBodyProps()}>

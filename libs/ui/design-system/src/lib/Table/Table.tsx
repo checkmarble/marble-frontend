@@ -5,7 +5,6 @@ import {
   type HeaderGroup,
   type Row,
   type RowData,
-  type Table as TableT,
   type TableOptions,
   useReactTable,
 } from '@tanstack/react-table';
@@ -15,7 +14,7 @@ import { useRef } from 'react';
 
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 
-interface TableContainerProps<TData extends RowData>
+interface TableContainerProps
   extends Pick<
     React.DetailedHTMLProps<
       React.HTMLAttributes<HTMLDivElement>,
@@ -23,21 +22,19 @@ interface TableContainerProps<TData extends RowData>
     >,
     'children' | 'className'
   > {
-  table: TableT<TData>;
   tableContainerRef: React.RefObject<HTMLDivElement>;
 }
 
-function TableContainer<TData extends RowData>({
-  table,
+function TableContainer({
   tableContainerRef,
   children,
   className,
-}: TableContainerProps<TData>) {
+}: TableContainerProps) {
   return (
     <ScrollArea.Root className="border-grey-10 overflow-hidden rounded-lg border">
       <ScrollArea.Viewport
         ref={tableContainerRef}
-        className={clsx('flex h-full max-h-96 overflow-auto', className)}
+        className={clsx('flex h-full overflow-auto', className)}
       >
         <table className="w-full table-fixed border-separate border-spacing-0">
           {children}
