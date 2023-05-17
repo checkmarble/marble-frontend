@@ -770,6 +770,15 @@ components:
         - $ref: '#/components/schemas/TrueOperator'
         - $ref: '#/components/schemas/NotOperator'
         - $ref: '#/components/schemas/PayloadFieldBoolOperator'
+        - $ref: '#/components/schemas/StringIsInListOperator'
+        - $ref: '#/components/schemas/FloatScalarOperator'
+        - $ref: '#/components/schemas/DbFieldFloatOperator'
+        - $ref: '#/components/schemas/PayloadFieldFloatOperator'
+        - $ref: '#/components/schemas/SumFloatOperator'
+        - $ref: '#/components/schemas/ProductFloatOperator'
+        - $ref: '#/components/schemas/SubstractFloatOperator'
+        - $ref: '#/components/schemas/DivideFloatOperator'
+        - $ref: '#/components/schemas/RoundFloatOperator'
     AndOperator:
       type: object
       required:
@@ -878,6 +887,149 @@ components:
           properties:
             fieldName:
               type: string
+    StringIsInListOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['STRING_IS_IN_LIST']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    FloatScalarOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['FLOAT_SCALAR']
+        staticData:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: number
+    DbFieldFloatOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['DB_FIELD_FLOAT']
+        staticData:
+          type: object
+          required:
+            - triggerTableName
+            - path
+            - fieldName
+          properties:
+            triggerTableName:
+              type: string
+            path:
+              type: array
+              items:
+                type: string
+            fieldName:
+              type: string
+    PayloadFieldFloatOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['PAYLOAD_FIELD_FLOAT']
+        staticData:
+          type: object
+          required:
+            - fieldName
+          properties:
+            fieldName:
+              type: string
+    SumFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['SUM_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    ProductFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['PRODUCT_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    SubstractFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['SUBTRACT_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    DivideFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['DIVIDE_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    RoundFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['ROUND_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+        staticData:
+          type: object
+          required:
+            - level
+          properties:
+            level:
+              type: integer
   securitySchemes:
     Oauth2ClientCredentials:
       type: oauth2

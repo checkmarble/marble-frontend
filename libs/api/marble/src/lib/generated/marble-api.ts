@@ -81,7 +81,54 @@ export type PayloadFieldBoolOperator = {
         fieldName: string;
     };
 };
-export type Operator = AndOperator | OrOperator | DbFieldBoolOperator | EqualBoolOperator | FalseOperator | TrueOperator | NotOperator | PayloadFieldBoolOperator;
+export type StringIsInListOperator = {
+    "type": "STRING_IS_IN_LIST";
+    children: Operator[];
+};
+export type FloatScalarOperator = {
+    "type": "FLOAT_SCALAR";
+    staticData: {
+        value: number;
+    };
+};
+export type DbFieldFloatOperator = {
+    "type": "DB_FIELD_FLOAT";
+    staticData: {
+        triggerTableName: string;
+        path: string[];
+        fieldName: string;
+    };
+};
+export type PayloadFieldFloatOperator = {
+    "type": "PAYLOAD_FIELD_FLOAT";
+    staticData: {
+        fieldName: string;
+    };
+};
+export type SumFloatOperator = {
+    "type": "SUM_FLOAT";
+    children: Operator[];
+};
+export type ProductFloatOperator = {
+    "type": "PRODUCT_FLOAT";
+    children: Operator[];
+};
+export type SubstractFloatOperator = {
+    "type": "SUBTRACT_FLOAT";
+    children: Operator[];
+};
+export type DivideFloatOperator = {
+    "type": "DIVIDE_FLOAT";
+    children: Operator[];
+};
+export type RoundFloatOperator = {
+    "type": "ROUND_FLOAT";
+    children: Operator[];
+    staticData: {
+        level: number;
+    };
+};
+export type Operator = AndOperator | OrOperator | DbFieldBoolOperator | EqualBoolOperator | FalseOperator | TrueOperator | NotOperator | PayloadFieldBoolOperator | StringIsInListOperator | FloatScalarOperator | DbFieldFloatOperator | PayloadFieldFloatOperator | SumFloatOperator | ProductFloatOperator | SubstractFloatOperator | DivideFloatOperator | RoundFloatOperator;
 export type CreateScenarioIterationRuleBody = {
     scenarioIterationId: string;
     displayOrder: number;
