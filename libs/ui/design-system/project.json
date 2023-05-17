@@ -14,7 +14,7 @@
         "project": "libs/ui/design-system/package.json",
         "entryFile": "libs/ui/design-system/src/index.ts",
         "external": ["react/jsx-runtime"],
-        "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+        "rollupConfig": "@nx/react/plugins/bundle-rollup",
         "compiler": "swc",
         "assets": [
           {
@@ -26,7 +26,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["libs/ui/design-system/**/*.{ts,tsx,js,jsx}"]
@@ -44,7 +44,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "libs/ui/design-system/jest.config.ts",
@@ -52,9 +52,8 @@
       }
     },
     "storybook": {
-      "executor": "@nrwl/storybook:storybook",
+      "executor": "@nx/storybook:storybook",
       "options": {
-        "uiFramework": "@storybook/react",
         "port": 4400,
         "configDir": "libs/ui/design-system/.storybook"
       },
@@ -65,12 +64,11 @@
       }
     },
     "build-storybook": {
-      "executor": "@nrwl/storybook:build",
+      "executor": "@nx/storybook:build",
       "outputs": ["{options.outputDir}"],
       "options": {
-        "uiFramework": "@storybook/react",
-        "configDir": "libs/ui/design-system/.storybook",
-        "outputDir": "dist/storybook/ui-design-system"
+        "outputDir": "dist/storybook/ui-design-system",
+        "configDir": "libs/ui/design-system/.storybook"
       },
       "configurations": {
         "ci": {

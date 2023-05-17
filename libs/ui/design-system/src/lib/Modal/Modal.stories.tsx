@@ -1,16 +1,16 @@
 import { Pushtolive } from '@marble-front/ui/icons';
-import { type Meta, Story } from '@storybook/react';
+import { type Meta, type StoryFn } from '@storybook/react';
 
 import { Button } from '../Button/Button';
 import { Modal } from './Modal';
 
-const Story: Meta<typeof Modal> = {
+const Story: Meta<typeof Modal.Root> = {
   component: Modal.Root,
   title: 'Modal',
 };
 export default Story;
 
-const Template: Story<typeof Modal> = (args) => (
+const Template: StoryFn<typeof Modal> = (args) => (
   <Modal.Root {...args}>
     <Modal.Trigger asChild>
       <Button>Trigger</Button>

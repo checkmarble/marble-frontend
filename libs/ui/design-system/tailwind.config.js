@@ -1,4 +1,4 @@
-const { createGlobPatternsForDependencies } = require('@nrwl/react/tailwind');
+const { createGlobPatternsForDependencies } = require('@nx/react/tailwind');
 const sharedTailwindConfig = require('../../tailwind-preset/tailwind.config');
 const { join } = require('path');
 
@@ -6,10 +6,7 @@ const { join } = require('path');
 module.exports = {
   presets: [sharedTailwindConfig],
   content: [
-    join(
-      __dirname,
-      '{src,pages,components}/**/*!(*.stories|*.spec).{ts,tsx,html}'
-    ),
+    join(__dirname, './src/**/*.{ts,tsx,html}'),
     ...createGlobPatternsForDependencies(__dirname),
   ],
 };

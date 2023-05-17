@@ -1,12 +1,12 @@
 {
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "name": "builder",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/builder",
   "projectType": "application",
   "tags": ["type:app", "scope:webapp"],
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/builder/**/*.{ts,tsx}"]

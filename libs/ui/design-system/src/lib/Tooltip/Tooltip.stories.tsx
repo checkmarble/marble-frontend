@@ -1,18 +1,21 @@
-import { type ComponentMeta, type ComponentStory } from '@storybook/react';
+import { type Meta, type StoryFn } from '@storybook/react';
 
 import { Tooltip } from './Tooltip';
 
-const Story: ComponentMeta<typeof Tooltip.Default> = {
+const Story: Meta<typeof Tooltip.Default> = {
   component: Tooltip.Default,
   title: 'Tooltip',
+  args: {
+    content: 'Tooltip...',
+  },
   argTypes: {
-    content: { type: 'string', defaultValue: 'Tooltip...' },
+    content: { type: 'string' },
   },
   decorators: [(story) => <Tooltip.Provider>{story()}</Tooltip.Provider>],
 };
 export default Story;
 
-const Template: ComponentStory<typeof Tooltip.Default> = (args) => (
+const Template: StoryFn<typeof Tooltip.Default> = (args) => (
   <Tooltip.Default {...args}>
     <div className="w-fit">hover me!</div>
   </Tooltip.Default>

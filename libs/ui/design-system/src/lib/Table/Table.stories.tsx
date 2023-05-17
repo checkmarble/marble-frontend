@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { type Meta, Story } from '@storybook/react';
+import { type Meta, type StoryFn } from '@storybook/react';
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -13,16 +13,7 @@ type StoryProps = {
   count: number;
 };
 
-const Story: Meta<StoryProps> = {
-  component: Table.Default,
-  title: 'Table',
-  argTypes: {
-    count: { type: 'number', defaultValue: 2500 },
-  },
-};
-export default Story;
-
-const Template: Story<StoryProps> = ({ count }) => {
+const Template: StoryFn<StoryProps> = ({ count }) => {
   const data = useMemo(
     () =>
       Array.from({ length: count }).map(() => ({
@@ -71,6 +62,18 @@ const Template: Story<StoryProps> = ({ count }) => {
 
   return <Table.Default {...virtualTable} />;
 };
+
+const Story: Meta<StoryProps> = {
+  component: Template,
+  title: 'Table',
+  args: {
+    count: 2500,
+  },
+  argTypes: {
+    count: { type: 'number' },
+  },
+};
+export default Story;
 
 export const Primary = Template.bind({});
 Primary.args = {};
