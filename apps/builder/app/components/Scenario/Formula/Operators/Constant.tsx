@@ -43,19 +43,18 @@ export function Constant({
   operator: ConstantOperator;
   isRoot?: boolean;
 }) {
-  const { t } = useTranslation(scenarioI18n);
+  const { t, i18n } = useTranslation(scenarioI18n);
 
   const constantType = operator.type;
   switch (constantType) {
     // case 'string':
     //   return <DefaultConstant>{`"${value.value}"`}</DefaultConstant>;
-    // case 'float':
-    // case 'int':
-    //   return (
-    //     <DefaultConstant>
-    //       {Intl.NumberFormat(i18n.language).format(value.value)}
-    //     </DefaultConstant>
-    //   );
+    case 'FLOAT_SCALAR':
+      return (
+        <DefaultConstant>
+          {Intl.NumberFormat(i18n.language).format(operator.staticData.value)}
+        </DefaultConstant>
+      );
     case 'TRUE':
       return (
         <DefaultConstant className="uppercase" isRoot={isRoot}>
