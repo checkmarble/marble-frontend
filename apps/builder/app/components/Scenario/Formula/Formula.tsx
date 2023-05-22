@@ -6,6 +6,7 @@ import {
 } from '@marble-front/operators';
 import { assertNever } from '@marble-front/typescript-utils';
 
+import { NotImplemented } from './NotImplemented';
 import { Constant, DataField, Math, Not } from './Operators';
 
 interface FormulaProps {
@@ -28,6 +29,10 @@ export function Formula({ formula, isRoot = false }: FormulaProps) {
 
   if (formula.type === 'NOT') {
     return <Not operator={formula} isRoot={isRoot} />;
+  }
+
+  if (formula.type === 'ROUND_FLOAT') {
+    return <NotImplemented value={JSON.stringify(formula, null, 2)} />;
   }
 
   assertNever('unknwon Operator:', formula);

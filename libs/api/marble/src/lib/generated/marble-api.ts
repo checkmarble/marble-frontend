@@ -53,16 +53,16 @@ export type OrOperator = {
     "type": "OR";
     children: Operator[];
 };
-export type DbFieldBoolOperator = {
-    "type": "DB_FIELD_BOOL";
-    staticData: {
-        triggerTableName: string;
-        path: string[];
-        fieldName: string;
-    };
-};
 export type EqualBoolOperator = {
     "type": "EQUAL_BOOL";
+    children: Operator[];
+};
+export type EqualStringOperator = {
+    "type": "EQUAL_STRING";
+    children: Operator[];
+};
+export type EqualFloatOperator = {
+    "type": "EQUAL_FLOAT";
     children: Operator[];
 };
 export type FalseOperator = {
@@ -75,13 +75,88 @@ export type NotOperator = {
     "type": "NOT";
     children: Operator[];
 };
+export type StringIsInListOperator = {
+    "type": "STRING_IS_IN_LIST";
+    children: Operator[];
+};
+export type FloatScalarOperator = {
+    "type": "FLOAT_SCALAR";
+    staticData: {
+        value: number;
+    };
+};
+export type StringScalarOperator = {
+    "type": "STRING_SCALAR";
+    staticData: {
+        value: number;
+    };
+};
+export type DbFieldBoolOperator = {
+    "type": "DB_FIELD_BOOL";
+    staticData: {
+        triggerTableName: string;
+        path: string[];
+        fieldName: string;
+    };
+};
+export type DbFieldFloatOperator = {
+    "type": "DB_FIELD_FLOAT";
+    staticData: {
+        triggerTableName: string;
+        path: string[];
+        fieldName: string;
+    };
+};
+export type DbFieldStringOperator = {
+    "type": "DB_FIELD_STRING";
+    staticData: {
+        triggerTableName: string;
+        path: string[];
+        fieldName: string;
+    };
+};
 export type PayloadFieldBoolOperator = {
     "type": "PAYLOAD_FIELD_BOOL";
     staticData: {
         fieldName: string;
     };
 };
-export type Operator = AndOperator | OrOperator | DbFieldBoolOperator | EqualBoolOperator | FalseOperator | TrueOperator | NotOperator | PayloadFieldBoolOperator;
+export type PayloadFieldFloatOperator = {
+    "type": "PAYLOAD_FIELD_FLOAT";
+    staticData: {
+        fieldName: string;
+    };
+};
+export type PayloadFieldStringOperator = {
+    "type": "PAYLOAD_FIELD_STRING";
+    staticData: {
+        fieldName: string;
+    };
+};
+export type SumFloatOperator = {
+    "type": "SUM_FLOAT";
+    children: Operator[];
+};
+export type ProductFloatOperator = {
+    "type": "PRODUCT_FLOAT";
+    children: Operator[];
+};
+export type SubstractFloatOperator = {
+    "type": "SUBTRACT_FLOAT";
+    children: Operator[];
+};
+export type DivideFloatOperator = {
+    "type": "DIVIDE_FLOAT";
+    children: Operator[];
+};
+export type RoundFloatOperator = {
+    "type": "ROUND_FLOAT";
+    children: Operator[];
+    staticData: {
+        level: number;
+    };
+};
+export type Operator = AndOperator | OrOperator | EqualBoolOperator | EqualStringOperator | EqualFloatOperator | FalseOperator | TrueOperator | NotOperator | StringIsInListOperator | FloatScalarOperator | StringScalarOperator | DbFieldBoolOperator | DbFieldFloatOperator | DbFieldStringOperator | PayloadFieldBoolOperator | PayloadFieldFloatOperator | PayloadFieldStringOperator | SumFloatOperator | ProductFloatOperator | SubstractFloatOperator | DivideFloatOperator | RoundFloatOperator;
 export type CreateScenarioIterationRuleBody = {
     scenarioIterationId: string;
     displayOrder: number;
