@@ -2,13 +2,15 @@ import {
   type FalseOperator,
   type FloatScalarOperator,
   type Operator,
+  type StringScalarOperator,
   type TrueOperator,
 } from '@marble-front/api/marble';
 
 export type ConstantOperator =
   | FalseOperator
   | TrueOperator
-  | FloatScalarOperator;
+  | FloatScalarOperator
+  | StringScalarOperator;
 
 export function isConstantOperator(
   operator: Operator
@@ -17,6 +19,7 @@ export function isConstantOperator(
     case 'TRUE':
     case 'FALSE':
     case 'FLOAT_SCALAR':
+    case 'STRING_SCALAR':
       return true;
     default:
       return false;
