@@ -6,6 +6,7 @@ import {
 import { Avatar, Button, ScrollArea } from '@marble-front/ui/design-system';
 import {
   Arrow2Down,
+  Decision,
   Lists,
   LogoStandard,
   Logout,
@@ -19,12 +20,22 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { authenticator } from '../services/auth/auth.server';
+import { getRoute } from '../services/routes';
 import { LanguagePicker } from './ressources/user/language';
 
 const LINKS: SidebarLinkProps[] = [
   // { labelTKey: 'navigation:home', to: 'home', Icon: Home },
-  { labelTKey: 'navigation:scenarios', to: 'scenarios', Icon: Scenarios },
-  { labelTKey: 'navigation:lists', to: 'lists', Icon: Lists },
+  {
+    labelTKey: 'navigation:scenarios',
+    to: getRoute('/scenarios'),
+    Icon: Scenarios,
+  },
+  { labelTKey: 'navigation:lists', to: getRoute('/lists'), Icon: Lists },
+  {
+    labelTKey: 'navigation:decisions',
+    to: getRoute('/decisions'),
+    Icon: Decision,
+  },
   // { labelTKey: 'navigation:analytics', to: 'analytics', Icon: Analytics },
   // { labelTKey: 'navigation:history', to: 'history', Icon: History },
 ];

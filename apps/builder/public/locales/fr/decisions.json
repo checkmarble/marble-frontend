@@ -1,0 +1,12 @@
+{
+  "created_at": "Créé à",
+  "outcome": "Résultat",
+  "scenario.name": "Scénario",
+  "score": "Score",
+  "trigger_object.type": "Objet déclencheur",
+  "outcome.approve": "Approuver",
+  "outcome.review": "A revoir",
+  "outcome.reject": "Rejeter",
+  "outcome.null": "Null",
+  "outcome.unknown": "Unknown"
+}

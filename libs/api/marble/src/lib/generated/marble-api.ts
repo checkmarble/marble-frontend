@@ -21,6 +21,31 @@ export type Token = {
     token_type: string;
     expires_in: string;
 };
+export type Error = {
+    code: number;
+    message: string;
+};
+export type Decision = {
+    id: string;
+    created_at: string;
+    trigger_object: object;
+    outcome: "approve" | "review" | "reject" | "null" | "unknown";
+    scenario: {
+        id: string;
+        name: string;
+        description: string;
+        version: number;
+    };
+    rules: {
+        name: string;
+        description: string;
+        score_modifier: number;
+        result: boolean;
+        error?: Error;
+    }[];
+    score: number;
+    error?: Error;
+};
 export type Scenario = {
     id: string;
     name: string;
@@ -232,6 +257,43 @@ export function postToken(createTokenBody: CreateTokenBody, opts?: Oazapfts.Requ
         method: "POST",
         body: createTokenBody
     })));
+}
+/**
+ * List decisions
+ */
+export function listDecisions(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Decision[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/decisions", {
+        ...opts
+    }));
+}
+/**
+ * Get a decision by id
+ */
+export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Decision;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/decisions/${encodeURIComponent(decisionId)}`, {
+        ...opts
+    }));
 }
 /**
  * List scenarios

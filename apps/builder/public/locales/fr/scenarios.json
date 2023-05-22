@@ -1,10 +1,7 @@
 {
-  "decision.score_based.approve": "Approuver",
   "decision.score_based.approve_condition": "Lorsque le score est égal ou inférieur",
   "decision.score_based.callout": "La décision est prise en comparant le score total calculé par les règles aux seuils définis ci-dessous.",
-  "decision.score_based.decline": "Déclin",
   "decision.score_based.decline_condition": "Lorsque le score est égal ou supérieur",
-  "decision.score_based.review": "Examen",
   "decision.score_based.review_condition": "Lorsque le score se situe entre les deux seuils.",
   "decision.score_based.title": "Décision basée sur le score",
   "deployment_modal.activate.button": "Activer",

@@ -6,6 +6,8 @@ info:
 tags:
   - name: Authorization
     description: Operations about authorization.
+  - name: Decisions
+    description: Operations about decisions.
   - name: Scenarios
     description: Operations about scenarios.
   - name: Scenario Iterations
@@ -41,6 +43,56 @@ paths:
                 $ref: '#/components/schemas/Token'
         '401':
           $ref: '#/components/responses/401'
+  /decisions:
+    get:
+      tags:
+        - Decisions
+      summary: List decisions
+      operationId: listDecisions
+      security:
+        - Oauth2ClientCredentials: []
+      responses:
+        '200':
+          description: List of corresponding decisions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Decision'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /decisions/{decisionId}:
+    get:
+      tags:
+        - Decisions
+      summary: Get a decision by id
+      operationId: getDecision
+      security:
+        - Oauth2ClientCredentials: []
+      parameters:
+        - name: decisionId
+          description: ID of the decision that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The decision corresponding to the provided `decisionId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Decision'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scenarios:
     get:
       tags:
@@ -527,6 +579,79 @@ components:
         expires_in:
           type: string
           format: date-time
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    Decision:
+      type: object
+      required:
+        - id
+        - created_at
+        - trigger_object
+        - outcome
+        - scenario
+        - rules
+        - score
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        trigger_object:
+          type: object
+        outcome:
+          type: string
+          enum: ['approve', 'review', 'reject', 'null', 'unknown']
+        scenario:
+          type: string
+          required:
+            - id
+            - name
+            - description
+            - version
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            description:
+              type: string
+            version:
+              type: integer
+        rules:
+          type: array
+          items:
+            type: object
+            required:
+              - name
+              - description
+              - score_modifier
+              - result
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              score_modifier:
+                type: integer
+              result:
+                type: boolean
+              error:
+                $ref: '#/components/schemas/Error'
+        score:
+          type: integer
+        error:
+          $ref: '#/components/schemas/Error'
     Scenario:
       type: object
       required:

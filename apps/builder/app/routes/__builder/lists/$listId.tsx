@@ -172,10 +172,10 @@ export default function Lists() {
         </Link>
         {data.name}
       </Page.Header>
-      <Page.Content className="max-w-3xl">
+      <Page.Content scrollable={false} className="max-w-3xl">
         <Callout>{data.description}</Callout>
         <ScenariosList scenarios={scenarios} />
-        <div className="flex flex-col gap-2 lg:gap-4">
+        <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
           <form className="flex items-center">
             <Input
               type="search"
