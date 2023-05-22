@@ -1,8 +1,19 @@
-# Welcome to Remix!
+# Builder app
 
-- [Remix Docs](https://remix.run/docs)
+## Getting started
 
-## Development
+The project make use of :
+
+- [Remix](https://remix.run/docs): React framework
+- [Tailwind CSS](https://tailwindcss.com/): utility first CSS framework
+- [Radix UI](https://www.radix-ui.com/): headless UI library (mostly used in shared componentsthe exposed in `ui-design` library)
+
+Some other libs you should pay attention to :
+
+- [zod](https://zod.dev/): TypeScript-first schema validation with static type inference
+- [react-hook-form](https://react-hook-form.com/): Performant, flexible and extensible forms with easy-to-use validation.
+
+### Development
 
 From your terminal:
 
