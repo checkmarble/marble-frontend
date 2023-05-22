@@ -3,5 +3,6 @@
 /dist
 /coverage
 
-# Generated API
+# Generated
 /libs/api/marble/src/lib/generated
+/apps/builder/app/services/routes/routes.ts
