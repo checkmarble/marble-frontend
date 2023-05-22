@@ -764,12 +764,26 @@ components:
       oneOf:
         - $ref: '#/components/schemas/AndOperator'
         - $ref: '#/components/schemas/OrOperator'
-        - $ref: '#/components/schemas/DbFieldBoolOperator'
         - $ref: '#/components/schemas/EqualBoolOperator'
+        - $ref: '#/components/schemas/EqualStringOperator'
+        - $ref: '#/components/schemas/EqualFloatOperator'
         - $ref: '#/components/schemas/FalseOperator'
         - $ref: '#/components/schemas/TrueOperator'
         - $ref: '#/components/schemas/NotOperator'
+        - $ref: '#/components/schemas/StringIsInListOperator'
+        - $ref: '#/components/schemas/FloatScalarOperator'
+        - $ref: '#/components/schemas/StringScalarOperator'
+        - $ref: '#/components/schemas/DbFieldBoolOperator'
+        - $ref: '#/components/schemas/DbFieldFloatOperator'
+        - $ref: '#/components/schemas/DbFieldStringOperator'
         - $ref: '#/components/schemas/PayloadFieldBoolOperator'
+        - $ref: '#/components/schemas/PayloadFieldFloatOperator'
+        - $ref: '#/components/schemas/PayloadFieldStringOperator'
+        - $ref: '#/components/schemas/SumFloatOperator'
+        - $ref: '#/components/schemas/ProductFloatOperator'
+        - $ref: '#/components/schemas/SubstractFloatOperator'
+        - $ref: '#/components/schemas/DivideFloatOperator'
+        - $ref: '#/components/schemas/RoundFloatOperator'
     AndOperator:
       type: object
       required:
@@ -796,30 +810,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operator'
-    DbFieldBoolOperator:
-      type: object
-      required:
-        - type
-        - staticData
-      properties:
-        type:
-          type: string
-          enum: ['DB_FIELD_BOOL']
-        staticData:
-          type: object
-          required:
-            - triggerTableName
-            - path
-            - fieldName
-          properties:
-            triggerTableName:
-              type: string
-            path:
-              type: array
-              items:
-                type: string
-            fieldName:
-              type: string
     EqualBoolOperator:
       type: object
       required:
@@ -829,6 +819,32 @@ components:
         type:
           type: string
           enum: ['EQUAL_BOOL']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    EqualStringOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['EQUAL_STRING']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    EqualFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['EQUAL_FLOAT']
         children:
           type: array
           items:
@@ -862,6 +878,123 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operator'
+    StringIsInListOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['STRING_IS_IN_LIST']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    FloatScalarOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['FLOAT_SCALAR']
+        staticData:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: number
+    StringScalarOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['STRING_SCALAR']
+        staticData:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: number
+    DbFieldBoolOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['DB_FIELD_BOOL']
+        staticData:
+          type: object
+          required:
+            - triggerTableName
+            - path
+            - fieldName
+          properties:
+            triggerTableName:
+              type: string
+            path:
+              type: array
+              items:
+                type: string
+            fieldName:
+              type: string
+    DbFieldFloatOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['DB_FIELD_FLOAT']
+        staticData:
+          type: object
+          required:
+            - triggerTableName
+            - path
+            - fieldName
+          properties:
+            triggerTableName:
+              type: string
+            path:
+              type: array
+              items:
+                type: string
+            fieldName:
+              type: string
+    DbFieldStringOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['DB_FIELD_STRING']
+        staticData:
+          type: object
+          required:
+            - triggerTableName
+            - path
+            - fieldName
+          properties:
+            triggerTableName:
+              type: string
+            path:
+              type: array
+              items:
+                type: string
+            fieldName:
+              type: string
     PayloadFieldBoolOperator:
       type: object
       required:
@@ -878,6 +1011,112 @@ components:
           properties:
             fieldName:
               type: string
+    PayloadFieldFloatOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['PAYLOAD_FIELD_FLOAT']
+        staticData:
+          type: object
+          required:
+            - fieldName
+          properties:
+            fieldName:
+              type: string
+    PayloadFieldStringOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['PAYLOAD_FIELD_STRING']
+        staticData:
+          type: object
+          required:
+            - fieldName
+          properties:
+            fieldName:
+              type: string
+    SumFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['SUM_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    ProductFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['PRODUCT_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    SubstractFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['SUBTRACT_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    DivideFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['DIVIDE_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    RoundFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['ROUND_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+        staticData:
+          type: object
+          required:
+            - level
+          properties:
+            level:
+              type: integer
   securitySchemes:
     Oauth2ClientCredentials:
       type: oauth2
