@@ -12,7 +12,9 @@ export type RightPannelContext = {
 
 export interface RightPannelRootProps
   extends Omit<Dialog.DialogProps, 'open' | 'onOpenChange' | 'modal'>,
-    RightPannelContext {}
+    RightPannelContext {
+  className?: string;
+}
 
 export function createRightPannel(name: string) {
   const { Provider, useValue } = createSimpleContext<RightPannelContext>(name);
@@ -20,11 +22,12 @@ export function createRightPannel(name: string) {
   function RightPannelRoot({
     open,
     onClose,
+    className,
     ...otherProps
   }: RightPannelRootProps) {
     const value = { open, onClose };
     return (
-      <div className="relative h-full w-full">
+      <div className={clsx('relative flex h-full w-full', className)}>
         <Provider value={value}>
           <Dialog.Root
             modal={false}
@@ -37,7 +40,13 @@ export function createRightPannel(name: string) {
     );
   }
 
-  function RightPannelViewport({ children }: { children: React.ReactNode }) {
+  function RightPannelViewport({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) {
     const { open, onClose } = useValue();
     return (
       <div
@@ -46,7 +55,7 @@ export function createRightPannel(name: string) {
             onClose();
           }
         }}
-        className="h-full w-full"
+        className={clsx('flex h-full w-full', className)}
       >
         {children}
       </div>
