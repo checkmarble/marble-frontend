@@ -588,6 +588,7 @@ components:
         - id
         - created_at
         - trigger_object
+        - trigger_object_type
         - outcome
         - scenario
         - rules
@@ -601,6 +602,8 @@ components:
           format: date-time
         trigger_object:
           type: object
+        trigger_object_type:
+          type: string
         outcome:
           type: string
           enum: ['approve', 'review', 'reject', 'null', 'unknown']
