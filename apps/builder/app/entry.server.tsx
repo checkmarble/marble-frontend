@@ -21,7 +21,7 @@ const ABORT_DELAY = 5000;
 defaults.baseUrl = getServerEnv('MARBLE_API_DOMAIN');
 
 const bffTokenService = new TokenService({
-  refreshToken: () => postToken({ refresh_token: 'token12345' }),
+  refreshToken: () => postToken('token12345'),
 });
 
 defaults.fetch = fetchWithAuthMiddleware({

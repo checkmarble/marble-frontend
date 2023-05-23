@@ -27,13 +27,13 @@ paths:
       summary: Get an access token
       operationId: postToken
       security: []
-      requestBody:
-        description: 'Valid refresh token required to generate a new access token'
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTokenBody'
-        required: true
+      parameters:
+        - in: header
+          description: 'Valid Api Key token required to generate a new access token'
+          name: X-API-Key
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: New access token
@@ -558,13 +558,6 @@ paths:
           $ref: '#/components/responses/404'
 components:
   schemas:
-    CreateTokenBody:
-      type: object
-      required:
-        - refresh_token
-      properties:
-        refresh_token:
-          type: string
     Token:
       type: object
       required:
