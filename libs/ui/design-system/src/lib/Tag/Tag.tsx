@@ -21,7 +21,7 @@ export function Tag({
   ...props
 }: TagProps) {
   return (
-    <div
+    <span
       className={clsx(
         'inline-flex items-center justify-center',
         {
