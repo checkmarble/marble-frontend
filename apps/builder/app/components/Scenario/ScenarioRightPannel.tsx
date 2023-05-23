@@ -1,11 +1,12 @@
 import { createSimpleContext } from '@marble-front/builder/utils/create-context';
-import { assertNever, noop } from '@marble-front/typescript-utils';
-import { Cross, Variable } from '@marble-front/ui/icons';
-import * as Dialog from '@radix-ui/react-dialog';
-import clsx from 'clsx';
-import { useCallback, useReducer } from 'react';
+import { assertNever } from '@marble-front/typescript-utils';
+import { Variable } from '@marble-front/ui/icons';
+import { type DialogTriggerProps } from '@radix-ui/react-dialog';
+import { type TFuncKey } from 'i18next';
+import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { createRightPannel, type RightPannelRootProps } from '../RightPannel';
 import { scenarioI18n } from './scenario-i18n';
 
 type State = {
@@ -44,85 +45,74 @@ function scenarioRightPannelReducer(prevState: State, action: Actions) {
   }
 }
 
-const { Provider, useValue: useActions } = createSimpleContext<{
-  onTriggerClick: (data: State['data']) => void;
-  onClose: () => void;
-}>('ScenarioRightPannel');
+const { RightPannel } = createRightPannel('ScenarioRightPannel');
 
-function ScenarioRightPannelProvider({
+const ScenarioRightPannelTriggerContext = createSimpleContext<{
+  onTriggerClick: (data: Pick<State, 'data'>) => void;
+}>('ScenarioRightPannelTrigger');
+
+function ScenarioRightPannelRoot({
   children,
   ...props
-}: Omit<Dialog.DialogProps, 'open' | 'onOpenChange' | 'modal'>) {
-  const getTitle = useGetTitle();
-  const [{ open, data }, dispatch] = useReducer(
+}: Omit<RightPannelRootProps, 'value'>) {
+  const [state, dispatch] = useReducer(
     scenarioRightPannelReducer,
     initialState
   );
 
   const value = {
-    onTriggerClick: (data: State['data']) => {
-      dispatch({ type: 'triggerClicked', payload: { data } });
-    },
-    onClose: () => {
-      dispatch({ type: 'close' });
+    onTriggerClick: (payload: Pick<State, 'data'>) => {
+      dispatch({ type: 'triggerClicked', payload });
     },
   };
 
   return (
-    <Provider value={value}>
-      <Dialog.Root modal={false} open={open} onOpenChange={noop} {...props}>
-        <div
-          onClick={() => {
-            if (open) {
-              value.onClose();
-            }
-          }}
-        >
-          {children}
-        </div>
-        <Dialog.Content
-          className={clsx(
-            'bg-grey-00 absolute right-0 top-0 bottom-0 flex w-full flex-col shadow',
-            'max-w-xs gap-4 p-4 lg:max-w-sm lg:gap-8 lg:p-8',
-            'radix-state-open:animate-slideRightAndFadeIn radix-state-closed:animate-slideRightAndFadeOut'
-          )}
-        >
-          <Dialog.Title className="text-grey-100 text-l flex flex-row items-center gap-2 font-bold">
-            <Variable height="24px" width="24px" />
-            <span className="w-full capitalize">{getTitle(data)}</span>
-            <Dialog.Close asChild onClick={value.onClose}>
-              <button aria-label="Close">
-                <Cross height="24px" width="24px" />
-              </button>
-            </Dialog.Close>
-          </Dialog.Title>
-          <Content data={data} />
-        </Dialog.Content>
-      </Dialog.Root>
-    </Provider>
+    <ScenarioRightPannelTriggerContext.Provider value={value}>
+      <RightPannel.Root
+        {...props}
+        open={state.open}
+        onClose={() => {
+          dispatch({ type: 'close' });
+        }}
+      >
+        <RightPannel.Viewport>{children}</RightPannel.Viewport>
+        <ScenarioRightPannelContent data={state.data} />
+      </RightPannel.Root>
+    </ScenarioRightPannelTriggerContext.Provider>
   );
 }
 
-function useGetTitle() {
+function ScenarioRightPannelContent({ data }: { data: State['data'] }) {
   const { t } = useTranslation(scenarioI18n);
 
-  return useCallback(
-    (data: State['data']) => {
-      if (!data) return null;
-      switch (data.type) {
-        case 'formulaAggregation':
-          return t('scenarios:rules.variable.title');
-        default:
-          assertNever('[ScenarioRightPannel] unknwon data case:', data.type);
-      }
-    },
-    [t]
+  if (!data) return null;
+
+  return (
+    <RightPannel.Content className="max-w-xs lg:max-w-sm">
+      <RightPannel.Title>
+        <Variable height="24px" width="24px" />
+        <span className="w-full capitalize">
+          {t(titleK[data.type]) ?? data.type}
+        </span>
+        <RightPannel.Close />
+      </RightPannel.Title>
+      <ScenarioRightPannelDetail data={data} />
+    </RightPannel.Content>
   );
 }
 
-function Content({ data }: { data: State['data'] }) {
-  if (!data) return null;
+const titleK: Record<
+  NonNullable<State['data']>['type'],
+  TFuncKey<['scenarios']>
+> = {
+  formulaAggregation: 'scenarios:rules.variable.title',
+};
 
+function ScenarioRightPannelDetail({
+  data,
+}: {
+  data: NonNullable<State['data']>;
+}) {
   switch (data.type) {
     case 'formulaAggregation':
       return null;
@@ -132,26 +122,27 @@ function Content({ data }: { data: State['data'] }) {
 }
 
 function ScenarioRightPannelTrigger({
-  children,
+  onClick,
   data,
+  ...otherProps
 }: {
-  children: React.ReactNode;
-  data: State['data'];
-}) {
-  const { onTriggerClick } = useActions();
+  data: Pick<State, 'data'>;
+} & DialogTriggerProps) {
+  const { onTriggerClick } = ScenarioRightPannelTriggerContext.useValue();
+
   return (
-    <Dialog.Trigger
+    <RightPannel.Trigger
       onClick={(e) => {
         onTriggerClick(data);
+        onClick?.(e);
         e.stopPropagation();
       }}
-    >
-      {children}
-    </Dialog.Trigger>
+      {...otherProps}
+    />
   );
 }
 
 export const ScenarioRightPannel = {
-  Provider: ScenarioRightPannelProvider,
+  Root: ScenarioRightPannelRoot,
   Trigger: ScenarioRightPannelTrigger,
 };

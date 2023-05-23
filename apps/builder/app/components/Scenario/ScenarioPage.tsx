@@ -9,11 +9,9 @@ function ScenarioPageContent({
   HTMLDivElement
 >) {
   return (
-    <div className="relative h-full w-full">
-      <ScenarioRightPannel.Provider>
-        <Page.Content {...props}>{children}</Page.Content>
-      </ScenarioRightPannel.Provider>
-    </div>
+    <ScenarioRightPannel.Root>
+      <Page.Content {...props}>{children}</Page.Content>
+    </ScenarioRightPannel.Root>
   );
 }
 
