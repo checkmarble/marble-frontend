@@ -135,7 +135,7 @@
     "react-i18next": "^12.2.0",
     "regenerator-runtime": "0.13.11",
     "remeda": "^1.8.0",
-    "remix": "^1.13.0",
+    "remix": "^1.16",
     "remix-auth": "^3.4.0",
     "remix-auth-oauth2": "^1.6.0",
     "remix-i18next": "^5.0.0",
