@@ -54,7 +54,7 @@ const ScenarioRightPannelTriggerContext = createSimpleContext<{
 function ScenarioRightPannelRoot({
   children,
   ...props
-}: Omit<RightPannelRootProps, 'value'>) {
+}: Omit<RightPannelRootProps, 'open' | 'onClose'>) {
   const [state, dispatch] = useReducer(
     scenarioRightPannelReducer,
     initialState
