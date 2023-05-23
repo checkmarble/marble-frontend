@@ -13,9 +13,6 @@ const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
     localDevlopmentServer: "http://localhost:8080"
 };
-export type CreateTokenBody = {
-    refresh_token: string;
-};
 export type Token = {
     access_token: string;
     token_type: string;
@@ -245,18 +242,21 @@ export type CreateScenarioPublicationBody = {
 /**
  * Get an access token
  */
-export function postToken(createTokenBody: CreateTokenBody, opts?: Oazapfts.RequestOpts) {
+export function postToken(xApiKey: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Token;
     } | {
         status: 401;
         data: string;
-    }>("/token", oazapfts.json({
+    }>("/token", {
         ...opts,
         method: "POST",
-        body: createTokenBody
-    })));
+        headers: {
+            ...opts && opts.headers,
+            "X-API-Key": xApiKey
+        }
+    }));
 }
 /**
  * List decisions
