@@ -133,6 +133,7 @@
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
     "react-i18next": "^12.2.0",
+    "react-json-view-lite": "^0.9.6",
     "regenerator-runtime": "0.13.11",
     "remeda": "^1.8.0",
     "remix": "^1.13.0",

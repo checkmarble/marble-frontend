@@ -5,6 +5,11 @@ export const routes = [
     file: "root.tsx",
     children: [
       {
+        id: "routes/ressources/decisions/decision-detail.$decisionId",
+        path: "ressources/decisions/decision-detail/:decisionId",
+        file: "routes/ressources/decisions/decision-detail.$decisionId.tsx",
+      },
+      {
         id: "routes/ressources/scenarios/deployment",
         path: "ressources/scenarios/deployment",
         file: "routes/ressources/scenarios/deployment.tsx",

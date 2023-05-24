@@ -1,5 +1,5 @@
 import { Page } from '../Page';
-import { ScenarioRightPannel } from './ScenarioRightPannel';
+import { ScenarioRightPanel } from './ScenarioRightPanel';
 
 function ScenarioPageContent({
   children,
@@ -9,11 +9,9 @@ function ScenarioPageContent({
   HTMLDivElement
 >) {
   return (
-    <div className="relative h-full w-full">
-      <ScenarioRightPannel.Provider>
-        <Page.Content {...props}>{children}</Page.Content>
-      </ScenarioRightPannel.Provider>
-    </div>
+    <ScenarioRightPanel.Root>
+      <Page.Content {...props}>{children}</Page.Content>
+    </ScenarioRightPanel.Root>
   );
 }
 
