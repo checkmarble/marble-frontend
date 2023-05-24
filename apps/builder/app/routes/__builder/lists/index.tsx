@@ -20,7 +20,7 @@ type List = {
 };
 
 const fakeLists = Array.from({ length: 2500 }).map(() => ({
-  name: faker.name.fullName(),
+  name: faker.person.fullName(),
   description: faker.lorem.sentences(),
 }));
 
