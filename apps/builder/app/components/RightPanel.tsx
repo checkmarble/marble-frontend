@@ -5,26 +5,26 @@ import * as Dialog from '@radix-ui/react-dialog';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 
-export type RightPannelContext = {
+export type RightPanelContext = {
   open: boolean;
   onClose: () => void;
 };
 
-export interface RightPannelRootProps
+export interface RightPanelRootProps
   extends Omit<Dialog.DialogProps, 'open' | 'onOpenChange' | 'modal'>,
-    RightPannelContext {
+    RightPanelContext {
   className?: string;
 }
 
-export function createRightPannel(name: string) {
-  const { Provider, useValue } = createSimpleContext<RightPannelContext>(name);
+export function createRightPanel(name: string) {
+  const { Provider, useValue } = createSimpleContext<RightPanelContext>(name);
 
-  function RightPannelRoot({
+  function RightPanelRoot({
     open,
     onClose,
     className,
     ...otherProps
-  }: RightPannelRootProps) {
+  }: RightPanelRootProps) {
     const value = { open, onClose };
     return (
       <div className={clsx('relative flex h-full w-full', className)}>
@@ -40,7 +40,7 @@ export function createRightPannel(name: string) {
     );
   }
 
-  function RightPannelViewport({
+  function RightPanelViewport({
     children,
     className,
   }: {
@@ -61,12 +61,12 @@ export function createRightPannel(name: string) {
       </div>
     );
   }
-  RightPannelViewport.displayName = `${name}Viewport`;
+  RightPanelViewport.displayName = `${name}Viewport`;
 
-  const RightPannelTrigger = Dialog.Trigger;
-  RightPannelTrigger.displayName = `${name}Trigger`;
+  const RightPanelTrigger = Dialog.Trigger;
+  RightPanelTrigger.displayName = `${name}Trigger`;
 
-  const RightPannelContent = forwardRef<
+  const RightPanelContent = forwardRef<
     HTMLDivElement,
     Dialog.DialogContentProps
   >(({ className, ...props }, ref) => {
@@ -83,9 +83,9 @@ export function createRightPannel(name: string) {
       />
     );
   });
-  RightPannelContent.displayName = `${name}Content`;
+  RightPanelContent.displayName = `${name}Content`;
 
-  function RightPannelTitle(props: Dialog.DialogTitleProps) {
+  function RightPanelTitle(props: Dialog.DialogTitleProps) {
     return (
       <Dialog.Title
         {...props}
@@ -96,9 +96,9 @@ export function createRightPannel(name: string) {
       />
     );
   }
-  RightPannelTitle.displayName = `${name}Title`;
+  RightPanelTitle.displayName = `${name}Title`;
 
-  function RightPannelClose() {
+  function RightPanelClose() {
     const { onClose } = useValue();
     return (
       <Dialog.Close asChild onClick={onClose}>
@@ -108,17 +108,17 @@ export function createRightPannel(name: string) {
       </Dialog.Close>
     );
   }
-  RightPannelClose.displayName = `${name}Close`;
+  RightPanelClose.displayName = `${name}Close`;
 
   return {
-    RightPannel: {
-      Root: RightPannelRoot,
-      Viewport: RightPannelViewport,
-      Trigger: RightPannelTrigger,
-      Content: RightPannelContent,
-      Title: RightPannelTitle,
-      Close: RightPannelClose,
+    RightPanel: {
+      Root: RightPanelRoot,
+      Viewport: RightPanelViewport,
+      Trigger: RightPanelTrigger,
+      Content: RightPanelContent,
+      Title: RightPanelTitle,
+      Close: RightPanelClose,
     },
-    useRightPannelContext: useValue,
+    useRightPanelContext: useValue,
   };
 }

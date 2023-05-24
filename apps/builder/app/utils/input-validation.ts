@@ -82,7 +82,7 @@ export async function parseParams<
 }
 
 /**
- * Paparamsse and validate a Request. Doesn't throw if validation fails.
+ * Parse and validate a Request. Doesn't throw if validation fails.
  */
 export async function parseQuerySafe<
   T extends ZodRawShape,

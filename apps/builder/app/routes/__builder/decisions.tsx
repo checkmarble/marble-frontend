@@ -20,8 +20,8 @@ import cssBundleHref from 'react-json-view-lite/dist/index.css';
 import * as R from 'remeda';
 
 import {
-  DecisionsRightPannel,
-  useDecisionsRightPannelState,
+  DecisionsRightPanel,
+  useDecisionsRightPanelState,
 } from '../ressources/decisions/decision-detail.$decisionId';
 
 export const handle = {
@@ -48,7 +48,7 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function DecisionsPage() {
-  const { decisionId, setDecisionId } = useDecisionsRightPannelState();
+  const { decisionId, setDecisionId } = useDecisionsRightPanelState();
 
   const { t, i18n } = useTranslation(handle.i18n);
   const decisions = useLoaderData<typeof loader>();
@@ -110,7 +110,7 @@ export default function DecisionsPage() {
         <DecisionIcon className="mr-2" height="24px" width="24px" />
         {t('navigation:decisions')}
       </Page.Header>
-      <DecisionsRightPannel.Root>
+      <DecisionsRightPanel.Root>
         <Page.Content scrollable={false}>
           <Table.Container {...getContainerProps()}>
             <Table.Header headerGroups={table.getHeaderGroups()} />
@@ -132,7 +132,7 @@ export default function DecisionsPage() {
             </Table.Body>
           </Table.Container>
         </Page.Content>
-      </DecisionsRightPannel.Root>
+      </DecisionsRightPanel.Root>
     </Page.Container>
   );
 }

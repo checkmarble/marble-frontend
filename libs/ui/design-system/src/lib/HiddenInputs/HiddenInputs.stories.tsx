@@ -26,7 +26,7 @@ const Template: StoryFn<typeof HiddenInputs> = (args) => (
     }}
   >
     <h1>Input should not be visible, data will be sent in form payload</h1>
-    <p>You can modify the value using the "Control" pannel</p>
+    <p>You can modify the value using the "Control" panel</p>
     <HiddenInputs {...args} />
     <Button type="submit">submit form</Button>
   </form>

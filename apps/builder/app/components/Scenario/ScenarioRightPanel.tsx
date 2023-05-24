@@ -6,7 +6,7 @@ import { type TFuncKey } from 'i18next';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { createRightPannel, type RightPannelRootProps } from '../RightPannel';
+import { createRightPanel, type RightPanelRootProps } from '../RightPanel';
 import { scenarioI18n } from './scenario-i18n';
 
 type State = {
@@ -29,7 +29,7 @@ const initialState: State = {
   open: false,
 };
 
-function scenarioRightPannelReducer(prevState: State, action: Actions) {
+function scenarioRightPanelReducer(prevState: State, action: Actions) {
   switch (action.type) {
     case 'triggerClicked': {
       return {
@@ -45,20 +45,17 @@ function scenarioRightPannelReducer(prevState: State, action: Actions) {
   }
 }
 
-const { RightPannel } = createRightPannel('ScenarioRightPannel');
+const { RightPanel } = createRightPanel('ScenarioRightPanel');
 
-const ScenarioRightPannelTriggerContext = createSimpleContext<{
+const ScenarioRightPanelTriggerContext = createSimpleContext<{
   onTriggerClick: (data: Pick<State, 'data'>) => void;
-}>('ScenarioRightPannelTrigger');
+}>('ScenarioRightPanelTrigger');
 
-function ScenarioRightPannelRoot({
+function ScenarioRightPanelRoot({
   children,
   ...props
-}: Omit<RightPannelRootProps, 'open' | 'onClose'>) {
-  const [state, dispatch] = useReducer(
-    scenarioRightPannelReducer,
-    initialState
-  );
+}: Omit<RightPanelRootProps, 'open' | 'onClose'>) {
+  const [state, dispatch] = useReducer(scenarioRightPanelReducer, initialState);
 
   const value = {
     onTriggerClick: (payload: Pick<State, 'data'>) => {
@@ -67,37 +64,37 @@ function ScenarioRightPannelRoot({
   };
 
   return (
-    <ScenarioRightPannelTriggerContext.Provider value={value}>
-      <RightPannel.Root
+    <ScenarioRightPanelTriggerContext.Provider value={value}>
+      <RightPanel.Root
         {...props}
         open={state.open}
         onClose={() => {
           dispatch({ type: 'close' });
         }}
       >
-        <RightPannel.Viewport>{children}</RightPannel.Viewport>
-        <ScenarioRightPannelContent data={state.data} />
-      </RightPannel.Root>
-    </ScenarioRightPannelTriggerContext.Provider>
+        <RightPanel.Viewport>{children}</RightPanel.Viewport>
+        <ScenarioRightPanelContent data={state.data} />
+      </RightPanel.Root>
+    </ScenarioRightPanelTriggerContext.Provider>
   );
 }
 
-function ScenarioRightPannelContent({ data }: { data: State['data'] }) {
+function ScenarioRightPanelContent({ data }: { data: State['data'] }) {
   const { t } = useTranslation(scenarioI18n);
 
   if (!data) return null;
 
   return (
-    <RightPannel.Content className="max-w-xs lg:max-w-sm">
-      <RightPannel.Title>
+    <RightPanel.Content className="max-w-xs lg:max-w-sm">
+      <RightPanel.Title>
         <Variable height="24px" width="24px" />
         <span className="w-full capitalize">
           {t(titleK[data.type]) ?? data.type}
         </span>
-        <RightPannel.Close />
-      </RightPannel.Title>
-      <ScenarioRightPannelDetail data={data} />
-    </RightPannel.Content>
+        <RightPanel.Close />
+      </RightPanel.Title>
+      <ScenarioRightPanelDetail data={data} />
+    </RightPanel.Content>
   );
 }
 
@@ -108,7 +105,7 @@ const titleK: Record<
   formulaAggregation: 'scenarios:rules.variable.title',
 };
 
-function ScenarioRightPannelDetail({
+function ScenarioRightPanelDetail({
   data,
 }: {
   data: NonNullable<State['data']>;
@@ -117,21 +114,21 @@ function ScenarioRightPannelDetail({
     case 'formulaAggregation':
       return null;
     default:
-      assertNever('[ScenarioRightPannel] unknwon data case:', data.type);
+      assertNever('[ScenarioRightPanel] unknwon data case:', data.type);
   }
 }
 
-function ScenarioRightPannelTrigger({
+function ScenarioRightPanelTrigger({
   onClick,
   data,
   ...otherProps
 }: {
   data: Pick<State, 'data'>;
 } & DialogTriggerProps) {
-  const { onTriggerClick } = ScenarioRightPannelTriggerContext.useValue();
+  const { onTriggerClick } = ScenarioRightPanelTriggerContext.useValue();
 
   return (
-    <RightPannel.Trigger
+    <RightPanel.Trigger
       onClick={(e) => {
         onTriggerClick(data);
         onClick?.(e);
@@ -142,7 +139,7 @@ function ScenarioRightPannelTrigger({
   );
 }
 
-export const ScenarioRightPannel = {
-  Root: ScenarioRightPannelRoot,
-  Trigger: ScenarioRightPannelTrigger,
+export const ScenarioRightPanel = {
+  Root: ScenarioRightPanelRoot,
+  Trigger: ScenarioRightPanelTrigger,
 };

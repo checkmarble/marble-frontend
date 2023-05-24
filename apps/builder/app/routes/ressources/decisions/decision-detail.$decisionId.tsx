@@ -1,8 +1,8 @@
 import { type Decision } from '@marble-front/api/marble';
 import {
-  createRightPannel,
+  createRightPanel,
   Outcome,
-  type RightPannelRootProps,
+  type RightPanelRootProps,
 } from '@marble-front/builder/components';
 import { getDecision } from '@marble-front/builder/fixtures';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
@@ -47,14 +47,14 @@ export async function loader({ request, params }: LoaderArgs) {
   }
 }
 
-const { RightPannel } = createRightPannel('DecisionsRightPannel');
+const { RightPanel } = createRightPanel('DecisionsRightPanel');
 
-function DecisionsRightPannelRoot({
+function DecisionsRightPanelRoot({
   children,
   ...props
-}: Omit<RightPannelRootProps, 'open' | 'onClose'>) {
+}: Omit<RightPanelRootProps, 'open' | 'onClose'>) {
   const { load, data } = useFetcher<typeof loader>();
-  const { decisionId, setDecisionId } = useDecisionsRightPannelState();
+  const { decisionId, setDecisionId } = useDecisionsRightPanelState();
 
   useEffect(() => {
     if (decisionId) {
@@ -69,7 +69,7 @@ function DecisionsRightPannelRoot({
   const open = !!decisionId;
 
   return (
-    <RightPannel.Root
+    <RightPanel.Root
       {...props}
       open={open}
       onClose={() => {
@@ -77,18 +77,18 @@ function DecisionsRightPannelRoot({
       }}
       className="overflow-hidden"
     >
-      <RightPannel.Viewport>{children}</RightPannel.Viewport>
-      <RightPannel.Content className="max-w-xl lg:max-w-2xl">
-        <RightPannel.Title>
+      <RightPanel.Viewport>{children}</RightPanel.Viewport>
+      <RightPanel.Content className="max-w-xl lg:max-w-2xl">
+        <RightPanel.Title>
           <DecisionIcon height="24px" width="24px" />
           <span className="w-full capitalize">
             {data?.decision?.id ?? decisionId}
           </span>
-          <RightPannel.Close />
-        </RightPannel.Title>
+          <RightPanel.Close />
+        </RightPanel.Title>
         <DecisionDetail decision={data?.decision} />
-      </RightPannel.Content>
-    </RightPannel.Root>
+      </RightPanel.Content>
+    </RightPanel.Root>
   );
 }
 
@@ -144,12 +144,12 @@ function DecisionDetail({ decision }: { decision?: Decision | null }) {
   );
 }
 
-export const DecisionsRightPannel = {
-  Root: DecisionsRightPannelRoot,
-  Trigger: RightPannel.Trigger,
+export const DecisionsRightPanel = {
+  Root: DecisionsRightPanelRoot,
+  Trigger: RightPanel.Trigger,
 };
 
-export function useDecisionsRightPannelState() {
+export function useDecisionsRightPanelState() {
   const [searchParams, setSearchParams] = useSearchParams();
   const decisionId = searchParams.get('decisionId');
 
