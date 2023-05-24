@@ -10,7 +10,8 @@ export function initMarbleAPI() {
   defaults.baseUrl = getServerEnv('MARBLE_API_DOMAIN');
 
   const bffTokenService = new TokenService({
-    refreshToken: () => postToken('token12345'),
+    // use default fetch to bypass ensure fetchWithAuthMiddleware is not used
+    refreshToken: () => postToken('token12345', { fetch: fetch }),
   });
 
   defaults.fetch = fetchWithAuthMiddleware({
