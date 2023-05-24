@@ -102,7 +102,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.0.1",
     "@radix-ui/react-avatar": "^1.0.1",
     "@radix-ui/react-checkbox": "^1.0.2",
     "@radix-ui/react-dialog": "^1.0.2",

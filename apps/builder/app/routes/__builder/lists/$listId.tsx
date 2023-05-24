@@ -25,7 +25,7 @@ import invariant from 'tiny-invariant';
 
 function getFakeList(id: string) {
   const values = Array.from({ length: Math.floor(Math.random() * 100) }).map(
-    (_) => faker.name.fullName()
+    (_) => faker.person.fullName()
   );
 
   return {

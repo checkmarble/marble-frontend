@@ -1,10 +1,9 @@
-import { type Decision } from '@marble-front/api/marble';
+import { type Decision, getDecision } from '@marble-front/api/marble';
 import {
   createRightPanel,
   Outcome,
   type RightPanelRootProps,
 } from '@marble-front/builder/components';
-import { getDecision } from '@marble-front/builder/fixtures';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { getRoute } from '@marble-front/builder/services/routes';
 import { formatCreatedAt } from '@marble-front/builder/utils/format';
