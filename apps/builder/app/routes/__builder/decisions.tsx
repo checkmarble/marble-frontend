@@ -22,7 +22,7 @@ import * as R from 'remeda';
 import {
   DecisionsRightPannel,
   useDecisionsRightPannelState,
-} from '../ressources/decisions/decision-detail';
+} from '../ressources/decisions/decision-detail.$decisionId';
 
 export const handle = {
   i18n: ['decisions', 'navigation'] satisfies Namespace,

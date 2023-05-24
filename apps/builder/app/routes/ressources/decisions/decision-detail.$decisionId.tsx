@@ -2,20 +2,20 @@ import { type Decision } from '@marble-front/api/marble';
 import {
   createRightPannel,
   Outcome,
-  type RightPannelContext,
   type RightPannelRootProps,
 } from '@marble-front/builder/components';
 import { getDecision } from '@marble-front/builder/fixtures';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { getRoute } from '@marble-front/builder/services/routes';
 import { formatCreatedAt } from '@marble-front/builder/utils/format';
-import { parseQuery } from '@marble-front/builder/utils/input-validation';
+import { parseParams } from '@marble-front/builder/utils/input-validation';
 import { Decision as DecisionIcon } from '@marble-front/ui/icons';
-import { json, type LinksFunction, type LoaderArgs } from '@remix-run/node';
+import { json, type LoaderArgs } from '@remix-run/node';
 import { useFetcher, useSearchParams } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { darkStyles, defaultStyles, JsonView } from 'react-json-view-lite';
+import { defaultStyles, JsonView } from 'react-json-view-lite';
 import * as z from 'zod';
 
 export const handle = {
@@ -26,13 +26,13 @@ const formSchema = z.object({
   decisionId: z.string().uuid(),
 });
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request, params }: LoaderArgs) {
   await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   try {
-    const { decisionId } = await parseQuery(request, formSchema);
+    const { decisionId } = await parseParams(params, formSchema);
     const decision = await getDecision(decisionId);
 
     return json({
@@ -53,17 +53,18 @@ function DecisionsRightPannelRoot({
   children,
   ...props
 }: Omit<RightPannelRootProps, 'open' | 'onClose'>) {
-  const { submit, data } = useFetcher<typeof loader>();
+  const { load, data } = useFetcher<typeof loader>();
   const { decisionId, setDecisionId } = useDecisionsRightPannelState();
 
   useEffect(() => {
     if (decisionId) {
-      submit(
-        { decisionId },
-        { action: '/ressources/decisions/decision-detail' }
+      load(
+        getRoute('/ressources/decisions/decision-detail/:decisionId', {
+          decisionId,
+        })
       );
     }
-  }, [decisionId, submit]);
+  }, [decisionId, load]);
 
   const open = !!decisionId;
 
@@ -80,7 +81,9 @@ function DecisionsRightPannelRoot({
       <RightPannel.Content className="max-w-xl lg:max-w-2xl">
         <RightPannel.Title>
           <DecisionIcon height="24px" width="24px" />
-          <span className="w-full capitalize">{decisionId}</span>
+          <span className="w-full capitalize">
+            {data?.decision?.id ?? decisionId}
+          </span>
           <RightPannel.Close />
         </RightPannel.Title>
         <DecisionDetail decision={data?.decision} />

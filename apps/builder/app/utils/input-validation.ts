@@ -69,7 +69,20 @@ export async function parseParamsSafe<
 }
 
 /**
- * Parse and validate a Request. Doesn't throw if validation fails.
+ * Parse and validate Params from LoaderArgs or ActionArgs. Throws if validation fails.
+ */
+export async function parseParams<
+  T extends ZodRawShape,
+  UnknownKeys extends UnknownKeysParam = 'strip',
+  Catchall extends ZodTypeAny = ZodTypeAny,
+  Output = objectOutputType<T, Catchall>,
+  Input = objectInputType<T, Catchall>
+>(params: Params, schema: ZodObject<T, UnknownKeys, Catchall, Output, Input>) {
+  return schema.parseAsync(params);
+}
+
+/**
+ * Paparamsse and validate a Request. Doesn't throw if validation fails.
  */
 export async function parseQuerySafe<
   T extends ZodRawShape,
