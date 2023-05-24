@@ -11,5 +11,6 @@
   "outcome.review": "Review",
   "outcome.decline": "Decline",
   "outcome.null": "Null",
-  "outcome.unknown": "Unknown"
+  "outcome.unknown": "Unknown",
+  "live_update": "Live update"
 }

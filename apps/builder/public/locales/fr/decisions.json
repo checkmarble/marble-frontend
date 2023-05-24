@@ -11,5 +11,6 @@
   "outcome.decline": "Refuser",
   "outcome.null": "Null",
   "outcome.unknown": "Inconnu",
-  "detail.error": "Une erreur s'est produite. Assurez-vous que l'ID de décision fourni est valide"
+  "detail.error": "Une erreur s'est produite. Assurez-vous que l'ID de décision fourni est valide",
+  "live_update": "Mise à jour en direct"
 }

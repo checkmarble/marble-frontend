@@ -6,14 +6,21 @@ import {
 } from '@marble-front/builder/components';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { formatCreatedAt } from '@marble-front/builder/utils/format';
-import { Input, Table, useVirtualTable } from '@marble-front/ui/design-system';
+import { useVisibilityChange } from '@marble-front/builder/utils/hooks';
+import {
+  Checkbox,
+  Input,
+  Table,
+  useVirtualTable,
+} from '@marble-front/ui/design-system';
 import { Decision as DecisionIcon, Search } from '@marble-front/ui/icons';
+import { Label } from '@radix-ui/react-label';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, useRevalidator } from '@remix-run/react';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { useMemo } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 
@@ -106,25 +113,29 @@ export default function DecisionsPage() {
       </Page.Header>
       <DecisionsRightPanel.Root>
         <Page.Content scrollable={false}>
-          <Input
-            type="search"
-            className="max-w-sm"
-            aria-label={t('decisions:search.placeholder')}
-            placeholder={t('decisions:search.placeholder')}
-            startAdornment={<Search />}
-            value={decisionId ?? ''}
-            onKeyDownCapture={(e) => {
-              if (e.code === 'Escape') {
-                setDecisionId();
-              }
-            }}
-            onChange={(event) => {
-              setDecisionId(event.target.value);
-            }}
-            onClick={(e) => {
-              e.stopPropagation(); // To prevent DecisionsRightPannel from closing
-            }}
-          />
+          <div className="flex flex-row justify-between">
+            <div className="w-full max-w-sm">
+              <Input
+                type="search"
+                aria-label={t('decisions:search.placeholder')}
+                placeholder={t('decisions:search.placeholder')}
+                startAdornment={<Search />}
+                value={decisionId ?? ''}
+                onKeyDownCapture={(e) => {
+                  if (e.code === 'Escape') {
+                    setDecisionId();
+                  }
+                }}
+                onChange={(event) => {
+                  setDecisionId(event.target.value);
+                }}
+                onClick={(e) => {
+                  e.stopPropagation(); // To prevent DecisionsRightPannel from closing
+                }}
+              />
+            </div>
+            <ToggleLiveUpdate />
+          </div>
           <Table.Container {...getContainerProps()}>
             <Table.Header headerGroups={table.getHeaderGroups()} />
             <Table.Body {...getBodyProps()}>
@@ -149,5 +160,41 @@ export default function DecisionsPage() {
         </Page.Content>
       </DecisionsRightPanel.Root>
     </Page.Container>
+  );
+}
+
+function ToggleLiveUpdate() {
+  const id = useId();
+  const { t } = useTranslation(handle.i18n);
+  const revalidator = useRevalidator();
+  const [liveUpdate, setLiveUpdate] = useState(false);
+  const visibilityState = useVisibilityChange();
+
+  useEffect(() => {
+    if (!liveUpdate || visibilityState === 'hidden') return;
+
+    const interval = setInterval(() => {
+      console.log(new Date().toISOString());
+      revalidator.revalidate();
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [liveUpdate, revalidator, visibilityState]);
+
+  return (
+    <div className="flex flex-row items-center gap-2">
+      <Checkbox
+        id={id}
+        onCheckedChange={(checked) => {
+          if (checked === 'indeterminate') return;
+          setLiveUpdate(checked);
+        }}
+      />
+      <Label htmlFor={id} className="text-s whitespace-nowrap">
+        {t('decisions:live_update')}
+      </Label>
+    </div>
   );
 }
