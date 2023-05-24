@@ -1,5 +1,6 @@
 {
   "created_at": "Créé à",
+  "search.placeholder": "Rechercher par id",
   "outcome": "Résultat",
   "scenario.name": "Scénario",
   "detail.scenario_name_runs_on": "<ScenarioName>{{scenarioName}}</ScenarioName> (correspond à <TriggerObjectType>{{triggerObjectType}}</TriggerObjectType>)",
@@ -9,5 +10,6 @@
   "outcome.review": "A revoir",
   "outcome.decline": "Refuser",
   "outcome.null": "Null",
-  "outcome.unknown": "Inconnu"
+  "outcome.unknown": "Inconnu",
+  "detail.error": "Une erreur s'est produite. Assurez-vous que l'ID de décision fourni est valide"
 }

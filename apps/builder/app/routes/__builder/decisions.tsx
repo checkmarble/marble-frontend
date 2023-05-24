@@ -6,16 +6,15 @@ import {
 } from '@marble-front/builder/components';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { formatCreatedAt } from '@marble-front/builder/utils/format';
-import { Table, useVirtualTable } from '@marble-front/ui/design-system';
-import { Decision as DecisionIcon } from '@marble-front/ui/icons';
-import { json, type LinksFunction, type LoaderArgs } from '@remix-run/node';
+import { Input, Table, useVirtualTable } from '@marble-front/ui/design-system';
+import { Decision as DecisionIcon, Search } from '@marble-front/ui/icons';
+import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import cssBundleHref from 'react-json-view-lite/dist/index.css';
 import * as R from 'remeda';
 
 import {
@@ -25,10 +24,6 @@ import {
 
 export const handle = {
   i18n: ['decisions', 'navigation'] satisfies Namespace,
-};
-
-export const links: LinksFunction = () => {
-  return [{ rel: 'stylesheet', href: cssBundleHref }];
 };
 
 export async function loader({ request }: LoaderArgs) {
@@ -111,23 +106,44 @@ export default function DecisionsPage() {
       </Page.Header>
       <DecisionsRightPanel.Root>
         <Page.Content scrollable={false}>
+          <Input
+            type="search"
+            className="max-w-sm"
+            aria-label={t('decisions:search.placeholder')}
+            placeholder={t('decisions:search.placeholder')}
+            startAdornment={<Search />}
+            value={decisionId ?? ''}
+            onKeyDownCapture={(e) => {
+              if (e.code === 'Escape') {
+                setDecisionId();
+              }
+            }}
+            onChange={(event) => {
+              setDecisionId(event.target.value);
+            }}
+            onClick={(e) => {
+              e.stopPropagation(); // To prevent DecisionsRightPannel from closing
+            }}
+          />
           <Table.Container {...getContainerProps()}>
             <Table.Header headerGroups={table.getHeaderGroups()} />
             <Table.Body {...getBodyProps()}>
-              {rows.map((row) => (
-                <Table.Row
-                  key={row.id}
-                  className={clsx(
-                    'hover:bg-grey-02 cursor-pointer',
-                    row.original.id === decisionId && 'bg-grey-02'
-                  )}
-                  row={row}
-                  onClick={(e) => {
-                    setDecisionId(row.original.id);
-                    e.stopPropagation();
-                  }}
-                />
-              ))}
+              {rows.map((row) => {
+                return (
+                  <Table.Row
+                    key={row.id}
+                    className={clsx(
+                      'hover:bg-grey-02 cursor-pointer',
+                      row.original.id === decisionId && 'bg-grey-02'
+                    )}
+                    row={row}
+                    onClick={(e) => {
+                      setDecisionId(row.original.id);
+                      e.stopPropagation(); // To prevent DecisionsRightPannel from closing
+                    }}
+                  />
+                );
+              })}
             </Table.Body>
           </Table.Container>
         </Page.Content>
