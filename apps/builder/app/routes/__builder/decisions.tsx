@@ -1,10 +1,9 @@
-import { type Decision } from '@marble-front/api/marble';
+import { type Decision, listDecisions } from '@marble-front/api/marble';
 import {
   Outcome,
   type OutcomeProps,
   Page,
 } from '@marble-front/builder/components';
-import { listDecisions } from '@marble-front/builder/fixtures';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { formatCreatedAt } from '@marble-front/builder/utils/format';
 import { Table, useVirtualTable } from '@marble-front/ui/design-system';
