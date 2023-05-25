@@ -1,4 +1,4 @@
-import { type Decision, getDecision } from '@marble-front/api/marble';
+import { getDecision } from '@marble-front/api/marble';
 import {
   createRightPanel,
   Outcome,
@@ -9,12 +9,13 @@ import { getRoute } from '@marble-front/builder/services/routes';
 import { formatCreatedAt } from '@marble-front/builder/utils/format';
 import { parseParams } from '@marble-front/builder/utils/input-validation';
 import { Decision as DecisionIcon } from '@marble-front/ui/icons';
-import { json, type LoaderArgs } from '@remix-run/node';
+import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
 import { useFetcher, useSearchParams } from '@remix-run/react';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { defaultStyles, JsonView } from 'react-json-view-lite';
+import { JsonView } from 'react-json-view-lite';
 import * as z from 'zod';
 
 export const handle = {
@@ -67,6 +68,8 @@ function DecisionsRightPanelRoot({
 
   const open = !!decisionId;
 
+  const title = data?.decision?.id ?? decisionId;
+
   return (
     <RightPanel.Root
       {...props}
@@ -77,69 +80,120 @@ function DecisionsRightPanelRoot({
       className="overflow-hidden"
     >
       <RightPanel.Viewport>{children}</RightPanel.Viewport>
-      <RightPanel.Content className="max-w-xl lg:max-w-2xl">
+      <RightPanel.Content
+        className="max-w-xl lg:max-w-2xl"
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+      >
         <RightPanel.Title>
           <DecisionIcon height="24px" width="24px" />
-          <span className="w-full capitalize">
-            {data?.decision?.id ?? decisionId}
-          </span>
+          <span className="w-full">{title}</span>
           <RightPanel.Close />
         </RightPanel.Title>
-        <DecisionDetail decision={data?.decision} />
+        {data ? <DecisionDetail data={data} /> : <DecisionDetailLoading />}
       </RightPanel.Content>
     </RightPanel.Root>
   );
 }
 
-function DecisionDetail({ decision }: { decision?: Decision | null }) {
+function Card({
+  className,
+  ...otherProps
+}: React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLDivElement>,
+  HTMLDivElement
+>) {
+  return (
+    <div
+      className={clsx(
+        'border-grey-10 w-full flex-shrink-0 items-center gap-y-2 gap-x-1 rounded border',
+        className
+      )}
+      {...otherProps}
+    />
+  );
+}
+
+function DecisionDetailLoading() {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <Card className="grid grid-cols-[repeat(1,max-content)] overflow-hidden  p-4">
+      <p className="font-light">{t('decisions:scenario.name')}:</p>
+      <p className="font-light">{t('decisions:score')}:</p>
+      <p className="font-light">{t('decisions:outcome')}:</p>
+      <p className="font-light">{t('decisions:created_at')}:</p>
+    </Card>
+  );
+}
+
+function DecisionDetail({ data }: { data: SerializeFrom<typeof loader> }) {
   const { t, i18n } = useTranslation(handle.i18n);
 
-  if (!decision) return null;
+  if (data.success) {
+    const decision = data.decision;
+    return (
+      <>
+        <Card className="grid grid-cols-[repeat(2,max-content)] overflow-hidden p-4">
+          <p className="font-light">{t('decisions:scenario.name')}:</p>
+          <p className="font-normal">
+            <Trans
+              t={t}
+              i18nKey="decisions:detail.scenario_name_runs_on"
+              components={{
+                ScenarioName: <span className="font-medium" />,
+                TriggerObjectType: <span className="font-medium" />,
+              }}
+              values={{
+                scenarioName: decision?.scenario.name,
+                triggerObjectType: decision.trigger_object_type,
+              }}
+            />
+          </p>
+          <p className="font-light">{t('decisions:score')}:</p>
+          <p className="font-medium">{decision?.score}</p>
+          <p className="font-light">{t('decisions:outcome')}:</p>
+          <Outcome
+            className="w-fit"
+            border="square"
+            size="small"
+            outcome={decision.outcome}
+          />
+          <p className="font-light">{t('decisions:created_at')}:</p>
+          <p className="font-medium">
+            {formatCreatedAt(i18n.language, decision.created_at)}
+          </p>
+        </Card>
+        <div className="flex overflow-hidden">
+          <Card className="overflow-auto">
+            <JsonView
+              data={decision}
+              style={{
+                container:
+                  'whitespace-pre-wrap break-words my-4 text-grey-100 font-light',
+                basicChildStyle: 'p-0 my-0 mx-4',
+                label: 'font-semibold mr-1',
+                nullValue: 'text-red-100',
+                undefinedValue: 'text-red-100',
+                stringValue: 'text-grey-100 font-light',
+                booleanValue: 'text-green-100',
+                numberValue: 'text-blue-100',
+                otherValue: 'text-grey-50',
+                expander: 'mr-1 select-none text-l',
+                punctuation: 'mr-1 font-bold',
+                pointer: 'cursor-pointer',
+              }}
+            />
+          </Card>
+        </div>
+      </>
+    );
+  }
 
   return (
-    <>
-      <div className="border-grey-10 grid flex-shrink-0 grid-cols-[repeat(2,max-content)] items-center gap-y-2 gap-x-1 overflow-hidden rounded border p-4">
-        <p className="font-light">{t('decisions:scenario.name')}:</p>
-        <p className="font-normal">
-          <Trans
-            t={t}
-            i18nKey="decisions:detail.scenario_name_runs_on"
-            components={{
-              ScenarioName: <span className="font-medium" />,
-              TriggerObjectType: <span className="font-medium" />,
-            }}
-            values={{
-              scenarioName: decision?.scenario.name,
-              triggerObjectType: decision.trigger_object_type,
-            }}
-          />
-        </p>
-        <p className="font-light">{t('decisions:score')}:</p>
-        <p className="font-medium">{decision?.score}</p>
-        <p className="font-light">{t('decisions:outcome')}:</p>
-        <Outcome
-          className="w-fit"
-          border="square"
-          size="small"
-          outcome={decision.outcome}
-        />
-        <p className="font-light">{t('decisions:created_at')}:</p>
-        <p className="font-medium">
-          {formatCreatedAt(i18n.language, decision.created_at)}
-        </p>
-      </div>
-      <div className="flex overflow-auto">
-        <div className="border-grey-10 relative w-full overflow-auto rounded border">
-          <JsonView
-            data={decision}
-            style={{
-              ...defaultStyles,
-              container: 'p-4',
-            }}
-          />
-        </div>
-      </div>
-    </>
+    <Card className="p-4">
+      <p>{t('decisions:detail.error')}</p>
+    </Card>
   );
 }
 

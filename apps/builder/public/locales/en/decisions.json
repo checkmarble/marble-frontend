@@ -1,6 +1,8 @@
 {
   "scenario.name": "Scenario",
+  "search.placeholder": "Search by id",
   "detail.scenario_name_runs_on": "<ScenarioName>{{scenarioName}}</ScenarioName> (runs on <TriggerObjectType>{{triggerObjectType}}</TriggerObjectType>)",
+  "detail.error": "An error as occured. Make sure the provided decision id is valid.",
   "trigger_object.type": "Trigger object",
   "score": "Score",
   "outcome": "Outcome",
@@ -9,5 +11,6 @@
   "outcome.review": "Review",
   "outcome.decline": "Decline",
   "outcome.null": "Null",
-  "outcome.unknown": "Unknown"
+  "outcome.unknown": "Unknown",
+  "live_update": "Live update"
 }
