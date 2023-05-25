@@ -130,7 +130,7 @@ export default function DecisionsPage() {
                   setDecisionId(event.target.value);
                 }}
                 onClick={(e) => {
-                  e.stopPropagation(); // To prevent DecisionsRightPannel from closing
+                  e.stopPropagation(); // To prevent DecisionsRightPanel from closing
                 }}
               />
             </div>
@@ -150,7 +150,7 @@ export default function DecisionsPage() {
                     row={row}
                     onClick={(e) => {
                       setDecisionId(row.original.id);
-                      e.stopPropagation(); // To prevent DecisionsRightPannel from closing
+                      e.stopPropagation(); // To prevent DecisionsRightPanel from closing
                     }}
                   />
                 );
