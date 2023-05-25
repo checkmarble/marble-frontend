@@ -884,27 +884,31 @@ components:
     Operator:
       oneOf:
         - $ref: '#/components/schemas/AndOperator'
-        - $ref: '#/components/schemas/OrOperator'
-        - $ref: '#/components/schemas/EqualBoolOperator'
-        - $ref: '#/components/schemas/EqualStringOperator'
-        - $ref: '#/components/schemas/EqualFloatOperator'
-        - $ref: '#/components/schemas/FalseOperator'
-        - $ref: '#/components/schemas/TrueOperator'
-        - $ref: '#/components/schemas/NotOperator'
-        - $ref: '#/components/schemas/StringIsInListOperator'
-        - $ref: '#/components/schemas/FloatScalarOperator'
-        - $ref: '#/components/schemas/StringScalarOperator'
+        - $ref: '#/components/schemas/BoolConstantOperator'
         - $ref: '#/components/schemas/DbFieldBoolOperator'
         - $ref: '#/components/schemas/DbFieldFloatOperator'
         - $ref: '#/components/schemas/DbFieldStringOperator'
+        - $ref: '#/components/schemas/DivideFloatOperator'
+        - $ref: '#/components/schemas/EqualBoolOperator'
+        - $ref: '#/components/schemas/EqualStringOperator'
+        - $ref: '#/components/schemas/EqualFloatOperator'
+        - $ref: '#/components/schemas/FloatConstantOperator'
+        - $ref: '#/components/schemas/GreaterFloatOperator'
+        - $ref: '#/components/schemas/GreaterOrEqualFloatOperator'
+        - $ref: '#/components/schemas/LesserFloatOperator'
+        - $ref: '#/components/schemas/LesserOrEqualFloatOperator'
+        - $ref: '#/components/schemas/NotOperator'
+        - $ref: '#/components/schemas/OrOperator'
         - $ref: '#/components/schemas/PayloadFieldBoolOperator'
         - $ref: '#/components/schemas/PayloadFieldFloatOperator'
         - $ref: '#/components/schemas/PayloadFieldStringOperator'
-        - $ref: '#/components/schemas/SumFloatOperator'
         - $ref: '#/components/schemas/ProductFloatOperator'
-        - $ref: '#/components/schemas/SubstractFloatOperator'
-        - $ref: '#/components/schemas/DivideFloatOperator'
         - $ref: '#/components/schemas/RoundFloatOperator'
+        - $ref: '#/components/schemas/StringIsInListOperator'
+        - $ref: '#/components/schemas/StringListConstantOperator'
+        - $ref: '#/components/schemas/StringConstantOperator'
+        - $ref: '#/components/schemas/SubstractFloatOperator'
+        - $ref: '#/components/schemas/SumFloatOperator'
     AndOperator:
       type: object
       required:
@@ -970,22 +974,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operator'
-    FalseOperator:
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-          enum: ['FALSE']
-    TrueOperator:
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-          enum: ['TRUE']
     NotOperator:
       type: object
       required:
@@ -1012,7 +1000,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operator'
-    FloatScalarOperator:
+    StringListConstantOperator:
       type: object
       required:
         - type
@@ -1020,15 +1008,17 @@ components:
       properties:
         type:
           type: string
-          enum: ['FLOAT_SCALAR']
+          enum: ['STRING_LIST_CONSTANT']
         staticData:
           type: object
           required:
             - value
           properties:
             value:
-              type: number
-    StringScalarOperator:
+              type: array
+              items:
+                type: string
+    FloatConstantOperator:
       type: object
       required:
         - type
@@ -1036,7 +1026,7 @@ components:
       properties:
         type:
           type: string
-          enum: ['STRING_SCALAR']
+          enum: ['FLOAT_CONSTANT']
         staticData:
           type: object
           required:
@@ -1044,6 +1034,90 @@ components:
           properties:
             value:
               type: number
+    BoolConstantOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['BOOL_CONSTANT']
+        staticData:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: boolean
+    GreaterFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['GREATER_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    GreaterOrEqualFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['GREATER_OR_EQUAL_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    LesserFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['LESSER_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    LesserOrEqualFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['LESSER_OR_EQUAL_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    StringConstantOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['STRING_CONSTANT']
+        staticData:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: string
     DbFieldBoolOperator:
       type: object
       required:

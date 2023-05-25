@@ -1,5 +1,7 @@
+import { formatNumber } from '@marble-front/builder/utils/format';
 import { type ConstantOperator } from '@marble-front/operators';
 import { assertNever } from '@marble-front/typescript-utils';
+import { Tooltip } from '@marble-front/ui/design-system';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
@@ -26,13 +28,33 @@ function DefaultConstant({ className, isRoot, ...otherProps }: ScalarProps) {
            *  </Container.Item>
            */
           className={clsx(
-            'text-grey-100 text-center font-medium only-of-type:w-full',
+            'text-grey-100 flex whitespace-pre text-center font-medium only-of-type:w-full',
             className
           )}
           {...otherProps}
         />
       </Condition.Item>
     </Condition.Container>
+  );
+}
+
+function DefaultList({ isRoot, children, ...otherProps }: ScalarProps) {
+  return (
+    <DefaultConstant isRoot={isRoot} {...otherProps}>
+      {'[ '}
+      <Tooltip.Default
+        content={
+          <span className="text-grey-100 text-center font-medium">
+            [ {children} ]
+          </span>
+        }
+      >
+        <span className="max-w-[250px] truncate max-md:max-w-[150px]">
+          {children}
+        </span>
+      </Tooltip.Default>
+      {' ]'}
+    </DefaultConstant>
   );
 }
 
@@ -45,31 +67,42 @@ export function Constant({
 }) {
   const { t, i18n } = useTranslation(scenarioI18n);
 
-  const constantType = operator.type;
-  switch (constantType) {
-    case 'STRING_SCALAR':
-      return (
-        <DefaultConstant>{`"${operator.staticData.value}"`}</DefaultConstant>
+  const { type } = operator;
+  switch (type) {
+    case 'STRING_LIST_CONSTANT': {
+      const formattedValue = formatArray(
+        operator.staticData.value,
+        formatString
       );
-    case 'FLOAT_SCALAR':
+      return <DefaultList isRoot={isRoot}>{formattedValue}</DefaultList>;
+    }
+    case 'STRING_CONSTANT':
       return (
-        <DefaultConstant>
-          {Intl.NumberFormat(i18n.language).format(operator.staticData.value)}
+        <DefaultConstant isRoot={isRoot}>
+          {formatString(operator.staticData.value)}
         </DefaultConstant>
       );
-    case 'TRUE':
+    case 'FLOAT_CONSTANT':
       return (
-        <DefaultConstant className="uppercase" isRoot={isRoot}>
-          {t(`scenarios:true`)}
+        <DefaultConstant isRoot={isRoot}>
+          {formatNumber(i18n.language, operator.staticData.value)}
         </DefaultConstant>
       );
-    case 'FALSE':
+    case 'BOOL_CONSTANT':
       return (
         <DefaultConstant className="uppercase" isRoot={isRoot}>
-          {t(`scenarios:false`)}
+          {t(`scenarios:${operator.staticData.value}`)}
         </DefaultConstant>
       );
     default:
-      assertNever('unknwon ConstantOperator:', constantType);
+      assertNever('unknwon ConstantOperator:', type);
   }
+}
+
+function formatString(value: string) {
+  return `"${value}"`;
+}
+
+function formatArray<T>(value: T[] = [], formatValue: (value: T) => string) {
+  return value.map(formatValue).join(', ');
 }

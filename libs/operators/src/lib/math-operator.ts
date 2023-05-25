@@ -4,6 +4,10 @@ import {
   type EqualBoolOperator,
   type EqualFloatOperator,
   type EqualStringOperator,
+  type GreaterFloatOperator,
+  type GreaterOrEqualFloatOperator,
+  type LesserFloatOperator,
+  type LesserOrEqualFloatOperator,
   type Operator,
   type OrOperator,
   type ProductFloatOperator,
@@ -22,6 +26,10 @@ export type MathOperator =
   | DivideFloatOperator
   | SubstractFloatOperator
   | ProductFloatOperator
+  | GreaterFloatOperator
+  | GreaterOrEqualFloatOperator
+  | LesserFloatOperator
+  | LesserOrEqualFloatOperator
   | StringIsInListOperator;
 
 export function isMathOperator(operator: Operator): operator is MathOperator {
@@ -36,6 +44,10 @@ export function isMathOperator(operator: Operator): operator is MathOperator {
     case 'SUBTRACT_FLOAT':
     case 'PRODUCT_FLOAT':
     case 'STRING_IS_IN_LIST':
+    case 'GREATER_FLOAT':
+    case 'GREATER_OR_EQUAL_FLOAT':
+    case 'LESSER_FLOAT':
+    case 'LESSER_OR_EQUAL_FLOAT':
       return true;
     default:
       return false;
