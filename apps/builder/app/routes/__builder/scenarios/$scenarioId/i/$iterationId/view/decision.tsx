@@ -40,7 +40,7 @@ export default function Decision() {
         <Outcome border="square" size="big" outcome="review" />
         {t('scenarios:decision.score_based.review_condition')}
 
-        <Outcome border="square" size="big" outcome="reject" />
+        <Outcome border="square" size="big" outcome="decline" />
         <div className="flex flex-row items-center gap-1 lg:gap-2">
           {t('scenarios:decision.score_based.decline_condition')}
           <Tag border="square" size="big" color="grey">
