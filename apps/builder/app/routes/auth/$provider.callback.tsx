@@ -1,4 +1,3 @@
-import { setLanguage } from '@marble-front/builder/config/i18n/i18next.server';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import {
   commitSession,
