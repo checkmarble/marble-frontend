@@ -15,7 +15,7 @@ const outcomeMapping: Record<
 > = {
   approve: { color: 'green', tKey: 'decisions:outcome.approve' },
   review: { color: 'yellow', tKey: 'decisions:outcome.review' },
-  reject: { color: 'red', tKey: 'decisions:outcome.reject' },
+  decline: { color: 'red', tKey: 'decisions:outcome.decline' },
   null: { color: 'grey', tKey: 'decisions:outcome.null' },
   unknown: { color: 'grey', tKey: 'decisions:outcome.unknown' },
 };
@@ -23,7 +23,7 @@ const outcomeMapping: Record<
 export function Outcome({ outcome, ...tagProps }: OutcomeProps) {
   const { t } = useTranslation(decisionI18n);
 
-  const { color, tKey } = outcomeMapping[outcome];
+  const { color, tKey } = outcomeMapping[outcome] ?? outcomeMapping.unknown;
 
   return (
     <Tag {...tagProps} color={color}>

@@ -606,7 +606,7 @@ components:
           type: string
         outcome:
           type: string
-          enum: ['approve', 'review', 'reject', 'null', 'unknown']
+          enum: ['approve', 'review', 'decline', 'null', 'unknown']
         scenario:
           type: string
           required:
