@@ -6,7 +6,7 @@
   "tags": ["type:ui", "scope:shared"],
   "targets": {
     "build": {
-      "executor": "@nrwl/rollup:rollup",
+      "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/ui/design-system",

@@ -8,7 +8,7 @@ import React from 'react';
 
 interface DefaultTooltipProps
   extends Pick<TooltipProps, 'open' | 'defaultOpen' | 'onOpenChange'>,
-    TooltipContentProps {
+    Omit<TooltipContentProps, 'content'> {
   children: React.ReactNode;
   content: React.ReactNode;
 }

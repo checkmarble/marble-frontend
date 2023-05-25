@@ -4,5 +4,6 @@
 /coverage
 
 # Generated
+/libs/tailwind-preset/src/lib
 /libs/api/marble/src/lib/generated
 /apps/builder/app/services/routes/routes.ts
