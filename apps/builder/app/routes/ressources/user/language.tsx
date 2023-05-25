@@ -1,6 +1,5 @@
 import { supportedLngs } from '@marble-front/builder/config/i18n/i18n-config';
 import { setLanguage } from '@marble-front/builder/config/i18n/i18next.server';
-import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import {
   commitSession,
   getSession,
@@ -24,7 +23,7 @@ export async function action({ request }: ActionArgs) {
   try {
     const { preferredLanguage } = await parseForm(request, formSchema);
 
-    const user = await authenticator.isAuthenticated(request);
+    // const user = await authenticator.isAuthenticated(request);
     // if (user)
     //   await usersApi.putUsersUserId({
     //     userId: user.id,

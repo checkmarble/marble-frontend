@@ -13,7 +13,8 @@ class MockPointerEvent extends Event {
   }
 }
 
-window.PointerEvent = MockPointerEvent as any;
+//@ts-expect-error Mock is missing some properties but the current implementation cover our needs
+window.PointerEvent = MockPointerEvent;
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 window.HTMLElement.prototype.releasePointerCapture = jest.fn();
 window.HTMLElement.prototype.hasPointerCapture = jest.fn();
