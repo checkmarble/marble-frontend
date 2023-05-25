@@ -56,14 +56,14 @@ function useGetOperatorLabel() {
           return '−';
         case 'DIVIDE_FLOAT':
           return '÷';
-        // case "GREATER":
-        //   return '>';
-        // case "GREATER_EQUAL":
-        //   return '≥';
-        // case "LOWER":
-        //   return '<';
-        // case "LOWER_EQUAL":
-        //   return '≤';
+        case 'GREATER_FLOAT':
+          return '>';
+        case 'GREATER_OR_EQUAL_FLOAT':
+          return '≥';
+        case 'LESSER_FLOAT':
+          return '<';
+        case 'LESSER_OR_EQUAL_FLOAT':
+          return '≤';
         case 'STRING_IS_IN_LIST':
           return t('scenarios:operator.is_in');
         default:

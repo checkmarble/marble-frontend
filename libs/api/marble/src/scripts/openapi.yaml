@@ -885,26 +885,31 @@ components:
       oneOf:
         - $ref: '#/components/schemas/AndOperator'
         - $ref: '#/components/schemas/OrOperator'
+        - $ref: '#/components/schemas/DbFieldBoolOperator'
+        - $ref: '#/components/schemas/DbFieldFloatOperator'
+        - $ref: '#/components/schemas/DbFieldStringOperator'
+        - $ref: '#/components/schemas/DivideFloatOperator'
         - $ref: '#/components/schemas/EqualBoolOperator'
         - $ref: '#/components/schemas/EqualStringOperator'
         - $ref: '#/components/schemas/EqualFloatOperator'
         - $ref: '#/components/schemas/FalseOperator'
-        - $ref: '#/components/schemas/TrueOperator'
-        - $ref: '#/components/schemas/NotOperator'
-        - $ref: '#/components/schemas/StringIsInListOperator'
         - $ref: '#/components/schemas/FloatScalarOperator'
-        - $ref: '#/components/schemas/StringScalarOperator'
-        - $ref: '#/components/schemas/DbFieldBoolOperator'
-        - $ref: '#/components/schemas/DbFieldFloatOperator'
-        - $ref: '#/components/schemas/DbFieldStringOperator'
+        - $ref: '#/components/schemas/GreaterFloatOperator'
+        - $ref: '#/components/schemas/GreaterOrEqualFloatOperator'
+        - $ref: '#/components/schemas/LesserFloatOperator'
+        - $ref: '#/components/schemas/LesserOrEqualFloatOperator'
+        - $ref: '#/components/schemas/NotOperator'
         - $ref: '#/components/schemas/PayloadFieldBoolOperator'
         - $ref: '#/components/schemas/PayloadFieldFloatOperator'
         - $ref: '#/components/schemas/PayloadFieldStringOperator'
-        - $ref: '#/components/schemas/SumFloatOperator'
         - $ref: '#/components/schemas/ProductFloatOperator'
-        - $ref: '#/components/schemas/SubstractFloatOperator'
-        - $ref: '#/components/schemas/DivideFloatOperator'
         - $ref: '#/components/schemas/RoundFloatOperator'
+        - $ref: '#/components/schemas/StringIsInListOperator'
+        - $ref: '#/components/schemas/StringListConstantOperator'
+        - $ref: '#/components/schemas/StringScalarOperator'
+        - $ref: '#/components/schemas/SubstractFloatOperator'
+        - $ref: '#/components/schemas/SumFloatOperator'
+        - $ref: '#/components/schemas/TrueOperator'
     AndOperator:
       type: object
       required:
@@ -1012,6 +1017,24 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operator'
+    StringListConstantOperator:
+      type: object
+      required:
+        - type
+        - staticData
+      properties:
+        type:
+          type: string
+          enum: ['STRING_LIST_CONSTANT']
+        staticData:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: array
+              items:
+                type: string
     FloatScalarOperator:
       type: object
       required:
@@ -1028,6 +1051,58 @@ components:
           properties:
             value:
               type: number
+    GreaterFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['GREATER_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    GreaterOrEqualFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['GREATER_OR_EQUAL_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    LesserFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['LESSER_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
+    LesserOrEqualFloatOperator:
+      type: object
+      required:
+        - type
+        - children
+      properties:
+        type:
+          type: string
+          enum: ['LESSER_OR_EQUAL_FLOAT']
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operator'
     StringScalarOperator:
       type: object
       required:
@@ -1043,7 +1118,7 @@ components:
             - value
           properties:
             value:
-              type: number
+              type: string
     DbFieldBoolOperator:
       type: object
       required:
