@@ -67,7 +67,6 @@ export function Constant({
 }) {
   const { t, i18n } = useTranslation(scenarioI18n);
 
-  //TODO: extract operator.staticData.value when all constant operators follow the same structure
   const { type } = operator;
   switch (type) {
     case 'STRING_LIST_CONSTANT': {
@@ -77,28 +76,22 @@ export function Constant({
       );
       return <DefaultList isRoot={isRoot}>{formattedValue}</DefaultList>;
     }
-    case 'STRING_SCALAR':
+    case 'STRING_CONSTANT':
       return (
         <DefaultConstant isRoot={isRoot}>
           {formatString(operator.staticData.value)}
         </DefaultConstant>
       );
-    case 'FLOAT_SCALAR':
+    case 'FLOAT_CONSTANT':
       return (
         <DefaultConstant isRoot={isRoot}>
           {formatNumber(i18n.language, operator.staticData.value)}
         </DefaultConstant>
       );
-    case 'TRUE':
+    case 'BOOL_CONSTANT':
       return (
         <DefaultConstant className="uppercase" isRoot={isRoot}>
-          {t(`scenarios:true`)}
-        </DefaultConstant>
-      );
-    case 'FALSE':
-      return (
-        <DefaultConstant className="uppercase" isRoot={isRoot}>
-          {t(`scenarios:false`)}
+          {t(`scenarios:${operator.staticData.value}`)}
         </DefaultConstant>
       );
     default:

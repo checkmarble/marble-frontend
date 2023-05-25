@@ -72,9 +72,11 @@ export type AndOperator = {
     "type": "AND";
     children: Operator[];
 };
-export type OrOperator = {
-    "type": "OR";
-    children: Operator[];
+export type BoolConstantOperator = {
+    "type": "BOOL_CONSTANT";
+    staticData: {
+        value: boolean;
+    };
 };
 export type DbFieldBoolOperator = {
     "type": "DB_FIELD_BOOL";
@@ -116,11 +118,8 @@ export type EqualFloatOperator = {
     "type": "EQUAL_FLOAT";
     children: Operator[];
 };
-export type FalseOperator = {
-    "type": "FALSE";
-};
-export type FloatScalarOperator = {
-    "type": "FLOAT_SCALAR";
+export type FloatConstantOperator = {
+    "type": "FLOAT_CONSTANT";
     staticData: {
         value: number;
     };
@@ -143,6 +142,10 @@ export type LesserOrEqualFloatOperator = {
 };
 export type NotOperator = {
     "type": "NOT";
+    children: Operator[];
+};
+export type OrOperator = {
+    "type": "OR";
     children: Operator[];
 };
 export type PayloadFieldBoolOperator = {
@@ -184,8 +187,8 @@ export type StringListConstantOperator = {
         value: string[];
     };
 };
-export type StringScalarOperator = {
-    "type": "STRING_SCALAR";
+export type StringConstantOperator = {
+    "type": "STRING_CONSTANT";
     staticData: {
         value: string;
     };
@@ -198,10 +201,7 @@ export type SumFloatOperator = {
     "type": "SUM_FLOAT";
     children: Operator[];
 };
-export type TrueOperator = {
-    "type": "TRUE";
-};
-export type Operator = AndOperator | OrOperator | DbFieldBoolOperator | DbFieldFloatOperator | DbFieldStringOperator | DivideFloatOperator | EqualBoolOperator | EqualStringOperator | EqualFloatOperator | FalseOperator | FloatScalarOperator | GreaterFloatOperator | GreaterOrEqualFloatOperator | LesserFloatOperator | LesserOrEqualFloatOperator | NotOperator | PayloadFieldBoolOperator | PayloadFieldFloatOperator | PayloadFieldStringOperator | ProductFloatOperator | RoundFloatOperator | StringIsInListOperator | StringListConstantOperator | StringScalarOperator | SubstractFloatOperator | SumFloatOperator | TrueOperator;
+export type Operator = AndOperator | BoolConstantOperator | DbFieldBoolOperator | DbFieldFloatOperator | DbFieldStringOperator | DivideFloatOperator | EqualBoolOperator | EqualStringOperator | EqualFloatOperator | FloatConstantOperator | GreaterFloatOperator | GreaterOrEqualFloatOperator | LesserFloatOperator | LesserOrEqualFloatOperator | NotOperator | OrOperator | PayloadFieldBoolOperator | PayloadFieldFloatOperator | PayloadFieldStringOperator | ProductFloatOperator | RoundFloatOperator | StringIsInListOperator | StringListConstantOperator | StringConstantOperator | SubstractFloatOperator | SumFloatOperator;
 export type CreateScenarioIterationRuleBody = {
     scenarioIterationId: string;
     displayOrder: number;
