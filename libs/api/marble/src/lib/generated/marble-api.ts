@@ -27,7 +27,7 @@ export type Decision = {
     created_at: string;
     trigger_object: object;
     trigger_object_type: string;
-    outcome: "approve" | "review" | "reject" | "null" | "unknown";
+    outcome: "approve" | "review" | "decline" | "null" | "unknown";
     scenario: {
         id: string;
         name: string;

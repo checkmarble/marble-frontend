@@ -7,7 +7,7 @@
   "trigger_object.type": "Objet déclencheur",
   "outcome.approve": "Approuver",
   "outcome.review": "A revoir",
-  "outcome.reject": "Rejeter",
+  "outcome.decline": "Refuser",
   "outcome.null": "Null",
-  "outcome.unknown": "Unknown"
+  "outcome.unknown": "Inconnu"
 }

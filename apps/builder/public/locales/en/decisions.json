@@ -7,7 +7,7 @@
   "created_at": "Created at",
   "outcome.approve": "Approve",
   "outcome.review": "Review",
-  "outcome.reject": "Reject",
+  "outcome.decline": "Decline",
   "outcome.null": "Null",
   "outcome.unknown": "Unknown"
 }

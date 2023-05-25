@@ -18,7 +18,7 @@ const fakeDecisions: Decision[] = Array.from({
   outcome: faker.helpers.arrayElement([
     'approve',
     'review',
-    'reject',
+    'decline',
     'null',
     'unknown',
   ]),
