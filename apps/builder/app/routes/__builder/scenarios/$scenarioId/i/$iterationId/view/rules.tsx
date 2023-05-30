@@ -35,7 +35,10 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export default function Rules() {
-  const { t } = useTranslation(handle.i18n);
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(handle.i18n);
 
   const navigate = useNavigate();
 
@@ -62,13 +65,15 @@ export default function Rules() {
 
           if (!scoreIncrease) return '';
 
-          return scoreIncrease >= 0 ? `+${scoreIncrease}` : `-${scoreIncrease}`;
+          return Intl.NumberFormat(language, {
+            signDisplay: 'exceptZero',
+          }).format(scoreIncrease);
         },
         header: t('scenarios:rules.score'),
         size: 100,
       },
     ],
-    [t]
+    [language, t]
   );
 
   const hasRules = rules.length > 0;
