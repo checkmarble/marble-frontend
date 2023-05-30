@@ -1,4 +1,3 @@
-import { getDecision } from '@marble-front/api/marble';
 import {
   createRightPanel,
   Outcome,
@@ -27,13 +26,13 @@ const formSchema = z.object({
 });
 
 export async function loader({ request, params }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   try {
     const { decisionId } = await parseParams(params, formSchema);
-    const decision = await getDecision(decisionId);
+    const decision = await apiClient.getDecision(decisionId);
 
     return json({
       success: true as const,

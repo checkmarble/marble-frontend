@@ -1,53 +1,30 @@
-import { Mutex } from 'async-mutex';
-
-export class TokenService<Token> {
-  private _token: Promise<Token>;
-  private _refreshToken: () => Promise<Token>;
-  private pendingRefreshMutex: Mutex = new Mutex();
-
-  constructor(args: { refreshToken: () => Promise<Token> }) {
-    this._refreshToken = args.refreshToken;
-    this._token = args.refreshToken();
-  }
-
-  public async getToken() {
-    return this.pendingRefreshMutex.waitForUnlock().then(() => this._token);
-  }
-
-  public async refreshToken() {
-    if (this.pendingRefreshMutex.isLocked()) return;
-
-    const release = await this.pendingRefreshMutex.acquire();
-    try {
-      this._token = this._refreshToken();
-    } finally {
-      release();
-    }
-  }
+export interface TokenService<Token> {
+  getToken: () => Promise<Token | undefined>;
+  refreshToken: () => Promise<Token>;
 }
 
 export function fetchWithAuthMiddleware<Token>({
-  bffTokenService,
+  tokenService,
   getAuthorizationHeader,
 }: {
-  bffTokenService: TokenService<Token>;
+  tokenService: TokenService<Token>;
   getAuthorizationHeader: (token: Token) => { name: string; value: string };
 }): typeof fetch {
-  async function setAuthorizationHeader(init?: RequestInit) {
-    const token = await bffTokenService.getToken();
-    const { name, value } = getAuthorizationHeader(token);
-    const headers = new Headers(init?.headers);
-    headers.set(name, value);
-    return { ...init, headers };
-  }
-
   return async (input, init) => {
-    const initWithAuth = await setAuthorizationHeader(init);
-    const response = await fetch(input, initWithAuth);
+    const headers = new Headers(init?.headers);
+
+    const token = await tokenService.getToken();
+    if (token) {
+      const { name, value } = getAuthorizationHeader(token);
+      headers.set(name, value);
+    }
+    const response = await fetch(input, { ...init, headers });
 
     if (response.status === 401) {
-      await bffTokenService.refreshToken();
-      return fetch(input, await setAuthorizationHeader(init));
+      const token = await tokenService.refreshToken();
+      const { name, value } = getAuthorizationHeader(token);
+      headers.set(name, value);
+      return fetch(input, { ...init, headers });
     }
 
     return response;

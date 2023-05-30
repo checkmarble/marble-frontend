@@ -1,8 +1,10 @@
-import { getServerEnv } from '@marble-front/builder/utils/environment';
+import { getServerEnv } from '@marble-front/builder/utils/environment.server';
 import { createCookie, createCookieSessionStorage } from '@remix-run/node';
 
-export const sessionCookie = createCookie('user_session', {
-  maxAge: Number(getServerEnv('SESSION_MAX_AGE')),
+export const userSessionMaxAge = Number(getServerEnv('SESSION_MAX_AGE'));
+
+const sessionCookie = createCookie('user_session', {
+  maxAge: userSessionMaxAge,
   sameSite: 'lax', // this helps with CSRF
   path: '/', // remember to add this so the cookie will work in all routes
   httpOnly: true,

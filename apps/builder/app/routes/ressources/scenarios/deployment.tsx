@@ -1,4 +1,3 @@
-import { createScenarioPublication } from '@marble-front/api/marble';
 import { navigationI18n } from '@marble-front/builder/components';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import {
@@ -55,7 +54,7 @@ const formSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -73,7 +72,7 @@ export async function action({ request }: ActionArgs) {
   try {
     const { iterationId, deploymentType } = parsedForm.data;
 
-    await createScenarioPublication({
+    await apiClient.createScenarioPublication({
       publicationAction:
         deploymentType === 'deactivate' ? 'unpublish' : 'publish',
       scenarioIterationId: iterationId,

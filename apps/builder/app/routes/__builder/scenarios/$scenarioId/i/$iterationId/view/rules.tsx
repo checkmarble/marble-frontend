@@ -1,7 +1,4 @@
-import {
-  listScenarioIterationRules,
-  type ScenarioIterationRule,
-} from '@marble-front/api/marble';
+import { type ScenarioIterationRule } from '@marble-front/api/marble';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { fromParams, fromUUID } from '@marble-front/builder/utils/short-uuid';
 import { Table, useVirtualTable } from '@marble-front/ui/design-system';
@@ -21,13 +18,13 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const scenarioIterationId = fromParams(params, 'iterationId');
 
-  const scenarioIterationRules = await listScenarioIterationRules({
+  const scenarioIterationRules = await apiClient.listScenarioIterationRules({
     scenarioIterationId,
   });
 

@@ -17,11 +17,17 @@ import {
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  AuthenticityTokenProvider,
+  createAuthenticityToken,
+} from 'remix-utils';
 
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { remixI18next } from './config/i18n/i18next.server';
 import { commitSession, getSession } from './services/auth/session.server';
 import tailwindStyles from './tailwind.css';
+import { type ClientEnvVars } from './utils/environment.client';
+import { getServerEnv } from './utils/environment.server';
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindStyles },
@@ -52,6 +58,11 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const session = await getSession(request.headers.get('cookie'));
   const toastMessage = getToastMessage(session);
+  const csrf = createAuthenticityToken(session);
+
+  const ENV: ClientEnvVars = {
+    AUTH_EMULATOR: getServerEnv('AUTH_EMULATOR', 'false') === 'true',
+  };
 
   return json(
     {
@@ -61,12 +72,15 @@ export const loader = async ({ request }: LoaderArgs) => {
        * - access it using window.ENV.MY_ENV_VAR
        * https://remix.run/docs/en/v1/guides/envvars#browser-environment-variables
        */
-      ENV: {},
+      ENV,
       locale,
+      csrf,
       toastMessage,
     },
     {
-      headers: { 'Set-Cookie': await commitSession(session) },
+      headers: {
+        'Set-Cookie': await commitSession(session),
+      },
     }
   );
 };
@@ -89,7 +103,7 @@ export const meta: V2_MetaFunction = () => [
 ];
 
 export default function App() {
-  const { locale, ENV, toastMessage } = useLoaderData<typeof loader>();
+  const { locale, ENV, toastMessage, csrf } = useLoaderData<typeof loader>();
 
   const { i18n } = useTranslation(handle.i18n);
 
@@ -104,9 +118,11 @@ export default function App() {
         <Links />
       </head>
       <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
-        <Tooltip.Provider>
-          <Outlet />
-        </Tooltip.Provider>
+        <AuthenticityTokenProvider token={csrf}>
+          <Tooltip.Provider>
+            <Outlet />
+          </Tooltip.Provider>
+        </AuthenticityTokenProvider>
         <script
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(ENV)}`,

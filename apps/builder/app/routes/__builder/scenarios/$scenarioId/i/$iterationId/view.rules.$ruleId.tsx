@@ -1,4 +1,3 @@
-import { getScenarioIterationRule } from '@marble-front/api/marble';
 import {
   Callout,
   Rule,
@@ -16,13 +15,13 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const ruleId = fromParams(params, 'ruleId');
 
-  const rule = await getScenarioIterationRule(ruleId);
+  const rule = await apiClient.getScenarioIterationRule(ruleId);
 
   return json(rule);
 }

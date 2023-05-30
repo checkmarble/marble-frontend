@@ -1,18 +1,13 @@
-import { initMarbleAPI } from '@marble-front/builder/services/marble-api/init.server';
 import { type EntryContext, Response } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import isbot from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
-import { rollingCookie } from 'remix-utils';
 import { PassThrough } from 'stream';
 
 import { getI18nextServerInstance } from './config/i18n/i18next.server';
-import { sessionCookie } from './services/auth/session.server';
 
 const ABORT_DELAY = 5000;
-
-initMarbleAPI();
 
 export default async function handleRequest(
   request: Request,
@@ -20,8 +15,6 @@ export default async function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  await rollingCookie(sessionCookie, request, responseHeaders);
-
   const i18n = await getI18nextServerInstance(request, remixContext);
 
   const App = (

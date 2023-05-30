@@ -1,4 +1,3 @@
-import { listScenarioIterations } from '@marble-front/api/marble';
 import { setToastMessage } from '@marble-front/builder/components/MarbleToaster';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import {
@@ -16,13 +15,15 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const scenarioIterations = await listScenarioIterations({ scenarioId });
+  const scenarioIterations = await apiClient.listScenarioIterations({
+    scenarioId,
+  });
 
   //TODO(CatchBoundary): replace this with according CatchBoundary
   if (scenarioIterations.length === 0) {
