@@ -120,12 +120,12 @@ function ModalContent({
   const deploymentType = getDeploymentType(currentIteration.type);
   const buttonConfig = getButtonConfig(deploymentType);
 
-  const isSuccess = fetcher.type === 'done' && fetcher.data?.success === true;
-
-  const error = fetcher.data?.error;
+  const { state, data } = fetcher;
+  const isSuccess = state === 'idle' && data?.success === true;
+  const error = data?.error;
 
   return isSuccess ? (
-    // In success modal, use fetcher.data.values.deploymentType (action will update deploymentType to the new state)
+    // In success modal, use data.values.deploymentType (action will update deploymentType to the new state)
     <div className="flex flex-col items-center p-8 text-center">
       <Tick
         width="108px"
@@ -134,12 +134,12 @@ function ModalContent({
       />
       <Modal.Title className="text-l text-grey-100 mb-2 font-semibold">
         {t(
-          `scenarios:deployment_modal_success.${fetcher.data.values.deploymentType}.title`
+          `scenarios:deployment_modal_success.${data.values.deploymentType}.title`
         )}
       </Modal.Title>
       <p className="text-s text-grey-100 mb-8 font-normal">
         {t(
-          `scenarios:deployment_modal_success.${fetcher.data.values.deploymentType}.description`
+          `scenarios:deployment_modal_success.${data.values.deploymentType}.description`
         )}
       </p>
       <Modal.Close asChild autoFocus>
@@ -153,7 +153,7 @@ function ModalContent({
       </Modal.Title>
       <fetcher.Form
         className="bg-grey-00 flex-col p-8"
-        method="post"
+        method="POST"
         action="/ressources/scenarios/deployment"
       >
         <HiddenInputs

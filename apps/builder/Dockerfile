@@ -31,7 +31,7 @@ ADD . .
 RUN npx nx run builder:build
 
 # Finally, build the production image with minimal footprint
-FROM node:16.14-alpine3.14
+FROM node:20-alpine
 ENV NODE_ENV=production
 ENV PORT=8080
 RUN mkdir /app

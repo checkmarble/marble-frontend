@@ -58,7 +58,7 @@ export default function Login() {
         <div className="bg-grey-00 min-w-xs mb-10 flex flex-shrink-0 flex-col items-center rounded-2xl p-10 text-center shadow-md">
           <h1 className="text-l mb-12 font-semibold">{t('login:title')}</h1>
 
-          <Form action={`/auth/google`} method="post" className="mb-1 w-full">
+          <Form action={`/auth/google`} method="POST" className="mb-1 w-full">
             <button className="flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)]">
               <div className="bg-grey-00 flex h-full w-10 items-center justify-center rounded-l-[3px]">
                 <GoogleLogo height="24px" width="24px" />
