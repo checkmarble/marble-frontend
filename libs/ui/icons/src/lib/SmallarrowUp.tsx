@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { SVGProps } from 'react';
 const SmallarrowUp = (props: SVGProps<SVGSVGElement>) => (
   <svg

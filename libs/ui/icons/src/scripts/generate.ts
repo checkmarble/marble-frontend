@@ -24,6 +24,7 @@ async function buildIcon(svgFileName: string) {
   const component = await transform(
     svgCode,
     {
+      jsxRuntime: 'automatic',
       icon: true,
       typescript: true,
       plugins: [

@@ -17,8 +17,8 @@ const Template: StoryFn<StoryProps> = ({ count }) => {
   const data = useMemo(
     () =>
       Array.from({ length: count }).map(() => ({
-        firstName: faker.name.firstName(),
-        lastName: faker.name.lastName(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
         description: faker.lorem.sentences(),
       })),
     [count]
@@ -72,6 +72,7 @@ const Story: Meta<StoryProps> = {
   argTypes: {
     count: { type: 'number' },
   },
+  decorators: [(story) => <div className="flex max-h-72 ">{story()}</div>],
 };
 export default Story;
 

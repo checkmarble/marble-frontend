@@ -52,7 +52,7 @@ function TestTable({
 describe('Table', () => {
   it('should render successfully', () => {
     const data = Array.from({ length: 10 }).map(() => ({
-      name: faker.name.fullName(),
+      name: faker.person.fullName(),
       description: faker.lorem.sentences(),
     }));
 
@@ -69,7 +69,7 @@ describe('Table', () => {
 
   it('should reorder successfully', async () => {
     const data = Array.from({ length: 10 }).map(() => ({
-      name: faker.name.fullName(),
+      name: faker.person.fullName(),
       description: faker.lorem.sentences(),
     }));
 

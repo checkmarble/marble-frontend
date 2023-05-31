@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { SVGProps } from 'react';
 const Pushtolive = (props: SVGProps<SVGSVGElement>) => (
   <svg
