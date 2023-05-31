@@ -18,6 +18,13 @@
         "cwd": "./libs/api/marble"
       }
     },
+    "operator-regex": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node -r esbuild-register src/scripts/operator-regexp.ts",
+        "cwd": "./libs/api/marble"
+      }
+    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {

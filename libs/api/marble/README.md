@@ -24,3 +24,13 @@ Change the generation script by editing `src/scripts/generate.ts`
 Change or add files in `src/lib/openapi`
 
 > don't forget to explicitly expose public interface in `src/lib/index.ts`
+
+### Get updated regex to easilly find new operators in backend code
+
+1. Run `npx nx api-marble:operator-regex` to generate the regexp
+2. Copy the regexp
+3. Use the "Find All" VS Code tab from the backend
+
+![regexp-example-backend](./docs/regexp-example.png)
+
+> NB: make sure to check the regexp box in the VS Code UI
