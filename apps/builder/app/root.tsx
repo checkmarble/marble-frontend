@@ -3,7 +3,7 @@ import {
   json,
   type LinksFunction,
   type LoaderArgs,
-  type MetaFunction,
+  type V2_MetaFunction,
 } from '@remix-run/node';
 import {
   Links,
@@ -75,11 +75,18 @@ export const handle = {
   i18n: ['common', 'navigation'] satisfies Namespace,
 };
 
-export const meta: MetaFunction = () => ({
-  charset: 'utf-8',
-  title: 'Marble',
-  viewport: 'width=device-width,initial-scale=1',
-});
+export const meta: V2_MetaFunction = () => [
+  {
+    charset: 'utf-8',
+  },
+  {
+    title: 'Marble',
+  },
+  {
+    name: 'viewport',
+    content: 'width=device-width,initial-scale=1',
+  },
+];
 
 export default function App() {
   const { locale, ENV, toastMessage } = useLoaderData<typeof loader>();

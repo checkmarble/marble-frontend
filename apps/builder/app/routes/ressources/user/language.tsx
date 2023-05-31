@@ -63,7 +63,7 @@ export function LanguagePicker() {
       onValueChange={(newPreferredLanguage) => {
         fetcher.submit(
           { preferredLanguage: newPreferredLanguage },
-          { method: 'post', action: '/ressources/user/language' }
+          { method: 'POST', action: '/ressources/user/language' }
         );
       }}
     >

@@ -120,7 +120,7 @@ function ModalContent({
   const deploymentType = getDeploymentType(currentIteration.type);
   const buttonConfig = getButtonConfig(deploymentType);
 
-  const isSuccess = fetcher.type === 'done' && fetcher.data?.success === true;
+  const isSuccess = fetcher.state === 'idle' && fetcher.data?.success === true;
 
   const error = fetcher.data?.error;
 
@@ -153,7 +153,7 @@ function ModalContent({
       </Modal.Title>
       <fetcher.Form
         className="bg-grey-00 flex-col p-8"
-        method="post"
+        method="POST"
         action="/ressources/scenarios/deployment"
       >
         <HiddenInputs
