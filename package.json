@@ -2,9 +2,7 @@
   "name": "marble-front",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {
-    "postinstall": "patch-package"
-  },
+  "scripts": {},
   "private": true,
   "devDependencies": {
     "@babel/core": "7.21.8",
@@ -122,7 +120,6 @@
     "i18next-http-backend": "^2.1.1",
     "isbot": "^3.6.10",
     "oazapfts": "^4.7.1",
-    "patch-package": "^7.0.0",
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
