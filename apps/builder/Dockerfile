@@ -7,7 +7,6 @@ RUN mkdir /app
 WORKDIR /app
 
 ADD package.json package-lock.json ./
-ADD patches ./patches
 RUN npm install --production=false
 
 # Setup production node_modules
@@ -17,7 +16,6 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules /app/node_modules
 ADD package.json package-lock.json ./
-ADD patches ./patches
 RUN npm prune --production
 
 # Build the app
