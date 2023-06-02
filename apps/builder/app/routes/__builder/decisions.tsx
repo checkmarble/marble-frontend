@@ -1,4 +1,4 @@
-import { type Decision, listDecisions } from '@marble-front/api/marble';
+import { type Decision } from '@marble-front/api/marble';
 import {
   Outcome,
   type OutcomeProps,
@@ -34,11 +34,11 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
-  const decisions = await listDecisions();
+  const decisions = await apiClient.listDecisions();
 
   const sortedDecisions = R.sortBy(decisions, [
     ({ created_at }) => created_at,

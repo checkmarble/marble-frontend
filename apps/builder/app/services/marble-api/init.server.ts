@@ -1,24 +1,39 @@
 import {
-  defaults,
   fetchWithAuthMiddleware,
-  postToken,
-  TokenService,
+  marbleApi,
+  type TokenService,
 } from '@marble-front/api/marble';
-import { getServerEnv } from '@marble-front/builder/utils/environment';
+import { getServerEnv } from '@marble-front/builder/utils/environment.server';
+import * as R from 'remeda';
 
-export function initMarbleAPI() {
-  defaults.baseUrl = getServerEnv('MARBLE_API_DOMAIN');
+type FunctionKeys<T> = {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  [P in keyof T]: T[P] extends Function ? P : never;
+}[keyof T];
 
-  const bffTokenService = new TokenService({
-    // use default fetch to bypass ensure fetchWithAuthMiddleware is not used
-    refreshToken: () => postToken('token12345', { fetch: fetch }),
-  });
+export type MarbleApi = {
+  [P in FunctionKeys<typeof marbleApi>]: (typeof marbleApi)[P];
+};
 
-  defaults.fetch = fetchWithAuthMiddleware({
-    bffTokenService,
+export function getMarbleAPIClient({
+  tokenService,
+}: {
+  tokenService: TokenService<string>;
+}): MarbleApi {
+  const baseUrl = getServerEnv('MARBLE_API_DOMAIN');
+  const fetch = fetchWithAuthMiddleware({
+    tokenService,
     getAuthorizationHeader: (token) => ({
       name: 'Authorization',
-      value: `${token.token_type} ${token.access_token}`,
+      value: `Bearer ${token}`,
     }),
+  });
+
+  const { defaults, servers, ...api } = marbleApi;
+
+  //@ts-expect-error can't infer args
+  return R.mapValues(api, (value) => (...args) => {
+    //@ts-expect-error can't infer args
+    return value(...args, { fetch, baseUrl });
   });
 }

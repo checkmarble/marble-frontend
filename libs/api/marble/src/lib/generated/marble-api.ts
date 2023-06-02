@@ -265,7 +265,10 @@ export type CreateScenarioPublicationBody = {
 /**
  * Get an access token
  */
-export function postToken(xApiKey: string, opts?: Oazapfts.RequestOpts) {
+export function postToken({ xApiKey, authorization }: {
+    xApiKey?: string;
+    authorization?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Token;
@@ -277,7 +280,8 @@ export function postToken(xApiKey: string, opts?: Oazapfts.RequestOpts) {
         method: "POST",
         headers: {
             ...opts && opts.headers,
-            "X-API-Key": xApiKey
+            "X-API-Key": xApiKey,
+            Authorization: authorization
         }
     }));
 }

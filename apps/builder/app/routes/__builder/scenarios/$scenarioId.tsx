@@ -1,4 +1,3 @@
-import { getScenario } from '@marble-front/api/marble';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { fromParams } from '@marble-front/builder/utils/short-uuid';
 import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
@@ -10,13 +9,13 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const scenario = await getScenario(scenarioId);
+  const scenario = await apiClient.getScenario(scenarioId);
 
   return json(scenario);
 }

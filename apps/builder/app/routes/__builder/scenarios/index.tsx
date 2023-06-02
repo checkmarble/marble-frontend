@@ -1,4 +1,3 @@
-import { listScenarios } from '@marble-front/api/marble';
 import { Page } from '@marble-front/builder/components';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { getRoute } from '@marble-front/builder/services/routes';
@@ -16,10 +15,10 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  const scenarios = await listScenarios();
+  const scenarios = await apiClient.listScenarios();
 
   const sortedScenarios = R.sortBy(scenarios, [
     ({ createdAt }) => createdAt,

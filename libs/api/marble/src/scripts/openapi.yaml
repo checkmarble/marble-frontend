@@ -25,15 +25,20 @@ paths:
       tags:
         - Authorization
       summary: Get an access token
+      description: You need to suply either "X-API-Key" or “Authorization" header
       operationId: postToken
       security: []
       parameters:
         - in: header
-          description: 'Valid Api Key token required to generate a new access token'
+          description: 'Valid Api Key token to generate a new access token'
           name: X-API-Key
           schema:
             type: string
-          required: true
+        - in: header
+          description: 'Valid bearer token to generate a new access token'
+          name: Authorization
+          schema:
+            type: string
       responses:
         '200':
           description: New access token

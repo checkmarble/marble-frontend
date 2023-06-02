@@ -1,7 +1,4 @@
-import {
-  listScenarioIterations,
-  type ScenarioIteration,
-} from '@marble-front/api/marble';
+import { type ScenarioIteration } from '@marble-front/api/marble';
 import {
   navigationI18n,
   ScenarioPage,
@@ -48,13 +45,15 @@ const LINKS: ScenariosLinkProps[] = [
 ];
 
 export async function loader({ request, params }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const scenarioIterations = await listScenarioIterations({ scenarioId });
+  const scenarioIterations = await apiClient.listScenarioIterations({
+    scenarioId,
+  });
 
   return json(scenarioIterations);
 }

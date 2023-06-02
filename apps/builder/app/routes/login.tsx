@@ -4,17 +4,18 @@ import {
   isAuthErrors,
 } from '@marble-front/builder/services/auth/auth.server';
 import { getSession } from '@marble-front/builder/services/auth/session.server';
-import { GoogleLogo, LogoStandard } from '@marble-front/ui/icons';
+import { LogoStandard } from '@marble-front/ui/icons';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { Form, useLoaderData } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import { type Namespace, type TFuncKey } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
+import { SignInWithGoogle } from './ressources/auth/login';
 import { LanguagePicker } from './ressources/user/language';
 
 export async function loader({ request }: LoaderArgs) {
   await authenticator.isAuthenticated(request, {
-    successRedirect: '/dashboard',
+    successRedirect: '/home',
   });
   const session = await getSession(request.headers.get('cookie'));
   const error = session.get(authenticator.sessionErrorKey) as
@@ -58,16 +59,9 @@ export default function Login() {
         <div className="bg-grey-00 min-w-xs mb-10 flex flex-shrink-0 flex-col items-center rounded-2xl p-10 text-center shadow-md">
           <h1 className="text-l mb-12 font-semibold">{t('login:title')}</h1>
 
-          <Form action={`/auth/google`} method="POST" className="mb-1 w-full">
-            <button className="flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)]">
-              <div className="bg-grey-00 flex h-full w-10 items-center justify-center rounded-l-[3px]">
-                <GoogleLogo height="24px" width="24px" />
-              </div>
-              <span className="text-s text-grey-00 w-full whitespace-nowrap text-center align-middle font-medium">
-                {t('login:sign_in.google')}
-              </span>
-            </button>
-          </Form>
+          <div className="mb-1 w-full">
+            <SignInWithGoogle />
+          </div>
 
           {authError && (
             <p className="text-xs font-normal text-red-100">
