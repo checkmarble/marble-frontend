@@ -6,6 +6,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
 
+import { logger } from '../logger';
 import { getMarbleAPIClient, type MarbleApi } from '../marble-api/init.server';
 
 export interface FirebaseStrategyOptions {
@@ -74,6 +75,8 @@ export function getServerAuth({
           : typeof error === 'string'
           ? error
           : 'Unknown error';
+
+      logger.error(message);
 
       session.flash(firebaseAuthErrorKey, { message });
 
