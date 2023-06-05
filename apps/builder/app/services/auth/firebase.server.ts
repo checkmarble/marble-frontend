@@ -1,4 +1,5 @@
 import { marbleApi, type Token } from '@marble-front/api/marble';
+import { getServerEnv } from '@marble-front/builder/utils/environment.server';
 import { parseForm } from '@marble-front/builder/utils/input-validation';
 import { redirect, type SessionStorage } from '@remix-run/node';
 import { verifyAuthenticityToken } from 'remix-utils';
@@ -43,9 +44,12 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
 
       await verifyAuthenticityToken(request, session);
 
-      const marbleToken = await marbleApi.postToken({
-        authorization: `Bearer ${idToken}`,
-      });
+      const marbleToken = await marbleApi.postToken(
+        {
+          authorization: `Bearer ${idToken}`,
+        },
+        { baseUrl: getServerEnv('MARBLE_API_DOMAIN') }
+      );
 
       session.set(marbleTokenKey, marbleToken);
       redirectUrl = options.successRedirect;
