@@ -1,37 +1,25 @@
-import { postToken } from '@marble-front/api/marble';
+import { marbleApi, type Token } from '@marble-front/api/marble';
 import { parseForm } from '@marble-front/builder/utils/input-validation';
 import { redirect, type SessionStorage } from '@remix-run/node';
-import { getApp, getApps, initializeApp } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
 import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
 
 import { logger } from '../logger';
 import { getMarbleAPIClient, type MarbleApi } from '../marble-api/init.server';
+import { getRoute } from '../routes';
 
 export interface FirebaseStrategyOptions {
-  /**
-   * The session cookie custom expiration in seconds. The minimum allowed is
-   * 5 minutes and the maxium allowed is 2 weeks.
-   */
-  maxAge: number;
   sessionStorage: SessionStorage;
 }
 
-const firebaseSessionCookieKey = 'auth:token';
-const firebaseAuthErrorKey = 'auth:error';
+const marbleTokenKey = 'auth:token';
+const authErrorKey = 'auth:error';
 
 interface AuthenticatedInfo {
   apiClient: MarbleApi;
 }
 
-export function getServerAuth({
-  maxAge,
-  sessionStorage,
-}: FirebaseStrategyOptions) {
-  const app = getApps().length === 0 ? initializeApp() : getApp();
-  const serverAuth = getAuth(app);
-
+export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
   async function authenticate(
     request: Request,
     options: {
@@ -55,16 +43,11 @@ export function getServerAuth({
 
       await verifyAuthenticityToken(request, session);
 
-      await serverAuth.verifyIdToken(idToken);
+      const marbleToken = await marbleApi.postToken({
+        authorization: `Bearer ${idToken}`,
+      });
 
-      const firebaseSessionCookie = await serverAuth.createSessionCookie(
-        idToken,
-        {
-          expiresIn: maxAge * 1000,
-        }
-      );
-
-      session.set(firebaseSessionCookieKey, firebaseSessionCookie);
+      session.set(marbleTokenKey, marbleToken);
       redirectUrl = options.successRedirect;
     } catch (error) {
       const message =
@@ -76,7 +59,7 @@ export function getServerAuth({
 
       logger.error(message);
 
-      session.flash(firebaseAuthErrorKey, { message });
+      session.flash(authErrorKey, { message });
 
       redirectUrl = options.failureRedirect;
     }
@@ -114,10 +97,8 @@ export function getServerAuth({
       request.headers.get('Cookie')
     );
 
-    const firebaseSessionCookie = session.get(firebaseSessionCookieKey) ?? null;
-    try {
-      await serverAuth.verifySessionCookie(firebaseSessionCookie);
-    } catch (error) {
+    const marbleToken: Token | null = session.get(marbleTokenKey) ?? null;
+    if (!marbleToken || marbleToken.expires_in > new Date().toISOString()) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
     }
@@ -128,11 +109,8 @@ export function getServerAuth({
       tokenService: {
         getToken: () => session.get('marbleToken'),
         refreshToken: async () => {
-          const { access_token } = await postToken({
-            authorization: `Bearer ${firebaseSessionCookie}`,
-          });
-          session.set('marbleToken', access_token);
-          return access_token;
+          // We don't handle refresh for now, force a logout when 401 is returned instead
+          throw redirect(getRoute('/ressources/auth/logout'));
         },
       },
     });
@@ -159,6 +137,6 @@ export function getServerAuth({
     authenticate,
     isAuthenticated,
     logout,
-    sessionErrorKey: firebaseAuthErrorKey,
+    sessionErrorKey: authErrorKey,
   };
 }
