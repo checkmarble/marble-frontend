@@ -20,19 +20,14 @@ export const routes = [
         file: "routes/ressources/user/language.tsx",
       },
       {
-        id: "routes/auth/$provider.callback",
-        path: "auth/:provider/callback",
-        file: "routes/auth/$provider.callback.tsx",
+        id: "routes/ressources/auth/logout",
+        path: "ressources/auth/logout",
+        file: "routes/ressources/auth/logout.tsx",
       },
       {
-        id: "routes/auth/$provider",
-        path: "auth/:provider",
-        file: "routes/auth/$provider.tsx",
-      },
-      {
-        id: "routes/auth/logout",
-        path: "auth/logout",
-        file: "routes/auth/logout.tsx",
+        id: "routes/ressources/auth/login",
+        path: "ressources/auth/login",
+        file: "routes/ressources/auth/login.tsx",
       },
       {
         id: "routes/healthcheck",
