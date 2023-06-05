@@ -10,7 +10,6 @@ import { logger } from '../logger';
 import { getMarbleAPIClient, type MarbleApi } from '../marble-api/init.server';
 
 export interface FirebaseStrategyOptions {
-  projectId: string;
   /**
    * The session cookie custom expiration in seconds. The minimum allowed is
    * 5 minutes and the maxium allowed is 2 weeks.
@@ -27,11 +26,10 @@ interface AuthenticatedInfo {
 }
 
 export function getServerAuth({
-  projectId,
   maxAge,
   sessionStorage,
 }: FirebaseStrategyOptions) {
-  const app = getApps().length === 0 ? initializeApp({ projectId }) : getApp();
+  const app = getApps().length === 0 ? initializeApp() : getApp();
   const serverAuth = getAuth(app);
 
   async function authenticate(
