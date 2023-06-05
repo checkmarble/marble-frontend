@@ -20,7 +20,6 @@ export type User = {
 };
 
 export const authenticator = getServerAuth({
-  projectId: 'tokyo-country-381508',
   maxAge: userSessionMaxAge,
   sessionStorage,
 });
