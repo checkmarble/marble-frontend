@@ -1,10 +1,9 @@
-import { type Session } from '@remix-run/node';
 import { useEffect } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 
-const toastMessageKey = 'toastMessage' as const;
+import { type MarbleSession } from '../services/auth/session.server';
 
 const toastMessageScema = z.object({
   type: z.enum(['success', 'error', 'loading', 'custom']),
@@ -14,18 +13,18 @@ const toastMessageScema = z.object({
   ]),
 });
 
-type ToastMessage = z.infer<typeof toastMessageScema>;
+export type ToastMessage = z.infer<typeof toastMessageScema>;
 
 export async function setToastMessage(
-  session: Session,
+  session: MarbleSession,
   toastMessage: ToastMessage
 ) {
-  session.flash(toastMessageKey, toastMessage);
+  session.flash('toastMessage', toastMessage);
 }
 
-export function getToastMessage(session: Session) {
+export function getToastMessage(session: MarbleSession) {
   try {
-    return toastMessageScema.parse(session.get(toastMessageKey));
+    return toastMessageScema.parse(session.get('toastMessage'));
   } catch (err) {}
 }
 

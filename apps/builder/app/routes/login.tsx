@@ -18,9 +18,7 @@ export async function loader({ request }: LoaderArgs) {
     successRedirect: '/home',
   });
   const session = await getSession(request.headers.get('cookie'));
-  const error = session.get(authenticator.sessionErrorKey) as
-    | { message?: string }
-    | undefined;
+  const error = session.get('authError');
 
   return json({
     authError:

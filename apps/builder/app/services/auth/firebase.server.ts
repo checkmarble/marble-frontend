@@ -1,20 +1,25 @@
-import { marbleApi, type Token } from '@marble-front/api/marble';
+import { marbleApi } from '@marble-front/api/marble';
 import { getServerEnv } from '@marble-front/builder/utils/environment.server';
 import { parseForm } from '@marble-front/builder/utils/input-validation';
-import { redirect, type SessionStorage } from '@remix-run/node';
+import {
+  redirect,
+  type SessionData,
+  type SessionStorage,
+} from '@remix-run/node';
 import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
 
 import { logger } from '../logger';
 import { getMarbleAPIClient, type MarbleApi } from '../marble-api/init.server';
 import { getRoute } from '../routes';
+import { type FlashData } from './session.server';
 
 export interface FirebaseStrategyOptions {
-  sessionStorage: SessionStorage;
+  sessionStorage: SessionStorage<
+    Pick<SessionData, 'authToken'>,
+    Pick<FlashData, 'authError'>
+  >;
 }
-
-const marbleTokenKey = 'auth:token';
-const authErrorKey = 'auth:error';
 
 interface AuthenticatedInfo {
   apiClient: MarbleApi;
@@ -51,7 +56,7 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
         { baseUrl: getServerEnv('MARBLE_API_DOMAIN') }
       );
 
-      session.set(marbleTokenKey, marbleToken);
+      session.set('authToken', marbleToken);
       redirectUrl = options.successRedirect;
     } catch (error) {
       const message =
@@ -63,7 +68,7 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
 
       logger.error(message);
 
-      session.flash(authErrorKey, { message });
+      session.flash('authError', { message });
 
       redirectUrl = options.failureRedirect;
     }
@@ -101,7 +106,7 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
       request.headers.get('Cookie')
     );
 
-    const marbleToken: Token | null = session.get(marbleTokenKey) ?? null;
+    const marbleToken = session.get('authToken');
     if (!marbleToken || marbleToken.expires_in > new Date().toISOString()) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
@@ -141,6 +146,5 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
     authenticate,
     isAuthenticated,
     logout,
-    sessionErrorKey: authErrorKey,
   };
 }
