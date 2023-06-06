@@ -22,6 +22,7 @@ const clientAuth = getAuth(app);
 clientAuth.setPersistence(inMemoryPersistence);
 
 const googleAuthProvider = new GoogleAuthProvider();
+googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
 
 export function getClientAuth(locale: string) {
   const authEmulatorHost = getClientEnv('AUTH_EMULATOR_HOST', '');

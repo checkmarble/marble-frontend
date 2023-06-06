@@ -1,7 +1,6 @@
 import {
   authenticator,
   type AuthErrors,
-  isAuthErrors,
 } from '@marble-front/builder/services/auth/auth.server';
 import { getSession } from '@marble-front/builder/services/auth/session.server';
 import { LogoStandard } from '@marble-front/ui/icons';
@@ -21,12 +20,7 @@ export async function loader({ request }: LoaderArgs) {
   const error = session.get('authError');
 
   return json({
-    authError:
-      error && error.message
-        ? isAuthErrors(error.message)
-          ? error.message
-          : 'Unknown'
-        : undefined,
+    authError: error?.message,
   });
 }
 

@@ -12,6 +12,7 @@ import * as z from 'zod';
 import { logger } from '../logger';
 import { getMarbleAPIClient, type MarbleApi } from '../marble-api/init.server';
 import { getRoute } from '../routes';
+import { getAuthErrors } from './auth.server';
 import { type FlashData } from './session.server';
 
 export interface FirebaseStrategyOptions {
@@ -59,16 +60,9 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
       session.set('authToken', marbleToken);
       redirectUrl = options.successRedirect;
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : typeof error === 'string'
-          ? error
-          : 'Unknown error';
+      logger.error(error);
 
-      logger.error(message);
-
-      session.flash('authError', { message });
+      session.flash('authError', { message: getAuthErrors(error) });
 
       redirectUrl = options.failureRedirect;
     }

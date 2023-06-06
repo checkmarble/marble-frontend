@@ -7,6 +7,8 @@ import {
   type Session,
 } from '@remix-run/node';
 
+import { type AuthErrors } from './auth.server';
+
 const sessionCookie = createCookie('user_session', {
   maxAge: getServerEnv('SESSION_MAX_AGE'),
   sameSite: 'lax', // this helps with CSRF
@@ -19,7 +21,7 @@ const sessionCookie = createCookie('user_session', {
 export type SessionData = { authToken: Token; lng: string };
 export type FlashData = {
   toastMessage: ToastMessage;
-  authError: { message: string };
+  authError: { message: AuthErrors };
 };
 export type MarbleSession = Session<SessionData, FlashData>;
 
