@@ -41,3 +41,7 @@ Thumbs.db
 
 # Env files
 **/.env
+
+# Firebase
+firebase-debug.log
+ui-debug.log

@@ -26,8 +26,7 @@ import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { remixI18next } from './config/i18n/i18next.server';
 import { commitSession, getSession } from './services/auth/session.server';
 import tailwindStyles from './tailwind.css';
-import { type ClientEnvVars } from './utils/environment.client';
-import { getServerEnv } from './utils/environment.server';
+import { getClientEnvVars } from './utils/environment.server';
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindStyles },
@@ -60,18 +59,10 @@ export const loader = async ({ request }: LoaderArgs) => {
   const toastMessage = getToastMessage(session);
   const csrf = createAuthenticityToken(session);
 
-  const ENV: ClientEnvVars = {
-    AUTH_EMULATOR: getServerEnv('AUTH_EMULATOR', 'false') === 'true',
-  };
+  const ENV = getClientEnvVars();
 
   return json(
     {
-      /**
-       * Browser env vars :
-       * - define browser env vars here
-       * - access it using window.ENV.MY_ENV_VAR
-       * https://remix.run/docs/en/v1/guides/envvars#browser-environment-variables
-       */
       ENV,
       locale,
       csrf,
