@@ -111,7 +111,7 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
 
     const apiClient = getMarbleAPIClient({
       tokenService: {
-        getToken: () => session.get('marbleToken'),
+        getToken: () => Promise.resolve(marbleToken.access_token),
         refreshToken: async () => {
           // We don't handle refresh for now, force a logout when 401 is returned instead
           throw redirect(getRoute('/ressources/auth/logout'));
