@@ -18,6 +18,17 @@ export type Token = {
     token_type: string;
     expires_in: string;
 };
+export type Credentials = {
+    credentials: {
+        organization_id: string;
+        role: string;
+        actor_identity: {
+            user_id?: string;
+            email?: string;
+            api_key_name?: string;
+        };
+    };
+};
 export type Error = {
     code: number;
     message: string;
@@ -283,6 +294,23 @@ export function postToken({ xApiKey, authorization }: {
             "X-API-Key": xApiKey,
             Authorization: authorization
         }
+    }));
+}
+/**
+ * Get user credentials included in the token
+ */
+export function getCredentials(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Credentials;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/credentials", {
+        ...opts
     }));
 }
 /**

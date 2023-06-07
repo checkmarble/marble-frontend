@@ -46,28 +46,26 @@ const BOTTOM_LINKS: SidebarLinkProps[] = [
 ];
 
 export interface UserResponse {
-  id: string;
+  id?: string;
   orgId: string;
-  email: string;
-  firstName: string;
-  lastName: string;
+  email?: string;
   preferredLanguage?: string;
   profilePictureUrl?: string;
 }
 
 export async function loader({ request }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
-  //TODO(user): retrieve the logged in user information
+  const { credentials } = await apiClient.getCredentials();
+
   const user: UserResponse = {
-    id: 'fakeUserId',
-    orgId: 'fakeUserOrgid',
-    email: 'fakeUserEmail',
-    firstName: 'fakeUserFirstname',
-    lastName: 'fakeUserLastname',
+    id: credentials.actor_identity.user_id,
+    orgId: credentials.organization_id,
+    email: credentials.actor_identity.email,
   };
+
   return json({ user });
 }
 
@@ -112,13 +110,14 @@ export default function Builder() {
                 sideOffset={4}
               >
                 <div className="flex flex-col items-center">
-                  <Avatar
+                  {/* TODO(user): add more information when available */}
+                  {/* <Avatar
                     className="mb-2"
                     firstName={user.firstName}
                     lastName={user.lastName}
                     src={user.profilePictureUrl}
-                  />
-                  <p className="text-m mb-1 font-semibold capitalize">{`${user.firstName} ${user.lastName}`}</p>
+                  /> */}
+                  {/* <p className="text-m mb-1 font-semibold capitalize">{`${user.firstName} ${user.lastName}`}</p> */}
                   <p className="text-s mb-2 font-normal">{user.email}</p>
                   <LanguagePicker />
                 </div>
