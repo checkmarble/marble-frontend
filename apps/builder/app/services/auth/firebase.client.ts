@@ -15,24 +15,19 @@ export interface FirebaseWrapper {
   googleAuthProvider: GoogleAuthProvider;
 }
 
-const app = initializeApp({
-  apiKey: 'AIzaSyAElc2shIKIrYzLSzWmWaZ1C7yEuoS-bBw',
-  authDomain: 'tokyo-country-381508.firebaseapp.com',
-  projectId: 'tokyo-country-381508',
-  storageBucket: 'tokyo-country-381508.appspot.com',
-  messagingSenderId: '1047691849054',
-  appId: '1:1047691849054:web:a5b69dd2ac584c1160b3cf',
-});
+const app = initializeApp(getClientEnv('FIREBASE_OPTIONS'));
 
 const clientAuth = getAuth(app);
 
 clientAuth.setPersistence(inMemoryPersistence);
 
 const googleAuthProvider = new GoogleAuthProvider();
+googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
 
 export function getClientAuth(locale: string) {
-  if (getClientEnv('AUTH_EMULATOR') && !('emulator' in clientAuth.config)) {
-    connectAuthEmulator(clientAuth, 'http://localhost:9099');
+  const authEmulatorHost = getClientEnv('AUTH_EMULATOR_HOST', '');
+  if (authEmulatorHost && !('emulator' in clientAuth.config)) {
+    connectAuthEmulator(clientAuth, authEmulatorHost);
   }
 
   if (locale) {

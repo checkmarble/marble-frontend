@@ -1,5 +1,13 @@
+import { type Token } from '@marble-front/api/marble';
+import { type ToastMessage } from '@marble-front/builder/components/MarbleToaster';
 import { getServerEnv } from '@marble-front/builder/utils/environment.server';
-import { createCookie, createCookieSessionStorage } from '@remix-run/node';
+import {
+  createCookie,
+  createCookieSessionStorage,
+  type Session,
+} from '@remix-run/node';
+
+import { type AuthErrors } from './auth.server';
 
 const sessionCookie = createCookie('user_session', {
   maxAge: getServerEnv('SESSION_MAX_AGE'),
@@ -10,8 +18,18 @@ const sessionCookie = createCookie('user_session', {
   secure: getServerEnv('NODE_ENV') !== 'development',
 });
 
+export type SessionData = { authToken: Token; lng: string };
+export type FlashData = {
+  toastMessage: ToastMessage;
+  authError: { message: AuthErrors };
+};
+export type MarbleSession = Session<SessionData, FlashData>;
+
 // export the whole sessionStorage object
-export const sessionStorage = createCookieSessionStorage({
+export const sessionStorage = createCookieSessionStorage<
+  SessionData,
+  FlashData
+>({
   cookie: sessionCookie,
 });
 

@@ -1,7 +1,10 @@
 import { resolve } from 'node:path';
 
-import { sessionStorage } from '@marble-front/builder/services/auth/session.server';
-import { type EntryContext, type Session } from '@remix-run/node';
+import {
+  type MarbleSession,
+  sessionStorage,
+} from '@marble-front/builder/services/auth/session.server';
+import { type EntryContext } from '@remix-run/node';
 import { createInstance } from 'i18next';
 import Backend from 'i18next-fs-backend';
 import { initReactI18next } from 'react-i18next';
@@ -57,6 +60,6 @@ export async function getI18nextServerInstance(
   return instance;
 }
 
-export async function setLanguage(session: Session, language: string) {
+export async function setLanguage(session: MarbleSession, language: string) {
   session.set('lng', language);
 }
