@@ -6,6 +6,8 @@ info:
 tags:
   - name: Authorization
     description: Operations about authorization.
+  - name: Users
+    description: Operations about users.
   - name: Decisions
     description: Operations about decisions.
   - name: Scenarios
@@ -48,6 +50,26 @@ paths:
                 $ref: '#/components/schemas/Token'
         '401':
           $ref: '#/components/responses/401'
+  /credentials:
+    get:
+      tags:
+        - Users
+      summary: Get user credentials included in the token
+      description: You need to suply either "X-API-Key" or “Authorization" header
+      operationId: getCredentials
+      security:
+        - Oauth2ClientCredentials: []
+      responses:
+        '200':
+          description: Credentials included in the token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credentials'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /decisions:
     get:
       tags:
@@ -577,6 +599,31 @@ components:
         expires_in:
           type: string
           format: date-time
+    Credentials:
+      type: object
+      required:
+        - credentials
+      properties:
+        credentials:
+          type: object
+          required:
+            - organization_id
+            - role
+            - actor_identity
+          properties:
+            organization_id:
+              type: string
+            role:
+              type: string
+            actor_identity:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                email:
+                  type: string
+                api_key_name:
+                  type: string
     Error:
       type: object
       required:
@@ -613,7 +660,7 @@ components:
           type: string
           enum: ['approve', 'review', 'decline', 'null', 'unknown']
         scenario:
-          type: string
+          type: object
           required:
             - id
             - name
