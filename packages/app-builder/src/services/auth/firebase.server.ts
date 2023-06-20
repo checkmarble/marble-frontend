@@ -1,12 +1,12 @@
+import { getMarbleAPIClient, type MarbleApi } from '@app-builder/repositories';
 import { getServerEnv } from '@app-builder/utils/environment.server';
 import { parseForm } from '@app-builder/utils/input-validation';
-import { marbleApi } from '@marble-api';
+import { marbleApi, type TokenService } from '@marble-api';
 import { redirect, type SessionStorage } from '@remix-run/node';
 import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
 
 import { logger } from '../logger';
-import { getMarbleAPIClient, type MarbleApi } from '../marble-api/init.server';
 import { getRoute } from '../routes';
 import { getAuthErrors } from './auth.server';
 import { type FlashData, type SessionData } from './session.server';
@@ -20,6 +20,7 @@ export interface FirebaseStrategyOptions {
 
 interface AuthenticatedInfo {
   apiClient: MarbleApi;
+  tokenService: TokenService<string>;
 }
 
 export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
@@ -43,7 +44,6 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
           idToken: z.string(),
         })
       );
-
       await verifyAuthenticityToken(request, session);
 
       const marbleToken = await marbleApi.postToken(
@@ -104,17 +104,19 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
 
     if (options.successRedirect) throw redirect(options.successRedirect);
 
-    const apiClient = getMarbleAPIClient({
-      tokenService: {
-        getToken: () => Promise.resolve(marbleToken.access_token),
-        refreshToken: () => {
-          // We don't handle refresh for now, force a logout when 401 is returned instead
-          throw redirect(getRoute('/ressources/auth/logout'));
-        },
+    const tokenService = {
+      getToken: () => Promise.resolve(marbleToken.access_token),
+      refreshToken: () => {
+        // We don't handle refresh for now, force a logout when 401 is returned instead
+        throw redirect(getRoute('/ressources/auth/logout'));
       },
+    };
+    const apiClient = getMarbleAPIClient({
+      baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
+      tokenService,
     });
 
-    return { apiClient };
+    return { apiClient, tokenService };
   }
 
   async function logout(

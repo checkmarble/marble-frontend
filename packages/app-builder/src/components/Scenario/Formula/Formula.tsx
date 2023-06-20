@@ -2,7 +2,7 @@ import {
   isConstantOperator,
   isDataFieldOperator,
   isMathOperator,
-} from '@app-builder/services/operators';
+} from '@app-builder/models';
 import { type Operator } from '@marble-api';
 import { assertNever } from '@typescript-utils';
 

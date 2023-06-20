@@ -1,4 +1,4 @@
-import { type ConstantOperator } from '@app-builder/services/operators';
+import { type ConstantOperator } from '@app-builder/models';
 import { formatNumber } from '@app-builder/utils/format';
 import { assertNever } from '@typescript-utils';
 import { Tooltip } from '@ui-design-system';
@@ -21,14 +21,8 @@ function DefaultConstant({ className, isRoot, ...otherProps }: ScalarProps) {
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>
         <span
-          /**
-           * only-of-type:w-full is necessary to handle text center in Formula 'data' case :
-           *  <Container.Item>
-           *    <Data />
-           *  </Container.Item>
-           */
           className={clsx(
-            'text-grey-100 flex whitespace-pre text-center font-medium only-of-type:w-full',
+            'text-grey-100 flex whitespace-pre text-center font-medium',
             className
           )}
           {...otherProps}

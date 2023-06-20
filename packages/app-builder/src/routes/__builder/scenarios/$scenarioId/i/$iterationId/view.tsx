@@ -19,7 +19,7 @@ import {
   useNavigate,
   useParams,
 } from '@remix-run/react';
-import { Select, Tag } from '@ui-design-system';
+import { Select } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';

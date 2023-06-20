@@ -36,14 +36,16 @@ function PageHeader({
   );
 }
 
+export type PageContentProps = React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLDivElement>,
+  HTMLDivElement
+> & { scrollable?: boolean };
+
 function PageContent({
   className,
   scrollable = true,
   ...props
-}: React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
-> & { scrollable?: boolean }) {
+}: PageContentProps) {
   return scrollable ? (
     <ScrollArea.Root className="flex flex-1 flex-col">
       <ScrollArea.Viewport className="h-full">

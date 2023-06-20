@@ -1,7 +1,4 @@
-import {
-  type DataFieldOperator,
-  isDbFieldOperator,
-} from '@app-builder/services/operators';
+import { type DataFieldOperator, isDbFieldOperator } from '@app-builder/models';
 import { Tooltip } from '@ui-design-system';
 
 import { Condition } from './Condition';

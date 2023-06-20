@@ -4,11 +4,13 @@ import clsx from 'clsx';
 function PaperContainer({
   children,
   className,
+  scrollable = true,
 }: {
   children: React.ReactNode;
   className?: string;
+  scrollable?: boolean;
 }) {
-  return (
+  return scrollable ? (
     <ScrollArea.Root
       className={clsx('border-grey-10 w-full rounded-lg border', className)}
       type="auto"
@@ -22,6 +24,16 @@ function PaperContainer({
         <ScrollArea.Thumb />
       </ScrollArea.Scrollbar>
     </ScrollArea.Root>
+  ) : (
+    <div
+      className={clsx(
+        'border-grey-10 w-full rounded-lg border',
+        'flex flex-col gap-4 p-4 lg:gap-8 lg:p-8',
+        className
+      )}
+    >
+      {children}
+    </div>
   );
 }
 
