@@ -10,6 +10,7 @@ const toastMessageScema = z.object({
   messageKey: z.enum([
     'common:errors.unknown',
     'common:empty_scenario_iteration_list',
+    'common:errors.edit.forbidden_not_draft',
   ]),
 });
 
