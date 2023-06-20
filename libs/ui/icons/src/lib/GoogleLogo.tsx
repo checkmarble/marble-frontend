@@ -1,9 +1,9 @@
-import { SVGProps } from 'react';
+import type { SVGProps } from 'react';
 const GoogleLogo = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 48 48"
     className="prefix__LgbsSe-Bz112c"
+    viewBox="0 0 48 48"
     width="1em"
     height="1em"
     {...props}
