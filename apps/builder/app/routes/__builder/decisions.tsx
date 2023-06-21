@@ -114,26 +114,25 @@ export default function DecisionsPage() {
       <DecisionsRightPanel.Root>
         <Page.Content scrollable={false}>
           <div className="flex flex-row justify-between">
-            <div className="w-full max-w-sm">
-              <Input
-                type="search"
-                aria-label={t('decisions:search.placeholder')}
-                placeholder={t('decisions:search.placeholder')}
-                startAdornment={<Search />}
-                value={decisionId ?? ''}
-                onKeyDownCapture={(e) => {
-                  if (e.code === 'Escape') {
-                    setDecisionId();
-                  }
-                }}
-                onChange={(event) => {
-                  setDecisionId(event.target.value);
-                }}
-                onClick={(e) => {
-                  e.stopPropagation(); // To prevent DecisionsRightPanel from closing
-                }}
-              />
-            </div>
+            <Input
+              className="w-full max-w-sm"
+              type="search"
+              aria-label={t('decisions:search.placeholder')}
+              placeholder={t('decisions:search.placeholder')}
+              startAdornment={<Search />}
+              value={decisionId ?? ''}
+              onKeyDownCapture={(e) => {
+                if (e.code === 'Escape') {
+                  setDecisionId();
+                }
+              }}
+              onChange={(event) => {
+                setDecisionId(event.target.value);
+              }}
+              onClick={(e) => {
+                e.stopPropagation(); // To prevent DecisionsRightPanel from closing
+              }}
+            />
             <ToggleLiveUpdate />
           </div>
           <Table.Container {...getContainerProps()}>

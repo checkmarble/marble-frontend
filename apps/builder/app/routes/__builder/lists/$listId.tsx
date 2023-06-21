@@ -178,6 +178,7 @@ export default function Lists() {
         <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
           <form className="flex items-center">
             <Input
+              className="w-full"
               type="search"
               aria-label={t('common:search')}
               placeholder={t('common:search')}
