@@ -117,6 +117,7 @@
     "clsx": "^1.2.1",
     "core-js": "^3.31.0",
     "dotenv": "^16.3.1",
+    "downshift": "^7.6.0",
     "firebase": "^9.23.0",
     "firebase-admin": "^11.9.0",
     "i18next": "^23.2.7",
