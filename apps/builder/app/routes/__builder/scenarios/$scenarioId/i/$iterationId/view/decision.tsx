@@ -22,13 +22,15 @@ export default function Decision() {
   } = useCurrentScenarioIteration();
 
   return (
-    <Paper.Container>
+    <Paper.Container className="max-w-3xl">
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:decision.score_based.title')}</Paper.Title>
-        <Callout>{t('scenarios:decision.score_based.callout')}</Callout>
+        <Callout className="w-fit">
+          {t('scenarios:decision.score_based.callout')}
+        </Callout>
       </div>
 
-      <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-y-2 gap-x-1 lg:gap-y-4 lg:gap-x-2">
+      <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
         <Outcome border="square" size="big" outcome="approve" />
         <div className="flex flex-row items-center gap-1 lg:gap-2">
           {t('scenarios:decision.score_based.approve_condition')}

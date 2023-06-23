@@ -37,8 +37,8 @@ export default function RuleView() {
         </Link>
         {rule.name ?? fromUUID(rule.id)}
       </ScenarioPage.Header>
-      <ScenarioPage.Content>
-        <Callout>{rule.description}</Callout>
+      <ScenarioPage.Content className="max-w-3xl">
+        <Callout className="w-full">{rule.description}</Callout>
         <Rule rule={rule} />
       </ScenarioPage.Content>
     </ScenarioPage.Container>
