@@ -28,6 +28,7 @@ export function isDbFieldOperator(
 
 export type PayloadFieldOperator =
   | PayloadFieldBoolOperator
+  | PayloadFieldStringOperator
   | PayloadFieldFloatOperator;
 
 export function isPayloadFieldOperator(
@@ -43,10 +44,7 @@ export function isPayloadFieldOperator(
   }
 }
 
-export type DataFieldOperator =
-  | DbFieldOperator
-  | PayloadFieldOperator
-  | PayloadFieldStringOperator;
+export type DataFieldOperator = DbFieldOperator | PayloadFieldOperator;
 
 export function isDataFieldOperator(
   operator: Operator

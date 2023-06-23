@@ -3,7 +3,7 @@ import {
   Sidebar,
   type SidebarLinkProps,
 } from '@marble-front/builder/components';
-import { Avatar, Button, ScrollArea } from '@marble-front/ui/design-system';
+import { Button, ScrollArea } from '@marble-front/ui/design-system';
 import {
   Arrow2Down,
   Decision,

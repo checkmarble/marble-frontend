@@ -29,6 +29,14 @@
             "allow": ["@marble-front/builder"],
             "depConstraints": [
               {
+                "sourceTag": "type:models",
+                "onlyDependOnLibsWithTags": ["type:util"]
+              },
+              {
+                "sourceTag": "type:repositories",
+                "onlyDependOnLibsWithTags": ["type:models", "type:util"]
+              },
+              {
                 "sourceTag": "type:api",
                 "onlyDependOnLibsWithTags": ["type:util"]
               },

@@ -1,4 +1,4 @@
-import { marbleApi } from '@marble-front/api/marble';
+import { marbleApi, type TokenService } from '@marble-front/api/marble';
 import { getServerEnv } from '@marble-front/builder/utils/environment.server';
 import { parseForm } from '@marble-front/builder/utils/input-validation';
 import {
@@ -24,6 +24,7 @@ export interface FirebaseStrategyOptions {
 
 interface AuthenticatedInfo {
   apiClient: MarbleApi;
+  tokenService: TokenService<string>;
 }
 
 export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
@@ -108,17 +109,18 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
 
     if (options.successRedirect) throw redirect(options.successRedirect);
 
-    const apiClient = getMarbleAPIClient({
-      tokenService: {
-        getToken: () => Promise.resolve(marbleToken.access_token),
-        refreshToken: async () => {
-          // We don't handle refresh for now, force a logout when 401 is returned instead
-          throw redirect(getRoute('/ressources/auth/logout'));
-        },
+    const tokenService = {
+      getToken: () => Promise.resolve(marbleToken.access_token),
+      refreshToken: async () => {
+        // We don't handle refresh for now, force a logout when 401 is returned instead
+        throw redirect(getRoute('/ressources/auth/logout'));
       },
+    };
+    const apiClient = getMarbleAPIClient({
+      tokenService,
     });
 
-    return { apiClient };
+    return { apiClient, tokenService };
   }
 
   async function logout(

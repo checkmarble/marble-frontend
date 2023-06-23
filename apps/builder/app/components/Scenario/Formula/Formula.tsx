@@ -58,7 +58,7 @@ export function NewFormula({
   isRoot?: boolean;
 }) {
   if (isConstantNode(node)) {
-    return <NewConstant node={node} isRoot />;
+    return <NewConstant node={node} isRoot={isRoot} />;
   }
 
   if (isDataFieldNode(node)) {

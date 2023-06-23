@@ -65,6 +65,10 @@
         "pascalCaseFiles": true,
         "export": true
       }
+    },
+    "@nx/js:library": {
+      "unitTestRunner": "vitest",
+      "bundler": "none"
     }
   }
 }
