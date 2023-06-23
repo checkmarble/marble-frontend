@@ -41,7 +41,7 @@ export function ComboBox<Item>({
       <ul
         {...cb.getMenuProps({
           className: clsx(
-            'mt-1 text-s text-grey-100 divide-night-100 bg-grey-00 border-grey-10 absolute z-10 max-h-[336px] w-fit divide-y divide-solid rounded border shadow-md overflow-auto',
+            'mt-1 text-s text-grey-100 divide-night-100 bg-grey-00 border-grey-10 absolute z-10 max-h-[336px] w-fit divide-y divide-solid rounded border shadow-md overflow-y-auto overflow-x-hidden',
             { hidden: !displayMenu }
           ),
         })}
