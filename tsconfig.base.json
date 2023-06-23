@@ -18,7 +18,9 @@
     "paths": {
       "@marble-front/api/marble": ["libs/api/marble/src/index.ts"],
       "@marble-front/builder/*": ["apps/builder/app/*"],
+      "@marble-front/models": ["libs/models/src/index.ts"],
       "@marble-front/operators": ["libs/operators/src/index.ts"],
+      "@marble-front/repositories": ["libs/repositories/src/index.ts"],
       "@marble-front/typescript-utils": ["libs/typescript-utils/src/index.ts"],
       "@marble-front/ui/design-system": ["libs/ui/design-system/src/index.ts"],
       "@marble-front/ui/icons": ["libs/ui/icons/src/index.ts"]
