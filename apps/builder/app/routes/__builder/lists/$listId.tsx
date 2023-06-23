@@ -1,8 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { Callout, Page } from '@marble-front/builder/components';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { parseFormSafe } from '@marble-front/builder/utils/input-validation';
+import { fromParams } from '@marble-front/builder/utils/short-uuid';
 import {
   Button,
+  HiddenInputs, 
   Input,
   ScrollArea,
   Table,
@@ -10,8 +13,8 @@ import {
 } from '@marble-front/ui/design-system';
 import { Cross, Scenarios, Search } from '@marble-front/ui/icons';
 import * as Dialog from '@radix-ui/react-dialog';
-import { json, type LoaderArgs } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
+import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -22,6 +25,7 @@ import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
+import * as z from 'zod';
 
 function getFakeList(id: string) {
   const values = Array.from({ length: Math.floor(Math.random() * 100) }).map(
@@ -35,16 +39,44 @@ function getFakeList(id: string) {
   };
 }
 
-export async function loader({ request, params }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+const formSchema = z.object({
+  listValueId: z.string().uuid()
+});
+
+export async function action({ request, params }: ActionArgs) {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-
+  console.log(request.method)
   invariant(params.listId, `params.listId is required`);
-  /** TODO(data): get list from API */
-  const scenario = getFakeList(params.listId);
+  console.log('listId', params.listId)
+  switch (request.method) {
+    case 'POST': {
+      await apiClient.createCustomListValue(params.listId, {value: 'Added Value'});
+      break;
+    }
+    case 'DELETE': {
+      const parsedForm = await parseFormSafe(request, formSchema);
+      const { listValueId } = parsedForm.data;
+      console.log('delete id: ', listValueId)
+      await apiClient.deleteCustomListValue(params.listId, {id: listValueId});
+      break;
+    }
+  }
+  return null;
+}
 
-  return json(scenario);
+export async function loader({ request, params }: LoaderArgs) {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
+  invariant(params.listId, `params.listId is required`);
+  console.log(params.listId)
+
+  const customListValues = await apiClient.getCustomList(params.listId);
+
+  console.log(customListValues)
+  return json(customListValues);
 }
 
 export const handle = {
@@ -129,9 +161,10 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
 }
 
 export default function Lists() {
-  const data = useLoaderData<typeof loader>();
+  const customListValues = useLoaderData<typeof loader>();
+  const fetcher = useFetcher<typeof action>();
   const { t } = useTranslation(handle.i18n);
-
+  const data = customListValues.listsValues
   const scenarios = [
     'Check transactions',
     'Validate sepa payouts',
@@ -145,17 +178,31 @@ export default function Lists() {
   const columns = useMemo<ColumnDef<string>[]>(
     () => [
       {
-        id: 'values',
-        accessorFn: (row) => row,
-        header: t('lists:description'),
+        accessorKey: 'value',
+        header: t('lists:value'),
         size: 600,
+        sortingFn: 'text',
+        enableSorting: true,
+      },
+      {
+        id: 'action',
+        header: t('lists:action'),
+        accessor: 'id',
+        cell: ({cell}) => (
+        <div>
+          <fetcher.Form method="delete">
+            <HiddenInputs listValueId={cell.row.original.id}/>
+            <Button type='submit' name='delete' onClick={(event) => {event.stopPropagation()}}>Delete</Button>
+          </fetcher.Form>
+        </div>
+        )
       },
     ],
     [t]
   );
 
   const virtualTable = useVirtualTable({
-    data: data.values,
+    data: data,
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
@@ -186,8 +233,12 @@ export default function Lists() {
               }}
             />
           </form>
-
-          <Table.Default {...virtualTable} />
+          <fetcher.Form method="POST">
+            <Button>Add List Value</Button>
+          </fetcher.Form>
+          {data.length &&
+            <Table.Default {...virtualTable} />
+          }
         </div>
       </Page.Content>
     </Page.Container>

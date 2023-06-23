@@ -55,6 +55,29 @@ export type Decision = {
     score: number;
     error?: Error;
 };
+export type CustomList = {
+    id: string;
+    name: string;
+    description: string;
+};
+export type CreateCustomListBody = {
+    name: string;
+    description: string;
+};
+export type CustomListValue = {
+    id: string;
+    value: string;
+};
+export type UpdateCustomListBody = {
+    name: string;
+    description: string;
+};
+export type CreateCustomListValueBody = {
+    value: string;
+};
+export type DeleteCustomListValueBody = {
+    id?: string;
+};
 export type Scenario = {
     id: string;
     name: string;
@@ -349,6 +372,152 @@ export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
     }>(`/decisions/${encodeURIComponent(decisionId)}`, {
         ...opts
     }));
+}
+/**
+ * List custom list
+ */
+export function listCustomLists(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomList[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/custom-lists", {
+        ...opts
+    }));
+}
+/**
+ * Create a custom list
+ */
+export function createCustomLists(createCustomListBody: CreateCustomListBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomList;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>("/custom-lists", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createCustomListBody
+    })));
+}
+/**
+ * Get a custom list values
+ */
+export function getCustomList(listId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomListValue[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/custom-lists/${encodeURIComponent(listId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Update a custom list
+ */
+export function updateCustomList(listId: string, updateCustomListBody: UpdateCustomListBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomList;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/custom-lists/${encodeURIComponent(listId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateCustomListBody
+    })));
+}
+/**
+ * Delete a custom list
+ */
+export function deleteCustomList(listId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomList;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/custom-lists/${encodeURIComponent(listId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Create a custom list value
+ */
+export function createCustomListValue(listId: string, createCustomListValueBody: CreateCustomListValueBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomListValue;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/custom-list-value/${encodeURIComponent(listId)}`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createCustomListValueBody
+    })));
+}
+/**
+ * Delete a custom list value
+ */
+export function deleteCustomListValue(listId: string, deleteCustomListValueBody: DeleteCustomListValueBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomListValue;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/custom-list-value/${encodeURIComponent(listId)}`, oazapfts.json({
+        ...opts,
+        method: "DELETE",
+        body: deleteCustomListValueBody
+    })));
 }
 /**
  * List scenarios
