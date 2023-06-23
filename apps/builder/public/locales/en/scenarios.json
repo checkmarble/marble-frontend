@@ -17,7 +17,7 @@
   "rules.score": "Score",
   "rules.decision": "Decision",
   "rules.empty": "Reach out to  Marble to create your first rule.",
-  "rules.consequence.score_increase": "Score increase: <Score>{{score}}</Score>",
+  "rules.consequence.score_modifier": "Score modifier: <Score>{{score}}</Score>",
   "logical_operator.or": "or",
   "logical_operator.if": "if",
   "logical_operator.and": "and",

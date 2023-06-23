@@ -13,7 +13,7 @@ export function Consequence({ scoreIncrease }: ConsequenceProps) {
     <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
       <Trans
         t={t}
-        i18nKey="scenarios:rules.consequence.score_increase"
+        i18nKey="scenarios:rules.consequence.score_modifier"
         components={{
           Score: <span className="font-semibold" />,
         }}

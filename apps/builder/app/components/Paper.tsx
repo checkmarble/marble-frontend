@@ -2,10 +2,16 @@ import { ScrollArea } from '@marble-front/ui/design-system';
 import clsx from 'clsx';
 import React from 'react';
 
-function PaperContainer({ children }: { children: React.ReactNode }) {
+function PaperContainer({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <ScrollArea.Root
-      className="border-grey-10 max-w-3xl rounded-lg border"
+      className={clsx('border-grey-10 w-full rounded-lg border', className)}
       type="auto"
     >
       <ScrollArea.Viewport>

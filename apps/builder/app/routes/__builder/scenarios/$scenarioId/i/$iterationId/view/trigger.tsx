@@ -27,7 +27,7 @@ export default function Trigger() {
   const { triggerObjectType } = useCurrentScenario();
 
   return (
-    <Paper.Container>
+    <Paper.Container className="max-w-3xl">
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.run_scenario.title')}</Paper.Title>
         <p className="text-s text-grey-100 font-normal">
@@ -77,7 +77,9 @@ export default function Trigger() {
 
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
-        <Callout>{t('scenarios:trigger.trigger_object.callout')}</Callout>
+        <Callout className="w-fit">
+          {t('scenarios:trigger.trigger_object.callout')}
+        </Callout>
       </div>
 
       <TriggerCondition
