@@ -1,6 +1,7 @@
 export * from './lib/Avatar/Avatar';
 export * from './lib/Button/Button';
 export * from './lib/Checkbox/Checkbox';
+export * from './lib/ComboBox/ComboBox';
 export * from './lib/HiddenInputs/HiddenInputs';
 export * from './lib/Input/Input';
 export * from './lib/Modal/Modal';

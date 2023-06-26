@@ -9,7 +9,7 @@ function ScenarioPageContent({
   HTMLDivElement
 >) {
   return (
-    <ScenarioRightPanel.Root>
+    <ScenarioRightPanel.Root className="overflow-hidden">
       <Page.Content {...props}>{children}</Page.Content>
     </ScenarioRightPanel.Root>
   );

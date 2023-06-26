@@ -85,7 +85,7 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
             </Dialog.Trigger>
             <Dialog.Portal>
               <Dialog.Overlay className="bg-grey-100 animate-overlayShow fixed inset-0 items-center justify-center bg-opacity-40" />
-              <Dialog.Content className="bg-grey-00 fixed top-1/2 left-1/2 flex w-full max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-8 rounded-lg p-8">
+              <Dialog.Content className="bg-grey-00 fixed left-1/2 top-1/2 flex w-full max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-8 rounded-lg p-8">
                 <Dialog.Title className="flex flex-row gap-2">
                   <Scenarios
                     height="24px"
@@ -178,6 +178,7 @@ export default function Lists() {
         <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
           <form className="flex items-center">
             <Input
+              className="w-full"
               type="search"
               aria-label={t('common:search')}
               placeholder={t('common:search')}

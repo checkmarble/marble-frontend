@@ -1,13 +1,6 @@
 import { type Params } from '@remix-run/react';
 import qs, { type IParseOptions } from 'qs';
-import {
-  type objectInputType,
-  type objectOutputType,
-  type UnknownKeysParam,
-  type ZodObject,
-  type ZodRawShape,
-  type ZodTypeAny,
-} from 'zod';
+import { type ZodType, type ZodTypeDef } from 'zod';
 
 const defaultQsConfig: IParseOptions = {
   allowDots: true,
@@ -52,12 +45,10 @@ export async function inputFromForm(request: Request, options?: IParseOptions) {
  * Parse and validate Params from LoaderArgs or ActionArgs. Doesn't throw if validation fails.
  */
 export async function parseParamsSafe<
-  T extends ZodRawShape,
-  UnknownKeys extends UnknownKeysParam = 'strip',
-  Catchall extends ZodTypeAny = ZodTypeAny,
-  Output = objectOutputType<T, Catchall>,
-  Input = objectInputType<T, Catchall>
->(params: Params, schema: ZodObject<T, UnknownKeys, Catchall, Output, Input>) {
+  Output,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output
+>(params: Params, schema: ZodType<Output, Def, Input>) {
   const result = await schema.safeParseAsync(params);
   if (!result.success) {
     return {
@@ -72,12 +63,10 @@ export async function parseParamsSafe<
  * Parse and validate Params from LoaderArgs or ActionArgs. Throws if validation fails.
  */
 export async function parseParams<
-  T extends ZodRawShape,
-  UnknownKeys extends UnknownKeysParam = 'strip',
-  Catchall extends ZodTypeAny = ZodTypeAny,
-  Output = objectOutputType<T, Catchall>,
-  Input = objectInputType<T, Catchall>
->(params: Params, schema: ZodObject<T, UnknownKeys, Catchall, Output, Input>) {
+  Output,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output
+>(params: Params, schema: ZodType<Output, Def, Input>) {
   return schema.parseAsync(params);
 }
 
@@ -85,15 +74,10 @@ export async function parseParams<
  * Parse and validate a Request. Doesn't throw if validation fails.
  */
 export async function parseQuerySafe<
-  T extends ZodRawShape,
-  UnknownKeys extends UnknownKeysParam = 'strip',
-  Catchall extends ZodTypeAny = ZodTypeAny,
-  Output = objectOutputType<T, Catchall>,
-  Input = objectInputType<T, Catchall>
->(
-  request: Request,
-  schema: ZodObject<T, UnknownKeys, Catchall, Output, Input>
-) {
+  Output,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output
+>(request: Request, schema: ZodType<Output, Def, Input>) {
   const searchParams = inputFromUrl(request);
   const result = await schema.safeParseAsync(searchParams);
   if (!result.success) {
@@ -109,15 +93,10 @@ export async function parseQuerySafe<
  * Parse and validate a Request. Throws if validation fails.
  */
 export async function parseQuery<
-  T extends ZodRawShape,
-  UnknownKeys extends UnknownKeysParam = 'strip',
-  Catchall extends ZodTypeAny = ZodTypeAny,
-  Output = objectOutputType<T, Catchall>,
-  Input = objectInputType<T, Catchall>
->(
-  request: Request,
-  schema: ZodObject<T, UnknownKeys, Catchall, Output, Input>
-) {
+  Output,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output
+>(request: Request, schema: ZodType<Output, Def, Input>) {
   const searchParams = inputFromUrl(request);
   return schema.parseAsync(searchParams);
 }
@@ -126,15 +105,10 @@ export async function parseQuery<
  * Parse and validate FormData from a Request. Doesn't throw if validation fails.
  */
 export async function parseFormSafe<
-  T extends ZodRawShape,
-  UnknownKeys extends UnknownKeysParam = 'strip',
-  Catchall extends ZodTypeAny = ZodTypeAny,
-  Output = objectOutputType<T, Catchall>,
-  Input = objectInputType<T, Catchall>
->(
-  request: Request,
-  schema: ZodObject<T, UnknownKeys, Catchall, Output, Input>
-) {
+  Output,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output
+>(request: Request, schema: ZodType<Output, Def, Input>) {
   const formData = await inputFromForm(request);
   const result = await schema.safeParseAsync(formData);
   if (!result.success) {
@@ -150,15 +124,10 @@ export async function parseFormSafe<
  * Parse and validate FormData from a Request. Throws if validation fails.
  */
 export async function parseForm<
-  T extends ZodRawShape,
-  UnknownKeys extends UnknownKeysParam = 'strip',
-  Catchall extends ZodTypeAny = ZodTypeAny,
-  Output = objectOutputType<T, Catchall>,
-  Input = objectInputType<T, Catchall>
->(
-  request: Request,
-  schema: ZodObject<T, UnknownKeys, Catchall, Output, Input>
-) {
+  Output,
+  Def extends ZodTypeDef = ZodTypeDef,
+  Input = Output
+>(request: Request, schema: ZodType<Output, Def, Input>) {
   const formData = await inputFromForm(request);
   return schema.parseAsync(formData);
 }
