@@ -1,5 +1,11 @@
 import { type FirebaseOptions } from 'firebase/app';
 
+/**
+ * Client env vars :
+ * - define the list here
+ * - inject value in getClientEnvVars()
+ */
+
 export type ClientEnvVars = {
   AUTH_EMULATOR_HOST?: string;
   FIREBASE_OPTIONS: FirebaseOptions;

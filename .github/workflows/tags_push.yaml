@@ -1,12 +1,12 @@
-name: Push on main (Check & Deploy)
+name: Push a tag (Check & Deploy)
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
       actions: read
     uses: ./.github/workflows/build_and_deploy.yaml
     with:
-      environment: 'staging'
-      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID_STAGING }}
+      environment: 'production'
+      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID_PRODUCTION }}
     secrets:
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_STAGING }}
+      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_PRODUCTION }}
