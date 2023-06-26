@@ -1,20 +1,51 @@
 import { type ClientEnvVars } from './environment.client';
 
-type ServerEnvVarName =
-  | 'ENV'
-  | 'NODE_ENV'
-  | 'APP_DOMAIN'
-  | 'SESSION_SECRET'
-  | 'SESSION_MAX_AGE'
-  | 'MARBLE_API_DOMAIN'
-  | 'FIREBASE_AUTH_EMULATOR'
+/**
+ * The separation in three types are here
+ * to help you to know where to define your env vars.
+ *
+ * 1.Create a new environment :
+ *   - add ServerPublicEnvVarName to the list of public env vars
+ *   - add ServerSecretEnvVarName to the list of secret env vars
+ *
+ * 2. Add a new env var :
+ *   - edit the appropriate list of env vars (dev, public, secret...)
+ *   - if necessary, update build_and_deploy.yaml (to inject the new env var)
+ *   - update existing environment
+ */
+
+/**
+ * These variables are defined only for development
+ * They are ignored for other envs
+ */
+type DevServerEnvVarName =
   | 'FIREBASE_AUTH_EMULATOR_HOST'
+  | 'FIREBASE_AUTH_EMULATOR';
+
+/**
+ * List of all public env vars to defined on each deployed environments
+ */
+type ServerPublicEnvVarName =
+  | 'ENV'
   | 'FIREBASE_API_KEY'
+  | 'FIREBASE_APP_ID'
   | 'FIREBASE_AUTH_DOMAIN'
+  | 'FIREBASE_MESSAGING_SENDER_ID'
   | 'FIREBASE_PROJECT_ID'
   | 'FIREBASE_STORAGE_BUCKET'
-  | 'FIREBASE_MESSAGING_SENDER_ID'
-  | 'FIREBASE_APP_ID';
+  | 'MARBLE_API_DOMAIN'
+  | 'NODE_ENV'
+  | 'SESSION_MAX_AGE';
+
+/**
+ * List of all secret env vars to defined on each deployed environments
+ */
+type ServerSecretEnvVarName = 'SESSION_SECRET';
+
+type ServerEnvVarName =
+  | DevServerEnvVarName
+  | ServerPublicEnvVarName
+  | ServerSecretEnvVarName;
 
 export function getServerEnv(
   serverEnvVarName: ServerEnvVarName,
