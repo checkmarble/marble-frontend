@@ -71,11 +71,8 @@ export async function loader({ request, params }: LoaderArgs) {
     failureRedirect: '/login',
   });
   invariant(params.listId, `params.listId is required`);
-  console.log(params.listId)
-
   const customListValues = await apiClient.getCustomList(params.listId);
 
-  console.log(customListValues)
   return json(customListValues);
 }
 
@@ -164,7 +161,7 @@ export default function Lists() {
   const customListValues = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const { t } = useTranslation(handle.i18n);
-  const data = customListValues.listsValues
+  const data = customListValues.custom_list_values
   const scenarios = [
     'Check transactions',
     'Validate sepa payouts',

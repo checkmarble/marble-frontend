@@ -74,7 +74,7 @@ export default function ListsPage() {
   const fetcher = useFetcher<typeof action>();
 
   const navigate = useNavigate();
-  const data = customList.lists
+  const data = customList.custom_lists
 
   const columns = useMemo<ColumnDef<List>[]>(
     () => [
@@ -118,7 +118,6 @@ export default function ListsPage() {
     ],
     [t]
   );
-
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data,
     columns,
