@@ -1,3 +1,4 @@
+import { Cross } from '@marble-front/ui/icons';
 import { clsx } from 'clsx';
 import { useCombobox, type UseComboboxProps } from 'downshift';
 import { useId } from 'react';
@@ -12,6 +13,7 @@ export interface ComboBoxProps<Item> extends UseComboboxProps<Item> {
     isHighlighted: boolean;
   }) => React.ReactNode;
   placeholder?: string;
+  inputRef: React.Ref<HTMLInputElement>;
 }
 
 export function ComboBox<Item>({
@@ -20,6 +22,7 @@ export function ComboBox<Item>({
   placeholder,
   id,
   items,
+  inputRef,
   ...otherProps
 }: ComboBoxProps<Item>) {
   const internalId = useId();
@@ -33,10 +36,24 @@ export function ComboBox<Item>({
 
   const displayMenu = cb.isOpen && items.length > 0;
 
+  const inputProps = cb.getInputProps({ id, placeholder, ref: inputRef });
+
   return (
     <div className="relative">
-      <div className="group relative max-w-xs">
-        <Input {...cb.getInputProps({ id, placeholder })} />
+      <div className="group/input relative max-w-xs">
+        <Input
+          {...inputProps}
+          endAdornment={
+            <button
+              className="hover:text-grey-100 pointer-events-auto opacity-20 transition-colors duration-200 ease-in-out group-hover/input:opacity-100"
+              onClick={() => {
+                cb.reset();
+              }}
+            >
+              <Cross />
+            </button>
+          }
+        />
       </div>
       <ul
         {...cb.getMenuProps({

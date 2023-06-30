@@ -1,13 +1,7 @@
-import { Page } from '../Page';
+import { Page, type PageContentProps } from '../Page';
 import { ScenarioRightPanel } from './ScenarioRightPanel';
 
-function ScenarioPageContent({
-  children,
-  ...props
-}: React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
->) {
+function ScenarioPageContent({ children, ...props }: PageContentProps) {
   return (
     <ScenarioRightPanel.Root className="overflow-hidden">
       <Page.Content {...props}>{children}</Page.Content>

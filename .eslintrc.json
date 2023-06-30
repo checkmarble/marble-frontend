@@ -46,6 +46,7 @@
                   "type:ui",
                   "type:util",
                   "type:service",
+                  "type:models",
                   "type:repositories"
                 ]
               },

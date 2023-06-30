@@ -32,7 +32,7 @@ export function NewAstNode({
   constant,
   children,
   namedChildren,
-}: Partial<AstNode>): AstNode {
+}: Partial<AstNode> = {}): AstNode {
   return {
     name: name ?? '',
     constant: constant ?? NoConstant,
