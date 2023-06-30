@@ -45,7 +45,8 @@
                 "onlyDependOnLibsWithTags": [
                   "type:ui",
                   "type:util",
-                  "type:service"
+                  "type:service",
+                  "type:repositories"
                 ]
               },
               {

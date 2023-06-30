@@ -20,5 +20,5 @@
       }
     }
   },
-  "tags": ["type:repositories"]
+  "tags": ["type:repositories", "scope:shared"]
 }

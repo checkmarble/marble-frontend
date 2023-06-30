@@ -1,4 +1,9 @@
-import { marbleApi, type TokenService } from '@marble-front/api/marble';
+import {
+  getMarbleAPIClient,
+  type MarbleApi,
+  marbleApi,
+  type TokenService,
+} from '@marble-front/api/marble';
 import { getServerEnv } from '@marble-front/builder/utils/environment.server';
 import { parseForm } from '@marble-front/builder/utils/input-validation';
 import {
@@ -10,7 +15,6 @@ import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
 
 import { logger } from '../logger';
-import { getMarbleAPIClient, type MarbleApi } from '../marble-api/init.server';
 import { getRoute } from '../routes';
 import { getAuthErrors } from './auth.server';
 import { type FlashData } from './session.server';
@@ -117,6 +121,7 @@ export function getServerAuth({ sessionStorage }: FirebaseStrategyOptions) {
       },
     };
     const apiClient = getMarbleAPIClient({
+      baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
       tokenService,
     });
 

@@ -1,46 +1,35 @@
 import {
-  fetchWithAuthMiddleware,
-  marbleApi,
+  getMarbleAPIClient,
   type TokenService,
 } from '@marble-front/api/marble';
-import {
-  adaptFormulaDto,
-  isOrAndGroup,
-  wrapInOrAndGroups,
-} from '@marble-front/models';
-import * as R from 'remeda';
+import { adaptFormulaDto, type AstNode } from '@marble-front/models';
 
-type FunctionKeys<T> = {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  [P in keyof T]: T[P] extends Function ? P : never;
-}[keyof T];
+export function isOrAndGroup(astNode: AstNode): boolean {
+  if (astNode.name !== 'OR') {
+    return false;
+  }
+  for (const child of astNode.children) {
+    if (child.name !== 'AND') {
+      return false;
+    }
+  }
+  return true;
+}
 
-export type MarbleApi = {
-  [P in FunctionKeys<typeof marbleApi>]: (typeof marbleApi)[P];
-};
-
-export function getMarbleAPIClient({
-  tokenService,
-  baseUrl,
-}: {
-  baseUrl: string;
-  tokenService: TokenService<string>;
-}): MarbleApi {
-  const fetch = fetchWithAuthMiddleware({
-    tokenService,
-    getAuthorizationHeader: (token) => ({
-      name: 'Authorization',
-      value: `Bearer ${token}`,
-    }),
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { defaults, servers, ...api } = marbleApi;
-
-  //@ts-expect-error can't infer args
-  return R.mapValues(api, (value) => (...args) => {
-    return value(...args, { fetch, baseUrl });
-  });
+export function wrapInOrAndGroups(astNode: AstNode): AstNode {
+  return {
+    name: 'OR',
+    constant: null,
+    children: [
+      {
+        name: 'AND',
+        constant: null,
+        children: [astNode],
+        namedChildren: {},
+      },
+    ],
+    namedChildren: {},
+  };
 }
 
 export async function getScenarioIterationRule({

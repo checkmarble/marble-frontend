@@ -8,23 +8,36 @@ import {
   isPayloadFieldOperator,
 } from './operators';
 
-type PrimitiveType = string | boolean | number;
-
-export type ConstantType = PrimitiveType | Array<ConstantType> | null;
-
 export interface AstNode {
   name: string;
-  constant: ConstantType;
+  constant: ConstantOptional;
   children: AstNode[];
   namedChildren: Record<string, AstNode>;
 }
 
-export function getEmptyNode(): AstNode {
+export type ConstantType =
+  | number
+  | string
+  | boolean
+  | null
+  | Array<ConstantType>
+  | { [key: string]: ConstantType };
+
+export const NoConstant: unique symbol = Symbol();
+export type ConstantOptional = ConstantType | typeof NoConstant;
+
+// helper
+export function NewAstNode({
+  name,
+  constant,
+  children,
+  namedChildren,
+}: Partial<AstNode>): AstNode {
   return {
-    name: '',
-    constant: null,
-    children: [],
-    namedChildren: {},
+    name: name ?? '',
+    constant: constant ?? NoConstant,
+    children: children ?? [],
+    namedChildren: namedChildren ?? {},
   };
 }
 
@@ -32,18 +45,14 @@ export function adaptFormulaDto(
   formula: ScenarioIterationRule['formula']
 ): AstNode {
   if (isConstantOperator(formula)) {
-    return {
+    return NewAstNode({
       name: formula.type,
       constant: formula.staticData.value,
-      children: [],
-      namedChildren: {},
-    };
+    });
   }
   if (isDbFieldOperator(formula)) {
-    return {
+    return NewAstNode({
       name: formula.type,
-      constant: null,
-      children: [],
       namedChildren: {
         triggerTableName: {
           name: 'STRING_CONSTANT',
@@ -64,13 +73,11 @@ export function adaptFormulaDto(
           namedChildren: {},
         },
       },
-    };
+    });
   }
   if (isPayloadFieldOperator(formula)) {
-    return {
+    return NewAstNode({
       name: formula.type,
-      constant: null,
-      children: [],
       namedChildren: {
         fieldName: {
           name: 'STRING_CONSTANT',
@@ -79,20 +86,17 @@ export function adaptFormulaDto(
           namedChildren: {},
         },
       },
-    };
+    });
   }
   if (isMathOperator(formula) || formula.type === 'NOT') {
-    return {
+    return NewAstNode({
       name: formula.type,
-      constant: null,
       children: formula.children.map(adaptFormulaDto),
-      namedChildren: {},
-    };
+    });
   }
   if (formula.type === 'ROUND_FLOAT') {
-    return {
+    return NewAstNode({
       name: formula.type,
-      constant: null,
       children: formula.children.map(adaptFormulaDto),
       namedChildren: {
         level: {
@@ -102,36 +106,8 @@ export function adaptFormulaDto(
           namedChildren: {},
         },
       },
-    };
+    });
   }
 
   assertNever('unknwon Operator:', formula);
-}
-
-export function isOrAndGroup(astNode: AstNode): boolean {
-  if (astNode.name !== 'OR') {
-    return false;
-  }
-  for (const child of astNode.children) {
-    if (child.name !== 'AND') {
-      return false;
-    }
-  }
-  return true;
-}
-
-export function wrapInOrAndGroups(astNode: AstNode): AstNode {
-  return {
-    name: 'OR',
-    constant: null,
-    children: [
-      {
-        name: 'AND',
-        constant: null,
-        children: [astNode],
-        namedChildren: {},
-      },
-    ],
-    namedChildren: {},
-  };
 }
