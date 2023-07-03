@@ -1,22 +1,20 @@
 import { type AstNode, NewAstNode } from '@marble-front/models';
-import { ComboBox } from '@marble-front/ui/design-system';
-import clsx from 'clsx';
+import { Combobox } from '@marble-front/ui/design-system';
 import { forwardRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { FormControl, FormField, FormItem, FormLabel } from './Form';
+import { FormControl, FormField, FormItem } from './Form';
 
 export function EditAstNode({ name }: { name: string }) {
   const { getFieldState, formState } = useFormContext();
   const { isDirty } = getFieldState(`${name}.children.0`, formState);
 
   return (
-    <div className="flex w-fit flex-row gap-1">
+    <div className="flex flex-row gap-1">
       <FormField
         name={`${name}.children.0`}
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="hidden">operand 0</FormLabel>
             <FormControl>
               <EditOperand {...field} />
             </FormControl>
@@ -27,7 +25,6 @@ export function EditAstNode({ name }: { name: string }) {
         name={`${name}.name`}
         render={({ field }) => (
           <FormItem className={isDirty ? '' : 'hidden'}>
-            <FormLabel className="hidden">name</FormLabel>
             <FormControl>
               <EditOperand {...field} />
             </FormControl>
@@ -38,7 +35,6 @@ export function EditAstNode({ name }: { name: string }) {
         name={`${name}.children.1`}
         render={({ field }) => (
           <FormItem className={isDirty ? '' : 'hidden'}>
-            <FormLabel className="hidden">operand 1</FormLabel>
             <FormControl>
               <EditOperand {...field} />
             </FormControl>
@@ -55,45 +51,44 @@ const EditOperand = forwardRef<
     value: AstNode;
     onChange: (value: AstNode | null) => void;
   }
->(({ value, onChange }, ref) => {
+>(({ value, onChange, ...otherProps }, ref) => {
   const [inputValue, setInputValue] = useState('');
   const [selectedItem, setSelectedItem] = useState<
     (typeof mockedIdentifiers)[number] | null
   >(null);
   const items = getIdentifierOptions(inputValue);
 
+  const filteredItems = items.filter((item) => item.label.includes(inputValue));
+
   return (
-    <ComboBox
-      items={items.filter((item) => item.label.includes(inputValue))}
-      onInputValueChange={({ inputValue }) => setInputValue(inputValue ?? '')}
-      itemToKey={(item) => item.label}
-      itemToString={(item) => item?.label ?? ''}
-      renderItemInList={({ item, isHighlighted, isSelected }) => (
-        <div
-          className={clsx(
-            'bg-g flex flex-col px-3 py-2 shadow-sm',
-            isHighlighted && 'bg-purple-05 text-purple-100',
-            isSelected && 'text-purple-100'
-          )}
-        >
-          <span>{item.label}</span>
-          <span className="text-sm text-gray-700">{item.node.name}</span>
-        </div>
-      )}
-      onSelectedItemChange={({ selectedItem }) => {
-        setSelectedItem(selectedItem ?? null);
+    <Combobox.Root
+      value={selectedItem}
+      onChange={(value) => {
+        setSelectedItem(value);
+        onChange(value?.node ?? null);
       }}
-      selectedItem={selectedItem}
-      inputValue={inputValue}
-      onIsOpenChange={({ isOpen, selectedItem }) => {
-        if (isOpen) return;
-        setInputValue(selectedItem?.label ?? '');
-        if (value !== selectedItem?.node) {
-          onChange(selectedItem?.node ?? null);
-        }
-      }}
-      inputRef={ref}
-    />
+      nullable
+    >
+      <div className="relative max-w-xs">
+        <Combobox.Input
+          ref={ref}
+          displayValue={(item?: (typeof items)[number]) => item?.label ?? ''}
+          onChange={(event) => setInputValue(event.target.value)}
+        />
+        <Combobox.Options className="w-full">
+          {filteredItems.map((item) => (
+            <Combobox.Option
+              key={item.label}
+              value={item}
+              className="flex flex-col gap-1"
+            >
+              <span>{item.label}</span>
+              <span className="text-sm text-gray-700">{item.node.name}</span>
+            </Combobox.Option>
+          ))}
+        </Combobox.Options>
+      </div>
+    </Combobox.Root>
   );
 });
 EditOperand.displayName = 'EditOperand';

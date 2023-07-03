@@ -1,12 +1,11 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import clsx from 'clsx';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
-import { ComboBox } from './ComboBox';
+import { Combobox } from './Combobox';
 
-const Story: Meta<typeof ComboBox> = {
-  component: ComboBox,
-  title: 'ComboBox',
+const Story: Meta<typeof Combobox.Root> = {
+  component: Combobox.Root,
+  title: 'Combobox',
 };
 export default Story;
 
@@ -35,38 +34,58 @@ function getBooksFilter(inputValue: string) {
   };
 }
 
-export const Default: StoryFn<typeof ComboBox<Book>> = ({
-  items,
-  renderItemInList,
-  itemToKey,
-  itemToString,
-  ...args
-}) => {
+export const Default: StoryFn<typeof Combobox.Root> = ({ ...args }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedValue, setSelectedValue] = useState<Book | null>(null);
   const [inputValue, setInputValue] = useState('');
 
+  const filteredBooks = books.filter(getBooksFilter(inputValue));
+
   return (
-    <ComboBox
-      items={items.filter(getBooksFilter(inputValue))}
-      onInputValueChange={({ inputValue }) => setInputValue(inputValue ?? '')}
-      renderItemInList={({ item, isHighlighted, isSelected }) => (
-        <div
-          className={clsx(
-            'bg-g flex flex-col px-3 py-2 shadow-sm',
-            isHighlighted && 'bg-purple-05 text-purple-100',
-            isSelected && 'text-purple-100'
-          )}
-        >
-          <span>{item.title}</span>
-          <span className="text-sm text-gray-700">{item.author}</span>
+    <div className="flex flex-col gap-2">
+      <Combobox.Root
+        {...args}
+        value={selectedValue}
+        onChange={setSelectedValue}
+        nullable
+      >
+        <div className="relative max-w-xs">
+          <Combobox.Input
+            ref={inputRef}
+            displayValue={(value?: Book) => value?.title ?? ''}
+            onChange={(event) => setInputValue(event.target.value)}
+          />
+          <Combobox.Options className="w-full">
+            {filteredBooks.length === 0 && inputValue !== '' ? (
+              <div className="text-grey-50 relative cursor-default select-none px-4 py-2">
+                Nothing found.
+              </div>
+            ) : (
+              filteredBooks.map((book) => (
+                <Combobox.Option
+                  key={book.title}
+                  className="flex flex-col items-start gap-1"
+                  value={book}
+                >
+                  <span>{book.title}</span>
+                  <span className="text-grey-50 text-sm">{book.author}</span>
+                </Combobox.Option>
+              ))
+            )}
+          </Combobox.Options>
         </div>
-      )}
-      itemToKey={(item) => `${item.title}${item.author}`}
-      itemToString={(item) => item?.title ?? ''}
-      placeholder="Select a value..."
-      {...args}
-    />
+      </Combobox.Root>
+      <p className="bg-grey-05 flex flex-col gap-1 rounded p-2">
+        Selected book:
+        {selectedValue ? (
+          <>
+            <span>{selectedValue.title}</span>
+            <span className="text-grey-50 text-sm">{selectedValue.author}</span>
+          </>
+        ) : (
+          <p>None</p>
+        )}
+      </p>
+    </div>
   );
-};
-Default.args = {
-  items: books,
 };

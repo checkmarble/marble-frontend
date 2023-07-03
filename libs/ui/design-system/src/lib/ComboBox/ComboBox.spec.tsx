@@ -1,28 +1,45 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 
-import ComboBox from './ComboBox';
+import { Combobox } from './Combobox';
 
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple'];
 
-describe('ComboBox', () => {
+function DefaultCombobox() {
+  const [inputValue, setInputValue] = useState('');
+
+  return (
+    <Combobox.Root>
+      <Combobox.Input onChange={(event) => setInputValue(event.target.value)} />
+      <Combobox.Options>
+        {fruits
+          .filter((fruit) => fruit.includes(inputValue))
+          .map((fruit) => (
+            <Combobox.Option key={fruit} value={fruit}>
+              {fruit}
+            </Combobox.Option>
+          ))}
+      </Combobox.Options>
+    </Combobox.Root>
+  );
+}
+
+describe('Combobox', () => {
   it('should render successfully', async () => {
-    render(
-      <ComboBox
-        items={fruits}
-        itemToKey={(fruit) => fruit}
-        itemToString={(fruit) => fruit ?? ''}
-        renderItemInList={({ item: fruit }) => fruit}
-      />
-    );
+    render(<DefaultCombobox />);
+
     const combobox = screen.getByRole('combobox');
     expect(combobox).toHaveValue('');
 
-    await userEvent.click(combobox);
+    await userEvent.type(combobox, 'a');
 
     fruits.forEach((fruit) =>
-      expect(screen.getByText(fruit)).toBeInTheDocument()
+      fruit.includes('a')
+        ? expect(screen.queryByText(fruit)).toBeInTheDocument()
+        : expect(screen.queryByText(fruit)).not.toBeInTheDocument()
     );
+
     await userEvent.click(screen.getByText('apple'));
 
     expect(combobox).toHaveValue('apple');

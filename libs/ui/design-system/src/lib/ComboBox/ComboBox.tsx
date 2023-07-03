@@ -1,86 +1,61 @@
-import { Cross } from '@marble-front/ui/icons';
-import { clsx } from 'clsx';
-import { useCombobox, type UseComboboxProps } from 'downshift';
-import { useId } from 'react';
+import { Combobox as ComboboxPrimitive } from '@headlessui/react';
+import clsx from 'clsx';
+import * as React from 'react';
 
-import { Input } from '../Input/Input';
+import Input from '../Input/Input';
 
-export interface ComboBoxProps<Item> extends UseComboboxProps<Item> {
-  itemToKey: (item: Item) => string;
-  renderItemInList: (props: {
-    item: Item;
-    isSelected: boolean;
-    isHighlighted: boolean;
-  }) => React.ReactNode;
-  placeholder?: string;
-  inputRef: React.Ref<HTMLInputElement>;
-}
+const ComboboxRoot = ComboboxPrimitive;
 
-export function ComboBox<Item>({
-  itemToKey,
-  renderItemInList,
-  placeholder,
-  id,
-  items,
-  inputRef,
-  ...otherProps
-}: ComboBoxProps<Item>) {
-  const internalId = useId();
-  const computedId = id ?? `combobox-${internalId}`;
+const ComboboxInput = React.forwardRef<
+  React.ElementRef<typeof ComboboxPrimitive.Input>,
+  React.ComponentPropsWithoutRef<typeof ComboboxPrimitive.Input>
+>(({ className, ...props }, ref) => (
+  <ComboboxPrimitive.Input
+    ref={ref}
+    as={Input}
+    className={clsx(
+      'ui-disabled:cursor-not-allowed ui-disabled:opacity-50',
+      className
+    )}
+    {...props}
+  />
+));
+ComboboxInput.displayName = 'Combobox.Input';
 
-  const cb = useCombobox<Item>({
-    id: computedId,
-    items,
-    ...otherProps,
-  });
+const ComboboxOptions = React.forwardRef<
+  React.ElementRef<typeof ComboboxPrimitive.Options>,
+  React.ComponentPropsWithoutRef<typeof ComboboxPrimitive.Options>
+>(({ className, ...props }, ref) => (
+  <ComboboxPrimitive.Options
+    ref={ref}
+    className={clsx(
+      'bg-grey-00 border-grey-10 absolute z-10 mt-1 flex max-h-[300px] flex-col gap-2 overflow-y-auto overflow-x-hidden rounded border p-2 shadow-md',
+      className
+    )}
+    {...props}
+  />
+));
+ComboboxOptions.displayName = 'Combobox.Options';
 
-  const displayMenu = cb.isOpen && items.length > 0;
+const ComboboxOption = React.forwardRef<
+  React.ElementRef<typeof ComboboxPrimitive.Option>,
+  React.ComponentPropsWithoutRef<typeof ComboboxPrimitive.Option>
+>(({ className, ...props }, ref) => (
+  <ComboboxPrimitive.Option
+    ref={ref}
+    className={clsx(
+      'ui-active:bg-purple-05 text-s cursor-default select-none rounded-sm p-2 outline-none',
+      'ui-disabled:pointer-events-none ui-disabled:opacity-50',
+      className
+    )}
+    {...props}
+  />
+));
+ComboboxOption.displayName = 'Combobox.Option';
 
-  const inputProps = cb.getInputProps({ id, placeholder, ref: inputRef });
-
-  return (
-    <div className="relative">
-      <div className="group/input relative max-w-xs">
-        <Input
-          {...inputProps}
-          endAdornment={
-            <button
-              className="hover:text-grey-100 pointer-events-auto opacity-20 transition-colors duration-200 ease-in-out group-hover/input:opacity-100"
-              onClick={() => {
-                cb.reset();
-              }}
-            >
-              <Cross />
-            </button>
-          }
-        />
-      </div>
-      <ul
-        {...cb.getMenuProps({
-          className: clsx(
-            'mt-1 text-s text-grey-100 divide-night-100 bg-grey-00 border-grey-10 absolute z-10 max-h-[336px] w-fit divide-y divide-solid rounded border shadow-md overflow-y-auto overflow-x-hidden',
-            { hidden: !displayMenu }
-          ),
-        })}
-      >
-        {displayMenu
-          ? items.map((item, index) => (
-              <li
-                className="cursor-pointer"
-                key={itemToKey(item)}
-                {...cb.getItemProps({ item: item, index })}
-              >
-                {renderItemInList({
-                  item,
-                  isSelected: cb.selectedItem === item,
-                  isHighlighted: cb.highlightedIndex === index,
-                })}
-              </li>
-            ))
-          : null}
-      </ul>
-    </div>
-  );
-}
-
-export default ComboBox;
+export const Combobox = {
+  Root: ComboboxRoot,
+  Input: ComboboxInput,
+  Options: ComboboxOptions,
+  Option: ComboboxOption,
+};
