@@ -79,13 +79,6 @@ export default function ListsPage() {
   const columns = useMemo<ColumnDef<List>[]>(
     () => [
       {
-        accessorKey: 'id',
-        header: t('lists:id'),
-        size: 200,
-        sortingFn: 'text',
-        enableSorting: true,
-      },
-      {
         accessorKey: 'name',
         header: t('lists:name'),
         size: 200,
@@ -98,32 +91,36 @@ export default function ListsPage() {
         header: t('lists:description'),
         size: 500,
       },
-      {
-        id: 'action',
-        header: t('lists:action'),
-        accessor: 'id',
-        cell: ({cell}) => (
-        <div>
-          <fetcher.Form method="patch">
-            <HiddenInputs listId={cell.row.original.id}/>
-            <Button type='submit' name='edit' onClick={(event) => {event.stopPropagation()}}>Edit</Button>
-          </fetcher.Form>
-          <fetcher.Form method="delete">
-            <HiddenInputs listId={cell.row.original.id}/>
-            <Button type='submit' name='delete' onClick={(event) => {event.stopPropagation()}}>Delete</Button>
-          </fetcher.Form>
-        </div>
-        )
-      },
+      // {
+      //   id: 'action',
+      //   header: t('lists:action'),
+      //   accessor: 'id',
+      //   cell: ({cell}) => (
+      //   <div>
+      //     <fetcher.Form method="patch">
+      //       <HiddenInputs listId={cell.row.original.id}/>
+      //       <Button type='submit' name='edit' onClick={(event) => {event.stopPropagation()}}>Edit</Button>
+      //     </fetcher.Form>
+      //     <fetcher.Form method="delete">
+      //       <HiddenInputs listId={cell.row.original.id}/>
+      //       <Button type='submit' name='delete' onClick={(event) => {event.stopPropagation()}}>Delete</Button>
+      //     </fetcher.Form>
+      //   </div>
+      //   )
+      // },
     ],
     [t]
   );
+
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data,
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    state: {
+      columnVisibility: { _id: false },
+  },
   });
 
   return (
@@ -133,9 +130,9 @@ export default function ListsPage() {
         {t('navigation:lists')}
       </Page.Header>
       <Page.Content scrollable={false}>
-      <fetcher.Form method="POST">
+      {/* <fetcher.Form method="POST">
         <Button>Create List</Button>
-      </fetcher.Form>
+      </fetcher.Form> */}
       <Table.Container {...getContainerProps()}>
           <Table.Header headerGroups={table.getHeaderGroups()} />
           <Table.Body {...getBodyProps()}>
@@ -145,7 +142,7 @@ export default function ListsPage() {
                 className="hover:bg-grey-02 cursor-pointer"
                 row={row}
                 onClick={() => {
-                  navigate(`./${row.getUniqueValues("id")}`);
+                  navigate(`./${row.original.id}`);
                 }}
               />
             ))}

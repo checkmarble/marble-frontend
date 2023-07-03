@@ -5,7 +5,7 @@ import { parseFormSafe } from '@marble-front/builder/utils/input-validation';
 import { fromParams } from '@marble-front/builder/utils/short-uuid';
 import {
   Button,
-  HiddenInputs, 
+  HiddenInputs,
   Input,
   ScrollArea,
   Table,
@@ -40,26 +40,28 @@ function getFakeList(id: string) {
 }
 
 const formSchema = z.object({
-  listValueId: z.string().uuid()
+  listValueId: z.string().uuid(),
 });
 
 export async function action({ request, params }: ActionArgs) {
   const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  console.log(request.method)
+  console.log(request.method);
   invariant(params.listId, `params.listId is required`);
-  console.log('listId', params.listId)
+  console.log('listId', params.listId);
   switch (request.method) {
     case 'POST': {
-      await apiClient.createCustomListValue(params.listId, {value: 'Added Value'});
+      await apiClient.createCustomListValue(params.listId, {
+        value: 'Added Value',
+      });
       break;
     }
     case 'DELETE': {
       const parsedForm = await parseFormSafe(request, formSchema);
       const { listValueId } = parsedForm.data;
-      console.log('delete id: ', listValueId)
-      await apiClient.deleteCustomListValue(params.listId, {id: listValueId});
+      console.log('delete id: ', listValueId);
+      await apiClient.deleteCustomListValue(params.listId, { id: listValueId });
       break;
     }
   }
@@ -161,7 +163,7 @@ export default function Lists() {
   const customListValues = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const { t } = useTranslation(handle.i18n);
-  const data = customListValues.custom_list_values
+  const data = customListValues.custom_list_values;
   const scenarios = [
     'Check transactions',
     'Validate sepa payouts',
@@ -181,19 +183,19 @@ export default function Lists() {
         sortingFn: 'text',
         enableSorting: true,
       },
-      {
-        id: 'action',
-        header: t('lists:action'),
-        accessor: 'id',
-        cell: ({cell}) => (
-        <div>
-          <fetcher.Form method="delete">
-            <HiddenInputs listValueId={cell.row.original.id}/>
-            <Button type='submit' name='delete' onClick={(event) => {event.stopPropagation()}}>Delete</Button>
-          </fetcher.Form>
-        </div>
-        )
-      },
+      // {
+      //   id: 'action',
+      //   header: t('lists:action'),
+      //   accessor: 'id',
+      //   cell: ({cell}) => (
+      //   <div>
+      //     <fetcher.Form method="delete">
+      //       <HiddenInputs listValueId={cell.row.original.id}/>
+      //       <Button type='submit' name='delete' onClick={(event) => {event.stopPropagation()}}>Delete</Button>
+      //     </fetcher.Form>
+      //   </div>
+      //   )
+      // },
     ],
     [t]
   );
@@ -217,7 +219,7 @@ export default function Lists() {
       </Page.Header>
       <Page.Content scrollable={false} className="max-w-3xl">
         <Callout className="w-full">{data.description}</Callout>
-        <ScenariosList scenarios={scenarios} />
+        {/* <ScenariosList scenarios={scenarios} /> */}
         <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
           <form className="flex items-center">
             <Input
@@ -230,12 +232,10 @@ export default function Lists() {
               }}
             />
           </form>
-          <fetcher.Form method="POST">
+          {/* <fetcher.Form method="POST">
             <Button>Add List Value</Button>
-          </fetcher.Form>
-          {data.length &&
-            <Table.Default {...virtualTable} />
-          }
+          </fetcher.Form> */}
+          {data.length && <Table.Default {...virtualTable} />}
         </div>
       </Page.Content>
     </Page.Container>

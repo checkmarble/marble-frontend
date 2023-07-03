@@ -262,7 +262,7 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-  /custom-list-value/{listId}:
+  /custom-lists/{listId}/values:
     post:
       tags:
         - CustomListValue
