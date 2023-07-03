@@ -272,7 +272,7 @@ paths:
         - Oauth2ClientCredentials: []
       parameters:
         - name: listId
-          description: ID of the custom list value that need to be added
+          description: ID of the list on which the value will be added
           in: path
           required: true
           schema:
