@@ -38,6 +38,7 @@ export function getMarbleAPIClient({
 
   //@ts-expect-error can't infer args
   return R.mapValues(api, (value) => (...args) => {
+    //@ts-expect-error can't infer args
     return value(...args, { fetch, baseUrl });
   });
 }
