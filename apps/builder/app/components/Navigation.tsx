@@ -63,7 +63,7 @@ function ScenariosLink({ Icon, labelTKey, to }: SidebarLinkProps) {
     <NavLink
       className={({ isActive }) =>
         clsx(
-          'text-s text-grey-100 hover:bg-purple-10 flex flex-row items-center gap-2 rounded py-2 px-4 font-medium hover:text-purple-100',
+          'text-s text-grey-100 hover:bg-purple-10 flex flex-row items-center gap-2 rounded px-4 py-2 font-medium hover:text-purple-100',
           {
             'bg-purple-10 text-purple-100': isActive,
           }

@@ -6,7 +6,7 @@ import { getSession } from '@marble-front/builder/services/auth/session.server';
 import { LogoStandard } from '@marble-front/ui/icons';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { type Namespace, type TFuncKey } from 'i18next';
+import { type Namespace, type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { SignInWithGoogle } from './ressources/auth/login';
@@ -28,7 +28,7 @@ export const handle = {
   i18n: ['login', 'common'] satisfies Namespace,
 };
 
-const errorLabels: Record<AuthErrors, TFuncKey<['login', 'common']>> = {
+const errorLabels: Record<AuthErrors, ParseKeys<['login', 'common']>> = {
   NoAccount: 'login:errors.no_account',
   Unknown: 'common:errors.unknown',
 };

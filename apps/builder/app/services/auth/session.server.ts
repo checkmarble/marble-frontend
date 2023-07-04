@@ -10,7 +10,7 @@ import {
 import { type AuthErrors } from './auth.server';
 
 const sessionCookie = createCookie('user_session', {
-  maxAge: getServerEnv('SESSION_MAX_AGE'),
+  maxAge: Number(getServerEnv('SESSION_MAX_AGE')),
   sameSite: 'lax', // this helps with CSRF
   path: '/', // remember to add this so the cookie will work in all routes
   httpOnly: true,

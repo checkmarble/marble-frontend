@@ -16,7 +16,7 @@ import { Play, Pushtolive, Stop, Tick } from '@marble-front/ui/icons';
 import { Label } from '@radix-ui/react-label';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { type Namespace, type TFuncKey } from 'i18next';
+import { type Namespace, type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 
@@ -274,7 +274,7 @@ function getButtonConfig(type: DeploymentType): {
     trigger: typeof Play;
     submit: typeof Play;
   };
-  label: TFuncKey<['scenarios']>;
+  label: ParseKeys<['scenarios']>;
 } {
   switch (type) {
     case 'activate':
