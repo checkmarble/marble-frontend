@@ -25,9 +25,9 @@ export async function loader({ request }: LoaderArgs) {
   const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  const customList = await apiClient.listCustomLists();
+  const { custom_lists } = await apiClient.listCustomLists();
 
-  return json(customList);
+  return json(custom_lists);
 }
 
 // const formSchema = z.object({

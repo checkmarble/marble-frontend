@@ -479,7 +479,9 @@ export function createIngestion(objectType: string, body: object, opts?: Oazapft
 export function listCustomLists(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CustomList[];
+        data: {
+            custom_lists: CustomList[];
+        };
     } | {
         status: 401;
         data: string;
@@ -518,7 +520,9 @@ export function createCustomList(createCustomListBody: CreateCustomListBody, opt
 export function getCustomList(customListId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CustomListWithValues;
+        data: {
+            custom_list: CustomListWithValues;
+        };
     } | {
         status: 401;
         data: string;

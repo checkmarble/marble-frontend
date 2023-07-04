@@ -1,5 +1,6 @@
 import { Callout, Page } from '@marble-front/builder/components';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { fromParams } from '@marble-front/builder/utils/short-uuid';
 import { Input, Table, useVirtualTable } from '@marble-front/ui/design-system';
 import { Search } from '@marble-front/ui/icons';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -13,16 +14,16 @@ import {
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import invariant from 'tiny-invariant';
 
 export async function loader({ request, params }: LoaderArgs) {
   const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  invariant(params.listId, `params.listId is required`);
-  const customList = await apiClient.getCustomList(params.listId);
+  const listId = fromParams(params, 'listId');
 
-  return json(customList);
+  const { custom_list } = await apiClient.getCustomList(listId);
+
+  return json(custom_list);
 }
 
 // const formSchema = z.object({
