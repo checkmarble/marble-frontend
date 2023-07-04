@@ -64,6 +64,8 @@ export type CustomList = {
     id: string;
     name: string;
     description: string;
+    createdAt: string;
+    updatedAt: string;
 };
 export type CreateCustomListBody = {
     name: string;
@@ -72,6 +74,9 @@ export type CreateCustomListBody = {
 export type CustomListValue = {
     id: string;
     value: string;
+};
+export type CustomListWithValues = CustomList & {
+    values: CustomListValue[];
 };
 export type UpdateCustomListBody = {
     name: string;
@@ -513,7 +518,7 @@ export function createCustomList(createCustomListBody: CreateCustomListBody, opt
 export function getCustomList(customListId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CustomListValue[];
+        data: CustomListWithValues;
     } | {
         status: 401;
         data: string;

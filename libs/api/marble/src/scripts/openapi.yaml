@@ -256,9 +256,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CustomListValue'
+                $ref: '#/components/schemas/CustomListWithValues'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1645,6 +1643,8 @@ components:
         - id
         - name
         - description
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: string
@@ -1653,6 +1653,12 @@ components:
           type: string
         description:
           type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     CustomListValue:
       type: object
       required:
@@ -1664,6 +1670,17 @@ components:
           format: uuid
         value:
           type: string
+    CustomListWithValues:
+      allOf:
+        - $ref: '#/components/schemas/CustomList'
+        - type: object
+          required:
+            - values
+          properties:
+            values:
+              type: array
+              items:
+                $ref: '#/components/schemas/CustomListValue'
     CreateCustomListBody:
       type: object
       required:

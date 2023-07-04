@@ -20,9 +20,9 @@ export async function loader({ request, params }: LoaderArgs) {
     failureRedirect: '/login',
   });
   invariant(params.listId, `params.listId is required`);
-  const customListValues = await apiClient.getCustomList(params.listId);
+  const customList = await apiClient.getCustomList(params.listId);
 
-  return json(customListValues);
+  return json(customList);
 }
 
 // const formSchema = z.object({
@@ -140,7 +140,7 @@ type ListValues = {
 };
 
 export default function Lists() {
-  const customListValues = useLoaderData<typeof loader>();
+  const customList = useLoaderData<typeof loader>();
   // const fetcher = useFetcher<typeof action>();
   const { t } = useTranslation(handle.i18n);
 
@@ -171,7 +171,7 @@ export default function Lists() {
   );
 
   const virtualTable = useVirtualTable({
-    data: customListValues,
+    data: customList.values,
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
@@ -185,10 +185,10 @@ export default function Lists() {
         <Link to="./.." className="mr-4">
           <Page.BackButton />
         </Link>
-        {customListValues.name}
+        {customList.name}
       </Page.Header>
       <Page.Content scrollable={false} className="max-w-3xl">
-        <Callout className="w-full">{customListValues.description}</Callout>
+        <Callout className="w-full">{customList.description}</Callout>
         {/* <ScenariosList scenarios={scenarios} /> */}
         <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
           <form className="flex items-center">
@@ -205,7 +205,7 @@ export default function Lists() {
           {/* <fetcher.Form method="POST">
             <Button>Add List Value</Button>
           </fetcher.Form> */}
-          {customListValues.length && <Table.Default {...virtualTable} />}
+          {customList.values.length > 0 && <Table.Default {...virtualTable} />}
         </div>
       </Page.Content>
     </Page.Container>
