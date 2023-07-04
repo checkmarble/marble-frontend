@@ -1,20 +1,9 @@
-import { faker } from '@faker-js/faker';
 import { Callout, Page } from '@marble-front/builder/components';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
-import { parseFormSafe } from '@marble-front/builder/utils/input-validation';
-import { fromParams } from '@marble-front/builder/utils/short-uuid';
-import {
-  Button,
-  HiddenInputs,
-  Input,
-  ScrollArea,
-  Table,
-  useVirtualTable,
-} from '@marble-front/ui/design-system';
-import { Cross, Scenarios, Search } from '@marble-front/ui/icons';
-import * as Dialog from '@radix-ui/react-dialog';
-import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
-import { Link, useFetcher, useLoaderData } from '@remix-run/react';
+import { Input, Table, useVirtualTable } from '@marble-front/ui/design-system';
+import { Search } from '@marble-front/ui/icons';
+import { json, type LoaderArgs } from '@remix-run/node';
+import { Link, useLoaderData } from '@remix-run/react';
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -25,48 +14,6 @@ import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
-import * as z from 'zod';
-
-function getFakeList(id: string) {
-  const values = Array.from({ length: Math.floor(Math.random() * 100) }).map(
-    (_) => faker.person.fullName()
-  );
-
-  return {
-    name: faker.database.column(),
-    description: faker.lorem.sentences(),
-    values,
-  };
-}
-
-const formSchema = z.object({
-  listValueId: z.string().uuid(),
-});
-
-export async function action({ request, params }: ActionArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
-  console.log(request.method);
-  invariant(params.listId, `params.listId is required`);
-  console.log('listId', params.listId);
-  switch (request.method) {
-    case 'POST': {
-      await apiClient.createCustomListValue(params.listId, {
-        value: 'Added Value',
-      });
-      break;
-    }
-    case 'DELETE': {
-      const parsedForm = await parseFormSafe(request, formSchema);
-      const { listValueId } = parsedForm.data;
-      console.log('delete id: ', listValueId);
-      await apiClient.deleteCustomListValue(params.listId, { id: listValueId });
-      break;
-    }
-  }
-  return null;
-}
 
 export async function loader({ request, params }: LoaderArgs) {
   const { apiClient } = await authenticator.isAuthenticated(request, {
@@ -78,107 +25,130 @@ export async function loader({ request, params }: LoaderArgs) {
   return json(customListValues);
 }
 
+// const formSchema = z.object({
+//   listValueId: z.string().uuid(),
+// });
+
+// export async function action({ request, params }: ActionArgs) {
+//   const { apiClient } = await authenticator.isAuthenticated(request, {
+//     failureRedirect: '/login',
+//   });
+//   invariant(params.listId, `params.listId is required`);
+
+//   switch (request.method) {
+//     case 'POST': {
+//       await apiClient.createCustomListValue(params.listId, {
+//         value: 'Added Value',
+//       });
+//       break;
+//     }
+//     case 'DELETE': {
+//       const parsedForm = await parseFormSafe(request, formSchema);
+//       const { listValueId } = parsedForm.data;
+//       await apiClient.deleteCustomListValue(params.listId, { id: listValueId });
+//       break;
+//     }
+//   }
+//   return null;
+// }
+
 export const handle = {
   i18n: ['lists', 'common'] satisfies Namespace,
 };
 
-const MAX_SCENARIOS = 4;
+// Correspond to this part of the UI : https://www.figma.com/file/JW6QvnhBtdZDcKvLdg9s5T/Marble-Portal?node-id=3920%3A31986&mode=dev
+//
+// const MAX_SCENARIOS = 4;
+// function ScenariosList({ scenarios }: { scenarios: string[] }) {
+//   const { t } = useTranslation(handle.i18n);
 
-function ScenariosList({ scenarios }: { scenarios: string[] }) {
-  const { t } = useTranslation(handle.i18n);
+//   return (
+//     <>
+//       <div className="flex flex-row gap-2">
+//         <Scenarios height="24px" width="24px" className="flex-shrink-0" />
+//         <p className="text-m text-grey-100 font-semibold">
+//           {t('lists:used_in_scenarios')}
+//         </p>
+//       </div>
+//       <div className="flex flex-wrap gap-2">
+//         {scenarios.slice(0, MAX_SCENARIOS).map((scenario) => (
+//           <div
+//             key={scenario}
+//             className="border-grey-10 text-s text-grey-100 flex h-10 items-center rounded border px-4 align-middle font-medium"
+//           >
+//             {scenario}
+//           </div>
+//         ))}
+//         {scenarios.length > MAX_SCENARIOS && (
+//           <Dialog.Root>
+//             <Dialog.Trigger asChild>
+//               <Button variant="secondary">
+//                 {t('lists:other_scenarios', {
+//                   count: scenarios.length - MAX_SCENARIOS,
+//                 })}
+//               </Button>
+//             </Dialog.Trigger>
+//             <Dialog.Portal>
+//               <Dialog.Overlay className="bg-grey-100 animate-overlayShow fixed inset-0 items-center justify-center bg-opacity-40" />
+//               <Dialog.Content className="bg-grey-00 fixed left-1/2 top-1/2 flex w-full max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-8 rounded-lg p-8">
+//                 <Dialog.Title className="flex flex-row gap-2">
+//                   <Scenarios
+//                     height="24px"
+//                     width="24px"
+//                     className="flex-shrink-0"
+//                   />
+//                   <p className="text-m text-grey-100 flex-1 font-semibold">
+//                     {t('lists:used_in_scenarios')}
+//                   </p>
+//                   <Dialog.Close aria-label="Close">
+//                     <Cross
+//                       height="24px"
+//                       width="24px"
+//                       className="flex-shrink-0"
+//                     />
+//                   </Dialog.Close>
+//                 </Dialog.Title>
+//                 <ScrollArea.Root>
+//                   <ScrollArea.Viewport className="max-h-72">
+//                     <div className="flex flex-col gap-2 pr-4">
+//                       {scenarios.map((scenario) => (
+//                         <div
+//                           key={scenario}
+//                           className="border-grey-10 text-s text-grey-100 flex h-14 items-center rounded border px-4 align-middle font-medium"
+//                         >
+//                           {scenario}
+//                         </div>
+//                       ))}
+//                     </div>
+//                   </ScrollArea.Viewport>
+//                   <ScrollArea.Scrollbar>
+//                     <ScrollArea.Thumb />
+//                   </ScrollArea.Scrollbar>
+//                 </ScrollArea.Root>
+//               </Dialog.Content>
+//             </Dialog.Portal>
+//           </Dialog.Root>
+//         )}
+//       </div>
+//     </>
+//   );
+// }
 
-  return (
-    <>
-      <div className="flex flex-row gap-2">
-        <Scenarios height="24px" width="24px" className="flex-shrink-0" />
-        <p className="text-m text-grey-100 font-semibold">
-          {t('lists:used_in_scenarios')}
-        </p>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {scenarios.slice(0, MAX_SCENARIOS).map((scenario) => (
-          <div
-            key={scenario}
-            className="border-grey-10 text-s text-grey-100 flex h-10 items-center rounded border px-4 align-middle font-medium"
-          >
-            {scenario}
-          </div>
-        ))}
-        {scenarios.length > MAX_SCENARIOS && (
-          <Dialog.Root>
-            <Dialog.Trigger asChild>
-              <Button variant="secondary">
-                {t('lists:other_scenarios', {
-                  count: scenarios.length - MAX_SCENARIOS,
-                })}
-              </Button>
-            </Dialog.Trigger>
-            <Dialog.Portal>
-              <Dialog.Overlay className="bg-grey-100 animate-overlayShow fixed inset-0 items-center justify-center bg-opacity-40" />
-              <Dialog.Content className="bg-grey-00 fixed left-1/2 top-1/2 flex w-full max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-8 rounded-lg p-8">
-                <Dialog.Title className="flex flex-row gap-2">
-                  <Scenarios
-                    height="24px"
-                    width="24px"
-                    className="flex-shrink-0"
-                  />
-                  <p className="text-m text-grey-100 flex-1 font-semibold">
-                    {t('lists:used_in_scenarios')}
-                  </p>
-                  <Dialog.Close aria-label="Close">
-                    <Cross
-                      height="24px"
-                      width="24px"
-                      className="flex-shrink-0"
-                    />
-                  </Dialog.Close>
-                </Dialog.Title>
-                <ScrollArea.Root>
-                  <ScrollArea.Viewport className="max-h-72">
-                    <div className="flex flex-col gap-2 pr-4">
-                      {scenarios.map((scenario) => (
-                        <div
-                          key={scenario}
-                          className="border-grey-10 text-s text-grey-100 flex h-14 items-center rounded border px-4 align-middle font-medium"
-                        >
-                          {scenario}
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea.Viewport>
-                  <ScrollArea.Scrollbar>
-                    <ScrollArea.Thumb />
-                  </ScrollArea.Scrollbar>
-                </ScrollArea.Root>
-              </Dialog.Content>
-            </Dialog.Portal>
-          </Dialog.Root>
-        )}
-      </div>
-    </>
-  );
-}
+type ListValues = {
+  id: string;
+  value: string;
+};
 
 export default function Lists() {
   const customListValues = useLoaderData<typeof loader>();
-  const fetcher = useFetcher<typeof action>();
+  // const fetcher = useFetcher<typeof action>();
   const { t } = useTranslation(handle.i18n);
-  const data = customListValues.custom_list_values;
-  const scenarios = [
-    'Check transactions',
-    'Validate sepa payouts',
-    'Check french transactions',
-    'qui perferendis vitae',
-    'est aut aut',
-    // 'velit autem sunt',
-    // 'et quis voluptatem',
-  ];
 
-  const columns = useMemo<ColumnDef<string>[]>(
+  const columns = useMemo<ColumnDef<ListValues>[]>(
     () => [
       {
         accessorKey: 'value',
-        header: t('lists:value'),
+        header: t('lists:values'),
         size: 600,
         sortingFn: 'text',
         enableSorting: true,
@@ -201,7 +171,7 @@ export default function Lists() {
   );
 
   const virtualTable = useVirtualTable({
-    data: data,
+    data: customListValues,
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
@@ -215,10 +185,10 @@ export default function Lists() {
         <Link to="./.." className="mr-4">
           <Page.BackButton />
         </Link>
-        {data.name}
+        {customListValues.name}
       </Page.Header>
       <Page.Content scrollable={false} className="max-w-3xl">
-        <Callout className="w-full">{data.description}</Callout>
+        <Callout className="w-full">{customListValues.description}</Callout>
         {/* <ScenariosList scenarios={scenarios} /> */}
         <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
           <form className="flex items-center">
@@ -235,7 +205,7 @@ export default function Lists() {
           {/* <fetcher.Form method="POST">
             <Button>Add List Value</Button>
           </fetcher.Form> */}
-          {data.length && <Table.Default {...virtualTable} />}
+          {customListValues.length && <Table.Default {...virtualTable} />}
         </div>
       </Page.Content>
     </Page.Container>

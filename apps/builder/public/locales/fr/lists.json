@@ -1,6 +1,7 @@
 {
   "description": "Description",
   "name": "Nom",
+  "values": "Valeurs",
   "other_scenarios_one": "{{count}} autre",
   "other_scenarios_other": "{{count}} autres",
   "show_less": "Montrer moins",
