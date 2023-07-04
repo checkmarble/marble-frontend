@@ -131,25 +131,33 @@ export default function ListsPage() {
         {/* <fetcher.Form method="POST">
           <Button>Create List</Button>
         </fetcher.Form> */}
-        <Table.Container {...getContainerProps()}>
-          <Table.Header headerGroups={table.getHeaderGroups()} />
-          <Table.Body {...getBodyProps()}>
-            {rows.map((row) => (
-              <Table.Row
-                key={row.id}
-                className="hover:bg-grey-02 cursor-pointer"
-                row={row}
-                onClick={() => {
-                  navigate(
-                    getRoute('/lists/:listId', {
-                      listId: fromUUID(row.original.id),
-                    })
-                  );
-                }}
-              />
-            ))}
-          </Table.Body>
-        </Table.Container>
+        {rows.length > 0 ? (
+          <Table.Container {...getContainerProps()}>
+            <Table.Header headerGroups={table.getHeaderGroups()} />
+            <Table.Body {...getBodyProps()}>
+              {rows.map((row) => (
+                <Table.Row
+                  key={row.id}
+                  className="hover:bg-grey-02 cursor-pointer"
+                  row={row}
+                  onClick={() => {
+                    navigate(
+                      getRoute('/lists/:listId', {
+                        listId: fromUUID(row.original.id),
+                      })
+                    );
+                  }}
+                />
+              ))}
+            </Table.Body>
+          </Table.Container>
+        ) : (
+          <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+            <p className="text-s font-medium">
+              {t('lists:empty_custom_lists_list')}
+            </p>
+          </div>
+        )}
       </Page.Content>
     </Page.Container>
   );

@@ -5,5 +5,6 @@
   "used_in_scenarios": "Used in the following scenarios:",
   "other_scenarios_one": "+{{count}} other",
   "other_scenarios_other": "+{{count}} others",
-  "show_less": "show less"
+  "show_less": "show less",
+  "empty_custom_lists_list": "Reach out to  Marble to create your first list."
 }
