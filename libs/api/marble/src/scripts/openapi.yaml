@@ -232,7 +232,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomList'
+                type: object
+                required:
+                  - custom_list
+                properties:
+                  custom_list:
+                    $ref: '#/components/schemas/CustomList'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -365,7 +370,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomListValue'
+                type: object
+                required:
+                  - custom_list_value
+                properties:
+                  custom_list_value:
+                    $ref: '#/components/schemas/CustomListValue'
         '401':
           $ref: '#/components/responses/401'
         '403':

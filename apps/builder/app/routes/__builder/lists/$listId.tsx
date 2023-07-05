@@ -191,23 +191,31 @@ export default function Lists() {
       <Page.Content scrollable={false} className="max-w-3xl">
         <Callout className="w-full">{customList.description}</Callout>
         {/* <ScenariosList scenarios={scenarios} /> */}
-        <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
-          <form className="flex items-center">
-            <Input
-              type="search"
-              aria-label={t('common:search')}
-              placeholder={t('common:search')}
-              startAdornment={<Search />}
-              onChange={(event) => {
-                virtualTable.table.setGlobalFilter(event.target.value);
-              }}
-            />
-          </form>
-          {/* <fetcher.Form method="POST">
+        {virtualTable.rows.length > 0 ? (
+          <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
+            <form className="flex items-center">
+              <Input
+                type="search"
+                aria-label={t('common:search')}
+                placeholder={t('common:search')}
+                startAdornment={<Search />}
+                onChange={(event) => {
+                  virtualTable.table.setGlobalFilter(event.target.value);
+                }}
+              />
+            </form>
+            {/* <fetcher.Form method="POST">
             <Button>Add List Value</Button>
           </fetcher.Form> */}
-          {customList.values.length > 0 && <Table.Default {...virtualTable} />}
-        </div>
+            <Table.Default {...virtualTable} />
+          </div>
+        ) : (
+          <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+            <p className="text-s font-medium">
+              {t('lists:empty_custom_list_values_list')}
+            </p>
+          </div>
+        )}
       </Page.Content>
     </Page.Container>
   );
