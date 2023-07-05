@@ -55,6 +55,39 @@ export type Decision = {
     score: number;
     error?: Error;
 };
+export type CreateDecisionBody = {
+    scenario_id: string;
+    trigger_object: object;
+    object_type: string;
+};
+export type CustomList = {
+    id: string;
+    name: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+};
+export type CreateCustomListBody = {
+    name: string;
+    description: string;
+};
+export type CustomListValue = {
+    id: string;
+    value: string;
+};
+export type CustomListWithValues = CustomList & {
+    values: CustomListValue[];
+};
+export type UpdateCustomListBody = {
+    name: string;
+    description: string;
+};
+export type CreateCustomListValueBody = {
+    value: string;
+};
+export type DeleteCustomListValueBody = {
+    id: string;
+};
 export type Scenario = {
     id: string;
     name: string;
@@ -273,6 +306,56 @@ export type CreateScenarioPublicationBody = {
     scenarioIterationId: string;
     publicationAction: PublicationAction;
 };
+export type DataModel = {
+    tables: {
+        [key: string]: {
+            name: string;
+            fields: {
+                [key: string]: {
+                    name: string;
+                    dataType: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
+                };
+            };
+            linksToSingle: {
+                [key: string]: {
+                    linkedTableName: string;
+                    parentFieldName: string;
+                    childFieldName: string;
+                };
+            };
+        };
+    };
+};
+export type ApiKey = {
+    api_key_id: string;
+    organization_id: string;
+    key: string;
+    role: string;
+};
+export type User = {
+    user_id: string;
+    email: string;
+    role: string;
+    organization_id: string;
+};
+export type CreateUser = {
+    email: string;
+    role: string;
+    organization_id: string;
+};
+export type Organization = {
+    id: string;
+    name: string;
+    database_name: string;
+};
+export type CreateOrganizationBodyDto = {
+    name: string;
+    database_name: string;
+};
+export type UpdateOrganizationBodyDto = {
+    name?: string;
+    database_name?: string;
+};
 /**
  * Get an access token
  */
@@ -331,6 +414,25 @@ export function listDecisions(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Create a decision
+ */
+export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Decision;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/decisions", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createDecisionBody
+    })));
+}
+/**
  * Get a decision by id
  */
 export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
@@ -349,6 +451,177 @@ export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
     }>(`/decisions/${encodeURIComponent(decisionId)}`, {
         ...opts
     }));
+}
+/**
+ * Ingest some data
+ */
+export function createIngestion(objectType: string, body: object, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/ingestion/${encodeURIComponent(objectType)}`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * List custom list
+ */
+export function listCustomLists(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            custom_lists: CustomList[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/custom-lists", {
+        ...opts
+    }));
+}
+/**
+ * Create a custom list
+ */
+export function createCustomList(createCustomListBody: CreateCustomListBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomList;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>("/custom-lists", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createCustomListBody
+    })));
+}
+/**
+ * Get values of the corresponding custom list
+ */
+export function getCustomList(customListId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            custom_list: CustomListWithValues;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/custom-lists/${encodeURIComponent(customListId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Update a custom list
+ */
+export function updateCustomList(customListId: string, updateCustomListBody: UpdateCustomListBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomList;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/custom-lists/${encodeURIComponent(customListId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateCustomListBody
+    })));
+}
+/**
+ * Delete a custom list
+ */
+export function deleteCustomList(customListId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomList;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/custom-lists/${encodeURIComponent(customListId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Create a custom list value
+ */
+export function createCustomListValue(customListId: string, createCustomListValueBody: CreateCustomListValueBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomListValue;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/custom-lists/${encodeURIComponent(customListId)}/values`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createCustomListValueBody
+    })));
+}
+/**
+ * Delete a custom list value
+ */
+export function deleteCustomListValue(customListId: string, deleteCustomListValueBody: DeleteCustomListValueBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CustomListValue;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/custom-lists/${encodeURIComponent(customListId)}/values`, oazapfts.json({
+        ...opts,
+        method: "DELETE",
+        body: deleteCustomListValueBody
+    })));
 }
 /**
  * List scenarios
@@ -412,7 +685,7 @@ export function getScenario(scenarioId: string, opts?: Oazapfts.RequestOpts) {
 /**
  * Update a scenario
  */
-export function updateScenario(scenarioId: string, updateScenarioBody: UpdateScenarioBody, opts?: Oazapfts.RequestOpts) {
+export function updateScenarioDeprecated(scenarioId: string, updateScenarioBody: UpdateScenarioBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Scenario;
@@ -428,6 +701,28 @@ export function updateScenario(scenarioId: string, updateScenarioBody: UpdateSce
     }>(`/scenarios/${encodeURIComponent(scenarioId)}`, oazapfts.json({
         ...opts,
         method: "PUT",
+        body: updateScenarioBody
+    })));
+}
+/**
+ * Update a scenario
+ */
+export function updateScenario(scenarioId: string, updateScenarioBody: UpdateScenarioBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Scenario;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenarios/${encodeURIComponent(scenarioId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
         body: updateScenarioBody
     })));
 }
@@ -500,7 +795,7 @@ export function getScenarioIteration(scenarioIterationId: string, opts?: Oazapft
 /**
  * Update a scenario iteration
  */
-export function updateScenarioIteration(scenarioIterationId: string, updateScenarioIterationBody: UpdateScenarioIterationBody, opts?: Oazapfts.RequestOpts) {
+export function updateScenarioIterationDeprecated(scenarioIterationId: string, updateScenarioIterationBody: UpdateScenarioIterationBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScenarioIterationWithBody;
@@ -516,6 +811,28 @@ export function updateScenarioIteration(scenarioIterationId: string, updateScena
     }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}`, oazapfts.json({
         ...opts,
         method: "PUT",
+        body: updateScenarioIterationBody
+    })));
+}
+/**
+ * Update a scenario iteration
+ */
+export function updateScenarioIteration(scenarioIterationId: string, updateScenarioIterationBody: UpdateScenarioIterationBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioIterationWithBody;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
         body: updateScenarioIterationBody
     })));
 }
@@ -588,7 +905,7 @@ export function getScenarioIterationRule(ruleId: string, opts?: Oazapfts.Request
 /**
  * Update a scenario iteration rule
  */
-export function updateScenarioIterationRule(ruleId: string, updateScenarioIterationRuleBody: UpdateScenarioIterationRuleBody, opts?: Oazapfts.RequestOpts) {
+export function updateScenarioIterationRuleDeprecated(ruleId: string, updateScenarioIterationRuleBody: UpdateScenarioIterationRuleBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScenarioIterationRule;
@@ -604,6 +921,28 @@ export function updateScenarioIterationRule(ruleId: string, updateScenarioIterat
     }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}`, oazapfts.json({
         ...opts,
         method: "PUT",
+        body: updateScenarioIterationRuleBody
+    })));
+}
+/**
+ * Update a scenario iteration rule
+ */
+export function updateScenarioIterationRule(ruleId: string, updateScenarioIterationRuleBody: UpdateScenarioIterationRuleBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioIterationRule;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
         body: updateScenarioIterationRuleBody
     })));
 }
@@ -674,6 +1013,293 @@ export function getScenarioPublication(scenarioPublicationId: string, opts?: Oaz
         status: 404;
         data: string;
     }>(`/scenario-publications/${encodeURIComponent(scenarioPublicationId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Get the data model associated with the current organization (present in the JWT)
+ */
+export function getDataModel(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            data_model: DataModel;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/data-model", {
+        ...opts
+    }));
+}
+/**
+ * List api keys associated with the current organization (present in the JWT)
+ */
+export function listApiKeys(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            api_keys: ApiKey[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/apikeys", {
+        ...opts
+    }));
+}
+/**
+ * List all users present in the database
+ */
+export function listUsers(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            users: User[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/users", {
+        ...opts
+    }));
+}
+/**
+ * Create a user
+ */
+export function createUser(createUser: CreateUser, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            user: User;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/users", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createUser
+    })));
+}
+/**
+ * Get a user by id
+ */
+export function getUser(userId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            user: User;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/users/${encodeURIComponent(userId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Delete a user by id
+ */
+export function deleteUser(userId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/users/${encodeURIComponent(userId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * List all organizations present in the database
+ */
+export function listOrganizations(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            organizations: Organization[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/organizations", {
+        ...opts
+    }));
+}
+/**
+ * Create an organization
+ */
+export function createOrganization(createOrganizationBodyDto: CreateOrganizationBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            organization: Organization;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/organizations", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createOrganizationBodyDto
+    })));
+}
+/**
+ * Get an organization by id
+ */
+export function getOrganization(organizationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            organization: Organization;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/organizations/${encodeURIComponent(organizationId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Update an organization by id
+ */
+export function updateOrganizationDeprecated(organizationId: string, updateOrganizationBodyDto: UpdateOrganizationBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            organization: Organization;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/organizations/${encodeURIComponent(organizationId)}`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: updateOrganizationBodyDto
+    })));
+}
+/**
+ * Update an organization by id
+ */
+export function updateOrganization(organizationId: string, updateOrganizationBodyDto: UpdateOrganizationBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            organization: Organization;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/organizations/${encodeURIComponent(organizationId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateOrganizationBodyDto
+    })));
+}
+/**
+ * Delete an organization by id
+ */
+export function deleteOrganization(organizationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/organizations/${encodeURIComponent(organizationId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * List all users of an organization
+ */
+export function listOrganizationUsers(organizationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            users: User;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/organizations/${encodeURIComponent(organizationId)}/users`, {
         ...opts
     }));
 }

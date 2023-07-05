@@ -4,12 +4,20 @@ info:
   title: 'Marble API'
   description: 'Consume Marble internal endpoints'
 tags:
+  - name: Admin
+    description: Admin operations.
+  - name: Data Model
+    description: Operations about data model.
   - name: Authorization
     description: Operations about authorization.
   - name: Users
     description: Operations about users.
+  - name: Organizations
+    description: Operations about organizations.
   - name: Decisions
     description: Operations about decisions.
+  - name: Ingestions
+    description: Operations about data ingestion.
   - name: Scenarios
     description: Operations about scenarios.
   - name: Scenario Iterations
@@ -18,6 +26,8 @@ tags:
     description: Operations about scenario iteration rules.
   - name: Scenario Publications
     description: Operations about scenario publications.
+  - name: CustomLists
+    description: Operations about custom lists.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
@@ -53,12 +63,12 @@ paths:
   /credentials:
     get:
       tags:
-        - Users
+        - Authorization
       summary: Get user credentials included in the token
       description: You need to suply either "X-API-Key" or “Authorization" header
       operationId: getCredentials
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       responses:
         '200':
           description: Credentials included in the token
@@ -77,7 +87,7 @@ paths:
       summary: List decisions
       operationId: listDecisions
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       responses:
         '200':
           description: List of corresponding decisions
@@ -91,6 +101,31 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+    post:
+      tags:
+        - Decisions
+      summary: Create a decision
+      operationId: createDecision
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Payload object used to be trigger the decision engine'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDecisionBody'
+        required: true
+      responses:
+        '200':
+          description: The decision corresponding to the provided payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Decision'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /decisions/{decisionId}:
     get:
       tags:
@@ -98,7 +133,7 @@ paths:
       summary: Get a decision by id
       operationId: getDecision
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: decisionId
           description: ID of the decision that need to be fetched
@@ -120,6 +155,258 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /ingestion/{objectType}:
+    post:
+      tags:
+        - Ingestions
+      summary: Ingest some data
+      operationId: createIngestion
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: objectType
+          description: Type of the data that needs to be ingested
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: 'Data that needs to be added to the database. The `objectType` is used to determine the type of the data'
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        '201':
+          description: Data created
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '422':
+          $ref: '#/components/responses/422'
+  /custom-lists:
+    get:
+      tags:
+        - CustomList
+      summary: List custom list
+      operationId: listCustomLists
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of corresponding custom lists
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - custom_lists
+                properties:
+                  custom_lists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomList'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      tags:
+        - CustomList
+      summary: Create a custom list
+      operationId: createCustomList
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Custom list object that needs to be added to the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomListBody'
+        required: true
+      responses:
+        '200':
+          description: Created custom list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomList'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '422':
+          $ref: '#/components/responses/422'
+  /custom-lists/{customListId}:
+    get:
+      tags:
+        - CustomList
+      summary: Get values of the corresponding custom list
+      operationId: getCustomList
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customListId
+          description: ID of the custom list that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Values from the custom list corresponding to the provided `customListId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - custom_list
+                properties:
+                  custom_list:
+                    $ref: '#/components/schemas/CustomListWithValues'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    patch:
+      tags:
+        - CustomList
+      summary: Update a custom list
+      operationId: updateCustomList
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customListId
+          description: ID of the custom list that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Updated scenario object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomListBody'
+        required: true
+      responses:
+        '200':
+          description: The updated custom list corresponding to the provided `customListId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomList'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    delete:
+      tags:
+        - CustomList
+      summary: Delete a custom list
+      operationId: deleteCustomList
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customListId
+          description: ID of the custom list that need to be deleted
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The deleted custom list corresponding to the provided `customListId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomList'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /custom-lists/{customListId}/values:
+    post:
+      tags:
+        - CustomList
+      summary: Create a custom list value
+      operationId: createCustomListValue
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customListId
+          description: ID of the custom list on which the value will be added
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Custom list value object that needs to be added to the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomListValueBody'
+        required: true
+      responses:
+        '200':
+          description: Created custom list Value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomListValue'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '422':
+          $ref: '#/components/responses/422'
+    delete:
+      tags:
+        - CustomList
+      summary: Delete a custom list value
+      operationId: deleteCustomListValue
+      security:
+        - Oauth2ClientCredentials: []
+      parameters:
+        - name: customListId
+          description: ID of the custom list associated with the deleted value
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Delete custom list value object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteCustomListValueBody'
+        required: true
+      responses:
+        '200':
+          description: The deleted custom list value corresponding to the provided `customListId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomListValue'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scenarios:
     get:
       tags:
@@ -127,7 +414,7 @@ paths:
       summary: List scenarios
       operationId: listScenarios
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       responses:
         '200':
           description: List of corresponding scenario
@@ -147,7 +434,7 @@ paths:
       summary: Create a scenario
       operationId: createScenario
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       requestBody:
         description: 'Scenario object that needs to be added to the database'
         content:
@@ -175,7 +462,7 @@ paths:
       summary: Get a scenario by id
       operationId: getScenario
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: scenarioId
           description: ID of the scenario that need to be fetched
@@ -198,12 +485,48 @@ paths:
         '404':
           $ref: '#/components/responses/404'
     put:
+      deprecated: true
+      tags:
+        - Scenarios
+      summary: Update a scenario
+      operationId: updateScenario_deprecated
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioId
+          description: ID of the scenario that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Updated scenario object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScenarioBody'
+        required: true
+      responses:
+        '200':
+          description: The updated scenario corresponding to the provided `scenarioId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    patch:
       tags:
         - Scenarios
       summary: Update a scenario
       operationId: updateScenario
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: scenarioId
           description: ID of the scenario that need to be updated
@@ -240,7 +563,7 @@ paths:
       description: List iterations corresponding to filters
       operationId: listScenarioIterations
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: scenarioId
           description: ID of the scenario returned iterations should be linked to
@@ -271,7 +594,7 @@ paths:
       description: Create a scenario iteration for a given `scenarioId`
       operationId: createScenarioIteration
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       requestBody:
         description: 'Scenario iteration object to create and linked `scenarioId`'
         content:
@@ -299,7 +622,7 @@ paths:
       summary: Get a scenario iteration by id
       operationId: getScenarioIteration
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: scenarioIterationId
           description: ID of the scenario iteration that need to be fetched
@@ -322,12 +645,48 @@ paths:
         '404':
           $ref: '#/components/responses/404'
     put:
+      deprecated: true
+      tags:
+        - Scenario Iterations
+      summary: Update a scenario iteration
+      operationId: updateScenarioIteration_deprecated
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioIterationId
+          description: ID of the scenario iteration that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Updated scenario iteration object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScenarioIterationBody'
+        required: true
+      responses:
+        '200':
+          description: The updated scenario iteration corresponding to the provided `scenarioIterationId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioIterationWithBody'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    patch:
       tags:
         - Scenario Iterations
       summary: Update a scenario iteration
       operationId: updateScenarioIteration
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: scenarioIterationId
           description: ID of the scenario iteration that need to be updated
@@ -364,7 +723,7 @@ paths:
       description: List rules using provided filters
       operationId: listScenarioIterationRules
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: scenarioIterationId
           description: ID of the scenario iteration returned rules should be linked to
@@ -395,7 +754,7 @@ paths:
       description: Create a scenario iteration rule for a given `scenarioIterationId`
       operationId: createScenarioIterationRule
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       requestBody:
         description: 'Scenario iteration rule object to create and linked `scenarioIterationId`'
         content:
@@ -423,7 +782,7 @@ paths:
       summary: Get a scenario iteration rule by id
       operationId: getScenarioIterationRule
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: ruleId
           description: ID of the rule that need to be fetched
@@ -446,12 +805,48 @@ paths:
         '404':
           $ref: '#/components/responses/404'
     put:
+      deprecated: true
+      tags:
+        - Scenario Iteration Rules
+      summary: Update a scenario iteration rule
+      operationId: updateScenarioIterationRule_deprecated
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: ruleId
+          description: ID of the rule that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Updated scenario iteration rule object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScenarioIterationRuleBody'
+        required: true
+      responses:
+        '200':
+          description: The updated scenario iteration rule corresponding to the provided `ruleId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioIterationRule'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    patch:
       tags:
         - Scenario Iteration Rules
       summary: Update a scenario iteration rule
       operationId: updateScenarioIterationRule
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: ruleId
           description: ID of the rule that need to be updated
@@ -488,7 +883,7 @@ paths:
       description: List scenario publications using provided filters
       operationId: listScenarioPublications
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: scenarioId
           description: ID of the scenario returned publications should be linked to
@@ -531,7 +926,7 @@ paths:
       summary: Create a scenario publication
       operationId: createScenarioPublication
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       requestBody:
         description: 'Describe the scenario publication action'
         content:
@@ -561,7 +956,7 @@ paths:
       summary: Get a scenario publication by id
       operationId: getScenarioPublication
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: scenarioPublicationId
           description: ID of the scenario publication that need to be fetched
@@ -583,8 +978,546 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /data-model:
+    get:
+      tags:
+        - Data Model
+      summary: Get the data model associated with the current organization (present in the JWT)
+      operationId: getDataModel
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The scenario publication corresponding to the provided `scenarioPublicationId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data_model
+                properties:
+                  data_model:
+                    $ref: '#/components/schemas/DataModel'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /apikeys:
+    get:
+      tags:
+        - Authorization
+      summary: List api keys associated with the current organization (present in the JWT)
+      operationId: listApiKeys
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The apikeys corresponding to the current organization (present in the JWT)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - api_keys
+                properties:
+                  api_keys:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ApiKey'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /users:
+    get:
+      tags:
+        - Admin
+        - Users
+      summary: List all users present in the database
+      operationId: listUsers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The list of users present in the database
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - users
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Admin
+        - Users
+      summary: Create a user
+      operationId: createUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Describe the user to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+        required: true
+      responses:
+        '200':
+          description: The created user
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /users/{userId}:
+    get:
+      tags:
+        - Admin
+        - Users
+      summary: Get a user by id
+      operationId: getUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          description: ID of the user that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The user corresponding to the provided `userId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    delete:
+      tags:
+        - Admin
+        - Users
+      summary: Delete a user by id
+      operationId: deleteUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          description: ID of the user that need to be deleted
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: The user has been deleted
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /organizations:
+    get:
+      tags:
+        - Admin
+        - Organizations
+      summary: List all organizations present in the database
+      operationId: listOrganizations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The list of organizations present in the database
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organizations
+                properties:
+                  organizations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Admin
+        - Organizations
+      summary: Create an organization
+      operationId: createOrganization
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Describe the organization to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationBodyDto'
+        required: true
+      responses:
+        '200':
+          description: The created organization
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization
+                properties:
+                  organization:
+                    $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /organizations/{organizationId}:
+    get:
+      tags:
+        - Admin
+        - Organizations
+      summary: Get an organization by id
+      operationId: getOrganization
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organizationId
+          description: ID of the organization that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The organization corresponding to the provided `organizationId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization
+                properties:
+                  organization:
+                    $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    put:
+      deprecated: true
+      tags:
+        - Admin
+        - Organizations
+      summary: Update an organization by id
+      operationId: updateOrganization_deprecated
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organizationId
+          description: ID of the organization that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Describe the organization to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationBodyDto'
+        required: true
+      responses:
+        '200':
+          description: The updated organization
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization
+                properties:
+                  organization:
+                    $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    patch:
+      tags:
+        - Admin
+        - Organizations
+      summary: Update an organization by id
+      operationId: updateOrganization
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organizationId
+          description: ID of the organization that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Describe the organization to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationBodyDto'
+        required: true
+      responses:
+        '200':
+          description: The updated organization
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization
+                properties:
+                  organization:
+                    $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    delete:
+      tags:
+        - Admin
+        - Organizations
+      summary: Delete an organization by id
+      operationId: deleteOrganization
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organizationId
+          description: ID of the organization that need to be deleted
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: The organization has been deleted
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /organizations/{organizationId}/users:
+    get:
+      tags:
+        - Admin
+        - Organizations
+      summary: List all users of an organization
+      operationId: listOrganizationUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organizationId
+          description: ID of the organization
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The list of users of the organization
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - users
+                properties:
+                  users:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
 components:
   schemas:
+    Organization:
+      type: object
+      required:
+        - id
+        - name
+        - database_name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        database_name:
+          type: string
+    CreateOrganizationBodyDto:
+      type: object
+      required:
+        - name
+        - database_name
+      properties:
+        name:
+          type: string
+        database_name:
+          type: string
+    UpdateOrganizationBodyDto:
+      type: object
+      properties:
+        name:
+          type: string
+        database_name:
+          type: string
+    User:
+      type: object
+      required:
+        - user_id
+        - email
+        - role
+        - organization_id
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        role:
+          type: string
+        organization_id:
+          type: string
+          format: uuid
+    CreateUser:
+      type: object
+      required:
+        - email
+        - role
+        - organization_id
+      properties:
+        email:
+          type: string
+        role:
+          type: string
+        organization_id:
+          type: string
+          format: uuid
+    ApiKey:
+      type: object
+      required:
+        - api_key_id
+        - organization_id
+        - key
+        - role
+      properties:
+        api_key_id:
+          type: string
+        organization_id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        role:
+          type: string
+    DataModel:
+      type: object
+      required:
+        - tables
+      properties:
+        tables:
+          type: object
+          additionalProperties:
+            type: object
+            required:
+              - name
+              - fields
+              - linksToSingle
+            properties:
+              name:
+                type: string
+              fields:
+                type: object
+                additionalProperties:
+                  type: object
+                  required:
+                    - name
+                    - dataType
+                  properties:
+                    name:
+                      type: string
+                    dataType:
+                      type: string
+                      enum: [Bool, Int, Float, String, Timestamp, unknown]
+              linksToSingle:
+                type: object
+                additionalProperties:
+                  type: object
+                  required:
+                    - linkedTableName
+                    - parentFieldName
+                    - childFieldName
+                  properties:
+                    linkedTableName:
+                      type: string
+                    parentFieldName:
+                      type: string
+                    childFieldName:
+                      type: string
     Token:
       type: object
       required:
@@ -700,6 +1633,100 @@ components:
           type: integer
         error:
           $ref: '#/components/schemas/Error'
+    CreateDecisionBody:
+      type: object
+      required:
+        - scenario_id
+        - trigger_object
+        - object_type
+      properties:
+        scenario_id:
+          type: string
+          format: uuid
+        trigger_object:
+          type: object
+        object_type:
+          type: string
+    CustomList:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CustomListValue:
+      type: object
+      required:
+        - id
+        - value
+      properties:
+        id:
+          type: string
+          format: uuid
+        value:
+          type: string
+    CustomListWithValues:
+      allOf:
+        - $ref: '#/components/schemas/CustomList'
+        - type: object
+          required:
+            - values
+          properties:
+            values:
+              type: array
+              items:
+                $ref: '#/components/schemas/CustomListValue'
+    CreateCustomListBody:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    UpdateCustomListBody:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    CreateCustomListValueBody:
+      type: object
+      required:
+        - value
+      properties:
+        value:
+          type: string
+    DeleteCustomListValueBody:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: id of the custom list value to delete
     Scenario:
       type: object
       required:
@@ -1365,12 +2392,10 @@ components:
             level:
               type: integer
   securitySchemes:
-    Oauth2ClientCredentials:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: token-bff
-          scopes: {}
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   responses:
     '401':
       description: Unauthorized

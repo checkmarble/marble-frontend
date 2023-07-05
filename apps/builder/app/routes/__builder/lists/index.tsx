@@ -1,6 +1,7 @@
-import { faker } from '@faker-js/faker';
 import { Page } from '@marble-front/builder/components';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { getRoute } from '@marble-front/builder/services/routes';
+import { fromUUID } from '@marble-front/builder/utils/short-uuid';
 import { Table, useVirtualTable } from '@marble-front/ui/design-system';
 import { Lists } from '@marble-front/ui/icons';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -15,23 +16,55 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type List = {
+  id: string;
   name: string;
   description: string;
 };
 
-const fakeLists = Array.from({ length: 2500 }).map(() => ({
-  name: faker.person.fullName(),
-  description: faker.lorem.sentences(),
-}));
-
 export async function loader({ request }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  /** TODO(data): get lists from API */
+  const { custom_lists } = await apiClient.listCustomLists();
 
-  return json<List[]>(fakeLists);
+  return json(custom_lists);
 }
+
+// const formSchema = z.object({
+//   listId: z.string().uuid(),
+// });
+
+// export async function action({ request }: ActionArgs) {
+//   const { apiClient } = await authenticator.isAuthenticated(request, {
+//     failureRedirect: '/login',
+//   });
+
+//   switch (request.method) {
+//     case 'POST': {
+//       await apiClient.createCustomList({
+//         name: 'New test list',
+//         description: 'test pour add une liste',
+//       });
+//       break;
+//     }
+//     case 'PATCH': {
+//       const parsedForm = await parseFormSafe(request, formSchema);
+//       const { listId } = parsedForm.data;
+//       await apiClient.updateCustomList(listId, {
+//         name: 'Updated test list',
+//         description: 'test pour update une liste',
+//       });
+//       break;
+//     }
+//     case 'DELETE': {
+//       const parsedForm = await parseFormSafe(request, formSchema);
+//       const { listId } = parsedForm.data;
+//       await apiClient.deleteCustomList(listId);
+//       break;
+//     }
+//   }
+//   return null;
+// }
 
 export const handle = {
   i18n: ['lists', 'navigation'] satisfies Namespace,
@@ -39,7 +72,10 @@ export const handle = {
 
 export default function ListsPage() {
   const { t } = useTranslation(handle.i18n);
-  const data = useLoaderData<typeof loader>();
+  const customList = useLoaderData<typeof loader>();
+  // const fetcher = useFetcher<typeof action>();
+
+  const navigate = useNavigate();
 
   const columns = useMemo<ColumnDef<List>[]>(
     () => [
@@ -54,21 +90,36 @@ export default function ListsPage() {
         id: 'description',
         accessorFn: (row) => row.description,
         header: t('lists:description'),
-        size: 800,
+        size: 500,
       },
+      // {
+      //   id: 'action',
+      //   header: t('lists:action'),
+      //   accessor: 'id',
+      //   cell: ({cell}) => (
+      //   <div>
+      //     <fetcher.Form method="patch">
+      //       <HiddenInputs listId={cell.row.original.id}/>
+      //       <Button type='submit' name='edit' onClick={(event) => {event.stopPropagation()}}>Edit</Button>
+      //     </fetcher.Form>
+      //     <fetcher.Form method="delete">
+      //       <HiddenInputs listId={cell.row.original.id}/>
+      //       <Button type='submit' name='delete' onClick={(event) => {event.stopPropagation()}}>Delete</Button>
+      //     </fetcher.Form>
+      //   </div>
+      //   )
+      // },
     ],
     [t]
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
-    data,
+    data: customList,
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
-
-  const navigate = useNavigate();
 
   return (
     <Page.Container>
@@ -77,21 +128,36 @@ export default function ListsPage() {
         {t('navigation:lists')}
       </Page.Header>
       <Page.Content scrollable={false}>
-        <Table.Container {...getContainerProps()}>
-          <Table.Header headerGroups={table.getHeaderGroups()} />
-          <Table.Body {...getBodyProps()}>
-            {rows.map((row) => (
-              <Table.Row
-                key={row.id}
-                className="hover:bg-grey-02 cursor-pointer"
-                row={row}
-                onClick={() => {
-                  navigate(`./${row.id}`);
-                }}
-              />
-            ))}
-          </Table.Body>
-        </Table.Container>
+        {/* <fetcher.Form method="POST">
+          <Button>Create List</Button>
+        </fetcher.Form> */}
+        {rows.length > 0 ? (
+          <Table.Container {...getContainerProps()}>
+            <Table.Header headerGroups={table.getHeaderGroups()} />
+            <Table.Body {...getBodyProps()}>
+              {rows.map((row) => (
+                <Table.Row
+                  key={row.id}
+                  className="hover:bg-grey-02 cursor-pointer"
+                  row={row}
+                  onClick={() => {
+                    navigate(
+                      getRoute('/lists/:listId', {
+                        listId: fromUUID(row.original.id),
+                      })
+                    );
+                  }}
+                />
+              ))}
+            </Table.Body>
+          </Table.Container>
+        ) : (
+          <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+            <p className="text-s font-medium">
+              {t('lists:empty_custom_lists_list')}
+            </p>
+          </div>
+        )}
       </Page.Content>
     </Page.Container>
   );

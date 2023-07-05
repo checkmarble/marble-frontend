@@ -1,8 +1,10 @@
 {
   "description": "Description",
   "name": "Nom",
+  "values": "Valeurs",
   "other_scenarios_one": "{{count}} autre",
   "other_scenarios_other": "{{count}} autres",
   "show_less": "Montrer moins",
-  "used_in_scenarios": "Utilisé dans les scénarios suivants :"
+  "used_in_scenarios": "Utilisé dans les scénarios suivants :",
+  "empty_custom_lists_list": "Contactez Marble pour créer votre première liste."
 }
