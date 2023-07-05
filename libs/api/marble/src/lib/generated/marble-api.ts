@@ -498,7 +498,9 @@ export function listCustomLists(opts?: Oazapfts.RequestOpts) {
 export function createCustomList(createCustomListBody: CreateCustomListBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CustomList;
+        data: {
+            custom_list: CustomList;
+        };
     } | {
         status: 401;
         data: string;
@@ -585,7 +587,9 @@ export function deleteCustomList(customListId: string, opts?: Oazapfts.RequestOp
 export function createCustomListValue(customListId: string, createCustomListValueBody: CreateCustomListValueBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CustomListValue;
+        data: {
+            custom_list_value: CustomListValue;
+        };
     } | {
         status: 401;
         data: string;
