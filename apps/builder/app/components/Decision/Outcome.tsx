@@ -1,6 +1,6 @@
 import { type Decision } from '@marble-front/api/marble';
 import { Tag, type TagProps } from '@marble-front/ui/design-system';
-import { type TFuncKey } from 'i18next';
+import { type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { decisionI18n } from './decision-i18n';
@@ -11,7 +11,7 @@ export interface OutcomeProps extends Omit<TagProps, 'color'> {
 
 const outcomeMapping: Record<
   OutcomeProps['outcome'],
-  { color: TagProps['color']; tKey: TFuncKey<['decisions']> }
+  { color: TagProps['color']; tKey: ParseKeys<['decisions']> }
 > = {
   approve: { color: 'green', tKey: 'decisions:outcome.approve' },
   review: { color: 'yellow', tKey: 'decisions:outcome.review' },

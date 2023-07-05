@@ -1,3 +1,3 @@
-import { type TFuncKey } from 'i18next';
+import { type ParseKeys } from 'i18next';
 
-export type NavigationTKey = TFuncKey<['navigation']>;
+export type NavigationTKey = ParseKeys<['navigation']>;

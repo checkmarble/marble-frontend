@@ -78,7 +78,6 @@ function ScenariosList({ scenarios }: { scenarios: string[] }) {
             <Dialog.Trigger asChild>
               <Button variant="secondary">
                 {t('lists:other_scenarios', {
-                  ns: 'lists',
                   count: scenarios.length - MAX_SCENARIOS,
                 })}
               </Button>

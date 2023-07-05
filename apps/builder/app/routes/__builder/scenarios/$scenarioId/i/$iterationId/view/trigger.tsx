@@ -59,7 +59,6 @@ export default function Trigger() {
                     navigator.clipboard.writeText(scenarioId).then(() => {
                       toast.success(
                         t('common:clipboard.copy', {
-                          ns: 'common',
                           replace: { value: scenarioId },
                         })
                       );

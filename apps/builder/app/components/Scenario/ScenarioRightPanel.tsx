@@ -2,7 +2,7 @@ import { createSimpleContext } from '@marble-front/builder/utils/create-context'
 import { assertNever } from '@marble-front/typescript-utils';
 import { Variable } from '@marble-front/ui/icons';
 import { type DialogTriggerProps } from '@radix-ui/react-dialog';
-import { type TFuncKey } from 'i18next';
+import { type ParseKeys } from 'i18next';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -100,7 +100,7 @@ function ScenarioRightPanelContent({ data }: { data: State['data'] }) {
 
 const titleK: Record<
   NonNullable<State['data']>['type'],
-  TFuncKey<['scenarios']>
+  ParseKeys<['scenarios']>
 > = {
   formulaAggregation: 'scenarios:rules.variable.title',
 };
