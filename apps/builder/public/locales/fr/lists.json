@@ -6,5 +6,6 @@
   "other_scenarios_other": "{{count}} autres",
   "show_less": "Montrer moins",
   "used_in_scenarios": "Utilisé dans les scénarios suivants :",
-  "empty_custom_lists_list": "Contactez Marble pour créer votre première liste."
+  "empty_custom_lists_list": "Contactez Marble pour créer votre première liste.",
+  "empty_custom_list_values_list": "Contactez Marble pour créer votre première valeur."
 }

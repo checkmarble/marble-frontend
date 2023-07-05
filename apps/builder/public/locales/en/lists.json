@@ -6,5 +6,6 @@
   "other_scenarios_one": "+{{count}} other",
   "other_scenarios_other": "+{{count}} others",
   "show_less": "show less",
-  "empty_custom_lists_list": "Reach out to  Marble to create your first list."
+  "empty_custom_lists_list": "Reach out to  Marble to create your first list.",
+  "empty_custom_list_values_list": "Reach out to  Marble to create your first list value."
 }
