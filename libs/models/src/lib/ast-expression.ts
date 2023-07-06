@@ -9,7 +9,7 @@ import {
 } from './operators';
 
 export interface AstNode {
-  name: string;
+  name: string | null;
   constant: ConstantOptional;
   children: AstNode[];
   namedChildren: Record<string, AstNode>;
@@ -34,7 +34,7 @@ export function NewAstNode({
   namedChildren,
 }: Partial<AstNode> = {}): AstNode {
   return {
-    name: name ?? '',
+    name: name ?? null,
     constant: constant ?? NoConstant,
     children: children ?? [],
     namedChildren: namedChildren ?? {},

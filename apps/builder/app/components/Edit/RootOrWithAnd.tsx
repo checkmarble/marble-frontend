@@ -1,4 +1,4 @@
-import { NewAstNode } from '@marble-front/models';
+import { type AstNode, NewAstNode } from '@marble-front/models';
 import { Button, type ButtonProps } from '@marble-front/ui/design-system';
 import clsx from 'clsx';
 import * as React from 'react';
@@ -8,18 +8,21 @@ import { useTranslation } from 'react-i18next';
 import { LogicalOperator } from '../Scenario/LogicalOperator';
 import { RemoveButton } from './RemoveButton';
 
+// type RootOrWithAndFormFields = {
+//   astNode: {
+//     name: 'OR';
+//     children: {
+//       name: 'AND';
+//       children: unknown[];
+//       constant: unknown;
+//       namedChildren: Record<string, never>;
+//     }[];
+//     constant: unknown;
+//     namedChildren: Record<string, never>;
+//   };
+// };
 type RootOrWithAndFormFields = {
-  astNode: {
-    name: 'OR';
-    children: {
-      name: 'AND';
-      children: unknown[];
-      constant: unknown;
-      namedChildren: Record<string, never>;
-    }[];
-    constant: unknown;
-    namedChildren: Record<string, never>;
-  };
+  astNode: AstNode;
 };
 
 const AddLogicalOperator = React.forwardRef<
@@ -48,7 +51,7 @@ export function RootOrOperator({
     fields: rootOrOperands,
     append,
     remove,
-  } = useFieldArray<RootOrWithAndFormFields>({
+  } = useFieldArray<RootOrWithAndFormFields, 'astNode.children'>({
     name: 'astNode.children',
   });
 
@@ -105,8 +108,8 @@ function RootAndOperator({
     fields: andOperands,
     remove,
     append,
-  } = useFieldArray<RootOrWithAndFormFields>({
-    name,
+  } = useFieldArray<RootOrWithAndFormFields, 'astNode.children'>({
+    name: name as 'astNode.children',
   });
 
   function onRemoveClick(operandIndex: number) {

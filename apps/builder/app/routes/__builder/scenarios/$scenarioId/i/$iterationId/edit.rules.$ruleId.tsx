@@ -14,11 +14,12 @@ import { authenticator } from '@marble-front/builder/services/auth/auth.server';
 import { getServerEnv } from '@marble-front/builder/utils/environment.server';
 import { fromParams, fromUUID } from '@marble-front/builder/utils/short-uuid';
 import { getScenarioIterationRule } from '@marble-front/repositories';
-import { Tag } from '@marble-front/ui/design-system';
+import { Button, Tag } from '@marble-front/ui/design-system';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { FormProvider, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { ClientOnly } from 'remix-utils';
 
 export const handle = {
@@ -69,17 +70,52 @@ export default function RuleView() {
           <Consequence scoreIncrease={rule.scoreModifier} />
           <Paper.Container scrollable={false}>
             <FormProvider {...formMethods}>
-              {/* <RootOrOperator renderAstNode={WildEditAstNode} /> */}
-              <RootOrOperator renderAstNode={EditAstNode} />
+              {/* <RootOrOperator
+                renderAstNode={({ name }) => <WildEditAstNode name={name} />}
+              /> */}
+              <RootOrOperator
+                renderAstNode={({ name }) => <EditAstNode name={name} />}
+              />
             </FormProvider>
           </Paper.Container>
+          <Button
+            onClick={formMethods.handleSubmit(
+              (values) => {
+                console.log(
+                  'SUCCESS',
+                  JSON.stringify(values.astNode, undefined, 2)
+                );
+                toast.success(() => (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-s text-grey-100">Successfully saved!</p>
+                    <p className="text-grey-50 text-xs">
+                      astNode print as JSON in the console
+                    </p>
+                  </div>
+                ));
+              },
+              (error) => {
+                console.log('ERROR', error);
+                toast.error(() => (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-s text-grey-100">Error saving!</p>
+                    <p className="text-grey-50 text-xs">
+                      error print in the console
+                    </p>
+                  </div>
+                ));
+              }
+            )}
+          >
+            Save
+          </Button>
         </div>
         <ClientOnly>
           {() => (
             <DevTool
               control={formMethods.control}
               placement="bottom-right"
-              styles={{ panel: { width: '1000px' } }}
+              // styles={{ panel: { width: '1000px' } }}
             />
           )}
         </ClientOnly>
