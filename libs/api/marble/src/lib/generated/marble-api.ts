@@ -356,6 +356,17 @@ export type UpdateOrganizationBodyDto = {
     name?: string;
     database_name?: string;
 };
+export type ConstantDto = (string | number | boolean | ConstantDto[] | {
+    [key: string]: ConstantDto;
+}) | null;
+export type NodeDto = {
+    name?: string;
+    constant?: ConstantDto;
+    children?: NodeDto[];
+    named_children?: {
+        [key: string]: NodeDto;
+    };
+};
 /**
  * Get an access token
  */
@@ -1300,6 +1311,25 @@ export function listOrganizationUsers(organizationId: string, opts?: Oazapfts.Re
         status: 404;
         data: string;
     }>(`/organizations/${encodeURIComponent(organizationId)}/users`, {
+        ...opts
+    }));
+}
+/**
+ * List all identifiers
+ */
+export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            data_accessors: NodeDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/editor/${encodeURIComponent(scenarioId)}/identifiers`, {
         ...opts
     }));
 }
