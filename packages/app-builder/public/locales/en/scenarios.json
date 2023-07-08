@@ -1,4 +1,5 @@
 {
+  "scheduled": "planifié",
   "live": "live",
   "draft": "draft",
   "empty_scenario_list": "Reach out to  Marble to create your first scenario.",
@@ -47,5 +48,5 @@
   "deployment_modal.deactivate.change_is_immediate": "I understand the change is immediate.",
   "deployment_modal.deactivate.helper": "You can roll back to a previous version directly from the version page",
   "deployment_modal_success.deactivate.title": "Version deactivated",
-  "deployment_modal_success.deactivate.description": "The live version has been successfully deactivated, the scenario has ceased to operate"
+  "deployment_modal_success.deactivate.description": "The live version has been successfully deactivated, the scenario has ceased to operate",
 }

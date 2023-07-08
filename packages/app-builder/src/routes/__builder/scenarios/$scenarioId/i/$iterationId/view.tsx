@@ -19,12 +19,14 @@ import {
   useNavigate,
   useParams,
 } from '@remix-run/react';
-import { Select } from '@ui-design-system';
+import { Select, Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import invariant from 'tiny-invariant';
+
+import { useCurrentScenarioIteration } from '../$iterationId';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -92,7 +94,11 @@ export type SortedScenarioIteration = ReturnType<
   : unknown;
 
 export default function ScenarioViewLayout() {
+  const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
+  const {
+    body: { schedule },
+  } = useCurrentScenarioIteration();
   const scenarioIterations = useLoaderData<typeof loader>();
 
   const sortedScenarioIterations = sortScenarioIterations(
@@ -135,6 +141,11 @@ export default function ScenarioViewLayout() {
             </li>
           ))}
         </Scenarios.Nav>
+        {schedule ? (
+          <Tag color="grey" className="w-24 capitalize">
+            {t('scenarios:scheduled')}
+          </Tag>
+        ) : null}
         <Outlet />
       </ScenarioPage.Content>
     </ScenarioPage.Container>
