@@ -54,19 +54,22 @@ function TriggerDescription() {
   return (
     <p className="text-s text-grey-100 font-normal">
       {schedule ? (
-        <>
-          {t('scenarios:scheduled')}
-          <span style={{ fontWeight: 'bold' }}>
-            {cronstrue
+        <Trans
+          t={t}
+          i18nKey="scenarios:scheduled"
+          components={{
+            ScheduleLocale: <span style={{ fontWeight: 'bold' }} />,
+          }}
+          values={{
+            schedule: cronstrue
               .toString(schedule, {
                 verbose: false,
                 locale: i18n.language,
                 throwExceptionOnParseError: false,
               })
-              .toLowerCase()}
-            {'.'}
-          </span>
-        </>
+              .toLowerCase(),
+          }}
+        />
       ) : (
         <>
           <Trans

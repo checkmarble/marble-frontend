@@ -1,5 +1,5 @@
 {
-  "scheduled": "This scenario is scheduled and will run ",
+  "scheduled": "This scenario is scheduled and will run <ScheduleLocale>{{schedule}}</ScheduleLocale>.",
   "live": "live",
   "draft": "draft",
   "empty_scenario_list": "Reach out to  Marble to create your first scenario.",
