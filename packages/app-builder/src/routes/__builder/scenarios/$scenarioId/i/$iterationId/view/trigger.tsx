@@ -58,7 +58,7 @@ function TriggerDescription() {
           {t('scenarios:scheduled')}
           <span style={{ fontWeight: 'bold' }}>
             {cronstrue
-              .toString('0 0 1 1 *', {
+              .toString(schedule, {
                 verbose: false,
                 locale: i18n.language,
                 throwExceptionOnParseError: false,
