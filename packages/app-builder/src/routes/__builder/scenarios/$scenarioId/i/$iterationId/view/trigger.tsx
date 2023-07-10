@@ -1,9 +1,13 @@
+import 'cronstrue/locales/fr';
+import 'cronstrue/locales/en';
+
 import { Callout, Paper } from '@app-builder/components';
 import { Formula } from '@app-builder/components/Scenario/Formula';
 import { LogicalOperator } from '@app-builder/components/Scenario/LogicalOperator';
 import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import { type Operator } from '@marble-api';
 import clsx from 'clsx';
+import cronstrue from 'cronstrue';
 import { type Namespace } from 'i18next';
 import { Fragment } from 'react';
 import { toast } from 'react-hot-toast';
@@ -19,18 +23,52 @@ export const handle = {
 export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
 
-  const {
-    scenarioId,
-    body: { triggerCondition },
-  } = useCurrentScenarioIteration();
-
-  const { triggerObjectType } = useCurrentScenario();
-
   return (
     <Paper.Container className="max-w-3xl">
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.run_scenario.title')}</Paper.Title>
-        <p className="text-s text-grey-100 font-normal">
+
+        <TriggerDescription />
+      </div>
+
+      <div className="flex flex-col gap-2 lg:gap-4">
+        <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
+        <Callout className="w-fit">
+          {t('scenarios:trigger.trigger_object.callout')}
+        </Callout>
+      </div>
+
+      <TriggerCondition />
+    </Paper.Container>
+  );
+}
+
+function TriggerDescription() {
+  const { t, i18n } = useTranslation(handle.i18n);
+
+  const {
+    scenarioId,
+    body: { schedule },
+  } = useCurrentScenarioIteration();
+
+  return (
+    <p className="text-s text-grey-100 font-normal">
+      {schedule ? (
+        <>
+          {t('scenarios:scheduled')}
+          <span style={{ fontWeight: 'bold' }}>
+            {cronstrue
+              .toString('0 0 1 1 *', {
+                verbose: false,
+                locale: i18n.language,
+                throwExceptionOnParseError: false,
+              })
+              .toLowerCase()}
+            {'.'}
+          </span>
+        </>
+      ) : (
+        <>
           <Trans
             t={t}
             i18nKey="scenarios:trigger.run_scenario.description.docs"
@@ -72,21 +110,9 @@ export default function Trigger() {
               scenarioId: scenarioId,
             }}
           />
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-2 lg:gap-4">
-        <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
-        <Callout className="w-fit">
-          {t('scenarios:trigger.trigger_object.callout')}
-        </Callout>
-      </div>
-
-      <TriggerCondition
-        triggerObjectType={triggerObjectType}
-        triggerCondition={triggerCondition}
-      />
-    </Paper.Container>
+        </>
+      )}
+    </p>
   );
 }
 
@@ -113,13 +139,13 @@ export default function Trigger() {
  *        |-> Where <Formula condition={condition} />
  *
  */
-function TriggerCondition({
-  triggerObjectType,
-  triggerCondition,
-}: {
-  triggerObjectType: string;
-  triggerCondition?: Operator;
-}) {
+function TriggerCondition() {
+  const {
+    body: { triggerCondition },
+  } = useCurrentScenarioIteration();
+
+  const { triggerObjectType } = useCurrentScenario();
+
   const conditions = getNestedConditions(triggerCondition);
 
   return (
