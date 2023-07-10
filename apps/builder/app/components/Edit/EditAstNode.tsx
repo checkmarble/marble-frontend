@@ -1,6 +1,7 @@
+import { useEditorIdentifiers } from '@marble-front/builder/services/editor/identifiers';
 import { type AstNode, NewAstNode } from '@marble-front/models';
 import { Combobox, Select } from '@marble-front/ui/design-system';
-import { forwardRef, useState } from 'react';
+import { forwardRef, useCallback, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useGetOperatorLabel } from '../Scenario/Formula/Operators';
@@ -56,9 +57,10 @@ const EditOperand = forwardRef<
     onChange: (value: AstNode | null) => void;
   }
 >(({ value, onChange, ...otherProps }, ref) => {
+  const getIdentifierOptions = useGetIdentifierOptions();
   const [inputValue, setInputValue] = useState('');
   const [selectedItem, setSelectedItem] = useState<
-    (typeof mockedIdentifiers)[number] | null
+    ReturnType<typeof getIdentifierOptions>[number] | null
   >(null);
   const items = getIdentifierOptions(inputValue);
 
@@ -73,7 +75,7 @@ const EditOperand = forwardRef<
       }}
       nullable
     >
-      <div className="relative max-w-xs">
+      <div className="relative">
         <Combobox.Input
           ref={ref}
           displayValue={(item?: (typeof items)[number]) => item?.label ?? ''}
@@ -82,7 +84,7 @@ const EditOperand = forwardRef<
             otherProps?.onBlur?.();
           }}
         />
-        <Combobox.Options className="w-full">
+        <Combobox.Options className="w-fit">
           {filteredItems.map((item) => (
             <Combobox.Option
               key={item.label}
@@ -90,7 +92,6 @@ const EditOperand = forwardRef<
               className="flex flex-col gap-1"
             >
               <span>{item.label}</span>
-              <span className="text-sm text-gray-700">{item.node.name}</span>
             </Combobox.Option>
           ))}
         </Combobox.Options>
@@ -99,49 +100,6 @@ const EditOperand = forwardRef<
   );
 });
 EditOperand.displayName = 'EditOperand';
-
-const mockedIdentifiers: { label: string; node: AstNode }[] = [
-  {
-    label: 'account.is_frozen',
-    node: NewAstNode({
-      name: 'DB_FIELD_BOOL',
-      namedChildren: {
-        triggerTableName: {
-          name: 'STRING_CONSTANT',
-          constant: 'transaction',
-          children: [],
-          namedChildren: {},
-        },
-        path: {
-          name: 'STRING_LIST_CONSTANT',
-          constant: ['account'],
-          children: [],
-          namedChildren: {},
-        },
-        fieldName: {
-          name: 'STRING_CONSTANT',
-          constant: 'is_frozen',
-          children: [],
-          namedChildren: {},
-        },
-      },
-    }),
-  },
-  {
-    label: 'amount',
-    node: NewAstNode({
-      name: 'PAYLOAD_FIELD_FLOAT',
-      namedChildren: {
-        fieldName: {
-          name: 'STRING_CONSTANT',
-          constant: 'amount',
-          children: [],
-          namedChildren: {},
-        },
-      },
-    }),
-  },
-];
 
 function coerceToConstant(search: string) {
   const parsedNumber = Number(search);
@@ -166,9 +124,16 @@ function coerceToConstant(search: string) {
   };
 }
 
-function getIdentifierOptions(search: string) {
-  if (!search) return mockedIdentifiers;
-  return [...mockedIdentifiers, coerceToConstant(search)];
+function useGetIdentifierOptions() {
+  const identifiers = useEditorIdentifiers();
+
+  return useCallback(
+    (search: string) => {
+      if (!search) return identifiers;
+      return [...identifiers, coerceToConstant(search)];
+    },
+    [identifiers]
+  );
 }
 
 const EditOperator = forwardRef<

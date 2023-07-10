@@ -1,5 +1,9 @@
-import { type ScenarioIterationRule } from '@marble-front/api/marble';
+import {
+  type NodeDto,
+  type ScenarioIterationRule,
+} from '@marble-front/api/marble';
 import { assertNever } from '@marble-front/typescript-utils';
+import * as R from 'remeda';
 
 import {
   isConstantOperator,
@@ -110,4 +114,13 @@ export function adaptFormulaDto(
   }
 
   assertNever('unknwon Operator:', formula);
+}
+
+export function adaptNodeDto(nodeDto: NodeDto): AstNode {
+  return NewAstNode({
+    name: nodeDto.name,
+    constant: nodeDto.constant,
+    children: nodeDto.children?.map(adaptNodeDto),
+    namedChildren: R.mapValues(nodeDto.named_children ?? {}, adaptNodeDto),
+  });
 }

@@ -11,9 +11,10 @@ import {
 } from '@marble-front/builder/components/Edit';
 import { Consequence } from '@marble-front/builder/components/Scenario/Rule/Consequence';
 import { authenticator } from '@marble-front/builder/services/auth/auth.server';
+import { EditorIdentifiersProvider } from '@marble-front/builder/services/editor/identifiers';
 import { getServerEnv } from '@marble-front/builder/utils/environment.server';
 import { fromParams, fromUUID } from '@marble-front/builder/utils/short-uuid';
-import { getScenarioIterationRule } from '@marble-front/repositories';
+import { editor, getScenarioIterationRule } from '@marble-front/repositories';
 import { Button, Tag } from '@marble-front/ui/design-system';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
@@ -32,23 +33,33 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 
   const ruleId = fromParams(params, 'ruleId');
+  const scenarioId = fromParams(params, 'scenarioId');
 
-  const scenarioIterationRule = await getScenarioIterationRule({
+  const scenarioIterationRule = getScenarioIterationRule({
     ruleId,
     tokenService,
     baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
   });
 
-  return json(scenarioIterationRule);
+  const identifiers = editor.listIdentifiers({
+    scenarioId,
+    tokenService,
+    baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
+  });
+
+  return json({
+    rule: await scenarioIterationRule,
+    identifiers: await identifiers,
+  });
 }
 
 export default function RuleView() {
-  const rule = useLoaderData<typeof loader>();
+  const { rule, identifiers } = useLoaderData<typeof loader>();
 
   const formMethods = useForm({
-    // defaultValues: {
-    //   astNode: rule.astNode as RootAstNode<any, any>,
-    // },
+    defaultValues: {
+      astNode: rule.astNode,
+    },
   });
 
   return (
@@ -69,14 +80,16 @@ export default function RuleView() {
         <div className="max-w flex flex-col gap-4">
           <Consequence scoreIncrease={rule.scoreModifier} />
           <Paper.Container scrollable={false}>
-            <FormProvider {...formMethods}>
-              {/* <RootOrOperator
-                renderAstNode={({ name }) => <WildEditAstNode name={name} />}
-              /> */}
-              <RootOrOperator
-                renderAstNode={({ name }) => <EditAstNode name={name} />}
-              />
-            </FormProvider>
+            <EditorIdentifiersProvider identifiers={identifiers}>
+              <FormProvider {...formMethods}>
+                {/* <RootOrOperator
+                  renderAstNode={({ name }) => <WildEditAstNode name={name} />}
+                /> */}
+                <RootOrOperator
+                  renderAstNode={({ name }) => <EditAstNode name={name} />}
+                />
+              </FormProvider>
+            </EditorIdentifiersProvider>
           </Paper.Container>
           <Button
             onClick={formMethods.handleSubmit(
@@ -115,7 +128,9 @@ export default function RuleView() {
             <DevTool
               control={formMethods.control}
               placement="bottom-right"
-              // styles={{ panel: { width: '1000px' } }}
+              styles={{
+                panel: { width: '1000px' },
+              }}
             />
           )}
         </ClientOnly>
