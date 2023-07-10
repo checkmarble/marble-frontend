@@ -1,0 +1,16 @@
+{
+  "name": "ui-design-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@storybook/react-vite": "^7.0.26",
+    "vite": "^4.4.2",
+    "vite-tsconfig-paths": "^4.2.0"
+  }
+}

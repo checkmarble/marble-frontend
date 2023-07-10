@@ -1,0 +1,12 @@
+{
+  "name": "marble-api",
+  "version": "1.0.0",
+  "description": "",
+  "devDependencies": {},
+  "scripts": {
+    "generate-api": "node -r esbuild-register scripts/generate.ts",
+    "operator-regex": "node -r esbuild-register scripts/operator-regexp.ts"
+  },
+  "author": "",
+  "license": "ISC"
+}

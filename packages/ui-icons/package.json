@@ -1,0 +1,11 @@
+{
+  "name": "ui-icons",
+  "version": "1.0.0",
+  "description": "",
+  "devDependencies": {},
+  "scripts": {
+    "icons-gen": "node -r esbuild-register scripts/generate.ts"
+  },
+  "author": "",
+  "license": "ISC"
+}

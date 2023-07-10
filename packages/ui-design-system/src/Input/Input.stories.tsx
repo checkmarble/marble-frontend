@@ -1,0 +1,38 @@
+import { Calendar, Help, Scenarios, Search } from '@marble-front/ui/icons';
+import { type Meta, type StoryFn } from '@storybook/react';
+
+import { Input, type InputProps } from './Input';
+
+const adornments = {
+  Calendar: <Calendar />,
+  Help: <Help />,
+  Scenarios: <Scenarios />,
+  Search: <Search />,
+};
+
+const Story: Meta<InputProps> = {
+  component: Input,
+  title: 'Input',
+  argTypes: {
+    startAdornment: {
+      options: Object.keys(adornments),
+      mapping: adornments,
+      control: {
+        type: 'select',
+      },
+    },
+    endAdornment: {
+      options: Object.keys(adornments),
+      mapping: adornments,
+      control: {
+        type: 'select',
+      },
+    },
+  },
+};
+export default Story;
+
+const Template: StoryFn<InputProps> = (args) => <Input {...args} />;
+
+export const Primary = Template.bind({});
+Primary.args = {};

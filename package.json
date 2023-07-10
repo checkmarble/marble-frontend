@@ -138,5 +138,12 @@
     "tslib": "^2.6.0",
     "winston": "^3.9.0",
     "zod": "^3.21.4"
-  }
+  },
+  "workspaces": [
+    "packages/tailwind-preset",
+    "packages/typescript-utils",
+    "packages/marble-api",
+    "packages/ui-icons",
+    "packages/ui-design-system"
+  ]
 }
