@@ -27,18 +27,22 @@ const OUT_DIR = 'src/lib';
 
 async function downloadDesignTokens() {
   const spinner = ora('Downloading design tokens...').start();
+
+  const pat = process.env['PERSONAL_ACCESS_TOKEN'];
+  if (!pat) throw new Error('PERSONAL_ACCESS_TOKEN is not set');
+
   let result: DesignTokens;
   try {
-    result = await fetch(
+    result = (await fetch(
       'https://api.zeplin.dev/v1/projects/6386281f1a052582d335e9ff/design_tokens?include_linked_styleguides=true',
       {
         method: 'GET',
         headers: new Headers({
           Accept: 'application/json',
-          Authorization: `Bearer ${process.env['PERSONAL_ACCESS_TOKEN']}`,
+          Authorization: `Bearer ${pat}`,
         }),
-      },
-    ).then((response) => response.json());
+      }
+    ).then((response) => response.json())) as DesignTokens;
 
     spinner.succeed('Design tokens succesfully downloaded');
   } catch (error) {
@@ -51,7 +55,7 @@ async function downloadDesignTokens() {
 async function saveFile(fileName: string, data: Record<string, unknown>) {
   await writeFile(
     join(OUT_DIR, fileName),
-    prettier.format(JSON.stringify(data), { parser: 'json' }),
+    prettier.format(JSON.stringify(data), { parser: 'json' })
   );
 }
 
@@ -72,9 +76,9 @@ async function buildColors(data: DesignTokens) {
         return R.pipe(
           values,
           R.groupBy(({ shade }) => shade),
-          R.mapValues((elem) => elem[0].value),
+          R.mapValues((elem) => elem[0].value)
         );
-      }),
+      })
     );
     await saveFile('colors.json', colors);
     spinner.succeed('colors succesfully built');
@@ -99,7 +103,7 @@ async function buildFontSize(data: DesignTokens) {
           key.match(/-(.*)-regular/)?.[1] ?? key,
           [`${font.size}px`, `${line_height}px`],
         ];
-      }),
+      })
     );
     await saveFile('fontSize.json', fontSize);
     spinner.succeed('fontSize succesfully built');
@@ -115,7 +119,6 @@ async function main() {
     await mkdir(OUT_DIR);
 
     const data = await downloadDesignTokens();
-    console.log(JSON.stringify(data, null, 2));
 
     await Promise.all([buildColors(data), buildFontSize(data)]);
   } catch (error) {
@@ -124,4 +127,4 @@ async function main() {
   }
 }
 
-main();
+void main();

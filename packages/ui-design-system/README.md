@@ -7,21 +7,17 @@ This library regroup the Marble design system implementation.
 To develop locally, lauch the Storybook :
 
 ```sh
-npx nx run ui-design-system:storybook
+npm run storybook -w ui-design-system
 ```
 
 You can start editing / add components in isolation
 
-### Add component using generator
+### Add a new component
 
-1. Use the nx generator as described above, and fill the form
+1. Create a folder following the convention (look at existing components)
 
-![generate-component](./docs/generate-component.png)
+2. Create a story and visualize it in Storybook
 
-2. It will create folder + files with skeleton to help you go faster
+3. Iterate on the component until it's ready (don't forget to add tests)
 
-> You may need to adapt certain part to comply with other components convention
-
-4. Add a story file
-
-> If you want, you can use the generator @nx/react:component-story, or duplicate an existing story file
+4. Export your component in `src/index.ts`

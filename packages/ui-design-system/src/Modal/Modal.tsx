@@ -25,7 +25,7 @@ export const ModalContent = forwardRef<
 function ModalTitle(props: Dialog.DialogTitleProps) {
   return (
     <Dialog.Title
-      className="text-m border-b-grey-10 bg-grey-02 border-b py-6 px-8 text-center font-bold"
+      className="text-m border-b-grey-10 bg-grey-02 border-b px-8 py-6 text-center font-bold"
       {...props}
     />
   );

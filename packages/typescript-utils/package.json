@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "devDependencies": {},
-  "scripts": {},
+  "scripts": {
+    "lint": "eslint .",
+    "type-check": "npx tsc --noEmit"
+  },
   "author": "",
   "license": "ISC"
 }

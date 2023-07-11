@@ -12,7 +12,7 @@ describe('Button', () => {
   });
 
   it('should handle click', async () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     render(
       <Button name="test" onClick={onClick}>
         Test

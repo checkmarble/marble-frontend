@@ -1,5 +1,5 @@
-import { Tick } from '@marble-front/ui/icons';
 import { type CheckboxProps, Indicator, Root } from '@radix-ui/react-checkbox';
+import { Tick } from '@ui-icons';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 

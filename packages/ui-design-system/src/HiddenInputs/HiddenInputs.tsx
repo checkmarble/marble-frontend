@@ -11,7 +11,7 @@ export function HiddenInputs<
          * undefined value is sent as "name=&" in FormData and parsed as "" with qs on the server
          * It leads to bad DX when validating with zod so we remove them from the form
          */
-        .filter(([name, value]) => value !== undefined)
+        .filter(([_, value]) => value !== undefined)
         .map(([name, value]) => (
           <input
             hidden

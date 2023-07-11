@@ -4,7 +4,6 @@ import {
 } from '@radix-ui/react-tooltip';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import clsx from 'clsx';
-import React from 'react';
 
 interface DefaultTooltipProps
   extends Pick<TooltipProps, 'open' | 'defaultOpen' | 'onOpenChange'>,

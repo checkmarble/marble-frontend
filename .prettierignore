@@ -1,9 +1,11 @@
 # Add files here to ignore them from prettier formatting
+/.vscode/
 
-/dist
-/coverage
+# app-builder
+/packages/app-builder/.cache/
+/packages/app-builder/build/
+/packages/app-builder/public/build/
+/packages/app-builder/src/services/routes/routes.ts
 
-# Generated
-/libs/tailwind-preset/src/lib
-/libs/api/marble/src/lib/generated
-/apps/builder/app/services/routes/routes.ts
+# marble-api
+/packages/marble-api/src/generated

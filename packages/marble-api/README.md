@@ -1,6 +1,6 @@
-# api-marble
+# marble-api
 
-This library generates Marble API client based on `src/scripts/openapi.yaml`.
+This package generates Marble API client based on `src/scripts/openapi.yaml`.
 
 ## Getting started
 

@@ -1,5 +1,5 @@
-import { Pushtolive } from '@marble-front/ui/icons';
 import { type Meta, type StoryFn } from '@storybook/react';
+import { Pushtolive } from '@ui-icons';
 
 import { Button } from '../Button/Button';
 import { Modal } from './Modal';

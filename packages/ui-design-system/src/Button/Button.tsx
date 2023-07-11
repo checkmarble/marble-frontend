@@ -41,7 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          'text-s flex flex-row items-center justify-center gap-1 rounded py-2 px-4 text-base font-semibold',
+          'text-s flex flex-row items-center justify-center gap-1 rounded px-4 py-2 text-base font-semibold',
           {
             'hover:bg-green-110 active:bg-green-120 text-grey-00 bg-green-100 disabled:bg-green-50':
               variant === 'primary' && color === 'green',

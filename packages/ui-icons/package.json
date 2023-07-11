@@ -4,6 +4,8 @@
   "description": "",
   "devDependencies": {},
   "scripts": {
+    "lint": "eslint .",
+    "type-check": "npx tsc --noEmit",
     "icons-gen": "node -r esbuild-register scripts/generate.ts"
   },
   "author": "",

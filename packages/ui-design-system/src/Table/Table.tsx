@@ -1,4 +1,3 @@
-import { Arrow2Down, Arrow2Up } from '@marble-front/ui/icons';
 import {
   flexRender,
   type Header,
@@ -9,6 +8,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { Arrow2Down, Arrow2Up } from '@ui-icons';
 import clsx from 'clsx';
 import { useRef } from 'react';
 
@@ -127,6 +127,7 @@ function Header<TData extends RowData>({
                       onDoubleClick={() => {
                         header.column.resetSize();
                       }}
+                      aria-hidden="true"
                     />
                   </div>
                 )}
@@ -166,10 +167,10 @@ export function useVirtualTable<TData extends RowData>(
 
   return {
     table,
-    getBodyProps() {
+    getBodyProps: () => {
       return { paddingTop, paddingBottom };
     },
-    getContainerProps() {
+    getContainerProps: () => {
       return { table, tableContainerRef };
     },
     rows: virtualRows.map((virtualRow) => rows[virtualRow.index]),

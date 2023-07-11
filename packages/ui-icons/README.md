@@ -1,4 +1,4 @@
-# ui-icons
+# @ui-icons
 
 This package contains all the icons used in the UI. This generate a React component for each svg icon.
 
@@ -14,6 +14,6 @@ This package contains all the icons used in the UI. This generate a React compon
 
 > a good convention is to keep the exported name from Figma, to make it easier to find already imported assets
 
-3. Run `npm run icons-gen -w ui-icons`
+3. Run `npm run icons-gen -w @ui-icons`
 
 4. Commit your changes

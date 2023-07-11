@@ -43,7 +43,6 @@ function TestTable({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
   });
 
   return <Table.Default {...virtualTable} />;

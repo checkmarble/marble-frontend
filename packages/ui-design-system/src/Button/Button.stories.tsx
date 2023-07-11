@@ -1,5 +1,5 @@
-import { Plus } from '@marble-front/ui/icons';
 import { type Meta, type StoryFn } from '@storybook/react';
+import { Plus } from '@ui-icons';
 
 import { Button, type ButtonProps, variantColors } from './Button';
 

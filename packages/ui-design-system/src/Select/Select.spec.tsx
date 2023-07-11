@@ -10,7 +10,7 @@ const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple'];
 
 describe('Select', () => {
   it('should render successfully', async () => {
-    const mockedOnValueChanged = jest.fn();
+    const mockedOnValueChanged = vi.fn();
     render(
       <Select.Default
         placeholder="Select a value..."

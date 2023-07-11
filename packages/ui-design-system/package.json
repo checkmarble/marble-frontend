@@ -2,9 +2,12 @@
   "name": "ui-design-system",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "type-check": "npx tsc --noEmit",
+    "test": "vitest",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "author": "",
   "license": "ISC",
@@ -12,5 +15,9 @@
     "@storybook/react-vite": "^7.0.26",
     "vite": "^4.4.2",
     "vite-tsconfig-paths": "^4.2.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-interactions": "^7.0.26",
+    "@storybook/addon-links": "^7.0.26"
   }
 }

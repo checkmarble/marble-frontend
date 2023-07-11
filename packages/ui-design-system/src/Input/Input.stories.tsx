@@ -1,5 +1,5 @@
-import { Calendar, Help, Scenarios, Search } from '@marble-front/ui/icons';
 import { type Meta, type StoryFn } from '@storybook/react';
+import { Calendar, Help, Scenarios, Search } from '@ui-icons';
 
 import { Input, type InputProps } from './Input';
 

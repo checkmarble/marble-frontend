@@ -4,19 +4,23 @@ import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 const config: StorybookConfig = {
   docs: {
-    autodocs: true,
+    autodocs: 'tag',
   },
   core: {
     disableTelemetry: true,
   },
-  stories: ['../src/lib/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
-  addons: ['@storybook/addon-essentials', 'storybook-addon-swc'],
+  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+  ],
   staticDirs: ['./public'],
   framework: {
     name: '@storybook/react-vite',
     options: {},
   },
-  async viteFinal(config) {
+  viteFinal(config) {
     return mergeConfig(config, {
       plugins: [viteTsConfigPaths()],
     });
