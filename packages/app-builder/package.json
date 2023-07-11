@@ -10,6 +10,8 @@
     "lint": "eslint .",
     "type-check": "npx tsc --noEmit",
     "dev": "dotenv -e .env.local remix dev",
+    "build": "remix build",
+    "start": "remix start",
     "generate-routes": "node -r esbuild-register scripts/generateRoutes.ts"
   },
   "author": "",

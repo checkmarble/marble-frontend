@@ -26,7 +26,7 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules /app/node_modules
 ADD . .
-RUN npx nx run builder:build
+RUN npm run build -w app-builder
 
 # Finally, build the production image with minimal footprint
 FROM node:20-alpine
@@ -36,8 +36,8 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY --from=production-deps /app/node_modules /app/node_modules
-COPY --from=build /app/apps/builder/build /app/build
-COPY --from=build /app/apps/builder/public /app/public
+COPY --from=build /app/packages/app-builder/build /app/build
+COPY --from=build /app/packages/app-builder/public /app/public
 
 # Expose the container port to the OS
 EXPOSE 8080

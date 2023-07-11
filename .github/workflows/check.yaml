@@ -26,8 +26,8 @@ jobs:
 
       - run: npm ci
 
-      - run: npx nx format:check
-      - run: npx nx affected -t lint --parallel=3
-      - run: npx nx affected -t type-check --parallel=3
-      - run: npx nx affected -t test --parallel=3 --configuration=ci
-      - run: npx nx affected -t build --parallel=3
+      - run: npm run format:check
+      - run: npm run lint --workspaces
+      - run: npm run type-check --workspaces
+      - run: npm run test:all
+      - run: npm run build --workspaces --if-present
