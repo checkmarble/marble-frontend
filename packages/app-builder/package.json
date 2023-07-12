@@ -1,0 +1,19 @@
+{
+  "name": "app-builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "dotenv-cli": "^7.2.1"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "type-check": "npx tsc --noEmit",
+    "dev": "dotenv -e .env.local remix dev",
+    "build": "remix build",
+    "start": "remix start",
+    "generate-routes": "node -r esbuild-register scripts/generateRoutes.ts"
+  },
+  "author": "",
+  "license": "ISC"
+}

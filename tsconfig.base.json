@@ -7,23 +7,27 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "target": "es2015",
+    "target": "ES2019",
     "esModuleInterop": true,
     "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@marble-front/api/marble": ["libs/api/marble/src/index.ts"],
-      "@marble-front/builder/*": ["apps/builder/app/*"],
-      "@marble-front/operators": ["libs/operators/src/index.ts"],
-      "@marble-front/typescript-utils": ["libs/typescript-utils/src/index.ts"],
-      "@marble-front/ui/design-system": ["libs/ui/design-system/src/index.ts"],
-      "@marble-front/ui/icons": ["libs/ui/icons/src/index.ts"]
+      "@marble-api": ["packages/marble-api/src/index.ts"],
+      "@typescript-utils": ["packages/typescript-utils/src/index.ts"],
+      "@ui-icons": ["packages/ui-icons/src/index.ts"],
+      "@ui-design-system": ["packages/ui-design-system/src/index.ts"],
+      "@app-builder/*": ["packages/app-builder/src/*"]
     },
     "pretty": true
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["**/*/node_modules", "tmp"]
 }

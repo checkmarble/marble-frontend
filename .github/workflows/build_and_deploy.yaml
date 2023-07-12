@@ -49,7 +49,7 @@ jobs:
           docker build \
             --platform linux/amd64 \
             --tag ${{env.TAG }} \
-            -f ./apps/builder/Dockerfile \
+            -f ./packages/app-builder/Dockerfile \
             .
 
       - name: Push

@@ -1,0 +1,14 @@
+{
+  "name": "marble-api",
+  "version": "1.0.0",
+  "description": "",
+  "devDependencies": {},
+  "scripts": {
+    "lint": "eslint .",
+    "type-check": "npx tsc --noEmit",
+    "generate-api": "node -r esbuild-register scripts/generate.ts",
+    "operator-regex": "node -r esbuild-register scripts/operator-regexp.ts"
+  },
+  "author": "",
+  "license": "ISC"
+}

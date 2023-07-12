@@ -1,0 +1,12 @@
+{
+  "name": "tailwind-preset",
+  "version": "1.0.0",
+  "description": "Shared config that group all specific design tokens for Marble",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "type-check": "npx tsc --noEmit",
+    "tailwind-preset-gen": "node -r esbuild-register scripts/generate.ts"
+  },
+  "license": "ISC"
+}

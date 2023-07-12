@@ -1,9 +1,0 @@
-{
-  "private": true,
-  "sideEffects": false,
-  "dependencies": {},
-  "devDependencies": {},
-  "engines": {
-    "node": ">=14"
-  }
-}

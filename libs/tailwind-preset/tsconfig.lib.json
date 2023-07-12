@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "module": "ESNext",
-    "types": ["node"]
-  },
-  "include": ["**/*.ts", "src/scripts/generate.ts"],
-  "exclude": ["jest.config.ts", "**/*.spec.ts"]
-}
