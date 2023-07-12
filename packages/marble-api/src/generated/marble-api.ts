@@ -279,6 +279,7 @@ export type ScenarioIterationWithBody = ScenarioIteration & {
         scoreReviewThreshold?: number;
         scoreRejectThreshold?: number;
         rules: ScenarioIterationRule[];
+        schedule?: string;
     };
 };
 export type UpdateScenarioIterationBody = {

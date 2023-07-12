@@ -76,6 +76,7 @@
     "@tanstack/react-table": "^8.9.3",
     "@tanstack/react-virtual": "^3.0.0-beta.54",
     "clsx": "^1.2.1",
+    "cronstrue": "^2.27.0",
     "dotenv": "^16.3.1",
     "firebase": "^9.23.0",
     "i18next": "^23.2.7",

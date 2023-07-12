@@ -1,5 +1,9 @@
+import 'cronstrue/locales/fr';
+import 'cronstrue/locales/en';
+
 export const defaultNS = 'common';
 
+// When adding a new supported lng, add corresponding construe locale above too
 export const supportedLngs = ['en', 'fr'] as const;
 
 export const i18nConfig = {

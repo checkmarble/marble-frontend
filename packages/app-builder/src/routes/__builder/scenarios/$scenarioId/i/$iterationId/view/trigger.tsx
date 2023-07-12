@@ -4,6 +4,7 @@ import { LogicalOperator } from '@app-builder/components/Scenario/LogicalOperato
 import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import { type Operator } from '@marble-api';
 import clsx from 'clsx';
+import cronstrue from 'cronstrue';
 import { type Namespace } from 'i18next';
 import { Fragment } from 'react';
 import { toast } from 'react-hot-toast';
@@ -19,61 +20,9 @@ export const handle = {
 export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
 
-  const {
-    scenarioId,
-    body: { triggerCondition },
-  } = useCurrentScenarioIteration();
-
-  const { triggerObjectType } = useCurrentScenario();
-
   return (
     <Paper.Container className="max-w-3xl">
-      <div className="flex flex-col gap-2 lg:gap-4">
-        <Paper.Title>{t('scenarios:trigger.run_scenario.title')}</Paper.Title>
-        <p className="text-s text-grey-100 font-normal">
-          <Trans
-            t={t}
-            i18nKey="scenarios:trigger.run_scenario.description.docs"
-            components={{
-              DocLink: (
-                // eslint-disable-next-line jsx-a11y/anchor-has-content
-                <a
-                  className="text-purple-100"
-                  href="https://docs.checkmarble.com/reference/introduction-1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
-              ),
-            }}
-          />
-          <br />
-          <Trans
-            t={t}
-            i18nKey="scenarios:trigger.run_scenario.description.scenario_id"
-            components={{
-              ScenarioIdLabel: <code className="select-none" />,
-              ScenarioIdValue: (
-                <code
-                  aria-hidden="true"
-                  className="border-grey-10 cursor-pointer select-none rounded-sm border px-1"
-                  onClick={() => {
-                    void navigator.clipboard.writeText(scenarioId).then(() => {
-                      toast.success(
-                        t('common:clipboard.copy', {
-                          replace: { value: scenarioId },
-                        })
-                      );
-                    });
-                  }}
-                />
-              ),
-            }}
-            values={{
-              scenarioId: scenarioId,
-            }}
-          />
-        </p>
-      </div>
+      <HowToRun />
 
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
@@ -82,11 +31,90 @@ export default function Trigger() {
         </Callout>
       </div>
 
-      <TriggerCondition
-        triggerObjectType={triggerObjectType}
-        triggerCondition={triggerCondition}
-      />
+      <TriggerCondition />
     </Paper.Container>
+  );
+}
+
+function HowToRun() {
+  const { t, i18n } = useTranslation(handle.i18n);
+
+  const {
+    scenarioId,
+    body: { schedule },
+  } = useCurrentScenarioIteration();
+
+  return (
+    <div className="flex flex-col gap-2 lg:gap-4">
+      <Paper.Title>{t('scenarios:trigger.run_scenario.title')}</Paper.Title>
+
+      <p className="text-s text-grey-100 font-normal">
+        {schedule ? (
+          <Trans
+            t={t}
+            i18nKey="scenarios:scheduled"
+            components={{
+              ScheduleLocale: <span style={{ fontWeight: 'bold' }} />,
+            }}
+            values={{
+              schedule: cronstrue
+                .toString(schedule, {
+                  verbose: false,
+                  locale: i18n.language,
+                  throwExceptionOnParseError: false,
+                })
+                .toLowerCase(),
+            }}
+          />
+        ) : (
+          <>
+            <Trans
+              t={t}
+              i18nKey="scenarios:trigger.run_scenario.description.docs"
+              components={{
+                DocLink: (
+                  // eslint-disable-next-line jsx-a11y/anchor-has-content
+                  <a
+                    className="text-purple-100"
+                    href="https://docs.checkmarble.com/reference/introduction-1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                ),
+              }}
+            />
+            <br />
+            <Trans
+              t={t}
+              i18nKey="scenarios:trigger.run_scenario.description.scenario_id"
+              components={{
+                ScenarioIdLabel: <code className="select-none" />,
+                ScenarioIdValue: (
+                  <code
+                    aria-hidden="true"
+                    className="border-grey-10 cursor-pointer select-none rounded-sm border px-1"
+                    onClick={() => {
+                      void navigator.clipboard
+                        .writeText(scenarioId)
+                        .then(() => {
+                          toast.success(
+                            t('common:clipboard.copy', {
+                              replace: { value: scenarioId },
+                            })
+                          );
+                        });
+                    }}
+                  />
+                ),
+              }}
+              values={{
+                scenarioId: scenarioId,
+              }}
+            />
+          </>
+        )}
+      </p>
+    </div>
   );
 }
 
@@ -113,13 +141,13 @@ export default function Trigger() {
  *        |-> Where <Formula condition={condition} />
  *
  */
-function TriggerCondition({
-  triggerObjectType,
-  triggerCondition,
-}: {
-  triggerObjectType: string;
-  triggerCondition?: Operator;
-}) {
+function TriggerCondition() {
+  const {
+    body: { triggerCondition },
+  } = useCurrentScenarioIteration();
+
+  const { triggerObjectType } = useCurrentScenario();
+
   const conditions = getNestedConditions(triggerCondition);
 
   return (

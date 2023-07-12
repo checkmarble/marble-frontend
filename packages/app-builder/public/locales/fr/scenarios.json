@@ -42,6 +42,7 @@
   "rules.name": "Nom",
   "rules.score": "Score",
   "rules.variable.title": "variable",
+  "scheduled": "Ce scénario est planifié et sera exécuté <ScheduleLocale>{{schedule}}</ScheduleLocale>.",
   "trigger.run_scenario.description.docs": "Vous pouvez exécuter ce scénario en appelant notre API : consultez nos documents <DocLink>ici</DocLink>.",
   "trigger.run_scenario.description.scenario_id": "Vous aurez besoin du <ScenarioIdLabel/>scenario_id</ScenarioIdLabe> : <ScenarioIdValue>{{scenarioId}}</ScenarioIdValue>",
   "trigger.run_scenario.title": "Comment exécuter ce scénario ?",
