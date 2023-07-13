@@ -36,6 +36,7 @@ async function buildIcon(svgFileName: string) {
       replaceAttrValues: {
         '#080525': 'currentColor',
         '#1C1B1F': 'currentColor',
+        '#D9D9D9': 'currentColor',
       },
     },
     { componentName }

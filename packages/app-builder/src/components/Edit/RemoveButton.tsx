@@ -1,5 +1,5 @@
 import { type ButtonProps } from '@ui-design-system';
-import { Trash } from '@ui-icons';
+import { Delete } from '@ui-icons';
 import clsx from 'clsx';
 import * as React from 'react';
 
@@ -18,7 +18,7 @@ export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
         tabIndex={-1}
         ref={ref}
       >
-        <Trash />
+        <Delete />
       </button>
     );
   }
