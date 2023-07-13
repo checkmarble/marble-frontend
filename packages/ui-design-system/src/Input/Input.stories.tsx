@@ -1,7 +1,7 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 import { Calendar, Help, Scenarios, Search } from '@ui-icons';
 
-import { Input, type InputProps } from './Input';
+import { Input } from './Input';
 
 const adornments = {
   Calendar: <Calendar />,
@@ -10,7 +10,7 @@ const adornments = {
   Search: <Search />,
 };
 
-const Story: Meta<InputProps> = {
+const Story: Meta<typeof Input> = {
   component: Input,
   title: 'Input',
   argTypes: {
@@ -32,7 +32,7 @@ const Story: Meta<InputProps> = {
 };
 export default Story;
 
-const Template: StoryFn<InputProps> = (args) => <Input {...args} />;
+const Template: StoryFn<typeof Input> = (args) => <Input {...args} />;
 
 export const Primary = Template.bind({});
 Primary.args = {};

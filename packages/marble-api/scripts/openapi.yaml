@@ -28,6 +28,8 @@ tags:
     description: Operations about scenario publications.
   - name: CustomLists
     description: Operations about custom lists.
+  - name: Editor
+    description: Operations about editor.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
@@ -1402,6 +1404,40 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /editor/{scenarioId}/identifiers:
+    get:
+      tags:
+        - Editor
+      summary: List all identifiers
+      operationId: listIdentifiers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioId
+          description: ID of the scenario
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The list of identifiers
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data_accessors
+                properties:
+                  data_accessors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NodeDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
 components:
   schemas:
     Organization:
@@ -1972,6 +2008,31 @@ components:
     PublicationAction:
       type: string
       enum: ['publish', 'unpublish']
+    ConstantDto:
+      nullable: true
+      oneOf:
+        - type: string
+        - type: number
+        - type: boolean
+        - type: array
+          items:
+            $ref: '#/components/schemas/ConstantDto'
+        - additionalProperties:
+            $ref: '#/components/schemas/ConstantDto'
+    NodeDto:
+      type: object
+      properties:
+        name:
+          type: string
+        constant:
+          $ref: '#/components/schemas/ConstantDto'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeDto'
+        named_children:
+          additionalProperties:
+            $ref: '#/components/schemas/NodeDto'
     Operator:
       oneOf:
         - $ref: '#/components/schemas/AndOperator'

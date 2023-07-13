@@ -1,4 +1,4 @@
-import { type MathOperator as MathOperatorType } from '@app-builder/services/operators';
+import { type MathOperator as MathOperatorType } from '@app-builder/models';
 import { assertNever } from '@typescript-utils';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,8 +33,8 @@ export function Math({ operator, isRoot }: MathProps) {
   );
 }
 
-// Function instead of obejct mapping to handle possible translation (ex: "IS IN" operator)
-function useGetOperatorLabel() {
+// Function instead of object mapping to handle possible translation (ex: "IS IN" operator)
+export function useGetOperatorLabel() {
   const { t } = useTranslation(scenarioI18n);
 
   return useCallback(
