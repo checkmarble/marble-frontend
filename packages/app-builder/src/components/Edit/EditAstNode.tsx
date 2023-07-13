@@ -4,8 +4,8 @@ import { Combobox, Select } from '@ui-design-system';
 import { forwardRef, useCallback, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
+import { FormControl, FormField, FormItem } from '../Form';
 import { useGetOperatorLabel } from '../Scenario/Formula/Operators';
-import { FormControl, FormField, FormItem } from './Form';
 
 export function EditAstNode({ name }: { name: string }) {
   const { getFieldState, formState } = useFormContext();

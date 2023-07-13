@@ -1,5 +1,4 @@
 import { getClientEnv } from '@app-builder/utils/environment.client';
-import { use } from 'i18next';
 import { useEffect } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +12,7 @@ const toastMessageScema = z.object({
     'common:errors.unknown',
     'common:empty_scenario_iteration_list',
     'common:errors.edit.forbidden_not_draft',
+    'common:errors.list.duplicate_list_name',
   ]),
 });
 
@@ -38,17 +38,17 @@ export function MarbleToaster({
 }) {
   const { t } = useTranslation(['common']);
 
-  const type = toastMessage?.type;
-  const message = toastMessage?.messageKey
-    ? t(toastMessage.messageKey)
-    : undefined;
-
   useEffect(() => {
+    const type = toastMessage?.type;
+    const message = toastMessage?.messageKey
+      ? t(toastMessage.messageKey)
+      : undefined;
+
     if (!type || !message) {
       return;
     }
     toast[type](getMessage(message));
-  }, [message, type]);
+  }, [t, toastMessage]);
 
   return <Toaster position="bottom-center" />;
 }
@@ -62,7 +62,7 @@ function getMessage(message: string) {
     <div className="flex flex-col gap-1">
       <p className="text-s text-grey-100">{message}</p>
       <p className="text-grey-50 text-xs">
-        In dev, toast are displayed twice due to strict mode
+        In dev, toast may be displayed twice due to strict mode
       </p>
     </div>
   );

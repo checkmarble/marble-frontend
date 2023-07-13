@@ -41,18 +41,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          'text-s focus:border-grey-100 flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
+          'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
           {
-            'hover:bg-green-110 active:bg-green-120 text-grey-00 focus:border-bg-green-100 bg-green-100 disabled:bg-green-50':
+            'hover:bg-green-110 active:bg-green-120 text-grey-00 border-bg-green-100 focus:border-grey-100 bg-green-100 disabled:bg-green-50':
               variant === 'primary' && color === 'green',
 
-            'hover:bg-purple-110 active:bg-purple-120 text-grey-00  border-bg-purple-100  bg-purple-100 disabled:bg-purple-50':
+            'hover:bg-purple-110 active:bg-purple-120 text-grey-00  border-bg-purple-100 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50':
               variant === 'primary' && color === 'purple',
 
-            'hover:bg-red-110 active:bg-red-120 text-grey-00 border-bg-red-100 bg-red-100 disabled:bg-red-50':
+            'hover:bg-red-110 active:bg-red-120 text-grey-00 border-bg-red-100 focus:border-grey-100 bg-red-100 disabled:bg-red-50':
               variant === 'primary' && color === 'red',
 
-            'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 disabled:bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50':
+            'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 disabled:bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 focus:border-purple-100':
               variant === 'secondary' && color === 'grey',
           },
           className
