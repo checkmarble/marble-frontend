@@ -76,7 +76,7 @@ export type CustomListValue = {
     value: string;
 };
 export type CustomListWithValues = CustomList & {
-    values: CustomListValue[];
+    values?: CustomListValue[];
 };
 export type UpdateCustomListBody = {
     name: string;
@@ -607,6 +607,9 @@ export function createCustomListValue(customListId: string, createCustomListValu
         data: string;
     } | {
         status: 403;
+        data: string;
+    } | {
+        status: 409;
         data: string;
     } | {
         status: 422;

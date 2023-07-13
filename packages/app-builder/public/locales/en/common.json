@@ -4,7 +4,10 @@
   "search": "Search",
   "errors.unknown": "An unknown error as occured",
   "errors.edit.forbidden_not_draft": "You can only edit a draft version of a scenario.",
+  "errors.list.duplicate_list_name": "A list with this name already exist",
   "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
   "close": "Close",
   "clipboard.copy": "Copied in clipboard: {{value}}",
   "empty_scenario_iteration_list": "Reach out to  Marble to create your first scenario draft."

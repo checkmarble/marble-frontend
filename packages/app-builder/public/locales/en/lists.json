@@ -1,11 +1,26 @@
 {
   "name": "Name",
   "description": "Description",
-  "values": "Values",
+  "value_one": "Value",
+  "value_other": "Values",
   "used_in_scenarios": "Used in the following scenarios:",
   "other_scenarios_one": "+{{count}} other",
   "other_scenarios_other": "+{{count}} others",
   "show_less": "show less",
   "empty_custom_lists_list": "Reach out to  Marble to create your first list.",
-  "empty_custom_list_values_list": "Reach out to  Marble to create your first list value."
+  "empty_custom_list_values_list": "Create your first list value to see it here.",
+  "create_list.title": "New List",
+  "create_list.name_placeholder": "Add a name to your list",
+  "create_list.description_placeholder": "Add a description",
+  "create_list.button_accept": "Create new list",
+  "edit_list.title": "Edit",
+  "edit_list.button": "Edit",
+  "delete_list.button": "Delete this list",
+  "create_value.title": "New value",
+  "create_value.value_placeholder": "Add a new value to your list",
+  "delete_list.title": "Delete this list",
+  "delete_list.content": "Your are about to delete this list. This action is irreversible, do you want to proceed ?",
+  "delete_value.title": "Delete this value",
+  "delete_value.value_content": "You are about to delete the value",
+  "delete_value.no_return": "This action is irreversible, do you want to proceed ?"
 }

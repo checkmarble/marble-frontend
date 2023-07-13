@@ -1,11 +1,26 @@
 {
   "description": "Description",
   "name": "Nom",
-  "values": "Valeurs",
   "other_scenarios_one": "{{count}} autre",
   "other_scenarios_other": "{{count}} autres",
   "show_less": "Montrer moins",
   "used_in_scenarios": "Utilisé dans les scénarios suivants :",
   "empty_custom_lists_list": "Contactez Marble pour créer votre première liste.",
-  "empty_custom_list_values_list": "Contactez Marble pour créer votre première valeur."
+  "create_value.title": "Nouvelle valeur",
+  "create_value.value_placeholder": "Ajouter une nouvelle valeur à votre liste",
+  "create_list.button_accept": "Creer une nouvelle liste",
+  "value_other": "Valeurs",
+  "value_one": "Valeur",
+  "edit_list.title": "Editer",
+  "edit_list.button": "Editer",
+  "delete_list.button": "Supprimer cette liste",
+  "delete_list.title": "Supprimer cette liste",
+  "delete_list.content": "Vous allez supprimer cette liste. Cette action est irréversible, voulez-vous continuer ?",
+  "delete_value.title": "Supprimer cette valeur",
+  "delete_value.value_content": "Vous allez supprimer cette valeur",
+  "delete_value.no_return": "Cette action est irréversible, voulez vous continuer ?",
+  "create_list.title": "Nouvelle liste",
+  "create_list.name_placeholder": "Ajouter un nom à cette liste",
+  "create_list.description_placeholder": "Ajouter une description",
+  "empty_custom_list_values_list": "Créez votre première valeur de liste pour la voir ici."
 }

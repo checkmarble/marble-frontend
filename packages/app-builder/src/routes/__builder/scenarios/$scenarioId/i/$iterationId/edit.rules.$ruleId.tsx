@@ -134,7 +134,7 @@ export default function RuleView() {
               control={formMethods.control}
               placement="bottom-right"
               styles={{
-                panel: { width: '1000px' },
+                panel: { width: '450px' },
               }}
             />
           )}
