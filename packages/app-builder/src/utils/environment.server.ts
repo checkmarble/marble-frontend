@@ -71,6 +71,7 @@ export function getClientEnvVars(): ClientEnvVars {
     getServerEnv('FIREBASE_AUTH_EMULATOR', 'false') === 'true';
 
   return {
+    ENV: getServerEnv('ENV'),
     AUTH_EMULATOR_HOST: isAuthEmulator
       ? getServerEnv('FIREBASE_AUTH_EMULATOR_HOST')
       : undefined,

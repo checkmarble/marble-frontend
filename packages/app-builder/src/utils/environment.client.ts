@@ -7,6 +7,7 @@ import { type FirebaseOptions } from 'firebase/app';
  */
 
 export type ClientEnvVars = {
+  ENV: string;
   AUTH_EMULATOR_HOST?: string;
   FIREBASE_OPTIONS: FirebaseOptions;
 };

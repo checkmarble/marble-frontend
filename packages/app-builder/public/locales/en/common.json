@@ -3,6 +3,7 @@
   "auth.login": "Login",
   "search": "Search",
   "errors.unknown": "An unknown error as occured",
+  "errors.edit.forbidden_not_draft": "You can only edit a draft version of a scenario.",
   "cancel": "Cancel",
   "close": "Close",
   "clipboard.copy": "Copied in clipboard: {{value}}",
