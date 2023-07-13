@@ -13,7 +13,9 @@ const adornments = {
 const Story: Meta<typeof Input> = {
   component: Input,
   title: 'Input',
+  args: { disabled: false },
   argTypes: {
+    disabled: { control: 'boolean' },
     startAdornment: {
       options: Object.keys(adornments),
       mapping: adornments,

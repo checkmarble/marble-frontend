@@ -17,7 +17,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           className={clsx(
-            'bg-grey-00 border-grey-10 text-s text-grey-100 placeholder:text-grey-50 peer block h-full w-full rounded border px-2 font-medium outline-none focus:border-purple-100',
+            'bg-grey-00 border-grey-10 text-s text-grey-100 placeholder:text-grey-50 disabled:bg-grey-05 peer block h-full w-full rounded border px-2 font-medium outline-none focus:border-purple-100',
             startAdornment && 'pl-10',
             endAdornment && 'pr-10'
           )}
