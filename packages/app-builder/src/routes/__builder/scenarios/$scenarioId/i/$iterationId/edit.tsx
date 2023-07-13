@@ -4,12 +4,21 @@ import {
   Scenarios,
   type ScenariosLinkProps,
 } from '@app-builder/components';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
+import { authenticator } from '@app-builder/services/auth/auth.server';
+import {
+  commitSession,
+  getSession,
+} from '@app-builder/services/auth/session.server';
 import { getRoute } from '@app-builder/services/routes';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { type LoaderArgs } from '@remix-run/node';
 import { Link, Outlet } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
+import { redirectBack } from 'remix-utils';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -24,6 +33,35 @@ const LINKS: ScenariosLinkProps[] = [
     Icon: Decision,
   },
 ];
+
+export async function loader({ request, params }: LoaderArgs) {
+  const { apiClient } = await authenticator.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
+
+  const iterationId = fromParams(params, 'iterationId');
+
+  const scenarioIteration = await apiClient.getScenarioIteration(iterationId);
+
+  if (scenarioIteration.version) {
+    const session = await getSession(request.headers.get('cookie'));
+
+    setToastMessage(session, {
+      type: 'error',
+      messageKey: 'common:errors.edit.forbidden_not_draft',
+    });
+
+    return redirectBack(request, {
+      fallback: getRoute('/scenarios/:scenarioId/i/:iterationId/view', {
+        scenarioId: fromUUID(scenarioIteration.scenarioId),
+        iterationId: fromUUID(scenarioIteration.id),
+      }),
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
+  }
+
+  return null;
+}
 
 export default function ScenarioViewLayout() {
   const currentScenario = useCurrentScenario();
