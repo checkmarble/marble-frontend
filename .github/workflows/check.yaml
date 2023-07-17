@@ -11,18 +11,12 @@ jobs:
       actions: read
     steps:
       - uses: actions/checkout@v3
-        with:
-          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
-          fetch-depth: 0
 
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version-file: '.tool-versions'
           cache: 'npm'
-
-      - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v3
 
       - run: npm ci
 
