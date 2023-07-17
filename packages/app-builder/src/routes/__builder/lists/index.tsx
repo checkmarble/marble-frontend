@@ -1,4 +1,5 @@
 import { Page } from '@app-builder/components';
+import { CreateList } from '@app-builder/routes/ressources/lists/create';
 import { authenticator } from '@app-builder/services/auth/auth.server';
 import { getRoute } from '@app-builder/services/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -30,42 +31,6 @@ export async function loader({ request }: LoaderArgs) {
   return json(custom_lists);
 }
 
-// const formSchema = z.object({
-//   listId: z.string().uuid(),
-// });
-
-// export async function action({ request }: ActionArgs) {
-//   const { apiClient } = await authenticator.isAuthenticated(request, {
-//     failureRedirect: '/login',
-//   });
-
-//   switch (request.method) {
-//     case 'POST': {
-//       await apiClient.createCustomList({
-//         name: 'New test list',
-//         description: 'test pour add une liste',
-//       });
-//       break;
-//     }
-//     case 'PATCH': {
-//       const parsedForm = await parseFormSafe(request, formSchema);
-//       const { listId } = parsedForm.data;
-//       await apiClient.updateCustomList(listId, {
-//         name: 'Updated test list',
-//         description: 'test pour update une liste',
-//       });
-//       break;
-//     }
-//     case 'DELETE': {
-//       const parsedForm = await parseFormSafe(request, formSchema);
-//       const { listId } = parsedForm.data;
-//       await apiClient.deleteCustomList(listId);
-//       break;
-//     }
-//   }
-//   return null;
-// }
-
 export const handle = {
   i18n: ['lists', 'navigation'] satisfies Namespace,
 };
@@ -73,7 +38,6 @@ export const handle = {
 export default function ListsPage() {
   const { t } = useTranslation(handle.i18n);
   const customList = useLoaderData<typeof loader>();
-  // const fetcher = useFetcher<typeof action>();
 
   const navigate = useNavigate();
 
@@ -92,23 +56,6 @@ export default function ListsPage() {
         header: t('lists:description'),
         size: 500,
       },
-      // {
-      //   id: 'action',
-      //   header: t('lists:action'),
-      //   accessor: 'id',
-      //   cell: ({cell}) => (
-      //   <div>
-      //     <fetcher.Form method="patch">
-      //       <HiddenInputs listId={cell.row.original.id}/>
-      //       <Button type='submit' name='edit' onClick={(event) => {event.stopPropagation()}}>Edit</Button>
-      //     </fetcher.Form>
-      //     <fetcher.Form method="delete">
-      //       <HiddenInputs listId={cell.row.original.id}/>
-      //       <Button type='submit' name='delete' onClick={(event) => {event.stopPropagation()}}>Delete</Button>
-      //     </fetcher.Form>
-      //   </div>
-      //   )
-      // },
     ],
     [t]
   );
@@ -128,9 +75,10 @@ export default function ListsPage() {
         {t('navigation:lists')}
       </Page.Header>
       <Page.Content scrollable={false}>
-        {/* <fetcher.Form method="POST">
-          <Button>Create List</Button>
-        </fetcher.Form> */}
+        <div className="flex flex-row justify-end">
+          <CreateList />
+        </div>
+
         {rows.length > 0 ? (
           <Table.Container {...getContainerProps()}>
             <Table.Header headerGroups={table.getHeaderGroups()} />

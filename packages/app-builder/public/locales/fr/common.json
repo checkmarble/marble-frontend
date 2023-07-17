@@ -6,6 +6,9 @@
   "close": "Fermer",
   "errors.unknown": "Une erreur inconnue s'est produite",
   "errors.edit.forbidden_not_draft": "Vous ne pouvez modifier qu'une version brouillon d'un scénario.",
+  "errors.list.duplicate_list_name": "Une liste avec ce nom existe déjà",
   "search": "Recherche",
-  "empty_scenario_iteration_list": "Contactez Marble pour créer votre premier brouillon de scénario."
+  "empty_scenario_iteration_list": "Contactez Marble pour créer votre premier brouillon de scénario.",
+  "delete": "Supprimer",
+  "save": "Sauvegarder"
 }

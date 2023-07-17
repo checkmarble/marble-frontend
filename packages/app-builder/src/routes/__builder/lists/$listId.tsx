@@ -1,4 +1,8 @@
 import { Callout, Page } from '@app-builder/components';
+import { DeleteList } from '@app-builder/routes/ressources/lists/delete';
+import { EditList } from '@app-builder/routes/ressources/lists/edit';
+import { NewListValue } from '@app-builder/routes/ressources/lists/value_create';
+import { DeleteListValue } from '@app-builder/routes/ressources/lists/value_delete';
 import { authenticator } from '@app-builder/services/auth/auth.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -10,7 +14,7 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { Input, Table, useVirtualTable } from '@ui-design-system';
-import { Search } from '@ui-icons';
+import { Delete, Search } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,45 +23,125 @@ export async function loader({ request, params }: LoaderArgs) {
   const { apiClient } = await authenticator.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  const listId = fromParams(params, 'listId');
 
+  const listId = fromParams(params, 'listId');
   const { custom_list } = await apiClient.getCustomList(listId);
 
   return json(custom_list);
 }
 
-// const formSchema = z.object({
-//   listValueId: z.string().uuid(),
-// });
-
-// export async function action({ request, params }: ActionArgs) {
-//   const { apiClient } = await authenticator.isAuthenticated(request, {
-//     failureRedirect: '/login',
-//   });
-//   invariant(params.listId, `params.listId is required`);
-
-//   switch (request.method) {
-//     case 'POST': {
-//       await apiClient.createCustomListValue(params.listId, {
-//         value: 'Added Value',
-//       });
-//       break;
-//     }
-//     case 'DELETE': {
-//       const parsedForm = await parseFormSafe(request, formSchema);
-//       const { listValueId } = parsedForm.data;
-//       await apiClient.deleteCustomListValue(params.listId, { id: listValueId });
-//       break;
-//     }
-//   }
-//   return null;
-// }
-
 export const handle = {
   i18n: ['lists', 'common'] satisfies Namespace,
 };
 
-// Correspond to this part of the UI : https://www.figma.com/file/JW6QvnhBtdZDcKvLdg9s5T/Marble-Portal?node-id=3920%3A31986&mode=dev
+type ListValues = {
+  id: string;
+  value: string;
+};
+
+export default function Lists() {
+  const customList = useLoaderData<typeof loader>();
+  const listValues = customList.values ?? [];
+  const { t } = useTranslation(handle.i18n);
+
+  const columns = useMemo<ColumnDef<ListValues>[]>(
+    () => [
+      {
+        accessorKey: 'value',
+        header: t('lists:value', { count: listValues.length }),
+        size: 600,
+        sortingFn: 'text',
+        enableSorting: true,
+        cell: ({ cell }) => {
+          return (
+            <div className="group flex items-center justify-between">
+              <p className="text-grey-100 text-s font-medium">
+                {cell.row.original.value}
+              </p>
+
+              <DeleteListValue
+                listId={customList.id}
+                listValueId={cell.row.original.id}
+                value={cell.row.original.value}
+              >
+                <button
+                  className="text-grey-00 group-hover:text-grey-100 transition-colors duration-200 ease-in-out"
+                  name="delete"
+                  tabIndex={-1}
+                >
+                  <Delete width={'24px'} height={'24px'} />
+                </button>
+              </DeleteListValue>
+            </div>
+          );
+        },
+      },
+    ],
+    [customList.id, listValues.length, t]
+  );
+
+  const virtualTable = useVirtualTable({
+    data: listValues,
+    columns,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+  return (
+    <Page.Container>
+      <Page.Header className="justify-between ">
+        <div className="flex w-full flex-row items-center justify-between	gap-4">
+          <div className="flex flex-row items-center gap-4">
+            <Link to="./.." className="mr-4">
+              <Page.BackButton />
+            </Link>
+            {customList.name}
+          </div>
+          <EditList
+            listId={customList.id}
+            name={customList.name}
+            description={customList.description}
+          />
+        </div>
+      </Page.Header>
+      <Page.Content scrollable={false} className="max-w-3xl">
+        <Callout className="w-full">{customList.description}</Callout>
+        {/* <ScenariosList scenarios={scenarios} /> */}
+        <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
+          <div className="flex flex-row gap-2 lg:gap-4">
+            <form className="flex grow items-center">
+              <Input
+                className="w-full"
+                disabled={listValues.length === 0}
+                type="search"
+                aria-label={t('common:search')}
+                placeholder={t('common:search')}
+                startAdornment={<Search />}
+                onChange={(event) => {
+                  virtualTable.table.setGlobalFilter(event.target.value);
+                }}
+              />
+            </form>
+            <NewListValue listId={customList.id} />
+          </div>
+          {virtualTable.rows.length > 0 ? (
+            <Table.Default {...virtualTable}></Table.Default>
+          ) : (
+            <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <p className="text-s font-medium">
+                {t('lists:empty_custom_list_values_list')}
+              </p>
+            </div>
+          )}
+        </div>
+        <DeleteList listId={customList.id} />
+      </Page.Content>
+    </Page.Container>
+  );
+}
+
+// Correspond to this part of the UI : https://www.figma.com/file/JW6QvnhBtdZDcKvLdg9s5T/Marble-Portal?node-id=6377%3A53150&mode=dev
 //
 // const MAX_SCENARIOS = 4;
 // function ScenariosList({ scenarios }: { scenarios: string[] }) {
@@ -134,89 +218,3 @@ export const handle = {
 //     </>
 //   );
 // }
-
-type ListValues = {
-  id: string;
-  value: string;
-};
-
-export default function Lists() {
-  const customList = useLoaderData<typeof loader>();
-  // const fetcher = useFetcher<typeof action>();
-  const { t } = useTranslation(handle.i18n);
-
-  const columns = useMemo<ColumnDef<ListValues>[]>(
-    () => [
-      {
-        accessorKey: 'value',
-        header: t('lists:values'),
-        size: 600,
-        sortingFn: 'text',
-        enableSorting: true,
-      },
-      // {
-      //   id: 'action',
-      //   header: t('lists:action'),
-      //   accessor: 'id',
-      //   cell: ({cell}) => (
-      //   <div>
-      //     <fetcher.Form method="delete">
-      //       <HiddenInputs listValueId={cell.row.original.id}/>
-      //       <Button type='submit' name='delete' onClick={(event) => {event.stopPropagation()}}>Delete</Button>
-      //     </fetcher.Form>
-      //   </div>
-      //   )
-      // },
-    ],
-    [t]
-  );
-
-  const virtualTable = useVirtualTable({
-    data: customList.values,
-    columns,
-    columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-  });
-
-  return (
-    <Page.Container>
-      <Page.Header>
-        <Link to="./.." className="mr-4">
-          <Page.BackButton />
-        </Link>
-        {customList.name}
-      </Page.Header>
-      <Page.Content scrollable={false} className="max-w-3xl">
-        <Callout className="w-full">{customList.description}</Callout>
-        {/* <ScenariosList scenarios={scenarios} /> */}
-        {virtualTable.rows.length > 0 ? (
-          <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
-            <form className="flex items-center">
-              <Input
-                type="search"
-                aria-label={t('common:search')}
-                placeholder={t('common:search')}
-                startAdornment={<Search />}
-                onChange={(event) => {
-                  virtualTable.table.setGlobalFilter(event.target.value);
-                }}
-              />
-            </form>
-            {/* <fetcher.Form method="POST">
-            <Button>Add List Value</Button>
-          </fetcher.Form> */}
-            <Table.Default {...virtualTable} />
-          </div>
-        ) : (
-          <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-            <p className="text-s font-medium">
-              {t('lists:empty_custom_list_values_list')}
-            </p>
-          </div>
-        )}
-      </Page.Content>
-    </Page.Container>
-  );
-}

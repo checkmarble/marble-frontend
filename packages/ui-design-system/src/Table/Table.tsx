@@ -217,11 +217,9 @@ function Row<TData extends RowData>({
         return (
           <td
             key={cell.id}
-            className="border-grey-10 w-full border-b pl-4 pr-4 group-last:border-b-0"
+            className="border-grey-10 text-s w-full border-b pl-4 pr-4 font-normal group-last:border-b-0"
           >
-            <p className="text-s line-clamp-2 font-normal">
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </p>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </td>
         );
       })}

@@ -2,7 +2,7 @@ import { type AstNode, NewAstNode, NoConstant } from '@app-builder/models';
 import { Button, Input } from '@ui-design-system';
 import { useFieldArray } from 'react-hook-form';
 
-import { FormControl, FormField, FormItem, FormLabel } from './Form';
+import { FormControl, FormField, FormItem, FormLabel } from '../Form';
 import { RemoveButton } from './RemoveButton';
 
 export function WildEditAstNode<TName extends string>({

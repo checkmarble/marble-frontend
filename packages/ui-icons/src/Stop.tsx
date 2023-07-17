@@ -19,7 +19,7 @@ const Stop = (props: SVGProps<SVGSVGElement>) => (
         maskType: 'alpha',
       }}
     >
-      <path fill="#D9D9D9" d="M0 0h24v24H0z" />
+      <path fill="currentColor" d="M0 0h24v24H0z" />
     </mask>
     <g mask="url(#prefix__a)">
       <path
