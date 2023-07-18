@@ -11,17 +11,19 @@ jobs:
       actions: read
     steps:
       - uses: actions/checkout@v3
-
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version-file: '.tool-versions'
-          cache: 'npm'
+          cache: 'pnpm'
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
-      - run: npm run format:check
-      - run: npm run lint --workspaces
-      - run: npm run type-check --workspaces
-      - run: npm run test:all
-      - run: npm run build --workspaces --if-present
+      - run: pnpm run format:check
+      - run: pnpm run -r lint
+      - run: pnpm run -r type-check
+      - run: pnpm run test:all
+      - run: pnpm run -r build

@@ -46,24 +46,20 @@ jobs:
 
       - name: Build
         run: |
-          docker build \
-            --platform linux/amd64 \
-            --tag ${{env.TAG }} \
-            -f ./packages/app-builder/Dockerfile \
-            .
+          docker build . --target app-builder --tag ${{ env.TAG}}
 
       - name: Push
         run: |
-          docker push ${{env.TAG }}
+          docker push ${{ env.TAG }}
 
       - name: Deploy server
         run: |
           gcloud run deploy marble-front \
             --quiet \
-            --image="${{env.TAG }}" \
+            --image="${{ env.TAG }}" \
             --region="europe-west1" \
             --allow-unauthenticated \
-            --service-account=${{env.SERVICE_ACCOUNT }} \
+            --service-account=${{ env.SERVICE_ACCOUNT }} \
             --set-env-vars=ENV=${{ vars.ENV }},FIREBASE_API_KEY=${{ vars.FIREBASE_API_KEY }},FIREBASE_APP_ID=${{ vars.FIREBASE_APP_ID }},FIREBASE_AUTH_DOMAIN=${{ vars.FIREBASE_AUTH_DOMAIN }},FIREBASE_MESSAGING_SENDER_ID=${{ vars.FIREBASE_MESSAGING_SENDER_ID }},FIREBASE_PROJECT_ID=${{ vars.FIREBASE_PROJECT_ID }},FIREBASE_STORAGE_BUCKET=${{ vars.FIREBASE_STORAGE_BUCKET }},MARBLE_API_DOMAIN=${{ vars.MARBLE_API_DOMAIN }},NODE_ENV=${{ vars.NODE_ENV }},SESSION_MAX_AGE=${{ vars.SESSION_MAX_AGE }} \
             --set-secrets=SESSION_SECRET=COOKIE_SESSION_SECRET:latest \
             --port=8080

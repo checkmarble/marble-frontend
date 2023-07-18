@@ -1,15 +1,52 @@
 # Marble Front Monorepo
 
-This is the frontend marble monorepo. We use `npm` to handle dependancies and `nx` as build system tool.
+This is the frontend marble monorepo. We use `pnpm` to handle dependancies.
 
 ## Getting started
 
-We recommand you look at [Nx](https://nx.dev/) documentation. For information, most of this monorepo follow the "Integrated Repo" philosophy.
+This README is a global README for the monorepo. Each package may have its own README. You can find them in the `packages/*/README.md` files.
 
-For VS Code users, we higlhy recommand the [official extension](https://nx.dev/core-features/integrate-with-editors#vscode-plugin:-nx-console). It will bring some UI on top of nx consol. It is based on the introspection of the monrepo `project.json` and `package.json` files, and thus can help you inspect/lauch all the targets of each projects.
+### Install pnpm
 
-> There is also some community extensions for WebStorm and Neovim
+```bash
+brew install pnpm
+```
 
-## Environment variables in Nx
+> NB: more installation options [here](https://pnpm.io/installation)
 
-Nx task runner comes with [a built in opinionated way to handle env variables](https://nx.dev/recipes/environment-variables/define-environment-variables)
+To enable shell autocompletion (works for bash, zsh and fish), run:
+
+```bash
+pnpm install-completion
+```
+
+### Install dependancies
+
+```bash
+pnpm install
+```
+
+### Work in a package
+
+Each packages are located in the `packages` folder. To work in a package, you can use the `--filter` option of `pnpm` to trigger the dedicated scripts present in each `packages/*/package.json`. Exemple to start the app builder in dev mode:
+
+```bash
+# This will run the dev script in the ./packages/app-builder/package.json
+pnpm --filter app-builder run dev
+```
+
+### Some usefull commands
+
+```bash
+# Start the builder app in dev mode
+pnpm --filter app-builder run dev
+
+# Generate the marble-api client
+pnpm --filter marble-api run generate-api
+
+# Start the storybook in dev mode
+pnpm --filter ui-design-system run storybook
+
+# Generate icons from svg files
+pnpm --filter ui-icons run generate-icons
+```
