@@ -1,15 +1,17 @@
 FROM node:20-slim AS base
-ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 COPY . /app
 WORKDIR /app
 
 FROM base AS prod-deps
-RUN --mount=type=cache,id=pnpm,target=$PNPM_HOME/store pnpm install --prod --frozen-lockfile
+# RUN --mount=type=cache,id=pnpm,target=$PNPM_HOME/store pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile
 
 FROM base AS build
-RUN --mount=type=cache,id=pnpm,target=$PNPM_HOME/store pnpm install --frozen-lockfile
+# RUN --mount=type=cache,id=pnpm,target=$PNPM_HOME/store pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 RUN pnpm run -r build
 
 FROM base AS app-builder
