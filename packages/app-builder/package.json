@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "devDependencies": {
+    "@types/qs": "^6.9.7",
     "dotenv-cli": "^7.2.1"
   },
   "scripts": {

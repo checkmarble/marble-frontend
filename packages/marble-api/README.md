@@ -7,7 +7,7 @@ This package generates Marble API client based on `src/scripts/openapi.yaml`.
 The generated code can be found in `src/lib/generated/marble-api.ts`
 
 1. Make sure to have `scripts/openapi.yaml` up to date
-2. Run `npm run generate-api -w marble-api` to generate the client
+2. Run `pnpm --filter marble-api run generate-api` to generate the client
 3. Review generated code and commit changes
 
 > NB: in case update introduced breaking changes, you may need to resolve TS issues in places the client is used
@@ -28,7 +28,7 @@ Change or add files in `src/helpers`
 
 > May be deprcated soon with the new AST based approach
 
-1. Run `npm run operator-regex -w marble-api` to generate the regexp
+1. Run `pnpm --filter marble-api run operator-regex` to generate the regexp
 2. Copy the regexp
 3. Use the "Find All" VS Code tab from the backend
 
