@@ -1,22 +1,22 @@
 FROM node:20-slim AS base
-
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-RUN pnpm config set store-dir ~/pnpm-store
 COPY . /app
 WORKDIR /app
 
 FROM base AS prod-deps
-RUN --mount=type=cache,id=pnpm,target=/root/pnpm-store pnpm install --prod --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=$PNPM_HOME/store pnpm install --prod --frozen-lockfile
 
 FROM base AS build
-RUN --mount=type=cache,id=pnpm,target=/root/pnpm-store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=$PNPM_HOME/store pnpm install --frozen-lockfile
 RUN pnpm run -r build
 
 FROM base AS app-builder
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# To replace by above commented line when nested package.json are correctly setup
+# To replace by above line when nested package.json are correctly setup
 COPY --from=prod-deps /app/node_modules /app/node_modules
 # COPY --from=prod-deps /app/packages/app-builder/node_modules/ /app/packages/app-builder/node_modules
 
