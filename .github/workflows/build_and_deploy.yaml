@@ -44,13 +44,16 @@ jobs:
         run: |
           gcloud auth configure-docker europe-docker.pkg.dev
 
-      - name: Build
-        run: |
-          docker build . --target app-builder --tag ${{ env.TAG}}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Push
-        run: |
-          docker push ${{ env.TAG }}
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          target: app-builder
+          tags: ${{ env.TAG }}
 
       - name: Deploy server
         run: |
