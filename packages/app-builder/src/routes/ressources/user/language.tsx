@@ -1,9 +1,5 @@
-import { supportedLngs } from '@app-builder/config/i18n/i18n-config';
-import { setLanguage } from '@app-builder/config/i18n/i18next.server';
-import {
-  commitSession,
-  getSession,
-} from '@app-builder/services/auth/session.server';
+import { supportedLngs } from '@app-builder/services/i18n/i18n-config';
+import { serverServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -19,7 +15,12 @@ const formSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  const session = await getSession(request.headers.get('cookie'));
+  const {
+    i18nextService,
+    sessionService: { getSession, commitSession },
+  } = serverServices;
+
+  const session = await getSession(request);
   try {
     const { preferredLanguage } = await parseForm(request, formSchema);
 
@@ -32,7 +33,7 @@ export async function action({ request }: ActionArgs) {
     //     },
     //   });
 
-    setLanguage(session, preferredLanguage);
+    i18nextService.setLanguage(session, preferredLanguage);
 
     return redirectBack(request, {
       fallback: '/home',

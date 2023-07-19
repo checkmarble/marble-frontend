@@ -8,8 +8,8 @@ import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { Consequence } from '@app-builder/components/Scenario/Rule/Consequence';
 import { type AstNode } from '@app-builder/models';
 import { editor, getScenarioIterationRule } from '@app-builder/repositories';
-import { authenticator } from '@app-builder/services/auth/auth.server';
 import { EditorIdentifiersProvider } from '@app-builder/services/editor';
+import { serverServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment.server';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { DevTool } from '@hookform/devtools';
@@ -26,7 +26,8 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { tokenService } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { tokenService } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 

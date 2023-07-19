@@ -7,11 +7,7 @@ import {
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/repositories';
-import { authenticator } from '@app-builder/services/auth/auth.server';
-import {
-  commitSession,
-  getSession,
-} from '@app-builder/services/auth/session.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/services/routes';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -35,7 +31,8 @@ const createListFormSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -62,7 +59,8 @@ export async function action({ request }: ActionArgs) {
     );
   } catch (error) {
     if (isStatusConflictHttpError(error)) {
-      const session = await getSession(request.headers.get('cookie'));
+      const { getSession, commitSession } = serverServices.sessionService;
+      const session = await getSession(request);
       setToastMessage(session, {
         type: 'error',
         messageKey: 'common:errors.list.duplicate_list_name',

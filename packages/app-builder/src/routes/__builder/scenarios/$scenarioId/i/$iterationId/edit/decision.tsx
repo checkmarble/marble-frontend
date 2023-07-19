@@ -1,10 +1,6 @@
 import { Callout, decisionI18n, Outcome, Paper } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { authenticator } from '@app-builder/services/auth/auth.server';
-import {
-  commitSession,
-  getSession,
-} from '@app-builder/services/auth/session.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,7 +34,8 @@ const formSchema = z
   );
 
 export async function action({ request, params }: ActionArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
   const parsedForm = await parseFormSafe(request, formSchema);
@@ -66,7 +63,8 @@ export async function action({ request, params }: ActionArgs) {
       values: parsedForm.data,
     });
   } catch (error) {
-    const session = await getSession(request.headers.get('cookie'));
+    const { getSession, commitSession } = serverServices.sessionService;
+    const session = await getSession(request);
 
     setToastMessage(session, {
       type: 'error',

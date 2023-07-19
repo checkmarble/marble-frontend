@@ -6,11 +6,7 @@ import {
 } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
-import { authenticator } from '@app-builder/services/auth/auth.server';
-import {
-  commitSession,
-  getSession,
-} from '@app-builder/services/auth/session.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/services/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderArgs } from '@remix-run/node';
@@ -35,7 +31,8 @@ const LINKS: ScenariosLinkProps[] = [
 ];
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -44,7 +41,8 @@ export async function loader({ request, params }: LoaderArgs) {
   const scenarioIteration = await apiClient.getScenarioIteration(iterationId);
 
   if (scenarioIteration.version) {
-    const session = await getSession(request.headers.get('cookie'));
+    const { getSession, commitSession } = serverServices.sessionService;
+    const session = await getSession(request);
 
     setToastMessage(session, {
       type: 'error',

@@ -1,4 +1,4 @@
-import { authenticator } from '@app-builder/services/auth/auth.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -19,7 +19,8 @@ const deleteValueFormSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
   const parsedForm = await parseFormSafe(request, deleteValueFormSchema);

@@ -3,7 +3,7 @@ import {
   Outcome,
   type RightPanelRootProps,
 } from '@app-builder/components';
-import { authenticator } from '@app-builder/services/auth/auth.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/services/routes';
 import { formatCreatedAt } from '@app-builder/utils/format';
 import { parseParams } from '@app-builder/utils/input-validation';
@@ -26,7 +26,8 @@ const formSchema = z.object({
 });
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 

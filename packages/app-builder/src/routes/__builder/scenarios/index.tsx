@@ -1,5 +1,5 @@
 import { Page } from '@app-builder/components';
-import { authenticator } from '@app-builder/services/auth/auth.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/services/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -15,7 +15,8 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
   const scenarios = await apiClient.listScenarios();

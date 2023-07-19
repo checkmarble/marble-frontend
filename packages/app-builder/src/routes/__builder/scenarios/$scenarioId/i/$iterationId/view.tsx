@@ -6,7 +6,7 @@ import {
 } from '@app-builder/components';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
-import { authenticator } from '@app-builder/services/auth/auth.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/services/routes';
 import { fromParams, fromUUID, toUUID } from '@app-builder/utils/short-uuid';
 import { type ScenarioIteration } from '@marble-api';
@@ -41,7 +41,8 @@ const LINKS: ScenariosLinkProps[] = [
 ];
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 

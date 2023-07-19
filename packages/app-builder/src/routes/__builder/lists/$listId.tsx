@@ -3,7 +3,7 @@ import { DeleteList } from '@app-builder/routes/ressources/lists/delete';
 import { EditList } from '@app-builder/routes/ressources/lists/edit';
 import { NewListValue } from '@app-builder/routes/ressources/lists/value_create';
 import { DeleteListValue } from '@app-builder/routes/ressources/lists/value_delete';
-import { authenticator } from '@app-builder/services/auth/auth.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
@@ -20,7 +20,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 

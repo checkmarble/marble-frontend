@@ -1,5 +1,5 @@
 import { Outcome, type OutcomeProps, Page } from '@app-builder/components';
-import { authenticator } from '@app-builder/services/auth/auth.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { formatCreatedAt } from '@app-builder/utils/format';
 import { useVisibilityChange } from '@app-builder/utils/hooks';
 import { type Decision } from '@marble-api';
@@ -25,7 +25,8 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
