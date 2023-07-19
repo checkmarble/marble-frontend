@@ -1,21 +1,28 @@
+import { type GetMarbleAPIClient } from '@app-builder/infra/marble-api';
+
+import { getEditorRepository } from './EditorRepository';
+import { getMarbleAPIRepository } from './MarbleAPIRepository';
+import { getScenarioRepository } from './ScenarioRepository';
 import {
   getSessionStorageRepository,
-  type SessionStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepository';
 
-export interface ServerRepositories {
-  sessionStorageRepository: SessionStorageRepository;
-}
-
 export function makeServerRepositories({
   sessionStorageRepositoryOptions,
+  getMarbleAPIClient,
 }: {
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
-}): ServerRepositories {
+  getMarbleAPIClient: GetMarbleAPIClient;
+}) {
   return {
     sessionStorageRepository: getSessionStorageRepository(
       sessionStorageRepositoryOptions
     ),
+    marbleAPIClient: getMarbleAPIRepository(getMarbleAPIClient),
+    editorRepository: getEditorRepository(),
+    scenarioRepository: getScenarioRepository(),
   };
 }
+
+export type ServerRepositories = ReturnType<typeof makeServerRepositories>;

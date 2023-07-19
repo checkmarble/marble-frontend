@@ -4,9 +4,9 @@ import {
   type RightPanelRootProps,
 } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/services/routes';
 import { formatCreatedAt } from '@app-builder/utils/format';
 import { parseParams } from '@app-builder/utils/input-validation';
+import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
 import { useFetcher, useSearchParams } from '@remix-run/react';
 import { Decision as DecisionIcon } from '@ui-icons';

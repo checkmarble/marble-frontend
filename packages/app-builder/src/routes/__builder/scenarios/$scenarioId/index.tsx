@@ -1,6 +1,6 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/services/routes';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderArgs, redirect } from '@remix-run/node';
 import { type Namespace } from 'i18next';

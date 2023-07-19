@@ -13,7 +13,7 @@ async function generateRoutes() {
     const routes = JSON.parse(stdout) as string;
 
     await writeFile(
-      'src/services/routes/routes.ts',
+      'src/utils/routes/routes.ts',
       prettier.format(
         `export const routes = ${JSON.stringify(routes)} as const;`,
         {

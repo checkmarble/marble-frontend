@@ -1,22 +1,29 @@
+import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { adaptAuthErrors } from '@app-builder/models';
-import { getMarbleAPIClient, type MarbleApi } from '@app-builder/repositories';
+import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
+import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
+import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { getServerEnv } from '@app-builder/utils/environment.server';
 import { parseForm } from '@app-builder/utils/input-validation';
-import { marbleApi, type TokenService } from '@marble-api';
+import { marbleApi } from '@marble-api';
 import { redirect } from '@remix-run/node';
 import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
 
+import { getRoute } from '../../utils/routes';
 import { logger } from '../logger';
-import { getRoute } from '../routes';
 import { type SessionService } from './session.server';
 
 interface AuthenticatedInfo {
   apiClient: MarbleApi;
-  tokenService: TokenService<string>;
+  editor: ReturnType<EditorRepository>;
+  scenario: ReturnType<ScenarioRepository>;
 }
 
 export function makeAuthenticationServerService(
+  marbleAPIClient: MarbleAPIRepository,
+  editorRepository: EditorRepository,
+  scenarioRepository: ScenarioRepository,
   sessionService: SessionService
 ) {
   async function authenticate(
@@ -102,12 +109,13 @@ export function makeAuthenticationServerService(
         throw redirect(getRoute('/ressources/auth/logout'));
       },
     };
-    const apiClient = getMarbleAPIClient({
-      baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
-      tokenService,
-    });
+    const apiClient = marbleAPIClient(tokenService);
 
-    return { apiClient, tokenService };
+    return {
+      apiClient,
+      editor: editorRepository(apiClient),
+      scenario: scenarioRepository(apiClient),
+    };
   }
 
   async function logout(

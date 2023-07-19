@@ -1,3 +1,4 @@
+import { initializeGetMarbleAPIClient } from '@app-builder/infra/marble-api';
 import {
   makeServerRepositories,
   type ServerRepositories,
@@ -14,15 +15,24 @@ function makeServerServices(repositories: ServerRepositories) {
   );
   return {
     sessionService,
-    authService: makeAuthenticationServerService(sessionService),
+    authService: makeAuthenticationServerService(
+      repositories.marbleAPIClient,
+      repositories.editorRepository,
+      repositories.scenarioRepository,
+      sessionService
+    ),
     i18nextService: makeI18nextServerService(
       repositories.sessionStorageRepository
     ),
   };
 }
 
-function initServices() {
+function initServerServices() {
+  const getMarbleAPIClient = initializeGetMarbleAPIClient({
+    baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
+  });
   const serverRepositories = makeServerRepositories({
+    getMarbleAPIClient,
     sessionStorageRepositoryOptions: {
       maxAge: Number(getServerEnv('SESSION_MAX_AGE')),
       secrets: [getServerEnv('SESSION_SECRET')],
@@ -32,4 +42,4 @@ function initServices() {
   return makeServerServices(serverRepositories);
 }
 
-export const serverServices = initServices();
+export const serverServices = initServerServices();

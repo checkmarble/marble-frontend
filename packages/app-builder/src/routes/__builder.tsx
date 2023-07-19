@@ -20,7 +20,7 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { getRoute } from '../services/routes';
+import { getRoute } from '../utils/routes';
 import { LanguagePicker } from './ressources/user/language';
 
 const LINKS: SidebarLinkProps[] = [

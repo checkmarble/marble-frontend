@@ -1,6 +1,6 @@
 import { Page } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/services/routes';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';

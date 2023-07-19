@@ -7,7 +7,7 @@ import {
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { serverServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/services/routes';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderArgs } from '@remix-run/node';
 import { Link, Outlet } from '@remix-run/react';
