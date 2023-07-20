@@ -1,8 +1,9 @@
-import { authenticator } from '@app-builder/services/auth/auth.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { type LoaderArgs } from '@remix-run/node';
 
 export async function loader({ request }: LoaderArgs) {
-  return authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  return authService.isAuthenticated(request, {
     successRedirect: '/scenarios',
     failureRedirect: '/login',
   });

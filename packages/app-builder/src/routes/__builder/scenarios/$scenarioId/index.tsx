@@ -1,10 +1,6 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { authenticator } from '@app-builder/services/auth/auth.server';
-import {
-  commitSession,
-  getSession,
-} from '@app-builder/services/auth/session.server';
-import { getRoute } from '@app-builder/services/routes';
+import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderArgs, redirect } from '@remix-run/node';
 import { type Namespace } from 'i18next';
@@ -15,7 +11,11 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const {
+    authService,
+    sessionService: { getSession, commitSession },
+  } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -27,7 +27,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
   //TODO(CatchBoundary): replace this with according CatchBoundary
   if (scenarioIterations.length === 0) {
-    const session = await getSession(request.headers.get('cookie'));
+    const session = await getSession(request);
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:empty_scenario_iteration_list',

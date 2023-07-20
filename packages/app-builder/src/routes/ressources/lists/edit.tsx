@@ -5,7 +5,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@app-builder/components/Form';
-import { authenticator } from '@app-builder/services/auth/auth.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -29,7 +29,8 @@ const editListFormSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 

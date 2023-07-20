@@ -3,6 +3,7 @@ import {
   Sidebar,
   type SidebarLinkProps,
 } from '@app-builder/components';
+import { serverServices } from '@app-builder/services/init.server';
 import * as Popover from '@radix-ui/react-popover';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Form, Outlet, useLoaderData } from '@remix-run/react';
@@ -19,8 +20,7 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { authenticator } from '../services/auth/auth.server';
-import { getRoute } from '../services/routes';
+import { getRoute } from '../utils/routes';
 import { LanguagePicker } from './ressources/user/language';
 
 const LINKS: SidebarLinkProps[] = [
@@ -54,7 +54,8 @@ export interface UserResponse {
 }
 
 export async function loader({ request }: LoaderArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 

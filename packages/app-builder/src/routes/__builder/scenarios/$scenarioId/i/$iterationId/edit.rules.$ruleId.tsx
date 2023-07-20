@@ -7,10 +7,8 @@ import {
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { Consequence } from '@app-builder/components/Scenario/Rule/Consequence';
 import { type AstNode } from '@app-builder/models';
-import { editor, getScenarioIterationRule } from '@app-builder/repositories';
-import { authenticator } from '@app-builder/services/auth/auth.server';
 import { EditorIdentifiersProvider } from '@app-builder/services/editor';
-import { getServerEnv } from '@app-builder/utils/environment.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { DevTool } from '@hookform/devtools';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -26,23 +24,20 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { tokenService } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { editor, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const ruleId = fromParams(params, 'ruleId');
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const scenarioIterationRule = getScenarioIterationRule({
+  const scenarioIterationRule = scenario.getScenarioIterationRule({
     ruleId,
-    tokenService,
-    baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
   });
 
   const identifiers = editor.listIdentifiers({
     scenarioId,
-    tokenService,
-    baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
   });
 
   return json({

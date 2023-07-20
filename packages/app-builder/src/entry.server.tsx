@@ -5,7 +5,7 @@ import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
 import { PassThrough } from 'stream';
 
-import { getI18nextServerInstance } from './config/i18n/i18next.server';
+import { serverServices } from './services/init.server';
 
 const ABORT_DELAY = 5000;
 
@@ -15,7 +15,11 @@ export default async function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  const i18n = await getI18nextServerInstance(request, remixContext);
+  const { i18nextService } = serverServices;
+  const i18n = await i18nextService.getI18nextServerInstance(
+    request,
+    remixContext
+  );
 
   const App = (
     <I18nextProvider i18n={i18n}>

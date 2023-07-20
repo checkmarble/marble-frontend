@@ -1,15 +1,13 @@
 import { NavLink } from '@remix-run/react';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
+import { type Namespace, type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
-
-import { type NavigationTKey } from '../config/navigation';
 
 export const navigationI18n = ['navigation'] satisfies Namespace;
 
 export type SidebarLinkProps = {
   Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
-  labelTKey: NavigationTKey;
+  labelTKey: ParseKeys<['navigation']>;
   to: string;
 };
 
@@ -52,7 +50,7 @@ export const Sidebar = {
 
 export type ScenariosLinkProps = {
   Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
-  labelTKey: NavigationTKey;
+  labelTKey: ParseKeys<['navigation']>;
   to: string;
 };
 

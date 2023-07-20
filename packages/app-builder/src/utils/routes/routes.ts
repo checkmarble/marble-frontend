@@ -15,9 +15,29 @@ export const routes = [
         file: "routes/ressources/scenarios/deployment.tsx",
       },
       {
+        id: "routes/ressources/lists/value_create",
+        path: "ressources/lists/value_create",
+        file: "routes/ressources/lists/value_create.tsx",
+      },
+      {
+        id: "routes/ressources/lists/value_delete",
+        path: "ressources/lists/value_delete",
+        file: "routes/ressources/lists/value_delete.tsx",
+      },
+      {
         id: "routes/ressources/user/language",
         path: "ressources/user/language",
         file: "routes/ressources/user/language.tsx",
+      },
+      {
+        id: "routes/ressources/lists/create",
+        path: "ressources/lists/create",
+        file: "routes/ressources/lists/create.tsx",
+      },
+      {
+        id: "routes/ressources/lists/delete",
+        path: "ressources/lists/delete",
+        file: "routes/ressources/lists/delete.tsx",
       },
       {
         id: "routes/ressources/auth/logout",
@@ -28,6 +48,11 @@ export const routes = [
         id: "routes/ressources/auth/login",
         path: "ressources/auth/login",
         file: "routes/ressources/auth/login.tsx",
+      },
+      {
+        id: "routes/ressources/lists/edit",
+        path: "ressources/lists/edit",
+        file: "routes/ressources/lists/edit.tsx",
       },
       {
         id: "routes/healthcheck",
@@ -49,6 +74,11 @@ export const routes = [
                 file: "routes/__builder/scenarios/$scenarioId/i/$iterationId.tsx",
                 children: [
                   {
+                    id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit.rules.$ruleId",
+                    path: "edit/rules/:ruleId",
+                    file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit.rules.$ruleId.tsx",
+                  },
+                  {
                     id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view.rules.$ruleId",
                     path: "view/rules/:ruleId",
                     file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view.rules.$ruleId.tsx",
@@ -57,6 +87,33 @@ export const routes = [
                     id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/index",
                     index: true,
                     file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/index.tsx",
+                  },
+                  {
+                    id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit",
+                    path: "edit",
+                    file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit.tsx",
+                    children: [
+                      {
+                        id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/decision",
+                        path: "decision",
+                        file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/decision.tsx",
+                      },
+                      {
+                        id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/trigger",
+                        path: "trigger",
+                        file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/trigger.tsx",
+                      },
+                      {
+                        id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/index",
+                        index: true,
+                        file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/index.tsx",
+                      },
+                      {
+                        id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/rules",
+                        path: "rules",
+                        file: "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/rules.tsx",
+                      },
+                    ],
                   },
                   {
                     id: "routes/__builder/scenarios/$scenarioId/i/$iterationId/view",

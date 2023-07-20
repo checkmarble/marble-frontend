@@ -6,7 +6,7 @@ pnpm-lock.yaml
 /packages/app-builder/.cache/
 /packages/app-builder/build/
 /packages/app-builder/public/build/
-/packages/app-builder/src/services/routes/routes.ts
+/packages/app-builder/src/utils/routes/routes.ts
 
 # marble-api
 /packages/marble-api/src/generated

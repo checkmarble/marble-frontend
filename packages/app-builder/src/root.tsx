@@ -23,8 +23,7 @@ import {
 } from 'remix-utils';
 
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
-import { remixI18next } from './config/i18n/i18next.server';
-import { commitSession, getSession } from './services/auth/session.server';
+import { serverServices } from './services/init.server';
 import tailwindStyles from './tailwind.css';
 import { getClientEnvVars } from './utils/environment.server';
 
@@ -53,9 +52,13 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const locale = await remixI18next.getLocale(request);
+  const {
+    i18nextService,
+    sessionService: { getSession, commitSession },
+  } = serverServices;
+  const locale = await i18nextService.getLocale(request);
 
-  const session = await getSession(request.headers.get('cookie'));
+  const session = await getSession(request);
   const toastMessage = getToastMessage(session);
   const csrf = createAuthenticityToken(session);
 

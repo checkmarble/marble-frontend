@@ -6,9 +6,9 @@ import {
 } from '@app-builder/components';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
-import { authenticator } from '@app-builder/services/auth/auth.server';
-import { getRoute } from '@app-builder/services/routes';
-import { fromParams, fromUUID, toUUID } from '@app-builder/utils/short-uuid';
+import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ScenarioIteration } from '@marble-api';
 import { json, type LoaderArgs } from '@remix-run/node';
 import {
@@ -17,7 +17,6 @@ import {
   useLoaderData,
   useLocation,
   useNavigate,
-  useParams,
 } from '@remix-run/react';
 import { Select } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
@@ -41,7 +40,8 @@ const LINKS: ScenariosLinkProps[] = [
 ];
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -100,11 +100,10 @@ export default function ScenarioViewLayout() {
     currentScenario.liveVersionId
   );
 
-  const { iterationId } = useParams();
-  invariant(iterationId, 'iterationId is required');
+  const iterationId = useParam('iterationId');
 
   const currentIteration = sortedScenarioIterations.find(
-    ({ id }) => id === toUUID(iterationId)
+    ({ id }) => id === iterationId
   );
   invariant(currentIteration, 'currentIteration is required');
 

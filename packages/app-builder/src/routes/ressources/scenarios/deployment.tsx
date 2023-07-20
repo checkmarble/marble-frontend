@@ -1,9 +1,5 @@
 import { navigationI18n } from '@app-builder/components';
-import { authenticator } from '@app-builder/services/auth/auth.server';
-import {
-  commitSession,
-  getSession,
-} from '@app-builder/services/auth/session.server';
+import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { Label } from '@radix-ui/react-label';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -54,7 +50,8 @@ const formSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  const { apiClient } = await authenticator.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -84,7 +81,8 @@ export async function action({ request }: ActionArgs) {
       values: parsedForm.data,
     });
   } catch (error) {
-    const session = await getSession(request.headers.get('cookie'));
+    const { getSession, commitSession } = serverServices.sessionService;
+    const session = await getSession(request);
 
     setToastMessage(session, {
       type: 'error',

@@ -1,8 +1,5 @@
-import {
-  authenticator,
-  type AuthErrors,
-} from '@app-builder/services/auth/auth.server';
-import { getSession } from '@app-builder/services/auth/session.server';
+import { type AuthErrors } from '@app-builder/models';
+import { serverServices } from '@app-builder/services/init.server';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { LogoStandard } from '@ui-icons';
@@ -13,10 +10,14 @@ import { SignInWithGoogle } from './ressources/auth/login';
 import { LanguagePicker } from './ressources/user/language';
 
 export async function loader({ request }: LoaderArgs) {
-  await authenticator.isAuthenticated(request, {
+  const {
+    authService,
+    sessionService: { getSession },
+  } = serverServices;
+  await authService.isAuthenticated(request, {
     successRedirect: '/home',
   });
-  const session = await getSession(request.headers.get('cookie'));
+  const session = await getSession(request);
   const error = session.get('authError');
 
   return json({
