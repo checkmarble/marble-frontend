@@ -4,11 +4,11 @@ import { adaptFormulaDto, type AstNode } from '@app-builder/models';
 export type ScenarioRepository = ReturnType<typeof getScenarioRepository>;
 
 export function isOrAndGroup(astNode: AstNode): boolean {
-  if (astNode.name !== 'OR') {
+  if (astNode.name !== 'Or') {
     return false;
   }
   for (const child of astNode.children) {
-    if (child.name !== 'AND') {
+    if (child.name !== 'And') {
       return false;
     }
   }
@@ -17,11 +17,11 @@ export function isOrAndGroup(astNode: AstNode): boolean {
 
 export function wrapInOrAndGroups(astNode: AstNode): AstNode {
   return {
-    name: 'OR',
+    name: 'Or',
     constant: null,
     children: [
       {
-        name: 'AND',
+        name: 'And',
         constant: null,
         children: [astNode],
         namedChildren: {},
