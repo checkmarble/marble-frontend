@@ -1440,6 +1440,31 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /ast-expression/save-rule:
+    patch:
+        tags:
+          - Editor
+        summary: Save a rule
+        operationId: saveRule
+        security:
+          - bearerAuth: []
+        requestBody:
+          description: The rule to save
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchRuleWithAstExpression'
+          required: true
+        responses:
+          '204':
+            description: The rule has been saved
+          '401':
+            $ref: '#/components/responses/401'
+          '403':
+            $ref: '#/components/responses/403'
+          '404':
+            $ref: '#/components/responses/404'
+
 components:
   schemas:
     Organization:
@@ -1932,6 +1957,9 @@ components:
         formula:
           $ref: '#/components/schemas/Operator'
           description: Valid marshalled operator
+        formula_ast_expression:
+          $ref: '#/components/schemas/NodeDto'
+          description: Valid marshalled ast_node
         scoreModifier:
           type: integer
         createdAt:
@@ -2464,6 +2492,17 @@ components:
           properties:
             level:
               type: integer
+    PatchRuleWithAstExpression:
+      type: object
+      required:
+        - rule_id
+        - expression
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        expression:
+          $ref: '#/components/schemas/NodeDto'
   securitySchemes:
     bearerAuth:
       type: http

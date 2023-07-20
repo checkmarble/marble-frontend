@@ -2,15 +2,18 @@ import { type AstNode, NewAstNode } from '@app-builder/models';
 import { useEditorIdentifiers } from '@app-builder/services/editor';
 import { Combobox, Select } from '@ui-design-system';
 import { forwardRef, useCallback, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 import { FormControl, FormField, FormItem } from '../Form';
-import { useGetOperatorLabel } from '../Scenario/Formula/Operators';
+//import { useGetOperatorLabel } from '../Scenario/Formula/Operators';
+
+function isAstNodeEmpty(node: AstNode): boolean {
+  return !node.name && !node.constant && node.children?.length === 0 && Object.keys(node.namedChildren).length ===0;
+}
 
 export function EditAstNode({ name }: { name: string }) {
-  const { getFieldState, formState } = useFormContext();
-  const firstChildState = getFieldState(`${name}.children.0`, formState);
-  const nameState = getFieldState(`${name}.name`, formState);
+  const firstChildNode = useWatch(`${name}.children.0`);
+  const nameNode = useWatch(`${name}.name`);
 
   return (
     <div className="flex flex-row gap-1">
@@ -26,9 +29,8 @@ export function EditAstNode({ name }: { name: string }) {
       />
       <FormField
         name={`${name}.name`}
-        rules={{ required: true }}
         render={({ field }) => (
-          <FormItem className={firstChildState.isDirty ? '' : 'hidden'}>
+          <FormItem className={firstChildNode && !isAstNodeEmpty(firstChildNode) ? '' : 'hidden'}>
             <FormControl>
               <EditOperator {...field} />
             </FormControl>
@@ -38,7 +40,7 @@ export function EditAstNode({ name }: { name: string }) {
       <FormField
         name={`${name}.children.1`}
         render={({ field }) => (
-          <FormItem className={nameState.isDirty ? '' : 'hidden'}>
+          <FormItem className={nameNode && !isAstNodeEmpty(nameNode) ? '' : 'hidden'}>
             <FormControl>
               <EditOperand {...field} />
             </FormControl>
@@ -48,31 +50,41 @@ export function EditAstNode({ name }: { name: string }) {
     </div>
   );
 }
+function getSelectedItem({value}: {value: AstNode | null }){
+  if(!value) return null
+
+  if (!value.name && value.constant) {
+    return {label: value.constant.toString(), node: value}
+  }
+  return null
+}
 
 //TODO: connect value to Combobox (we may need to save {label:string; node: AstNode} in the form to ease the process)
 const EditOperand = forwardRef<
   HTMLInputElement,
   {
     name: string;
-    value: string | null;
+    value: AstNode | null;
     onChange: (value: AstNode | null) => void;
     onBlur: () => void;
   }
->(({ onChange, onBlur }, ref) => {
+>(({ onChange, onBlur, value }, ref) => {
   const getIdentifierOptions = useGetIdentifierOptions();
-  const [inputValue, setInputValue] = useState('');
-  const [selectedItem, setSelectedItem] = useState<
-    ReturnType<typeof getIdentifierOptions>[number] | null
-  >(null);
+
+  const selectedItem = getSelectedItem({value})
+  
+  const [inputValue, setInputValue] = useState(selectedItem?.label ?? "");
+  
   const items = getIdentifierOptions(inputValue);
 
   const filteredItems = items.filter((item) => item.label.includes(inputValue));
+  
+  items.find((item) => item.node === value)
 
   return (
     <Combobox.Root
       value={selectedItem}
       onChange={(value) => {
-        setSelectedItem(value);
         onChange(value?.node ?? null);
       }}
       nullable
@@ -143,7 +155,7 @@ const EditOperator = forwardRef<
     onBlur: () => void;
   }
 >(({ name, value, onChange, onBlur }, ref) => {
-  const getOperatorLabel = useGetOperatorLabel();
+  // const getOperatorLabel = useGetOperatorLabel();
 
   return (
     <Select.Root
@@ -172,7 +184,8 @@ const EditOperator = forwardRef<
                 <p className="flex flex-col gap-1">
                   <Select.ItemText>
                     <span className="text-s text-grey-100 font-semibold">
-                      {getOperatorLabel(operator)}
+                      {/* {getOperatorLabel(operator)} */}
+                      {operator}
                     </span>
                   </Select.ItemText>
                   <span className="text-grey-50 text-xs">{operator}</span>
@@ -188,18 +201,5 @@ const EditOperator = forwardRef<
 EditOperator.displayName = 'EditOperator';
 
 const mockedOperators = [
-  'EQUAL_BOOL',
-  'EQUAL_FLOAT',
-  'EQUAL_STRING',
-  'AND',
-  'PRODUCT_FLOAT',
-  'OR',
-  'SUM_FLOAT',
-  'SUBTRACT_FLOAT',
-  'DIVIDE_FLOAT',
-  'GREATER_FLOAT',
-  'GREATER_OR_EQUAL_FLOAT',
-  'LESSER_FLOAT',
-  'LESSER_OR_EQUAL_FLOAT',
-  'STRING_IS_IN_LIST',
+  '=',
 ] as const;

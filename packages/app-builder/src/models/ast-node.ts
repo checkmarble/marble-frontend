@@ -11,7 +11,7 @@ import {
 
 export interface AstNode {
   name: string | null;
-  constant: ConstantOptional;
+  constant: ConstantType | null;
   children: AstNode[];
   namedChildren: Record<string, AstNode>;
 }
@@ -24,8 +24,6 @@ export type ConstantType =
   | Array<ConstantType>
   | { [key: string]: ConstantType };
 
-export const NoConstant: unique symbol = Symbol();
-export type ConstantOptional = ConstantType | typeof NoConstant;
 
 // helper
 export function NewAstNode({
@@ -36,7 +34,7 @@ export function NewAstNode({
 }: Partial<AstNode> = {}): AstNode {
   return {
     name: name ?? null,
-    constant: constant ?? NoConstant,
+    constant: constant ?? null,
     children: children ?? [],
     namedChildren: namedChildren ?? {},
   };
@@ -120,4 +118,13 @@ export function adaptNodeDto(nodeDto: NodeDto): AstNode {
     children: nodeDto.children?.map(adaptNodeDto),
     namedChildren: R.mapValues(nodeDto.named_children ?? {}, adaptNodeDto),
   });
+}
+
+export function adaptAstNode(astNode: AstNode): NodeDto {
+  return {
+    name: astNode.name ?? undefined,
+    constant: astNode.constant ?? undefined,
+    children: astNode.children?.map(adaptAstNode),
+    named_children: R.mapValues(astNode.namedChildren ?? {}, adaptAstNode),
+  };
 }

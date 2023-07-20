@@ -10,5 +10,6 @@
   "delete": "Delete",
   "close": "Close",
   "clipboard.copy": "Copied in clipboard: {{value}}",
-  "empty_scenario_iteration_list": "Reach out to  Marble to create your first scenario draft."
+  "empty_scenario_iteration_list": "Reach out to  Marble to create your first scenario draft.",
+  "success.save": "Saved successfully"
 }
