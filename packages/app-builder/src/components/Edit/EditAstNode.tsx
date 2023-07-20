@@ -109,7 +109,6 @@ function coerceToConstant(search: string) {
     return {
       label: search,
       node: NewAstNode({
-        name: 'CONSTANT_FLOAT',
         constant: parsedNumber,
       }),
     };
@@ -118,7 +117,6 @@ function coerceToConstant(search: string) {
   return {
     label: `"${search}"`,
     node: NewAstNode({
-      name: 'CONSTANT_STRING',
       constant: search,
     }),
   };

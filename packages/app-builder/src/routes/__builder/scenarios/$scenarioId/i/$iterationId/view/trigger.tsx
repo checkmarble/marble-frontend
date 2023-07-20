@@ -1,6 +1,6 @@
 import { Callout, Paper } from '@app-builder/components';
 import { Formula } from '@app-builder/components/Scenario/Formula';
-import { LogicalOperator } from '@app-builder/components/Scenario/LogicalOperator';
+import { LogicalOperatorLabel } from '@app-builder/components/Scenario/LogicalOperator';
 import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import { type Operator } from '@marble-api';
 import clsx from 'clsx';
@@ -177,7 +177,7 @@ function TriggerCondition() {
               )}
             />
             <div className="border-grey-10 h-5 border-b" />
-            <LogicalOperator
+            <LogicalOperatorLabel
               className="bg-grey-02 mr-2 p-2"
               operator={logicalOperator}
             />
