@@ -29,6 +29,10 @@ const AddLogicalOperatorButton = React.forwardRef<
 });
 AddLogicalOperatorButton.displayName = 'AddLogicalOperatorButton';
 
+function NewBinaryAstNode(){
+  return NewAstNode({children: [NewAstNode(),NewAstNode()]} )
+}
+
 export function RootOrOperator({
   renderAstNode,
 }: {
@@ -45,7 +49,7 @@ export function RootOrOperator({
   function appendOrOperand() {
     append({
       name: 'And',
-      children: [NewAstNode()],
+      children: [NewBinaryAstNode()],
       namedChildren: {},
       constant: null,
     });
@@ -105,7 +109,7 @@ function RootAndOperator({
   }
 
   function appendAndOperand() {
-    append(NewAstNode());
+    append(NewBinaryAstNode());
   }
 
   return (

@@ -2,7 +2,7 @@
   "auth.logout": "Se déconnecter",
   "auth.login": "Connexion",
   "cancel": "Annuler",
-  "clipboard.copy": "Copié dans le presse-papier : {{value}}",
+  "clipboard.copy": "Copié dans le presse-papier : {{value}}",
   "close": "Fermer",
   "errors.unknown": "Une erreur inconnue s'est produite",
   "errors.edit.forbidden_not_draft": "Vous ne pouvez modifier qu'une version brouillon d'un scénario.",
@@ -10,5 +10,6 @@
   "search": "Recherche",
   "empty_scenario_iteration_list": "Contactez Marble pour créer votre premier brouillon de scénario.",
   "delete": "Supprimer",
-  "save": "Sauvegarder"
+  "save": "Sauvegarder",
+  "success.save": "Sauvegarde réussie"
 }
