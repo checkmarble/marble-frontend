@@ -1,13 +1,14 @@
 import { adaptAstNodeToViewModel, type AstNode } from '@app-builder/models';
 import {
+  useEditorOperators,
   useGetIdentifierOptions,
+  useGetOperatorName,
   useIsEditedOnce,
 } from '@app-builder/services/editor';
 import { Combobox, Select } from '@ui-design-system';
 import { forwardRef, useState } from 'react';
 
 import { FormControl, FormField, FormItem } from '../Form';
-//import { useGetOperatorLabel } from '../Scenario/Formula/Operators';
 
 export function EditAstNode({ name }: { name: string }) {
   const isFirstChildEditedOnce = useIsEditedOnce(`${name}.children.0`);
@@ -110,7 +111,8 @@ const EditOperator = forwardRef<
     onBlur: () => void;
   }
 >(({ name, value, onChange, onBlur }, ref) => {
-  // const getOperatorLabel = useGetOperatorLabel();
+  const operators = useEditorOperators();
+  const getOperatorName = useGetOperatorName();
 
   return (
     <Select.Root
@@ -129,22 +131,18 @@ const EditOperator = forwardRef<
       </Select.Trigger>
       <Select.Content className="max-h-60">
         <Select.Viewport>
-          {mockedOperators.map((operator) => {
+          {operators.map((operator) => {
             return (
               <Select.Item
                 className="min-w-[110px]"
                 key={operator}
                 value={operator}
               >
-                <p className="flex flex-col gap-1">
-                  <Select.ItemText>
-                    <span className="text-s text-grey-100 font-semibold">
-                      {/* {getOperatorLabel(operator)} */}
-                      {operator}
-                    </span>
-                  </Select.ItemText>
-                  <span className="text-grey-50 text-xs">{operator}</span>
-                </p>
+                <Select.ItemText>
+                  <span className="text-s text-grey-100 font-semibold">
+                    {getOperatorName(operator)}
+                  </span>
+                </Select.ItemText>
               </Select.Item>
             );
           })}
@@ -154,5 +152,3 @@ const EditOperator = forwardRef<
   );
 });
 EditOperator.displayName = 'EditOperator';
-
-const mockedOperators = ['*', '+', '-', '/', '<', '=', '>'] as const;

@@ -8,7 +8,10 @@ import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Consequence } from '@app-builder/components/Scenario/Rule/Consequence';
 import { type AstNode } from '@app-builder/models';
-import { EditorIdentifiersProvider } from '@app-builder/services/editor';
+import {
+  EditorIdentifiersProvider,
+  EditorOperatorsProvider,
+} from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { DevTool } from '@hookform/devtools';
@@ -37,6 +40,9 @@ export async function loader({ request, params }: LoaderArgs) {
     ruleId,
   });
 
+  //TODO: replace this mocked operators with real ones
+  const mockedOperators = ['*', '+', '-', '/', '<', '=', '>'] as const;
+
   const identifiers = editor.listIdentifiers({
     scenarioId,
   });
@@ -44,6 +50,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({
     rule: await scenarioIterationRule,
     identifiers: await identifiers,
+    operators: mockedOperators,
   });
 }
 
@@ -97,7 +104,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleView() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers } = useLoaderData<typeof loader>();
+  const { rule, identifiers, operators } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
   //@ts-expect-error recursive type is not supported
@@ -134,14 +141,16 @@ export default function RuleView() {
             <Consequence scoreIncrease={rule.scoreModifier} />
             <Paper.Container scrollable={false}>
               <EditorIdentifiersProvider identifiers={identifiers}>
-                <FormProvider {...formMethods}>
-                  {/* <RootOrOperator
+                <EditorOperatorsProvider operators={operators}>
+                  <FormProvider {...formMethods}>
+                    {/* <RootOrOperator
                   renderAstNode={({ name }) => <WildEditAstNode name={name} />}
                 /> */}
-                  <RootOrOperator
-                    renderAstNode={({ name }) => <EditAstNode name={name} />}
-                  />
-                </FormProvider>
+                    <RootOrOperator
+                      renderAstNode={({ name }) => <EditAstNode name={name} />}
+                    />
+                  </FormProvider>
+                </EditorOperatorsProvider>
               </EditorIdentifiersProvider>
             </Paper.Container>
             <Button type="submit" className="w-fit">
