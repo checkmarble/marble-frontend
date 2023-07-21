@@ -29,8 +29,8 @@ const AddLogicalOperatorButton = React.forwardRef<
 });
 AddLogicalOperatorButton.displayName = 'AddLogicalOperatorButton';
 
-function NewBinaryAstNode(){
-  return NewAstNode({children: [NewAstNode(),NewAstNode()]} )
+function NewBinaryAstNode() {
+  return NewAstNode({ children: [NewAstNode(), NewAstNode()] });
 }
 
 export function RootOrOperator({
@@ -129,7 +129,9 @@ function RootAndOperator({
             <div className="peer-hover:border-grey-25 flex flex-1 flex-col rounded border border-transparent p-1 transition-colors duration-200 ease-in-out">
               {renderAstNode({ name: `${name}.${operandIndex}` })}
             </div>
-            <LogicalOperatorLabel operator={operandIndex === 0 ? 'if' : 'and'} />
+            <LogicalOperatorLabel
+              operator={operandIndex === 0 ? 'if' : 'and'}
+            />
           </div>
         );
       })}

@@ -8,7 +8,10 @@ interface LogicalOperatorLabelProps {
   className?: string;
 }
 
-export function LogicalOperatorLabel({ operator, className }: LogicalOperatorLabelProps) {
+export function LogicalOperatorLabel({
+  operator,
+  className,
+}: LogicalOperatorLabelProps) {
   const { t } = useTranslation(scenarioI18n);
 
   return (

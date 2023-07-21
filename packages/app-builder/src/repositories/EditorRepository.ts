@@ -1,5 +1,5 @@
-import { type MarbleApi } from "@app-builder/infra/marble-api";
-import { adaptAstNode,adaptNodeDto, type AstNode } from "@app-builder/models";
+import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { adaptAstNode, adaptNodeDto, type AstNode } from '@app-builder/models';
 
 export type EditorRepository = ReturnType<typeof getEditorRepository>;
 

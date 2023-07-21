@@ -22,5 +22,5 @@
   "delete_value.no_return": "Cette action est irréversible, voulez vous continuer ?",
   "create_list.title": "Nouvelle liste",
   "create_list.name_placeholder": "Ajouter un nom à cette liste",
-  "create_list.description_placeholder": "Ajouter une description",
+  "create_list.description_placeholder": "Ajouter une description"
 }

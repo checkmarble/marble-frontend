@@ -24,7 +24,6 @@ export type ConstantType =
   | Array<ConstantType>
   | { [key: string]: ConstantType };
 
-
 // helper
 export function NewAstNode({
   name,
@@ -127,4 +126,38 @@ export function adaptAstNode(astNode: AstNode): NodeDto {
     children: astNode.children?.map(adaptAstNode),
     named_children: R.mapValues(astNode.namedChildren ?? {}, adaptAstNode),
   };
+}
+
+export function isAstNodeEmpty(node: AstNode): boolean {
+  return (
+    !node.name &&
+    !node.constant &&
+    node.children?.length === 0 &&
+    Object.keys(node.namedChildren).length === 0
+  );
+}
+
+export interface ConstantAstNode<T extends ConstantType = ConstantType> {
+  name: null;
+  constant: T;
+  children: [];
+  namedChildren: Record<string, never>;
+}
+
+export function isConstant(node: AstNode): node is ConstantAstNode {
+  return !node.name && !!node.constant;
+}
+
+export interface DatabaseAccessAstNode {
+  name: 'DatabaseAccess';
+  constant: null;
+  children: [];
+  namedChildren: {
+    path: ConstantAstNode<string[]>;
+    fieldName: ConstantAstNode<string>;
+  };
+}
+
+export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
+  return node.name === 'DatabaseAccess';
 }

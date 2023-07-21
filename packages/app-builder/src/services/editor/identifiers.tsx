@@ -1,19 +1,13 @@
-import { type AstNode } from '@app-builder/models';
+import {
+  adaptAstNodeToViewModel,
+  type AstNode,
+  NewAstNode,
+} from '@app-builder/models';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-
-function getIdentifierDisplayName(identifiers: AstNode) {
-  switch (identifiers.name) {
-    case 'DatabaseAccess': {
-      const { path, fieldName } = identifiers.namedChildren;
-      return [...(path.constant as string[]), fieldName.constant].join('.');
-    }
-    default:
-      return undefined;
-  }
-}
+import { useCallback, useMemo } from 'react';
 
 const EditorIdentifiersContext =
-  createSimpleContext<{ label: string; node: AstNode }[]>('EditorIdentifiers');
+  createSimpleContext<AstNode[]>('EditorIdentifiers');
 
 export function EditorIdentifiersProvider({
   children,
@@ -24,15 +18,7 @@ export function EditorIdentifiersProvider({
     dataAccessors: AstNode[];
   };
 }) {
-  const value = identifiers.dataAccessors
-    .map((dataAccessor) => ({
-      label: getIdentifierDisplayName(dataAccessor),
-      node: dataAccessor,
-    }))
-    .filter(
-      (identifier): identifier is { label: string; node: AstNode } =>
-        identifier.label !== undefined
-    );
+  const value = [...identifiers.dataAccessors];
   return (
     <EditorIdentifiersContext.Provider value={value}>
       {children}
@@ -41,3 +27,35 @@ export function EditorIdentifiersProvider({
 }
 
 export const useEditorIdentifiers = EditorIdentifiersContext.useValue;
+
+function coerceToConstant(search: string) {
+  const parsedNumber = Number(search);
+  const isNumber = !isNaN(parsedNumber);
+
+  if (isNumber) {
+    return NewAstNode({
+      constant: parsedNumber,
+    });
+  }
+
+  return NewAstNode({
+    constant: search,
+  });
+}
+
+export function useGetIdentifierOptions() {
+  const identifiers = useEditorIdentifiers();
+  const identifiersOptions = useMemo(
+    () => identifiers.map(adaptAstNodeToViewModel),
+    [identifiers]
+  );
+
+  return useCallback(
+    (search: string) => {
+      if (!search) return identifiersOptions;
+      const constantNode = coerceToConstant(search);
+      return [...identifiersOptions, adaptAstNodeToViewModel(constantNode)];
+    },
+    [identifiersOptions]
+  );
+}
