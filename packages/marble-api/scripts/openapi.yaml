@@ -1442,28 +1442,28 @@ paths:
           $ref: '#/components/responses/403'
   /ast-expression/save-rule:
     patch:
-        tags:
-          - Editor
-        summary: Save a rule
-        operationId: saveRule
-        security:
-          - bearerAuth: []
-        requestBody:
-          description: The rule to save
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PatchRuleWithAstExpression'
-          required: true
-        responses:
-          '204':
-            description: The rule has been saved
-          '401':
-            $ref: '#/components/responses/401'
-          '403':
-            $ref: '#/components/responses/403'
-          '404':
-            $ref: '#/components/responses/404'
+      tags:
+        - Editor
+      summary: Save a rule
+      operationId: saveRule
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: The rule to save
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchRuleWithAstExpression'
+        required: true
+      responses:
+        '204':
+          description: The rule has been saved
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
 
 components:
   schemas:

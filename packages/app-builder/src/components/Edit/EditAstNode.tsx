@@ -1,19 +1,17 @@
-import { type AstNode, NewAstNode } from '@app-builder/models';
-import { useEditorIdentifiers } from '@app-builder/services/editor';
+import { adaptAstNodeToViewModel, type AstNode } from '@app-builder/models';
+import {
+  useGetIdentifierOptions,
+  useIsEditedOnce,
+} from '@app-builder/services/editor';
 import { Combobox, Select } from '@ui-design-system';
-import { forwardRef, useCallback, useState } from 'react';
-import { useWatch } from 'react-hook-form';
+import { forwardRef, useState } from 'react';
 
 import { FormControl, FormField, FormItem } from '../Form';
 //import { useGetOperatorLabel } from '../Scenario/Formula/Operators';
 
-function isAstNodeEmpty(node: AstNode): boolean {
-  return !node.name && !node.constant && node.children?.length === 0 && Object.keys(node.namedChildren).length ===0;
-}
-
 export function EditAstNode({ name }: { name: string }) {
-  const firstChildNode = useWatch(`${name}.children.0`);
-  const nameNode = useWatch(`${name}.name`);
+  const isFirstChildEditedOnce = useIsEditedOnce(`${name}.children.0`);
+  const isNameEditedOnce = useIsEditedOnce(`${name}.name`);
 
   return (
     <div className="flex flex-row gap-1">
@@ -30,7 +28,7 @@ export function EditAstNode({ name }: { name: string }) {
       <FormField
         name={`${name}.name`}
         render={({ field }) => (
-          <FormItem className={firstChildNode && !isAstNodeEmpty(firstChildNode) ? '' : 'hidden'}>
+          <FormItem className={isFirstChildEditedOnce ? '' : 'hidden'}>
             <FormControl>
               <EditOperator {...field} />
             </FormControl>
@@ -40,7 +38,7 @@ export function EditAstNode({ name }: { name: string }) {
       <FormField
         name={`${name}.children.1`}
         render={({ field }) => (
-          <FormItem className={nameNode && !isAstNodeEmpty(nameNode) ? '' : 'hidden'}>
+          <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
             <FormControl>
               <EditOperand {...field} />
             </FormControl>
@@ -50,16 +48,7 @@ export function EditAstNode({ name }: { name: string }) {
     </div>
   );
 }
-function getSelectedItem({value}: {value: AstNode | null }){
-  if(!value) return null
 
-  if (!value.name && value.constant) {
-    return {label: value.constant.toString(), node: value}
-  }
-  return null
-}
-
-//TODO: connect value to Combobox (we may need to save {label:string; node: AstNode} in the form to ease the process)
 const EditOperand = forwardRef<
   HTMLInputElement,
   {
@@ -71,21 +60,20 @@ const EditOperand = forwardRef<
 >(({ onChange, onBlur, value }, ref) => {
   const getIdentifierOptions = useGetIdentifierOptions();
 
-  const selectedItem = getSelectedItem({value})
-  
-  const [inputValue, setInputValue] = useState(selectedItem?.label ?? "");
-  
+  const selectedItem = value ? adaptAstNodeToViewModel(value) : null;
+
+  const [inputValue, setInputValue] = useState(selectedItem?.label ?? '');
+
   const items = getIdentifierOptions(inputValue);
 
   const filteredItems = items.filter((item) => item.label.includes(inputValue));
-  
-  items.find((item) => item.node === value)
 
   return (
-    <Combobox.Root
+    <Combobox.Root<(typeof items)[0]>
       value={selectedItem}
       onChange={(value) => {
-        onChange(value?.node ?? null);
+        setInputValue(value?.label ?? '');
+        onChange(value?.astNode ?? null);
       }}
       nullable
     >
@@ -112,39 +100,6 @@ const EditOperand = forwardRef<
   );
 });
 EditOperand.displayName = 'EditOperand';
-
-function coerceToConstant(search: string) {
-  const parsedNumber = Number(search);
-  const isNumber = !isNaN(parsedNumber);
-
-  if (isNumber) {
-    return {
-      label: search,
-      node: NewAstNode({
-        constant: parsedNumber,
-      }),
-    };
-  }
-
-  return {
-    label: `"${search}"`,
-    node: NewAstNode({
-      constant: search,
-    }),
-  };
-}
-
-function useGetIdentifierOptions() {
-  const identifiers = useEditorIdentifiers();
-
-  return useCallback(
-    (search: string) => {
-      if (!search) return identifiers;
-      return [...identifiers, coerceToConstant(search)];
-    },
-    [identifiers]
-  );
-}
 
 const EditOperator = forwardRef<
   HTMLButtonElement,
@@ -200,6 +155,4 @@ const EditOperator = forwardRef<
 });
 EditOperator.displayName = 'EditOperator';
 
-const mockedOperators = [
-  '=',
-] as const;
+const mockedOperators = ['='] as const;

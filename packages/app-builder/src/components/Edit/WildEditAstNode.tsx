@@ -42,7 +42,7 @@ export function WildEditAstNode<TName extends string>({
               <FormControl>
                 <Input
                   {...field}
-                  value={field.value?.toString() ?? ""}
+                  value={field.value?.toString() ?? ''}
                   onChange={(event) => {
                     field.onChange(event.target.value ?? null);
                   }}
