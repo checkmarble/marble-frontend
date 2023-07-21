@@ -26,6 +26,22 @@ pnpm install-completion
 pnpm install
 ```
 
+#### (VSCode) Install recommended VSCode extensions
+
+There is a recommended extensions list in the `.vscode/extensions.json` file.
+
+You can read README pages in the extension marketplace for each extensions.
+**TL;DR: you should add those settings to your (global/workspace) VSCode settings:**
+
+```json
+"editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+
+"editor.formatOnSave": true,
+"editor.defaultFormatter": "esbenp.prettier-vscode",
+```
+
 ### Work in a package
 
 Each packages are located in the `packages` folder. To work in a package, you can use the `--filter` option of `pnpm` to trigger the dedicated scripts present in each `packages/*/package.json`. Exemple to start the app builder in dev mode:
