@@ -155,4 +155,4 @@ const EditOperator = forwardRef<
 });
 EditOperator.displayName = 'EditOperator';
 
-const mockedOperators = ['='] as const;
+const mockedOperators = ['*', '+', '-', '/', '<', '=', '>'] as const;
