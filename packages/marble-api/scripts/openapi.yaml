@@ -1430,12 +1430,22 @@ paths:
               schema:
                 type: object
                 required:
-                  - data_accessors
+                  - database_accessors
+                  - payload_accessors
+                  - custom_list_accessors
                 properties:
-                  data_accessors:
+                  database_accessors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/NodeDto'
+                      $ref: '#/components/schemas/Identifier'
+                  payload_accessors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Identifier'
+                  custom_list_accessors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Identifier'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -2061,6 +2071,19 @@ components:
         named_children:
           additionalProperties:
             $ref: '#/components/schemas/NodeDto'
+    Identifier:
+      type: object
+      required:
+        -name
+        -description
+        -node
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        node:
+          $ref: '#/components/schemas/NodeDto'
     Operator:
       oneOf:
         - $ref: '#/components/schemas/AndOperator'

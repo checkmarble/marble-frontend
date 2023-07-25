@@ -1,18 +1,20 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { adaptAstNode, adaptNodeDto, type AstNode } from '@app-builder/models';
+import { adaptAstNode, type AstNode } from '@app-builder/models';
+import { adaptIdentifierDto } from '@app-builder/models/identifier';
 
 export type EditorRepository = ReturnType<typeof getEditorRepository>;
 
 export function getEditorRepository() {
   return (marbleApiClient: MarbleApi) => ({
     listIdentifiers: async ({ scenarioId }: { scenarioId: string }) => {
-      const { data_accessors } = await marbleApiClient.listIdentifiers(
+      const { database_accessors, payload_accessors, custom_list_accessors } = await marbleApiClient.listIdentifiers(
         scenarioId
       );
+      const databaseAccessors = database_accessors.map(adaptIdentifierDto);
+      const payloadAccessors = payload_accessors.map(adaptIdentifierDto);
+      const customListAccessors = custom_list_accessors.map(adaptIdentifierDto);
 
-      const dataAccessors = data_accessors.map(adaptNodeDto);
-
-      return { dataAccessors };
+      return { databaseAccessors, payloadAccessors, customListAccessors };
     },
     saveRule: async ({
       ruleId,

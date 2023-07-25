@@ -147,7 +147,7 @@ export default function RuleView() {
                   renderAstNode={({ name }) => <WildEditAstNode name={name} />}
                 /> */}
                     <RootOrOperator
-                      renderAstNode={({ name }) => <EditAstNode name={name} />}
+                      renderAstNode={({ name }) => <EditAstNode name={name} editorIdentifier={identifiers} />}
                     />
                   </FormProvider>
                 </EditorOperatorsProvider>
