@@ -1,4 +1,5 @@
-import { adaptAstNodeToViewModel, type AstNode } from '@app-builder/models';
+import { adaptAstNodeToViewModelFromIdentifier, type AstNode } from '@app-builder/models';
+import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import {
   useEditorOperators,
   useGetIdentifierOptions,
@@ -10,7 +11,11 @@ import { forwardRef, useState } from 'react';
 
 import { FormControl, FormField, FormItem } from '../Form';
 
-export function EditAstNode({ name }: { name: string }) {
+export function EditAstNode({ name, editorIdentifier }: 
+{ 
+  name: string,
+  editorIdentifier: EditorIdentifiersByType;
+}) {
   const isFirstChildEditedOnce = useIsEditedOnce(`${name}.children.0`);
   const isNameEditedOnce = useIsEditedOnce(`${name}.name`);
 
@@ -21,7 +26,7 @@ export function EditAstNode({ name }: { name: string }) {
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <EditOperand {...field} />
+              <EditOperand editorIdentifier={ editorIdentifier } {...field} />
             </FormControl>
           </FormItem>
         )}
@@ -41,7 +46,7 @@ export function EditAstNode({ name }: { name: string }) {
         render={({ field }) => (
           <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
             <FormControl>
-              <EditOperand {...field} />
+              <EditOperand editorIdentifier={ editorIdentifier } {...field} />
             </FormControl>
           </FormItem>
         )}
@@ -55,13 +60,14 @@ const EditOperand = forwardRef<
   {
     name: string;
     value: AstNode | null;
+    editorIdentifier: EditorIdentifiersByType
     onChange: (value: AstNode | null) => void;
     onBlur: () => void;
   }
->(({ onChange, onBlur, value }, ref) => {
+>(({ onChange, onBlur, value, editorIdentifier }, ref) => {
   const getIdentifierOptions = useGetIdentifierOptions();
-
-  const selectedItem = value ? adaptAstNodeToViewModel(value) : null;
+  console.log(editorIdentifier)
+  const selectedItem = value ? adaptAstNodeToViewModelFromIdentifier(value, editorIdentifier) : null;
 
   const [inputValue, setInputValue] = useState(selectedItem?.label ?? '');
 

@@ -369,6 +369,11 @@ export type UpdateOrganizationBodyDto = {
     name?: string;
     database_name?: string;
 };
+export type Identifier = {
+    name: string;
+    description: string;
+    node: NodeDto;
+};
 export type PatchRuleWithAstExpression = {
     rule_id: string;
     expression: NodeDto;
@@ -1334,7 +1339,9 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            data_accessors: NodeDto[];
+            database_accessors: Identifier[];
+            payload_accessors: Identifier[];
+            custom_list_accessors: Identifier[];
         };
     } | {
         status: 401;

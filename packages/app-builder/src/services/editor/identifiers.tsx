@@ -1,24 +1,23 @@
 import {
   adaptAstNodeToViewModel,
-  type AstNode,
+  adaptEditorIdentifierToViewModel,
   NewAstNode,
 } from '@app-builder/models';
+import { type EditorIdentifier, type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallback, useMemo } from 'react';
 
 const EditorIdentifiersContext =
-  createSimpleContext<AstNode[]>('EditorIdentifiers');
+  createSimpleContext<EditorIdentifier[]>('EditorIdentifiers');
 
 export function EditorIdentifiersProvider({
   children,
   identifiers,
 }: {
   children: React.ReactNode;
-  identifiers: {
-    dataAccessors: AstNode[];
-  };
+  identifiers: EditorIdentifiersByType;
 }) {
-  const value = [...identifiers.dataAccessors];
+  const value = [...identifiers.databaseAccessors, ...identifiers.payloadAccessors, ...identifiers.customListAccessors];
   return (
     <EditorIdentifiersContext.Provider value={value}>
       {children}
@@ -46,7 +45,7 @@ function coerceToConstant(search: string) {
 export function useGetIdentifierOptions() {
   const identifiers = useEditorIdentifiers();
   const identifiersOptions = useMemo(
-    () => identifiers.map(adaptAstNodeToViewModel),
+    () => identifiers.map(adaptEditorIdentifierToViewModel),
     [identifiers]
   );
 
