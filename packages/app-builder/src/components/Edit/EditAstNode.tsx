@@ -141,12 +141,12 @@ const EditOperator = forwardRef<
             return (
               <Select.Item
                 className="min-w-[110px]"
-                key={operator}
-                value={operator}
+                key={operator.name}
+                value={operator.name}
               >
                 <Select.ItemText>
                   <span className="text-s text-grey-100 font-semibold">
-                    {getOperatorName(operator)}
+                    {getOperatorName(operator.name)}
                   </span>
                 </Select.ItemText>
               </Select.Item>

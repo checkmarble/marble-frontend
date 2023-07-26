@@ -40,8 +40,9 @@ export async function loader({ request, params }: LoaderArgs) {
     ruleId,
   });
 
-  //TODO: replace this mocked operators with real ones
-  const mockedOperators = ['*', '+', '-', '/', '<', '=', '>'] as const;
+  const operators = editor.listOperators({
+    scenarioId,
+  });
 
   const identifiers = editor.listIdentifiers({
     scenarioId,
@@ -50,7 +51,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({
     rule: await scenarioIterationRule,
     identifiers: await identifiers,
-    operators: mockedOperators,
+    operators: await operators,
   });
 }
 

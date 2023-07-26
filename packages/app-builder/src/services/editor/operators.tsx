@@ -1,14 +1,15 @@
+import { type AstOperator } from '@app-builder/models/ast-operators';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallback } from 'react';
 
-const EditorOperatorsContext = createSimpleContext<string[]>('EditorOperators');
+const EditorOperatorsContext = createSimpleContext<AstOperator[]>('EditorOperators');
 
 export function EditorOperatorsProvider({
   children,
   operators,
 }: {
   children: React.ReactNode;
-  operators: string[];
+  operators: AstOperator[];
 }) {
   const value = operators;
   return (
