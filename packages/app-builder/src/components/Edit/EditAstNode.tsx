@@ -1,6 +1,6 @@
 import { adaptAstNodeToViewModelFromIdentifier, type AstNode } from '@app-builder/models';
-import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import {
+  useEditorIdentifiers,
   useEditorOperators,
   useGetIdentifierOptions,
   useGetOperatorName,
@@ -11,10 +11,9 @@ import { forwardRef, useState } from 'react';
 
 import { FormControl, FormField, FormItem } from '../Form';
 
-export function EditAstNode({ name, editorIdentifier }: 
+export function EditAstNode({ name }: 
 { 
   name: string,
-  editorIdentifier: EditorIdentifiersByType;
 }) {
   const isFirstChildEditedOnce = useIsEditedOnce(`${name}.children.0`);
   const isNameEditedOnce = useIsEditedOnce(`${name}.name`);
@@ -26,7 +25,7 @@ export function EditAstNode({ name, editorIdentifier }:
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <EditOperand editorIdentifier={ editorIdentifier } {...field} />
+              <EditOperand {...field} />
             </FormControl>
           </FormItem>
         )}
@@ -46,7 +45,7 @@ export function EditAstNode({ name, editorIdentifier }:
         render={({ field }) => (
           <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
             <FormControl>
-              <EditOperand editorIdentifier={ editorIdentifier } {...field} />
+              <EditOperand {...field} />
             </FormControl>
           </FormItem>
         )}
@@ -60,13 +59,12 @@ const EditOperand = forwardRef<
   {
     name: string;
     value: AstNode | null;
-    editorIdentifier: EditorIdentifiersByType
     onChange: (value: AstNode | null) => void;
     onBlur: () => void;
   }
->(({ onChange, onBlur, value, editorIdentifier }, ref) => {
+>(({ onChange, onBlur, value }, ref) => {
+  const editorIdentifier = useEditorIdentifiers();
   const getIdentifierOptions = useGetIdentifierOptions();
-  console.log(editorIdentifier)
   const selectedItem = value ? adaptAstNodeToViewModelFromIdentifier(value, editorIdentifier) : null;
 
   const [inputValue, setInputValue] = useState(selectedItem?.label ?? '');
