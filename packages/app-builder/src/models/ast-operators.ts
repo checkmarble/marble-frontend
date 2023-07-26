@@ -1,4 +1,4 @@
-import { type FuncAttributes } from "@marble-api";
+import { type FuncAttributes } from '@marble-api';
 
 export interface AstOperator {
   name: string;
@@ -19,7 +19,9 @@ export function NewAstOperator({
   };
 }
 
-export function adaptAstOperatorDto(funcAttributes: FuncAttributes): AstOperator {
+export function adaptAstOperatorDto(
+  funcAttributes: FuncAttributes
+): AstOperator {
   return NewAstOperator({
     name: funcAttributes.name,
     number_of_arguments: funcAttributes.number_of_arguments,

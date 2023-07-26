@@ -1,6 +1,6 @@
-import { type Identifier } from "@marble-api";
+import { type Identifier } from '@marble-api';
 
-import { adaptNodeDto, type AstNode } from "./ast-node";
+import { adaptNodeDto, type AstNode } from './ast-node';
 
 export interface EditorIdentifier {
   name: string;
@@ -21,8 +21,8 @@ export function NewEditorIdentifier({
   node,
 }: EditorIdentifier): EditorIdentifier {
   return {
-    name: name ?? "",
-    description: description ?? "",
+    name: name ?? '',
+    description: description ?? '',
     node: node ?? null,
   };
 }

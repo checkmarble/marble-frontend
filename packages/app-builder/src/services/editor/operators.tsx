@@ -2,7 +2,8 @@ import { type AstOperator } from '@app-builder/models/ast-operators';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallback } from 'react';
 
-const EditorOperatorsContext = createSimpleContext<AstOperator[]>('EditorOperators');
+const EditorOperatorsContext =
+  createSimpleContext<AstOperator[]>('EditorOperators');
 
 export function EditorOperatorsProvider({
   children,

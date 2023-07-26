@@ -44,7 +44,11 @@ function coerceToConstant(search: string) {
 export function useGetIdentifierOptions() {
   const identifiers = useEditorIdentifiers();
   const identifiersOptions = useMemo(
-    () => [...identifiers.databaseAccessors.map(adaptEditorIdentifierToViewModel), ...identifiers.payloadAccessors.map(adaptEditorIdentifierToViewModel), ...identifiers.customListAccessors.map(adaptEditorIdentifierToViewModel)],
+    () => [
+      ...identifiers.databaseAccessors.map(adaptEditorIdentifierToViewModel),
+      ...identifiers.payloadAccessors.map(adaptEditorIdentifierToViewModel),
+      ...identifiers.customListAccessors.map(adaptEditorIdentifierToViewModel),
+    ],
     [identifiers]
   );
 

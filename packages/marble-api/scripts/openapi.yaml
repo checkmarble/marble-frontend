@@ -2107,8 +2107,7 @@ components:
             $ref: '#/components/schemas/NodeDto'
     Identifier:
       type: object
-      required:
-        -name
+      required: -name
         -description
         -node
       properties:
@@ -2120,8 +2119,7 @@ components:
           $ref: '#/components/schemas/NodeDto'
     FuncAttributes:
       type: object
-      required:
-        -name
+      required: -name
         -number_of_arguments
       properties:
         name:

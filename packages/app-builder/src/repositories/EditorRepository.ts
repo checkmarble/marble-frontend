@@ -8,9 +8,8 @@ export type EditorRepository = ReturnType<typeof getEditorRepository>;
 export function getEditorRepository() {
   return (marbleApiClient: MarbleApi) => ({
     listIdentifiers: async ({ scenarioId }: { scenarioId: string }) => {
-      const { database_accessors, payload_accessors, custom_list_accessors } = await marbleApiClient.listIdentifiers(
-        scenarioId
-      );
+      const { database_accessors, payload_accessors, custom_list_accessors } =
+        await marbleApiClient.listIdentifiers(scenarioId);
       const databaseAccessors = database_accessors.map(adaptIdentifierDto);
       const payloadAccessors = payload_accessors.map(adaptIdentifierDto);
       const customListAccessors = custom_list_accessors.map(adaptIdentifierDto);

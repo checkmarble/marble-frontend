@@ -1,4 +1,7 @@
-import { adaptAstNodeToViewModelFromIdentifier, type AstNode } from '@app-builder/models';
+import {
+  adaptAstNodeToViewModelFromIdentifier,
+  type AstNode,
+} from '@app-builder/models';
 import {
   useEditorIdentifiers,
   useEditorOperators,
@@ -11,10 +14,7 @@ import { forwardRef, useState } from 'react';
 
 import { FormControl, FormField, FormItem } from '../Form';
 
-export function EditAstNode({ name }: 
-{ 
-  name: string,
-}) {
+export function EditAstNode({ name }: { name: string }) {
   const isFirstChildEditedOnce = useIsEditedOnce(`${name}.children.0`);
   const isNameEditedOnce = useIsEditedOnce(`${name}.name`);
 
@@ -65,7 +65,9 @@ const EditOperand = forwardRef<
 >(({ onChange, onBlur, value }, ref) => {
   const editorIdentifier = useEditorIdentifiers();
   const getIdentifierOptions = useGetIdentifierOptions();
-  const selectedItem = value ? adaptAstNodeToViewModelFromIdentifier(value, editorIdentifier) : null;
+  const selectedItem = value
+    ? adaptAstNodeToViewModelFromIdentifier(value, editorIdentifier)
+    : null;
 
   const [inputValue, setInputValue] = useState(selectedItem?.label ?? '');
 
