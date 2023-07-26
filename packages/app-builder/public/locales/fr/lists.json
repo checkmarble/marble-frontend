@@ -4,8 +4,9 @@
   "other_scenarios_one": "{{count}} autre",
   "other_scenarios_other": "{{count}} autres",
   "show_less": "Montrer moins",
-  "used_in_scenarios": "Utilisé dans les scénarios suivants :",
-  "empty_custom_lists_list": "Contactez Marble pour créer votre première liste.",
+  "used_in_scenarios": "Utilisé dans les scénarios suivants :",
+  "empty_custom_lists_list": "Vous n'avez pas encore de liste. Créer votre première liste pour la voir s'afficher ici",
+  "empty_custom_list_values_list": "Cette liste est vide. Ajouter votre première valeur pour la voir s'afficher ici",
   "create_value.title": "Nouvelle valeur",
   "create_value.value_placeholder": "Ajouter une nouvelle valeur à votre liste",
   "create_list.button_accept": "Creer une nouvelle liste",
@@ -21,6 +22,5 @@
   "delete_value.no_return": "Cette action est irréversible, voulez vous continuer ?",
   "create_list.title": "Nouvelle liste",
   "create_list.name_placeholder": "Ajouter un nom à cette liste",
-  "create_list.description_placeholder": "Ajouter une description",
-  "empty_custom_list_values_list": "Créez votre première valeur de liste pour la voir ici."
+  "create_list.description_placeholder": "Ajouter une description"
 }

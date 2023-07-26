@@ -1,4 +1,4 @@
-import { type AstNode, NewAstNode, NoConstant } from '@app-builder/models';
+import { type AstNode, NewAstNode } from '@app-builder/models';
 import { Button, Input } from '@ui-design-system';
 import { useFieldArray } from 'react-hook-form';
 
@@ -42,13 +42,9 @@ export function WildEditAstNode<TName extends string>({
               <FormControl>
                 <Input
                   {...field}
-                  value={
-                    field.value === NoConstant || !field.value
-                      ? ''
-                      : field.value.toString()
-                  }
+                  value={field.value?.toString() ?? ''}
                   onChange={(event) => {
-                    field.onChange(event.target.value || NoConstant);
+                    field.onChange(event.target.value ?? null);
                   }}
                 />
               </FormControl>

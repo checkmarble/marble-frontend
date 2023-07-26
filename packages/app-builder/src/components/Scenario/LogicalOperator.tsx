@@ -3,12 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { scenarioI18n } from './scenario-i18n';
 import { ScenarioBox } from './ScenarioBox';
 
-interface LogicalOperatorProps {
+interface LogicalOperatorLabelProps {
   operator: 'if' | 'and' | 'or' | 'where';
   className?: string;
 }
 
-export function LogicalOperator({ operator, className }: LogicalOperatorProps) {
+export function LogicalOperatorLabel({
+  operator,
+  className,
+}: LogicalOperatorLabelProps) {
   const { t } = useTranslation(scenarioI18n);
 
   return (

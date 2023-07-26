@@ -6,14 +6,14 @@ import * as React from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { LogicalOperator } from '../Scenario/LogicalOperator';
+import { LogicalOperatorLabel } from '../Scenario/LogicalOperator';
 import { RemoveButton } from './RemoveButton';
 
 type RootOrWithAndFormFields = {
   astNode: AstNode;
 };
 
-const AddLogicalOperator = React.forwardRef<
+const AddLogicalOperatorButton = React.forwardRef<
   HTMLButtonElement,
   ButtonProps & {
     operator: 'if' | 'and' | 'or' | 'where';
@@ -27,7 +27,11 @@ const AddLogicalOperator = React.forwardRef<
     </Button>
   );
 });
-AddLogicalOperator.displayName = 'AddLogicalOperator';
+AddLogicalOperatorButton.displayName = 'AddLogicalOperatorButton';
+
+function NewBinaryAstNode() {
+  return NewAstNode({ children: [NewAstNode(), NewAstNode()] });
+}
 
 export function RootOrOperator({
   renderAstNode,
@@ -44,8 +48,8 @@ export function RootOrOperator({
 
   function appendOrOperand() {
     append({
-      name: 'AND',
-      children: [NewAstNode()],
+      name: 'And',
+      children: [NewBinaryAstNode()],
       namedChildren: {},
       constant: null,
     });
@@ -60,7 +64,7 @@ export function RootOrOperator({
           <React.Fragment key={operand.id}>
             {!isFirstOperand && (
               <div className="flex flex-row gap-1">
-                <LogicalOperator
+                <LogicalOperatorLabel
                   operator="or"
                   className="bg-grey-02 uppercase"
                 />
@@ -77,7 +81,7 @@ export function RootOrOperator({
           </React.Fragment>
         );
       })}
-      <AddLogicalOperator onClick={appendOrOperand} operator="or" />
+      <AddLogicalOperatorButton onClick={appendOrOperand} operator="or" />
     </div>
   );
 }
@@ -105,7 +109,7 @@ function RootAndOperator({
   }
 
   function appendAndOperand() {
-    append(NewAstNode());
+    append(NewBinaryAstNode());
   }
 
   return (
@@ -125,12 +129,14 @@ function RootAndOperator({
             <div className="peer-hover:border-grey-25 flex flex-1 flex-col rounded border border-transparent p-1 transition-colors duration-200 ease-in-out">
               {renderAstNode({ name: `${name}.${operandIndex}` })}
             </div>
-            <LogicalOperator operator={operandIndex === 0 ? 'if' : 'and'} />
+            <LogicalOperatorLabel
+              operator={operandIndex === 0 ? 'if' : 'and'}
+            />
           </div>
         );
       })}
 
-      <AddLogicalOperator
+      <AddLogicalOperatorButton
         className="text-grey-25 h-fit w-fit text-xs"
         variant="secondary"
         onClick={appendAndOperand}

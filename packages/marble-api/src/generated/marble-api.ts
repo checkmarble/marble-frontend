@@ -263,6 +263,17 @@ export type CreateScenarioIterationBody = {
         rules?: CreateScenarioIterationRuleBody[];
     };
 };
+export type ConstantDto = (string | number | boolean | ConstantDto[] | {
+    [key: string]: ConstantDto;
+}) | null;
+export type NodeDto = {
+    name?: string;
+    constant?: ConstantDto;
+    children?: NodeDto[];
+    named_children?: {
+        [key: string]: NodeDto;
+    };
+};
 export type ScenarioIterationRule = {
     id: string;
     scenarioIterationId: string;
@@ -270,6 +281,7 @@ export type ScenarioIterationRule = {
     name: string;
     description: string;
     formula: Operator;
+    formula_ast_expression?: NodeDto;
     scoreModifier: number;
     createdAt: string;
 };
@@ -357,16 +369,19 @@ export type UpdateOrganizationBodyDto = {
     name?: string;
     database_name?: string;
 };
-export type ConstantDto = (string | number | boolean | ConstantDto[] | {
-    [key: string]: ConstantDto;
-}) | null;
-export type NodeDto = {
-    name?: string;
-    constant?: ConstantDto;
-    children?: NodeDto[];
-    named_children?: {
-        [key: string]: NodeDto;
-    };
+export type Identifier = {
+    name: string;
+    description: string;
+    node: NodeDto;
+};
+export type FuncAttributes = {
+    name: string;
+    number_of_arguments: number;
+    named_arguments?: string[];
+};
+export type PatchRuleWithAstExpression = {
+    rule_id: string;
+    expression: NodeDto;
 };
 /**
  * Get an access token
@@ -1329,7 +1344,9 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            data_accessors: NodeDto[];
+            database_accessors: Identifier[];
+            payload_accessors: Identifier[];
+            custom_list_accessors: Identifier[];
         };
     } | {
         status: 401;
@@ -1340,4 +1357,44 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
     }>(`/editor/${encodeURIComponent(scenarioId)}/identifiers`, {
         ...opts
     }));
+}
+/**
+ * List all operators
+ */
+export function listOperators(scenarioId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            operators_accessors: FuncAttributes[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/editor/${encodeURIComponent(scenarioId)}/operators`, {
+        ...opts
+    }));
+}
+/**
+ * Save a rule
+ */
+export function saveRule(patchRuleWithAstExpression: PatchRuleWithAstExpression, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/ast-expression/save-rule", oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: patchRuleWithAstExpression
+    })));
 }

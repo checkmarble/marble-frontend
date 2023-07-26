@@ -5,22 +5,26 @@ import {
   ScenarioPage,
 } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Consequence } from '@app-builder/components/Scenario/Rule/Consequence';
 import { type AstNode } from '@app-builder/models';
-import { EditorIdentifiersProvider } from '@app-builder/services/editor';
+import {
+  EditorIdentifiersProvider,
+  EditorOperatorsProvider,
+} from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { DevTool } from '@hookform/devtools';
-import { json, type LoaderArgs } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
+import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
-import { FormProvider, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { Form, FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
 
 export const handle = {
-  i18n: [...scenarioI18n] satisfies Namespace,
+  i18n: [...scenarioI18n, 'common'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -36,6 +40,10 @@ export async function loader({ request, params }: LoaderArgs) {
     ruleId,
   });
 
+  const operators = editor.listOperators({
+    scenarioId,
+  });
+
   const identifiers = editor.listIdentifiers({
     scenarioId,
   });
@@ -43,17 +51,66 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({
     rule: await scenarioIterationRule,
     identifiers: await identifiers,
+    operators: await operators,
   });
 }
 
-export default function RuleView() {
-  const { rule, identifiers } = useLoaderData<typeof loader>();
+export async function action({ request, params }: ActionArgs) {
+  const {
+    authService,
+    sessionService: { getSession, commitSession },
+  } = serverServices;
+  const session = await getSession(request);
+  const { editor } = await authService.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
 
-  const formMethods = useForm<{ astNode: AstNode }>({
-    // TODO(builder): defaultValues is not working
-    // defaultValues: {
-    //   astNode: rule.astNode,
-    // },
+  try {
+    const ruleId = fromParams(params, 'ruleId');
+
+    const expression = (await request.json()) as {
+      astNode: AstNode;
+    };
+
+    await editor.saveRule({ ruleId, astNode: expression.astNode });
+
+    setToastMessage(session, {
+      type: 'success',
+      messageKey: 'common:success.save',
+    });
+    return json(
+      {
+        success: true as const,
+        error: null,
+        values: expression,
+      },
+      { headers: { 'Set-Cookie': await commitSession(session) } }
+    );
+  } catch (error) {
+    setToastMessage(session, {
+      type: 'error',
+      messageKey: 'common:errors.unknown',
+    });
+
+    return json(
+      {
+        success: false as const,
+        error: null,
+        values: null,
+      },
+      { headers: { 'Set-Cookie': await commitSession(session) } }
+    );
+  }
+}
+
+export default function RuleView() {
+  const { t } = useTranslation(handle.i18n);
+  const { rule, identifiers, operators } = useLoaderData<typeof loader>();
+
+  const fetcher = useFetcher<typeof action>();
+  //@ts-expect-error recursive type is not supported
+  const formMethods = useForm({
+    defaultValues: { astNode: rule.astNode },
   });
 
   return (
@@ -72,57 +129,36 @@ export default function RuleView() {
       </ScenarioPage.Header>
       <ScenarioPage.Content className="max-w-3xl">
         <Callout>{rule.description}</Callout>
-        <div className="max-w flex flex-col gap-4">
-          <Consequence scoreIncrease={rule.scoreModifier} />
-          <Paper.Container scrollable={false}>
-            <EditorIdentifiersProvider identifiers={identifiers}>
-              <FormProvider {...formMethods}>
-                {/* <RootOrOperator
+        <Form
+          control={formMethods.control}
+          onSubmit={({ data }) => {
+            fetcher.submit(data, {
+              method: 'PATCH',
+              encType: 'application/json',
+            });
+          }}
+        >
+          <div className="max-w flex flex-col gap-4">
+            <Consequence scoreIncrease={rule.scoreModifier} />
+            <Paper.Container scrollable={false}>
+              <EditorIdentifiersProvider identifiers={identifiers}>
+                <EditorOperatorsProvider operators={operators}>
+                  <FormProvider {...formMethods}>
+                    {/* <RootOrOperator
                   renderAstNode={({ name }) => <WildEditAstNode name={name} />}
                 /> */}
-                <RootOrOperator
-                  renderAstNode={({ name }) => <EditAstNode name={name} />}
-                />
-              </FormProvider>
-            </EditorIdentifiersProvider>
-          </Paper.Container>
-          <Button
-            onClick={
-              void formMethods.handleSubmit(
-                (values) => {
-                  console.log(
-                    'SUCCESS',
-                    JSON.stringify(values.astNode, undefined, 2)
-                  );
-                  toast.success(() => (
-                    <div className="flex flex-col gap-1">
-                      <p className="text-s text-grey-100">
-                        Successfully saved!
-                      </p>
-                      <p className="text-grey-50 text-xs">
-                        astNode print as JSON in the console
-                      </p>
-                    </div>
-                  ));
-                },
-                (error) => {
-                  console.log('ERROR', error);
-                  toast.error(() => (
-                    <div className="flex flex-col gap-1">
-                      <p className="text-s text-grey-100">Error saving!</p>
-                      <p className="text-grey-50 text-xs">
-                        error print in the console
-                      </p>
-                    </div>
-                  ));
-                }
-              )
-            }
-          >
-            {/* TODO(builder): use transaltion */}
-            Save
-          </Button>
-        </div>
+                    <RootOrOperator
+                      renderAstNode={({ name }) => <EditAstNode name={name} />}
+                    />
+                  </FormProvider>
+                </EditorOperatorsProvider>
+              </EditorIdentifiersProvider>
+            </Paper.Container>
+            <Button type="submit" className="w-fit">
+              {t('common:save')}
+            </Button>
+          </div>
+        </Form>
         <ClientOnly>
           {() => (
             <DevTool

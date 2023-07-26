@@ -1430,16 +1430,85 @@ paths:
               schema:
                 type: object
                 required:
-                  - data_accessors
+                  - database_accessors
+                  - payload_accessors
+                  - custom_list_accessors
                 properties:
-                  data_accessors:
+                  database_accessors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/NodeDto'
+                      $ref: '#/components/schemas/Identifier'
+                  payload_accessors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Identifier'
+                  custom_list_accessors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Identifier'
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /editor/{scenarioId}/operators:
+    get:
+      tags:
+        - Editor
+      summary: List all operators
+      operationId: listOperators
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioId
+          description: ID of the scenario
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The list of operators
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - operators_accessors
+                properties:
+                  operators_accessors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FuncAttributes'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /ast-expression/save-rule:
+    patch:
+      tags:
+        - Editor
+      summary: Save a rule
+      operationId: saveRule
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: The rule to save
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchRuleWithAstExpression'
+        required: true
+      responses:
+        '204':
+          description: The rule has been saved
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+
 components:
   schemas:
     Organization:
@@ -1932,6 +2001,9 @@ components:
         formula:
           $ref: '#/components/schemas/Operator'
           description: Valid marshalled operator
+        formula_ast_expression:
+          $ref: '#/components/schemas/NodeDto'
+          description: Valid marshalled ast_node
         scoreModifier:
           type: integer
         createdAt:
@@ -2033,6 +2105,31 @@ components:
         named_children:
           additionalProperties:
             $ref: '#/components/schemas/NodeDto'
+    Identifier:
+      type: object
+      required: -name
+        -description
+        -node
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        node:
+          $ref: '#/components/schemas/NodeDto'
+    FuncAttributes:
+      type: object
+      required: -name
+        -number_of_arguments
+      properties:
+        name:
+          type: string
+        number_of_arguments:
+          type: number
+        named_arguments:
+          type: array
+          items:
+            type: string
     Operator:
       oneOf:
         - $ref: '#/components/schemas/AndOperator'
@@ -2464,6 +2561,17 @@ components:
           properties:
             level:
               type: integer
+    PatchRuleWithAstExpression:
+      type: object
+      required:
+        - rule_id
+        - expression
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        expression:
+          $ref: '#/components/schemas/NodeDto'
   securitySchemes:
     bearerAuth:
       type: http

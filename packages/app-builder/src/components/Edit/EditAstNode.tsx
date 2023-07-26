@@ -1,16 +1,22 @@
-import { type AstNode, NewAstNode } from '@app-builder/models';
-import { useEditorIdentifiers } from '@app-builder/services/editor';
+import {
+  adaptAstNodeToViewModelFromIdentifier,
+  type AstNode,
+} from '@app-builder/models';
+import {
+  useEditorIdentifiers,
+  useEditorOperators,
+  useGetIdentifierOptions,
+  useGetOperatorName,
+  useIsEditedOnce,
+} from '@app-builder/services/editor';
 import { Combobox, Select } from '@ui-design-system';
-import { forwardRef, useCallback, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { forwardRef, useState } from 'react';
 
 import { FormControl, FormField, FormItem } from '../Form';
-import { useGetOperatorLabel } from '../Scenario/Formula/Operators';
 
 export function EditAstNode({ name }: { name: string }) {
-  const { getFieldState, formState } = useFormContext();
-  const firstChildState = getFieldState(`${name}.children.0`, formState);
-  const nameState = getFieldState(`${name}.name`, formState);
+  const isFirstChildEditedOnce = useIsEditedOnce(`${name}.children.0`);
+  const isNameEditedOnce = useIsEditedOnce(`${name}.name`);
 
   return (
     <div className="flex flex-row gap-1">
@@ -26,9 +32,8 @@ export function EditAstNode({ name }: { name: string }) {
       />
       <FormField
         name={`${name}.name`}
-        rules={{ required: true }}
         render={({ field }) => (
-          <FormItem className={firstChildState.isDirty ? '' : 'hidden'}>
+          <FormItem className={isFirstChildEditedOnce ? '' : 'hidden'}>
             <FormControl>
               <EditOperator {...field} />
             </FormControl>
@@ -38,7 +43,7 @@ export function EditAstNode({ name }: { name: string }) {
       <FormField
         name={`${name}.children.1`}
         render={({ field }) => (
-          <FormItem className={nameState.isDirty ? '' : 'hidden'}>
+          <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
             <FormControl>
               <EditOperand {...field} />
             </FormControl>
@@ -49,31 +54,33 @@ export function EditAstNode({ name }: { name: string }) {
   );
 }
 
-//TODO: connect value to Combobox (we may need to save {label:string; node: AstNode} in the form to ease the process)
 const EditOperand = forwardRef<
   HTMLInputElement,
   {
     name: string;
-    value: string | null;
+    value: AstNode | null;
     onChange: (value: AstNode | null) => void;
     onBlur: () => void;
   }
->(({ onChange, onBlur }, ref) => {
+>(({ onChange, onBlur, value }, ref) => {
+  const editorIdentifier = useEditorIdentifiers();
   const getIdentifierOptions = useGetIdentifierOptions();
-  const [inputValue, setInputValue] = useState('');
-  const [selectedItem, setSelectedItem] = useState<
-    ReturnType<typeof getIdentifierOptions>[number] | null
-  >(null);
+  const selectedItem = value
+    ? adaptAstNodeToViewModelFromIdentifier(value, editorIdentifier)
+    : null;
+
+  const [inputValue, setInputValue] = useState(selectedItem?.label ?? '');
+
   const items = getIdentifierOptions(inputValue);
 
   const filteredItems = items.filter((item) => item.label.includes(inputValue));
 
   return (
-    <Combobox.Root
+    <Combobox.Root<(typeof items)[0]>
       value={selectedItem}
       onChange={(value) => {
-        setSelectedItem(value);
-        onChange(value?.node ?? null);
+        setInputValue(value?.label ?? '');
+        onChange(value?.astNode ?? null);
       }}
       nullable
     >
@@ -101,41 +108,6 @@ const EditOperand = forwardRef<
 });
 EditOperand.displayName = 'EditOperand';
 
-function coerceToConstant(search: string) {
-  const parsedNumber = Number(search);
-  const isNumber = !isNaN(parsedNumber);
-
-  if (isNumber) {
-    return {
-      label: search,
-      node: NewAstNode({
-        name: 'CONSTANT_FLOAT',
-        constant: parsedNumber,
-      }),
-    };
-  }
-
-  return {
-    label: `"${search}"`,
-    node: NewAstNode({
-      name: 'CONSTANT_STRING',
-      constant: search,
-    }),
-  };
-}
-
-function useGetIdentifierOptions() {
-  const identifiers = useEditorIdentifiers();
-
-  return useCallback(
-    (search: string) => {
-      if (!search) return identifiers;
-      return [...identifiers, coerceToConstant(search)];
-    },
-    [identifiers]
-  );
-}
-
 const EditOperator = forwardRef<
   HTMLButtonElement,
   {
@@ -145,7 +117,8 @@ const EditOperator = forwardRef<
     onBlur: () => void;
   }
 >(({ name, value, onChange, onBlur }, ref) => {
-  const getOperatorLabel = useGetOperatorLabel();
+  const operators = useEditorOperators();
+  const getOperatorName = useGetOperatorName();
 
   return (
     <Select.Root
@@ -164,21 +137,18 @@ const EditOperator = forwardRef<
       </Select.Trigger>
       <Select.Content className="max-h-60">
         <Select.Viewport>
-          {mockedOperators.map((operator) => {
+          {operators.map((operator) => {
             return (
               <Select.Item
                 className="min-w-[110px]"
-                key={operator}
-                value={operator}
+                key={operator.name}
+                value={operator.name}
               >
-                <p className="flex flex-col gap-1">
-                  <Select.ItemText>
-                    <span className="text-s text-grey-100 font-semibold">
-                      {getOperatorLabel(operator)}
-                    </span>
-                  </Select.ItemText>
-                  <span className="text-grey-50 text-xs">{operator}</span>
-                </p>
+                <Select.ItemText>
+                  <span className="text-s text-grey-100 font-semibold">
+                    {getOperatorName(operator.name)}
+                  </span>
+                </Select.ItemText>
               </Select.Item>
             );
           })}
@@ -188,20 +158,3 @@ const EditOperator = forwardRef<
   );
 });
 EditOperator.displayName = 'EditOperator';
-
-const mockedOperators = [
-  'EQUAL_BOOL',
-  'EQUAL_FLOAT',
-  'EQUAL_STRING',
-  'AND',
-  'PRODUCT_FLOAT',
-  'OR',
-  'SUM_FLOAT',
-  'SUBTRACT_FLOAT',
-  'DIVIDE_FLOAT',
-  'GREATER_FLOAT',
-  'GREATER_OR_EQUAL_FLOAT',
-  'LESSER_FLOAT',
-  'LESSER_OR_EQUAL_FLOAT',
-  'STRING_IS_IN_LIST',
-] as const;

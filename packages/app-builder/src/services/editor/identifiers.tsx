@@ -1,43 +1,63 @@
-import { type AstNode } from '@app-builder/models';
+import {
+  adaptAstNodeToViewModel,
+  adaptEditorIdentifierToViewModel,
+  NewAstNode,
+} from '@app-builder/models';
+import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-
-function getIdentifierDisplayName(identifiers: AstNode) {
-  switch (identifiers.name) {
-    case 'DatabaseAccess': {
-      const { path, fieldName } = identifiers.namedChildren;
-      return [...(path.constant as string[]), fieldName.constant].join('.');
-    }
-    default:
-      return undefined;
-  }
-}
+import { useCallback, useMemo } from 'react';
 
 const EditorIdentifiersContext =
-  createSimpleContext<{ label: string; node: AstNode }[]>('EditorIdentifiers');
+  createSimpleContext<EditorIdentifiersByType>('EditorIdentifiers');
 
 export function EditorIdentifiersProvider({
   children,
   identifiers,
 }: {
   children: React.ReactNode;
-  identifiers: {
-    dataAccessors: AstNode[];
-  };
+  identifiers: EditorIdentifiersByType;
 }) {
-  const value = identifiers.dataAccessors
-    .map((dataAccessor) => ({
-      label: getIdentifierDisplayName(dataAccessor),
-      node: dataAccessor,
-    }))
-    .filter(
-      (identifier): identifier is { label: string; node: AstNode } =>
-        identifier.label !== undefined
-    );
   return (
-    <EditorIdentifiersContext.Provider value={value}>
+    <EditorIdentifiersContext.Provider value={identifiers}>
       {children}
     </EditorIdentifiersContext.Provider>
   );
 }
 
 export const useEditorIdentifiers = EditorIdentifiersContext.useValue;
+
+function coerceToConstant(search: string) {
+  const parsedNumber = Number(search);
+  const isNumber = !isNaN(parsedNumber);
+
+  if (isNumber) {
+    return NewAstNode({
+      constant: parsedNumber,
+    });
+  }
+
+  return NewAstNode({
+    constant: search,
+  });
+}
+
+export function useGetIdentifierOptions() {
+  const identifiers = useEditorIdentifiers();
+  const identifiersOptions = useMemo(
+    () => [
+      ...identifiers.databaseAccessors.map(adaptEditorIdentifierToViewModel),
+      ...identifiers.payloadAccessors.map(adaptEditorIdentifierToViewModel),
+      ...identifiers.customListAccessors.map(adaptEditorIdentifierToViewModel),
+    ],
+    [identifiers]
+  );
+
+  return useCallback(
+    (search: string) => {
+      if (!search) return identifiersOptions;
+      const constantNode = coerceToConstant(search);
+      return [...identifiersOptions, adaptAstNodeToViewModel(constantNode)];
+    },
+    [identifiersOptions]
+  );
+}

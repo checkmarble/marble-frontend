@@ -3,7 +3,7 @@ import { Fragment } from 'react';
 
 import { Paper } from '../../Paper';
 import { Formula } from '../Formula';
-import { LogicalOperator } from '../LogicalOperator';
+import { LogicalOperatorLabel } from '../LogicalOperator';
 import { Consequence } from './Consequence';
 
 /**
@@ -46,7 +46,7 @@ export function Rule({ rule }: { rule: ScenarioIterationRule }) {
                   (nestedOperand, nestedOperandIndex) => {
                     return (
                       <Fragment key={`nested_operand_${nestedOperandIndex}`}>
-                        <LogicalOperator
+                        <LogicalOperatorLabel
                           operator={nestedOperand.logicalOperator}
                         />
                         <Formula formula={nestedOperand.operator} isRoot />
@@ -56,7 +56,7 @@ export function Rule({ rule }: { rule: ScenarioIterationRule }) {
                 )}
                 {!isLastOperand && (
                   <>
-                    <LogicalOperator
+                    <LogicalOperatorLabel
                       operator={rootOperand.logicalOperator}
                       className="bg-grey-02 uppercase"
                     />

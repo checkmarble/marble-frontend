@@ -11,6 +11,7 @@ export const toastMessageScema = z.object({
     'common:empty_scenario_iteration_list',
     'common:errors.edit.forbidden_not_draft',
     'common:errors.list.duplicate_list_name',
+    'common:success.save',
   ]),
 });
 
