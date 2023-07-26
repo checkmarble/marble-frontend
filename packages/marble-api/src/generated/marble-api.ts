@@ -374,6 +374,11 @@ export type Identifier = {
     description: string;
     node: NodeDto;
 };
+export type FuncAttributes = {
+    name: string;
+    number_of_arguments: number;
+    named_arguments?: string[];
+};
 export type PatchRuleWithAstExpression = {
     rule_id: string;
     expression: NodeDto;
@@ -1350,6 +1355,25 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
         status: 403;
         data: string;
     }>(`/editor/${encodeURIComponent(scenarioId)}/identifiers`, {
+        ...opts
+    }));
+}
+/**
+ * List all operators
+ */
+export function listOperators(scenarioId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            operators_accessors: FuncAttributes[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/editor/${encodeURIComponent(scenarioId)}/operators`, {
         ...opts
     }));
 }
