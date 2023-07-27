@@ -392,7 +392,7 @@ paths:
       summary: Delete a custom list value
       operationId: deleteCustomListValue
       security:
-        - Oauth2ClientCredentials: []
+        - bearerAuth: []
       parameters:
         - name: customListId
           description: ID of the custom list associated with the deleted value
@@ -1920,9 +1920,10 @@ components:
               required:
                 - rules
               properties:
-                triggerCondition:
-                  $ref: '#/components/schemas/Operator'
-                  description: Valid marshalled operator
+                trigger_condition_ast_expression:
+                  nullable: true
+                  allOf:
+                    - $ref: '#/components/schemas/NodeDto'
                 scoreReviewThreshold:
                   type: integer
                   minimum: 0
@@ -1946,9 +1947,10 @@ components:
         body:
           type: object
           properties:
-            triggerCondition:
-              $ref: '#/components/schemas/Operator'
-              description: Valid marshalled operator
+            trigger_condition_ast_expression:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/NodeDto'
             scoreReviewThreshold:
               type: integer
               minimum: 0
@@ -1965,9 +1967,10 @@ components:
         body:
           type: object
           properties:
-            triggerCondition:
-              $ref: '#/components/schemas/Operator'
-              description: Valid marshalled operator
+            trigger_condition_ast_expression:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/NodeDto'
             scoreReviewThreshold:
               type: integer
               minimum: 0
@@ -1982,7 +1985,7 @@ components:
         - displayOrder
         - name
         - description
-        - formula
+        - formula_ast_expression
         - scoreModifier
         - createdAt
       properties:
@@ -1998,12 +2001,10 @@ components:
           type: string
         description:
           type: string
-        formula:
-          $ref: '#/components/schemas/Operator'
-          description: Valid marshalled operator
         formula_ast_expression:
-          $ref: '#/components/schemas/NodeDto'
-          description: Valid marshalled ast_node
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/NodeDto'
         scoreModifier:
           type: integer
         createdAt:
@@ -2016,7 +2017,7 @@ components:
         - displayOrder
         - name
         - description
-        - formula
+        - formula_ast_expression
         - scoreModifier
       properties:
         scenarioIterationId:
@@ -2028,9 +2029,10 @@ components:
           type: string
         description:
           type: string
-        formula:
-          $ref: '#/components/schemas/Operator'
-          description: Valid marshalled operator
+        formula_ast_expression:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/NodeDto'
         scoreModifier:
           type: integer
     UpdateScenarioIterationRuleBody:
@@ -2042,9 +2044,10 @@ components:
           type: string
         description:
           type: string
-        formula:
-          type: object
-          description: Valid marshalled operator
+        formula_ast_expression:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/NodeDto'
         scoreModifier:
           type: integer
     ScenarioPublication:
@@ -2082,6 +2085,7 @@ components:
       enum: ['publish', 'unpublish']
     ConstantDto:
       nullable: true
+      example: "some constant value"
       oneOf:
         - type: string
         - type: number
@@ -2089,27 +2093,33 @@ components:
         - type: array
           items:
             $ref: '#/components/schemas/ConstantDto'
-        - additionalProperties:
+        - type: object
+          additionalProperties:
             $ref: '#/components/schemas/ConstantDto'
     NodeDto:
       type: object
       properties:
         name:
           type: string
+          example: ">"
         constant:
           $ref: '#/components/schemas/ConstantDto'
         children:
           type: array
           items:
             $ref: '#/components/schemas/NodeDto'
+          example: [{ constant: 4 }]
         named_children:
+          type: object
           additionalProperties:
             $ref: '#/components/schemas/NodeDto'
+          example: { "field_name": { constant: "account"} }
     Identifier:
       type: object
-      required: -name
-        -description
-        -node
+      required:
+        - name
+        - description
+        - node
       properties:
         name:
           type: string
@@ -2119,8 +2129,9 @@ components:
           $ref: '#/components/schemas/NodeDto'
     FuncAttributes:
       type: object
-      required: -name
-        -number_of_arguments
+      required:
+        - name
+        - number_of_arguments
       properties:
         name:
           type: string
