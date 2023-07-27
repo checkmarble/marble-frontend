@@ -1,7 +1,7 @@
 import { Callout, Paper } from '@app-builder/components';
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/LogicalOperator';
 import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
-import { type Operator } from '@marble-api';
+import { type Operator } from '@app-builder/models';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { Fragment } from 'react';

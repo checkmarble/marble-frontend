@@ -24,7 +24,7 @@ import {
   type StringListConstantOperator,
   type SubstractFloatOperator,
   type SumFloatOperator,
-} from '@marble-api';
+} from './operators-legacy';
 
 import { type AstNode } from './ast-node';
 import { type EditorIdentifiersByType,getIdentifiersFromAstNode } from './identifier';
