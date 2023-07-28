@@ -1,4 +1,4 @@
-import { type MathOperator as MathOperatorType } from '@app-builder/models';
+import { type AstNode, type MathOperator as MathOperatorType } from '@app-builder/models';
 import { assertNever } from '@typescript-utils';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,19 +8,19 @@ import { Formula } from '../Formula';
 import { Condition } from './Condition';
 
 interface MathProps {
-  operator: MathOperatorType;
+  node: AstNode;
   isRoot?: boolean;
 }
 
-export function Math({ operator, isRoot }: MathProps) {
+export function Math({ node, isRoot }: MathProps) {
   return (
     <Condition.Container isRoot={isRoot}>
-      {operator.children.map((child, index) => {
+      {node.children?.map((child, index) => {
         return (
-          <React.Fragment key={`${child.type}-${index}`}>
+          <React.Fragment key={`${child.name ?? "constant"}-${index}`}>
             {index !== 0 && (
               <Condition.Item className="px-4" isRoot={isRoot}>
-                <MathOperator operatorType={operator.type} />
+                <MathOperator operatorName={node.name ?? ""} />
               </Condition.Item>
             )}
             <Condition.Item isRoot={isRoot}>
@@ -75,14 +75,13 @@ export function useGetOperatorLabel() {
 }
 
 function MathOperator({
-  operatorType,
+  operatorName,
 }: {
-  operatorType: MathOperatorType['type'];
+  operatorName: string;
 }) {
-  const getOperatorLabel = useGetOperatorLabel();
   return (
     <span className="text-grey-100 font-semibold">
-      {getOperatorLabel(operatorType)}
+      {operatorName}
     </span>
   );
 }

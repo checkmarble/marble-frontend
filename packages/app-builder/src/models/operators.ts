@@ -26,6 +26,8 @@ import {
   type SumFloatOperator,
 } from '@marble-api';
 
+import { type AstNode } from './ast-node';
+
 /**
  * This file is heavilly based on the actual Operator DTOs from the API.
  *
@@ -77,6 +79,7 @@ export function isDataFieldOperator(
   return isDbFieldOperator(operator) || isPayloadFieldOperator(operator);
 }
 
+
 export type ConstantOperator =
   | BoolConstantOperator
   | FloatConstantOperator
@@ -95,6 +98,13 @@ export function isConstantOperator(
     default:
       return false;
   }
+}
+
+export function isConstantNode(node: AstNode) {
+  if (node.name === null) {
+      return true;
+  }
+  return false;
 }
 
 export type MathOperator =
@@ -133,4 +143,30 @@ export function isMathOperator(operator: Operator): operator is MathOperator {
     default:
       return false;
   }
+}
+
+
+export function isMathAst(node: AstNode) {
+  switch (node.name) {
+    case 'And':
+    case 'Or':
+    case '=':
+    case '+':
+    case '/':
+    case '-':
+    case '*':
+    case 'IsIn':
+    case '>':
+    case '<':
+      return true;
+    default:
+      return false;
+  }
+}
+
+
+export function isPayload(node: AstNode) {
+  if (node.name === "Payload")
+    return true;
+  return false;
 }

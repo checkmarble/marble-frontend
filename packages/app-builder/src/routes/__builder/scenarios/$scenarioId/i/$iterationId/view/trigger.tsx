@@ -1,5 +1,4 @@
 import { Callout, Paper } from '@app-builder/components';
-import { Formula } from '@app-builder/components/Scenario/Formula';
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/LogicalOperator';
 import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import { type Operator } from '@marble-api';
@@ -155,7 +154,8 @@ function TriggerCondition() {
       <ScenarioBox className="bg-grey-02 col-span-4 w-fit p-2 font-semibold text-purple-100">
         {triggerObjectType}
       </ScenarioBox>
-      {conditions.map(({ condition, logicalOperator }, index) => {
+      {/* {conditions.map(({ condition, logicalOperator }, index) => { */}
+      {conditions.map(({ logicalOperator }, index) => {
         const isFirstCondition = index === 0;
         const isLastCondition = index === conditions.length - 1;
 
@@ -182,7 +182,7 @@ function TriggerCondition() {
               operator={logicalOperator}
             />
             <div className="flex flex-row gap-2">
-              <Formula isRoot formula={condition} />
+              {/* <Formula isRoot formula={condition} /> */}
             </div>
           </Fragment>
         );

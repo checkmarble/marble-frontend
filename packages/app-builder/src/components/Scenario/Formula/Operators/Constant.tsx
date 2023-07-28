@@ -1,6 +1,5 @@
-import { type ConstantOperator } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import { formatNumber } from '@app-builder/utils/format';
-import { assertNever } from '@typescript-utils';
 import { Tooltip } from '@ui-design-system';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -53,43 +52,48 @@ function DefaultList({ isRoot, children, ...otherProps }: ScalarProps) {
 }
 
 export function Constant({
-  operator,
+  node,
   isRoot,
 }: {
-  operator: ConstantOperator;
+  node: AstNode;
   isRoot?: boolean;
 }) {
   const { t, i18n } = useTranslation(scenarioI18n);
-
-  const { type } = operator;
-  switch (type) {
-    case 'STRING_LIST_CONSTANT': {
-      const formattedValue = formatArray(
-        operator.staticData.value,
-        formatString
-      );
-      return <DefaultList isRoot={isRoot}>{formattedValue}</DefaultList>;
+  console.log("CONSTANT")
+  if (node.constant === null) {
+    return "UNKNOWN CONSTANT";
+  }
+  switch (typeof node.constant) {
+    case "object": {
+      if (Array.isArray(node.constant) && node.constant.every(i => typeof i === "string")) {
+        const formattedValue = formatArray(
+          (node.constant as string[]),
+          formatString
+        );
+        return <DefaultList isRoot={isRoot}>{formattedValue}</DefaultList>;
+      }
+      return "UNKNOWN CONSTANT";
     }
-    case 'STRING_CONSTANT':
+    case "string":
       return (
         <DefaultConstant isRoot={isRoot}>
-          {formatString(operator.staticData.value)}
+          {formatString(node.constant)}
         </DefaultConstant>
       );
-    case 'FLOAT_CONSTANT':
+    case "number":
       return (
         <DefaultConstant isRoot={isRoot}>
-          {formatNumber(i18n.language, operator.staticData.value)}
+          {formatNumber(i18n.language, node.constant)}
         </DefaultConstant>
       );
-    case 'BOOL_CONSTANT':
+    case 'boolean':
       return (
         <DefaultConstant className="uppercase" isRoot={isRoot}>
-          {t(`scenarios:${operator.staticData.value}`)}
+          {t(`scenarios:${node.constant}`)}
         </DefaultConstant>
       );
     default:
-      assertNever('unknwon ConstantOperator:', type);
+      return "UNKNOWN CONSTANT";
   }
 }
 
