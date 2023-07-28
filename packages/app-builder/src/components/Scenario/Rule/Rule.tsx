@@ -31,7 +31,7 @@ import { Consequence } from './Consequence';
  */
 export function Rule({ rule }: { rule: ScenarioIterationRule }) {
   if (!rule.formula_ast_expression) {
-    console.log("NOT RULE")
+    console.log(JSON.stringify(rule, null, 2))
     return
   }
   const nestedConditions = getNestedConditions(adaptNodeDto(rule.formula_ast_expression));

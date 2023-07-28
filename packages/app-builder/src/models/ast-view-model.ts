@@ -8,43 +8,34 @@ import {
 import {
   type EditorIdentifier,
   type EditorIdentifiersByType,
+  getIdentifiersFromAstNode,
 } from './identifier';
 
 export interface AstViewModel {
   label: string;
+  tooltip: string;
   astNode: AstNode;
 }
 
 export function adaptAstNodeToViewModel(astNode: AstNode): AstViewModel {
   return {
     label: getAstNodeDisplayName(astNode),
+    tooltip: "",
     astNode,
   };
 }
 
-// This implementation might be problematic in the future, we might need to standartise each node with something like a hash function
 export function adaptAstNodeToViewModelFromIdentifier(
   astNode: AstNode,
   identifiers: EditorIdentifiersByType
 ): AstViewModel {
-  const astString = JSON.stringify(astNode);
-  for (const identifier of identifiers.databaseAccessors) {
-    if (astString === JSON.stringify(identifier.node)) {
-      return adaptEditorIdentifierToViewModel(identifier);
-    }
-  }
-  for (const identifier of identifiers.customListAccessors) {
-    if (astString === JSON.stringify(identifier.node)) {
-      return adaptEditorIdentifierToViewModel(identifier);
-    }
-  }
-  for (const identifier of identifiers.payloadAccessors) {
-    if (astString === JSON.stringify(identifier.node)) {
-      return adaptEditorIdentifierToViewModel(identifier);
-    }
+  const identifier = getIdentifiersFromAstNode(astNode, identifiers)
+  if (identifier) {
+    return adaptEditorIdentifierToViewModel(identifier);
   }
   return {
     label: getAstNodeDisplayName(astNode),
+    tooltip: "",
     astNode,
   };
 }
@@ -54,6 +45,7 @@ export function adaptEditorIdentifierToViewModel(
 ): AstViewModel {
   return {
     label: identifier.name,
+    tooltip: identifier.description,
     astNode: identifier.node,
   };
 }

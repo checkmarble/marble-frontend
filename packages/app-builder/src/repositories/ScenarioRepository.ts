@@ -34,14 +34,14 @@ export function wrapInOrAndGroups(astNode?: AstNode): AstNode {
 export function getScenarioRepository() {
   return (marbleApiClient: MarbleApi) => ({
     getScenarioIterationRule: async ({ ruleId }: { ruleId: string }) => {
-      const { formula_ast_expression, ...rule } =
+      const rule =
         await marbleApiClient.getScenarioIterationRule(ruleId);
 
-      if (!formula_ast_expression) {
+      if (!rule.formula_ast_expression) {
         return { ...rule, astNode: wrapInOrAndGroups() };
       }
 
-      const astNode = adaptNodeDto(formula_ast_expression);
+      const astNode = adaptNodeDto(rule.formula_ast_expression);
 
       const orAndGroupAstNode = isOrAndGroup(astNode)
         ? astNode

@@ -27,6 +27,7 @@ import {
 } from '@marble-api';
 
 import { type AstNode } from './ast-node';
+import { type EditorIdentifiersByType,getIdentifiersFromAstNode } from './identifier';
 
 /**
  * This file is heavilly based on the actual Operator DTOs from the API.
@@ -167,6 +168,12 @@ export function isMathAst(node: AstNode) {
 
 export function isPayload(node: AstNode) {
   if (node.name === "Payload")
+    return true;
+  return false;
+}
+
+export function isIdentifier(node: AstNode, identifiers: EditorIdentifiersByType) {
+  if (getIdentifiersFromAstNode(node, identifiers))
     return true;
   return false;
 }

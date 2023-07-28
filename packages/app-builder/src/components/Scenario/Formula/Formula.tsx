@@ -1,12 +1,15 @@
 import {
   type AstNode,
   isConstantNode,
+  isIdentifier,
   isMathAst,
   isPayload,
 } from '@app-builder/models';
+import { useEditorIdentifiers } from '@app-builder/services/editor';
 
 import { Constant, Math } from './Operators';
 import { Default } from './Operators/Default';
+import { Identifier } from './Operators/Identifier';
 import { Payload } from './Operators/Payload';
 
 interface FormulaProps {
@@ -15,6 +18,7 @@ interface FormulaProps {
 }
 
 export function Formula({ formula, isRoot = false }: FormulaProps) {
+  const editorIdentifier = useEditorIdentifiers();
   console.log("NAME : ", formula.name ?? "")
   if (isConstantNode(formula)) {
     return <Constant node={formula} isRoot={isRoot} />;
@@ -31,6 +35,10 @@ export function Formula({ formula, isRoot = false }: FormulaProps) {
 
   if (isPayload(formula)) {
     return <Payload node={formula} isRoot={isRoot} />;
+  }
+
+  if (isIdentifier(formula, editorIdentifier)) {
+    return <Identifier node={formula} isRoot={isRoot} />;
   }
 
   // if (formula.type === 'NOT') {
