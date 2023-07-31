@@ -28,7 +28,7 @@ export const useEditorOperators = EditorOperatorsContext.useValue;
  * cf useGetOperatorLabel() in packages/app-builder/src/components/Scenario/Formula/Operators/Math.tsx
  */
 export function useGetOperatorName() {
-  const { t } = useTranslation('scenarios');
+  const { t } = useTranslation(['scenarios']);
 
   return useCallback((operatorName: string) => {
     if (['+', '-', '<', '=', '>'].includes(operatorName)) return operatorName;
