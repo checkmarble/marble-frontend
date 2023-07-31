@@ -1,6 +1,5 @@
-import {
-  type AstNode,
-} from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
+import { useGetOperatorName } from '@app-builder/services/editor';
 import React from 'react';
 
 import { Formula } from '../Formula';
@@ -12,6 +11,8 @@ interface MathProps {
 }
 
 export function Math({ node, isRoot }: MathProps) {
+  const getOperatorName = useGetOperatorName();
+
   return (
     <Condition.Container isRoot={isRoot}>
       {node.children?.map((child, index) => {
@@ -19,7 +20,7 @@ export function Math({ node, isRoot }: MathProps) {
           <React.Fragment key={`${child.name ?? 'constant'}-${index}`}>
             {index !== 0 && (
               <Condition.Item className="px-4" isRoot={isRoot}>
-                <MathOperator operatorName={node.name ?? ''} />
+                {getOperatorName(node.name ?? '')}
               </Condition.Item>
             )}
             <Condition.Item isRoot={isRoot}>
@@ -30,49 +31,4 @@ export function Math({ node, isRoot }: MathProps) {
       })}
     </Condition.Container>
   );
-}
-
-// Function instead of object mapping to handle possible translation (ex: "IS IN" operator)
-// export function useGetOperatorLabel() {
-//   const { t } = useTranslation(scenarioI18n);
-
-//   return useCallback(
-//     (type: MathOperatorType['type']) => {
-//       switch (type) {
-//         case 'EQUAL_BOOL':
-//         case 'EQUAL_FLOAT':
-//         case 'EQUAL_STRING':
-//           return '=';
-//         case 'NOT_EQUAL_BOOL':
-//           return '≠';
-//         case 'AND':
-//         case 'PRODUCT_FLOAT':
-//           return '×';
-//         case 'OR':
-//         case 'SUM_FLOAT':
-//           return '+';
-//         case 'SUBTRACT_FLOAT':
-//           return '−';
-//         case 'DIVIDE_FLOAT':
-//           return '÷';
-//         case 'GREATER_FLOAT':
-//           return '>';
-//         case 'GREATER_OR_EQUAL_FLOAT':
-//           return '≥';
-//         case 'LESSER_FLOAT':
-//           return '<';
-//         case 'LESSER_OR_EQUAL_FLOAT':
-//           return '≤';
-//         case 'STRING_IS_IN_LIST':
-//           return t('scenarios:operator.is_in');
-//         default:
-//           assertNever('unknwon Math operator :', type);
-//       }
-//     },
-//     [t]
-//   );
-// }
-
-function MathOperator({ operatorName }: { operatorName: string }) {
-  return <span className="text-grey-100 font-semibold">{operatorName}</span>;
 }

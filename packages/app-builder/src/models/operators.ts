@@ -27,7 +27,7 @@ export function isMathAst(node: AstNode) {
     case '/':
     case '-':
     case '*':
-    case 'IsIn':
+    case 'IsInList':
     case '>':
     case '<':
       return true;

@@ -6,6 +6,10 @@ import {
 } from '@app-builder/components';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
+import {
+  EditorIdentifiersProvider,
+  EditorOperatorsProvider,
+} from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -41,7 +45,7 @@ const LINKS: ScenariosLinkProps[] = [
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { editor, apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -51,7 +55,18 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
-  return json(scenarioIterations);
+  const operators = await editor.listOperators({
+    scenarioId,
+  });
+
+  const identifiers = await editor.listIdentifiers({
+    scenarioId,
+  });
+  return json({
+    scenarioIterations: scenarioIterations,
+    identifiers: identifiers,
+    operators: operators,
+  });
 }
 
 function sortScenarioIterations(
@@ -93,7 +108,8 @@ export type SortedScenarioIteration = ReturnType<
 
 export default function ScenarioViewLayout() {
   const currentScenario = useCurrentScenario();
-  const scenarioIterations = useLoaderData<typeof loader>();
+  const { scenarioIterations, identifiers, operators } =
+    useLoaderData<typeof loader>();
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
@@ -126,16 +142,20 @@ export default function ScenarioViewLayout() {
           currentIteration={currentIteration}
         />
       </ScenarioPage.Header>
-      <ScenarioPage.Content>
-        <Scenarios.Nav>
-          {LINKS.map((linkProps) => (
-            <li key={linkProps.labelTKey}>
-              <Scenarios.Link {...linkProps} />
-            </li>
-          ))}
-        </Scenarios.Nav>
-        <Outlet />
-      </ScenarioPage.Content>
+      <EditorIdentifiersProvider identifiers={identifiers}>
+        <EditorOperatorsProvider operators={operators}>
+          <ScenarioPage.Content>
+            <Scenarios.Nav>
+              {LINKS.map((linkProps) => (
+                <li key={linkProps.labelTKey}>
+                  <Scenarios.Link {...linkProps} />
+                </li>
+              ))}
+            </Scenarios.Nav>
+            <Outlet />
+          </ScenarioPage.Content>
+        </EditorOperatorsProvider>
+      </EditorIdentifiersProvider>
     </ScenarioPage.Container>
   );
 }

@@ -1,15 +1,10 @@
 import { Callout, Paper } from '@app-builder/components';
-import { LogicalOperatorLabel } from '@app-builder/components/Scenario/LogicalOperator';
-import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
-import { type Operator } from '@app-builder/models';
-import clsx from 'clsx';
+import { TriggerCondition } from '@app-builder/components/Scenario/Trigger/Trigger';
 import cronstrue from 'cronstrue';
 import { type Namespace } from 'i18next';
-import { Fragment } from 'react';
 import { toast } from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useCurrentScenario } from '../../../../$scenarioId';
 import { useCurrentScenarioIteration } from '../../$iterationId';
 
 export const handle = {
@@ -115,107 +110,4 @@ function HowToRun() {
       </p>
     </div>
   );
-}
-
-/**
- * Design is opinionated: it assumes a trigger condition will often be an AND/OR operator.
- *
- * 1. condition is an AND operator
- *
- *    Transaction
- *        |-> Where <Formula condition={condition.children[0]} />
- *        |-> And   <Formula condition={condition.children[1]} />
- *        |-> And   <Formula condition={condition.children[2]} />
- *
- * 2. condition is an OR operator
- *
- *    Transaction
- *        |-> Where <Formula condition={condition.children[0]} />
- *        |-> Or    <Formula condition={condition.children[1]} />
- *        |-> Or    <Formula condition={condition.children[2]} />
- *
- * 3. condition is another Boolean operator
- *
- *    Transaction
- *        |-> Where <Formula condition={condition} />
- *
- */
-function TriggerCondition() {
-  const {
-    body: { triggerCondition },
-  } = useCurrentScenarioIteration();
-
-  const { triggerObjectType } = useCurrentScenario();
-
-  const conditions = getNestedConditions(triggerCondition);
-
-  return (
-    <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">
-      <ScenarioBox className="bg-grey-02 col-span-4 w-fit p-2 font-semibold text-purple-100">
-        {triggerObjectType}
-      </ScenarioBox>
-      {/* {conditions.map(({ condition, logicalOperator }, index) => { */}
-      {conditions.map(({ logicalOperator }, index) => {
-        const isFirstCondition = index === 0;
-        const isLastCondition = index === conditions.length - 1;
-
-        return (
-          <Fragment key={`condition_${index}`}>
-            {/* Row 1 */}
-            <div
-              className={clsx(
-                'border-grey-10 col-span-4 w-2 border-r ',
-                isFirstCondition ? 'h-4' : 'h-2'
-              )}
-            />
-
-            {/* Row 2 */}
-            <div
-              className={clsx(
-                'border-grey-10 border-r',
-                isLastCondition && 'h-5'
-              )}
-            />
-            <div className="border-grey-10 h-5 border-b" />
-            <LogicalOperatorLabel
-              className="bg-grey-02 mr-2 p-2"
-              operator={logicalOperator}
-            />
-            <div className="flex flex-row gap-2">
-              {/* <Formula isRoot formula={condition} /> */}
-            </div>
-          </Fragment>
-        );
-      })}
-    </div>
-  );
-}
-
-function getNestedConditions(triggerCondition?: Operator) {
-  if (!triggerCondition) return [];
-  switch (triggerCondition.type) {
-    case 'AND':
-      return triggerCondition.children.map(
-        (operator, index) =>
-          ({
-            logicalOperator: index === 0 ? 'where' : 'and',
-            condition: operator,
-          } as const)
-      );
-    case 'OR':
-      return triggerCondition.children.map(
-        (operator, index) =>
-          ({
-            logicalOperator: index === 0 ? 'where' : 'or',
-            condition: operator,
-          } as const)
-      );
-    default:
-      return [
-        {
-          logicalOperator: 'where',
-          condition: triggerCondition,
-        } as const,
-      ];
-  }
 }

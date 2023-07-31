@@ -1,7 +1,6 @@
 import { type NodeDto } from '@marble-api';
 import * as R from 'remeda';
 
-
 export interface AstNode {
   name: string | null;
   constant: ConstantType | null;

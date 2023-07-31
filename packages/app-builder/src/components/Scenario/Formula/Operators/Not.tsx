@@ -1,4 +1,3 @@
-
 import { type AstNode } from '@app-builder/models';
 
 import { Formula } from '../Formula';
