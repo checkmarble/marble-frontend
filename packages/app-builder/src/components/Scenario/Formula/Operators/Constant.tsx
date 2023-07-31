@@ -95,11 +95,7 @@ export function Constant({
         </DefaultConstant>
       );
     default:
-<<<<<<< Updated upstream
-      return 'UNKNOWN CONSTANT';
-=======
       return <DefaultList isRoot={isRoot}>{JSON.stringify(node.constant)}</DefaultList>;
->>>>>>> Stashed changes
   }
 }
 
