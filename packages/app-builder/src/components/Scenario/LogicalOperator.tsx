@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { scenarioI18n } from './scenario-i18n';
 import { ScenarioBox } from './ScenarioBox';
 
+export type LogicalOperatorType = 'if' | 'and' | 'or' | 'where';
+
 interface LogicalOperatorLabelProps {
-  operator: 'if' | 'and' | 'or' | 'where';
+  operator: LogicalOperatorType;
   className?: string;
 }
 

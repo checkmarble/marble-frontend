@@ -1,17 +1,17 @@
-import { type NotOperator } from '@marble-api';
+import { type AstNode } from '@app-builder/models';
 
 import { Formula } from '../Formula';
 import { Condition } from './Condition';
 
 interface NotProps {
-  operator: NotOperator;
+  node: AstNode;
   isRoot?: boolean;
 }
-export function Not({ operator, isRoot }: NotProps) {
+export function Not({ node, isRoot }: NotProps) {
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>
-        {!(<Formula formula={operator.children[0]} />)}
+        {!(<Formula formula={node.children[0]} />)}
       </Condition.Item>
     </Condition.Container>
   );

@@ -4,6 +4,10 @@ import {
   scenarioI18n,
   ScenarioPage,
 } from '@app-builder/components';
+import {
+  EditorIdentifiersProvider,
+  EditorOperatorsProvider,
+} from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -16,19 +20,32 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { editor, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const ruleId = fromParams(params, 'ruleId');
+  const scenarioId = fromParams(params, 'scenarioId');
 
-  const rule = await apiClient.getScenarioIterationRule(ruleId);
+  const rule = scenario.getScenarioIterationRule({
+    ruleId,
+  });
+  const operators = editor.listOperators({
+    scenarioId,
+  });
 
-  return json(rule);
+  const identifiers = editor.listIdentifiers({
+    scenarioId,
+  });
+  return json({
+    rule: await rule,
+    identifiers: await identifiers,
+    operators: await operators,
+  });
 }
 
 export default function RuleView() {
-  const rule = useLoaderData<typeof loader>();
+  const { rule, identifiers, operators } = useLoaderData<typeof loader>();
 
   return (
     <ScenarioPage.Container>
@@ -40,7 +57,11 @@ export default function RuleView() {
       </ScenarioPage.Header>
       <ScenarioPage.Content className="max-w-3xl">
         <Callout className="w-full">{rule.description}</Callout>
-        <Rule rule={rule} />
+        <EditorIdentifiersProvider identifiers={identifiers}>
+          <EditorOperatorsProvider operators={operators}>
+            <Rule rule={rule} />
+          </EditorOperatorsProvider>
+        </EditorIdentifiersProvider>
       </ScenarioPage.Content>
     </ScenarioPage.Container>
   );

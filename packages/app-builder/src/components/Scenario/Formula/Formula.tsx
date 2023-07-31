@@ -1,39 +1,45 @@
 import {
-  isConstantOperator,
-  isDataFieldOperator,
-  isMathOperator,
+  type AstNode,
+  isConstantNode,
+  isIdentifier,
+  isMathAst,
+  isPayload,
 } from '@app-builder/models';
-import { type Operator } from '@marble-api';
-import { assertNever } from '@typescript-utils';
+import { useEditorIdentifiers } from '@app-builder/services/editor';
 
-import { NotImplemented } from './NotImplemented';
-import { Constant, DataField, Math, Not } from './Operators';
+import { Constant, Math } from './Operators';
+import { Default } from './Operators/Default';
+import { Identifier } from './Operators/Identifier';
+import { Payload } from './Operators/Payload';
 
 interface FormulaProps {
-  formula: Operator;
+  formula: AstNode;
   isRoot?: boolean;
 }
 
 export function Formula({ formula, isRoot = false }: FormulaProps) {
-  if (isConstantOperator(formula)) {
-    return <Constant operator={formula} isRoot={isRoot} />;
+  const editorIdentifier = useEditorIdentifiers();
+  console.log('NAME : ', formula.name ?? '');
+  if (isConstantNode(formula)) {
+    return <Constant node={formula} isRoot={isRoot} />;
+  }
+  console.log('NOT CONSTANT : ', formula.name ?? '');
+
+  // if (isDataFieldOperator(formula)) {
+  //   return <DataField operator={formula} isRoot={isRoot} />;
+  // }
+
+  if (isMathAst(formula)) {
+    return <Math node={formula} isRoot={isRoot} />;
   }
 
-  if (isDataFieldOperator(formula)) {
-    return <DataField operator={formula} isRoot={isRoot} />;
+  if (isPayload(formula)) {
+    return <Payload node={formula} isRoot={isRoot} />;
   }
 
-  if (isMathOperator(formula)) {
-    return <Math operator={formula} isRoot={isRoot} />;
+  if (isIdentifier(formula, editorIdentifier)) {
+    return <Identifier node={formula} isRoot={isRoot} />;
   }
 
-  if (formula.type === 'NOT') {
-    return <Not operator={formula} isRoot={isRoot} />;
-  }
-
-  if (formula.type === 'ROUND_FLOAT') {
-    return <NotImplemented value={JSON.stringify(formula, null, 2)} />;
-  }
-
-  assertNever('unknwon Operator:', formula);
+  return <Default node={formula} isRoot={isRoot} />;
 }

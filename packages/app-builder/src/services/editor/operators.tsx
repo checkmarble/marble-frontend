@@ -1,6 +1,7 @@
 import { type AstOperator } from '@app-builder/models/ast-operators';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const EditorOperatorsContext =
   createSimpleContext<AstOperator[]>('EditorOperators');
@@ -27,7 +28,7 @@ export const useEditorOperators = EditorOperatorsContext.useValue;
  * cf useGetOperatorLabel() in packages/app-builder/src/components/Scenario/Formula/Operators/Math.tsx
  */
 export function useGetOperatorName() {
-  // const { t } = useTranslation('scenarios');
+  const { t } = useTranslation(['scenarios']);
 
   return useCallback((operatorName: string) => {
     if (['+', '-', '<', '=', '>'].includes(operatorName)) return operatorName;
@@ -36,6 +37,7 @@ export function useGetOperatorName() {
     if (operatorName === '/') return '÷';
 
     if (operatorName === '/') return '÷';
+    if (operatorName === 'IsInList') return t('scenarios:operator.is_in');
 
     // eslint-disable-next-line no-restricted-properties
     if (process.env.NODE_ENV === 'development') {

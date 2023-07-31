@@ -1,36 +1,34 @@
-import { type DataFieldOperator, isDbFieldOperator } from '@app-builder/models';
+import {
+  adaptAstNodeToViewModelFromIdentifier,
+  type AstNode,
+  type AstViewModel,
+} from '@app-builder/models';
+import { useEditorIdentifiers } from '@app-builder/services/editor';
 import { Tooltip } from '@ui-design-system';
 
 import { Condition } from './Condition';
 
-interface DBFieldProps {
-  operator: DataFieldOperator;
+interface PayloadProps {
+  node: AstNode;
   isRoot?: boolean;
 }
 
-function format(operator: DataFieldOperator) {
-  if (isDbFieldOperator(operator)) {
-    const fields = [
-      operator.staticData.triggerTableName,
-      ...operator.staticData.path,
-      operator.staticData.fieldName,
-    ];
-
-    return {
-      tooltip: fields.join('.'),
-      inline: fields.slice(1).join('.'),
-    };
-  }
-
+function format(viewModel: AstViewModel) {
   return {
-    tooltip: operator.staticData.fieldName,
-    inline: operator.staticData.fieldName,
+    tooltip: 'This is from the payload',
+    inline: viewModel.label,
   };
 }
 
-export function DataField({ operator, isRoot }: DBFieldProps) {
-  const { tooltip, inline } = format(operator);
-
+export function Payload({ node, isRoot }: PayloadProps) {
+  const editorIdentifier = useEditorIdentifiers();
+  const viewModel = adaptAstNodeToViewModelFromIdentifier(
+    node,
+    editorIdentifier
+  );
+  console.log(viewModel);
+  const { tooltip, inline } = format(viewModel);
+  console.log(JSON.stringify(node, null, 2));
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>

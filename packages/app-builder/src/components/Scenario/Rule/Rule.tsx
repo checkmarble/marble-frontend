@@ -1,3 +1,4 @@
+import { adaptNodeDto, type AstNode } from '@app-builder/models';
 import { type ScenarioIterationRule } from '@marble-api';
 import { Fragment } from 'react';
 
@@ -29,7 +30,12 @@ import { Consequence } from './Consequence';
  * In case this is not an OR/AND operator, we simulate an OR operator with a single operand
  */
 export function Rule({ rule }: { rule: ScenarioIterationRule }) {
-  const nestedConditions = getNestedConditions(rule.formula);
+  if (!rule.formula_ast_expression) {
+    return;
+  }
+  const nestedConditions = getNestedConditions(
+    adaptNodeDto(rule.formula_ast_expression)
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -42,18 +48,19 @@ export function Rule({ rule }: { rule: ScenarioIterationRule }) {
 
             return (
               <Fragment key={`root_operand_${rootOperandIndex}`}>
-                {rootOperand.operator.map(
-                  (nestedOperand, nestedOperandIndex) => {
-                    return (
-                      <Fragment key={`nested_operand_${nestedOperandIndex}`}>
-                        <LogicalOperatorLabel
-                          operator={nestedOperand.logicalOperator}
-                        />
-                        <Formula formula={nestedOperand.operator} isRoot />
-                      </Fragment>
-                    );
-                  }
-                )}
+                {rootOperand &&
+                  rootOperand.operator?.map(
+                    (nestedOperand, nestedOperandIndex) => {
+                      return (
+                        <Fragment key={`nested_operand_${nestedOperandIndex}`}>
+                          <LogicalOperatorLabel
+                            operator={nestedOperand.logicalOperator}
+                          />
+                          <Formula formula={nestedOperand.operator} isRoot />
+                        </Fragment>
+                      );
+                    }
+                  )}
                 {!isLastOperand && (
                   <>
                     <LogicalOperatorLabel
@@ -74,17 +81,17 @@ export function Rule({ rule }: { rule: ScenarioIterationRule }) {
   );
 }
 
-function getNestedConditions(formula: ScenarioIterationRule['formula']) {
-  switch (formula.type) {
-    case 'AND': {
-      const andOperands = formula.children;
+function getNestedConditions(formula: AstNode) {
+  switch (formula.name) {
+    case 'And': {
+      const andOperands = formula.children ?? [];
 
       return andOperands.map((andOperand) => {
         return {
           logicalOperator: 'and',
           operator:
-            andOperand.type === 'OR'
-              ? andOperand.children.map(
+            andOperand.name === 'Or'
+              ? andOperand.children?.map(
                   (orOperand, orOperandIndex) =>
                     ({
                       logicalOperator: orOperandIndex === 0 ? 'if' : 'or',
@@ -101,15 +108,15 @@ function getNestedConditions(formula: ScenarioIterationRule['formula']) {
       });
     }
 
-    case 'OR': {
-      const orOperands = formula.children;
+    case 'Or': {
+      const orOperands = formula.children ?? [];
 
       return orOperands.map((orOperand) => {
         return {
           logicalOperator: 'or',
           operator:
-            orOperand.type === 'AND'
-              ? orOperand.children.map(
+            orOperand.name === 'And'
+              ? orOperand.children?.map(
                   (andOperand, andOperandIndex) =>
                     ({
                       logicalOperator: andOperandIndex === 0 ? 'if' : 'and',
