@@ -34,8 +34,7 @@ export function wrapInOrAndGroups(astNode?: AstNode): AstNode {
 export function getScenarioRepository() {
   return (marbleApiClient: MarbleApi) => ({
     getScenarioIterationRule: async ({ ruleId }: { ruleId: string }) => {
-      const rule =
-        await marbleApiClient.getScenarioIterationRule(ruleId);
+      const rule = await marbleApiClient.getScenarioIterationRule(ruleId);
 
       if (!rule.formula_ast_expression) {
         return { ...rule, astNode: wrapInOrAndGroups() };

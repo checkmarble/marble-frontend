@@ -59,28 +59,30 @@ export function Constant({
   isRoot?: boolean;
 }) {
   const { t, i18n } = useTranslation(scenarioI18n);
-  console.log("CONSTANT")
   if (node.constant === null) {
-    return "UNKNOWN CONSTANT";
+    return <DefaultList isRoot={isRoot}>{JSON.stringify(node.constant)}</DefaultList>;
   }
   switch (typeof node.constant) {
-    case "object": {
-      if (Array.isArray(node.constant) && node.constant.every(i => typeof i === "string")) {
+    case 'object': {
+      if (
+        Array.isArray(node.constant) &&
+        node.constant.every((i) => typeof i === 'string')
+      ) {
         const formattedValue = formatArray(
-          (node.constant as string[]),
+          node.constant as string[],
           formatString
         );
         return <DefaultList isRoot={isRoot}>{formattedValue}</DefaultList>;
       }
-      return "UNKNOWN CONSTANT";
+      return <DefaultList isRoot={isRoot}>{JSON.stringify(node.constant)}</DefaultList>;
     }
-    case "string":
+    case 'string':
       return (
         <DefaultConstant isRoot={isRoot}>
           {formatString(node.constant)}
         </DefaultConstant>
       );
-    case "number":
+    case 'number':
       return (
         <DefaultConstant isRoot={isRoot}>
           {formatNumber(i18n.language, node.constant)}
@@ -93,7 +95,11 @@ export function Constant({
         </DefaultConstant>
       );
     default:
-      return "UNKNOWN CONSTANT";
+<<<<<<< Updated upstream
+      return 'UNKNOWN CONSTANT';
+=======
+      return <DefaultList isRoot={isRoot}>{JSON.stringify(node.constant)}</DefaultList>;
+>>>>>>> Stashed changes
   }
 }
 

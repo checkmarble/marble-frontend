@@ -36,7 +36,10 @@ export function adaptIdentifierDto(identifier: Identifier): EditorIdentifier {
 }
 
 // This implementation might be problematic in the future, we might need to standartise each node with something like a hash function
-export function getIdentifiersFromAstNode(node: AstNode, identifiers: EditorIdentifiersByType) {
+export function getIdentifiersFromAstNode(
+  node: AstNode,
+  identifiers: EditorIdentifiersByType
+) {
   const astString = JSON.stringify(node);
   for (const identifier of identifiers.databaseAccessors) {
     if (astString === JSON.stringify(identifier.node)) {
@@ -53,5 +56,5 @@ export function getIdentifiersFromAstNode(node: AstNode, identifiers: EditorIden
       return identifier;
     }
   }
-  return null
+  return null;
 }

@@ -27,7 +27,10 @@ import {
 } from './operators-legacy';
 
 import { type AstNode } from './ast-node';
-import { type EditorIdentifiersByType,getIdentifiersFromAstNode } from './identifier';
+import {
+  type EditorIdentifiersByType,
+  getIdentifiersFromAstNode,
+} from './identifier';
 
 /**
  * This file is heavilly based on the actual Operator DTOs from the API.
@@ -80,7 +83,6 @@ export function isDataFieldOperator(
   return isDbFieldOperator(operator) || isPayloadFieldOperator(operator);
 }
 
-
 export type ConstantOperator =
   | BoolConstantOperator
   | FloatConstantOperator
@@ -103,7 +105,7 @@ export function isConstantOperator(
 
 export function isConstantNode(node: AstNode) {
   if (node.name === null) {
-      return true;
+    return true;
   }
   return false;
 }
@@ -146,7 +148,6 @@ export function isMathOperator(operator: Operator): operator is MathOperator {
   }
 }
 
-
 export function isMathAst(node: AstNode) {
   switch (node.name) {
     case 'And':
@@ -165,15 +166,15 @@ export function isMathAst(node: AstNode) {
   }
 }
 
-
 export function isPayload(node: AstNode) {
-  if (node.name === "Payload")
-    return true;
+  if (node.name === 'Payload') return true;
   return false;
 }
 
-export function isIdentifier(node: AstNode, identifiers: EditorIdentifiersByType) {
-  if (getIdentifiersFromAstNode(node, identifiers))
-    return true;
+export function isIdentifier(
+  node: AstNode,
+  identifiers: EditorIdentifiersByType
+) {
+  if (getIdentifiersFromAstNode(node, identifiers)) return true;
   return false;
 }

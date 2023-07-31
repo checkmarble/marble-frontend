@@ -20,7 +20,7 @@ export interface AstViewModel {
 export function adaptAstNodeToViewModel(astNode: AstNode): AstViewModel {
   return {
     label: getAstNodeDisplayName(astNode),
-    tooltip: "",
+    tooltip: '',
     astNode,
   };
 }
@@ -29,13 +29,13 @@ export function adaptAstNodeToViewModelFromIdentifier(
   astNode: AstNode,
   identifiers: EditorIdentifiersByType
 ): AstViewModel {
-  const identifier = getIdentifiersFromAstNode(astNode, identifiers)
+  const identifier = getIdentifiersFromAstNode(astNode, identifiers);
   if (identifier) {
     return adaptEditorIdentifierToViewModel(identifier);
   }
   return {
     label: getAstNodeDisplayName(astNode),
-    tooltip: "",
+    tooltip: '',
     astNode,
   };
 }

@@ -1,4 +1,4 @@
-import { adaptNodeDto,type AstNode } from '@app-builder/models';
+import { adaptNodeDto, type AstNode } from '@app-builder/models';
 import { type ScenarioIterationRule } from '@marble-api';
 import { Fragment } from 'react';
 
@@ -31,11 +31,13 @@ import { Consequence } from './Consequence';
  */
 export function Rule({ rule }: { rule: ScenarioIterationRule }) {
   if (!rule.formula_ast_expression) {
-    console.log(JSON.stringify(rule, null, 2))
-    return
+    console.log(JSON.stringify(rule, null, 2));
+    return;
   }
-  const nestedConditions = getNestedConditions(adaptNodeDto(rule.formula_ast_expression));
-  console.log(JSON.stringify(nestedConditions, null, 2))
+  const nestedConditions = getNestedConditions(
+    adaptNodeDto(rule.formula_ast_expression)
+  );
+  console.log(JSON.stringify(nestedConditions, null, 2));
 
   return (
     <div className="flex flex-col gap-4">
@@ -48,18 +50,19 @@ export function Rule({ rule }: { rule: ScenarioIterationRule }) {
 
             return (
               <Fragment key={`root_operand_${rootOperandIndex}`}>
-                {rootOperand && rootOperand.operator?.map(
-                  (nestedOperand, nestedOperandIndex) => {
-                    return (
-                      <Fragment key={`nested_operand_${nestedOperandIndex}`}>
-                        <LogicalOperatorLabel
-                          operator={nestedOperand.logicalOperator}
-                        />
-                        <Formula formula={nestedOperand.operator} isRoot />
-                      </Fragment>
-                    );
-                  }
-                )}
+                {rootOperand &&
+                  rootOperand.operator?.map(
+                    (nestedOperand, nestedOperandIndex) => {
+                      return (
+                        <Fragment key={`nested_operand_${nestedOperandIndex}`}>
+                          <LogicalOperatorLabel
+                            operator={nestedOperand.logicalOperator}
+                          />
+                          <Formula formula={nestedOperand.operator} isRoot />
+                        </Fragment>
+                      );
+                    }
+                  )}
                 {!isLastOperand && (
                   <>
                     <LogicalOperatorLabel

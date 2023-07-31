@@ -19,11 +19,11 @@ interface FormulaProps {
 
 export function Formula({ formula, isRoot = false }: FormulaProps) {
   const editorIdentifier = useEditorIdentifiers();
-  console.log("NAME : ", formula.name ?? "")
+  console.log('NAME : ', formula.name ?? '');
   if (isConstantNode(formula)) {
     return <Constant node={formula} isRoot={isRoot} />;
   }
-  console.log("NOT CONSTANT : ", formula.name ?? "")
+  console.log('NOT CONSTANT : ', formula.name ?? '');
 
   // if (isDataFieldOperator(formula)) {
   //   return <DataField operator={formula} isRoot={isRoot} />;
@@ -40,10 +40,6 @@ export function Formula({ formula, isRoot = false }: FormulaProps) {
   if (isIdentifier(formula, editorIdentifier)) {
     return <Identifier node={formula} isRoot={isRoot} />;
   }
-
-  // if (formula.type === 'NOT') {
-  //   return <Not operator={formula} isRoot={isRoot} />;
-  // }
 
   return <Default node={formula} isRoot={isRoot}/>
 }

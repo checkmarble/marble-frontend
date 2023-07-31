@@ -1,4 +1,8 @@
-import { adaptAstNodeToViewModelFromIdentifier, type AstNode,type AstViewModel } from '@app-builder/models';
+import {
+  adaptAstNodeToViewModelFromIdentifier,
+  type AstNode,
+  type AstViewModel,
+} from '@app-builder/models';
 import { useEditorIdentifiers } from '@app-builder/services/editor';
 import { Tooltip } from '@ui-design-system';
 
@@ -11,17 +15,20 @@ interface PayloadProps {
 
 function format(viewModel: AstViewModel) {
   return {
-    tooltip: "This is from the payload",
+    tooltip: 'This is from the payload',
     inline: viewModel.label,
   };
 }
 
 export function Payload({ node, isRoot }: PayloadProps) {
   const editorIdentifier = useEditorIdentifiers();
-  const viewModel = adaptAstNodeToViewModelFromIdentifier(node, editorIdentifier)
-  console.log(viewModel)
+  const viewModel = adaptAstNodeToViewModelFromIdentifier(
+    node,
+    editorIdentifier
+  );
+  console.log(viewModel);
   const { tooltip, inline } = format(viewModel);
-  console.log(JSON.stringify(node, null, 2))
+  console.log(JSON.stringify(node, null, 2));
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>
@@ -35,7 +42,7 @@ export function Payload({ node, isRoot }: PayloadProps) {
             dir="rtl"
             className="max-w-[250px] overflow-hidden text-ellipsis font-medium text-purple-100 max-md:max-w-[150px]"
           >
-            {inline }
+            {inline}
           </span>
         </Tooltip.Default>
       </Condition.Item>

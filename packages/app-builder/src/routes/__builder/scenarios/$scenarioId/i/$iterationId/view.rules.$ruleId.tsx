@@ -4,7 +4,10 @@ import {
   scenarioI18n,
   ScenarioPage,
 } from '@app-builder/components';
-import { EditorIdentifiersProvider, EditorOperatorsProvider } from '@app-builder/services/editor';
+import {
+  EditorIdentifiersProvider,
+  EditorOperatorsProvider,
+} from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
