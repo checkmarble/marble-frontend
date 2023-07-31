@@ -41,5 +41,5 @@ export function Formula({ formula, isRoot = false }: FormulaProps) {
     return <Identifier node={formula} isRoot={isRoot} />;
   }
 
-  return <Default node={formula} isRoot={isRoot}/>
+  return <Default node={formula} isRoot={isRoot} />;
 }

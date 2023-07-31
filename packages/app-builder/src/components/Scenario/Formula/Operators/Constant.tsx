@@ -60,7 +60,9 @@ export function Constant({
 }) {
   const { t, i18n } = useTranslation(scenarioI18n);
   if (node.constant === null) {
-    return <DefaultList isRoot={isRoot}>{JSON.stringify(node.constant)}</DefaultList>;
+    return (
+      <DefaultList isRoot={isRoot}>{JSON.stringify(node.constant)}</DefaultList>
+    );
   }
   switch (typeof node.constant) {
     case 'object': {
@@ -74,7 +76,11 @@ export function Constant({
         );
         return <DefaultList isRoot={isRoot}>{formattedValue}</DefaultList>;
       }
-      return <DefaultList isRoot={isRoot}>{JSON.stringify(node.constant)}</DefaultList>;
+      return (
+        <DefaultList isRoot={isRoot}>
+          {JSON.stringify(node.constant)}
+        </DefaultList>
+      );
     }
     case 'string':
       return (
@@ -95,7 +101,11 @@ export function Constant({
         </DefaultConstant>
       );
     default:
-      return <DefaultList isRoot={isRoot}>{JSON.stringify(node.constant)}</DefaultList>;
+      return (
+        <DefaultList isRoot={isRoot}>
+          {JSON.stringify(node.constant)}
+        </DefaultList>
+      );
   }
 }
 
