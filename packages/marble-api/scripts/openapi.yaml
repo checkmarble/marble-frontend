@@ -818,42 +818,6 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-    put:
-      deprecated: true
-      tags:
-        - Scenario Iteration Rules
-      summary: Update a scenario iteration rule
-      operationId: updateScenarioIterationRule_deprecated
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: ruleId
-          description: ID of the rule that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        description: 'Updated scenario iteration rule object'
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateScenarioIterationRuleBody'
-        required: true
-      responses:
-        '200':
-          description: The updated scenario iteration rule corresponding to the provided `ruleId`
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ScenarioIterationRule'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
     patch:
       tags:
         - Scenario Iteration Rules
