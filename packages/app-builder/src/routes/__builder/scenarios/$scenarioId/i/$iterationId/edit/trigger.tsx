@@ -1,5 +1,6 @@
 import { Callout, Paper } from '@app-builder/components';
-import { TriggerCondition } from '@app-builder/components/Scenario/Trigger/Trigger';
+import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
+import { Button } from '@ui-design-system';
 import { type Namespace } from 'i18next';
 import { toast } from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
@@ -16,7 +17,8 @@ export default function Trigger() {
   const { scenarioId } = useCurrentScenarioIteration();
 
   return (
-    <Paper.Container>
+    <div>
+    <Paper.Container scrollable={false}>
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.run_scenario.title')}</Paper.Title>
         <p className="text-s text-grey-100 font-normal">
@@ -68,7 +70,13 @@ export default function Trigger() {
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
         <Callout>{t('scenarios:trigger.trigger_object.callout')}</Callout>
       </div>
-      <TriggerCondition />
+      <RootOrOperator
+        renderAstNode={({ name }) => <EditAstNode name={name} />}
+      />
     </Paper.Container>
+            <Button type="submit" className="w-fit">
+            {t('common:save')}
+          </Button>
+</div>
   );
 }
