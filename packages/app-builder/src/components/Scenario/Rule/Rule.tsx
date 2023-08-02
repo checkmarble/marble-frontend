@@ -1,5 +1,5 @@
-import { adaptNodeDto, type AstNode } from '@app-builder/models';
-import { type ScenarioIterationRule } from '@marble-api';
+import { type AstNode } from '@app-builder/models';
+import { type ScenarioIterationRule } from '@app-builder/models/scenario';
 import { Fragment } from 'react';
 
 import { Paper } from '../../Paper';
@@ -30,12 +30,7 @@ import { Consequence } from './Consequence';
  * In case this is not an OR/AND operator, we simulate an OR operator with a single operand
  */
 export function Rule({ rule }: { rule: ScenarioIterationRule }) {
-  if (!rule.formula_ast_expression) {
-    return;
-  }
-  const nestedConditions = getNestedConditions(
-    adaptNodeDto(rule.formula_ast_expression)
-  );
+  const nestedConditions = getNestedConditions(rule.astNode);
 
   return (
     <div className="flex flex-col gap-4">

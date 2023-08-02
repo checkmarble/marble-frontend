@@ -82,3 +82,40 @@ export interface DatabaseAccessAstNode {
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === 'DatabaseAccess';
 }
+
+export function isOrAndGroup(astNode: AstNode): boolean {
+  if (astNode.name !== 'Or') {
+    return false;
+  }
+  for (const child of astNode.children) {
+    if (child.name !== 'And') {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function wrapInOrAndGroups(astNode?: AstNode): AstNode {
+  if (astNode?.name === 'Or') return astNode;
+  if (astNode?.name === 'And') {
+    return {
+      name: 'Or',
+      constant: null,
+      children: [astNode],
+      namedChildren: {},
+    };
+  }
+  return {
+    name: 'Or',
+    constant: null,
+    children: [
+      {
+        name: 'And',
+        constant: null,
+        children: astNode ? [astNode] : [],
+        namedChildren: {},
+      },
+    ],
+    namedChildren: {},
+  };
+}
