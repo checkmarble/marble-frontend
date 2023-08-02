@@ -782,7 +782,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationRule'
+                type: object
+                required:
+                  - rule
+                properties:
+                  rule:
+                    $ref: '#/components/schemas/ScenarioIterationRule'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -808,42 +813,6 @@ paths:
       responses:
         '200':
           description: The scenario iteration rule corresponding to the provided `ruleId`
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ScenarioIterationRule'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-    put:
-      deprecated: true
-      tags:
-        - Scenario Iteration Rules
-      summary: Update a scenario iteration rule
-      operationId: updateScenarioIterationRule_deprecated
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: ruleId
-          description: ID of the rule that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        description: 'Updated scenario iteration rule object'
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateScenarioIterationRuleBody'
-        required: true
-      responses:
-        '200':
-          description: The updated scenario iteration rule corresponding to the provided `ruleId`
           content:
             application/json:
               schema:
@@ -882,7 +851,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationRule'
+                type: object
+                required:
+                  - rule
+                  - scenario_validation
+                properties:
+                  rule:
+                    $ref: '#/components/schemas/ScenarioIterationRule'
+                  scenario_validation:
+                    $ref: '#/components/schemas/ScenarioValidationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -2010,6 +1987,23 @@ components:
         createdAt:
           type: string
           format: date-time
+    ScenarioValidationDto:
+      type: object
+      required:
+        - errors
+        - trigger_evaluation
+        - rules_evaluations
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        trigger_evaluation:
+          $ref: '#/components/schemas/NodeEvaluationDto'
+        rules_evaluations:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeEvaluationDto'
     CreateScenarioIterationRuleBody:
       type: object
       required:
@@ -2114,6 +2108,26 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/NodeDto'
           example: { 'field_name': { constant: 'account' } }
+    NodeEvaluationDto:
+      type: object
+      required:
+        - return_value
+        - evaluation_error
+        - children
+        - named_children
+      properties:
+        return_value:
+          $ref: '#/components/schemas/ConstantDto'
+        evaluation_error:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeEvaluationDto'
+        named_children:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/NodeEvaluationDto'
     Identifier:
       type: object
       required:
