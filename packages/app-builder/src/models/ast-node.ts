@@ -96,18 +96,16 @@ export function isOrAndGroup(astNode: AstNode): boolean {
 }
 
 export function wrapInOrAndGroups(astNode?: AstNode): AstNode {
-  if (astNode?.name === "Or")
-    return astNode;
-    if (astNode?.name === "And") {
-      return {
-        name: 'Or',
-        constant: null,
-        children: [astNode],
-        namedChildren: {},
-      };
-    
-    }
+  if (astNode?.name === 'Or') return astNode;
+  if (astNode?.name === 'And') {
     return {
+      name: 'Or',
+      constant: null,
+      children: [astNode],
+      namedChildren: {},
+    };
+  }
+  return {
     name: 'Or',
     constant: null,
     children: [
