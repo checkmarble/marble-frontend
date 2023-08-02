@@ -42,9 +42,9 @@ const LINKS: ScenariosLinkProps[] = [
 ];
 
 interface LoaderResponse {
-  scenarioIteration: ScenarioIteration,
-  identifiers: EditorIdentifiersByType,
-  operators: AstOperator[],
+  scenarioIteration: ScenarioIteration;
+  identifiers: EditorIdentifiersByType;
+  operators: AstOperator[];
 }
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
@@ -94,27 +94,28 @@ export async function loader({ request, params }: LoaderArgs) {
 export default function ScenarioViewLayout() {
   const currentScenario = useCurrentScenario();
   const fetcher = useFetcher<typeof action>();
-  const { scenarioIteration, identifiers, operators } =
-    useLoaderData<typeof loader>() as LoaderResponse;
+  const { scenarioIteration, identifiers, operators } = useLoaderData<
+    typeof loader
+  >() as LoaderResponse;
   //@ts-expect-error recursive type is not supported
   const formMethods = useForm({
     defaultValues: { astNode: scenarioIteration.astNode },
   });
   return (
     <ScenarioPage.Container>
-    <Form
-      className='h-full'
-      control={formMethods.control}
-      onSubmit={({ data }) => {
-        fetcher.submit(JSON.stringify(data), {
-          method: 'PATCH',
-          encType: 'application/json',
-        });
-      }}
+      <Form
+        className="h-full"
+        control={formMethods.control}
+        onSubmit={({ data }) => {
+          fetcher.submit(JSON.stringify(data), {
+            method: 'PATCH',
+            encType: 'application/json',
+          });
+        }}
       >
-      <EditorIdentifiersProvider identifiers={identifiers}>
-        <EditorOperatorsProvider operators={operators}>
-          <FormProvider {...formMethods}>
+        <EditorIdentifiersProvider identifiers={identifiers}>
+          <EditorOperatorsProvider operators={operators}>
+            <FormProvider {...formMethods}>
               <ScenarioPage.Header>
                 <div className="flex flex-row items-center gap-4">
                   <Link to={getRoute('/scenarios')}>
@@ -126,7 +127,7 @@ export default function ScenarioViewLayout() {
                   </Tag>
                 </div>
               </ScenarioPage.Header>
-              <ScenarioPage.Content className="overflow-scroll max-w-3xl">
+              <ScenarioPage.Content className="max-w-3xl overflow-scroll">
                 <Scenarios.Nav>
                   {LINKS.map((linkProps) => (
                     <li key={linkProps.labelTKey}>
@@ -136,21 +137,21 @@ export default function ScenarioViewLayout() {
                 </Scenarios.Nav>
                 <Outlet />
               </ScenarioPage.Content>
-          </FormProvider>
-        </EditorOperatorsProvider>
-      </EditorIdentifiersProvider>
-    </Form>
-    <ClientOnly>
-      {() => (
-        <DevTool
-          control={formMethods.control}
-          placement="bottom-right"
-          styles={{
-            panel: { width: '450px' },
-          }}
-        />
-      )}
-    </ClientOnly>
+            </FormProvider>
+          </EditorOperatorsProvider>
+        </EditorIdentifiersProvider>
+      </Form>
+      <ClientOnly>
+        {() => (
+          <DevTool
+            control={formMethods.control}
+            placement="bottom-right"
+            styles={{
+              panel: { width: '450px' },
+            }}
+          />
+        )}
+      </ClientOnly>
     </ScenarioPage.Container>
   );
 }

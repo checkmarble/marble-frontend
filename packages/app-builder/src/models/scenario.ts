@@ -1,6 +1,14 @@
-import { type ScenarioIterationRule as ScenarioIterationRuleDto, type ScenarioIterationWithBody } from '@marble-api';
+import {
+  type ScenarioIterationRule as ScenarioIterationRuleDto,
+  type ScenarioIterationWithBody,
+} from '@marble-api';
 
-import { adaptNodeDto, type AstNode,isOrAndGroup, wrapInOrAndGroups } from './ast-node';
+import {
+  adaptNodeDto,
+  type AstNode,
+  isOrAndGroup,
+  wrapInOrAndGroups,
+} from './ast-node';
 
 export type ScenarioIterationRule = {
   id: string;
@@ -26,9 +34,10 @@ export interface ScenarioIteration {
   astNode: AstNode;
 }
 
-
-export function adaptScenarioIterationRuleDto(scenarioIterationRuleDto: ScenarioIterationRuleDto): ScenarioIterationRule {
-  let astNode: AstNode; 
+export function adaptScenarioIterationRuleDto(
+  scenarioIterationRuleDto: ScenarioIterationRuleDto
+): ScenarioIterationRule {
+  let astNode: AstNode;
   if (!scenarioIterationRuleDto.formula_ast_expression) {
     astNode = wrapInOrAndGroups();
   } else {
@@ -36,8 +45,8 @@ export function adaptScenarioIterationRuleDto(scenarioIterationRuleDto: Scenario
       scenarioIterationRuleDto.formula_ast_expression
     );
     astNode = isOrAndGroup(unwrappedAstNode)
-    ? unwrappedAstNode
-    : wrapInOrAndGroups(unwrappedAstNode);
+      ? unwrappedAstNode
+      : wrapInOrAndGroups(unwrappedAstNode);
   }
   return {
     id: scenarioIterationRuleDto.id,
@@ -48,12 +57,13 @@ export function adaptScenarioIterationRuleDto(scenarioIterationRuleDto: Scenario
     astNode: astNode,
     scoreModifier: scenarioIterationRuleDto.scoreModifier,
     createdAt: scenarioIterationRuleDto.createdAt,
-  }
+  };
 }
 
-
-export function adaptScenarioIterationDto(scenarioIterationWithBody: ScenarioIterationWithBody): ScenarioIteration {
-  let astNode: AstNode; 
+export function adaptScenarioIterationDto(
+  scenarioIterationWithBody: ScenarioIterationWithBody
+): ScenarioIteration {
+  let astNode: AstNode;
   if (!scenarioIterationWithBody.body.trigger_condition_ast_expression) {
     astNode = wrapInOrAndGroups();
   } else {
@@ -61,8 +71,8 @@ export function adaptScenarioIterationDto(scenarioIterationWithBody: ScenarioIte
       scenarioIterationWithBody.body.trigger_condition_ast_expression
     );
     astNode = isOrAndGroup(unwrappedAstNode)
-    ? unwrappedAstNode
-    : wrapInOrAndGroups(unwrappedAstNode);
+      ? unwrappedAstNode
+      : wrapInOrAndGroups(unwrappedAstNode);
   }
   return {
     id: scenarioIterationWithBody.id,
@@ -72,8 +82,10 @@ export function adaptScenarioIterationDto(scenarioIterationWithBody: ScenarioIte
     updatedAt: scenarioIterationWithBody.updatedAt,
     scoreReviewThreshold: scenarioIterationWithBody.body.scoreReviewThreshold,
     scoreRejectThreshold: scenarioIterationWithBody.body.scoreRejectThreshold,
-    rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRuleDto),
+    rules: scenarioIterationWithBody.body.rules.map(
+      adaptScenarioIterationRuleDto
+    ),
     schedule: scenarioIterationWithBody.body.schedule,
     astNode: astNode,
-  }
+  };
 }
