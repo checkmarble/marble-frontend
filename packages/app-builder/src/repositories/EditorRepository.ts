@@ -27,13 +27,24 @@ export function getEditorRepository() {
     saveRule: async ({
       ruleId,
       astNode,
+      displayOrder,
+      name,
+      description,
+      scoreModifier,
     }: {
       ruleId: string;
       astNode: AstNode;
+      displayOrder?: number;
+      name?: string;
+      description?: string;
+      scoreModifier?: number;
     }) => {
-      return marbleApiClient.saveRule({
-        rule_id: ruleId,
-        expression: adaptAstNode(astNode),
+      return marbleApiClient.updateScenarioIterationRule(ruleId, {
+        displayOrder,
+        name,
+        description,
+        formula_ast_expression: adaptAstNode(astNode),
+        scoreModifier,
       });
     },
   });
