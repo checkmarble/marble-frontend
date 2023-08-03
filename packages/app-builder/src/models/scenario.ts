@@ -1,5 +1,5 @@
 import {
-  type ScenarioIterationRule as ScenarioIterationRuleDto,
+  type ScenarioIterationRuleDto,
   type ScenarioIterationWithBody,
 } from '@marble-api';
 

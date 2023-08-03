@@ -1,6 +1,6 @@
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { type ScenarioIterationRule } from '@marble-api';
+import { type ScenarioIterationRuleDto } from '@marble-api';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import {
@@ -42,7 +42,7 @@ export default function Rules() {
 
   const rules = useLoaderData<typeof loader>();
 
-  const columns = useMemo<ColumnDef<ScenarioIterationRule>[]>(
+  const columns = useMemo<ColumnDef<ScenarioIterationRuleDto>[]>(
     () => [
       {
         id: 'name',

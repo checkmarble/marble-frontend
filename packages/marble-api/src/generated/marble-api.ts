@@ -140,7 +140,7 @@ export type CreateScenarioIterationBody = {
         rules?: CreateScenarioIterationRuleBody[];
     };
 };
-export type ScenarioIterationRule = {
+export type ScenarioIterationRuleDto = {
     id: string;
     scenarioIterationId: string;
     displayOrder: number;
@@ -155,7 +155,7 @@ export type ScenarioIterationWithBody = ScenarioIteration & {
         trigger_condition_ast_expression?: (NodeDto) | null;
         scoreReviewThreshold?: number;
         scoreRejectThreshold?: number;
-        rules: ScenarioIterationRule[];
+        rules: ScenarioIterationRuleDto[];
         schedule?: string;
     };
 };
@@ -752,7 +752,7 @@ export function listScenarioIterationRules({ scenarioIterationId }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationRule[];
+        data: ScenarioIterationRuleDto[];
     } | {
         status: 401;
         data: string;
@@ -775,7 +775,7 @@ export function createScenarioIterationRule(createScenarioIterationRuleBody: Cre
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            rule: ScenarioIterationRule;
+            rule: ScenarioIterationRuleDto;
         };
     } | {
         status: 401;
@@ -798,7 +798,9 @@ export function createScenarioIterationRule(createScenarioIterationRuleBody: Cre
 export function getScenarioIterationRule(ruleId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationRule;
+        data: {
+            rule: ScenarioIterationRuleDto;
+        };
     } | {
         status: 401;
         data: string;
@@ -819,7 +821,7 @@ export function updateScenarioIterationRule(ruleId: string, updateScenarioIterat
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            rule: ScenarioIterationRule;
+            rule: ScenarioIterationRuleDto;
             scenario_validation: ScenarioValidationDto;
         };
     } | {

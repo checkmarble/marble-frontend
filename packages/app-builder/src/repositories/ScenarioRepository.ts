@@ -10,7 +10,7 @@ export type ScenarioRepository = ReturnType<typeof getScenarioRepository>;
 export function getScenarioRepository() {
   return (marbleApiClient: MarbleApi) => ({
     getScenarioIterationRule: async ({ ruleId }: { ruleId: string }) => {
-      const rule = await marbleApiClient.getScenarioIterationRule(ruleId);
+      const { rule } = await marbleApiClient.getScenarioIterationRule(ruleId);
 
       return adaptScenarioIterationRuleDto(rule);
     },
