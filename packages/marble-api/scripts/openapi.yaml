@@ -754,7 +754,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ScenarioIterationRule'
+                  $ref: '#/components/schemas/ScenarioIterationRuleDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -787,7 +787,7 @@ paths:
                   - rule
                 properties:
                   rule:
-                    $ref: '#/components/schemas/ScenarioIterationRule'
+                    $ref: '#/components/schemas/ScenarioIterationRuleDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -816,7 +816,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationRule'
+                type: object
+                required:
+                  - rule
+                properties:
+                  rule:
+                    $ref: '#/components/schemas/ScenarioIterationRuleDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -857,7 +862,7 @@ paths:
                   - scenario_validation
                 properties:
                   rule:
-                    $ref: '#/components/schemas/ScenarioIterationRule'
+                    $ref: '#/components/schemas/ScenarioIterationRuleDto'
                   scenario_validation:
                     $ref: '#/components/schemas/ScenarioValidationDto'
         '401':
@@ -1885,7 +1890,7 @@ components:
                 rules:
                   type: array
                   items:
-                    $ref: '#/components/schemas/ScenarioIterationRule'
+                    $ref: '#/components/schemas/ScenarioIterationRuleDto'
                 schedule:
                   type: string
     CreateScenarioIterationBody:
@@ -1929,7 +1934,7 @@ components:
             scoreRejectThreshold:
               type: integer
               minimum: 0
-    ScenarioIterationRule:
+    ScenarioIterationRuleDto:
       type: object
       required:
         - id
