@@ -30,19 +30,22 @@ export const useEditorOperators = EditorOperatorsContext.useValue;
 export function useGetOperatorName() {
   const { t } = useTranslation(['scenarios']);
 
-  return useCallback((operatorName: string) => {
-    if (['+', '-', '<', '=', '>'].includes(operatorName)) return operatorName;
+  return useCallback(
+    (operatorName: string) => {
+      if (['+', '-', '<', '=', '>'].includes(operatorName)) return operatorName;
 
-    if (operatorName === '*') return '×';
-    if (operatorName === '/') return '÷';
+      if (operatorName === '*') return '×';
+      if (operatorName === '/') return '÷';
 
-    if (operatorName === '/') return '÷';
-    if (operatorName === 'IsInList') return t('scenarios:operator.is_in');
+      if (operatorName === '/') return '÷';
+      if (operatorName === 'IsInList') return t('scenarios:operator.is_in');
 
-    // eslint-disable-next-line no-restricted-properties
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Unhandled operator', operatorName);
-    }
-    return operatorName;
-  }, []);
+      // eslint-disable-next-line no-restricted-properties
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Unhandled operator', operatorName);
+      }
+      return operatorName;
+    },
+    [t]
+  );
 }
