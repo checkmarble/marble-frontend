@@ -173,6 +173,19 @@ export type UpdateScenarioIterationRuleBody = {
     formula_ast_expression?: (NodeDto) | null;
     scoreModifier?: number;
 };
+export type NodeEvaluationDto = {
+    return_value: ConstantDto;
+    evaluation_error: string;
+    children: NodeEvaluationDto[];
+    named_children: {
+        [key: string]: NodeEvaluationDto;
+    };
+};
+export type ScenarioValidationDto = {
+    errors: string[];
+    trigger_evaluation: NodeEvaluationDto;
+    rules_evaluations: NodeEvaluationDto[];
+};
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
     id: string;
@@ -243,10 +256,6 @@ export type FuncAttributes = {
     name: string;
     number_of_arguments: number;
     named_arguments?: string[];
-};
-export type PatchRuleWithAstExpression = {
-    rule_id: string;
-    expression: NodeDto;
 };
 /**
  * Get an access token
@@ -765,7 +774,9 @@ export function listScenarioIterationRules({ scenarioIterationId }: {
 export function createScenarioIterationRule(createScenarioIterationRuleBody: CreateScenarioIterationRuleBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationRule;
+        data: {
+            rule: ScenarioIterationRule;
+        };
     } | {
         status: 401;
         data: string;
@@ -804,32 +815,13 @@ export function getScenarioIterationRule(ruleId: string, opts?: Oazapfts.Request
 /**
  * Update a scenario iteration rule
  */
-export function updateScenarioIterationRuleDeprecated(ruleId: string, updateScenarioIterationRuleBody: UpdateScenarioIterationRuleBody, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: ScenarioIterationRule;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}`, oazapfts.json({
-        ...opts,
-        method: "PUT",
-        body: updateScenarioIterationRuleBody
-    })));
-}
-/**
- * Update a scenario iteration rule
- */
 export function updateScenarioIterationRule(ruleId: string, updateScenarioIterationRuleBody: UpdateScenarioIterationRuleBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationRule;
+        data: {
+            rule: ScenarioIterationRule;
+            scenario_validation: ScenarioValidationDto;
+        };
     } | {
         status: 401;
         data: string;
@@ -1241,25 +1233,4 @@ export function listOperators(scenarioId: string, opts?: Oazapfts.RequestOpts) {
     }>(`/editor/${encodeURIComponent(scenarioId)}/operators`, {
         ...opts
     }));
-}
-/**
- * Save a rule
- */
-export function saveRule(patchRuleWithAstExpression: PatchRuleWithAstExpression, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 204;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>("/ast-expression/save-rule", oazapfts.json({
-        ...opts,
-        method: "PATCH",
-        body: patchRuleWithAstExpression
-    })));
 }
