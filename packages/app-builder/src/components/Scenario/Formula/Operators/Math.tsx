@@ -15,7 +15,7 @@ export function Math({ node, isRoot }: MathProps) {
 
   return (
     <Condition.Container isRoot={isRoot}>
-      {node.children?.map((child, index) => {
+      {node.children.map((child, index) => {
         return (
           <React.Fragment key={`${child.name ?? 'constant'}-${index}`}>
             {index !== 0 && (
