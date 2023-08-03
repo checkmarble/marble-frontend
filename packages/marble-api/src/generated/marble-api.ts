@@ -166,13 +166,6 @@ export type UpdateScenarioIterationBody = {
         scoreRejectThreshold?: number;
     };
 };
-export type UpdateScenarioIterationRuleBody = {
-    displayOrder?: number;
-    name?: string;
-    description?: string;
-    formula_ast_expression?: (NodeDto) | null;
-    scoreModifier?: number;
-};
 export type NodeEvaluationDto = {
     return_value: ConstantDto;
     evaluation_error: string;
@@ -185,6 +178,13 @@ export type ScenarioValidationDto = {
     errors: string[];
     trigger_evaluation: NodeEvaluationDto;
     rules_evaluations: NodeEvaluationDto[];
+};
+export type UpdateScenarioIterationRuleBody = {
+    displayOrder?: number;
+    name?: string;
+    description?: string;
+    formula_ast_expression?: (NodeDto) | null;
+    scoreModifier?: number;
 };
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
@@ -703,32 +703,13 @@ export function getScenarioIteration(scenarioIterationId: string, opts?: Oazapft
 /**
  * Update a scenario iteration
  */
-export function updateScenarioIterationDeprecated(scenarioIterationId: string, updateScenarioIterationBody: UpdateScenarioIterationBody, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: ScenarioIterationWithBody;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}`, oazapfts.json({
-        ...opts,
-        method: "PUT",
-        body: updateScenarioIterationBody
-    })));
-}
-/**
- * Update a scenario iteration
- */
 export function updateScenarioIteration(scenarioIterationId: string, updateScenarioIterationBody: UpdateScenarioIterationBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationWithBody;
+        data: {
+            iteration: ScenarioIterationWithBody;
+            scenario_validation: ScenarioValidationDto;
+        };
     } | {
         status: 401;
         data: string;
