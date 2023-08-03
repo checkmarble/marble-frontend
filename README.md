@@ -66,3 +66,9 @@ pnpm --filter ui-design-system run storybook
 # Generate icons from svg files
 pnpm --filter ui-icons run generate-icons
 ```
+
+### How to check the code locally like the CI
+
+```bash
+pnpm run -r type-check && pnpm run -r lint && pnpm run format:check
+```
