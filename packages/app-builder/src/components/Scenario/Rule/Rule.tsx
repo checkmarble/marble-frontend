@@ -79,14 +79,14 @@ export function Rule({ rule }: { rule: ScenarioIterationRule }) {
 function getNestedConditions(formula: AstNode) {
   switch (formula.name) {
     case 'And': {
-      const andOperands = formula.children ?? [];
+      const andOperands = formula.children;
 
       return andOperands.map((andOperand) => {
         return {
           logicalOperator: 'and',
           operator:
             andOperand.name === 'Or'
-              ? andOperand.children?.map(
+              ? andOperand.children.map(
                   (orOperand, orOperandIndex) =>
                     ({
                       logicalOperator: orOperandIndex === 0 ? 'if' : 'or',
@@ -104,14 +104,14 @@ function getNestedConditions(formula: AstNode) {
     }
 
     case 'Or': {
-      const orOperands = formula.children ?? [];
+      const orOperands = formula.children;
 
       return orOperands.map((orOperand) => {
         return {
           logicalOperator: 'or',
           operator:
             orOperand.name === 'And'
-              ? orOperand.children?.map(
+              ? orOperand.children.map(
                   (andOperand, andOperandIndex) =>
                     ({
                       logicalOperator: andOperandIndex === 0 ? 'if' : 'and',

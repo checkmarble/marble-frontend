@@ -3,7 +3,7 @@ import * as R from 'remeda';
 
 export interface AstNode {
   name: string | null;
-  constant: ConstantType | null;
+  constant?: ConstantType;
   children: AstNode[];
   namedChildren: Record<string, AstNode>;
 }
@@ -25,26 +25,26 @@ export function NewAstNode({
 }: Partial<AstNode> = {}): AstNode {
   return {
     name: name ?? null,
-    constant: constant ?? null,
+    constant: constant,
     children: children ?? [],
     namedChildren: namedChildren ?? {},
   };
 }
 
 export function adaptNodeDto(nodeDto: NodeDto): AstNode {
-  return NewAstNode({
-    name: nodeDto.name,
+  return {
+    name: nodeDto.name === undefined ? null : nodeDto.name,
     constant: nodeDto.constant,
-    children: nodeDto.children?.map(adaptNodeDto),
+    children: (nodeDto.children ?? []).map(adaptNodeDto),
     namedChildren: R.mapValues(nodeDto.named_children ?? {}, adaptNodeDto),
-  });
+  };
 }
 
 export function adaptAstNode(astNode: AstNode): NodeDto {
   return {
     name: astNode.name ?? undefined,
-    constant: astNode.constant ?? undefined,
-    children: astNode.children?.map(adaptAstNode),
+    constant: astNode.constant,
+    children: astNode.children.map(adaptAstNode),
     named_children: R.mapValues(astNode.namedChildren ?? {}, adaptAstNode),
   };
 }
@@ -52,8 +52,8 @@ export function adaptAstNode(astNode: AstNode): NodeDto {
 export function isAstNodeEmpty(node: AstNode): boolean {
   return (
     !node.name &&
-    !node.constant &&
-    node.children?.length === 0 &&
+    node.constant === undefined &&
+    node.children.length === 0 &&
     Object.keys(node.namedChildren).length === 0
   );
 }
@@ -66,7 +66,7 @@ export interface ConstantAstNode<T extends ConstantType = ConstantType> {
 }
 
 export function isConstant(node: AstNode): node is ConstantAstNode {
-  return !node.name && !!node.constant;
+  return !node.name && node.constant !== undefined;
 }
 
 export interface DatabaseAccessAstNode {

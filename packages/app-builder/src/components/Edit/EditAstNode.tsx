@@ -58,7 +58,7 @@ const EditOperand = forwardRef<
   HTMLInputElement,
   {
     name: string;
-    value: AstNode | null;
+    value: AstNode;
     onChange: (value: AstNode | null) => void;
     onBlur: () => void;
   }
