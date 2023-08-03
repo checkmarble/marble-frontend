@@ -1,9 +1,35 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { adaptAstNode, type AstNode } from '@app-builder/models';
+import {
+  adaptAstNode,
+  type AstNode,
+  type NodeEvaluation,
+  type ScenarioValidation,
+} from '@app-builder/models';
 import { adaptAstOperatorDto } from '@app-builder/models/ast-operators';
 import { adaptIdentifierDto } from '@app-builder/models/identifier';
+import type { NodeEvaluationDto, ScenarioValidationDto } from '@marble-api';
+import * as R from 'remeda';
 
 export type EditorRepository = ReturnType<typeof getEditorRepository>;
+
+function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
+  return {
+    returnValue: dto.return_value,
+    evaluationError: dto.evaluation_error,
+    children: dto.children.map(adaptNodeEvaluation),
+    namedChildren: R.mapValues(dto.named_children, adaptNodeEvaluation),
+  };
+}
+
+function adaptScenarioValidation(
+  dto: ScenarioValidationDto
+): ScenarioValidation {
+  return {
+    errors: dto.errors,
+    triggerEvaluation: adaptNodeEvaluation(dto.trigger_evaluation),
+    rulesEvaluations: dto.rules_evaluations.map(adaptNodeEvaluation),
+  };
+}
 
 export function getEditorRepository() {
   return (marbleApiClient: MarbleApi) => ({
@@ -38,14 +64,15 @@ export function getEditorRepository() {
       name?: string;
       description?: string;
       scoreModifier?: number;
-    }) => {
-      return marbleApiClient.updateScenarioIterationRule(ruleId, {
+    }): Promise<ScenarioValidation> => {
+      const dto = await marbleApiClient.updateScenarioIterationRule(ruleId, {
         displayOrder,
         name,
         description,
         formula_ast_expression: adaptAstNode(astNode),
         scoreModifier,
       });
+      return adaptScenarioValidation(dto.scenario_validation);
     },
   });
 }

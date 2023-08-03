@@ -7,7 +7,13 @@ import {
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Consequence } from '@app-builder/components/Scenario/Rule/Consequence';
-import { type AstNode } from '@app-builder/models';
+import type {
+  AstNode,
+  EditorIdentifier,
+  ScenarioIterationRule,
+  ScenarioValidation,
+} from '@app-builder/models';
+import { type AstOperator } from '@app-builder/models/ast-operators';
 import {
   EditorIdentifiersProvider,
   EditorOperatorsProvider,
@@ -26,6 +32,17 @@ import { ClientOnly } from 'remix-utils';
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
 };
+
+interface EditRuleLoaderResult {
+  rule: ScenarioIterationRule;
+  identifiers: {
+    databaseAccessors: EditorIdentifier[];
+    payloadAccessors: EditorIdentifier[];
+    customListAccessors: EditorIdentifier[];
+  };
+  operators: AstOperator[];
+  scenarioValidation: ScenarioValidation | null;
+}
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
@@ -48,10 +65,13 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
-  return json({
+  const scenarioValidation: ScenarioValidation | null = null;
+
+  return json<EditRuleLoaderResult>({
     rule: await scenarioIterationRule,
     identifiers: await identifiers,
     operators: await operators,
+    scenarioValidation,
   });
 }
 
@@ -72,7 +92,10 @@ export async function action({ request, params }: ActionArgs) {
       astNode: AstNode;
     };
 
-    await editor.saveRule({ ruleId, astNode: expression.astNode });
+    const scenarioValidation = await editor.saveRule({
+      ruleId,
+      astNode: expression.astNode,
+    });
 
     setToastMessage(session, {
       type: 'success',
@@ -83,6 +106,7 @@ export async function action({ request, params }: ActionArgs) {
         success: true as const,
         error: null,
         values: expression,
+        scenarioValidation,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -97,6 +121,7 @@ export async function action({ request, params }: ActionArgs) {
         success: false as const,
         error: null,
         values: null,
+        scenarioValidation: null,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -105,10 +130,12 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleView() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators } = useLoaderData<typeof loader>();
+  const { rule, identifiers, operators, scenarioValidation } =
+    useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
-  //@ts-expect-error recursive type is not supported
+
+  // @ts-expect-error recursive type is not supported
   const formMethods = useForm({
     defaultValues: { astNode: rule.astNode },
   });
@@ -128,6 +155,11 @@ export default function RuleView() {
         </div>
       </ScenarioPage.Header>
       <ScenarioPage.Content className="max-w-3xl">
+        {scenarioValidation && (
+          <Callout>
+            <pre>{JSON.stringify(scenarioValidation)}</pre>
+          </Callout>
+        )}
         <Callout>{rule.description}</Callout>
         <Form
           control={formMethods.control}
