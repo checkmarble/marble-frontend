@@ -1,13 +1,14 @@
-import { type AstNode } from '@app-builder/models';
+import type { AstNode } from '@app-builder/models';
 import clsx from 'clsx';
 
 import { Condition } from './Condition';
+import { stringifyConstant } from './Constant';
 
 function DefaultValue(node: AstNode) {
   let value = (node.name ?? '') + '(';
   for (const child of node.children) {
     if (child.name === null) {
-      value += child.constant ?? '' + ', ';
+      value += stringifyConstant(child.constant) + ', ';
     } else {
       value += DefaultValue(child) + ', ';
     }
@@ -15,7 +16,7 @@ function DefaultValue(node: AstNode) {
   Object.keys(node.namedChildren).forEach((key) => {
     const child = node.namedChildren[key];
     if (child.name === null) {
-      const constant = (child.constant ?? '').toString();
+      const constant = stringifyConstant(child.constant);
       value += key + ': ' + constant + ', ';
     } else {
       value += key + ': ' + DefaultValue(child) + ', ';

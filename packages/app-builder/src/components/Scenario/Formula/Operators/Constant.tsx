@@ -1,4 +1,4 @@
-import { type AstNode } from '@app-builder/models';
+import type { AstNode, ConstantType } from '@app-builder/models';
 import { formatNumber } from '@app-builder/utils/format';
 import { Tooltip } from '@ui-design-system';
 import clsx from 'clsx';
@@ -51,6 +51,10 @@ function DefaultList({ isRoot, children, ...otherProps }: ScalarProps) {
   );
 }
 
+export function stringifyConstant(constant?: ConstantType): string {
+  return constant === undefined ? '(no constant)' : JSON.stringify(constant);
+}
+
 export function Constant({
   node,
   isRoot,
@@ -59,11 +63,7 @@ export function Constant({
   isRoot?: boolean;
 }) {
   const { t, i18n } = useTranslation(scenarioI18n);
-  if (node.constant === null) {
-    return (
-      <DefaultList isRoot={isRoot}>{JSON.stringify(node.constant)}</DefaultList>
-    );
-  }
+
   switch (typeof node.constant) {
     case 'object': {
       if (
@@ -78,7 +78,7 @@ export function Constant({
       }
       return (
         <DefaultList isRoot={isRoot}>
-          {JSON.stringify(node.constant)}
+          {stringifyConstant(node.constant)}
         </DefaultList>
       );
     }
@@ -103,7 +103,7 @@ export function Constant({
     default:
       return (
         <DefaultList isRoot={isRoot}>
-          {JSON.stringify(node.constant)}
+          stringifyConstant(node.constant)
         </DefaultList>
       );
   }
