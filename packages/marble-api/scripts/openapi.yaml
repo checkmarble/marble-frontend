@@ -658,42 +658,6 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-    put:
-      deprecated: true
-      tags:
-        - Scenario Iterations
-      summary: Update a scenario iteration
-      operationId: updateScenarioIteration_deprecated
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        description: 'Updated scenario iteration object'
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateScenarioIterationBody'
-        required: true
-      responses:
-        '200':
-          description: The updated scenario iteration corresponding to the provided `scenarioIterationId`
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ScenarioIterationWithBody'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
     patch:
       tags:
         - Scenario Iterations
@@ -722,7 +686,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationWithBody'
+                type: object
+                required:
+                  - iteration
+                  - scenario_validation
+                properties:
+                  iteration:
+                    $ref: '#/components/schemas/ScenarioIterationWithBody'
+                  scenario_validation:
+                    $ref: '#/components/schemas/ScenarioValidationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
