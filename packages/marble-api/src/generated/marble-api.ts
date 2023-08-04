@@ -593,28 +593,6 @@ export function getScenario(scenarioId: string, opts?: Oazapfts.RequestOpts) {
 /**
  * Update a scenario
  */
-export function updateScenarioDeprecated(scenarioId: string, updateScenarioBody: UpdateScenarioBody, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: Scenario;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/scenarios/${encodeURIComponent(scenarioId)}`, oazapfts.json({
-        ...opts,
-        method: "PUT",
-        body: updateScenarioBody
-    })));
-}
-/**
- * Update a scenario
- */
 export function updateScenario(scenarioId: string, updateScenarioBody: UpdateScenarioBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -1086,30 +1064,6 @@ export function getOrganization(organizationId: string, opts?: Oazapfts.RequestO
     }>(`/organizations/${encodeURIComponent(organizationId)}`, {
         ...opts
     }));
-}
-/**
- * Update an organization by id
- */
-export function updateOrganizationDeprecated(organizationId: string, updateOrganizationBodyDto: UpdateOrganizationBodyDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            organization: Organization;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/organizations/${encodeURIComponent(organizationId)}`, oazapfts.json({
-        ...opts,
-        method: "PUT",
-        body: updateOrganizationBodyDto
-    })));
 }
 /**
  * Update an organization by id
