@@ -26,7 +26,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const ruleId = fromParams(params, 'ruleId');
   const scenarioId = fromParams(params, 'scenarioId');
-
+  console.log("ruleId: ",ruleId, " scen: ", scenarioId)
   const rule = scenario.getScenarioIterationRule({
     ruleId,
   });
@@ -46,6 +46,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function RuleView() {
   const { rule, identifiers, operators } = useLoaderData<typeof loader>();
+  console.log("rule : ", rule)
 
   return (
     <ScenarioPage.Container>

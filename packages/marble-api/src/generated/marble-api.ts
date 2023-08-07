@@ -198,22 +198,24 @@ export type CreateScenarioPublicationBody = {
     scenarioIterationId: string;
     publicationAction: PublicationAction;
 };
+export type DataModelField = {
+    name: string;
+    dataType: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
+};
+export type LinkToSingle = {
+    linkedTableName: string;
+    parentFieldName: string;
+    childFieldName: string;
+};
 export type DataModel = {
     tables: {
         [key: string]: {
             name: string;
             fields: {
-                [key: string]: {
-                    name: string;
-                    dataType: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
-                };
+                [key: string]: DataModelField;
             };
-            linksToSingle: {
-                [key: string]: {
-                    linkedTableName: string;
-                    parentFieldName: string;
-                    childFieldName: string;
-                };
+            links_to_single?: {
+                [key: string]: LinkToSingle;
             };
         };
     };

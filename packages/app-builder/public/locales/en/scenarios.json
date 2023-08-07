@@ -48,5 +48,12 @@
   "deployment_modal.deactivate.change_is_immediate": "I understand the change is immediate.",
   "deployment_modal.deactivate.helper": "You can roll back to a previous version directly from the version page",
   "deployment_modal_success.deactivate.title": "Version deactivated",
-  "deployment_modal_success.deactivate.description": "The live version has been successfully deactivated, the scenario has ceased to operate"
+  "deployment_modal_success.deactivate.description": "The live version has been successfully deactivated, the scenario has ceased to operate",
+  "create_scenario.title": "New Scenario",
+  "create_scenario.name": "Scenario Name",
+  "create_scenario.description": "Scenario Description",
+  "create_scenario.description_placeholder": "Add a description",
+  "create_scenario.name_placeholder": "Add a name",
+  "create_scenario.trigger_object_placeholder": "Select a trigger object",
+  "create_scenario.trigger_object_title": "Trigger Object"
 }

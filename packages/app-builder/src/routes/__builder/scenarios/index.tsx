@@ -1,4 +1,6 @@
 import { Page } from '@app-builder/components';
+import { adaptDataModelDto } from '@app-builder/models/data-model';
+import { CreateScenario } from '@app-builder/routes/ressources/scenarios/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -20,18 +22,21 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
   const scenarios = await apiClient.listScenarios();
+  const { data_model } = await apiClient.getDataModel();
 
   const sortedScenarios = R.sortBy(scenarios, [
     ({ createdAt }) => createdAt,
     'desc',
   ]);
-
-  return json(sortedScenarios);
+  return json({
+    scenarios: sortedScenarios,
+    dataModel: adaptDataModelDto(data_model),
+  });
 }
 
 export default function ScenariosPage() {
   const { t } = useTranslation(handle.i18n);
-  const scenarios = useLoaderData<typeof loader>();
+  const {scenarios, dataModel } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -40,6 +45,9 @@ export default function ScenariosPage() {
         {t('navigation:scenarios')}
       </Page.Header>
       <Page.Content>
+        <div className="flex flex-row justify-end">
+          <CreateScenario dataModels={dataModel}/>
+        </div>
         <div className="flex flex-col gap-2 lg:gap-4">
           {scenarios.length ? (
             scenarios.map((scenario) => {

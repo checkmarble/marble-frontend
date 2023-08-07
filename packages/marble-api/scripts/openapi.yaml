@@ -1442,6 +1442,30 @@ components:
           type: string
         role:
           type: string
+    LinkToSingle:
+      type: object
+      required:
+        - linkedTableName
+        - parentFieldName
+        - childFieldName
+      properties:
+        linkedTableName:
+          type: string
+        parentFieldName:
+          type: string
+        childFieldName:
+          type: string
+    DataModelField:
+      type: object
+      required:
+        - name
+        - dataType
+      properties:
+        name:
+          type: string
+        dataType:
+          type: string
+          enum: [Bool, Int, Float, String, Timestamp, unknown]
     DataModel:
       type: object
       required:
@@ -1454,38 +1478,20 @@ components:
             required:
               - name
               - fields
-              - linksToSingle
             properties:
               name:
                 type: string
-              fields:
+              fields: 
                 type: object
                 additionalProperties:
                   type: object
-                  required:
-                    - name
-                    - dataType
-                  properties:
-                    name:
-                      type: string
-                    dataType:
-                      type: string
-                      enum: [Bool, Int, Float, String, Timestamp, unknown]
-              linksToSingle:
+                  $ref: '#/components/schemas/DataModelField'
+              links_to_single:
                 type: object
                 additionalProperties:
                   type: object
-                  required:
-                    - linkedTableName
-                    - parentFieldName
-                    - childFieldName
-                  properties:
-                    linkedTableName:
-                      type: string
-                    parentFieldName:
-                      type: string
-                    childFieldName:
-                      type: string
+                  $ref: '#/components/schemas/LinkToSingle'
+
     Token:
       type: object
       required:
