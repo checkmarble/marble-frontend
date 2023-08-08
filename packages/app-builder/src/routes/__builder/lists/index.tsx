@@ -1,4 +1,5 @@
 import { Page } from '@app-builder/components';
+import { usePermissionsContext } from '@app-builder/components/PermissionsContext';
 import { CreateList } from '@app-builder/routes/ressources/lists/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -39,6 +40,7 @@ export const handle = {
 export default function ListsPage() {
   const { t } = useTranslation(handle.i18n);
   const customList = useLoaderData<typeof loader>();
+  const { userPermissions } = usePermissionsContext();
 
   const navigate = useNavigate();
 
@@ -77,9 +79,8 @@ export default function ListsPage() {
       </Page.Header>
       <Page.Content scrollable={false}>
         <div className="flex flex-row justify-end">
-          <CreateList />
+          {userPermissions.canManageList && <CreateList />}
         </div>
-
         {rows.length > 0 ? (
           <Table.Container {...getContainerProps()}>
             <Table.Header headerGroups={table.getHeaderGroups()} />
