@@ -4,6 +4,8 @@ type Permissions = string[];
 type UserPermissions = {
   canManageList: boolean;
   canManageListItem: boolean;
+  canManageScenario: boolean;
+  canPublishScenario: boolean;
 };
 
 type PermissionsContextType = React.DetailedHTMLProps<
@@ -17,11 +19,15 @@ type PermissionsContextType = React.DetailedHTMLProps<
 const PermissionsList = {
   canManageList: 'CUSTOM_LISTS_PUBLISH',
   canManageListItem: 'CUSTOM_LISTS_PUBLISH',
+  canManageScenario: 'SCENARIO_CREATE',
+  canPublishScenario: 'SCENARIO_PUBLISH',
 };
 
 const defaultUserPermissions: UserPermissions = {
   canManageList: false,
   canManageListItem: false,
+  canManageScenario: false,
+  canPublishScenario: false,
 };
 
 const Context = createContext<PermissionsContextType>({

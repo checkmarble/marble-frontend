@@ -3,6 +3,7 @@ import {
   ScenarioPage,
   Scenarios,
   type ScenariosLinkProps,
+  usePermissionsContext,
 } from '@app-builder/components';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
@@ -110,6 +111,7 @@ export default function ScenarioViewLayout() {
   const currentScenario = useCurrentScenario();
   const { scenarioIterations, identifiers, operators } =
     useLoaderData<typeof loader>();
+  const { userPermissions } = usePermissionsContext();
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
@@ -136,11 +138,14 @@ export default function ScenarioViewLayout() {
             currentIteration={currentIteration}
           />
         </div>
-        <DeploymentModal
-          scenarioId={currentScenario.id}
-          liveVersionId={currentScenario.liveVersionId}
-          currentIteration={currentIteration}
-        />
+
+        {userPermissions.canPublishScenario && (
+          <DeploymentModal
+            scenarioId={currentScenario.id}
+            liveVersionId={currentScenario.liveVersionId}
+            currentIteration={currentIteration}
+          />
+        )}
       </ScenarioPage.Header>
       <EditorIdentifiersProvider identifiers={identifiers}>
         <EditorOperatorsProvider operators={operators}>

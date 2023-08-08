@@ -3,6 +3,7 @@ import {
   ScenarioPage,
   Scenarios,
   type ScenariosLinkProps,
+  usePermissionsContext,
 } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type AstOperator } from '@app-builder/models/ast-operators';
@@ -22,6 +23,7 @@ import { Link, Outlet, useFetcher, useLoaderData } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
+import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { ClientOnly, redirectBack } from 'remix-utils';
 
@@ -46,6 +48,7 @@ interface LoaderResponse {
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
 }
+
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
   const { scenario, editor } = await authService.isAuthenticated(request, {
@@ -91,7 +94,7 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 }
 
-export default function ScenarioViewLayout() {
+export default function ScenarioEditLayout() {
   const currentScenario = useCurrentScenario();
   const fetcher = useFetcher<typeof action>();
   const { scenarioIteration, identifiers, operators } = useLoaderData<
@@ -101,6 +104,25 @@ export default function ScenarioViewLayout() {
   const formMethods = useForm({
     defaultValues: { astNode: scenarioIteration.astNode },
   });
+  const { userPermissions } = usePermissionsContext();
+
+  useEffect(() => {
+    if (!userPermissions.canManageScenario) {
+      const redirectUrl = getRoute(
+        '/scenarios/:scenarioId/i/:iterationId/view',
+        {
+          scenarioId: fromUUID(scenarioIteration.scenarioId),
+          iterationId: fromUUID(scenarioIteration.id),
+        }
+      );
+      window.location.replace(redirectUrl);
+    }
+  }, [
+    scenarioIteration.id,
+    scenarioIteration.scenarioId,
+    userPermissions.canManageScenario,
+  ]);
+
   return (
     <ScenarioPage.Container>
       <Form
