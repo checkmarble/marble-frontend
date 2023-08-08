@@ -27,6 +27,7 @@ export type Credentials = {
             email?: string;
             api_key_name?: string;
         };
+        permissions: string[];
     };
 };
 export type Error = {
