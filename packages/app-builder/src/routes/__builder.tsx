@@ -125,7 +125,7 @@ export default function Builder() {
 
                 <div className="mt-6 flex flex-col items-center">
                   <Form action="/ressources/auth/logout" method="POST">
-                    <Button variant="secondary">
+                    <Button variant="secondary" type="submit">
                       <Logout height="24px" width="24px" />
                       {t('common:auth.logout')}
                     </Button>
