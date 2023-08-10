@@ -3,6 +3,7 @@ import {
   Paper,
   scenarioI18n,
   ScenarioPage,
+  usePermissionsContext,
 } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
@@ -19,12 +20,14 @@ import {
   EditorOperatorsProvider,
 } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { DevTool } from '@hookform/devtools';
 import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
+import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
@@ -42,6 +45,7 @@ interface EditRuleLoaderResult {
   };
   operators: AstOperator[];
   scenarioValidation: ScenarioValidation | null;
+  scenarioId: string;
 }
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -72,6 +76,7 @@ export async function loader({ request, params }: LoaderArgs) {
     identifiers: await identifiers,
     operators: await operators,
     scenarioValidation,
+    scenarioId,
   });
 }
 
@@ -128,10 +133,30 @@ export async function action({ request, params }: ActionArgs) {
   }
 }
 
-export default function RuleView() {
+export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators, scenarioValidation } =
+  const { rule, identifiers, operators, scenarioValidation, scenarioId } =
     useLoaderData<typeof loader>();
+  const { userPermissions } = usePermissionsContext();
+
+  useEffect(() => {
+    if (!userPermissions.canManageScenario) {
+      const redirectUrl = getRoute(
+        '/scenarios/:scenarioId/i/:iterationId/view/rules/:ruleId',
+        {
+          scenarioId: fromUUID(scenarioId),
+          iterationId: fromUUID(rule.scenarioIterationId),
+          ruleId: fromUUID(rule.id),
+        }
+      );
+      window.location.replace(redirectUrl);
+    }
+  }, [
+    rule.id,
+    rule.scenarioIterationId,
+    scenarioId,
+    userPermissions.canManageScenario,
+  ]);
 
   const fetcher = useFetcher<typeof action>();
 

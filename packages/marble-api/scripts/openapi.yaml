@@ -1511,6 +1511,7 @@ components:
             - organization_id
             - role
             - actor_identity
+            - permissions
           properties:
             organization_id:
               type: string
@@ -1525,6 +1526,10 @@ components:
                   type: string
                 api_key_name:
                   type: string
+            permissions:
+              type: array
+              items:
+                type: string
     Error:
       type: object
       required:

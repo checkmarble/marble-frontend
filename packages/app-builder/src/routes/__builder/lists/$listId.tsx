@@ -1,4 +1,4 @@
-import { Callout, Page } from '@app-builder/components';
+import { Callout, Page, usePermissionsContext } from '@app-builder/components';
 import { DeleteList } from '@app-builder/routes/ressources/lists/delete';
 import { EditList } from '@app-builder/routes/ressources/lists/edit';
 import { NewListValue } from '@app-builder/routes/ressources/lists/value_create';
@@ -44,6 +44,7 @@ export default function Lists() {
   const customList = useLoaderData<typeof loader>();
   const listValues = customList.values ?? [];
   const { t } = useTranslation(handle.i18n);
+  const { userPermissions } = usePermissionsContext();
 
   const columns = useMemo<ColumnDef<ListValues>[]>(
     () => [
@@ -60,25 +61,27 @@ export default function Lists() {
                 {cell.row.original.value}
               </p>
 
-              <DeleteListValue
-                listId={customList.id}
-                listValueId={cell.row.original.id}
-                value={cell.row.original.value}
-              >
-                <button
-                  className="text-grey-00 group-hover:text-grey-100 transition-colors duration-200 ease-in-out"
-                  name="delete"
-                  tabIndex={-1}
+              {userPermissions.canManageListItem && (
+                <DeleteListValue
+                  listId={customList.id}
+                  listValueId={cell.row.original.id}
+                  value={cell.row.original.value}
                 >
-                  <Delete width={'24px'} height={'24px'} />
-                </button>
-              </DeleteListValue>
+                  <button
+                    className="text-grey-00 group-hover:text-grey-100 transition-colors duration-200 ease-in-out"
+                    name="delete"
+                    tabIndex={-1}
+                  >
+                    <Delete width={'24px'} height={'24px'} />
+                  </button>
+                </DeleteListValue>
+              )}
             </div>
           );
         },
       },
     ],
-    [customList.id, listValues.length, t]
+    [customList.id, listValues.length, t, userPermissions]
   );
 
   const virtualTable = useVirtualTable({
@@ -99,11 +102,13 @@ export default function Lists() {
             </Link>
             {customList.name}
           </div>
-          <EditList
-            listId={customList.id}
-            name={customList.name}
-            description={customList.description}
-          />
+          {userPermissions.canManageList && (
+            <EditList
+              listId={customList.id}
+              name={customList.name}
+              description={customList.description}
+            />
+          )}
         </div>
       </Page.Header>
       <Page.Content scrollable={false} className="max-w-3xl">
@@ -124,7 +129,9 @@ export default function Lists() {
                 }}
               />
             </form>
-            <NewListValue listId={customList.id} />
+            {userPermissions.canManageListItem && (
+              <NewListValue listId={customList.id} />
+            )}
           </div>
           {virtualTable.rows.length > 0 ? (
             <Table.Default {...virtualTable}></Table.Default>
@@ -136,7 +143,7 @@ export default function Lists() {
             </div>
           )}
         </div>
-        <DeleteList listId={customList.id} />
+        {userPermissions.canManageList && <DeleteList listId={customList.id} />}
       </Page.Content>
     </Page.Container>
   );
