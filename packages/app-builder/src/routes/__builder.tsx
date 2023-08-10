@@ -1,5 +1,4 @@
 import {
-  defaultUserPermissions,
   navigationI18n,
   PermissionsProvider,
   Sidebar,
@@ -83,10 +82,7 @@ export default function Builder() {
   const { user } = useLoaderData<typeof loader>();
 
   return (
-    <PermissionsProvider
-      permissions={user.permissions}
-      userPermissions={defaultUserPermissions}
-    >
+    <PermissionsProvider permissions={user.permissions}>
       <div className="flex h-full flex-1 flex-row overflow-hidden">
         <header
           className={clsx(

@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, type PropsWithChildren, useContext } from 'react';
 
 type Permissions = string[];
 type UserPermissions = {
@@ -8,10 +8,7 @@ type UserPermissions = {
   canPublishScenario: boolean;
 };
 
-type PermissionsContextType = React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
-> & {
+type PermissionsContextType = {
   permissions: Permissions;
   userPermissions: UserPermissions;
 };
@@ -23,7 +20,7 @@ const PermissionsList = {
   canPublishScenario: 'SCENARIO_PUBLISH',
 };
 
-const defaultUserPermissions: UserPermissions = {
+const emptyUserPermissions: UserPermissions = {
   canManageList: false,
   canManageListItem: false,
   canManageScenario: false,
@@ -32,13 +29,13 @@ const defaultUserPermissions: UserPermissions = {
 
 const Context = createContext<PermissionsContextType>({
   permissions: [],
-  userPermissions: defaultUserPermissions,
+  userPermissions: emptyUserPermissions,
 });
 
 const PermissionsProvider = ({
   permissions,
   ...props
-}: PermissionsContextType) => {
+}: PropsWithChildren & { permissions: string[] }) => {
   const userPermissions = Object.fromEntries(
     Object.entries(PermissionsList).map(([permission, permissionKey]) => [
       permission,
@@ -59,9 +56,4 @@ const PermissionsProvider = ({
 
 const usePermissionsContext = (): PermissionsContextType => useContext(Context);
 
-export {
-  defaultUserPermissions,
-  PermissionsProvider,
-  usePermissionsContext,
-  type UserPermissions,
-};
+export { PermissionsProvider, usePermissionsContext, type UserPermissions };
