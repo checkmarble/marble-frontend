@@ -5,9 +5,12 @@ import {
   type ScenariosLinkProps,
   usePermissionsContext,
 } from '@app-builder/components';
+import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { type AstOperator } from '@app-builder/models/ast-operators';
 import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
+import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
+import { CreateDraftIteration } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/create_draft';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
 import {
   EditorIdentifiersProvider,
@@ -17,19 +20,10 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ScenarioIteration } from '@marble-api';
-import { json, type LoaderArgs,redirect } from '@remix-run/node';
-import {
-  Link,
-  Outlet,
-  useLoaderData,
-  useLocation,
-  useNavigate,
-} from '@remix-run/react';
-import { Select } from '@ui-design-system';
+import { json, type LoaderArgs, redirect } from '@remix-run/node';
+import { Link, Outlet, useLoaderData } from '@remix-run/react';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
-import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 
 export const handle = {
@@ -47,7 +41,7 @@ const LINKS: ScenariosLinkProps[] = [
 ];
 
 interface LoaderResponse {
-  scenarioIterations: ScenarioIteration[],
+  scenarioIterations: ScenarioIteration[];
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
 }
@@ -63,18 +57,19 @@ export async function loader({ request, params }: LoaderArgs) {
   const scenarioIterations = await apiClient.listScenarioIterations({
     scenarioId,
   });
-  
+
   const iterationId = fromParams(params, 'iterationId');
 
   const currentIteration = scenarioIterations.find(
     ({ id }) => id === iterationId
   );
-  console.log(JSON.stringify(currentIteration, null, 2))
   if (currentIteration?.version === null) {
-    return redirect(getRoute('/scenarios/:scenarioId/i/:iterationId/edit', {
+    return redirect(
+      getRoute('/scenarios/:scenarioId/i/:iterationId/edit', {
         scenarioId: fromUUID(currentIteration.scenarioId),
         iterationId: fromUUID(currentIteration.id),
-      }));
+      })
+    );
   }
   const operators = await editor.listOperators({
     scenarioId,
@@ -90,46 +85,11 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 }
 
-function sortScenarioIterations(
-  scenarioIterations: ScenarioIteration[],
-  liveVersionId?: string
-) {
-  return R.pipe(
-    scenarioIterations,
-    R.partition(({ version }) => version === undefined),
-    ([drafts, versions]) => {
-      const sortedDrafts = R.pipe(
-        drafts,
-        R.map((draft) => ({ ...draft, type: 'draft' as const })),
-        R.sortBy([({ createdAt }) => createdAt, 'desc'])
-      );
-
-      const sortedVersions = R.pipe(
-        versions,
-        R.map((version) => ({
-          ...version,
-          type:
-            version.id === liveVersionId
-              ? ('live version' as const)
-              : ('past version' as const),
-        })),
-        R.sortBy([({ createdAt }) => createdAt, 'desc'])
-      );
-
-      return [...sortedDrafts, ...sortedVersions];
-    }
-  );
-}
-
-export type SortedScenarioIteration = ReturnType<
-  typeof sortScenarioIterations
-> extends Array<infer ItemT>
-  ? ItemT
-  : unknown;
-
 export default function ScenarioViewLayout() {
   const currentScenario = useCurrentScenario();
-  const { scenarioIterations, identifiers, operators } = useLoaderData<typeof loader>() as LoaderResponse;
+  const { scenarioIterations, identifiers, operators } = useLoaderData<
+  typeof loader
+  >() as LoaderResponse;
   const { userPermissions } = usePermissionsContext();
 
   const sortedScenarioIterations = sortScenarioIterations(
@@ -157,14 +117,19 @@ export default function ScenarioViewLayout() {
             currentIteration={currentIteration}
           />
         </div>
-
+        <div className="flex-column flex gap-4">
         {userPermissions.canPublishScenario && (
+          <CreateDraftIteration
+            iterationId={currentIteration.id}
+            scenarioId={currentScenario.id}
+          />
+          )}
           <DeploymentModal
             scenarioId={currentScenario.id}
             liveVersionId={currentScenario.liveVersionId}
             currentIteration={currentIteration}
           />
-        )}
+        </div>
       </ScenarioPage.Header>
       <EditorIdentifiersProvider identifiers={identifiers}>
         <EditorOperatorsProvider operators={operators}>
@@ -181,58 +146,5 @@ export default function ScenarioViewLayout() {
         </EditorOperatorsProvider>
       </EditorIdentifiersProvider>
     </ScenarioPage.Container>
-  );
-}
-
-function VersionSelect({
-  currentIteration,
-  scenarioIterations,
-}: {
-  currentIteration: SortedScenarioIteration;
-  scenarioIterations: SortedScenarioIteration[];
-}) {
-  const { t } = useTranslation(handle.i18n);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  return (
-    <Select.Default
-      value={currentIteration.id}
-      border="rounded"
-      className="min-w-[126px]"
-      onValueChange={(selectedId) => {
-        const elem = scenarioIterations.find(({ id }) => id === selectedId);
-        if (!elem?.id) return;
-        navigate(
-          location.pathname.replace(
-            fromUUID(currentIteration.id),
-            fromUUID(elem?.id)
-          )
-        );
-      }}
-    >
-      {scenarioIterations.map((iteration) => {
-        return (
-          <Select.DefaultItem
-            className="min-w-[110px]"
-            key={iteration.id}
-            value={iteration.id}
-          >
-            <p className="text-s flex flex-row gap-1 font-semibold">
-              <span className="text-grey-100 capitalize">
-                {iteration.version
-                  ? `V${iteration.version}`
-                  : t('scenarios:draft')}
-              </span>
-              {iteration.type === 'live version' && (
-                <span className="capitalize text-purple-100">
-                  {t('scenarios:live')}
-                </span>
-              )}
-            </p>
-          </Select.DefaultItem>
-        );
-      })}
-    </Select.Default>
   );
 }

@@ -19,12 +19,9 @@ interface FormulaProps {
 
 export function Formula({ formula, isRoot = false }: FormulaProps) {
   const editorIdentifier = useEditorIdentifiers();
-  console.log('NAME : ', formula.name ?? '');
   if (isConstantNode(formula)) {
     return <Constant node={formula} isRoot={isRoot} />;
   }
-  console.log('NOT CONSTANT : ', formula.name ?? '');
-
   // if (isDataFieldOperator(formula)) {
   //   return <DataField operator={formula} isRoot={isRoot} />;
   // }

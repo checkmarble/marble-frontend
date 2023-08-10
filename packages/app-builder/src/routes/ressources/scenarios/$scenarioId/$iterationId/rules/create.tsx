@@ -62,7 +62,11 @@ export async function action({ request, params }: ActionArgs) {
     });
 
     return redirect(
-      getRoute('/scenarios/:scenarioId/i/:iterationId/edit/rules/:ruleId', { scenarioId: fromUUID(scenarioId), iterationId: fromUUID(iterationId), ruleId: fromUUID(rule.id) })
+      getRoute('/scenarios/:scenarioId/i/:iterationId/edit/rules/:ruleId', {
+        scenarioId: fromUUID(scenarioId),
+        iterationId: fromUUID(iterationId),
+        ruleId: fromUUID(rule.id),
+      })
     );
   } catch (error) {
     if (isStatusConflictHttpError(error)) {
@@ -90,7 +94,13 @@ export async function action({ request, params }: ActionArgs) {
   }
 }
 
-export function CreateRule({ scenarioId, iterationId }: { scenarioId: string, iterationId: string }) {
+export function CreateRule({
+  scenarioId,
+  iterationId,
+}: {
+  scenarioId: string;
+  iterationId: string;
+}) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
@@ -118,7 +128,9 @@ export function CreateRule({ scenarioId, iterationId }: { scenarioId: string, it
           onSubmit={({ formData }) => {
             fetcher.submit(formData, {
               method: 'POST',
-              action: `/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(iterationId)}/rules/create`,
+              action: `/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
+                iterationId
+              )}/rules/create`,
             });
           }}
         >
@@ -135,7 +147,9 @@ export function CreateRule({ scenarioId, iterationId }: { scenarioId: string, it
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder={t('scenarios:create_rule.name_placeholder')}
+                          placeholder={t(
+                            'scenarios:create_rule.name_placeholder'
+                          )}
                           {...field}
                         />
                       </FormControl>

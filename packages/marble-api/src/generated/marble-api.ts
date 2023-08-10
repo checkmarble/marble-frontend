@@ -681,6 +681,28 @@ export function getScenarioIteration(scenarioIterationId: string, opts?: Oazapft
         ...opts
     }));
 }
+
+/**
+ * Create draft from a scenario iteration
+ */
+export function createDraftFromScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioIterationWithBody;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}`, {
+        ...opts,
+        method: "POST"
+    }));
+}
 /**
  * Update a scenario iteration
  */
@@ -800,6 +822,26 @@ export function updateScenarioIterationRule(ruleId: string, updateScenarioIterat
         method: "PATCH",
         body: updateScenarioIterationRuleBody
     })));
+}
+/**
+ * Delete a scenario iteration rule
+ */
+export function deleteScenarioIterationRule(ruleId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
 }
 /**
  * List scenario publications

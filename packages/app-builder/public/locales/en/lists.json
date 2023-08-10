@@ -19,7 +19,7 @@
   "create_value.title": "New value",
   "create_value.value_placeholder": "Add a new value to your list",
   "delete_list.title": "Delete this list",
-  "delete_list.content": "Your are about to delete this list. This action is irreversible, do you want to proceed ?",
+  "delete_list.content": "You are about to delete this list. This action is irreversible, do you want to proceed ?",
   "delete_value.title": "Delete this value",
   "delete_value.value_content": "You are about to delete the value",
   "delete_value.no_return": "This action is irreversible, do you want to proceed ?"

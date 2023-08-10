@@ -18,7 +18,6 @@ export function Identifier({ node, isRoot }: CustomListProps) {
     node,
     editorIdentifier
   );
-  console.log(JSON.stringify(node, null, 2));
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>

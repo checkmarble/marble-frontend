@@ -36,7 +36,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function ScenariosPage() {
   const { t } = useTranslation(handle.i18n);
-  const {scenarios, dataModel } = useLoaderData<typeof loader>();
+  const { scenarios, dataModel } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -46,7 +46,7 @@ export default function ScenariosPage() {
       </Page.Header>
       <Page.Content>
         <div className="flex flex-row justify-end">
-          <CreateScenario dataModels={dataModel}/>
+          <CreateScenario dataModels={dataModel} />
         </div>
         <div className="flex flex-col gap-2 lg:gap-4">
           {scenarios.length ? (

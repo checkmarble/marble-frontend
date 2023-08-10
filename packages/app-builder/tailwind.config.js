@@ -12,7 +12,7 @@ module.exports = {
     extend: {
       keyframes: {
         maxWidth: {
-          75: '75%'
+          75: '75%',
         },
         overlayShow: {
           from: {

@@ -90,7 +90,7 @@ export default function Rules() {
   return (
     <div className="max-w-fit overflow-scroll">
       <div className="flex flex-row justify-end p-3">
-        <CreateRule scenarioId={scenarioId} iterationId={iterationId}/>
+        <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
       </div>
       <Table.Container {...getContainerProps()}>
         <Table.Header headerGroups={table.getHeaderGroups()} />

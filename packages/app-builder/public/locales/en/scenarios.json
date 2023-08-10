@@ -62,5 +62,14 @@
   "create_rule.description_placeholder": "Add a description to your scenario",
   "create_rule.button_accept": "Create a new rule",
   "create_rule.score": "Score",
-  "create_rule.score_placeholder": "Add a score to your rule"
+  "create_rule.score_placeholder": "Add a score to your rule",
+  "delete_rule.button": "Delete this rule",
+  "delete_rule.title": "Delete this rule",
+  "delete_rule.content": "You are about to delete this rule. This action is irreversible, do you want to proceed ?",
+  "edit_rule.name_placeholder": "Edit the name of your rule",
+  "edit_rule.description_placeholder": "Edit the description of your rule",
+  "edit_rule.score_placeholder": "Edit the score of your rule",
+  "edit_rule.title": "Information",
+  "create_iteration.title": "New draft",
+  "create_draft.button_accept": "Create a new draft"
 }

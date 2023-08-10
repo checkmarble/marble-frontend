@@ -1,10 +1,5 @@
-import {
-  Callout,
-  Paper,
-  scenarioI18n,
-  ScenarioPage,
-  usePermissionsContext,
-} from '@app-builder/components';
+
+import { Paper, scenarioI18n, ScenarioPage, usePermissionsContext } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Consequence } from '@app-builder/components/Scenario/Rule/Consequence';
@@ -12,16 +7,17 @@ import type {
   AstNode,
   EditorIdentifier,
   ScenarioIterationRule,
-  ScenarioValidation,
-} from '@app-builder/models';
+  ScenarioValidation } from '@app-builder/models';
 import { type AstOperator } from '@app-builder/models/ast-operators';
+import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
+import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import {
   EditorIdentifiersProvider,
   EditorOperatorsProvider,
 } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { DevTool } from '@hookform/devtools';
 import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
@@ -135,8 +131,11 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators, scenarioValidation, scenarioId } =
-    useLoaderData<typeof loader>();
+  const { rule, identifiers, operators, scenarioValidation } = useLoaderData<typeof loader>() as EditRuleLoaderResult;
+
+  const iterationId = useParam('iterationId');
+  const scenarioId = useParam('scenarioId');
+  const ruleId = useParam('ruleId');
   const { userPermissions } = usePermissionsContext();
 
   useEffect(() => {
@@ -185,7 +184,11 @@ export default function RuleEdit() {
             <pre>{JSON.stringify(scenarioValidation)}</pre>
           </Callout>
         )}
-        <Callout>{rule.description}</Callout>
+        <EditRule
+          rule={rule}
+          iterationId={iterationId}
+          scenarioId={scenarioId}
+        />
         <Form
           control={formMethods.control}
           onSubmit={({ data }) => {
@@ -216,6 +219,11 @@ export default function RuleEdit() {
             </Button>
           </div>
         </Form>
+        <DeleteRule
+          ruleId={ruleId}
+          iterationId={iterationId}
+          scenarioId={scenarioId}
+        />
         <ClientOnly>
           {() => (
             <DevTool

@@ -26,9 +26,7 @@ export function Payload({ node, isRoot }: PayloadProps) {
     node,
     editorIdentifier
   );
-  console.log(viewModel);
   const { tooltip, inline } = format(viewModel);
-  console.log(JSON.stringify(node, null, 2));
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>

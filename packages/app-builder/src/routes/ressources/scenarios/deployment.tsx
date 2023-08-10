@@ -56,7 +56,6 @@ export async function action({ request }: ActionArgs) {
   });
 
   const parsedForm = await parseFormSafe(request, formSchema);
-  console.log("parseFormSafe")
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
 
@@ -83,7 +82,6 @@ export async function action({ request }: ActionArgs) {
   } catch (error) {
     const { getSession, commitSession } = serverServices.sessionService;
     const session = await getSession(request);
-    console.log("error : ", error)
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
