@@ -1,7 +1,6 @@
-import { adaptNodeDto, type AstNode } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { useCurrentScenarioIteration } from '@app-builder/routes/__builder/scenarios/$scenarioId/i/$iterationId';
-import { type NodeDto } from '@marble-api';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
@@ -33,15 +32,11 @@ import { ScenarioBox } from '../ScenarioBox';
  *
  */
 export function TriggerCondition() {
-  const {
-    body: { trigger_condition_ast_expression },
-  } = useCurrentScenarioIteration();
+  const { astNode } = useCurrentScenarioIteration();
   const { triggerObjectType } = useCurrentScenario();
-  if (trigger_condition_ast_expression == null) return;
-  const conditions = getNestedConditions(
-    adaptNodeDto(trigger_condition_ast_expression as NodeDto)
-  );
-  console.log(JSON.stringify(trigger_condition_ast_expression, null, 2));
+  if (astNode == null) return;
+  const conditions = getNestedConditions(astNode);
+
   return (
     <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">
       <ScenarioBox className="bg-grey-02 col-span-4 w-fit p-2 font-semibold text-purple-100">

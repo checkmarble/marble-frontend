@@ -1753,6 +1753,7 @@ components:
       required:
         - id
         - scenarioId
+        - version
         - createdAt
         - updatedAt
       properties:
@@ -1764,6 +1765,7 @@ components:
           format: uuid
         version:
           type: integer
+          nullable: true
         createdAt:
           type: string
           format: date-time

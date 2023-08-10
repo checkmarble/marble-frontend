@@ -13,7 +13,7 @@ export default function Decision() {
   const { t } = useTranslation(handle.i18n);
 
   const {
-    body: { scoreRejectThreshold, scoreReviewThreshold },
+    scoreRejectThreshold, scoreReviewThreshold 
   } = useCurrentScenarioIteration();
 
   return (

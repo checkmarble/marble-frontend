@@ -10,14 +10,15 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const iterationId = fromParams(params, 'iterationId');
 
-  const scenarioIteration = await apiClient.getScenarioIteration(iterationId);
-
+  const scenarioIteration = await scenario.getScenarioIteration({
+    iterationId,
+  });
   return json(scenarioIteration);
 }
 

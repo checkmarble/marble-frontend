@@ -11,6 +11,9 @@ module.exports = {
   theme: {
     extend: {
       keyframes: {
+        maxWidth: {
+          75: '75%'
+        },
         overlayShow: {
           from: {
             opacity: 0,

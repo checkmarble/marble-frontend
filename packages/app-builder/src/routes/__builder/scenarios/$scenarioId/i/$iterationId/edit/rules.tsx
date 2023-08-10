@@ -1,5 +1,6 @@
+import { CreateRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/create';
 import { serverServices } from '@app-builder/services/init.server';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ScenarioIterationRuleDto } from '@marble-api';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
@@ -38,8 +39,9 @@ export default function Rules() {
     i18n: { language },
   } = useTranslation(handle.i18n);
 
+  const iterationId = useParam('iterationId');
+  const scenarioId = useParam('scenarioId');
   const navigate = useNavigate();
-
   const rules = useLoaderData<typeof loader>();
 
   const columns = useMemo<ColumnDef<ScenarioIterationRuleDto>[]>(
@@ -86,28 +88,33 @@ export default function Rules() {
   });
 
   return (
-    <Table.Container {...getContainerProps()}>
-      <Table.Header headerGroups={table.getHeaderGroups()} />
-      <Table.Body {...getBodyProps()}>
-        {hasRules ? (
-          rows.map((row) => (
-            <Table.Row
-              key={row.id}
-              className="hover:bg-grey-02 cursor-pointer"
-              row={row}
-              onClick={() => {
-                navigate(`./${fromUUID(row.original.id)}`);
-              }}
-            />
-          ))
-        ) : (
-          <tr className="h-28">
-            <td colSpan={columns.length}>
-              <p className="text-center">{t('scenarios:rules.empty')}</p>
-            </td>
-          </tr>
-        )}
-      </Table.Body>
-    </Table.Container>
+    <div className="max-w-fit overflow-scroll">
+      <div className="flex flex-row justify-end p-3">
+        <CreateRule scenarioId={scenarioId} iterationId={iterationId}/>
+      </div>
+      <Table.Container {...getContainerProps()}>
+        <Table.Header headerGroups={table.getHeaderGroups()} />
+        <Table.Body {...getBodyProps()}>
+          {hasRules ? (
+            rows.map((row) => (
+              <Table.Row
+                key={row.id}
+                className="hover:bg-grey-02 cursor-pointer"
+                row={row}
+                onClick={() => {
+                  navigate(`./${fromUUID(row.original.id)}`);
+                }}
+              />
+            ))
+          ) : (
+            <tr className="h-28">
+              <td colSpan={columns.length}>
+                <p className="text-center">{t('scenarios:rules.empty')}</p>
+              </td>
+            </tr>
+          )}
+        </Table.Body>
+      </Table.Container>
+    </div>
   );
 }

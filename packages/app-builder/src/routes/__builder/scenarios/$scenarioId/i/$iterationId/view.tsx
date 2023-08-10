@@ -5,6 +5,8 @@ import {
   type ScenariosLinkProps,
   usePermissionsContext,
 } from '@app-builder/components';
+import { type AstOperator } from '@app-builder/models/ast-operators';
+import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
 import {
@@ -15,7 +17,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ScenarioIteration } from '@marble-api';
-import { json, type LoaderArgs } from '@remix-run/node';
+import { json, type LoaderArgs,redirect } from '@remix-run/node';
 import {
   Link,
   Outlet,
@@ -44,6 +46,12 @@ const LINKS: ScenariosLinkProps[] = [
   },
 ];
 
+interface LoaderResponse {
+  scenarioIterations: ScenarioIteration[],
+  identifiers: EditorIdentifiersByType;
+  operators: AstOperator[];
+}
+
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
   const { editor, apiClient } = await authService.isAuthenticated(request, {
@@ -55,7 +63,19 @@ export async function loader({ request, params }: LoaderArgs) {
   const scenarioIterations = await apiClient.listScenarioIterations({
     scenarioId,
   });
+  
+  const iterationId = fromParams(params, 'iterationId');
 
+  const currentIteration = scenarioIterations.find(
+    ({ id }) => id === iterationId
+  );
+  console.log(JSON.stringify(currentIteration, null, 2))
+  if (currentIteration?.version === null) {
+    return redirect(getRoute('/scenarios/:scenarioId/i/:iterationId/edit', {
+        scenarioId: fromUUID(currentIteration.scenarioId),
+        iterationId: fromUUID(currentIteration.id),
+      }));
+  }
   const operators = await editor.listOperators({
     scenarioId,
   });
@@ -109,8 +129,7 @@ export type SortedScenarioIteration = ReturnType<
 
 export default function ScenarioViewLayout() {
   const currentScenario = useCurrentScenario();
-  const { scenarioIterations, identifiers, operators } =
-    useLoaderData<typeof loader>();
+  const { scenarioIterations, identifiers, operators } = useLoaderData<typeof loader>() as LoaderResponse;
   const { userPermissions } = usePermissionsContext();
 
   const sortedScenarioIterations = sortScenarioIterations(

@@ -38,6 +38,7 @@ export async function action({ request, params }: ActionArgs) {
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
+  console.log("decision")
   const parsedForm = await parseFormSafe(request, formSchema);
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
@@ -85,7 +86,7 @@ export async function action({ request, params }: ActionArgs) {
 export default function Decision() {
   const { t } = useTranslation(handle.i18n);
   const {
-    body: { scoreRejectThreshold, scoreReviewThreshold },
+   scoreRejectThreshold, scoreReviewThreshold
   } = useCurrentScenarioIteration();
   const submit = useSubmit();
 

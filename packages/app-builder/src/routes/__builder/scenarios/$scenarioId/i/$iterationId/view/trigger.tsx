@@ -35,7 +35,7 @@ function HowToRun() {
 
   const {
     scenarioId,
-    body: { schedule },
+    schedule 
   } = useCurrentScenarioIteration();
 
   return (

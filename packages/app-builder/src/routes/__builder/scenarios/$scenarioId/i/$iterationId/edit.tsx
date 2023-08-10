@@ -10,6 +10,7 @@ import { type AstOperator } from '@app-builder/models/ast-operators';
 import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import { type ScenarioIteration } from '@app-builder/models/scenario';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
+import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
 import {
   EditorIdentifiersProvider,
   EditorOperatorsProvider,
@@ -17,17 +18,13 @@ import {
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { DevTool } from '@hookform/devtools';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { Link, Outlet, useFetcher, useLoaderData } from '@remix-run/react';
+import { Link, Outlet, useLoaderData } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
-import { Form, FormProvider, useForm } from 'react-hook-form';
-import { ClientOnly, redirectBack } from 'remix-utils';
-
-import { type action } from './edit.rules.$ruleId';
+import { redirectBack } from 'remix-utils';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -61,7 +58,7 @@ export async function loader({ request, params }: LoaderArgs) {
     iterationId,
   });
 
-  if (scenarioIteration.version) {
+  if (scenarioIteration.version !== null) {
     const { getSession, commitSession } = serverServices.sessionService;
     const session = await getSession(request);
 
@@ -69,7 +66,6 @@ export async function loader({ request, params }: LoaderArgs) {
       type: 'error',
       messageKey: 'common:errors.edit.forbidden_not_draft',
     });
-    // temporary to make typescript happy but should return on redirect
     return redirectBack(request, {
       fallback: getRoute('/scenarios/:scenarioId/i/:iterationId/view', {
         scenarioId: fromUUID(scenarioIteration.scenarioId),
@@ -96,14 +92,10 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function ScenarioEditLayout() {
   const currentScenario = useCurrentScenario();
-  const fetcher = useFetcher<typeof action>();
   const { scenarioIteration, identifiers, operators } = useLoaderData<
     typeof loader
   >() as LoaderResponse;
-  //@ts-expect-error recursive type is not supported
-  const formMethods = useForm({
-    defaultValues: { astNode: scenarioIteration.astNode },
-  });
+
   const { userPermissions } = usePermissionsContext();
 
   useEffect(() => {
@@ -125,20 +117,10 @@ export default function ScenarioEditLayout() {
 
   return (
     <ScenarioPage.Container>
-      <Form
-        className="h-full"
-        control={formMethods.control}
-        onSubmit={({ data }) => {
-          fetcher.submit(JSON.stringify(data), {
-            method: 'PATCH',
-            encType: 'application/json',
-          });
-        }}
-      >
+
         <EditorIdentifiersProvider identifiers={identifiers}>
           <EditorOperatorsProvider operators={operators}>
-            <FormProvider {...formMethods}>
-              <ScenarioPage.Header>
+              <ScenarioPage.Header className="justify-between">
                 <div className="flex flex-row items-center gap-4">
                   <Link to={getRoute('/scenarios')}>
                     <ScenarioPage.BackButton />
@@ -148,6 +130,11 @@ export default function ScenarioEditLayout() {
                     Edit
                   </Tag>
                 </div>
+                <DeploymentModal
+                  scenarioId={currentScenario.id}
+                  liveVersionId={currentScenario.liveVersionId}
+                  currentIteration={{...scenarioIteration, type: 'draft'}}
+                />
               </ScenarioPage.Header>
               <ScenarioPage.Content className="max-w-3xl overflow-scroll">
                 <Scenarios.Nav>
@@ -159,21 +146,8 @@ export default function ScenarioEditLayout() {
                 </Scenarios.Nav>
                 <Outlet />
               </ScenarioPage.Content>
-            </FormProvider>
           </EditorOperatorsProvider>
         </EditorIdentifiersProvider>
-      </Form>
-      <ClientOnly>
-        {() => (
-          <DevTool
-            control={formMethods.control}
-            placement="bottom-right"
-            styles={{
-              panel: { width: '450px' },
-            }}
-          />
-        )}
-      </ClientOnly>
     </ScenarioPage.Container>
   );
 }

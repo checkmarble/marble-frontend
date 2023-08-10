@@ -109,7 +109,7 @@ export type UpdateScenarioBody = {
 export type ScenarioIteration = {
     id: string;
     scenarioId: string;
-    version?: number;
+    version: number | null;
     createdAt: string;
     updatedAt: string;
 };

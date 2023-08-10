@@ -24,7 +24,7 @@ export type ScenarioIterationRule = {
 export interface ScenarioIteration {
   id: string;
   scenarioId: string;
-  version?: number;
+  version: number | null;
   createdAt: string;
   updatedAt: string;
   scoreReviewThreshold?: number;
