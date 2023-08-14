@@ -25,7 +25,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { DevTool } from '@hookform/devtools';
 import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
-import { Link, useFetcher, useLoaderData } from '@remix-run/react';
+import { Link, useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
 import { Button, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
@@ -143,6 +143,7 @@ export default function RuleEdit() {
   const scenarioId = useParam('scenarioId');
   const ruleId = useParam('ruleId');
   const { userPermissions } = usePermissionsContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userPermissions.canManageScenario) {
@@ -154,9 +155,10 @@ export default function RuleEdit() {
           ruleId: fromUUID(rule.id),
         }
       );
-      window.location.replace(redirectUrl);
+      navigate(redirectUrl);
     }
   }, [
+    navigate,
     rule.id,
     rule.scenarioIterationId,
     scenarioId,

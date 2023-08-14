@@ -20,7 +20,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs, redirect } from '@remix-run/node';
-import { Link, Outlet, useLoaderData } from '@remix-run/react';
+import { Link, Outlet, useLoaderData, useNavigate } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
@@ -100,6 +100,7 @@ export default function ScenarioEditLayout() {
     useLoaderData<typeof loader>() as LoaderResponse;
 
   const { userPermissions } = usePermissionsContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userPermissions.canManageScenario) {
@@ -110,11 +111,12 @@ export default function ScenarioEditLayout() {
           iterationId: fromUUID(currentIteration.id),
         }
       );
-      window.location.replace(redirectUrl);
+      navigate(redirectUrl);
     }
   }, [
     currentIteration.id,
     currentIteration.scenarioId,
+    navigate,
     userPermissions.canManageScenario,
   ]);
 
