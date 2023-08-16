@@ -44,7 +44,7 @@ export default function ScenariosPage() {
         <Scenarios className="mr-2" height="24px" width="24px" />
         {t('navigation:scenarios')}
       </Page.Header>
-      <Page.Content>
+      <Page.Content className="max-w-3xl">
         <div className="flex flex-row justify-end">
           <CreateScenario dataModels={dataModel} />
         </div>
@@ -58,7 +58,7 @@ export default function ScenariosPage() {
                     scenarioId: fromUUID(scenario.id),
                   })}
                 >
-                  <div className="bg-grey-00 border-grey-10 flex max-w-3xl flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
+                  <div className="bg-grey-00 border-grey-10 flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
                     <div className="text-m flex flex-row gap-2 font-bold">
                       {scenario.name}
                       {scenario.liveVersionId && (

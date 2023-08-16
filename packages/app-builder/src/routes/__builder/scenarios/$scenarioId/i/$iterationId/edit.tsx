@@ -106,15 +106,15 @@ export default function ScenarioEditLayout() {
       const redirectUrl = getRoute(
         '/scenarios/:scenarioId/i/:iterationId/view',
         {
-          scenarioId: fromUUID(scenarioIteration.scenarioId),
-          iterationId: fromUUID(scenarioIteration.id),
+          scenarioId: fromUUID(currentIteration.scenarioId),
+          iterationId: fromUUID(currentIteration.id),
         }
       );
       window.location.replace(redirectUrl);
     }
   }, [
-    scenarioIteration.id,
-    scenarioIteration.scenarioId,
+    currentIteration.id,
+    currentIteration.scenarioId,
     userPermissions.canManageScenario,
   ]);
 

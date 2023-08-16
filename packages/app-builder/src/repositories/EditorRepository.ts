@@ -16,8 +16,10 @@ function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
   return {
     returnValue: dto.return_value,
     evaluationError: dto.evaluation_error,
-    children: dto.children.map(adaptNodeEvaluation),
-    namedChildren: R.mapValues(dto.named_children, adaptNodeEvaluation),
+    children: dto.children ? dto.children.map(adaptNodeEvaluation) : [],
+    namedChildren: dto.named_children
+      ? R.mapValues(dto.named_children, adaptNodeEvaluation)
+      : {},
   };
 }
 

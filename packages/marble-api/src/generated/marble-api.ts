@@ -170,8 +170,8 @@ export type UpdateScenarioIterationBody = {
 export type NodeEvaluationDto = {
     return_value: ConstantDto;
     evaluation_error: string;
-    children: NodeEvaluationDto[];
-    named_children: {
+    children?: NodeEvaluationDto[];
+    named_children?: {
         [key: string]: NodeEvaluationDto;
     };
 };
@@ -681,7 +681,6 @@ export function getScenarioIteration(scenarioIterationId: string, opts?: Oazapft
         ...opts
     }));
 }
-
 /**
  * Create draft from a scenario iteration
  */

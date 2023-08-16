@@ -1,4 +1,3 @@
-import { ScenarioIterationRule } from '@app-builder/models/scenario';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -47,7 +46,7 @@ export function DeleteRule({
   scenarioId,
   iterationId,
 }: {
-  ruleId: ruleId;
+  ruleId: string;
   scenarioId: string;
   iterationId: string;
 }) {

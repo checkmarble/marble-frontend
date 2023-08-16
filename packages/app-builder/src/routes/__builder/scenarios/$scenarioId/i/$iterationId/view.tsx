@@ -88,7 +88,7 @@ export async function loader({ request, params }: LoaderArgs) {
 export default function ScenarioViewLayout() {
   const currentScenario = useCurrentScenario();
   const { scenarioIterations, identifiers, operators } = useLoaderData<
-  typeof loader
+    typeof loader
   >() as LoaderResponse;
   const { userPermissions } = usePermissionsContext();
 
@@ -101,6 +101,9 @@ export default function ScenarioViewLayout() {
 
   const currentIteration = sortedScenarioIterations.find(
     ({ id }) => id === iterationId
+  );
+  const draftIteration = sortedScenarioIterations.find(
+    ({ version }) => version === null
   );
   invariant(currentIteration, 'currentIteration is required');
 
@@ -118,11 +121,12 @@ export default function ScenarioViewLayout() {
           />
         </div>
         <div className="flex-column flex gap-4">
-        {userPermissions.canPublishScenario && (
-          <CreateDraftIteration
-            iterationId={currentIteration.id}
-            scenarioId={currentScenario.id}
-          />
+          {userPermissions.canPublishScenario && (
+            <CreateDraftIteration
+              iterationId={currentIteration.id}
+              scenarioId={currentScenario.id}
+              draftId={draftIteration?.id}
+            />
           )}
           <DeploymentModal
             scenarioId={currentScenario.id}

@@ -156,10 +156,12 @@ export default function Trigger() {
               renderAstNode={({ name }) => <EditAstNode name={name} />}
             />
           </FormProvider>
+          <div className="flex flex-row justify-end">
+            <Button type="submit" className="w-fit p-3">
+              {t('common:save')}
+            </Button>
+          </div>
         </Paper.Container>
-        <Button type="submit" className="w-fit p-3">
-          {t('common:save')}
-        </Button>
       </Form>
     </div>
   );

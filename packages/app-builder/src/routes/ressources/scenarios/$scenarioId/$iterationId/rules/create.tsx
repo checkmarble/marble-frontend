@@ -28,7 +28,7 @@ export const handle = {
 const createListFormSchema = z.object({
   name: z.string().nonempty(),
   description: z.string(),
-  scoreModifier: z.coerce.number().int(),
+  scoreModifier: z.coerce.number().int().min(-1000).max(1000),
 });
 
 export async function action({ request, params }: ActionArgs) {

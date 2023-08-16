@@ -39,7 +39,7 @@ export async function loader({ request, params }: LoaderArgs) {
   }
 
   const lastScenarioIteration = R.sortBy(scenarioIterations, [
-    ({ version }) => version,
+    ({ version }) => version !== null,
     'desc',
   ])[0];
 
