@@ -54,7 +54,7 @@ export function adaptDataModelDto(dataModelDto: DataModelDto): DataModel[] {
     let linksToSingle: LinksToSingle[] = [];
     if (dataModelDto.tables[key].links_to_single !== undefined) {
       linksToSingle = adaptLinkToSingleDto(
-        dataModelDto.tables[key].links_to_single
+        dataModelDto.tables[key].links_to_single ?? {}
       );
     }
     dataModel.push({

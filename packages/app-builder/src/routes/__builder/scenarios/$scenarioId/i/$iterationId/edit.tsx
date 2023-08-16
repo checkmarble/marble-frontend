@@ -127,7 +127,13 @@ export default function ScenarioEditLayout() {
 
   const currentIterationSorted = sortedScenarioIterations.find(
     ({ id }) => id === iterationId
-  );
+  ) ?? {
+    ...currentIteration,
+    type:
+      currentIteration.version !== null
+        ? ('live version' as const)
+        : ('draft' as const),
+  };
   return (
     <ScenarioPage.Container>
       <EditorIdentifiersProvider identifiers={identifiers}>

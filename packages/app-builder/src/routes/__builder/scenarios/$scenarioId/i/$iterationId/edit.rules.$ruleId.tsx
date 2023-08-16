@@ -198,7 +198,7 @@ export default function RuleEdit() {
         <Form
           control={formMethods.control}
           onSubmit={({ data }) => {
-            fetcher.submit(data, {
+            fetcher.submit(JSON.stringify(data), {
               method: 'PATCH',
               encType: 'application/json',
             });
