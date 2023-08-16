@@ -26,7 +26,7 @@ export const handle = {
   i18n: ['scenarios', 'navigation', 'common'] satisfies Namespace,
 };
 
-const createListFormSchema = z.object({
+const editRuleFormSchema = z.object({
   name: z.string().nonempty(),
   description: z.string(),
   scoreModifier: z.coerce.number().int().min(-1000).max(1000),
@@ -40,7 +40,7 @@ export async function action({ request, params }: ActionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
-  const parsedForm = await parseFormSafe(request, createListFormSchema);
+  const parsedForm = await parseFormSafe(request, editRuleFormSchema);
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
 
@@ -104,9 +104,9 @@ export function EditRule({
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const formMethods = useForm<z.infer<typeof createListFormSchema>>({
+  const formMethods = useForm<z.infer<typeof editRuleFormSchema>>({
     progressive: true,
-    resolver: zodResolver(createListFormSchema),
+    resolver: zodResolver(editRuleFormSchema),
     defaultValues: {
       name: rule.name,
       description: rule.description,
