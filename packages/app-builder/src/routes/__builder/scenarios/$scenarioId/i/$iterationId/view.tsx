@@ -122,11 +122,11 @@ export default function ScenarioViewLayout() {
         </div>
         <div className="flex-column flex gap-4">
           {userPermissions.canManageScenario && (
-              <CreateDraftIteration
-                iterationId={currentIteration.id}
-                scenarioId={currentScenario.id}
-                draftId={draftIteration?.id}
-              />
+            <CreateDraftIteration
+              iterationId={currentIteration.id}
+              scenarioId={currentScenario.id}
+              draftId={draftIteration?.id}
+            />
           )}
           {userPermissions.canPublishScenario && (
             <DeploymentModal
