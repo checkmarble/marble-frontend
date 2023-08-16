@@ -84,9 +84,8 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function Decision() {
   const { t } = useTranslation(handle.i18n);
-  const {
-    body: { scoreRejectThreshold, scoreReviewThreshold },
-  } = useCurrentScenarioIteration();
+  const { scoreRejectThreshold, scoreReviewThreshold } =
+    useCurrentScenarioIteration();
   const submit = useSubmit();
 
   const {

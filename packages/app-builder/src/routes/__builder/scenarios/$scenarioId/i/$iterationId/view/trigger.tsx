@@ -33,10 +33,7 @@ export default function Trigger() {
 function HowToRun() {
   const { t, i18n } = useTranslation(handle.i18n);
 
-  const {
-    scenarioId,
-    body: { schedule },
-  } = useCurrentScenarioIteration();
+  const { scenarioId, schedule } = useCurrentScenarioIteration();
 
   return (
     <div className="flex flex-col gap-2 lg:gap-4">

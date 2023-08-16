@@ -109,7 +109,7 @@ export type UpdateScenarioBody = {
 export type ScenarioIteration = {
     id: string;
     scenarioId: string;
-    version?: number;
+    version: number | null;
     createdAt: string;
     updatedAt: string;
 };
@@ -170,8 +170,8 @@ export type UpdateScenarioIterationBody = {
 export type NodeEvaluationDto = {
     return_value: ConstantDto;
     evaluation_error: string;
-    children: NodeEvaluationDto[];
-    named_children: {
+    children?: NodeEvaluationDto[];
+    named_children?: {
         [key: string]: NodeEvaluationDto;
     };
 };
@@ -198,22 +198,24 @@ export type CreateScenarioPublicationBody = {
     scenarioIterationId: string;
     publicationAction: PublicationAction;
 };
+export type DataModelField = {
+    name: string;
+    dataType: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
+};
+export type LinkToSingle = {
+    linkedTableName: string;
+    parentFieldName: string;
+    childFieldName: string;
+};
 export type DataModel = {
     tables: {
         [key: string]: {
             name: string;
             fields: {
-                [key: string]: {
-                    name: string;
-                    dataType: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
-                };
+                [key: string]: DataModelField;
             };
-            linksToSingle: {
-                [key: string]: {
-                    linkedTableName: string;
-                    parentFieldName: string;
-                    childFieldName: string;
-                };
+            links_to_single?: {
+                [key: string]: LinkToSingle;
             };
         };
     };
@@ -680,6 +682,27 @@ export function getScenarioIteration(scenarioIterationId: string, opts?: Oazapft
     }));
 }
 /**
+ * Create draft from a scenario iteration
+ */
+export function createDraftFromScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioIterationWithBody;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
  * Update a scenario iteration
  */
 export function updateScenarioIteration(scenarioIterationId: string, updateScenarioIterationBody: UpdateScenarioIterationBody, opts?: Oazapfts.RequestOpts) {
@@ -798,6 +821,26 @@ export function updateScenarioIterationRule(ruleId: string, updateScenarioIterat
         method: "PATCH",
         body: updateScenarioIterationRuleBody
     })));
+}
+/**
+ * Delete a scenario iteration rule
+ */
+export function deleteScenarioIterationRule(ruleId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
 }
 /**
  * List scenario publications

@@ -5,29 +5,27 @@ import {
   type ScenariosLinkProps,
   usePermissionsContext,
 } from '@app-builder/components';
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { type AstOperator } from '@app-builder/models/ast-operators';
 import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import { type ScenarioIteration } from '@app-builder/models/scenario';
+import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
+import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
 import {
   EditorIdentifiersProvider,
   EditorOperatorsProvider,
 } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { DevTool } from '@hookform/devtools';
-import { json, type LoaderArgs } from '@remix-run/node';
-import { Link, Outlet, useFetcher, useLoaderData } from '@remix-run/react';
+import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import { json, type LoaderArgs, redirect } from '@remix-run/node';
+import { Link, Outlet, useLoaderData } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
-import { Form, FormProvider, useForm } from 'react-hook-form';
-import { ClientOnly, redirectBack } from 'remix-utils';
-
-import { type action } from './edit.rules.$ruleId';
+import * as R from 'remeda';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -44,41 +42,42 @@ const LINKS: ScenariosLinkProps[] = [
 ];
 
 interface LoaderResponse {
-  scenarioIteration: ScenarioIteration;
+  scenarioIterations: ScenarioIteration[];
+  currentIteration: ScenarioIteration;
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
 }
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { scenario, editor } = await authService.isAuthenticated(request, {
+  const { apiClient, editor } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const iterationId = fromParams(params, 'iterationId');
+  const scenarioId = fromParams(params, 'scenarioId');
 
-  const scenarioIteration = await scenario.getScenarioIteration({
-    iterationId,
+  const scenarioIterations = await apiClient.listScenarioIterations({
+    scenarioId,
   });
 
-  if (scenarioIteration.version) {
-    const { getSession, commitSession } = serverServices.sessionService;
-    const session = await getSession(request);
+  let currentIteration = scenarioIterations.find(
+    ({ id }) => id === iterationId
+  );
 
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: 'common:errors.edit.forbidden_not_draft',
-    });
-    // temporary to make typescript happy but should return on redirect
-    return redirectBack(request, {
-      fallback: getRoute('/scenarios/:scenarioId/i/:iterationId/view', {
-        scenarioId: fromUUID(scenarioIteration.scenarioId),
-        iterationId: fromUUID(scenarioIteration.id),
-      }),
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+  if (currentIteration && currentIteration.version !== null) {
+    return redirect(
+      getRoute('/scenarios/:scenarioId/i/:iterationId/view', {
+        scenarioId: fromUUID(currentIteration.scenarioId),
+        iterationId: fromUUID(currentIteration.id),
+      })
+    );
+  } else {
+    currentIteration = R.sortBy(scenarioIterations, [
+      ({ createdAt }) => createdAt,
+      'desc',
+    ])[0];
   }
-  const scenarioId = fromParams(params, 'scenarioId');
   const operators = await editor.listOperators({
     scenarioId,
   });
@@ -88,7 +87,8 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 
   return json({
-    scenarioIteration: scenarioIteration,
+    scenarioIterations: scenarioIterations,
+    currentIteration: currentIteration,
     identifiers: identifiers,
     operators: operators,
   });
@@ -96,14 +96,9 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function ScenarioEditLayout() {
   const currentScenario = useCurrentScenario();
-  const fetcher = useFetcher<typeof action>();
-  const { scenarioIteration, identifiers, operators } = useLoaderData<
-    typeof loader
-  >() as LoaderResponse;
-  //@ts-expect-error recursive type is not supported
-  const formMethods = useForm({
-    defaultValues: { astNode: scenarioIteration.astNode },
-  });
+  const { scenarioIterations, currentIteration, identifiers, operators } =
+    useLoaderData<typeof loader>() as LoaderResponse;
+
   const { userPermissions } = usePermissionsContext();
 
   useEffect(() => {
@@ -111,69 +106,72 @@ export default function ScenarioEditLayout() {
       const redirectUrl = getRoute(
         '/scenarios/:scenarioId/i/:iterationId/view',
         {
-          scenarioId: fromUUID(scenarioIteration.scenarioId),
-          iterationId: fromUUID(scenarioIteration.id),
+          scenarioId: fromUUID(currentIteration.scenarioId),
+          iterationId: fromUUID(currentIteration.id),
         }
       );
       window.location.replace(redirectUrl);
     }
   }, [
-    scenarioIteration.id,
-    scenarioIteration.scenarioId,
+    currentIteration.id,
+    currentIteration.scenarioId,
     userPermissions.canManageScenario,
   ]);
 
+  const sortedScenarioIterations = sortScenarioIterations(
+    scenarioIterations,
+    currentScenario.liveVersionId
+  );
+
+  const iterationId = useParam('iterationId');
+
+  const currentIterationSorted = sortedScenarioIterations.find(
+    ({ id }) => id === iterationId
+  ) ?? {
+    ...currentIteration,
+    type:
+      currentIteration.version !== null
+        ? ('live version' as const)
+        : ('draft' as const),
+  };
   return (
     <ScenarioPage.Container>
-      <Form
-        className="h-full"
-        control={formMethods.control}
-        onSubmit={({ data }) => {
-          fetcher.submit(JSON.stringify(data), {
-            method: 'PATCH',
-            encType: 'application/json',
-          });
-        }}
-      >
-        <EditorIdentifiersProvider identifiers={identifiers}>
-          <EditorOperatorsProvider operators={operators}>
-            <FormProvider {...formMethods}>
-              <ScenarioPage.Header>
-                <div className="flex flex-row items-center gap-4">
-                  <Link to={getRoute('/scenarios')}>
-                    <ScenarioPage.BackButton />
-                  </Link>
-                  {currentScenario.name}
-                  <Tag size="big" border="square">
-                    Edit
-                  </Tag>
-                </div>
-              </ScenarioPage.Header>
-              <ScenarioPage.Content className="max-w-3xl overflow-scroll">
-                <Scenarios.Nav>
-                  {LINKS.map((linkProps) => (
-                    <li key={linkProps.labelTKey}>
-                      <Scenarios.Link {...linkProps} />
-                    </li>
-                  ))}
-                </Scenarios.Nav>
-                <Outlet />
-              </ScenarioPage.Content>
-            </FormProvider>
-          </EditorOperatorsProvider>
-        </EditorIdentifiersProvider>
-      </Form>
-      <ClientOnly>
-        {() => (
-          <DevTool
-            control={formMethods.control}
-            placement="bottom-right"
-            styles={{
-              panel: { width: '450px' },
-            }}
-          />
-        )}
-      </ClientOnly>
+      <EditorIdentifiersProvider identifiers={identifiers}>
+        <EditorOperatorsProvider operators={operators}>
+          <ScenarioPage.Header className="justify-between">
+            <div className="flex flex-row items-center gap-4">
+              <Link to={getRoute('/scenarios')}>
+                <ScenarioPage.BackButton />
+              </Link>
+              {currentScenario.name}
+              <VersionSelect
+                scenarioIterations={sortedScenarioIterations}
+                currentIteration={currentIterationSorted}
+              />
+              <Tag size="big" border="square">
+                Edit
+              </Tag>
+            </div>
+            <div className="flex-column flex gap-4">
+              <DeploymentModal
+                scenarioId={currentScenario.id}
+                liveVersionId={currentScenario.liveVersionId}
+                currentIteration={{ ...currentIteration, type: 'draft' }}
+              />
+            </div>
+          </ScenarioPage.Header>
+          <ScenarioPage.Content className="max-w-3xl overflow-scroll">
+            <Scenarios.Nav>
+              {LINKS.map((linkProps) => (
+                <li key={linkProps.labelTKey}>
+                  <Scenarios.Link {...linkProps} />
+                </li>
+              ))}
+            </Scenarios.Nav>
+            <Outlet />
+          </ScenarioPage.Content>
+        </EditorOperatorsProvider>
+      </EditorIdentifiersProvider>
     </ScenarioPage.Container>
   );
 }

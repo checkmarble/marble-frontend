@@ -1,4 +1,6 @@
 import { Page } from '@app-builder/components';
+import { adaptDataModelDto } from '@app-builder/models/data-model';
+import { CreateScenario } from '@app-builder/routes/ressources/scenarios/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -20,18 +22,21 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
   const scenarios = await apiClient.listScenarios();
+  const { data_model } = await apiClient.getDataModel();
 
   const sortedScenarios = R.sortBy(scenarios, [
     ({ createdAt }) => createdAt,
     'desc',
   ]);
-
-  return json(sortedScenarios);
+  return json({
+    scenarios: sortedScenarios,
+    dataModel: adaptDataModelDto(data_model),
+  });
 }
 
 export default function ScenariosPage() {
   const { t } = useTranslation(handle.i18n);
-  const scenarios = useLoaderData<typeof loader>();
+  const { scenarios, dataModel } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -39,7 +44,10 @@ export default function ScenariosPage() {
         <Scenarios className="mr-2" height="24px" width="24px" />
         {t('navigation:scenarios')}
       </Page.Header>
-      <Page.Content>
+      <Page.Content className="max-w-3xl">
+        <div className="flex flex-row justify-end">
+          <CreateScenario dataModels={dataModel} />
+        </div>
         <div className="flex flex-col gap-2 lg:gap-4">
           {scenarios.length ? (
             scenarios.map((scenario) => {
@@ -50,7 +58,7 @@ export default function ScenariosPage() {
                     scenarioId: fromUUID(scenario.id),
                   })}
                 >
-                  <div className="bg-grey-00 border-grey-10 flex max-w-3xl flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
+                  <div className="bg-grey-00 border-grey-10 flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
                     <div className="text-m flex flex-row gap-2 font-bold">
                       {scenario.name}
                       {scenario.liveVersionId && (

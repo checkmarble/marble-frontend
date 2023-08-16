@@ -622,6 +622,34 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Scenario Iterations
+      summary: Create draft from a scenario iteration
+      operationId: createDraftFromScenarioIteration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioIterationId
+          description: ID of the scenario iteration that need to be used as base for the draft
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The create draft scenario iteration corresponding to the scenario iteration provided `scenarioIterationId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioIterationWithBody'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
     patch:
       tags:
         - Scenario Iterations
@@ -801,6 +829,30 @@ paths:
                     $ref: '#/components/schemas/ScenarioIterationRuleDto'
                   scenario_validation:
                     $ref: '#/components/schemas/ScenarioValidationDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    delete:
+      tags:
+        - Scenario Iteration Rules
+      summary: Delete a scenario iteration rule
+      operationId: deleteScenarioIterationRule
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: ruleId
+          description: ID of the rule that need to be delete
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: The rule has been deleted
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1442,6 +1494,30 @@ components:
           type: string
         role:
           type: string
+    LinkToSingle:
+      type: object
+      required:
+        - linkedTableName
+        - parentFieldName
+        - childFieldName
+      properties:
+        linkedTableName:
+          type: string
+        parentFieldName:
+          type: string
+        childFieldName:
+          type: string
+    DataModelField:
+      type: object
+      required:
+        - name
+        - dataType
+      properties:
+        name:
+          type: string
+        dataType:
+          type: string
+          enum: [Bool, Int, Float, String, Timestamp, unknown]
     DataModel:
       type: object
       required:
@@ -1454,7 +1530,6 @@ components:
             required:
               - name
               - fields
-              - linksToSingle
             properties:
               name:
                 type: string
@@ -1462,30 +1537,13 @@ components:
                 type: object
                 additionalProperties:
                   type: object
-                  required:
-                    - name
-                    - dataType
-                  properties:
-                    name:
-                      type: string
-                    dataType:
-                      type: string
-                      enum: [Bool, Int, Float, String, Timestamp, unknown]
-              linksToSingle:
+                  $ref: '#/components/schemas/DataModelField'
+              links_to_single:
                 type: object
                 additionalProperties:
                   type: object
-                  required:
-                    - linkedTableName
-                    - parentFieldName
-                    - childFieldName
-                  properties:
-                    linkedTableName:
-                      type: string
-                    parentFieldName:
-                      type: string
-                    childFieldName:
-                      type: string
+                  $ref: '#/components/schemas/LinkToSingle'
+
     Token:
       type: object
       required:
@@ -1747,6 +1805,7 @@ components:
       required:
         - id
         - scenarioId
+        - version
         - createdAt
         - updatedAt
       properties:
@@ -1758,6 +1817,7 @@ components:
           format: uuid
         version:
           type: integer
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -1992,8 +2052,6 @@ components:
       required:
         - return_value
         - evaluation_error
-        - children
-        - named_children
       properties:
         return_value:
           $ref: '#/components/schemas/ConstantDto'

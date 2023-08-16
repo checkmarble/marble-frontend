@@ -16,8 +16,10 @@ function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
   return {
     returnValue: dto.return_value,
     evaluationError: dto.evaluation_error,
-    children: dto.children.map(adaptNodeEvaluation),
-    namedChildren: R.mapValues(dto.named_children, adaptNodeEvaluation),
+    children: dto.children ? dto.children.map(adaptNodeEvaluation) : [],
+    namedChildren: dto.named_children
+      ? R.mapValues(dto.named_children, adaptNodeEvaluation)
+      : {},
   };
 }
 
@@ -36,9 +38,13 @@ export function getEditorRepository() {
     listIdentifiers: async ({ scenarioId }: { scenarioId: string }) => {
       const { database_accessors, payload_accessors, custom_list_accessors } =
         await marbleApiClient.listIdentifiers(scenarioId);
-      const databaseAccessors = database_accessors.map(adaptIdentifierDto);
-      const payloadAccessors = payload_accessors.map(adaptIdentifierDto);
-      const customListAccessors = custom_list_accessors.map(adaptIdentifierDto);
+      const databaseAccessors = database_accessors.map(
+        adaptIdentifierDto ?? []
+      );
+      const payloadAccessors = payload_accessors.map(adaptIdentifierDto ?? []);
+      const customListAccessors = custom_list_accessors.map(
+        adaptIdentifierDto ?? []
+      );
 
       return { databaseAccessors, payloadAccessors, customListAccessors };
     },

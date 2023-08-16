@@ -1,4 +1,5 @@
 import { navigationI18n } from '@app-builder/components';
+import { type SortedScenarioIteration } from '@app-builder/models/scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { Label } from '@radix-ui/react-label';
@@ -17,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 
 import { setToastMessage } from '../../../components/MarbleToaster';
-import { type SortedScenarioIteration } from '../../__builder/scenarios/$scenarioId/i/$iterationId/view';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -65,7 +65,6 @@ export async function action({ request }: ActionArgs) {
       error: parsedForm.error.format(),
     });
   }
-
   try {
     const { iterationId, deploymentType } = parsedForm.data;
 
@@ -83,7 +82,6 @@ export async function action({ request }: ActionArgs) {
   } catch (error) {
     const { getSession, commitSession } = serverServices.sessionService;
     const session = await getSession(request);
-
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',

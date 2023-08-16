@@ -12,9 +12,8 @@ export const handle = {
 export default function Decision() {
   const { t } = useTranslation(handle.i18n);
 
-  const {
-    body: { scoreRejectThreshold, scoreReviewThreshold },
-  } = useCurrentScenarioIteration();
+  const { scoreRejectThreshold, scoreReviewThreshold } =
+    useCurrentScenarioIteration();
 
   return (
     <Paper.Container className="max-w-3xl">

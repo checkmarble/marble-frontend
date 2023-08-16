@@ -26,7 +26,6 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const ruleId = fromParams(params, 'ruleId');
   const scenarioId = fromParams(params, 'scenarioId');
-
   const rule = scenario.getScenarioIterationRule({
     ruleId,
   });
