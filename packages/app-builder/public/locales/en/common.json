@@ -5,7 +5,7 @@
   "errors.unknown": "An unknown error as occured",
   "errors.edit.forbidden_not_draft": "You can only edit a draft version of a scenario.",
   "errors.list.duplicate_list_name": "A list with this name already exist",
-  "errors.scenario.duplicate_rule_name": "A rule with this name already exist",
+  "errors.scenario.duplicate_rule_name": "A rule with this name already exists",
   "cancel": "Cancel",
   "save": "Save",
   "delete": "Delete",
