@@ -56,7 +56,7 @@ export default function Rules() {
         id: 'description',
         accessorFn: (row) => row.description,
         header: t('scenarios:rules.description'),
-        size: 600,
+        size: 400,
       },
       {
         id: 'score',

@@ -8,7 +8,7 @@
   "errors.edit.forbidden_not_draft": "Vous ne pouvez modifier qu'une version brouillon d'un scénario.",
   "errors.list.duplicate_list_name": "Une liste avec ce nom existe déjà",
   "search": "Recherche",
-  "empty_scenario_iteration_list": "Contactez Marble pour créer votre premier brouillon de scénario.",
+  "empty_scenario_iteration_list": "Vous n'avez pas de régles. Cliquer sur créer une régle pour en faire une nouvelle",
   "delete": "Supprimer",
   "save": "Sauvegarder",
   "success.save": "Sauvegarde réussie"
