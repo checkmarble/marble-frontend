@@ -3,7 +3,7 @@ import {
   ScenarioPage,
   Scenarios,
   type ScenariosLinkProps,
-  usePermissionsContext,
+  usePermissionRedirect,
 } from '@app-builder/components';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { type AstOperator } from '@app-builder/models/ast-operators';
@@ -20,11 +20,10 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs, redirect } from '@remix-run/node';
-import { Link, Outlet, useLoaderData, useNavigate } from '@remix-run/react';
+import { Link, Outlet, useLoaderData } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
-import { useEffect } from 'react';
 import * as R from 'remeda';
 
 export const handle = {
@@ -99,26 +98,12 @@ export default function ScenarioEditLayout() {
   const { scenarioIterations, currentIteration, identifiers, operators } =
     useLoaderData<typeof loader>() as LoaderResponse;
 
-  const { userPermissions } = usePermissionsContext();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!userPermissions.canManageScenario) {
-      const redirectUrl = getRoute(
-        '/scenarios/:scenarioId/i/:iterationId/view',
-        {
-          scenarioId: fromUUID(currentIteration.scenarioId),
-          iterationId: fromUUID(currentIteration.id),
-        }
-      );
-      navigate(redirectUrl);
-    }
-  }, [
-    currentIteration.id,
-    currentIteration.scenarioId,
-    navigate,
-    userPermissions.canManageScenario,
-  ]);
+  usePermissionRedirect('canManageScenario', {
+    redirectUrl: getRoute('/scenarios/:scenarioId/i/:iterationId/view', {
+      scenarioId: fromUUID(currentIteration.scenarioId),
+      iterationId: fromUUID(currentIteration.id),
+    }),
+  });
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,

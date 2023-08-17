@@ -1,4 +1,10 @@
-import { createContext, type PropsWithChildren, useContext } from 'react';
+import { useNavigate } from '@remix-run/react';
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useEffect,
+} from 'react';
 
 type Permissions = string[];
 type UserPermissions = {
@@ -56,4 +62,23 @@ const PermissionsProvider = ({
 
 const usePermissionsContext = (): PermissionsContextType => useContext(Context);
 
-export { PermissionsProvider, usePermissionsContext, type UserPermissions };
+const usePermissionRedirect = (
+  permission: keyof UserPermissions,
+  options: { redirectUrl: string }
+) => {
+  const { userPermissions } = usePermissionsContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userPermissions[permission]) {
+      navigate(options.redirectUrl, { replace: true });
+    }
+  }, [navigate, options.redirectUrl, permission, userPermissions]);
+};
+
+export {
+  PermissionsProvider,
+  usePermissionRedirect,
+  usePermissionsContext,
+  type UserPermissions,
+};
