@@ -3,7 +3,7 @@ import {
   ScenarioPage,
   Scenarios,
   type ScenariosLinkProps,
-  usePermissionsContext,
+  usePermissionRedirect,
 } from '@app-builder/components';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { type AstOperator } from '@app-builder/models/ast-operators';
@@ -24,7 +24,6 @@ import { Link, Outlet, useLoaderData } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
-import { useEffect } from 'react';
 import * as R from 'remeda';
 
 export const handle = {
@@ -99,24 +98,12 @@ export default function ScenarioEditLayout() {
   const { scenarioIterations, currentIteration, identifiers, operators } =
     useLoaderData<typeof loader>() as LoaderResponse;
 
-  const { userPermissions } = usePermissionsContext();
-
-  useEffect(() => {
-    if (!userPermissions.canManageScenario) {
-      const redirectUrl = getRoute(
-        '/scenarios/:scenarioId/i/:iterationId/view',
-        {
-          scenarioId: fromUUID(currentIteration.scenarioId),
-          iterationId: fromUUID(currentIteration.id),
-        }
-      );
-      window.location.replace(redirectUrl);
-    }
-  }, [
-    currentIteration.id,
-    currentIteration.scenarioId,
-    userPermissions.canManageScenario,
-  ]);
+  usePermissionRedirect('canManageScenario', {
+    redirectUrl: getRoute('/scenarios/:scenarioId/i/:iterationId/view', {
+      scenarioId: fromUUID(currentIteration.scenarioId),
+      iterationId: fromUUID(currentIteration.id),
+    }),
+  });
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,

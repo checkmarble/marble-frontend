@@ -3,7 +3,7 @@ import {
   Paper,
   scenarioI18n,
   ScenarioPage,
-  usePermissionsContext,
+  usePermissionRedirect,
 } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
@@ -28,7 +28,6 @@ import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
-import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
@@ -142,26 +141,17 @@ export default function RuleEdit() {
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
   const ruleId = useParam('ruleId');
-  const { userPermissions } = usePermissionsContext();
 
-  useEffect(() => {
-    if (!userPermissions.canManageScenario) {
-      const redirectUrl = getRoute(
-        '/scenarios/:scenarioId/i/:iterationId/view/rules/:ruleId',
-        {
-          scenarioId: fromUUID(scenarioId),
-          iterationId: fromUUID(rule.scenarioIterationId),
-          ruleId: fromUUID(rule.id),
-        }
-      );
-      window.location.replace(redirectUrl);
-    }
-  }, [
-    rule.id,
-    rule.scenarioIterationId,
-    scenarioId,
-    userPermissions.canManageScenario,
-  ]);
+  usePermissionRedirect('canManageScenario', {
+    redirectUrl: getRoute(
+      '/scenarios/:scenarioId/i/:iterationId/view/rules/:ruleId',
+      {
+        scenarioId: fromUUID(scenarioId),
+        iterationId: fromUUID(rule.scenarioIterationId),
+        ruleId: fromUUID(rule.id),
+      }
+    ),
+  });
 
   const fetcher = useFetcher<typeof action>();
 
