@@ -30,25 +30,7 @@ pnpm install
 
 There is a recommended extensions list in the `.vscode/extensions.json` file.
 
-You can read README pages in the extension marketplace for each extensions.
-**TL;DR: you should add those settings to your (global/workspace) VSCode settings:**
-
-```json
-"editor.codeActionsOnSave": {
-  "source.fixAll": true
-},
-
-"editor.formatOnSave": true,
-"editor.defaultFormatter": "esbenp.prettier-vscode",
-
-"files.associations": {
-  "*.css": "tailwindcss",
-},
-"editor.quickSuggestions": {
-  "strings": "on"
-},
-"tailwindCSS.classAttributes": ["class", "className", "ngClass", "style"],
-```
+All required configuration settings are already included inside the `.vscode/settings.json` file.
 
 ### Work in a package
 
