@@ -35,11 +35,19 @@ You can read README pages in the extension marketplace for each extensions.
 
 ```json
 "editor.codeActionsOnSave": {
-    "source.fixAll": true
-  },
+  "source.fixAll": true
+},
 
 "editor.formatOnSave": true,
 "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+"files.associations": {
+  "*.css": "tailwindcss",
+},
+"editor.quickSuggestions": {
+  "strings": "on"
+},
+"tailwindCSS.classAttributes": ["class", "className", "ngClass", "style"],
 ```
 
 ### Work in a package
