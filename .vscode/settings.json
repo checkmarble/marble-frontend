@@ -2,5 +2,20 @@
   "i18n-ally.localesPaths": ["packages/app-builder/public/locales"],
   "i18n-ally.keystyle": "flat",
   "i18n-ally.enabledFrameworks": ["react", "i18next"],
-  "i18n-ally.namespace": true
+  "i18n-ally.namespace": true,
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "style"]
 }
