@@ -110,14 +110,19 @@ export async function action({ request, params }: ActionArgs) {
 
   try {
     const ruleId = fromParams(params, 'ruleId');
+    const iterationId = fromParams(params, 'iterationId');
 
     const expression = (await request.json()) as {
       astNode: AstNode;
     };
 
-    const scenarioValidation = await editor.saveRule({
+    await editor.saveRule({
       ruleId,
       astNode: expression.astNode,
+    });
+
+    const scenarioValidation = await editor.validate({
+      iterationId: iterationId,
     });
 
     setToastMessage(session, {

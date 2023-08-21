@@ -2,20 +2,32 @@ import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
   adaptAstNode,
   type AstNode,
+  type EvaluationError,
   type NodeEvaluation,
   type ScenarioValidation,
 } from '@app-builder/models';
 import { adaptAstOperatorDto } from '@app-builder/models/ast-operators';
 import { adaptIdentifierDto } from '@app-builder/models/identifier';
-import type { NodeEvaluationDto, ScenarioValidationDto } from '@marble-api';
+import type {
+  EvaluationErrorDto,
+  NodeEvaluationDto,
+  ScenarioValidationDto,
+} from '@marble-api';
 import * as R from 'remeda';
 
 export type EditorRepository = ReturnType<typeof getEditorRepository>;
 
+function adaptEvaluationError(dto: EvaluationErrorDto): EvaluationError {
+  return {
+    code: dto.code,
+    message: dto.message,
+  };
+}
+
 function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
   return {
     returnValue: dto.return_value,
-    evaluationError: dto.evaluation_error,
+    errors: dto.errors === null ? null : dto.errors.map(adaptEvaluationError),
     children: dto.children ? dto.children.map(adaptNodeEvaluation) : [],
     namedChildren: dto.named_children
       ? R.mapValues(dto.named_children, adaptNodeEvaluation)
@@ -56,6 +68,12 @@ export function getEditorRepository() {
 
       return operatorsAccessors;
     },
+    validate: async ({ iterationId }: { iterationId: string }) => {
+      const result = await marbleApiClient.validateScenarioIteration(
+        iterationId
+      );
+      return adaptScenarioValidation(result.scenario_validation);
+    },
     saveRule: async ({
       ruleId,
       astNode,
@@ -70,15 +88,14 @@ export function getEditorRepository() {
       name?: string;
       description?: string;
       scoreModifier?: number;
-    }): Promise<ScenarioValidation> => {
-      const dto = await marbleApiClient.updateScenarioIterationRule(ruleId, {
+    }) => {
+      await marbleApiClient.updateScenarioIterationRule(ruleId, {
         displayOrder,
         name,
         description,
         formula_ast_expression: adaptAstNode(astNode),
         scoreModifier,
       });
-      return adaptScenarioValidation(dto.scenario_validation);
     },
   });
 }
