@@ -13,6 +13,7 @@ import type {
   ScenarioValidation,
 } from '@app-builder/models';
 import { type AstOperator } from '@app-builder/models/ast-operators';
+import { countValidationErrors } from '@app-builder/repositories/EditorRepository';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import {
@@ -48,7 +49,7 @@ interface EditRuleLoaderResult {
     customListAccessors: EditorIdentifier[];
   };
   operators: AstOperator[];
-  scenarioValidation: ScenarioValidation | null;
+  scenarioValidation: ScenarioValidation;
   scenarioId: string;
 }
 
@@ -87,7 +88,9 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
-  const scenarioValidation: ScenarioValidation | null = null;
+  const scenarioValidation: ScenarioValidation = await editor.validate({
+    iterationId: iterationId,
+  });
 
   return json<EditRuleLoaderResult>({
     rule: await scenarioIterationRule,
@@ -110,7 +113,6 @@ export async function action({ request, params }: ActionArgs) {
 
   try {
     const ruleId = fromParams(params, 'ruleId');
-    const iterationId = fromParams(params, 'iterationId');
 
     const expression = (await request.json()) as {
       astNode: AstNode;
@@ -119,10 +121,6 @@ export async function action({ request, params }: ActionArgs) {
     await editor.saveRule({
       ruleId,
       astNode: expression.astNode,
-    });
-
-    const scenarioValidation = await editor.validate({
-      iterationId: iterationId,
     });
 
     setToastMessage(session, {
@@ -134,7 +132,6 @@ export async function action({ request, params }: ActionArgs) {
         success: true as const,
         error: null,
         values: expression,
-        scenarioValidation,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -148,7 +145,6 @@ export async function action({ request, params }: ActionArgs) {
         success: false as const,
         error: null,
         values: null,
-        scenarioValidation: null,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -172,6 +168,8 @@ export default function RuleEdit() {
     defaultValues: { astNode: rule.astNode },
   });
 
+  const numberOfValidationErrors = countValidationErrors(scenarioValidation);
+
   return (
     <ScenarioPage.Container>
       <ScenarioPage.Header>
@@ -187,9 +185,18 @@ export default function RuleEdit() {
         </div>
       </ScenarioPage.Header>
       <ScenarioPage.Content className="max-w-3xl">
+        {numberOfValidationErrors && (
+          <Callout>{numberOfValidationErrors} validation error(s)</Callout>
+        )}
         {scenarioValidation && (
           <Callout>
-            <pre>{JSON.stringify(scenarioValidation)}</pre>
+            <pre
+              style={{
+                whiteSpace: 'pre',
+              }}
+            >
+              {JSON.stringify(scenarioValidation, null, 2)}
+            </pre>
           </Callout>
         )}
         <EditRule

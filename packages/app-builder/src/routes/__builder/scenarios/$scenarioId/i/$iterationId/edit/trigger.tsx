@@ -45,6 +45,7 @@ export async function action({ request, params }: ActionArgs) {
       type: 'success',
       messageKey: 'common:success.save',
     });
+
     return json(
       {
         success: true as const,

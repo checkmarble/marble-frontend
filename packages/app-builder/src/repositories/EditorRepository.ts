@@ -35,7 +35,7 @@ function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
   };
 }
 
-function adaptScenarioValidation(
+export function adaptScenarioValidation(
   dto: ScenarioValidationDto
 ): ScenarioValidation {
   return {
@@ -43,6 +43,29 @@ function adaptScenarioValidation(
     triggerEvaluation: adaptNodeEvaluation(dto.trigger_evaluation),
     rulesEvaluations: dto.rules_evaluations.map(adaptNodeEvaluation),
   };
+}
+
+// return just an array of error from a recursive evaluation
+export function flattenNodeEvaluationErrors(
+  evaluation: NodeEvaluation
+): EvaluationError[] {
+  return [
+    ...(evaluation.errors ?? []),
+    ...evaluation.children.map(flattenNodeEvaluationErrors).flat(),
+    ...Object.values(evaluation.namedChildren)
+      .map(flattenNodeEvaluationErrors)
+      .flat(),
+  ];
+}
+
+export function countValidationErrors(validation: ScenarioValidation): number {
+  return (
+    validation.errors.length +
+    [validation.triggerEvaluation, ...validation.rulesEvaluations].reduce(
+      (acc, evaluation) => acc + flattenNodeEvaluationErrors(evaluation).length,
+      0
+    )
+  );
 }
 
 export function getEditorRepository() {
