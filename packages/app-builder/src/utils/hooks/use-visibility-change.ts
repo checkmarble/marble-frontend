@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+function subscribe(
+  listener: (this: Document, ev: DocumentEventMap['visibilitychange']) => void
+) {
+  document.addEventListener('visibilitychange', listener);
+  return () => {
+    document.removeEventListener('visibilitychange', listener);
+  };
+}
 
 export function useVisibilityChange() {
-  const [visibilityState, setVisibilityState] =
-    useState<DocumentVisibilityState>('visible');
-
-  useEffect(() => {
-    function listener() {
-      setVisibilityState(document.visibilityState);
-    }
-    document.addEventListener('visibilitychange', listener);
-    return () => {
-      document.removeEventListener('visibilitychange', listener);
-    };
-  }, []);
-
-  return visibilityState;
+  return useSyncExternalStore<DocumentVisibilityState>(
+    subscribe,
+    () => document.visibilityState,
+    () => 'visible'
+  );
 }
