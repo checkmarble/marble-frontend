@@ -8,12 +8,12 @@ import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import type {
   AstNode,
+  AstOperator,
   EditorIdentifier,
+  NodeEvaluation,
   ScenarioIterationRule,
-  ScenarioValidation,
 } from '@app-builder/models';
-import { type AstOperator } from '@app-builder/models/ast-operators';
-import { countValidationErrors } from '@app-builder/repositories/EditorRepository';
+import { countRuleValidationErrors } from '@app-builder/repositories/EditorRepository';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import {
@@ -21,6 +21,7 @@ import {
   EditorOperatorsProvider,
 } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
+import { findRuleValidation } from '@app-builder/services/validation/FindRuleValidation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { DevTool } from '@hookform/devtools';
@@ -49,7 +50,7 @@ interface EditRuleLoaderResult {
     customListAccessors: EditorIdentifier[];
   };
   operators: AstOperator[];
-  scenarioValidation: ScenarioValidation;
+  ruleValidation: NodeEvaluation;
   scenarioId: string;
 }
 
@@ -88,15 +89,18 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
-  const scenarioValidation: ScenarioValidation = await editor.validate({
-    iterationId: iterationId,
-  });
+  const validation = await editor.validate({ iterationId });
+  console.log(JSON.stringify(validation, null, 2));
+  const ruleValidation = findRuleValidation(
+    await editor.validate({ iterationId }),
+    ruleId
+  );
 
   return json<EditRuleLoaderResult>({
     rule: await scenarioIterationRule,
     identifiers: await identifiers,
     operators: await operators,
-    scenarioValidation,
+    ruleValidation,
     scenarioId,
   });
 }
@@ -153,7 +157,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators, scenarioValidation } = useLoaderData<
+  const { rule, identifiers, operators, ruleValidation } = useLoaderData<
     typeof loader
   >() as EditRuleLoaderResult;
 
@@ -168,7 +172,7 @@ export default function RuleEdit() {
     defaultValues: { astNode: rule.astNode },
   });
 
-  const numberOfValidationErrors = countValidationErrors(scenarioValidation);
+  const numberOfValidationErrors = countRuleValidationErrors(ruleValidation);
 
   return (
     <ScenarioPage.Container>
@@ -188,14 +192,14 @@ export default function RuleEdit() {
         {numberOfValidationErrors && (
           <Callout>{numberOfValidationErrors} validation error(s)</Callout>
         )}
-        {scenarioValidation && (
+        {ruleValidation && (
           <Callout>
             <pre
               style={{
                 whiteSpace: 'pre',
               }}
             >
-              {JSON.stringify(scenarioValidation, null, 2)}
+              {JSON.stringify(ruleValidation, null, 2)}
             </pre>
           </Callout>
         )}

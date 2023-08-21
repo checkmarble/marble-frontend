@@ -106,7 +106,7 @@ export type UpdateScenarioBody = {
     name?: string;
     description?: string;
 };
-export type ScenarioIteration = {
+export type ScenarioIterationDto = {
     id: string;
     scenarioId: string;
     version: number | null;
@@ -151,7 +151,7 @@ export type ScenarioIterationRuleDto = {
     scoreModifier: number;
     createdAt: string;
 };
-export type ScenarioIterationWithBody = ScenarioIteration & {
+export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
         trigger_condition_ast_expression?: (NodeDto) | null;
         scoreReviewThreshold?: number;
@@ -183,7 +183,9 @@ export type NodeEvaluationDto = {
 export type ScenarioValidationDto = {
     errors: string[];
     trigger_evaluation: NodeEvaluationDto;
-    rules_evaluations: NodeEvaluationDto[];
+    rules_evaluations: {
+        [key: string]: NodeEvaluationDto;
+    };
 };
 export type UpdateScenarioIterationRuleBody = {
     displayOrder?: number;
@@ -628,7 +630,7 @@ export function listScenarioIterations({ scenarioId }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIteration[];
+        data: ScenarioIterationDto[];
     } | {
         status: 401;
         data: string;
@@ -650,7 +652,7 @@ export function listScenarioIterations({ scenarioId }: {
 export function createScenarioIteration(createScenarioIterationBody: CreateScenarioIterationBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationWithBody;
+        data: ScenarioIterationWithBodyDto;
     } | {
         status: 401;
         data: string;
@@ -672,7 +674,7 @@ export function createScenarioIteration(createScenarioIterationBody: CreateScena
 export function getScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationWithBody;
+        data: ScenarioIterationWithBodyDto;
     } | {
         status: 401;
         data: string;
@@ -692,7 +694,7 @@ export function getScenarioIteration(scenarioIterationId: string, opts?: Oazapft
 export function createDraftFromScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationWithBody;
+        data: ScenarioIterationWithBodyDto;
     } | {
         status: 401;
         data: string;
@@ -714,7 +716,7 @@ export function updateScenarioIteration(scenarioIterationId: string, updateScena
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            iteration: ScenarioIterationWithBody;
+            iteration: ScenarioIterationWithBodyDto;
         };
     } | {
         status: 401;

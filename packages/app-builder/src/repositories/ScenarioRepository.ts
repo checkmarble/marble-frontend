@@ -1,7 +1,8 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
-  adaptScenarioIterationDto,
   adaptScenarioIterationRuleDto,
+  adaptScenarioIterationSummary,
+  adaptScenarioIterationWithBody,
 } from '@app-builder/models/scenario';
 
 export type ScenarioRepository = ReturnType<typeof getScenarioRepository>;
@@ -17,7 +18,11 @@ export function getScenarioRepository() {
       const scenarioIteration = await marbleApiClient.getScenarioIteration(
         iterationId
       );
-      return adaptScenarioIterationDto(scenarioIteration);
+      return adaptScenarioIterationWithBody(scenarioIteration);
+    },
+    listScenarioIterations: async ({ scenarioId }: { scenarioId: string }) => {
+      const dtos = await marbleApiClient.listScenarioIterations({ scenarioId });
+      return dtos.map(adaptScenarioIterationSummary);
     },
   });
 }

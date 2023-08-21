@@ -1,8 +1,9 @@
-import { type ScenarioIteration } from '@marble-api';
 import * as R from 'remeda';
 
-export function sortScenarioIterations(
-  scenarioIterations: ScenarioIteration[],
+import { type ScenarioIterationSummary } from './scenario';
+
+export function sortScenarioIterations<T extends ScenarioIterationSummary>(
+  scenarioIterations: T[],
   liveVersionId?: string
 ) {
   return R.pipe(

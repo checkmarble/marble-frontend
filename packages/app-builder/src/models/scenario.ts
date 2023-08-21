@@ -1,6 +1,7 @@
 import {
+  type ScenarioIterationDto,
   type ScenarioIterationRuleDto,
-  type ScenarioIterationWithBody,
+  type ScenarioIterationWithBodyDto,
 } from '@marble-api';
 
 import {
@@ -20,6 +21,14 @@ export type ScenarioIterationRule = {
   scoreModifier: number;
   createdAt: string;
 };
+
+export interface ScenarioIterationSummary {
+  id: string;
+  scenarioId: string;
+  version: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface ScenarioIteration {
   id: string;
@@ -60,8 +69,8 @@ export function adaptScenarioIterationRuleDto(
   };
 }
 
-export function adaptScenarioIterationDto(
-  scenarioIterationWithBody: ScenarioIterationWithBody
+export function adaptScenarioIterationWithBody(
+  scenarioIterationWithBody: ScenarioIterationWithBodyDto
 ): ScenarioIteration {
   let astNode: AstNode;
   if (!scenarioIterationWithBody.body.trigger_condition_ast_expression) {
@@ -87,5 +96,17 @@ export function adaptScenarioIterationDto(
     ),
     schedule: scenarioIterationWithBody.body.schedule,
     astNode: astNode,
+  };
+}
+
+export function adaptScenarioIterationSummary(
+  dto: ScenarioIterationDto
+): ScenarioIterationSummary {
+  return {
+    id: dto.id,
+    scenarioId: dto.scenarioId,
+    version: dto.version,
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
   };
 }

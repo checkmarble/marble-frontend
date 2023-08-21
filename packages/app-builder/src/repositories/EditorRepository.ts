@@ -41,7 +41,7 @@ export function adaptScenarioValidation(
   return {
     errors: dto.errors,
     triggerEvaluation: adaptNodeEvaluation(dto.trigger_evaluation),
-    rulesEvaluations: dto.rules_evaluations.map(adaptNodeEvaluation),
+    rulesEvaluations: R.mapValues(dto.rules_evaluations, adaptNodeEvaluation),
   };
 }
 
@@ -61,11 +61,18 @@ export function flattenNodeEvaluationErrors(
 export function countValidationErrors(validation: ScenarioValidation): number {
   return (
     validation.errors.length +
-    [validation.triggerEvaluation, ...validation.rulesEvaluations].reduce(
+    [
+      validation.triggerEvaluation,
+      ...Object.values(validation.rulesEvaluations),
+    ].reduce(
       (acc, evaluation) => acc + flattenNodeEvaluationErrors(evaluation).length,
       0
     )
   );
+}
+
+export function countRuleValidationErrors(evaluation: NodeEvaluation): number {
+  return flattenNodeEvaluationErrors(evaluation).length;
 }
 
 export function getEditorRepository() {

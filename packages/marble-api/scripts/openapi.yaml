@@ -558,7 +558,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ScenarioIteration'
+                  $ref: '#/components/schemas/ScenarioIterationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -586,7 +586,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationWithBody'
+                $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -615,7 +615,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationWithBody'
+                $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -643,7 +643,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationWithBody'
+                $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -683,7 +683,7 @@ paths:
                   - iteration
                 properties:
                   iteration:
-                    $ref: '#/components/schemas/ScenarioIterationWithBody'
+                    $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1828,7 +1828,7 @@ components:
           type: string
         description:
           type: string
-    ScenarioIteration:
+    ScenarioIterationDto:
       type: object
       required:
         - id
@@ -1852,9 +1852,9 @@ components:
         updatedAt:
           type: string
           format: date-time
-    ScenarioIterationWithBody:
+    ScenarioIterationWithBodyDto:
       allOf:
-        - $ref: '#/components/schemas/ScenarioIteration'
+        - $ref: '#/components/schemas/ScenarioIterationDto'
         - type: object
           required:
             - body
@@ -1968,8 +1968,8 @@ components:
         trigger_evaluation:
           $ref: '#/components/schemas/NodeEvaluationDto'
         rules_evaluations:
-          type: array
-          items:
+          type: object
+          additionalProperties:
             $ref: '#/components/schemas/NodeEvaluationDto'
     CreateScenarioIterationRuleBody:
       type: object

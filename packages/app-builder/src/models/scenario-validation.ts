@@ -20,5 +20,5 @@ export interface NodeEvaluation {
 export interface ScenarioValidation {
   errors: string[];
   triggerEvaluation: NodeEvaluation;
-  rulesEvaluations: NodeEvaluation[];
+  rulesEvaluations: Record<string, NodeEvaluation>;
 }

@@ -5,9 +5,12 @@ import {
   type ScenariosLinkProps,
 } from '@app-builder/components';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
-import { type AstOperator } from '@app-builder/models/ast-operators';
-import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
-import { type ScenarioIteration } from '@app-builder/models/scenario';
+import type {
+  AstOperator,
+  EditorIdentifiersByType,
+  ScenarioIterationSummary,
+  ScenarioValidation,
+} from '@app-builder/models';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
@@ -39,16 +42,17 @@ const LINKS: ScenariosLinkProps[] = [
   },
 ];
 
-interface LoaderResponse {
-  scenarioIterations: ScenarioIteration[];
-  currentIteration: ScenarioIteration;
+interface EditIterationLoaderResult {
+  scenarioIterations: ScenarioIterationSummary[];
+  currentIteration: ScenarioIterationSummary;
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
+  scenarioValidation: ScenarioValidation;
 }
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient, editor, user } = await authService.isAuthenticated(
+  const { editor, scenario, user } = await authService.isAuthenticated(
     request,
     {
       failureRedirect: '/login',
@@ -67,7 +71,7 @@ export async function loader({ request, params }: LoaderArgs) {
     );
   }
 
-  const scenarioIterations = await apiClient.listScenarioIterations({
+  const scenarioIterations = await scenario.listScenarioIterations({
     scenarioId,
   });
 
@@ -96,18 +100,23 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
-  return json({
+  const scenarioValidation: ScenarioValidation = await editor.validate({
+    iterationId: iterationId,
+  });
+
+  return json<EditIterationLoaderResult>({
     scenarioIterations: scenarioIterations,
     currentIteration: currentIteration,
     identifiers: identifiers,
     operators: operators,
+    scenarioValidation: scenarioValidation,
   });
 }
 
 export default function ScenarioEditLayout() {
   const currentScenario = useCurrentScenario();
   const { scenarioIterations, currentIteration, identifiers, operators } =
-    useLoaderData<typeof loader>() as LoaderResponse;
+    useLoaderData<typeof loader>();
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
@@ -125,6 +134,7 @@ export default function ScenarioEditLayout() {
         ? ('live version' as const)
         : ('draft' as const),
   };
+
   return (
     <ScenarioPage.Container>
       <EditorIdentifiersProvider identifiers={identifiers}>
