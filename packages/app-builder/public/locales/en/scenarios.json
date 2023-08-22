@@ -2,7 +2,7 @@
   "scheduled": "This scenario is scheduled and will run <ScheduleLocale>{{schedule}}</ScheduleLocale>.",
   "live": "live",
   "draft": "draft",
-  "empty_scenario_list": "Reach out to  Marble to create your first scenario.",
+  "empty_scenario_list": "You don’t have any scenario. Click on new scenario to make a new one",
   "trigger.run_scenario.title": "How to run this scenario ?",
   "trigger.run_scenario.description.docs": "You can run this scenario by calling our API: see our docs <DocLink>here</DocLink>.",
   "trigger.run_scenario.description.scenario_id": "You’ll need the <ScenarioIdLabel/>scenario_id</ScenarioIdLabe>: <ScenarioIdValue>{{scenarioId}}</ScenarioIdValue>",
@@ -17,7 +17,7 @@
   "rules.description": "Description",
   "rules.score": "Score Modifier",
   "rules.decision": "Decision",
-  "rules.empty": "Reach out to  Marble to create your first rule.",
+  "rules.empty": "You don’t have any rules. Click on new rule to make a new one",
   "rules.consequence.score_modifier": "Score modifier: <Score>{{score}}</Score>",
   "logical_operator.or": "or",
   "logical_operator.if": "if",
@@ -50,8 +50,8 @@
   "deployment_modal_success.deactivate.title": "Version deactivated",
   "deployment_modal_success.deactivate.description": "The live version has been successfully deactivated, the scenario has ceased to operate",
   "create_scenario.title": "New Scenario",
-  "create_scenario.name": "Scenario Name",
-  "create_scenario.description": "Scenario Description",
+  "create_scenario.name": "Name",
+  "create_scenario.description": "Description",
   "create_scenario.description_placeholder": "Add a description",
   "create_scenario.name_placeholder": "Add a name",
   "create_scenario.trigger_object_placeholder": "Select a trigger object",
@@ -75,6 +75,6 @@
   "create_rule.draft_already_exist": "There is already a draft for this scenario",
   "create_rule.draft_already_exist_2": "You can keep the existing draft and edit it",
   "create_draft.keep_existing_draft": "Keep existing draft",
-  "create_draft.override_existing_draft": "Overwrite existing draft",
-  "create_rule.draft_already_exist_possibility": "You can keep the existing draft and edit it or you can overwrite the existing draft, creating a new one based on this version"
+  "create_draft.override_existing_draft": "Replace existing draft",
+  "create_rule.draft_already_exist_possibility": "You can keep the existing draft and edit it or you can replace the existing draft, creating a new one based on this version"
 }

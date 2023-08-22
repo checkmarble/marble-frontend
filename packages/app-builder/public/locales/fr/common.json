@@ -11,5 +11,8 @@
   "empty_scenario_iteration_list": "Vous n'avez pas de régles. Cliquer sur créer une régle pour en faire une nouvelle",
   "delete": "Supprimer",
   "save": "Sauvegarder",
-  "success.save": "Sauvegarde réussie"
+  "success.save": "Sauvegarde réussie",
+  "description": "Description",
+  "errors.scenario.duplicate_rule_name": "Une règle avec ce nom existe déjà",
+  "name": "Nom"
 }
