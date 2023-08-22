@@ -90,7 +90,9 @@ export default function ScenarioViewLayout() {
   const { scenarioIterations, identifiers, operators } = useLoaderData<
     typeof loader
   >() as LoaderResponse;
-  const { userPermissions } = usePermissionsContext();
+  const {
+    userPermissions: { canManageScenario, canPublishScenario },
+  } = usePermissionsContext();
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
@@ -121,14 +123,14 @@ export default function ScenarioViewLayout() {
           />
         </div>
         <div className="flex-column flex gap-4">
-          {userPermissions.canManageScenario && (
+          {canManageScenario && (
             <CreateDraftIteration
               iterationId={currentIteration.id}
               scenarioId={currentScenario.id}
               draftId={draftIteration?.id}
             />
           )}
-          {userPermissions.canPublishScenario && (
+          {canPublishScenario && (
             <DeploymentModal
               scenarioId={currentScenario.id}
               liveVersionId={currentScenario.liveVersionId}

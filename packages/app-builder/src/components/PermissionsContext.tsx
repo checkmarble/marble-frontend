@@ -69,11 +69,13 @@ const usePermissionRedirect = (
   const { userPermissions } = usePermissionsContext();
   const navigate = useNavigate();
 
+  const permissionValue = userPermissions[permission];
+
   useEffect(() => {
-    if (!userPermissions[permission]) {
+    if (!permissionValue) {
       navigate(options.redirectUrl, { replace: true });
     }
-  }, [navigate, options.redirectUrl, permission, userPermissions]);
+  }, [navigate, options.redirectUrl, permissionValue]);
 };
 
 export {

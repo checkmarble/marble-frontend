@@ -44,7 +44,9 @@ export default function Lists() {
   const customList = useLoaderData<typeof loader>();
   const listValues = customList.values ?? [];
   const { t } = useTranslation(handle.i18n);
-  const { userPermissions } = usePermissionsContext();
+  const {
+    userPermissions: { canManageListItem, canManageList },
+  } = usePermissionsContext();
 
   const columns = useMemo<ColumnDef<ListValues>[]>(
     () => [
@@ -61,7 +63,7 @@ export default function Lists() {
                 {cell.row.original.value}
               </p>
 
-              {userPermissions.canManageListItem && (
+              {canManageListItem && (
                 <DeleteListValue
                   listId={customList.id}
                   listValueId={cell.row.original.id}
@@ -81,7 +83,7 @@ export default function Lists() {
         },
       },
     ],
-    [customList.id, listValues.length, t, userPermissions]
+    [customList.id, listValues.length, t, canManageListItem]
   );
 
   const virtualTable = useVirtualTable({
@@ -102,7 +104,7 @@ export default function Lists() {
             </Link>
             {customList.name}
           </div>
-          {userPermissions.canManageList && (
+          {canManageList && (
             <EditList
               listId={customList.id}
               name={customList.name}
@@ -129,9 +131,7 @@ export default function Lists() {
                 }}
               />
             </form>
-            {userPermissions.canManageListItem && (
-              <NewListValue listId={customList.id} />
-            )}
+            {canManageListItem && <NewListValue listId={customList.id} />}
           </div>
           {virtualTable.rows.length > 0 ? (
             <Table.Default {...virtualTable}></Table.Default>
@@ -143,7 +143,7 @@ export default function Lists() {
             </div>
           )}
         </div>
-        {userPermissions.canManageList && <DeleteList listId={customList.id} />}
+        {canManageList && <DeleteList listId={customList.id} />}
       </Page.Content>
     </Page.Container>
   );

@@ -40,7 +40,9 @@ export const handle = {
 export default function ListsPage() {
   const { t } = useTranslation(handle.i18n);
   const customList = useLoaderData<typeof loader>();
-  const { userPermissions } = usePermissionsContext();
+  const {
+    userPermissions: { canManageList },
+  } = usePermissionsContext();
 
   const navigate = useNavigate();
 
@@ -79,7 +81,7 @@ export default function ListsPage() {
       </Page.Header>
       <Page.Content scrollable={false}>
         <div className="flex flex-row justify-end">
-          {userPermissions.canManageList && <CreateList />}
+          {canManageList && <CreateList />}
         </div>
         {rows.length > 0 ? (
           <Table.Container {...getContainerProps()}>
