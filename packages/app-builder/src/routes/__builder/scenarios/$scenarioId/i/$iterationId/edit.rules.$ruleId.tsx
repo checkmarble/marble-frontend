@@ -6,13 +6,7 @@ import {
 } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import type {
-  AstNode,
-  AstOperator,
-  EditorIdentifier,
-  NodeEvaluation,
-  ScenarioIterationRule,
-} from '@app-builder/models';
+import type { AstNode } from '@app-builder/models';
 import { countRuleValidationErrors } from '@app-builder/repositories/EditorRepository';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
@@ -42,18 +36,6 @@ export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
 };
 
-interface EditRuleLoaderResult {
-  rule: ScenarioIterationRule;
-  identifiers: {
-    databaseAccessors: EditorIdentifier[];
-    payloadAccessors: EditorIdentifier[];
-    customListAccessors: EditorIdentifier[];
-  };
-  operators: AstOperator[];
-  ruleValidation: NodeEvaluation;
-  scenarioId: string;
-}
-
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
   const { editor, scenario, user } = await authService.isAuthenticated(
@@ -77,29 +59,25 @@ export async function loader({ request, params }: LoaderArgs) {
     );
   }
 
-  const scenarioIterationRule = scenario.getScenarioIterationRule({
+  const scenarioIterationRulePromise = scenario.getScenarioIterationRule({
     ruleId,
   });
 
-  const operators = editor.listOperators({
+  const operatorsPromise = editor.listOperators({
     scenarioId,
   });
 
-  const identifiers = editor.listIdentifiers({
+  const identifiersPromise = editor.listIdentifiers({
     scenarioId,
   });
 
   const validation = await editor.validate({ iterationId });
-  console.log(JSON.stringify(validation, null, 2));
-  const ruleValidation = findRuleValidation(
-    await editor.validate({ iterationId }),
-    ruleId
-  );
+  const ruleValidation = findRuleValidation(validation, ruleId);
 
-  return json<EditRuleLoaderResult>({
-    rule: await scenarioIterationRule,
-    identifiers: await identifiers,
-    operators: await operators,
+  return json({
+    rule: await scenarioIterationRulePromise,
+    identifiers: await identifiersPromise,
+    operators: await operatorsPromise,
     ruleValidation,
     scenarioId,
   });
@@ -157,9 +135,8 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators, ruleValidation } = useLoaderData<
-    typeof loader
-  >() as EditRuleLoaderResult;
+  const { rule, identifiers, operators, ruleValidation } =
+    useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');

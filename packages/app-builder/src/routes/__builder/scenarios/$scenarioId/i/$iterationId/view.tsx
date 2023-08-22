@@ -6,9 +6,6 @@ import {
   usePermissionsContext,
 } from '@app-builder/components';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
-import type { ScenarioIterationSummary } from '@app-builder/models';
-import { type AstOperator } from '@app-builder/models/ast-operators';
-import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { CreateDraftIteration } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/create_draft';
@@ -40,12 +37,6 @@ const LINKS: ScenariosLinkProps[] = [
   },
 ];
 
-interface LoaderResponse {
-  scenarioIterations: ScenarioIterationSummary[];
-  identifiers: EditorIdentifiersByType;
-  operators: AstOperator[];
-}
-
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
   const { editor, scenario } = await authService.isAuthenticated(request, {
@@ -53,12 +44,19 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
+  const iterationId = fromParams(params, 'iterationId');
+
+  const operatorsPromise = editor.listOperators({
+    scenarioId,
+  });
+
+  const identifiersPromise = editor.listIdentifiers({
+    scenarioId,
+  });
 
   const scenarioIterations = await scenario.listScenarioIterations({
     scenarioId,
   });
-
-  const iterationId = fromParams(params, 'iterationId');
 
   const currentIteration = scenarioIterations.find(
     ({ id }) => id === iterationId
@@ -74,17 +72,11 @@ export async function loader({ request, params }: LoaderArgs) {
       })
     );
   }
-  const operators = await editor.listOperators({
-    scenarioId,
-  });
 
-  const identifiers = await editor.listIdentifiers({
-    scenarioId,
-  });
-  return json<LoaderResponse>({
+  return json({
     scenarioIterations: scenarioIterations,
-    identifiers: identifiers,
-    operators: operators,
+    identifiers: await identifiersPromise,
+    operators: await operatorsPromise,
   });
 }
 

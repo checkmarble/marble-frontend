@@ -5,12 +5,6 @@ import {
   type ScenariosLinkProps,
 } from '@app-builder/components';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
-import type {
-  AstOperator,
-  EditorIdentifiersByType,
-  ScenarioIterationSummary,
-  ScenarioValidation,
-} from '@app-builder/models';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
@@ -42,14 +36,6 @@ const LINKS: ScenariosLinkProps[] = [
   },
 ];
 
-interface EditIterationLoaderResult {
-  scenarioIterations: ScenarioIterationSummary[];
-  currentIteration: ScenarioIterationSummary;
-  identifiers: EditorIdentifiersByType;
-  operators: AstOperator[];
-  scenarioValidation: ScenarioValidation;
-}
-
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
   const { editor, scenario, user } = await authService.isAuthenticated(
@@ -59,8 +45,20 @@ export async function loader({ request, params }: LoaderArgs) {
     }
   );
 
-  const iterationId = fromParams(params, 'iterationId');
   const scenarioId = fromParams(params, 'scenarioId');
+  const iterationId = fromParams(params, 'iterationId');
+
+  const operatorsPromise = editor.listOperators({
+    scenarioId,
+  });
+
+  const identifiersPromise = editor.listIdentifiers({
+    scenarioId,
+  });
+
+  const scenarioValidationPromise = editor.validate({
+    iterationId: iterationId,
+  });
 
   if (!user.permissions.canManageScenario) {
     return redirect(
@@ -92,24 +90,13 @@ export async function loader({ request, params }: LoaderArgs) {
       'desc',
     ])[0];
   }
-  const operators = await editor.listOperators({
-    scenarioId,
-  });
 
-  const identifiers = await editor.listIdentifiers({
-    scenarioId,
-  });
-
-  const scenarioValidation: ScenarioValidation = await editor.validate({
-    iterationId: iterationId,
-  });
-
-  return json<EditIterationLoaderResult>({
+  return json({
     scenarioIterations: scenarioIterations,
     currentIteration: currentIteration,
-    identifiers: identifiers,
-    operators: operators,
-    scenarioValidation: scenarioValidation,
+    identifiers: await identifiersPromise,
+    operators: await operatorsPromise,
+    scenarioValidation: await scenarioValidationPromise,
   });
 }
 
