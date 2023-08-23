@@ -7,6 +7,7 @@ import {
   getSessionStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepository';
+import { getUserRepository } from './UserRepository';
 
 export function makeServerRepositories({
   sessionStorageRepositoryOptions,
@@ -20,6 +21,7 @@ export function makeServerRepositories({
       sessionStorageRepositoryOptions
     ),
     marbleAPIClient: getMarbleAPIRepository(getMarbleAPIClient),
+    userRepository: getUserRepository(),
     editorRepository: getEditorRepository(),
     scenarioRepository: getScenarioRepository(),
   };
