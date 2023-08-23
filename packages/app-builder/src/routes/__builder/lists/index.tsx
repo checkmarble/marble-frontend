@@ -40,9 +40,7 @@ export const handle = {
 export default function ListsPage() {
   const { t } = useTranslation(handle.i18n);
   const customList = useLoaderData<typeof loader>();
-  const {
-    userPermissions: { canManageList },
-  } = usePermissionsContext();
+  const { canManageList } = usePermissionsContext();
 
   const navigate = useNavigate();
 

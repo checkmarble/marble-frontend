@@ -48,9 +48,12 @@ interface LoaderResponse {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { editor, apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
+  const { editor, apiClient, user } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: '/login',
+    }
+  );
 
   const scenarioId = fromParams(params, 'scenarioId');
 
@@ -63,7 +66,10 @@ export async function loader({ request, params }: LoaderArgs) {
   const currentIteration = scenarioIterations.find(
     ({ id }) => id === iterationId
   );
-  if (currentIteration?.version === null) {
+  if (
+    user.permissions.canManageScenario &&
+    currentIteration?.version === null
+  ) {
     return redirect(
       getRoute('/scenarios/:scenarioId/i/:iterationId/edit', {
         scenarioId: fromUUID(currentIteration.scenarioId),
@@ -90,9 +96,7 @@ export default function ScenarioViewLayout() {
   const { scenarioIterations, identifiers, operators } = useLoaderData<
     typeof loader
   >() as LoaderResponse;
-  const {
-    userPermissions: { canManageScenario, canPublishScenario },
-  } = usePermissionsContext();
+  const { canManageScenario, canPublishScenario } = usePermissionsContext();
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,

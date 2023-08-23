@@ -3,7 +3,6 @@ import {
   ScenarioPage,
   Scenarios,
   type ScenariosLinkProps,
-  usePermissionRedirect,
 } from '@app-builder/components';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { type AstOperator } from '@app-builder/models/ast-operators';
@@ -49,12 +48,24 @@ interface LoaderResponse {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient, editor } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
+  const { apiClient, editor, user } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: '/login',
+    }
+  );
 
   const iterationId = fromParams(params, 'iterationId');
   const scenarioId = fromParams(params, 'scenarioId');
+
+  if (!user.permissions.canManageScenario) {
+    return redirect(
+      getRoute('/scenarios/:scenarioId/i/:iterationId/view', {
+        scenarioId: fromUUID(scenarioId),
+        iterationId: fromUUID(iterationId),
+      })
+    );
+  }
 
   const scenarioIterations = await apiClient.listScenarioIterations({
     scenarioId,
@@ -97,13 +108,6 @@ export default function ScenarioEditLayout() {
   const currentScenario = useCurrentScenario();
   const { scenarioIterations, currentIteration, identifiers, operators } =
     useLoaderData<typeof loader>() as LoaderResponse;
-
-  usePermissionRedirect('canManageScenario', {
-    redirectUrl: getRoute('/scenarios/:scenarioId/i/:iterationId/view', {
-      scenarioId: fromUUID(currentIteration.scenarioId),
-      iterationId: fromUUID(currentIteration.id),
-    }),
-  });
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
