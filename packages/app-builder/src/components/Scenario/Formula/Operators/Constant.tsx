@@ -103,7 +103,7 @@ export function Constant({
     default:
       return (
         <DefaultList isRoot={isRoot}>
-          stringifyConstant(node.constant)
+          {stringifyConstant(node.constant)}
         </DefaultList>
       );
   }
