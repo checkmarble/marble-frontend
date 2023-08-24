@@ -13,7 +13,7 @@ export type EvaluationErrorCode =
   | 'WRONG_NUMBER_OF_ARGUMENTS';
 
 export interface EvaluationError {
-  code: EvaluationErrorCode;
+  error: EvaluationErrorCode;
   message: string;
 }
 
@@ -49,7 +49,7 @@ export interface ScenarioValidation {
 
 function adaptEvaluationError(dto: EvaluationErrorDto): EvaluationError {
   return {
-    code: dto.code,
+    error: dto.error,
     message: dto.message,
   };
 }

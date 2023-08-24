@@ -2099,10 +2099,10 @@ components:
     EvaluationErrorDto:
       type: object
       required:
-        - code
+        - error
         - message
       properties:
-        code:
+        error:
           $ref: '#/components/schemas/EvaluationErrorCodeDto'
         message:
           type: string

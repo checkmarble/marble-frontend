@@ -76,5 +76,6 @@
   "create_rule.draft_already_exist_2": "You can keep the existing draft and edit it",
   "create_draft.keep_existing_draft": "Keep existing draft",
   "create_draft.override_existing_draft": "Replace existing draft",
-  "create_rule.draft_already_exist_possibility": "You can keep the existing draft and edit it or you can replace the existing draft, creating a new one based on this version"
+  "create_rule.draft_already_exist_possibility": "You can keep the existing draft and edit it or you can replace the existing draft, creating a new one based on this version",
+  "validation.evaluation_error.unknown_function": "Required"
 }

@@ -3,6 +3,8 @@ import {
   type NodeEvaluation,
   type ScenarioValidation,
 } from '@app-builder/models';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 
 // return just an array of error from a recursive evaluation
@@ -46,4 +48,20 @@ export function findRuleValidation(
 
 export function countNodeEvaluationErrors(evaluation: NodeEvaluation): number {
   return flattenNodeEvaluationErrors(evaluation).length;
+}
+
+export function useGetNodeEvaluationErrorMessage() {
+  const { t } = useTranslation(['scenarios']);
+
+  return useCallback(
+    (evaluationError: EvaluationError) => {
+      switch (evaluationError.error) {
+        case 'UNKNOWN_FUNCTION':
+          return t('scenarios:validation.evaluation_error.unknown_function');
+        default:
+          return evaluationError.message;
+      }
+    },
+    [t]
+  );
 }

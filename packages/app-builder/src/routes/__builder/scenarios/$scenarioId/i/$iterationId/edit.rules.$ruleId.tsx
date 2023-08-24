@@ -17,6 +17,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import {
   countNodeEvaluationErrors,
   findRuleValidation,
+  useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation/scenario-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -151,6 +152,7 @@ export default function RuleEdit() {
   });
 
   const { setError } = formMethods;
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   useEffect(() => {
     const allEvaluationErrors = adaptNodeEvaluationErrors(
       'astNode',
@@ -161,11 +163,13 @@ export default function RuleEdit() {
         //@ts-expect-error path is a string
         setError(flattenNodeEvaluationErrors.path, {
           type: 'custom',
-          message: flattenNodeEvaluationErrors.errors[0].message,
+          message: getNodeEvaluationErrorMessage(
+            flattenNodeEvaluationErrors.errors[0]
+          ),
         });
       }
     });
-  }, [ruleValidation, setError]);
+  }, [getNodeEvaluationErrorMessage, ruleValidation, setError]);
 
   return (
     <ScenarioPage.Container>

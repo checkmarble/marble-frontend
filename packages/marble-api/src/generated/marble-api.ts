@@ -169,7 +169,7 @@ export type UpdateScenarioIterationBody = {
 };
 export type EvaluationErrorCodeDto = "UNEXPECTED_ERROR" | "UNKNOWN_FUNCTION" | "WRONG_NUMBER_OF_ARGUMENTS";
 export type EvaluationErrorDto = {
-    code: EvaluationErrorCodeDto;
+    error: EvaluationErrorCodeDto;
     message: string;
 };
 export type NodeEvaluationDto = {
