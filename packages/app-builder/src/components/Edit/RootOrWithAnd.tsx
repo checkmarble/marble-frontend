@@ -1,4 +1,4 @@
-import { type AstNode, NewAstNode } from '@app-builder/models';
+import { type AstNode, NewUnknownAstNode } from '@app-builder/models';
 import { Button, type ButtonProps } from '@ui-design-system';
 import { Plus } from '@ui-icons';
 import clsx from 'clsx';
@@ -6,6 +6,7 @@ import * as React from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { FormField, FormItem, FormMessage } from '../Form';
 import { LogicalOperatorLabel } from '../Scenario/LogicalOperator';
 import { RemoveButton } from './RemoveButton';
 
@@ -30,7 +31,9 @@ const AddLogicalOperatorButton = React.forwardRef<
 AddLogicalOperatorButton.displayName = 'AddLogicalOperatorButton';
 
 function NewBinaryAstNode() {
-  return NewAstNode({ children: [NewAstNode(), NewAstNode()] });
+  return NewUnknownAstNode({
+    children: [NewUnknownAstNode(), NewUnknownAstNode()],
+  });
 }
 
 export function RootOrOperator({
@@ -56,33 +59,41 @@ export function RootOrOperator({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      {rootOrOperands.map((operand, operandIndex) => {
-        const isFirstOperand = operandIndex === 0;
-
+    <FormField
+      name="astNode"
+      render={() => {
         return (
-          <React.Fragment key={operand.id}>
-            {!isFirstOperand && (
-              <div className="flex flex-row gap-1">
-                <LogicalOperatorLabel
-                  operator="or"
-                  className="bg-grey-02 uppercase"
-                />
-                <div className="flex flex-1 items-center">
-                  <div className="bg-grey-10 h-[1px] w-full" />
-                </div>
-              </div>
-            )}
-            <RootAndOperator
-              name={`astNode.children.${operandIndex}.children`}
-              removeOrOperand={() => remove(operandIndex)}
-              renderAstNode={renderAstNode}
-            />
-          </React.Fragment>
+          <FormItem className="flex flex-col gap-2">
+            {rootOrOperands.map((operand, operandIndex) => {
+              const isFirstOperand = operandIndex === 0;
+
+              return (
+                <React.Fragment key={operand.id}>
+                  {!isFirstOperand && (
+                    <div className="flex flex-row gap-1">
+                      <LogicalOperatorLabel
+                        operator="or"
+                        className="bg-grey-02 uppercase"
+                      />
+                      <div className="flex flex-1 items-center">
+                        <div className="bg-grey-10 h-[1px] w-full" />
+                      </div>
+                    </div>
+                  )}
+                  <RootAndOperator
+                    name={`astNode.children.${operandIndex}`}
+                    removeOrOperand={() => remove(operandIndex)}
+                    renderAstNode={renderAstNode}
+                  />
+                </React.Fragment>
+              );
+            })}
+            <FormMessage />
+            <AddLogicalOperatorButton onClick={appendOrOperand} operator="or" />
+          </FormItem>
         );
-      })}
-      <AddLogicalOperatorButton onClick={appendOrOperand} operator="or" />
-    </div>
+      }}
+    />
   );
 }
 
@@ -92,7 +103,7 @@ function RootAndOperator({
   renderAstNode,
 }: {
   removeOrOperand: () => void;
-  name: `astNode.children.${number}.children`;
+  name: `astNode.children.${number}`;
   renderAstNode: (args: { name: string }) => React.ReactNode;
 }) {
   const {
@@ -100,7 +111,7 @@ function RootAndOperator({
     remove,
     append,
   } = useFieldArray<RootOrWithAndFormFields, 'astNode.children'>({
-    name: name as 'astNode.children',
+    name: `${name}.children` as 'astNode.children',
   });
 
   function onRemoveClick(operandIndex: number) {
@@ -113,35 +124,45 @@ function RootAndOperator({
   }
 
   return (
-    <>
-      {andOperands.map((operand, operandIndex) => {
+    <FormField
+      name={name}
+      render={() => {
         return (
-          <div
-            key={operand.id}
-            className="flex flex-row-reverse items-center gap-2"
-          >
-            <RemoveButton
-              className="peer"
-              onClick={() => {
-                onRemoveClick(operandIndex);
-              }}
-            />
-            <div className="peer-hover:border-grey-25 flex flex-1 flex-col rounded border border-transparent p-1 transition-colors duration-200 ease-in-out">
-              {renderAstNode({ name: `${name}.${operandIndex}` })}
-            </div>
-            <LogicalOperatorLabel
-              operator={operandIndex === 0 ? 'if' : 'and'}
-            />
-          </div>
-        );
-      })}
+          <FormItem>
+            {andOperands.map((operand, operandIndex) => {
+              return (
+                <div
+                  key={operand.id}
+                  className="flex flex-row-reverse items-center gap-2"
+                >
+                  <RemoveButton
+                    className="peer"
+                    onClick={() => {
+                      onRemoveClick(operandIndex);
+                    }}
+                  />
+                  <div className="peer-hover:border-grey-25 flex flex-1 flex-col rounded border border-transparent p-1 transition-colors duration-200 ease-in-out">
+                    {renderAstNode({
+                      name: `${name}.children.${operandIndex}`,
+                    })}
+                  </div>
+                  <LogicalOperatorLabel
+                    operator={operandIndex === 0 ? 'if' : 'and'}
+                  />
+                </div>
+              );
+            })}
+            <FormMessage />
 
-      <AddLogicalOperatorButton
-        className="text-grey-25 h-fit w-fit text-xs"
-        variant="secondary"
-        onClick={appendAndOperand}
-        operator="and"
-      />
-    </>
+            <AddLogicalOperatorButton
+              className="text-grey-25 h-fit w-fit text-xs"
+              variant="secondary"
+              onClick={appendAndOperand}
+              operator="and"
+            />
+          </FormItem>
+        );
+      }}
+    />
   );
 }

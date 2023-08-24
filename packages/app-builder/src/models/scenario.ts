@@ -43,7 +43,7 @@ export interface ScenarioIteration {
   astNode: AstNode;
 }
 
-export function adaptScenarioIterationRuleDto(
+export function adaptScenarioIterationRule(
   scenarioIterationRuleDto: ScenarioIterationRuleDto
 ): ScenarioIterationRule {
   let astNode: AstNode;
@@ -69,7 +69,7 @@ export function adaptScenarioIterationRuleDto(
   };
 }
 
-export function adaptScenarioIterationWithBody(
+export function adaptScenarioIteration(
   scenarioIterationWithBody: ScenarioIterationWithBodyDto
 ): ScenarioIteration {
   let astNode: AstNode;
@@ -91,9 +91,7 @@ export function adaptScenarioIterationWithBody(
     updatedAt: scenarioIterationWithBody.updatedAt,
     scoreReviewThreshold: scenarioIterationWithBody.body.scoreReviewThreshold,
     scoreRejectThreshold: scenarioIterationWithBody.body.scoreRejectThreshold,
-    rules: scenarioIterationWithBody.body.rules.map(
-      adaptScenarioIterationRuleDto
-    ),
+    rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),
     schedule: scenarioIterationWithBody.body.schedule,
     astNode: astNode,
   };

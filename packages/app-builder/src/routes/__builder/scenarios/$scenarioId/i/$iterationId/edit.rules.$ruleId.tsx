@@ -6,8 +6,7 @@ import {
 } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import type { AstNode } from '@app-builder/models';
-import { countRuleValidationErrors } from '@app-builder/repositories/EditorRepository';
+import { adaptNodeEvaluationErrors, type AstNode } from '@app-builder/models';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import {
@@ -15,10 +14,12 @@ import {
   EditorOperatorsProvider,
 } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
-import { findRuleValidation } from '@app-builder/services/validation/FindRuleValidation';
+import {
+  countNodeEvaluationErrors,
+  findRuleValidation,
+} from '@app-builder/services/validation/scenario-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { DevTool } from '@hookform/devtools';
 import {
   type ActionArgs,
   json,
@@ -28,9 +29,9 @@ import {
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
+import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -71,7 +72,7 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
-  const validation = await editor.validate({ iterationId });
+  const validation = await scenario.validate({ iterationId });
   const ruleValidation = findRuleValidation(validation, ruleId);
 
   return json({
@@ -149,7 +150,22 @@ export default function RuleEdit() {
     defaultValues: { astNode: rule.astNode },
   });
 
-  const numberOfValidationErrors = countRuleValidationErrors(ruleValidation);
+  const { setError } = formMethods;
+  useEffect(() => {
+    const allEvaluationErrors = adaptNodeEvaluationErrors(
+      'astNode',
+      ruleValidation
+    );
+    allEvaluationErrors.forEach((flattenNodeEvaluationErrors) => {
+      if (flattenNodeEvaluationErrors.state === 'invalid') {
+        //@ts-expect-error path is a string
+        setError(flattenNodeEvaluationErrors.path, {
+          type: 'custom',
+          message: flattenNodeEvaluationErrors.errors[0].message,
+        });
+      }
+    });
+  }, [ruleValidation, setError]);
 
   return (
     <ScenarioPage.Container>
@@ -166,20 +182,11 @@ export default function RuleEdit() {
         </div>
       </ScenarioPage.Header>
       <ScenarioPage.Content className="max-w-3xl">
-        {numberOfValidationErrors && (
-          <Callout>{numberOfValidationErrors} validation error(s)</Callout>
-        )}
-        {ruleValidation && (
-          <Callout>
-            <pre
-              style={{
-                whiteSpace: 'pre',
-              }}
-            >
-              {JSON.stringify(ruleValidation, null, 2)}
-            </pre>
-          </Callout>
-        )}
+        <Callout variant="error">
+          {t('common:validation_error', {
+            count: countNodeEvaluationErrors(ruleValidation),
+          })}
+        </Callout>
         <EditRule
           rule={rule}
           iterationId={iterationId}
@@ -221,17 +228,6 @@ export default function RuleEdit() {
           iterationId={iterationId}
           scenarioId={scenarioId}
         />
-        <ClientOnly>
-          {() => (
-            <DevTool
-              control={formMethods.control}
-              placement="bottom-right"
-              styles={{
-                panel: { width: '450px' },
-              }}
-            />
-          )}
-        </ClientOnly>
       </ScenarioPage.Content>
     </ScenarioPage.Container>
   );

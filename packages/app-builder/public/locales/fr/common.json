@@ -2,6 +2,8 @@
   "auth.logout": "Se déconnecter",
   "auth.login": "Connexion",
   "cancel": "Annuler",
+  "error_one": "erreur",
+  "error_other": "erreurs",
   "clipboard.copy": "Copié dans le presse-papier : {{value}}",
   "close": "Fermer",
   "errors.unknown": "Une erreur inconnue s'est produite",

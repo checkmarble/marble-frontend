@@ -1,6 +1,7 @@
 import {
   adaptAstNodeToViewModelFromIdentifier,
   type AstNode,
+  NewUnknownAstNode,
 } from '@app-builder/models';
 import {
   useEditorIdentifiers,
@@ -12,45 +13,55 @@ import {
 import { Combobox, Select } from '@ui-design-system';
 import { forwardRef, useState } from 'react';
 
-import { FormControl, FormField, FormItem } from '../Form';
+import { FormControl, FormField, FormItem, FormMessage } from '../Form';
 
 export function EditAstNode({ name }: { name: string }) {
   const isFirstChildEditedOnce = useIsEditedOnce(`${name}.children.0`);
-  const isNameEditedOnce = useIsEditedOnce(`${name}.name`);
+  const isNameEditedOnce = useIsEditedOnce(name);
 
   return (
-    <div className="flex flex-row gap-1">
-      <FormField
-        name={`${name}.children.0`}
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <EditOperand {...field} />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-      <FormField
-        name={`${name}.name`}
-        render={({ field }) => (
-          <FormItem className={isFirstChildEditedOnce ? '' : 'hidden'}>
-            <FormControl>
-              <EditOperator {...field} />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-      <FormField
-        name={`${name}.children.1`}
-        render={({ field }) => (
-          <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
-            <FormControl>
-              <EditOperand {...field} />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-    </div>
+    <FormField
+      name={name}
+      render={() => (
+        <div className="relative">
+          <div className=" flex flex-row gap-1">
+            <FormField
+              name={`${name}.children.0`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <EditOperand {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name={`${name}.name`}
+              render={({ field }) => (
+                <FormItem className={isFirstChildEditedOnce ? '' : 'hidden'}>
+                  <FormControl>
+                    <EditOperator {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              name={`${name}.children.1`}
+              render={({ field }) => (
+                <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
+                  <FormControl>
+                    <EditOperand {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormMessage />
+        </div>
+      )}
+    />
   );
 }
 
@@ -59,7 +70,7 @@ const EditOperand = forwardRef<
   {
     name: string;
     value: AstNode;
-    onChange: (value: AstNode | null) => void;
+    onChange: (value: AstNode) => void;
     onBlur: () => void;
   }
 >(({ onChange, onBlur, value }, ref) => {
@@ -80,7 +91,7 @@ const EditOperand = forwardRef<
       value={selectedItem}
       onChange={(value) => {
         setInputValue(value?.label ?? '');
-        onChange(value?.astNode ?? null);
+        onChange(value?.astNode ?? NewUnknownAstNode());
       }}
       nullable
     >

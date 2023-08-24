@@ -1,4 +1,5 @@
 import {
+  Callout,
   navigationI18n,
   ScenarioPage,
   Scenarios,
@@ -20,6 +21,7 @@ import { Link, Outlet, useLoaderData } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 
 export const handle = {
@@ -56,7 +58,7 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
-  const scenarioValidationPromise = editor.validate({
+  const scenarioValidationPromise = scenario.validate({
     iterationId: iterationId,
   });
 
@@ -102,8 +104,13 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function ScenarioEditLayout() {
   const currentScenario = useCurrentScenario();
-  const { scenarioIterations, currentIteration, identifiers, operators } =
-    useLoaderData<typeof loader>();
+  const {
+    scenarioIterations,
+    currentIteration,
+    identifiers,
+    operators,
+    scenarioValidation,
+  } = useLoaderData<typeof loader>();
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
@@ -149,6 +156,7 @@ export default function ScenarioEditLayout() {
             </div>
           </ScenarioPage.Header>
           <ScenarioPage.Content>
+            <SanityErrors errors={scenarioValidation?.errors ?? []} />
             <Scenarios.Nav>
               {LINKS.map((linkProps) => (
                 <li key={linkProps.labelTKey}>
@@ -161,5 +169,28 @@ export default function ScenarioEditLayout() {
         </EditorOperatorsProvider>
       </EditorIdentifiersProvider>
     </ScenarioPage.Container>
+  );
+}
+
+function SanityErrors({ errors }: { errors: string[] }) {
+  const { t } = useTranslation(handle.i18n);
+
+  if (errors.length === 0) return null;
+
+  return (
+    <Callout variant="error">
+      <div className="flex flex-col">
+        <p>
+          {t('common:error', {
+            count: errors.length,
+          })}
+        </p>
+        <ul className="list-inside list-disc">
+          {errors.map((error) => (
+            <li key={error}>{error}</li>
+          ))}
+        </ul>
+      </div>
+    </Callout>
   );
 }

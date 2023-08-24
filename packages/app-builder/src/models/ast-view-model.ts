@@ -1,7 +1,7 @@
 import {
   type AstNode,
   type ConstantType,
-  isAstNodeEmpty,
+  isAstNodeUnknown,
   isConstant,
   isDatabaseAccess,
 } from './ast-node';
@@ -80,7 +80,7 @@ function getAstNodeDisplayName(astNode: AstNode) {
     return [...path.constant, fieldName.constant].join('.');
   }
 
-  if (isAstNodeEmpty(astNode)) {
+  if (isAstNodeUnknown(astNode)) {
     return '';
   }
 

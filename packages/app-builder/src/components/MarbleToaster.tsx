@@ -4,8 +4,9 @@ import {
   toastMessageScema,
 } from '@app-builder/models';
 import { getClientEnv } from '@app-builder/utils/environment.client';
+import { Cross } from '@ui-icons';
 import { useEffect } from 'react';
-import { toast, Toaster } from 'react-hot-toast';
+import { toast, ToastBar, Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 export function setToastMessage(
@@ -40,7 +41,25 @@ export function MarbleToaster({
     toast[type](getMessage(message));
   }, [t, toastMessage]);
 
-  return <Toaster position="bottom-center" />;
+  return (
+    <Toaster position="bottom-center">
+      {(t) => (
+        <ToastBar toast={t}>
+          {({ icon, message }) => (
+            <>
+              {icon}
+              {message}
+              {t.type !== 'loading' && (
+                <button onClick={() => toast.dismiss(t.id)} aria-label="Close">
+                  <Cross height="24px" width="24px" />
+                </button>
+              )}
+            </>
+          )}
+        </ToastBar>
+      )}
+    </Toaster>
+  );
 }
 
 function getMessage(message: string) {
