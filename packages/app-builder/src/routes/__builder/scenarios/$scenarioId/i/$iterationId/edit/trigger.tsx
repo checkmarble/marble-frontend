@@ -91,7 +91,7 @@ export default function Trigger() {
           });
         }}
       >
-        <Paper.Container scrollable={false}>
+        <Paper.Container scrollable={false} className="max-w-3xl">
           <div className="flex flex-col gap-2 lg:gap-4">
             <Paper.Title>
               {t('scenarios:trigger.run_scenario.title')}
