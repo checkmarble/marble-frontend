@@ -22,45 +22,58 @@ export function EditAstNode({ name }: { name: string }) {
   return (
     <FormField
       name={name}
-      render={() => (
-        <div className="relative">
-          <div className=" flex flex-row gap-1">
-            <FormField
-              name={`${name}.children.0`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <EditOperand {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              name={`${name}.name`}
-              render={({ field }) => (
-                <FormItem className={isFirstChildEditedOnce ? '' : 'hidden'}>
-                  <FormControl>
-                    <EditOperator {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name={`${name}.children.1`}
-              render={({ field }) => (
-                <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
-                  <FormControl>
-                    <EditOperand {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      render={({ fieldState: { error } }) => {
+        const isParentError = !!error?.type;
+
+        return (
+          <div className="relative">
+            <div className=" flex flex-row gap-1">
+              <FormField
+                name={`${name}.children.0`}
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormControl>
+                      <EditOperand
+                        {...field}
+                        invalid={fieldState.invalid || isParentError}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name={`${name}.name`}
+                render={({ field, fieldState }) => (
+                  <FormItem className={isFirstChildEditedOnce ? '' : 'hidden'}>
+                    <FormControl>
+                      <EditOperator
+                        {...field}
+                        invalid={fieldState.invalid || isParentError}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name={`${name}.children.1`}
+                render={({ field, fieldState }) => (
+                  <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
+                    <FormControl>
+                      <EditOperand
+                        {...field}
+                        invalid={fieldState.invalid || isParentError}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormMessage />
           </div>
-          <FormMessage />
-        </div>
-      )}
+        );
+      }}
     />
   );
 }
@@ -72,8 +85,9 @@ const EditOperand = forwardRef<
     value: AstNode;
     onChange: (value: AstNode) => void;
     onBlur: () => void;
+    invalid: boolean;
   }
->(({ onChange, onBlur, value }, ref) => {
+>(({ onChange, onBlur, value, invalid }, ref) => {
   const editorIdentifier = useEditorIdentifiers();
   const getIdentifierOptions = useGetIdentifierOptions();
   const selectedItem = value
@@ -98,6 +112,7 @@ const EditOperand = forwardRef<
       <div className="relative">
         <Combobox.Input
           ref={ref}
+          aria-invalid={invalid}
           displayValue={(item?: (typeof items)[number]) => item?.label ?? ''}
           onChange={(event) => setInputValue(event.target.value)}
           onBlur={onBlur}
@@ -126,8 +141,9 @@ const EditOperator = forwardRef<
     value: string | null;
     onChange: (value: string | null) => void;
     onBlur: () => void;
+    invalid: boolean;
   }
->(({ name, value, onChange, onBlur }, ref) => {
+>(({ name, value, onChange, onBlur, invalid }, ref) => {
   const operators = useEditorOperators();
   const getOperatorName = useGetOperatorName();
 
@@ -141,7 +157,8 @@ const EditOperator = forwardRef<
     >
       <Select.Trigger
         ref={ref}
-        className="focus:border-purple-100"
+        aria-invalid={invalid}
+        className="focus:border-purple-100 aria-[invalid=true]:border-red-100"
         onBlur={onBlur}
       >
         <Select.Value placeholder="..." />
