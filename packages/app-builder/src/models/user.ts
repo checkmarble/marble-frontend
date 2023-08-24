@@ -30,7 +30,6 @@ export function NewPermissions(): UserPermissions {
 }
 
 export function adaptUser(credentials: CredentialsDto['credentials']): User {
-  console.log(credentials.permissions);
   return {
     organizationId: credentials.organization_id,
     role: credentials.role,

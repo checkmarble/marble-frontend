@@ -39,12 +39,10 @@ export async function action({ request, params }: ActionArgs) {
   }
   const scenarioId = fromParams(params, 'scenarioId');
   const { iterationId } = parsedForm.data;
-  console.log(iterationId);
   try {
     const draftIteration = await apiClient.createDraftFromScenarioIteration(
       iterationId
     );
-    console.log(draftIteration);
 
     return redirect(
       getRoute('/scenarios/:scenarioId/i/:iterationId/edit', {
@@ -53,7 +51,6 @@ export async function action({ request, params }: ActionArgs) {
       })
     );
   } catch (error) {
-    console.log(error);
     return json({
       success: false as const,
       values: parsedForm.data,
