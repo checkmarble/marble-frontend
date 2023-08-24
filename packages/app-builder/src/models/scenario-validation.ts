@@ -91,11 +91,24 @@ export function adaptNodeEvaluationErrors(
   path: string,
   evaluation: NodeEvaluation
 ): NodeEvaluationErrors[] {
-  const childrenPathErrors = evaluation.children
-    .map((child, index) => {
+  const childrenPathErrors = R.pipe(
+    evaluation.children,
+    R.map.indexed((child, index) => {
       return adaptNodeEvaluationErrors(`${path}.children.${index}`, child);
-    })
-    .flat();
+    }),
+    R.flatten()
+  );
 
-  return [{ path, ...evaluation }, ...childrenPathErrors];
+  const namedChildrenPathErrors = R.pipe(
+    R.toPairs(evaluation.namedChildren),
+    R.flatMap(([key, child]) => {
+      return adaptNodeEvaluationErrors(`${path}.namedChildren.${key}`, child);
+    })
+  );
+
+  return [
+    { path, ...evaluation },
+    ...childrenPathErrors,
+    ...namedChildrenPathErrors,
+  ];
 }
