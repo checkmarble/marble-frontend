@@ -1,4 +1,4 @@
-import { type AstNode, NewUnknownAstNode } from '@app-builder/models';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { Button, type ButtonProps } from '@ui-design-system';
 import { Plus } from '@ui-icons';
 import clsx from 'clsx';
@@ -31,8 +31,8 @@ const AddLogicalOperatorButton = React.forwardRef<
 AddLogicalOperatorButton.displayName = 'AddLogicalOperatorButton';
 
 function NewBinaryAstNode() {
-  return NewUnknownAstNode({
-    children: [NewUnknownAstNode(), NewUnknownAstNode()],
+  return NewUndefinedAstNode({
+    children: [NewUndefinedAstNode(), NewUndefinedAstNode()],
   });
 }
 

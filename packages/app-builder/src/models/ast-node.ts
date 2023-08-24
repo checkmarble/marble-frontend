@@ -8,7 +8,7 @@ export interface AstNode {
   namedChildren: Record<string, AstNode>;
 }
 
-const unknownAstNodeName = 'Unknown';
+const undefinedAstNodeName = 'Undefined';
 
 export type ConstantType =
   | number
@@ -33,13 +33,13 @@ export function NewAstNode({
   };
 }
 
-export function NewUnknownAstNode({
+export function NewUndefinedAstNode({
   constant,
   children,
   namedChildren,
 }: Partial<Omit<AstNode, 'name'>> = {}): AstNode {
   return NewAstNode({
-    name: unknownAstNodeName,
+    name: undefinedAstNodeName,
     constant,
     children,
     namedChildren,
@@ -65,7 +65,7 @@ export function adaptAstNode(astNode: AstNode): NodeDto {
 }
 
 export function isAstNodeUnknown(node: AstNode): boolean {
-  return node.name === unknownAstNodeName;
+  return node.name === undefinedAstNodeName;
 }
 
 export interface ConstantAstNode<T extends ConstantType = ConstantType> {

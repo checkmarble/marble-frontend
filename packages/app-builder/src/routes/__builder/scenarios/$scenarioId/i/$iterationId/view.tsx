@@ -39,9 +39,12 @@ const LINKS: ScenariosLinkProps[] = [
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { editor, scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
+  const { editor, scenario, user } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: '/login',
+    }
+  );
 
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');

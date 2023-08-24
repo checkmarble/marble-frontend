@@ -1,7 +1,7 @@
 import {
   adaptAstNodeToViewModelFromIdentifier,
   type AstNode,
-  NewUnknownAstNode,
+  NewUndefinedAstNode,
 } from '@app-builder/models';
 import {
   useEditorIdentifiers,
@@ -10,6 +10,7 @@ import {
   useGetOperatorName,
   useIsEditedOnce,
 } from '@app-builder/services/editor';
+import { getInvalidStates } from '@app-builder/services/validation/scenario-validation';
 import { Combobox, Select } from '@ui-design-system';
 import { forwardRef, useState } from 'react';
 
@@ -23,7 +24,7 @@ export function EditAstNode({ name }: { name: string }) {
     <FormField
       name={name}
       render={({ fieldState: { error } }) => {
-        const isParentError = !!error?.type;
+        const invalidStates = getInvalidStates(error);
 
         return (
           <div className="relative">
@@ -35,7 +36,11 @@ export function EditAstNode({ name }: { name: string }) {
                     <FormControl>
                       <EditOperand
                         {...field}
-                        invalid={fieldState.invalid || isParentError}
+                        invalid={
+                          fieldState.invalid ||
+                          invalidStates.root ||
+                          invalidStates.children[field.name]
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -49,7 +54,11 @@ export function EditAstNode({ name }: { name: string }) {
                     <FormControl>
                       <EditOperator
                         {...field}
-                        invalid={fieldState.invalid || isParentError}
+                        invalid={
+                          fieldState.invalid ||
+                          invalidStates.root ||
+                          invalidStates.name
+                        }
                       />
                     </FormControl>
                   </FormItem>
@@ -62,7 +71,11 @@ export function EditAstNode({ name }: { name: string }) {
                     <FormControl>
                       <EditOperand
                         {...field}
-                        invalid={fieldState.invalid || isParentError}
+                        invalid={
+                          fieldState.invalid ||
+                          invalidStates.root ||
+                          invalidStates.children[field.name]
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -70,7 +83,7 @@ export function EditAstNode({ name }: { name: string }) {
                 )}
               />
             </div>
-            <FormMessage />
+            {invalidStates.root && isFirstChildEditedOnce && <FormMessage />}
           </div>
         );
       }}
@@ -105,7 +118,7 @@ const EditOperand = forwardRef<
       value={selectedItem}
       onChange={(value) => {
         setInputValue(value?.label ?? '');
-        onChange(value?.astNode ?? NewUnknownAstNode());
+        onChange(value?.astNode ?? NewUndefinedAstNode());
       }}
       nullable
     >

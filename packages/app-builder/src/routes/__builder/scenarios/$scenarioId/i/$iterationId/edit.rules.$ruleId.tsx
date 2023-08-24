@@ -160,12 +160,11 @@ export default function RuleEdit() {
     );
     allEvaluationErrors.forEach((flattenNodeEvaluationErrors) => {
       if (flattenNodeEvaluationErrors.state === 'invalid') {
+        const firstError = flattenNodeEvaluationErrors.errors[0];
         //@ts-expect-error path is a string
         setError(flattenNodeEvaluationErrors.path, {
-          type: 'custom',
-          message: getNodeEvaluationErrorMessage(
-            flattenNodeEvaluationErrors.errors[0]
-          ),
+          type: firstError.error,
+          message: getNodeEvaluationErrorMessage(firstError),
         });
       }
     });

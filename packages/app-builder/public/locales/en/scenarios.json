@@ -77,5 +77,14 @@
   "create_draft.keep_existing_draft": "Keep existing draft",
   "create_draft.override_existing_draft": "Replace existing draft",
   "create_rule.draft_already_exist_possibility": "You can keep the existing draft and edit it or you can replace the existing draft, creating a new one based on this version",
-  "validation.evaluation_error.unknown_function": "Required"
+  "validation.evaluation_error.unknown_function": "required",
+  "validation.evaluation_error.wrong_number_of_arguments": "wrong number of arguments",
+  "validation.evaluation_error.missing_named_argument": "missing named argument",
+  "validation.evaluation_error.arguments_must_be_int_or_float": "arguments must be an integer or a float",
+  "validation.evaluation_error.argument_must_be_integer": "argument must be an integer",
+  "validation.evaluation_error.argument_must_be_string": "argument must be a string",
+  "validation.evaluation_error.argument_must_be_boolean": "argument must be a boolean",
+  "validation.evaluation_error.argument_must_be_list": "argument must be a list",
+  "validation.evaluation_error.argument_must_be_convertible_to_duration": "argument must be a duration",
+  "validation.evaluation_error.argument_must_be_time": "argument must be a time"
 }

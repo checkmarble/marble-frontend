@@ -9,12 +9,27 @@ import type { ConstantType } from './ast-node';
 
 export type EvaluationErrorCode =
   | 'UNEXPECTED_ERROR'
-  | 'UNKNOWN_FUNCTION'
-  | 'WRONG_NUMBER_OF_ARGUMENTS';
+  | 'UNDEFINED_FUNCTION'
+  | 'WRONG_NUMBER_OF_ARGUMENTS'
+  | 'MISSING_NAMED_ARGUMENT'
+  | 'ARGUMENTS_MUST_BE_INT_OR_FLOAT'
+  | 'ARGUMENT_MUST_BE_INTEGER'
+  | 'ARGUMENT_MUST_BE_STRING'
+  | 'ARGUMENT_MUST_BE_BOOLEAN'
+  | 'ARGUMENT_MUST_BE_LIST'
+  | 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION'
+  | 'ARGUMENT_MUST_BE_TIME';
 
 export interface EvaluationError {
   error: EvaluationErrorCode;
   message: string;
+}
+
+export function isUndefinedFunctionError(evaluationError: {
+  error: string;
+  message: string;
+}): evaluationError is { error: 'UNDEFINED_FUNCTION'; message: string } {
+  return evaluationError.error === 'UNDEFINED_FUNCTION';
 }
 
 interface CommonNodeEvaluation {
