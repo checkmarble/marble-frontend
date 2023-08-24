@@ -14,6 +14,7 @@ export const toastMessageScema = z.object({
     'common:errors.list.duplicate_list_name',
     'common:success.save',
     'common:errors.scenario.duplicate_rule_name',
+    'common:errors.draft.invalid',
   ]),
 });
 

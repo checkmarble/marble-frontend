@@ -1,4 +1,5 @@
 import { navigationI18n } from '@app-builder/components';
+import { isStatusBadRequestHttpError } from '@app-builder/models';
 import { type SortedScenarioIteration } from '@app-builder/models/scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
@@ -82,10 +83,18 @@ export async function action({ request }: ActionArgs) {
   } catch (error) {
     const { getSession, commitSession } = serverServices.sessionService;
     const session = await getSession(request);
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: 'common:errors.unknown',
-    });
+
+    if (isStatusBadRequestHttpError(error)) {
+      setToastMessage(session, {
+        type: 'error',
+        messageKey: 'common:errors.draft.invalid',
+      });
+    } else {
+      setToastMessage(session, {
+        type: 'error',
+        messageKey: 'common:errors.unknown',
+      });
+    }
 
     return json(
       {
