@@ -54,9 +54,14 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
+/**
+ * The component is hidden when there is only one language available.
+ */
 export function LanguagePicker() {
   const { i18n } = useTranslation<'common'>();
   const fetcher = useFetcher<typeof action>();
+
+  if (supportedLngs.length === 1) return null;
 
   return (
     <Select.Default
