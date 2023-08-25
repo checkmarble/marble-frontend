@@ -23,6 +23,8 @@ export type EvaluationErrorCode =
 export interface EvaluationError {
   error: EvaluationErrorCode;
   message: string;
+  argumentIndex?: number;
+  argumentName?: string;
 }
 
 export function isUndefinedFunctionError(evaluationError: {
@@ -66,6 +68,8 @@ function adaptEvaluationError(dto: EvaluationErrorDto): EvaluationError {
   return {
     error: dto.error,
     message: dto.message,
+    argumentIndex: dto.argument_index,
+    argumentName: dto.argument_name,
   };
 }
 

@@ -171,6 +171,8 @@ export type EvaluationErrorCodeDto = "UNEXPECTED_ERROR" | "UNDEFINED_FUNCTION" |
 export type EvaluationErrorDto = {
     error: EvaluationErrorCodeDto;
     message: string;
+    argument_index?: number;
+    argument_name?: string;
 };
 export type NodeEvaluationDto = {
     return_value: ConstantDto;
