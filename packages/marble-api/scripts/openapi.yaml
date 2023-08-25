@@ -2106,6 +2106,10 @@ components:
           $ref: '#/components/schemas/EvaluationErrorCodeDto'
         message:
           type: string
+        argument_index:
+          type: integer
+        argument_name:
+          type: string
     EvaluationErrorCodeDto:
       type: string
       enum:
