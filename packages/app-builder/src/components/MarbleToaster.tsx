@@ -43,14 +43,17 @@ export function MarbleToaster({
 
   return (
     <Toaster position="bottom-center">
-      {(t) => (
-        <ToastBar toast={t}>
+      {(currentToast) => (
+        <ToastBar toast={currentToast}>
           {({ icon, message }) => (
             <>
               {icon}
               {message}
-              {t.type !== 'loading' && (
-                <button onClick={() => toast.dismiss(t.id)} aria-label="Close">
+              {currentToast.type !== 'loading' && (
+                <button
+                  onClick={() => toast.dismiss(currentToast.id)}
+                  aria-label="Close"
+                >
                   <Cross height="24px" width="24px" />
                 </button>
               )}
