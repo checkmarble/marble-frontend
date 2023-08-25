@@ -558,7 +558,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ScenarioIteration'
+                  $ref: '#/components/schemas/ScenarioIterationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -586,7 +586,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationWithBody'
+                $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -615,7 +615,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationWithBody'
+                $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -643,7 +643,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioIterationWithBody'
+                $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -681,10 +681,41 @@ paths:
                 type: object
                 required:
                   - iteration
-                  - scenario_validation
                 properties:
                   iteration:
-                    $ref: '#/components/schemas/ScenarioIterationWithBody'
+                    $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /scenario-iterations/{scenarioIterationId}/validate:
+    get:
+      tags:
+        - Scenario Iterations
+      summary: Validate a scenario iteration by id
+      operationId: validateScenarioIteration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioIterationId
+          description: ID of the scenario iteration
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The scenario iteration corresponding to the provided `scenarioIterationId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - scenario_validation
+                properties:
                   scenario_validation:
                     $ref: '#/components/schemas/ScenarioValidationDto'
         '401':
@@ -823,12 +854,9 @@ paths:
                 type: object
                 required:
                   - rule
-                  - scenario_validation
                 properties:
                   rule:
                     $ref: '#/components/schemas/ScenarioIterationRuleDto'
-                  scenario_validation:
-                    $ref: '#/components/schemas/ScenarioValidationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1800,7 +1828,7 @@ components:
           type: string
         description:
           type: string
-    ScenarioIteration:
+    ScenarioIterationDto:
       type: object
       required:
         - id
@@ -1824,9 +1852,9 @@ components:
         updatedAt:
           type: string
           format: date-time
-    ScenarioIterationWithBody:
+    ScenarioIterationWithBodyDto:
       allOf:
-        - $ref: '#/components/schemas/ScenarioIteration'
+        - $ref: '#/components/schemas/ScenarioIterationDto'
         - type: object
           required:
             - body
@@ -1940,8 +1968,8 @@ components:
         trigger_evaluation:
           $ref: '#/components/schemas/NodeEvaluationDto'
         rules_evaluations:
-          type: array
-          items:
+          type: object
+          additionalProperties:
             $ref: '#/components/schemas/NodeEvaluationDto'
     CreateScenarioIterationRuleBody:
       type: object
@@ -2051,12 +2079,15 @@ components:
       type: object
       required:
         - return_value
-        - evaluation_error
+        - errors
       properties:
         return_value:
           $ref: '#/components/schemas/ConstantDto'
-        evaluation_error:
-          type: string
+        errors:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/EvaluationErrorDto'
         children:
           type: array
           items:
@@ -2065,6 +2096,30 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/NodeEvaluationDto'
+    EvaluationErrorDto:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          $ref: '#/components/schemas/EvaluationErrorCodeDto'
+        message:
+          type: string
+    EvaluationErrorCodeDto:
+      type: string
+      enum:
+        - UNEXPECTED_ERROR
+        - UNDEFINED_FUNCTION
+        - WRONG_NUMBER_OF_ARGUMENTS
+        - MISSING_NAMED_ARGUMENT
+        - ARGUMENTS_MUST_BE_INT_OR_FLOAT
+        - ARGUMENT_MUST_BE_INTEGER
+        - ARGUMENT_MUST_BE_STRING
+        - ARGUMENT_MUST_BE_BOOLEAN
+        - ARGUMENT_MUST_BE_LIST
+        - ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION
+        - ARGUMENT_MUST_BE_TIME
     Identifier:
       type: object
       required:

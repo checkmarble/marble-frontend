@@ -45,6 +45,7 @@ export async function action({ request, params }: ActionArgs) {
       type: 'success',
       messageKey: 'common:success.save',
     });
+
     return json(
       {
         success: true as const,
@@ -74,7 +75,7 @@ export default function Trigger() {
   const scenarioIteration = useCurrentScenarioIteration();
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
-  //@ts-expect-error recursive type is not supported
+
   const formMethods = useForm({
     defaultValues: { astNode: scenarioIteration.astNode },
   });

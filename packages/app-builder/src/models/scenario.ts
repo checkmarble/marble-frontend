@@ -1,6 +1,7 @@
 import {
+  type ScenarioIterationDto,
   type ScenarioIterationRuleDto,
-  type ScenarioIterationWithBody,
+  type ScenarioIterationWithBodyDto,
 } from '@marble-api';
 
 import {
@@ -21,6 +22,14 @@ export type ScenarioIterationRule = {
   createdAt: string;
 };
 
+export interface ScenarioIterationSummary {
+  id: string;
+  scenarioId: string;
+  version: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ScenarioIteration {
   id: string;
   scenarioId: string;
@@ -34,7 +43,7 @@ export interface ScenarioIteration {
   astNode: AstNode;
 }
 
-export function adaptScenarioIterationRuleDto(
+export function adaptScenarioIterationRule(
   scenarioIterationRuleDto: ScenarioIterationRuleDto
 ): ScenarioIterationRule {
   let astNode: AstNode;
@@ -60,8 +69,8 @@ export function adaptScenarioIterationRuleDto(
   };
 }
 
-export function adaptScenarioIterationDto(
-  scenarioIterationWithBody: ScenarioIterationWithBody
+export function adaptScenarioIteration(
+  scenarioIterationWithBody: ScenarioIterationWithBodyDto
 ): ScenarioIteration {
   let astNode: AstNode;
   if (!scenarioIterationWithBody.body.trigger_condition_ast_expression) {
@@ -82,10 +91,20 @@ export function adaptScenarioIterationDto(
     updatedAt: scenarioIterationWithBody.updatedAt,
     scoreReviewThreshold: scenarioIterationWithBody.body.scoreReviewThreshold,
     scoreRejectThreshold: scenarioIterationWithBody.body.scoreRejectThreshold,
-    rules: scenarioIterationWithBody.body.rules.map(
-      adaptScenarioIterationRuleDto
-    ),
+    rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),
     schedule: scenarioIterationWithBody.body.schedule,
     astNode: astNode,
+  };
+}
+
+export function adaptScenarioIterationSummary(
+  dto: ScenarioIterationDto
+): ScenarioIterationSummary {
+  return {
+    id: dto.id,
+    scenarioId: dto.scenarioId,
+    version: dto.version,
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
   };
 }

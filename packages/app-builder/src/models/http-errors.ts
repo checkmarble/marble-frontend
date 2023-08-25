@@ -7,3 +7,9 @@ export function isHttpError(error: unknown): error is HttpError {
 export function isStatusConflictHttpError(error: unknown): error is HttpError {
   return isHttpError(error) && error.status === 409;
 }
+
+export function isStatusBadRequestHttpError(
+  error: unknown
+): error is HttpError {
+  return isHttpError(error) && error.status === 400;
+}

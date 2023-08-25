@@ -1,6 +1,7 @@
 import {
   adaptAstNodeToViewModelFromIdentifier,
   type AstNode,
+  NewUndefinedAstNode,
 } from '@app-builder/models';
 import {
   useEditorIdentifiers,
@@ -9,48 +10,84 @@ import {
   useGetOperatorName,
   useIsEditedOnce,
 } from '@app-builder/services/editor';
+import { getInvalidStates } from '@app-builder/services/validation/scenario-validation';
 import { Combobox, Select } from '@ui-design-system';
 import { forwardRef, useState } from 'react';
 
-import { FormControl, FormField, FormItem } from '../Form';
+import { FormControl, FormField, FormItem, FormMessage } from '../Form';
 
 export function EditAstNode({ name }: { name: string }) {
   const isFirstChildEditedOnce = useIsEditedOnce(`${name}.children.0`);
-  const isNameEditedOnce = useIsEditedOnce(`${name}.name`);
+  const isNameEditedOnce = useIsEditedOnce(name);
 
   return (
-    <div className="flex flex-row gap-1">
-      <FormField
-        name={`${name}.children.0`}
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <EditOperand {...field} />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-      <FormField
-        name={`${name}.name`}
-        render={({ field }) => (
-          <FormItem className={isFirstChildEditedOnce ? '' : 'hidden'}>
-            <FormControl>
-              <EditOperator {...field} />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-      <FormField
-        name={`${name}.children.1`}
-        render={({ field }) => (
-          <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
-            <FormControl>
-              <EditOperand {...field} />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-    </div>
+    <FormField
+      name={name}
+      render={({ fieldState: { error } }) => {
+        const invalidStates = getInvalidStates(error);
+
+        return (
+          <div className="relative">
+            <div className=" flex flex-row gap-1">
+              <FormField
+                name={`${name}.children.0`}
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormControl>
+                      <EditOperand
+                        {...field}
+                        invalid={
+                          fieldState.invalid ||
+                          invalidStates.root ||
+                          invalidStates.children[field.name]
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name={`${name}.name`}
+                render={({ field, fieldState }) => (
+                  <FormItem className={isFirstChildEditedOnce ? '' : 'hidden'}>
+                    <FormControl>
+                      <EditOperator
+                        {...field}
+                        invalid={
+                          fieldState.invalid ||
+                          invalidStates.root ||
+                          invalidStates.name
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name={`${name}.children.1`}
+                render={({ field, fieldState }) => (
+                  <FormItem className={isNameEditedOnce ? '' : 'hidden'}>
+                    <FormControl>
+                      <EditOperand
+                        {...field}
+                        invalid={
+                          fieldState.invalid ||
+                          invalidStates.root ||
+                          invalidStates.children[field.name]
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            {invalidStates.root && isFirstChildEditedOnce && <FormMessage />}
+          </div>
+        );
+      }}
+    />
   );
 }
 
@@ -59,10 +96,11 @@ const EditOperand = forwardRef<
   {
     name: string;
     value: AstNode;
-    onChange: (value: AstNode | null) => void;
+    onChange: (value: AstNode) => void;
     onBlur: () => void;
+    invalid: boolean;
   }
->(({ onChange, onBlur, value }, ref) => {
+>(({ onChange, onBlur, value, invalid }, ref) => {
   const editorIdentifier = useEditorIdentifiers();
   const getIdentifierOptions = useGetIdentifierOptions();
   const selectedItem = value
@@ -80,13 +118,14 @@ const EditOperand = forwardRef<
       value={selectedItem}
       onChange={(value) => {
         setInputValue(value?.label ?? '');
-        onChange(value?.astNode ?? null);
+        onChange(value?.astNode ?? NewUndefinedAstNode());
       }}
       nullable
     >
       <div className="relative">
         <Combobox.Input
           ref={ref}
+          aria-invalid={invalid}
           displayValue={(item?: (typeof items)[number]) => item?.label ?? ''}
           onChange={(event) => setInputValue(event.target.value)}
           onBlur={onBlur}
@@ -115,8 +154,9 @@ const EditOperator = forwardRef<
     value: string | null;
     onChange: (value: string | null) => void;
     onBlur: () => void;
+    invalid: boolean;
   }
->(({ name, value, onChange, onBlur }, ref) => {
+>(({ name, value, onChange, onBlur, invalid }, ref) => {
   const operators = useEditorOperators();
   const getOperatorName = useGetOperatorName();
 
@@ -130,7 +170,8 @@ const EditOperator = forwardRef<
     >
       <Select.Trigger
         ref={ref}
-        className="focus:border-purple-100"
+        aria-invalid={invalid}
+        className="focus:border-purple-100 aria-[invalid=true]:border-red-100"
         onBlur={onBlur}
       >
         <Select.Value placeholder="..." />

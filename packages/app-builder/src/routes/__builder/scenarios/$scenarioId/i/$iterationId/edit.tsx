@@ -1,13 +1,11 @@
 import {
+  Callout,
   navigationI18n,
   ScenarioPage,
   Scenarios,
   type ScenariosLinkProps,
 } from '@app-builder/components';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
-import { type AstOperator } from '@app-builder/models/ast-operators';
-import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
-import { type ScenarioIteration } from '@app-builder/models/scenario';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
@@ -23,6 +21,7 @@ import { Link, Outlet, useLoaderData } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Decision, Rules, Trigger } from '@ui-icons';
 import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 
 export const handle = {
@@ -39,24 +38,29 @@ const LINKS: ScenariosLinkProps[] = [
   },
 ];
 
-interface LoaderResponse {
-  scenarioIterations: ScenarioIteration[];
-  currentIteration: ScenarioIteration;
-  identifiers: EditorIdentifiersByType;
-  operators: AstOperator[];
-}
-
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient, editor, user } = await authService.isAuthenticated(
+  const { editor, scenario, user } = await authService.isAuthenticated(
     request,
     {
       failureRedirect: '/login',
     }
   );
 
-  const iterationId = fromParams(params, 'iterationId');
   const scenarioId = fromParams(params, 'scenarioId');
+  const iterationId = fromParams(params, 'iterationId');
+
+  const operatorsPromise = editor.listOperators({
+    scenarioId,
+  });
+
+  const identifiersPromise = editor.listIdentifiers({
+    scenarioId,
+  });
+
+  const scenarioValidationPromise = scenario.validate({
+    iterationId: iterationId,
+  });
 
   if (!user.permissions.canManageScenario) {
     return redirect(
@@ -67,7 +71,7 @@ export async function loader({ request, params }: LoaderArgs) {
     );
   }
 
-  const scenarioIterations = await apiClient.listScenarioIterations({
+  const scenarioIterations = await scenario.listScenarioIterations({
     scenarioId,
   });
 
@@ -88,26 +92,25 @@ export async function loader({ request, params }: LoaderArgs) {
       'desc',
     ])[0];
   }
-  const operators = await editor.listOperators({
-    scenarioId,
-  });
-
-  const identifiers = await editor.listIdentifiers({
-    scenarioId,
-  });
 
   return json({
     scenarioIterations: scenarioIterations,
     currentIteration: currentIteration,
-    identifiers: identifiers,
-    operators: operators,
+    identifiers: await identifiersPromise,
+    operators: await operatorsPromise,
+    scenarioValidation: await scenarioValidationPromise,
   });
 }
 
 export default function ScenarioEditLayout() {
   const currentScenario = useCurrentScenario();
-  const { scenarioIterations, currentIteration, identifiers, operators } =
-    useLoaderData<typeof loader>() as LoaderResponse;
+  const {
+    scenarioIterations,
+    currentIteration,
+    identifiers,
+    operators,
+    scenarioValidation,
+  } = useLoaderData<typeof loader>();
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
@@ -125,6 +128,7 @@ export default function ScenarioEditLayout() {
         ? ('live version' as const)
         : ('draft' as const),
   };
+
   return (
     <ScenarioPage.Container>
       <EditorIdentifiersProvider identifiers={identifiers}>
@@ -152,6 +156,7 @@ export default function ScenarioEditLayout() {
             </div>
           </ScenarioPage.Header>
           <ScenarioPage.Content>
+            <SanityErrors errors={scenarioValidation?.errors ?? []} />
             <Scenarios.Nav>
               {LINKS.map((linkProps) => (
                 <li key={linkProps.labelTKey}>
@@ -164,5 +169,28 @@ export default function ScenarioEditLayout() {
         </EditorOperatorsProvider>
       </EditorIdentifiersProvider>
     </ScenarioPage.Container>
+  );
+}
+
+function SanityErrors({ errors }: { errors: string[] }) {
+  const { t } = useTranslation(handle.i18n);
+
+  if (errors.length === 0) return null;
+
+  return (
+    <Callout variant="error">
+      <div className="flex flex-col">
+        <p>
+          {t('common:error', {
+            count: errors.length,
+          })}
+        </p>
+        <ul className="list-inside list-disc">
+          {errors.map((error) => (
+            <li key={error}>{error}</li>
+          ))}
+        </ul>
+      </div>
+    </Callout>
   );
 }

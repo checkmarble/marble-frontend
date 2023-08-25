@@ -106,7 +106,7 @@ export type UpdateScenarioBody = {
     name?: string;
     description?: string;
 };
-export type ScenarioIteration = {
+export type ScenarioIterationDto = {
     id: string;
     scenarioId: string;
     version: number | null;
@@ -151,7 +151,7 @@ export type ScenarioIterationRuleDto = {
     scoreModifier: number;
     createdAt: string;
 };
-export type ScenarioIterationWithBody = ScenarioIteration & {
+export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
         trigger_condition_ast_expression?: (NodeDto) | null;
         scoreReviewThreshold?: number;
@@ -167,9 +167,14 @@ export type UpdateScenarioIterationBody = {
         scoreRejectThreshold?: number;
     };
 };
+export type EvaluationErrorCodeDto = "UNEXPECTED_ERROR" | "UNDEFINED_FUNCTION" | "WRONG_NUMBER_OF_ARGUMENTS" | "MISSING_NAMED_ARGUMENT" | "ARGUMENTS_MUST_BE_INT_OR_FLOAT" | "ARGUMENT_MUST_BE_INTEGER" | "ARGUMENT_MUST_BE_STRING" | "ARGUMENT_MUST_BE_BOOLEAN" | "ARGUMENT_MUST_BE_LIST" | "ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION" | "ARGUMENT_MUST_BE_TIME";
+export type EvaluationErrorDto = {
+    error: EvaluationErrorCodeDto;
+    message: string;
+};
 export type NodeEvaluationDto = {
     return_value: ConstantDto;
-    evaluation_error: string;
+    errors: EvaluationErrorDto[] | null;
     children?: NodeEvaluationDto[];
     named_children?: {
         [key: string]: NodeEvaluationDto;
@@ -178,7 +183,9 @@ export type NodeEvaluationDto = {
 export type ScenarioValidationDto = {
     errors: string[];
     trigger_evaluation: NodeEvaluationDto;
-    rules_evaluations: NodeEvaluationDto[];
+    rules_evaluations: {
+        [key: string]: NodeEvaluationDto;
+    };
 };
 export type UpdateScenarioIterationRuleBody = {
     displayOrder?: number;
@@ -623,7 +630,7 @@ export function listScenarioIterations({ scenarioId }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIteration[];
+        data: ScenarioIterationDto[];
     } | {
         status: 401;
         data: string;
@@ -645,7 +652,7 @@ export function listScenarioIterations({ scenarioId }: {
 export function createScenarioIteration(createScenarioIterationBody: CreateScenarioIterationBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationWithBody;
+        data: ScenarioIterationWithBodyDto;
     } | {
         status: 401;
         data: string;
@@ -667,7 +674,7 @@ export function createScenarioIteration(createScenarioIterationBody: CreateScena
 export function getScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationWithBody;
+        data: ScenarioIterationWithBodyDto;
     } | {
         status: 401;
         data: string;
@@ -687,7 +694,7 @@ export function getScenarioIteration(scenarioIterationId: string, opts?: Oazapft
 export function createDraftFromScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationWithBody;
+        data: ScenarioIterationWithBodyDto;
     } | {
         status: 401;
         data: string;
@@ -709,8 +716,7 @@ export function updateScenarioIteration(scenarioIterationId: string, updateScena
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            iteration: ScenarioIterationWithBody;
-            scenario_validation: ScenarioValidationDto;
+            iteration: ScenarioIterationWithBodyDto;
         };
     } | {
         status: 401;
@@ -726,6 +732,28 @@ export function updateScenarioIteration(scenarioIterationId: string, updateScena
         method: "PATCH",
         body: updateScenarioIterationBody
     })));
+}
+/**
+ * Validate a scenario iteration by id
+ */
+export function validateScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            scenario_validation: ScenarioValidationDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/validate`, {
+        ...opts
+    }));
 }
 /**
  * List rules
@@ -805,7 +833,6 @@ export function updateScenarioIterationRule(ruleId: string, updateScenarioIterat
         status: 200;
         data: {
             rule: ScenarioIterationRuleDto;
-            scenario_validation: ScenarioValidationDto;
         };
     } | {
         status: 401;

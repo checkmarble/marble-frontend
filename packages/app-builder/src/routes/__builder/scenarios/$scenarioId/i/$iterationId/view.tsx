@@ -6,8 +6,6 @@ import {
   usePermissionsContext,
 } from '@app-builder/components';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
-import { type AstOperator } from '@app-builder/models/ast-operators';
-import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { CreateDraftIteration } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/create_draft';
@@ -19,7 +17,6 @@ import {
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { type ScenarioIteration } from '@marble-api';
 import { json, type LoaderArgs, redirect } from '@remix-run/node';
 import { Link, Outlet, useLoaderData } from '@remix-run/react';
 import { Decision, Rules, Trigger } from '@ui-icons';
@@ -40,15 +37,9 @@ const LINKS: ScenariosLinkProps[] = [
   },
 ];
 
-interface LoaderResponse {
-  scenarioIterations: ScenarioIteration[];
-  identifiers: EditorIdentifiersByType;
-  operators: AstOperator[];
-}
-
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { editor, apiClient, user } = await authService.isAuthenticated(
+  const { editor, scenario, user } = await authService.isAuthenticated(
     request,
     {
       failureRedirect: '/login',
@@ -56,12 +47,19 @@ export async function loader({ request, params }: LoaderArgs) {
   );
 
   const scenarioId = fromParams(params, 'scenarioId');
+  const iterationId = fromParams(params, 'iterationId');
 
-  const scenarioIterations = await apiClient.listScenarioIterations({
+  const operatorsPromise = editor.listOperators({
     scenarioId,
   });
 
-  const iterationId = fromParams(params, 'iterationId');
+  const identifiersPromise = editor.listIdentifiers({
+    scenarioId,
+  });
+
+  const scenarioIterations = await scenario.listScenarioIterations({
+    scenarioId,
+  });
 
   const currentIteration = scenarioIterations.find(
     ({ id }) => id === iterationId
@@ -77,25 +75,18 @@ export async function loader({ request, params }: LoaderArgs) {
       })
     );
   }
-  const operators = await editor.listOperators({
-    scenarioId,
-  });
 
-  const identifiers = await editor.listIdentifiers({
-    scenarioId,
-  });
   return json({
     scenarioIterations: scenarioIterations,
-    identifiers: identifiers,
-    operators: operators,
+    identifiers: await identifiersPromise,
+    operators: await operatorsPromise,
   });
 }
 
 export default function ScenarioViewLayout() {
   const currentScenario = useCurrentScenario();
-  const { scenarioIterations, identifiers, operators } = useLoaderData<
-    typeof loader
-  >() as LoaderResponse;
+  const { scenarioIterations, identifiers, operators } =
+    useLoaderData<typeof loader>();
   const { canManageScenario, canPublishScenario } = usePermissionsContext();
 
   const sortedScenarioIterations = sortScenarioIterations(

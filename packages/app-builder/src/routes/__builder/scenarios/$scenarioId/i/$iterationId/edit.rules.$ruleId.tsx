@@ -6,13 +6,7 @@ import {
 } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import type {
-  AstNode,
-  EditorIdentifier,
-  ScenarioIterationRule,
-  ScenarioValidation,
-} from '@app-builder/models';
-import { type AstOperator } from '@app-builder/models/ast-operators';
+import { adaptNodeEvaluationErrors, type AstNode } from '@app-builder/models';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import {
@@ -20,9 +14,13 @@ import {
   EditorOperatorsProvider,
 } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
+import {
+  countNodeEvaluationErrors,
+  findRuleValidation,
+  useGetNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation/scenario-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { DevTool } from '@hookform/devtools';
 import {
   type ActionArgs,
   json,
@@ -32,25 +30,13 @@ import {
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
+import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
 };
-
-interface EditRuleLoaderResult {
-  rule: ScenarioIterationRule;
-  identifiers: {
-    databaseAccessors: EditorIdentifier[];
-    payloadAccessors: EditorIdentifier[];
-    customListAccessors: EditorIdentifier[];
-  };
-  operators: AstOperator[];
-  scenarioValidation: ScenarioValidation | null;
-  scenarioId: string;
-}
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
@@ -75,25 +61,26 @@ export async function loader({ request, params }: LoaderArgs) {
     );
   }
 
-  const scenarioIterationRule = scenario.getScenarioIterationRule({
+  const scenarioIterationRulePromise = scenario.getScenarioIterationRule({
     ruleId,
   });
 
-  const operators = editor.listOperators({
+  const operatorsPromise = editor.listOperators({
     scenarioId,
   });
 
-  const identifiers = editor.listIdentifiers({
+  const identifiersPromise = editor.listIdentifiers({
     scenarioId,
   });
 
-  const scenarioValidation: ScenarioValidation | null = null;
+  const validation = await scenario.validate({ iterationId });
+  const ruleValidation = findRuleValidation(validation, ruleId);
 
-  return json<EditRuleLoaderResult>({
-    rule: await scenarioIterationRule,
-    identifiers: await identifiers,
-    operators: await operators,
-    scenarioValidation,
+  return json({
+    rule: await scenarioIterationRulePromise,
+    identifiers: await identifiersPromise,
+    operators: await operatorsPromise,
+    ruleValidation,
     scenarioId,
   });
 }
@@ -115,7 +102,7 @@ export async function action({ request, params }: ActionArgs) {
       astNode: AstNode;
     };
 
-    const scenarioValidation = await editor.saveRule({
+    await editor.saveRule({
       ruleId,
       astNode: expression.astNode,
     });
@@ -129,7 +116,6 @@ export async function action({ request, params }: ActionArgs) {
         success: true as const,
         error: null,
         values: expression,
-        scenarioValidation,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -143,7 +129,6 @@ export async function action({ request, params }: ActionArgs) {
         success: false as const,
         error: null,
         values: null,
-        scenarioValidation: null,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -152,9 +137,8 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators, scenarioValidation } = useLoaderData<
-    typeof loader
-  >() as EditRuleLoaderResult;
+  const { rule, identifiers, operators, ruleValidation } =
+    useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -166,6 +150,25 @@ export default function RuleEdit() {
   const formMethods = useForm({
     defaultValues: { astNode: rule.astNode },
   });
+
+  const { setError } = formMethods;
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+  useEffect(() => {
+    const allEvaluationErrors = adaptNodeEvaluationErrors(
+      'astNode',
+      ruleValidation
+    );
+    allEvaluationErrors.forEach((flattenNodeEvaluationErrors) => {
+      if (flattenNodeEvaluationErrors.state === 'invalid') {
+        const firstError = flattenNodeEvaluationErrors.errors[0];
+        //@ts-expect-error path is a string
+        setError(flattenNodeEvaluationErrors.path, {
+          type: firstError.error,
+          message: getNodeEvaluationErrorMessage(firstError),
+        });
+      }
+    });
+  }, [getNodeEvaluationErrorMessage, ruleValidation, setError]);
 
   return (
     <ScenarioPage.Container>
@@ -182,11 +185,11 @@ export default function RuleEdit() {
         </div>
       </ScenarioPage.Header>
       <ScenarioPage.Content className="max-w-3xl">
-        {scenarioValidation && (
-          <Callout>
-            <pre>{JSON.stringify(scenarioValidation)}</pre>
-          </Callout>
-        )}
+        <Callout variant="error">
+          {t('common:validation_error', {
+            count: countNodeEvaluationErrors(ruleValidation),
+          })}
+        </Callout>
         <EditRule
           rule={rule}
           iterationId={iterationId}
@@ -228,17 +231,6 @@ export default function RuleEdit() {
           iterationId={iterationId}
           scenarioId={scenarioId}
         />
-        <ClientOnly>
-          {() => (
-            <DevTool
-              control={formMethods.control}
-              placement="bottom-right"
-              styles={{
-                panel: { width: '450px' },
-              }}
-            />
-          )}
-        </ClientOnly>
       </ScenarioPage.Content>
     </ScenarioPage.Container>
   );
