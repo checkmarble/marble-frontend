@@ -44,9 +44,7 @@ export default function Lists() {
   const customList = useLoaderData<typeof loader>();
   const listValues = customList.values ?? [];
   const { t } = useTranslation(handle.i18n);
-  const {
-    userPermissions: { canManageListItem, canManageList },
-  } = usePermissionsContext();
+  const { canManageListItem, canManageList } = usePermissionsContext();
 
   const columns = useMemo<ColumnDef<ListValues>[]>(
     () => [

@@ -77,7 +77,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Credentials'
+                $ref: '#/components/schemas/CredentialsDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1038,7 +1038,7 @@ paths:
                   users:
                     type: array
                     items:
-                      $ref: '#/components/schemas/User'
+                      $ref: '#/components/schemas/UserDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1071,7 +1071,7 @@ paths:
                   - user
                 properties:
                   user:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1106,7 +1106,7 @@ paths:
                   - user
                 properties:
                   user:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1327,7 +1327,7 @@ paths:
                   - users
                 properties:
                   users:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1445,7 +1445,7 @@ components:
           type: string
         database_name:
           type: string
-    User:
+    UserDto:
       type: object
       required:
         - user_id
@@ -1558,7 +1558,7 @@ components:
         expires_in:
           type: string
           format: date-time
-    Credentials:
+    CredentialsDto:
       type: object
       required:
         - credentials

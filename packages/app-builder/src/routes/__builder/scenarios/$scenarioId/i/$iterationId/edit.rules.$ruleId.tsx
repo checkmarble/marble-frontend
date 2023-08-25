@@ -3,7 +3,6 @@ import {
   Paper,
   scenarioI18n,
   ScenarioPage,
-  usePermissionRedirect,
 } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
@@ -24,7 +23,12 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { DevTool } from '@hookform/devtools';
-import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
+import {
+  type ActionArgs,
+  json,
+  type LoaderArgs,
+  redirect,
+} from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
@@ -50,12 +54,26 @@ interface EditRuleLoaderResult {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { editor, scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
+  const { editor, scenario, user } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: '/login',
+    }
+  );
 
   const ruleId = fromParams(params, 'ruleId');
   const scenarioId = fromParams(params, 'scenarioId');
+  const iterationId = fromParams(params, 'iterationId');
+
+  if (!user.permissions.canManageScenario) {
+    return redirect(
+      getRoute('/scenarios/:scenarioId/i/:iterationId/view/rules/:ruleId', {
+        scenarioId: fromUUID(scenarioId),
+        iterationId: fromUUID(iterationId),
+        ruleId: fromUUID(ruleId),
+      })
+    );
+  }
 
   const scenarioIterationRule = scenario.getScenarioIterationRule({
     ruleId,
@@ -141,17 +159,6 @@ export default function RuleEdit() {
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
   const ruleId = useParam('ruleId');
-
-  usePermissionRedirect('canManageScenario', {
-    redirectUrl: getRoute(
-      '/scenarios/:scenarioId/i/:iterationId/view/rules/:ruleId',
-      {
-        scenarioId: fromUUID(scenarioId),
-        iterationId: fromUUID(rule.scenarioIterationId),
-        ruleId: fromUUID(rule.id),
-      }
-    ),
-  });
 
   const fetcher = useFetcher<typeof action>();
 

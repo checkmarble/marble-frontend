@@ -46,29 +46,11 @@ const BOTTOM_LINKS: SidebarLinkProps[] = [
   // { labelTKey: 'navigation:help-center', to: 'help-center', Icon: Helpcenter },
 ];
 
-export interface UserResponse {
-  id?: string;
-  orgId: string;
-  email?: string;
-  preferredLanguage?: string;
-  profilePictureUrl?: string;
-  permissions: string[];
-}
-
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { user } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-
-  const { credentials } = await apiClient.getCredentials();
-
-  const user: UserResponse = {
-    id: credentials.actor_identity.user_id,
-    orgId: credentials.organization_id,
-    email: credentials.actor_identity.email,
-    permissions: credentials.permissions,
-  };
 
   return json({ user });
 }
@@ -82,7 +64,7 @@ export default function Builder() {
   const { user } = useLoaderData<typeof loader>();
 
   return (
-    <PermissionsProvider permissions={user.permissions}>
+    <PermissionsProvider userPermissions={user.permissions}>
       <div className="flex h-full flex-1 flex-row overflow-hidden">
         <header
           className={clsx(
@@ -123,7 +105,9 @@ export default function Builder() {
                       src={user.profilePictureUrl}
                     /> */}
                     {/* <p className="text-m mb-1 font-semibold capitalize">{`${user.firstName} ${user.lastName}`}</p> */}
-                    <p className="text-s mb-2 font-normal">{user.email}</p>
+                    <p className="text-s mb-2 font-normal">
+                      {user.actorIdentity.email}
+                    </p>
                     <LanguagePicker />
                   </div>
 

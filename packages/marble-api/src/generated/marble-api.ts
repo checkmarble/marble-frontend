@@ -18,7 +18,7 @@ export type Token = {
     token_type: string;
     expires_in: string;
 };
-export type Credentials = {
+export type CredentialsDto = {
     credentials: {
         organization_id: string;
         role: string;
@@ -226,7 +226,7 @@ export type ApiKey = {
     key: string;
     role: string;
 };
-export type User = {
+export type UserDto = {
     user_id: string;
     email: string;
     role: string;
@@ -289,7 +289,7 @@ export function postToken({ xApiKey, authorization }: {
 export function getCredentials(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Credentials;
+        data: CredentialsDto;
     } | {
         status: 401;
         data: string;
@@ -963,7 +963,7 @@ export function listUsers(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            users: User[];
+            users: UserDto[];
         };
     } | {
         status: 401;
@@ -985,7 +985,7 @@ export function createUser(createUser: CreateUser, opts?: Oazapfts.RequestOpts) 
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            user: User;
+            user: UserDto;
         };
     } | {
         status: 401;
@@ -1009,7 +1009,7 @@ export function getUser(userId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            user: User;
+            user: UserDto;
         };
     } | {
         status: 401;
@@ -1160,7 +1160,7 @@ export function listOrganizationUsers(organizationId: string, opts?: Oazapfts.Re
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            users: User;
+            users: UserDto;
         };
     } | {
         status: 401;

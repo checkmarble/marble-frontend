@@ -7,3 +7,4 @@ export * from './marble-session';
 export * from './operators';
 export * from './scenario';
 export * from './scenario-validation';
+export * from './user';

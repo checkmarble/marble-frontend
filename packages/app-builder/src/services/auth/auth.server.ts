@@ -1,8 +1,9 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { adaptAuthErrors } from '@app-builder/models';
+import { adaptAuthErrors, type User } from '@app-builder/models';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
+import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { getServerEnv } from '@app-builder/utils/environment.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { marbleApi } from '@marble-api';
@@ -18,14 +19,27 @@ interface AuthenticatedInfo {
   apiClient: MarbleApi;
   editor: ReturnType<EditorRepository>;
   scenario: ReturnType<ScenarioRepository>;
+  user: User;
 }
 
 export function makeAuthenticationServerService(
   marbleAPIClient: MarbleAPIRepository,
+  userRepository: UserRepository,
   editorRepository: EditorRepository,
   scenarioRepository: ScenarioRepository,
   sessionService: SessionService
 ) {
+  function getMarbleAPIClient(marbleAccessToken: string) {
+    const tokenService = {
+      getToken: () => Promise.resolve(marbleAccessToken),
+      refreshToken: () => {
+        // We don't handle refresh for now, force a logout when 401 is returned instead
+        throw redirect(getRoute('/ressources/auth/logout'));
+      },
+    };
+    return marbleAPIClient(tokenService);
+  }
+
   async function authenticate(
     request: Request,
     options: {
@@ -53,7 +67,11 @@ export function makeAuthenticationServerService(
         { baseUrl: getServerEnv('MARBLE_API_DOMAIN') }
       );
 
+      const apiClient = getMarbleAPIClient(marbleToken.access_token);
+      const user = await userRepository(apiClient).getCurrentUser();
+
       session.set('authToken', marbleToken);
+      session.set('user', user);
       redirectUrl = options.successRedirect;
     } catch (error) {
       logger.error(error);
@@ -95,26 +113,25 @@ export function makeAuthenticationServerService(
     const session = await sessionService.getSession(request);
 
     const marbleToken = session.get('authToken');
-    if (!marbleToken || marbleToken.expires_in > new Date().toISOString()) {
+    const user = session.get('user');
+    if (
+      !marbleToken ||
+      marbleToken.expires_in > new Date().toISOString() ||
+      !user
+    ) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
     }
 
     if (options.successRedirect) throw redirect(options.successRedirect);
 
-    const tokenService = {
-      getToken: () => Promise.resolve(marbleToken.access_token),
-      refreshToken: () => {
-        // We don't handle refresh for now, force a logout when 401 is returned instead
-        throw redirect(getRoute('/ressources/auth/logout'));
-      },
-    };
-    const apiClient = marbleAPIClient(tokenService);
+    const apiClient = getMarbleAPIClient(marbleToken.access_token);
 
     return {
       apiClient,
       editor: editorRepository(apiClient),
       scenario: scenarioRepository(apiClient),
+      user,
     };
   }
 

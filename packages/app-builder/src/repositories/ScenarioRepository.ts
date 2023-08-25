@@ -2,7 +2,6 @@ import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
   adaptScenarioIterationDto,
   adaptScenarioIterationRuleDto,
-  type ScenarioIteration,
 } from '@app-builder/models/scenario';
 
 export type ScenarioRepository = ReturnType<typeof getScenarioRepository>;
@@ -14,11 +13,7 @@ export function getScenarioRepository() {
 
       return adaptScenarioIterationRuleDto(rule);
     },
-    getScenarioIteration: async ({
-      iterationId,
-    }: {
-      iterationId: string;
-    }): Promise<ScenarioIteration> => {
+    getScenarioIteration: async ({ iterationId }: { iterationId: string }) => {
       const scenarioIteration = await marbleApiClient.getScenarioIteration(
         iterationId
       );

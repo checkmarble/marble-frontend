@@ -3,6 +3,7 @@ import { type Session } from '@remix-run/node';
 import * as z from 'zod';
 
 import { type AuthErrors } from './auth-errors';
+import { type User } from './user';
 
 export const toastMessageScema = z.object({
   type: z.enum(['success', 'error', 'loading', 'custom']),
@@ -18,7 +19,7 @@ export const toastMessageScema = z.object({
 
 export type ToastMessage = z.infer<typeof toastMessageScema>;
 
-export type MarbleSessionData = { authToken: Token; lng: string };
+export type MarbleSessionData = { authToken: Token; lng: string; user: User };
 export type MarbleFlashData = {
   toastMessage: ToastMessage;
   authError: { message: AuthErrors };
