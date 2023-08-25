@@ -88,8 +88,8 @@ export default function Rules() {
   });
 
   return (
-    <div className="max-w-fit overflow-scroll">
-      <div className="flex flex-row justify-end p-3">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-row justify-end">
         <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
       </div>
       <Table.Container {...getContainerProps()}>

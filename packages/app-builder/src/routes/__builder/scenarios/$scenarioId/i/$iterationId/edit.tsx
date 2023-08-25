@@ -151,7 +151,7 @@ export default function ScenarioEditLayout() {
               />
             </div>
           </ScenarioPage.Header>
-          <ScenarioPage.Content className="max-w-3xl overflow-scroll">
+          <ScenarioPage.Content>
             <Scenarios.Nav>
               {LINKS.map((linkProps) => (
                 <li key={linkProps.labelTKey}>
