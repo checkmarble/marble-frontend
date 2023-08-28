@@ -35,7 +35,7 @@ export function EditAstNode({ name }: { name: string }) {
 
         return (
           <div className="relative">
-            <div className=" flex flex-row gap-1">
+            <div className="flex flex-row gap-1">
               <FormField
                 name={`${name}.children.0`}
                 render={({ field, fieldState }) => (
