@@ -1,20 +1,19 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { adaptAstNode, type AstNode } from '@app-builder/models';
+import {
+  adaptAstNode,
+  adaptIdentifierDto,
+  type AstNode,
+  type EditorIdentifiersByType,
+} from '@app-builder/models';
 import {
   adaptAstOperatorDto,
   type AstOperator,
 } from '@app-builder/models/ast-operators';
-import {
-  adaptIdentifierDto,
-  type EditorIdentifier,
-} from '@app-builder/models/identifier';
 
 export interface EditorRepository {
-  listIdentifiers(args: { scenarioId: string }): Promise<{
-    databaseAccessors: EditorIdentifier[];
-    payloadAccessors: EditorIdentifier[];
-    customListAccessors: EditorIdentifier[];
-  }>;
+  listIdentifiers(args: {
+    scenarioId: string;
+  }): Promise<EditorIdentifiersByType>;
   listOperators(args: { scenarioId: string }): Promise<AstOperator[]>;
   saveRule(args: {
     ruleId: string;

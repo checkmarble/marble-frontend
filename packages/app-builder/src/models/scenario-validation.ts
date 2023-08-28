@@ -53,6 +53,14 @@ interface InvalidNodeEvaluation extends CommonNodeEvaluation {
   errors: EvaluationError[];
 }
 
+export function NewPendingNodeEvaluation(): PendingNodeEvaluation {
+  return {
+    state: 'pending',
+    children: [],
+    namedChildren: {},
+  };
+}
+
 export type NodeEvaluation =
   | ValidNodeEvaluation
   | PendingNodeEvaluation
