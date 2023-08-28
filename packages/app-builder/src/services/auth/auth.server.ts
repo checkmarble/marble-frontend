@@ -17,16 +17,43 @@ import { type SessionService } from './session.server';
 
 interface AuthenticatedInfo {
   apiClient: MarbleApi;
-  editor: ReturnType<EditorRepository>;
-  scenario: ReturnType<ScenarioRepository>;
+  editor: EditorRepository;
+  scenario: ScenarioRepository;
   user: User;
+}
+
+export interface AuthenticationServerService {
+  authenticate(
+    request: Request,
+    options: {
+      successRedirect: string;
+      failureRedirect: string;
+    }
+  ): Promise<void>;
+
+  isAuthenticated(
+    request: Request,
+    options?: { successRedirect?: never; failureRedirect?: never }
+  ): Promise<AuthenticatedInfo | null>;
+  isAuthenticated(
+    request: Request,
+    options: { successRedirect: string; failureRedirect?: never }
+  ): Promise<null>;
+  isAuthenticated(
+    request: Request,
+    options: { successRedirect?: never; failureRedirect: string }
+  ): Promise<AuthenticatedInfo>;
+  isAuthenticated(
+    request: Request,
+    options: { successRedirect: string; failureRedirect: string }
+  ): Promise<null>;
 }
 
 export function makeAuthenticationServerService(
   marbleAPIClient: MarbleAPIRepository,
-  userRepository: UserRepository,
-  editorRepository: EditorRepository,
-  scenarioRepository: ScenarioRepository,
+  userRepository: (marbleApiClient: MarbleApi) => UserRepository,
+  editorRepository: (marbleApiClient: MarbleApi) => EditorRepository,
+  scenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository,
   sessionService: SessionService
 ) {
   function getMarbleAPIClient(marbleAccessToken: string) {
@@ -154,7 +181,3 @@ export function makeAuthenticationServerService(
     logout,
   };
 }
-
-export type AuthenticationServerService = ReturnType<
-  typeof makeAuthenticationServerService
->;

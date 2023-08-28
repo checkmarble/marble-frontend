@@ -1,10 +1,12 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { adaptUser } from '@app-builder/models/user';
+import { adaptUser, type User } from '@app-builder/models/user';
 
-export type UserRepository = ReturnType<typeof getUserRepository>;
+export interface UserRepository {
+  getCurrentUser(): Promise<User>;
+}
 
 export function getUserRepository() {
-  return (marbleApiClient: MarbleApi) => ({
+  return (marbleApiClient: MarbleApi): UserRepository => ({
     getCurrentUser: async () => {
       const { credentials } = await marbleApiClient.getCredentials();
 

@@ -1,13 +1,34 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { adaptAstNode, type AstNode } from '@app-builder/models';
-import { adaptAstOperatorDto } from '@app-builder/models/ast-operators';
-import { adaptIdentifierDto } from '@app-builder/models/identifier';
+import {
+  adaptAstOperatorDto,
+  type AstOperator,
+} from '@app-builder/models/ast-operators';
+import {
+  adaptIdentifierDto,
+  type EditorIdentifier,
+} from '@app-builder/models/identifier';
 
-export type EditorRepository = ReturnType<typeof getEditorRepository>;
+export interface EditorRepository {
+  listIdentifiers(args: { scenarioId: string }): Promise<{
+    databaseAccessors: EditorIdentifier[];
+    payloadAccessors: EditorIdentifier[];
+    customListAccessors: EditorIdentifier[];
+  }>;
+  listOperators(args: { scenarioId: string }): Promise<AstOperator[]>;
+  saveRule(args: {
+    ruleId: string;
+    astNode: AstNode;
+    displayOrder?: number;
+    name?: string;
+    description?: string;
+    scoreModifier?: number;
+  }): Promise<void>;
+}
 
 export function getEditorRepository() {
-  return (marbleApiClient: MarbleApi) => ({
-    listIdentifiers: async ({ scenarioId }: { scenarioId: string }) => {
+  return (marbleApiClient: MarbleApi): EditorRepository => ({
+    listIdentifiers: async ({ scenarioId }) => {
       const { database_accessors, payload_accessors, custom_list_accessors } =
         await marbleApiClient.listIdentifiers(scenarioId);
       const databaseAccessors = database_accessors.map(
@@ -20,7 +41,7 @@ export function getEditorRepository() {
 
       return { databaseAccessors, payloadAccessors, customListAccessors };
     },
-    listOperators: async ({ scenarioId }: { scenarioId: string }) => {
+    listOperators: async ({ scenarioId }) => {
       const { operators_accessors } = await marbleApiClient.listOperators(
         scenarioId
       );
@@ -35,13 +56,6 @@ export function getEditorRepository() {
       name,
       description,
       scoreModifier,
-    }: {
-      ruleId: string;
-      astNode: AstNode;
-      displayOrder?: number;
-      name?: string;
-      description?: string;
-      scoreModifier?: number;
     }) => {
       await marbleApiClient.updateScenarioIterationRule(ruleId, {
         displayOrder,
