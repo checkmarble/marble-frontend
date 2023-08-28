@@ -1,5 +1,6 @@
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
+  serverDependenciesToBundle: ['nanoid'],
   serverModuleFormat: 'cjs',
   appDirectory: 'src',
   ignoredRouteFiles: ['**/.*'],
