@@ -64,7 +64,11 @@ export function adaptAstNode(astNode: AstNode): NodeDto {
   };
 }
 
-export function isAstNodeUnknown(node: AstNode): boolean {
+export interface UndefinedAstNode extends Omit<AstNode, 'name'> {
+  name: typeof undefinedAstNodeName;
+}
+
+export function isAstNodeUnknown(node: AstNode): node is UndefinedAstNode {
   return node.name === undefinedAstNodeName;
 }
 
@@ -124,7 +128,19 @@ export function isAggregation(node: AstNode): node is AggregationAstNode {
   return node.name === aggregationAstNodeName;
 }
 
-export function isOrAndGroup(astNode: AstNode): boolean {
+export interface OrAndGroupAstNode {
+  name: 'Or';
+  constant: null;
+  children: {
+    name: 'And';
+    constant: null;
+    children: AstNode[];
+    namedChildren: Record<string, never>;
+  }[];
+  namedChildren: Record<string, never>;
+}
+
+export function isOrAndGroup(astNode: AstNode): astNode is OrAndGroupAstNode {
   if (astNode.name !== 'Or') {
     return false;
   }
