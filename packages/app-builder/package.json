@@ -16,5 +16,8 @@
     "generate-routes": "node -r esbuild-register scripts/generateRoutes.ts"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "nanoid": "^4.0.2"
+  }
 }
