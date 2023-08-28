@@ -16,5 +16,8 @@
     "generate-routes": "source scripts/generateRoutes.sh"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "nanoid": "^4.0.2"
+  }
 }
