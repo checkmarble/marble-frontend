@@ -8,7 +8,7 @@ export interface AstNode {
   namedChildren: Record<string, AstNode>;
 }
 
-const undefinedAstNodeName = 'Undefined';
+export const undefinedAstNodeName = 'Undefined';
 
 export type ConstantType =
   | number

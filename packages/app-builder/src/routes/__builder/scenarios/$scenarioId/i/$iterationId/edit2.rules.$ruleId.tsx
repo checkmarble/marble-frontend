@@ -5,21 +5,15 @@ import {
   ScenarioPage,
 } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
-import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { adaptNodeEvaluationErrors, type AstNode } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
-import {
-  EditorIdentifiersProvider,
-  EditorOperatorsProvider,
-} from '@app-builder/services/editor';
 import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
 import {
   countNodeEvaluationErrors,
   findRuleValidation,
-  useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation/scenario-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -32,7 +26,6 @@ import {
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const handle = {
