@@ -29,11 +29,11 @@ export interface RootOrWithAndViewModel {
 export function adaptRootOrWithAndViewModel(
   astNode: EditorNodeViewModel
 ): RootOrWithAndViewModel | null {
-  if (astNode.name !== 'Or') {
+  if (astNode.funcName !== 'Or') {
     return null;
   }
   for (const child of astNode.children) {
-    if (child.name !== 'And') {
+    if (child.funcName !== 'And') {
       return null;
     }
   }
