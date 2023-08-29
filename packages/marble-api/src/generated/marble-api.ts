@@ -758,6 +758,33 @@ export function validateScenarioIteration(scenarioIterationId: string, opts?: Oa
     }));
 }
 /**
+ * Validate a scenario iteration using the rule or trigger passed in body
+ */
+export function validateScenarioIterationWithGivenTriggerOrRule(scenarioIterationId: string, body: {
+    trigger_or_rule: NodeDto;
+    rule_id: string | null;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            scenario_validation: ScenarioValidationDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/validate`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * List rules
  */
 export function listScenarioIterationRules({ scenarioIterationId }: {

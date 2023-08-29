@@ -708,7 +708,57 @@ paths:
             format: uuid
       responses:
         '200':
-          description: The scenario iteration corresponding to the provided `scenarioIterationId`
+          description: The scenario validation of the iteration
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - scenario_validation
+                properties:
+                  scenario_validation:
+                    $ref: '#/components/schemas/ScenarioValidationDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Scenario Iterations
+      summary: Validate a scenario iteration using the rule or trigger passed in body
+      operationId: validateScenarioIterationWithGivenTriggerOrRule
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioIterationId
+          description: ID of the scenario iteration
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Trigger or rule to validate'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - trigger_or_rule
+                - rule_id
+              properties:
+                trigger_or_rule:
+                  $ref: '#/components/schemas/NodeDto'
+                rule_id:
+                  type: string
+                  nullable: true
+                  format: uuid
+        required: true
+      responses:
+        '200':
+          description: The scenario validation of the iteration using the rule or tigger passed in the body
           content:
             application/json:
               schema:
