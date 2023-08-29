@@ -138,7 +138,8 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, ruleValidation } = useLoaderData<typeof loader>();
+  const { rule, identifiers, operators, ruleValidation } =
+    useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -150,8 +151,9 @@ export default function RuleEdit() {
     ast: rule.astNode,
     validation: ruleValidation,
     identifiers,
+    operators,
     onSave: (astNodeToSave: AstNode) => {
-      fetcher.submit(data, {
+      fetcher.submit(JSON.stringify(astNodeToSave), {
         method: 'PATCH',
         encType: 'application/json',
       });

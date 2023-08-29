@@ -1,5 +1,9 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/LogicalOperator';
-import { NewAstNode, NewUndefinedAstNode } from '@app-builder/models';
+import {
+  NewAstNode,
+  NewUndefinedAstNode,
+  type NodeEvaluation,
+} from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
@@ -11,6 +15,38 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AstBuilderNode } from '../AstBuilderNode';
+
+export interface RootOrWithAndViewModel {
+  orNodeId: string;
+  orValidation: NodeEvaluation;
+  ands: {
+    nodeId: string;
+    validation: NodeEvaluation;
+    children: EditorNodeViewModel[];
+  }[];
+}
+
+export function adaptRootOrWithAndViewModel(
+  astNode: EditorNodeViewModel
+): RootOrWithAndViewModel | null {
+  if (astNode.name !== 'Or') {
+    return null;
+  }
+  for (const child of astNode.children) {
+    if (child.name !== 'And') {
+      return null;
+    }
+  }
+  return {
+    orNodeId: astNode.nodeId,
+    orValidation: astNode.validation,
+    ands: astNode.children.map((andNode) => ({
+      nodeId: andNode.nodeId,
+      validation: andNode.validation,
+      children: andNode.children,
+    })),
+  };
+}
 
 function NewAndChild() {
   return NewUndefinedAstNode({
@@ -30,11 +66,11 @@ export function RootOrWithAnd({
   rootOrWithAndViewModel,
 }: {
   builder: AstBuilder;
-  rootOrWithAndViewModel: EditorNodeViewModel;
+  rootOrWithAndViewModel: RootOrWithAndViewModel;
 }) {
   return (
     <div className="flex flex-col gap-2">
-      {rootOrWithAndViewModel.children.map((andChild, childIndex) => {
+      {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
 
         return (
@@ -56,7 +92,7 @@ export function RootOrWithAnd({
       })}
       <AddLogicalOperatorButton
         onClick={() => {
-          builder.appendChild(rootOrWithAndViewModel.nodeId, NewOrChild());
+          builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
         }}
         operator="or"
       />
@@ -69,7 +105,7 @@ function RootAnd({
   rootAndViewModel,
 }: {
   builder: AstBuilder;
-  rootAndViewModel: EditorNodeViewModel;
+  rootAndViewModel: RootOrWithAndViewModel['ands'][0];
 }) {
   function onRemoveClick(childNodeId: string) {
     // if this is the last and operand, remove the parent or operand instead

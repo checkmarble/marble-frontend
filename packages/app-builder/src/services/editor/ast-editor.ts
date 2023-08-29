@@ -1,5 +1,6 @@
 import {
   type AstNode,
+  type AstOperator,
   type ConstantType,
   type EditorIdentifiersByType,
   NewPendingNodeEvaluation,
@@ -9,10 +10,12 @@ import { nanoid } from 'nanoid';
 import { useCallback, useState } from 'react';
 import * as R from 'remeda';
 
+// TODO: trancher entre Builder vs Editor
 export interface EditorNodeViewModel {
   nodeId: string;
-  nodePath: string;
-  ast: AstNode;
+  name: string | null;
+  constant?: ConstantType;
+  // TODO: rename validation pour quelque chose de plus parlant (error, pending, success ...)
   validation: NodeEvaluation;
   children: EditorNodeViewModel[];
   namedChildren: Record<string, EditorNodeViewModel>;
@@ -21,29 +24,25 @@ export interface EditorNodeViewModel {
 function adaptEditorNodeViewModel({
   ast,
   validation,
-  nodePath,
 }: {
   ast: AstNode;
-  validation?: NodeEvaluation;
-  nodePath: string;
+  validation: NodeEvaluation;
 }): EditorNodeViewModel {
   return {
     nodeId: nanoid(),
-    nodePath,
-    ast,
-    validation: validation ?? NewPendingNodeEvaluation(),
+    name: ast.name,
+    constant: ast.constant,
+    validation: validation,
     children: ast.children.map((child, i) =>
       adaptEditorNodeViewModel({
         ast: child,
-        validation: validation?.children[i],
-        nodePath: `${nodePath}.children[${i}]`,
+        validation: validation.children[i],
       })
     ),
     namedChildren: R.mapValues(ast.namedChildren, (child, namedKey) =>
       adaptEditorNodeViewModel({
         ast: child,
-        validation: validation?.namedChildren[namedKey],
-        nodePath: `${nodePath}.namedChildren.${namedKey}`,
+        validation: validation.namedChildren[namedKey],
       })
     ),
   };
@@ -52,7 +51,10 @@ function adaptEditorNodeViewModel({
 export interface AstBuilder {
   astViewModel: EditorNodeViewModel;
   identifiers: EditorIdentifiersByType;
+  operators: AstOperator[];
   setConstant(nodeId: string, newValue: ConstantType): void;
+  setOperand(nodeId: string, operandAst: AstNode): void;
+  setOperator(nodeId: string, name: string): void;
   appendChild(nodeId: string, childAst: AstNode): void;
   remove(nodeId: string): void;
 }
@@ -61,14 +63,16 @@ export function useAstBuilder({
   ast,
   validation,
   identifiers,
+  operators,
 }: {
   ast: AstNode;
   validation: NodeEvaluation;
   identifiers: EditorIdentifiersByType;
-  onSave: (toSave: AstNode) => Promise<void>;
+  operators: AstOperator[];
+  onSave: (toSave: AstNode) => void;
 }): AstBuilder {
   const [astViewModel, setAstViewModel] = useState<EditorNodeViewModel>(() =>
-    adaptEditorNodeViewModel({ ast, validation, nodePath: 'root' })
+    adaptEditorNodeViewModel({ ast, validation })
   );
 
   const replaceOneNode = useCallback(
@@ -100,11 +104,40 @@ export function useAstBuilder({
       // Todo: edit view
       replaceOneNode(nodeId, (node) => ({
         ...node,
-        ast: {
-          ...node.ast,
-          constant: newValue,
-        },
+        constant: newValue,
       }));
+
+      // Todo: debonced save
+    },
+    [replaceOneNode]
+  );
+
+  const setOperand = useCallback(
+    (nodeId: string, operandAst: AstNode) => {
+      // Todo: edit view
+      replaceOneNode(nodeId, () => {
+        const newOperand = adaptEditorNodeViewModel({
+          ast: operandAst,
+          validation: NewPendingNodeEvaluation(),
+        });
+
+        return newOperand;
+      });
+
+      // Todo: debonced save
+    },
+    [replaceOneNode]
+  );
+
+  const setOperator = useCallback(
+    (nodeId: string, name: string) => {
+      // Todo: edit view
+      replaceOneNode(nodeId, (node) => {
+        return {
+          ...node,
+          name,
+        };
+      });
 
       // Todo: debonced save
     },
@@ -117,7 +150,7 @@ export function useAstBuilder({
       replaceOneNode(nodeId, (node) => {
         const newChild = adaptEditorNodeViewModel({
           ast: childAst,
-          nodePath: `${nodeId}.children[${node.children.length}]`,
+          validation: NewPendingNodeEvaluation(),
         });
 
         return {
@@ -159,7 +192,10 @@ export function useAstBuilder({
   return {
     astViewModel,
     identifiers,
+    operators,
     setConstant,
+    setOperand,
+    setOperator,
     appendChild,
     remove,
   };
