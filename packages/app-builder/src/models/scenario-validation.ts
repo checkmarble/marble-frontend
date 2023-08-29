@@ -5,7 +5,7 @@ import {
 } from '@marble-api';
 import * as R from 'remeda';
 
-import type { ConstantType } from './ast-node';
+import type { AstNode, ConstantType } from './ast-node';
 
 export type EvaluationErrorCode =
   | 'UNEXPECTED_ERROR'
@@ -53,11 +53,11 @@ interface InvalidNodeEvaluation extends CommonNodeEvaluation {
   errors: EvaluationError[];
 }
 
-export function NewPendingNodeEvaluation(): PendingNodeEvaluation {
+export function NewPendingNodeEvaluation(ast: AstNode): PendingNodeEvaluation {
   return {
     state: 'pending',
-    children: [],
-    namedChildren: {},
+    children: ast.children.map(NewPendingNodeEvaluation),
+    namedChildren: R.mapValues(ast.namedChildren, NewPendingNodeEvaluation),
   };
 }
 

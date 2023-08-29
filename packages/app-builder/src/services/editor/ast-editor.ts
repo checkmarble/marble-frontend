@@ -13,7 +13,7 @@ import * as R from 'remeda';
 // TODO: trancher entre Builder vs Editor
 export interface EditorNodeViewModel {
   nodeId: string;
-  name: string | null;
+  funcName: string | null;
   constant?: ConstantType;
   // TODO: rename validation pour quelque chose de plus parlant (error, pending, success ...)
   validation: NodeEvaluation;
@@ -30,7 +30,7 @@ function adaptEditorNodeViewModel({
 }): EditorNodeViewModel {
   return {
     nodeId: nanoid(),
-    name: ast.name,
+    funcName: ast.name,
     constant: ast.constant,
     validation: validation,
     children: ast.children.map((child, i) =>
@@ -44,6 +44,21 @@ function adaptEditorNodeViewModel({
         ast: child,
         validation: validation.namedChildren[namedKey],
       })
+    ),
+  };
+}
+
+// adapt ast node from editor view model
+export function adaptAstNodeFromEditorViewModel(
+  vm: EditorNodeViewModel
+): AstNode {
+  return {
+    name: vm.funcName,
+    constant: vm.constant,
+    children: vm.children.map(adaptAstNodeFromEditorViewModel),
+    namedChildren: R.mapValues(
+      vm.namedChildren,
+      adaptAstNodeFromEditorViewModel
     ),
   };
 }
@@ -118,7 +133,7 @@ export function useAstBuilder({
       replaceOneNode(nodeId, () => {
         const newOperand = adaptEditorNodeViewModel({
           ast: operandAst,
-          validation: NewPendingNodeEvaluation(),
+          validation: NewPendingNodeEvaluation(operandAst),
         });
 
         return newOperand;
@@ -150,7 +165,7 @@ export function useAstBuilder({
       replaceOneNode(nodeId, (node) => {
         const newChild = adaptEditorNodeViewModel({
           ast: childAst,
-          validation: NewPendingNodeEvaluation(),
+          validation: NewPendingNodeEvaluation(childAst),
         });
 
         return {
