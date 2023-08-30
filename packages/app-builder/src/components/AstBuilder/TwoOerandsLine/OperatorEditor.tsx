@@ -16,7 +16,6 @@ const operatorEditorFunctions = [
   '>',
   '*',
   '/',
-  '/',
   'IsInList',
 ] as const;
 type OperatorEditorFunctions = (typeof operatorEditorFunctions)[number];
@@ -95,7 +94,6 @@ export function useGetOperatorName() {
       if (operatorName === '*') return '×';
       if (operatorName === '/') return '÷';
 
-      if (operatorName === '/') return '÷';
       if (operatorName === 'IsInList') return t('scenarios:operator.is_in');
 
       // eslint-disable-next-line no-restricted-properties

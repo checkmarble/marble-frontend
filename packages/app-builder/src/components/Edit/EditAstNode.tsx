@@ -1,5 +1,5 @@
 import {
-  adaptAstNodeToViewModelFromIdentifier,
+  adaptLabelledAstFromAllIdentifiers,
   type AstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
@@ -104,7 +104,7 @@ const EditOperand = forwardRef<
   const editorIdentifier = useEditorIdentifiers();
   const getIdentifierOptions = useGetIdentifierOptions();
   const selectedItem = value
-    ? adaptAstNodeToViewModelFromIdentifier(value, editorIdentifier)
+    ? adaptLabelledAstFromAllIdentifiers(value, editorIdentifier)
     : null;
 
   const [inputValue, setInputValue] = useState(selectedItem?.label ?? '');
