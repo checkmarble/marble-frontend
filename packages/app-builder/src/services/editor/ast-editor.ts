@@ -81,6 +81,7 @@ export interface AstBuilder {
   setOperator(nodeId: string, name: string): void;
   appendChild(nodeId: string, childAst: AstNode): void;
   remove(nodeId: string): void;
+  save(): void;
 }
 
 export function useAstBuilder({
@@ -88,6 +89,7 @@ export function useAstBuilder({
   validation,
   identifiers,
   operators,
+  onSave,
 }: {
   ast: AstNode;
   validation: NodeEvaluation;
@@ -211,6 +213,12 @@ export function useAstBuilder({
     // Todo: debonced save
   }, []);
 
+  const save = useCallback(() => {
+    onSave(adaptAstNodeFromEditorViewModel(astViewModel));
+
+    // Todo: debonced save
+  }, [astViewModel, onSave]);
+
   return {
     astViewModel,
     identifiers,
@@ -220,5 +228,6 @@ export function useAstBuilder({
     setOperator,
     appendChild,
     remove,
+    save,
   };
 }
