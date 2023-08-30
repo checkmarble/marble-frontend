@@ -92,13 +92,11 @@ export async function action({ request, params }: ActionArgs) {
   try {
     const ruleId = fromParams(params, 'ruleId');
 
-    const expression = (await request.json()) as {
-      astNode: AstNode;
-    };
+    const astNode = (await request.json()) as AstNode;
 
     await editor.saveRule({
       ruleId,
-      astNode: expression.astNode,
+      astNode,
     });
 
     setToastMessage(session, {
@@ -109,7 +107,7 @@ export async function action({ request, params }: ActionArgs) {
       {
         success: true as const,
         error: null,
-        values: expression,
+        astNode,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -122,7 +120,7 @@ export async function action({ request, params }: ActionArgs) {
       {
         success: false as const,
         error: null,
-        values: null,
+        astNode: null,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -146,7 +144,7 @@ export default function RuleEdit() {
     identifiers,
     operators,
     onSave: (astNodeToSave: AstNode) => {
-      fetcher.submit(JSON.stringify(astNodeToSave), {
+      fetcher.submit(astNodeToSave, {
         method: 'PATCH',
         encType: 'application/json',
       });
@@ -183,7 +181,13 @@ export default function RuleEdit() {
           <Paper.Container scrollable={false}>
             <AstBuilder builder={astEditor} />
             <div className="flex flex-row justify-end">
-              <Button type="submit" className="w-fit">
+              <Button
+                type="submit"
+                className="w-fit"
+                onClick={() => {
+                  astEditor.save();
+                }}
+              >
                 {t('common:save')}
               </Button>
             </div>
