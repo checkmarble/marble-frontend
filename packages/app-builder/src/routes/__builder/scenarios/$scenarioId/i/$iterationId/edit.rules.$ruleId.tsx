@@ -6,7 +6,7 @@ import {
 } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { adaptNodeEvaluationErrors, type AstNode } from '@app-builder/models';
+import { adaptValidationErrors, type AstNode } from '@app-builder/models';
 import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
@@ -156,12 +156,12 @@ export default function RuleEdit() {
   const { setError } = formMethods;
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   useEffect(() => {
-    const allEvaluationErrors = adaptNodeEvaluationErrors(
+    const allEvaluationErrors = adaptValidationErrors(
       'astNode',
       ruleValidation
     );
     allEvaluationErrors.forEach((flattenNodeEvaluationErrors) => {
-      if (flattenNodeEvaluationErrors.state === 'invalid') {
+      if (flattenNodeEvaluationErrors.state === 'fail') {
         const firstError = flattenNodeEvaluationErrors.errors[0];
         //@ts-expect-error path is a string
         setError(flattenNodeEvaluationErrors.path, {

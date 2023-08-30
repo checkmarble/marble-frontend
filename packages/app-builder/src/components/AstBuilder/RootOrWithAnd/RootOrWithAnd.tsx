@@ -2,7 +2,7 @@ import { LogicalOperatorLabel } from '@app-builder/components/Scenario/LogicalOp
 import {
   NewAstNode,
   NewUndefinedAstNode,
-  type NodeEvaluation,
+  type Validation,
 } from '@app-builder/models';
 import {
   type AstBuilder,
@@ -18,29 +18,29 @@ import { AstBuilderNode } from '../AstBuilderNode';
 
 export interface RootOrWithAndViewModel {
   orNodeId: string;
-  orValidation: NodeEvaluation;
+  orValidation: Validation;
   ands: {
     nodeId: string;
-    validation: NodeEvaluation;
+    validation: Validation;
     children: EditorNodeViewModel[];
   }[];
 }
 
 export function adaptRootOrWithAndViewModel(
-  astNode: EditorNodeViewModel
+  viewModel: EditorNodeViewModel
 ): RootOrWithAndViewModel | null {
-  if (astNode.funcName !== 'Or') {
+  if (viewModel.funcName !== 'Or') {
     return null;
   }
-  for (const child of astNode.children) {
+  for (const child of viewModel.children) {
     if (child.funcName !== 'And') {
       return null;
     }
   }
   return {
-    orNodeId: astNode.nodeId,
-    orValidation: astNode.validation,
-    ands: astNode.children.map((andNode) => ({
+    orNodeId: viewModel.nodeId,
+    orValidation: viewModel.validation,
+    ands: viewModel.children.map((andNode) => ({
       nodeId: andNode.nodeId,
       validation: andNode.validation,
       children: andNode.children,
