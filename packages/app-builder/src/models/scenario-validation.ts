@@ -5,7 +5,7 @@ import {
 } from '@marble-api';
 import * as R from 'remeda';
 
-import type { AstNode, ConstantType } from './ast-node';
+import type { ConstantType } from './ast-node';
 
 export type EvaluationErrorCode =
   | 'UNEXPECTED_ERROR'
@@ -34,37 +34,30 @@ export function isUndefinedFunctionError(evaluationError: {
   return evaluationError.error === 'UNDEFINED_FUNCTION';
 }
 
-interface CommonNodeEvaluation {
-  returnValue?: ConstantType;
+export interface NodeEvaluation {
+  returnValue: ConstantType;
+  errors: EvaluationError[] | null;
   children: NodeEvaluation[];
   namedChildren: Record<string, NodeEvaluation>;
 }
 
-interface ValidNodeEvaluation extends CommonNodeEvaluation {
+interface ValidationSuccess {
   state: 'valid';
 }
 
-interface PendingNodeEvaluation extends CommonNodeEvaluation {
+interface PendingValidation {
   state: 'pending';
 }
 
-interface InvalidNodeEvaluation extends CommonNodeEvaluation {
-  state: 'invalid';
+interface ValidationFailure {
+  state: 'fail';
   errors: EvaluationError[];
 }
 
-export function NewPendingNodeEvaluation(ast: AstNode): PendingNodeEvaluation {
-  return {
-    state: 'pending',
-    children: ast.children.map(NewPendingNodeEvaluation),
-    namedChildren: R.mapValues(ast.namedChildren, NewPendingNodeEvaluation),
-  };
-}
-
-export type NodeEvaluation =
-  | ValidNodeEvaluation
-  | PendingNodeEvaluation
-  | InvalidNodeEvaluation;
+export type Validation =
+  | ValidationSuccess
+  | PendingValidation
+  | ValidationFailure;
 
 export interface ScenarioValidation {
   errors: string[];
@@ -82,22 +75,25 @@ function adaptEvaluationError(dto: EvaluationErrorDto): EvaluationError {
 }
 
 function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
-  const commonNodeEvaluation = {
+  return {
     returnValue: dto.return_value,
+    errors: dto.errors ? dto.errors.map(adaptEvaluationError) : null,
     children: dto.children ? dto.children.map(adaptNodeEvaluation) : [],
     namedChildren: dto.named_children
       ? R.mapValues(dto.named_children, adaptNodeEvaluation)
       : {},
   };
-  if (dto.errors === null) {
-    return { ...commonNodeEvaluation, state: 'pending' };
-  } else if (dto.errors.length === 0) {
-    return { ...commonNodeEvaluation, state: 'valid' };
+}
+
+export function adaptValidation(evaluation: NodeEvaluation): Validation {
+  if (evaluation.errors === null) {
+    return { state: 'pending' };
+  } else if (evaluation.errors.length === 0) {
+    return { state: 'valid' };
   } else {
     return {
-      ...commonNodeEvaluation,
-      state: 'invalid',
-      errors: dto.errors.map(adaptEvaluationError),
+      state: 'fail',
+      errors: evaluation.errors,
     };
   }
 }
@@ -112,16 +108,16 @@ export function adaptScenarioValidation(
   };
 }
 
-type NodeEvaluationErrors = NodeEvaluation & { path: string };
+type ValidationErrors = Validation & { path: string };
 
-export function adaptNodeEvaluationErrors(
+export function adaptValidationErrors(
   path: string,
   evaluation: NodeEvaluation
-): NodeEvaluationErrors[] {
+): ValidationErrors[] {
   const childrenPathErrors = R.pipe(
     evaluation.children,
     R.map.indexed((child, index) => {
-      return adaptNodeEvaluationErrors(`${path}.children.${index}`, child);
+      return adaptValidationErrors(`${path}.children.${index}`, child);
     }),
     R.flatten()
   );
@@ -129,12 +125,12 @@ export function adaptNodeEvaluationErrors(
   const namedChildrenPathErrors = R.pipe(
     R.toPairs(evaluation.namedChildren),
     R.flatMap(([key, child]) => {
-      return adaptNodeEvaluationErrors(`${path}.namedChildren.${key}`, child);
+      return adaptValidationErrors(`${path}.namedChildren.${key}`, child);
     })
   );
 
   return [
-    { path, ...evaluation },
+    { ...adaptValidation(evaluation), path },
     ...childrenPathErrors,
     ...namedChildrenPathErrors,
   ];

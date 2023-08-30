@@ -1,10 +1,11 @@
 import {
+  adaptValidation,
   type AstNode,
   type AstOperator,
   type ConstantType,
   type EditorIdentifiersByType,
-  NewPendingNodeEvaluation,
   type NodeEvaluation,
+  type Validation,
 } from '@app-builder/models';
 import { nanoid } from 'nanoid';
 import { useCallback, useState } from 'react';
@@ -15,8 +16,7 @@ export interface EditorNodeViewModel {
   nodeId: string;
   funcName: string | null;
   constant?: ConstantType;
-  // TODO: rename validation pour quelque chose de plus parlant (error, pending, success ...)
-  validation: NodeEvaluation;
+  validation: Validation;
   children: EditorNodeViewModel[];
   namedChildren: Record<string, EditorNodeViewModel>;
 }
@@ -26,23 +26,32 @@ function adaptEditorNodeViewModel({
   validation,
 }: {
   ast: AstNode;
-  validation: NodeEvaluation;
+  validation?: NodeEvaluation;
 }): EditorNodeViewModel {
+  const evaluation = validation
+    ? validation
+    : {
+        returnValue: null,
+        errors: null,
+        children: [],
+        namedChildren: {},
+      };
+
   return {
     nodeId: nanoid(),
     funcName: ast.name,
     constant: ast.constant,
-    validation: validation,
+    validation: adaptValidation(evaluation),
     children: ast.children.map((child, i) =>
       adaptEditorNodeViewModel({
         ast: child,
-        validation: validation.children[i],
+        validation: evaluation.children[i],
       })
     ),
     namedChildren: R.mapValues(ast.namedChildren, (child, namedKey) =>
       adaptEditorNodeViewModel({
         ast: child,
-        validation: validation.namedChildren[namedKey],
+        validation: evaluation.namedChildren[namedKey],
       })
     ),
   };
@@ -133,7 +142,6 @@ export function useAstBuilder({
       replaceOneNode(nodeId, () => {
         const newOperand = adaptEditorNodeViewModel({
           ast: operandAst,
-          validation: NewPendingNodeEvaluation(operandAst),
         });
 
         return newOperand;
@@ -165,7 +173,6 @@ export function useAstBuilder({
       replaceOneNode(nodeId, (node) => {
         const newChild = adaptEditorNodeViewModel({
           ast: childAst,
-          validation: NewPendingNodeEvaluation(childAst),
         });
 
         return {
