@@ -1,5 +1,5 @@
 import {
-  adaptAstNodeToViewModelFromIdentifier,
+  adaptLabelledAstFromAllIdentifiers,
   type AstNode,
 } from '@app-builder/models';
 import { useEditorIdentifiers } from '@app-builder/services/editor';
@@ -21,10 +21,7 @@ function format(label: string) {
 
 export function Payload({ node, isRoot }: PayloadProps) {
   const editorIdentifier = useEditorIdentifiers();
-  const viewModel = adaptAstNodeToViewModelFromIdentifier(
-    node,
-    editorIdentifier
-  );
+  const viewModel = adaptLabelledAstFromAllIdentifiers(node, editorIdentifier);
   const { tooltip, inline } = format(viewModel.label);
   return (
     <Condition.Container isRoot={isRoot}>

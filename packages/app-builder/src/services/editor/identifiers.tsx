@@ -1,7 +1,7 @@
 import { scenarioI18n } from '@app-builder/components';
 import {
-  adaptAstNodeToViewModel,
-  adaptEditorIdentifierToViewModel,
+  adaptLabelledAst,
+  adaptLabelledAstFromIdentifier,
   NewAstNode,
 } from '@app-builder/models';
 import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
@@ -47,10 +47,10 @@ export function useGetIdentifierOptions() {
   const identifiers = useEditorIdentifiers();
   const identifiersOptions = useMemo(
     () => [
-      ...identifiers.databaseAccessors.map(adaptEditorIdentifierToViewModel),
-      ...identifiers.payloadAccessors.map(adaptEditorIdentifierToViewModel),
-      ...identifiers.customListAccessors.map(adaptEditorIdentifierToViewModel),
-      ...identifiers.aggregatorAccessors.map(adaptEditorIdentifierToViewModel),
+      ...identifiers.databaseAccessors.map(adaptLabelledAstFromIdentifier),
+      ...identifiers.payloadAccessors.map(adaptLabelledAstFromIdentifier),
+      ...identifiers.customListAccessors.map(adaptLabelledAstFromIdentifier),
+      ...identifiers.aggregatorAccessors.map(adaptLabelledAstFromIdentifier),
     ],
     [identifiers]
   );
@@ -59,7 +59,7 @@ export function useGetIdentifierOptions() {
     (search: string) => {
       if (!search) return identifiersOptions;
       const constantNode = coerceToConstant(search);
-      return [...identifiersOptions, adaptAstNodeToViewModel(constantNode)];
+      return [...identifiersOptions, adaptLabelledAst(constantNode)];
     },
     [identifiersOptions]
   );
