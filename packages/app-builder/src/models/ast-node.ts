@@ -1,12 +1,12 @@
 import { type NodeDto } from '@marble-api';
 import * as R from 'remeda';
 
-export interface AstNode {
+export type AstNode = {
   name: string | null;
   constant?: ConstantType;
   children: AstNode[];
   namedChildren: Record<string, AstNode>;
-}
+};
 
 export const undefinedAstNodeName = 'Undefined';
 
