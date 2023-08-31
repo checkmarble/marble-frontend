@@ -14,7 +14,7 @@ function flattenNodeEvaluationErrors(
   evaluation: NodeEvaluation
 ): EvaluationError[] {
   return [
-    ...(evaluation.state === 'invalid' ? evaluation.errors : []),
+    ...(evaluation.errors ?? []),
     ...evaluation.children.flatMap(flattenNodeEvaluationErrors),
     ...Object.values(evaluation.namedChildren).flatMap(
       flattenNodeEvaluationErrors

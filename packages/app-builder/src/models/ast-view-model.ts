@@ -11,13 +11,13 @@ import {
   getIdentifiersFromAstNode,
 } from './identifier';
 
-export interface AstViewModel {
+export interface LabelledAst {
   label: string;
   tooltip: string;
   astNode: AstNode;
 }
 
-export function adaptAstNodeToViewModel(astNode: AstNode): AstViewModel {
+export function adaptLabelledAst(astNode: AstNode): LabelledAst {
   return {
     label: getAstNodeDisplayName(astNode),
     tooltip: '',
@@ -25,13 +25,13 @@ export function adaptAstNodeToViewModel(astNode: AstNode): AstViewModel {
   };
 }
 
-export function adaptAstNodeToViewModelFromIdentifier(
+export function adaptLabelledAstFromAllIdentifiers(
   astNode: AstNode,
   identifiers: EditorIdentifiersByType
-): AstViewModel {
+): LabelledAst {
   const identifier = getIdentifiersFromAstNode(astNode, identifiers);
   if (identifier) {
-    return adaptEditorIdentifierToViewModel(identifier);
+    return adaptLabelledAstFromIdentifier(identifier);
   }
   return {
     label: getAstNodeDisplayName(astNode),
@@ -40,19 +40,14 @@ export function adaptAstNodeToViewModelFromIdentifier(
   };
 }
 
-export function adaptEditorIdentifierToViewModel(
+export function adaptLabelledAstFromIdentifier(
   identifier: EditorIdentifier
-): AstViewModel {
+): LabelledAst {
   return {
     label: identifier.name,
     tooltip: identifier.description,
     astNode: identifier.node,
   };
-}
-export function adaptAstViewModelToAstNode(
-  astViewModel: AstViewModel
-): AstNode {
-  return astViewModel.astNode;
 }
 
 function getConstantDisplayName(constant: ConstantType) {

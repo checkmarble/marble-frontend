@@ -1,7 +1,7 @@
 import {
-  adaptAstNodeToViewModel,
-  adaptEditorIdentifierToViewModel,
-  type AstViewModel,
+  adaptLabelledAst,
+  adaptLabelledAstFromIdentifier,
+  type LabelledAst,
   NewAstNode,
 } from '@app-builder/models';
 import {
@@ -21,16 +21,16 @@ export function OperandEditor({
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
 }) {
-  const identifiersOptions: AstViewModel[] = useMemo(
+  const identifiersOptions: LabelledAst[] = useMemo(
     () => [
       ...builder.identifiers.databaseAccessors.map(
-        adaptEditorIdentifierToViewModel
+        adaptLabelledAstFromIdentifier
       ),
       ...builder.identifiers.payloadAccessors.map(
-        adaptEditorIdentifierToViewModel
+        adaptLabelledAstFromIdentifier
       ),
       ...builder.identifiers.customListAccessors.map(
-        adaptEditorIdentifierToViewModel
+        adaptLabelledAstFromIdentifier
       ),
     ],
     [builder.identifiers]
@@ -39,21 +39,20 @@ export function OperandEditor({
     (search: string) => {
       if (!search) return identifiersOptions;
       const constantNode = coerceToConstant(search);
-      return [...identifiersOptions, adaptAstNodeToViewModel(constantNode)];
+      return [...identifiersOptions, adaptLabelledAst(constantNode)];
     },
     [identifiersOptions]
   );
 
   const [inputValue, setInputValue] = useState(
-    adaptAstNodeToViewModel(adaptAstNodeFromEditorViewModel(operandViewModel))
-      .label
+    adaptLabelledAst(adaptAstNodeFromEditorViewModel(operandViewModel)).label
   );
 
   const items = getIdentifierOptions(inputValue);
 
   const filteredItems = items.filter((item) => item.label.includes(inputValue));
 
-  const [selectedItem, setSelectedItem] = useState<AstViewModel | null>(null);
+  const [selectedItem, setSelectedItem] = useState<LabelledAst | null>(null);
 
   return (
     <Combobox.Root<(typeof items)[0]>
