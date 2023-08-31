@@ -7,9 +7,11 @@ import {
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { adaptNodeEvaluationErrors, type AstNode } from '@app-builder/models';
+import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import {
+  EditorDataModelsProvider,
   EditorIdentifiersProvider,
   EditorOperatorsProvider,
 } from '@app-builder/services/editor';
@@ -40,12 +42,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { editor, scenario, user } = await authService.isAuthenticated(
-    request,
-    {
+  const { apiClient, editor, scenario, user } =
+    await authService.isAuthenticated(request, {
       failureRedirect: '/login',
-    }
-  );
+    });
 
   const ruleId = fromParams(params, 'ruleId');
   const scenarioId = fromParams(params, 'scenarioId');
@@ -75,6 +75,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const validation = await scenario.validate({ iterationId });
   const ruleValidation = findRuleValidation(validation, ruleId);
+  const { data_model } = await apiClient.getDataModel();
 
   return json({
     rule: await scenarioIterationRulePromise,
@@ -82,6 +83,7 @@ export async function loader({ request, params }: LoaderArgs) {
     operators: await operatorsPromise,
     ruleValidation,
     scenarioId,
+    dataModels: adaptDataModelDto(data_model),
   });
 }
 
@@ -137,7 +139,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators, ruleValidation } =
+  const { rule, identifiers, operators, ruleValidation, dataModels } =
     useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
@@ -208,14 +210,18 @@ export default function RuleEdit() {
             <Paper.Container scrollable={false}>
               <EditorIdentifiersProvider identifiers={identifiers}>
                 <EditorOperatorsProvider operators={operators}>
-                  <FormProvider {...formMethods}>
-                    {/* <RootOrOperator
+                  <EditorDataModelsProvider dataModels={dataModels}>
+                    <FormProvider {...formMethods}>
+                      {/* <RootOrOperator
                   renderAstNode={({ name }) => <WildEditAstNode name={name} />}
                 /> */}
-                    <RootOrOperator
-                      renderAstNode={({ name }) => <EditAstNode name={name} />}
-                    />
-                  </FormProvider>
+                      <RootOrOperator
+                        renderAstNode={({ name }) => (
+                          <EditAstNode name={name} />
+                        )}
+                      />
+                    </FormProvider>
+                  </EditorDataModelsProvider>
                 </EditorOperatorsProvider>
               </EditorIdentifiersProvider>
               <div className="flex flex-row justify-end">

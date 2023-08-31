@@ -75,6 +75,19 @@ export interface ConstantAstNode<T extends ConstantType = ConstantType> {
   namedChildren: Record<string, never>;
 }
 
+export function NewConstantAstNode<T extends ConstantType = ConstantType>({
+  constant,
+}: {
+  constant: T;
+}): ConstantAstNode<T> {
+  return {
+    name: null,
+    constant: constant,
+    children: [],
+    namedChildren: {},
+  };
+}
+
 export function isConstant(node: AstNode): node is ConstantAstNode {
   return !node.name && node.constant !== undefined;
 }
@@ -89,8 +102,25 @@ export interface DatabaseAccessAstNode {
   };
 }
 
+export interface AggregationAstNode {
+  name: 'Aggregator';
+  constant: null;
+  children: [];
+  namedChildren: {
+    aggregator: ConstantAstNode<string>;
+    tableName: ConstantAstNode<string>;
+    fieldName: ConstantAstNode<string>;
+    label: ConstantAstNode<string>;
+    filters: AstNode;
+  };
+}
+
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === 'DatabaseAccess';
+}
+
+export function isAggregation(node: AstNode): node is AggregationAstNode {
+  return node.name === 'Aggregator';
 }
 
 export function isOrAndGroup(astNode: AstNode): boolean {

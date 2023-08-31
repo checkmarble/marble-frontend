@@ -1,6 +1,7 @@
 import {
   type AstNode,
   type ConstantType,
+  isAggregation,
   isAstNodeUnknown,
   isConstant,
   isDatabaseAccess,
@@ -25,6 +26,18 @@ export function adaptAstNodeToViewModel(astNode: AstNode): AstViewModel {
   };
 }
 
+export const adaptConstantAstNodeToString = (
+  astNode: AstNode | null
+): string => {
+  if (!astNode) {
+    return '';
+  }
+  if (!astNode.constant) {
+    return '';
+  }
+  return String(astNode.constant);
+};
+
 export function adaptAstNodeToViewModelFromIdentifier(
   astNode: AstNode,
   identifiers: EditorIdentifiersByType
@@ -40,11 +53,18 @@ export function adaptAstNodeToViewModelFromIdentifier(
   };
 }
 
+const getEditorIdentifierName = (identifier: EditorIdentifier): string => {
+  if (isAggregation(identifier.node)) {
+    return getAggregatorName(identifier.name);
+  }
+  return identifier.name;
+};
+
 export function adaptEditorIdentifierToViewModel(
   identifier: EditorIdentifier
 ): AstViewModel {
   return {
-    label: identifier.name,
+    label: getEditorIdentifierName(identifier),
     tooltip: identifier.description,
     astNode: identifier.node,
   };
@@ -80,6 +100,14 @@ function getAstNodeDisplayName(astNode: AstNode) {
     return [...path.constant, fieldName.constant].join('.');
   }
 
+  if (isAggregation(astNode)) {
+    const { aggregator, label } = astNode.namedChildren;
+    if (label == undefined || label.constant == undefined) {
+      return getAggregatorName(adaptConstantAstNodeToString(aggregator));
+    }
+    return adaptConstantAstNodeToString(label);
+  }
+
   if (isAstNodeUnknown(astNode)) {
     return '';
   }
@@ -90,3 +118,22 @@ function getAstNodeDisplayName(astNode: AstNode) {
   }
   return '';
 }
+
+export const getAggregatorName = (aggregatorName: string): string => {
+  switch (aggregatorName) {
+    case 'AVG':
+      return 'Average';
+    case 'COUNT':
+      return 'Count';
+    case 'COUNT_DISTINCT':
+      return 'Count distinct';
+    case 'MAX':
+      return 'Max';
+    case 'MIN':
+      return 'Min';
+    case 'SUM':
+      return 'Sum';
+    default:
+      return aggregatorName;
+  }
+};
