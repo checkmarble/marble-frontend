@@ -2,6 +2,7 @@ import { type Meta, type StoryFn } from '@storybook/react';
 import { Calendar, Help, Scenarios, Search } from '@ui-icons';
 
 import { Input } from './Input';
+import { inputBorderColor } from './Input.constants';
 
 const adornments = {
   Calendar: <Calendar />,
@@ -13,9 +14,13 @@ const adornments = {
 const Story: Meta<typeof Input> = {
   component: Input,
   title: 'Input',
-  args: { disabled: false },
+  args: { disabled: false, borderColor: inputBorderColor[0] },
   argTypes: {
     disabled: { control: 'boolean' },
+    borderColor: {
+      control: { type: 'radio' },
+      options: inputBorderColor,
+    },
     startAdornment: {
       options: Object.keys(adornments),
       mapping: adornments,
