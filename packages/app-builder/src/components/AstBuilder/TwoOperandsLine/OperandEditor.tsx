@@ -12,6 +12,8 @@ import {
 import { Combobox } from '@ui-design-system';
 import { useCallback, useMemo, useState } from 'react';
 
+import { getBorderColor } from '../utils';
+
 export type OperandViewModel = EditorNodeViewModel;
 
 export function OperandEditor({
@@ -54,6 +56,8 @@ export function OperandEditor({
 
   const [selectedItem, setSelectedItem] = useState<LabelledAst | null>(null);
 
+  const isInvalid = operandViewModel.validation.state === 'fail';
+
   return (
     <Combobox.Root<(typeof items)[0]>
       value={selectedItem}
@@ -69,6 +73,8 @@ export function OperandEditor({
         <Combobox.Input
           displayValue={(item?: (typeof items)[number]) => item?.label ?? ''}
           onChange={(event) => setInputValue(event.target.value)}
+          aria-invalid={isInvalid}
+          borderColor={getBorderColor(operandViewModel.validation)}
         />
         <Combobox.Options className="w-fit">
           {filteredItems.map((item) => (
