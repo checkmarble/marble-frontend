@@ -1,6 +1,7 @@
+import { stringifyConstant } from '@app-builder/components/Scenario/Formula/Operators';
 import {
-  adaptLabelledAst,
   adaptLabelledAstFromIdentifier,
+  type AstNode,
   type LabelledAst,
   NewAstNode,
 } from '@app-builder/models';
@@ -10,11 +11,19 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { Combobox } from '@ui-design-system';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { getBorderColor } from '../utils';
 
 export type OperandViewModel = EditorNodeViewModel;
+
+interface EditOperandViewModel {
+  initialOption: LabelledAst;
+  constantOptions: LabelledAst[];
+  identifiersOptions: LabelledAst[];
+  selectedOption: LabelledAst | null;
+  searchText: string;
+}
 
 export function OperandEditor({
   builder,
@@ -23,68 +32,86 @@ export function OperandEditor({
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
 }) {
-  const identifiersOptions: LabelledAst[] = useMemo(
-    () => [
-      ...builder.identifiers.databaseAccessors.map(
-        adaptLabelledAstFromIdentifier
-      ),
-      ...builder.identifiers.payloadAccessors.map(
-        adaptLabelledAstFromIdentifier
-      ),
-      ...builder.identifiers.customListAccessors.map(
-        adaptLabelledAstFromIdentifier
-      ),
-    ],
-    [builder.identifiers]
+  const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
+    () => {
+      const initialOption: LabelledAst = {
+        label: adaptOperandLabel(
+          adaptAstNodeFromEditorViewModel(operandViewModel)
+        ),
+        tooltip: '(initial value)',
+        astNode: adaptAstNodeFromEditorViewModel(operandViewModel),
+      };
+
+      const identifiersOptions: LabelledAst[] = [
+        ...builder.identifiers.databaseAccessors.map(
+          adaptLabelledAstFromIdentifier
+        ),
+        ...builder.identifiers.payloadAccessors.map(
+          adaptLabelledAstFromIdentifier
+        ),
+        ...builder.identifiers.customListAccessors.map(
+          adaptLabelledAstFromIdentifier
+        ),
+      ];
+
+      return {
+        initialOption,
+        constantOptions: [],
+        identifiersOptions,
+        selectedOption: initialOption,
+        searchText: '',
+      };
+    }
   );
-  const getIdentifierOptions = useCallback(
-    (search: string) => {
-      if (!search) return identifiersOptions;
-      const constantNode = coerceToConstant(search);
-      return [...identifiersOptions, adaptLabelledAst(constantNode)];
+
+  const handleInputChanged = useCallback((newInputText: string) => {
+    setEditViewModel((vm) => ({
+      ...vm,
+      searchText: newInputText,
+      constantOptions: coerceToConstantsLabelledAst(newInputText),
+    }));
+  }, []);
+
+  const handleSelectOption = useCallback(
+    (newSelection: LabelledAst) => {
+      setEditViewModel((vm) => ({
+        ...vm,
+        selectedOption: newSelection,
+      }));
+      builder.setOperand(operandViewModel.nodeId, newSelection.astNode);
     },
-    [identifiersOptions]
+    [builder, operandViewModel.nodeId]
   );
 
-  const [inputValue, setInputValue] = useState(
-    adaptLabelledAst(adaptAstNodeFromEditorViewModel(operandViewModel)).label
-  );
-
-  const items = getIdentifierOptions(inputValue);
-
-  const filteredItems = items.filter((item) => item.label.includes(inputValue));
-
-  const [selectedItem, setSelectedItem] = useState<LabelledAst | null>(null);
+  const availableOptions = [
+    ...editViewModel.constantOptions,
+    ...editViewModel.identifiersOptions.filter((option) =>
+      option.label
+        .toLocaleUpperCase()
+        .includes(editViewModel.searchText.toLocaleUpperCase())
+    ),
+  ];
 
   const isInvalid = operandViewModel.validation.state === 'fail';
 
   return (
-    <Combobox.Root<(typeof items)[0]>
-      value={selectedItem}
-      onChange={(value) => {
-        setSelectedItem(value);
-        if (value) {
-          builder.setOperand(operandViewModel.nodeId, value.astNode);
-        }
-      }}
-      nullable
+    <Combobox.Root<LabelledAst>
+      value={editViewModel.selectedOption ?? undefined}
+      onChange={handleSelectOption}
     >
       <div className="relative">
         <Combobox.Input
-          displayValue={(item?: (typeof items)[number]) => item?.label ?? ''}
-          onChange={(event) => setInputValue(event.target.value)}
+          displayValue={(item: LabelledAst) => item.label ?? '??'}
+          onChange={(event) => {
+            handleInputChanged(event.target.value);
+          }}
           aria-invalid={isInvalid}
           borderColor={getBorderColor(operandViewModel.validation)}
         />
+
         <Combobox.Options className="w-fit">
-          {filteredItems.map((item) => (
-            <Combobox.Option
-              key={item.label}
-              value={item}
-              className="flex flex-col gap-1"
-            >
-              <span>{item.label}</span>
-            </Combobox.Option>
+          {availableOptions.map((option, i) => (
+            <OperandComboBoxOption key={i} option={option} />
           ))}
         </Combobox.Options>
       </div>
@@ -92,17 +119,67 @@ export function OperandEditor({
   );
 }
 
-function coerceToConstant(search: string) {
-  const parsedNumber = Number(search);
-  const isNumber = !isNaN(parsedNumber);
+function OperandComboBoxOption({ option }: { option: LabelledAst }) {
+  return (
+    <Combobox.Option value={option} className="flex flex-col gap-1">
+      <span>{option.label}</span>
+      <span>{option.tooltip}</span>
+    </Combobox.Option>
+  );
+}
 
-  if (isNumber) {
-    return NewAstNode({
-      constant: parsedNumber,
+function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
+  const results: LabelledAst[] = [];
+
+  const searchLowerCase = search.trim().toLocaleLowerCase();
+  if (searchLowerCase.length === 0) {
+    return [];
+  }
+
+  // Note: Number('') === 0
+  const parsedNumber = Number(searchLowerCase);
+  if (Number.isFinite(parsedNumber)) {
+    results.push({
+      label: search,
+      tooltip: '(number)',
+      astNode: NewAstNode({
+        constant: parsedNumber,
+      }),
     });
   }
 
-  return NewAstNode({
-    constant: search,
+  if (searchLowerCase === 'true' || searchLowerCase === 'false') {
+    results.push({
+      label: search,
+      tooltip: '(boolean)',
+      astNode: NewAstNode({
+        constant: search === 'true',
+      }),
+    });
+  }
+
+  results.push({
+    label: `"${search}"`,
+    tooltip: '(string)',
+    astNode: NewAstNode({
+      constant: search,
+    }),
   });
+
+  return results;
+}
+
+function shortAstDescription(node: AstNode): string {
+  return node.name === null
+    ? `constant: ${stringifyConstant(node.constant)}`
+    : `func: ${node.name}`;
+}
+
+function adaptOperandLabel(node: AstNode) {
+  // TODO: merge with getAstNodeDisplayName()
+  return node.name === null
+    ? stringifyConstant(node.constant)
+    : node.name === 'Payload'
+    ? `Payload ${stringifyConstant(node.children[0].constant)}`
+    : shortAstDescription(node);
 }
