@@ -12,7 +12,7 @@ import { adaptRootOrWithAndViewModel, RootOrWithAnd } from './RootOrWithAnd';
 import {
   adaptTwoOperandsLineViewModel,
   TwoOperandsLine,
-} from './TwoOerandsLine/TwoOperandsLine';
+} from './TwoOperandsLine/TwoOperandsLine';
 
 interface AstBuilderNodeProps {
   builder: AstBuilder;

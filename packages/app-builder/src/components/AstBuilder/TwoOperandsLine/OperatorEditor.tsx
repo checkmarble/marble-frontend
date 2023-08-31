@@ -1,4 +1,4 @@
-import { undefinedAstNodeName } from '@app-builder/models';
+import { undefinedAstNodeName, type Validation } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
@@ -6,6 +6,8 @@ import {
 import { Select } from '@ui-design-system';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { getBorderColor } from '../utils';
 
 const operatorEditorFunctions = [
   undefinedAstNodeName,
@@ -29,6 +31,7 @@ function isOperatorEditorFunctions(
 export interface OperatorEditorViewModel {
   nodeId: string;
   funcName: OperatorEditorFunctions;
+  validation: Validation;
 }
 
 export function adaptOperatorEditorViewModel(
@@ -39,6 +42,7 @@ export function adaptOperatorEditorViewModel(
   return {
     nodeId: vm.nodeId,
     funcName: vm.funcName,
+    validation: vm.validation,
   };
 }
 
@@ -58,7 +62,9 @@ export function OperatorEditor({
         builder.setOperator(operatorEditorViewModel.nodeId, newFuncName);
       }}
     >
-      <Select.Trigger className="focus:border-purple-100 aria-[invalid=true]:border-red-100">
+      <Select.Trigger
+        borderColor={getBorderColor(operatorEditorViewModel.validation)}
+      >
         <Select.Value placeholder="..." />
       </Select.Trigger>
       <Select.Content className="max-h-60">
