@@ -8,7 +8,7 @@ import {
   type Validation,
 } from '@app-builder/models';
 import { nanoid } from 'nanoid';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import * as R from 'remeda';
 
 // TODO: trancher entre Builder vs Editor
@@ -100,6 +100,11 @@ export function useAstBuilder({
   const [astViewModel, setAstViewModel] = useState<EditorNodeViewModel>(() =>
     adaptEditorNodeViewModel({ ast, validation })
   );
+
+  // VERY TEMTO
+  useEffect(() => {
+    setAstViewModel(adaptEditorNodeViewModel({ ast, validation }));
+  }, [ast, validation]);
 
   const replaceOneNode = useCallback(
     (
