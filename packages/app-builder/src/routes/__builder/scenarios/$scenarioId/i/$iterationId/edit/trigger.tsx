@@ -1,7 +1,7 @@
 import { Callout, Paper } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { adaptAstNode, type AstNode } from '@app-builder/models';
+import { adaptNodeDto, type AstNode } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -37,7 +37,7 @@ export async function action({ request, params }: ActionArgs) {
 
     await apiClient.updateScenarioIteration(iterationId, {
       body: {
-        trigger_condition_ast_expression: adaptAstNode(expression.astNode),
+        trigger_condition_ast_expression: adaptNodeDto(expression.astNode),
       },
     });
 

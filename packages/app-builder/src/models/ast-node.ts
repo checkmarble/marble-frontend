@@ -46,21 +46,21 @@ export function NewUndefinedAstNode({
   });
 }
 
-export function adaptNodeDto(nodeDto: NodeDto): AstNode {
+export function adaptAstNode(nodeDto: NodeDto): AstNode {
   return {
     name: nodeDto.name === undefined ? null : nodeDto.name,
     constant: nodeDto.constant,
-    children: (nodeDto.children ?? []).map(adaptNodeDto),
-    namedChildren: R.mapValues(nodeDto.named_children ?? {}, adaptNodeDto),
+    children: (nodeDto.children ?? []).map(adaptAstNode),
+    namedChildren: R.mapValues(nodeDto.named_children ?? {}, adaptAstNode),
   };
 }
 
-export function adaptAstNode(astNode: AstNode): NodeDto {
+export function adaptNodeDto(astNode: AstNode): NodeDto {
   return {
     name: astNode.name ?? undefined,
     constant: astNode.constant,
-    children: astNode.children.map(adaptAstNode),
-    named_children: R.mapValues(astNode.namedChildren ?? {}, adaptAstNode),
+    children: astNode.children.map(adaptNodeDto),
+    named_children: R.mapValues(astNode.namedChildren ?? {}, adaptNodeDto),
   };
 }
 
