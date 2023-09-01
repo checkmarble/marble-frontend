@@ -57,8 +57,16 @@ export function getIdentifiersFromAstNode(
       return identifier;
     }
   }
+
+  return null;
+}
+
+export function getAggregationFromAstNode(
+  node: AstNode,
+  identifiers: EditorIdentifiersByType
+) {
   for (const identifier of identifiers.aggregatorAccessors) {
-    if (astString === JSON.stringify(identifier.node)) {
+    if (node.name === identifier.node.name) {
       return identifier;
     }
   }

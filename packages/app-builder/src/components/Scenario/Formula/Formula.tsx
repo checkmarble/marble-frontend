@@ -1,5 +1,6 @@
 import {
   type AstNode,
+  isAggregationIdentifier,
   isConstantNode,
   isIdentifier,
   isMathAst,
@@ -35,6 +36,10 @@ export function Formula({ formula, isRoot = false }: FormulaProps) {
   }
 
   if (isIdentifier(formula, editorIdentifier)) {
+    return <Identifier node={formula} isRoot={isRoot} />;
+  }
+
+  if (isAggregationIdentifier(formula, editorIdentifier)) {
     return <Identifier node={formula} isRoot={isRoot} />;
   }
 
