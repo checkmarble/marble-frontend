@@ -1,7 +1,9 @@
 import { Callout, Paper } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import { adaptAstNode, type AstNode } from '@app-builder/models';
+import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -73,6 +75,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function Trigger() {
   const scenarioIteration = useCurrentScenarioIteration();
+  const { triggerObjectType } = useCurrentScenario();
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
@@ -152,6 +155,9 @@ export default function Trigger() {
             </Paper.Title>
             <Callout>{t('scenarios:trigger.trigger_object.callout')}</Callout>
           </div>
+          <ScenarioBox className="bg-grey-02 col-span-4 w-fit p-2 font-semibold text-purple-100">
+            {triggerObjectType}
+          </ScenarioBox>
           <FormProvider {...formMethods}>
             <RootOrOperator
               renderAstNode={({ name }) => <EditAstNode name={name} />}

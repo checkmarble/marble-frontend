@@ -17,14 +17,23 @@ type RootOrWithAndFormFields = {
 const AddLogicalOperatorButton = React.forwardRef<
   HTMLButtonElement,
   ButtonProps & {
-    operator: 'if' | 'and' | 'or' | 'where';
+    operator: 'and' | 'or';
   }
 >(({ className, operator, ...props }, ref) => {
   const { t } = useTranslation(['scenarios']);
+
   return (
-    <Button className={clsx('w-fit uppercase', className)} {...props} ref={ref}>
+    <Button
+      className={clsx(
+        'text-grey-25 h-fit w-fit border-none ',
+        'hover:bg-purple-10 hover:text-purple-100',
+        className
+      )}
+      {...props}
+      ref={ref}
+    >
       <Plus className="text-m" />
-      {t(`scenarios:logical_operator.${operator}`)}
+      {t(`scenarios:logical_operator.${operator}_button`)}
     </Button>
   );
 });
@@ -73,7 +82,8 @@ export function RootOrOperator({
                     <div className="flex flex-row gap-1">
                       <LogicalOperatorLabel
                         operator="or"
-                        className="bg-grey-02 uppercase"
+                        className="bg-purple-10 uppercase"
+                        color="purple"
                       />
                       <div className="flex flex-1 items-center">
                         <div className="bg-grey-10 h-[1px] w-full" />
@@ -81,6 +91,7 @@ export function RootOrOperator({
                     </div>
                   )}
                   <RootAndOperator
+                    isFirstGroupOperand={isFirstOperand}
                     name={`astNode.children.${operandIndex}`}
                     removeOrOperand={() => remove(operandIndex)}
                     renderAstNode={renderAstNode}
@@ -89,7 +100,13 @@ export function RootOrOperator({
               );
             })}
             <FormMessage />
-            <AddLogicalOperatorButton onClick={appendOrOperand} operator="or" />
+            <div className="my-1 flex flex-row items-center gap-1">
+              <AddLogicalOperatorButton
+                onClick={appendOrOperand}
+                operator="or"
+                variant="secondary"
+              />
+            </div>
           </FormItem>
         );
       }}
@@ -98,10 +115,12 @@ export function RootOrOperator({
 }
 
 function RootAndOperator({
+  isFirstGroupOperand = false,
   removeOrOperand,
   name,
   renderAstNode,
 }: {
+  isFirstGroupOperand: boolean;
   removeOrOperand: () => void;
   name: `astNode.children.${number}`;
   renderAstNode: (args: { name: string }) => React.ReactNode;
@@ -122,6 +141,8 @@ function RootAndOperator({
   function appendAndOperand() {
     append(NewBinaryAstNode());
   }
+  const isFirstConditionOperand =
+    isFirstGroupOperand && andOperands.length === 0;
 
   return (
     <FormField
@@ -154,12 +175,15 @@ function RootAndOperator({
             })}
             <FormMessage />
 
-            <AddLogicalOperatorButton
-              className="text-grey-25 h-fit w-fit text-xs"
-              variant="secondary"
-              onClick={appendAndOperand}
-              operator="and"
-            />
+            <div
+              className={clsx('my-1', !isFirstConditionOperand && 'ml-[70px]')}
+            >
+              <AddLogicalOperatorButton
+                variant="secondary"
+                onClick={appendAndOperand}
+                operator="and"
+              />
+            </div>
           </FormItem>
         );
       }}
