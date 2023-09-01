@@ -209,7 +209,7 @@ export type CreateScenarioPublicationBody = {
 };
 export type DataModelField = {
     name: string;
-    dataType: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
+    data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
 };
 export type LinkToSingle = {
     linkedTableName: string;
@@ -1241,6 +1241,7 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
             database_accessors: Identifier[];
             payload_accessors: Identifier[];
             custom_list_accessors: Identifier[];
+            aggregator_accessors: Identifier[];
         };
     } | {
         status: 401;

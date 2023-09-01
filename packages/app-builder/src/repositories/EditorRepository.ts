@@ -14,6 +14,7 @@ export interface EditorRepository {
     databaseAccessors: EditorIdentifier[];
     payloadAccessors: EditorIdentifier[];
     customListAccessors: EditorIdentifier[];
+    aggregatorAccessors: EditorIdentifier[];
   }>;
   listOperators(args: { scenarioId: string }): Promise<AstOperator[]>;
   saveRule(args: {
@@ -29,8 +30,12 @@ export interface EditorRepository {
 export function getEditorRepository() {
   return (marbleApiClient: MarbleApi): EditorRepository => ({
     listIdentifiers: async ({ scenarioId }) => {
-      const { database_accessors, payload_accessors, custom_list_accessors } =
-        await marbleApiClient.listIdentifiers(scenarioId);
+      const {
+        database_accessors,
+        payload_accessors,
+        custom_list_accessors,
+        aggregator_accessors,
+      } = await marbleApiClient.listIdentifiers(scenarioId);
       const databaseAccessors = database_accessors.map(
         adaptIdentifierDto ?? []
       );
@@ -38,8 +43,16 @@ export function getEditorRepository() {
       const customListAccessors = custom_list_accessors.map(
         adaptIdentifierDto ?? []
       );
+      const aggregatorAccessors = aggregator_accessors.map(
+        adaptIdentifierDto ?? []
+      );
 
-      return { databaseAccessors, payloadAccessors, customListAccessors };
+      return {
+        databaseAccessors,
+        payloadAccessors,
+        customListAccessors,
+        aggregatorAccessors,
+      };
     },
     listOperators: async ({ scenarioId }) => {
       const { operators_accessors } = await marbleApiClient.listOperators(

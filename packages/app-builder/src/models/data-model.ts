@@ -27,8 +27,8 @@ function adaptFieldDto(dataModelFieldsDto: {
   const dataFieldsModel: DataModelField[] = [];
   Object.keys(dataModelFieldsDto).forEach((key) => {
     dataFieldsModel.push({
-      name: dataModelFieldsDto[key].name,
-      dataType: dataModelFieldsDto[key].dataType,
+      name: key,
+      dataType: dataModelFieldsDto[key].data_type,
     });
   });
   return dataFieldsModel;

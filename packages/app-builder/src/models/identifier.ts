@@ -12,6 +12,7 @@ export interface EditorIdentifiersByType {
   databaseAccessors: EditorIdentifier[];
   payloadAccessors: EditorIdentifier[];
   customListAccessors: EditorIdentifier[];
+  aggregatorAccessors: EditorIdentifier[];
 }
 
 // helper
@@ -52,6 +53,11 @@ export function getIdentifiersFromAstNode(
     }
   }
   for (const identifier of identifiers.payloadAccessors) {
+    if (astString === JSON.stringify(identifier.node)) {
+      return identifier;
+    }
+  }
+  for (const identifier of identifiers.aggregatorAccessors) {
     if (astString === JSON.stringify(identifier.node)) {
       return identifier;
     }

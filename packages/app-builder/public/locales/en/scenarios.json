@@ -86,5 +86,20 @@
   "validation.evaluation_error.argument_must_be_boolean": "argument must be a boolean",
   "validation.evaluation_error.argument_must_be_list": "argument must be a list",
   "validation.evaluation_error.argument_must_be_convertible_to_duration": "argument must be a duration",
-  "validation.evaluation_error.argument_must_be_time": "argument must be a time"
+  "validation.evaluation_error.argument_must_be_time": "argument must be a time",
+  "edit_aggregation.title": "Create a variable",
+  "edit_aggregation.subtitle": "From Marble database",
+  "edit_aggregation.label_title": "Variable name",
+  "edit_aggregation.label_placeholder": "Edit the name of your variable",
+  "edit_aggregation.function_title": "Function",
+  "edit_aggregation.filter_and": "where",
+  "edit_aggregation.add_filter": "Filter",
+  "edit_aggregation.aggregator_average": "Average",
+  "edit_rule.aggregation_list_title": "Edit the Custom variables used in Conditions",
+  "aggregator.average": "Average",
+  "aggregator.count": "Count",
+  "aggregator.count_distinct": "Count distinct",
+  "aggregator.max": "Max",
+  "aggregator.min": "Min",
+  "aggregator.sum": "Sum"
 }
