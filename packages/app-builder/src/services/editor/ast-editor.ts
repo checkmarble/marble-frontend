@@ -82,29 +82,29 @@ export interface AstBuilder {
   appendChild(nodeId: string, childAst: AstNode): void;
   remove(nodeId: string): void;
   save(): void;
+  // validate(): Promise<void>;
 }
 
 export function useAstBuilder({
-  ast,
-  validation,
+  backendAst,
+  backendValidation,
+  localValidation,
   identifiers,
   operators,
   onSave,
+  onValidate,
 }: {
-  ast: AstNode;
-  validation: NodeEvaluation;
+  backendAst: AstNode;
+  backendValidation: NodeEvaluation;
+  localValidation: NodeEvaluation | null;
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
   onSave: (toSave: AstNode) => void;
+  onValidate: (ast: AstNode) => void;
 }): AstBuilder {
   const [astViewModel, setAstViewModel] = useState<EditorNodeViewModel>(() =>
-    adaptEditorNodeViewModel({ ast, validation })
+    adaptEditorNodeViewModel({ ast: backendAst, validation: backendValidation })
   );
-
-  // VERY TEMTO
-  useEffect(() => {
-    setAstViewModel(adaptEditorNodeViewModel({ ast, validation }));
-  }, [ast, validation]);
 
   const replaceOneNode = useCallback(
     (
@@ -218,11 +218,33 @@ export function useAstBuilder({
     // Todo: debonced save
   }, []);
 
-  const save = useCallback(() => {
-    onSave(adaptAstNodeFromEditorViewModel(astViewModel));
+  useEffect(() => {
+    if (localValidation === null) {
+      return;
+    }
 
-    // Todo: debonced save
-  }, [astViewModel, onSave]);
+    // use local viewmodel
+    // TODO: to not replace the astViewModel and merge the localValidation
+
+    setAstViewModel((vm) => {
+      const editedAst = adaptAstNodeFromEditorViewModel(vm);
+      return adaptEditorNodeViewModel({
+        ast: editedAst,
+        validation: localValidation,
+      });
+    });
+  }, [localValidation]);
+
+  const validate = useCallback(() => {
+    const editedAst = adaptAstNodeFromEditorViewModel(astViewModel);
+    onValidate(editedAst);
+  }, [astViewModel, onValidate]);
+
+  const save = useCallback(() => {
+    const newAst = adaptAstNodeFromEditorViewModel(astViewModel);
+    onSave(newAst);
+    validate();
+  }, [astViewModel, onSave, validate]);
 
   return {
     astViewModel,
@@ -234,5 +256,6 @@ export function useAstBuilder({
     appendChild,
     remove,
     save,
+    // validate,
   };
 }

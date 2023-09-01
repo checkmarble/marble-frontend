@@ -9,6 +9,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type AstNode } from '@app-builder/models';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
+import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
 import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -137,10 +138,13 @@ export default function RuleEdit() {
   const ruleId = useParam('ruleId');
 
   const fetcher = useFetcher<typeof action>();
+  const { validate, validation: localValidation } =
+    useTriggerOrRuleValidationFetcher(scenarioId, iterationId, ruleId);
 
   const astEditor = useAstBuilder({
-    ast: rule.astNode,
-    validation: ruleValidation,
+    backendAst: rule.astNode,
+    backendValidation: ruleValidation,
+    localValidation,
     identifiers,
     operators,
     onSave: (astNodeToSave: AstNode) => {
@@ -149,6 +153,7 @@ export default function RuleEdit() {
         encType: 'application/json',
       });
     },
+    onValidate: validate,
   });
 
   return (
