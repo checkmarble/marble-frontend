@@ -3,6 +3,7 @@ import {
   type AstNode,
   isAggregation,
   NewUndefinedAstNode,
+  undefinedAstNodeName,
 } from '@app-builder/models';
 import {
   useEditorIdentifiers,
@@ -165,7 +166,7 @@ export const EditOperand = forwardRef<
           </Combobox.Options>
         </div>
       </Combobox.Root>
-      {editingAggregation.name !== 'Undefined' && (
+      {editingAggregation.name !== undefinedAstNodeName && (
         <AggregationEditModal
           initialAggregation={adaptAggregationViewModel(editingAggregation)}
           modalOpen={modalOpen}

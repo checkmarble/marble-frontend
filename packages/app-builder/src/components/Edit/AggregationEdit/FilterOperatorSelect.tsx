@@ -19,7 +19,7 @@ export const FilterOperatorSelect = ({
         onChange(selectedValue);
       }}
     >
-      <Select.Trigger className="focus:border-purple-100 aria-[invalid=true]:border-red-100">
+      <Select.Trigger>
         <Select.Value placeholder="..." />
       </Select.Trigger>
       <Select.Content className="max-h-60">

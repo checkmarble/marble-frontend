@@ -23,9 +23,11 @@ export const EditFilters = ({
 }) => {
   const { t } = useTranslation(scenarioI18n);
 
-  const filteredDataModalFieldOptions = dataModelFieldOptions.filter(
-    ({ tableName }) => tableName == aggregatedField?.tableName
-  );
+  const filteredDataModalFieldOptions = aggregatedField?.tableName
+    ? dataModelFieldOptions.filter(
+        ({ tableName }) => tableName == aggregatedField?.tableName
+      )
+    : dataModelFieldOptions;
 
   const onFilterChange = (
     newFieldValue: Partial<FilterViewModel>,

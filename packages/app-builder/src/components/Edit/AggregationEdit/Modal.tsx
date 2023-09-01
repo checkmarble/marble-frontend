@@ -111,14 +111,14 @@ export interface FilterViewModel {
 
 const aggregationFormSchema = z.object({
   label: z.string().nonempty({ message: 'Required' }),
-  aggregator: z.enum(['AVG', 'COUNT', 'COUNT_DISTINCT', 'MAX', 'MIN', 'SUM']),
+  aggregator: z.string().nonempty({ message: 'Required' }),
   aggregatedField: z.object({
     tableName: z.string().nonempty({ message: 'Required' }),
     fieldName: z.string().nonempty({ message: 'Required' }),
   }),
   filters: z.array(
     z.object({
-      operator: z.enum(['=', '!=', '>', '>=', '<', '<=']),
+      operator: z.string().nonempty({ message: 'Required' }),
       filteredField: z.object({
         tableName: z.string().nonempty({ message: 'Required' }),
         fieldName: z.string().nonempty({ message: 'Required' }),

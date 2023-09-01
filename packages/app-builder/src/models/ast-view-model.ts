@@ -29,10 +29,7 @@ export function adaptAstNodeToViewModel(astNode: AstNode): AstViewModel {
 export const adaptConstantAstNodeToString = (
   astNode: AstNode | null
 ): string => {
-  if (!astNode) {
-    return '';
-  }
-  if (!astNode.constant) {
+  if (!astNode || !astNode.constant) {
     return '';
   }
   return String(astNode.constant);
