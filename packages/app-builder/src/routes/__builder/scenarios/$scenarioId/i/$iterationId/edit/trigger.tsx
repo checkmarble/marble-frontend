@@ -39,7 +39,7 @@ export async function action({ request, params }: ActionArgs) {
 
     await apiClient.updateScenarioIteration(iterationId, {
       body: {
-        trigger_condition_ast_expression: adaptAstNode(expression.astNode),
+        trigger_condition_ast_expression: adaptNodeDto(expression.astNode),
       },
     });
 

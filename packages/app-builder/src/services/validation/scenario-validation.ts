@@ -39,8 +39,11 @@ export function countScenarioValidationErrors(
 
 export function findRuleValidation(
   validation: ScenarioValidation,
-  ruleId: string
+  ruleId: string | null
 ): NodeEvaluation {
+  if (ruleId === null) {
+    return validation.triggerEvaluation;
+  }
   const evaluation = validation.rulesEvaluations[ruleId];
 
   invariant(evaluation !== undefined, `Rule ${ruleId} not found in validation`);

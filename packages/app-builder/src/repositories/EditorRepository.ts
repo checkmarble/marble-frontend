@@ -1,7 +1,7 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
-  adaptAstNode,
   adaptIdentifierDto,
+  adaptNodeDto,
   type AstNode,
   type EditorIdentifiersByType,
 } from '@app-builder/models';
@@ -72,7 +72,7 @@ export function getEditorRepository() {
         displayOrder,
         name,
         description,
-        formula_ast_expression: adaptAstNode(astNode),
+        formula_ast_expression: adaptNodeDto(astNode),
         scoreModifier,
       });
     },

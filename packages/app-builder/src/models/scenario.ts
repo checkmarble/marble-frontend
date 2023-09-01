@@ -5,7 +5,7 @@ import {
 } from '@marble-api';
 
 import {
-  adaptNodeDto,
+  adaptAstNode,
   type AstNode,
   isOrAndGroup,
   wrapInOrAndGroups,
@@ -50,7 +50,7 @@ export function adaptScenarioIterationRule(
   if (!scenarioIterationRuleDto.formula_ast_expression) {
     astNode = wrapInOrAndGroups();
   } else {
-    const unwrappedAstNode = adaptNodeDto(
+    const unwrappedAstNode = adaptAstNode(
       scenarioIterationRuleDto.formula_ast_expression
     );
     astNode = isOrAndGroup(unwrappedAstNode)
@@ -76,7 +76,7 @@ export function adaptScenarioIteration(
   if (!scenarioIterationWithBody.body.trigger_condition_ast_expression) {
     astNode = wrapInOrAndGroups();
   } else {
-    const unwrappedAstNode = adaptNodeDto(
+    const unwrappedAstNode = adaptAstNode(
       scenarioIterationWithBody.body.trigger_condition_ast_expression
     );
     astNode = isOrAndGroup(unwrappedAstNode)
