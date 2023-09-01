@@ -23,6 +23,8 @@
   "logical_operator.if": "if",
   "logical_operator.and": "and",
   "logical_operator.where": "where",
+  "logical_operator.and_button": "Condition",
+  "logical_operator.or_button": "Group",
   "operator.is_in": "is in",
   "false": "false",
   "true": "true",
