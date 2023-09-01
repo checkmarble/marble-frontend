@@ -15,7 +15,7 @@ import * as z from 'zod';
 import { useCurrentScenarioIteration } from '../../$iterationId';
 
 export const handle = {
-  i18n: [...decisionI18n, 'scenarios'] satisfies Namespace,
+  i18n: [...decisionI18n, 'scenarios', 'common'] satisfies Namespace,
 };
 
 const formSchema = z
@@ -108,35 +108,38 @@ export default function Decision() {
       </div>
 
       <Form
-        className="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4"
         control={control}
         onSubmit={({ formData }) => {
           submit(formData, { method: 'POST' });
         }}
       >
-        <Outcome border="square" size="big" outcome="approve" />
-        <div className="flex flex-row items-center gap-1 lg:gap-2">
-          {t('scenarios:decision.score_based.approve_condition')}
-          <Input
-            {...register('thresholds.0')}
-            type="number"
-            className="relative w-fit"
-          />
-        </div>
+        <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
+          <Outcome border="square" size="big" outcome="approve" />
+          <div className="flex flex-row items-center gap-1 lg:gap-2">
+            {t('scenarios:decision.score_based.approve_condition')}
+            <Input
+              {...register('thresholds.0')}
+              type="number"
+              className="relative w-fit"
+            />
+          </div>
 
-        <Outcome border="square" size="big" outcome="review" />
-        {t('scenarios:decision.score_based.review_condition')}
+          <Outcome border="square" size="big" outcome="review" />
+          {t('scenarios:decision.score_based.review_condition')}
 
-        <Outcome border="square" size="big" outcome="decline" />
-        <div className="flex flex-row items-center gap-1 lg:gap-2">
-          {t('scenarios:decision.score_based.decline_condition')}
-          <Input
-            className="relative w-fit"
-            {...register('thresholds.1')}
-            type="number"
-          />
+          <Outcome border="square" size="big" outcome="decline" />
+          <div className="flex flex-row items-center gap-1 lg:gap-2">
+            {t('scenarios:decision.score_based.decline_condition')}
+            <Input
+              className="relative w-fit"
+              {...register('thresholds.1')}
+              type="number"
+            />
+          </div>
         </div>
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="float-right">
+          {t('common:save')}
+        </Button>
         {errors.thresholds?.message && (
           <div className="bg-grey-00 text-s text-red-100">
             {errors.thresholds?.message}
