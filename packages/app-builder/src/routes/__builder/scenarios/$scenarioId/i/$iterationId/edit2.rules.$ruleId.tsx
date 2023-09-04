@@ -68,14 +68,14 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
-  const validation = await scenario.validate({ iterationId });
-  const ruleValidation = findRuleValidation(validation, ruleId);
-
   return json({
     rule: await scenarioIterationRulePromise,
     identifiers: await identifiersPromise,
     operators: await operatorsPromise,
-    ruleValidation,
+    ruleValidation: findRuleValidation(
+      await scenario.validate({ iterationId }),
+      ruleId
+    ),
     scenarioId,
   });
 }
@@ -142,7 +142,7 @@ export default function RuleEdit() {
     useTriggerOrRuleValidationFetcher(scenarioId, iterationId, ruleId);
 
   const astEditor = useAstBuilder({
-    backendAst: rule.astNode,
+    backendAst: rule.formula,
     backendValidation: ruleValidation,
     localValidation,
     identifiers,

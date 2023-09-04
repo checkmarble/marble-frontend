@@ -135,7 +135,7 @@ function RootAnd({
               }}
             />
             <div className="peer-hover:border-grey-25 flex flex-1 flex-col rounded border border-transparent p-1 transition-colors duration-200 ease-in-out">
-              <AstBuilderNode builder={builder} astNodeViewModel={child} />
+              <AstBuilderNode builder={builder} editorNodeViewModel={child} />
             </div>
             <LogicalOperatorLabel operator={childIndex === 0 ? 'if' : 'and'} />
           </div>

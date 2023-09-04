@@ -6,6 +6,7 @@ import {
   type EditorIdentifiersByType,
   type NodeEvaluation,
   type Validation,
+  wrapInOrAndGroups,
 } from '@app-builder/models';
 import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useState } from 'react';
@@ -28,14 +29,26 @@ function adaptEditorNodeViewModel({
   ast: AstNode;
   validation?: NodeEvaluation;
 }): EditorNodeViewModel {
-  const evaluation = validation
-    ? validation
-    : {
-        returnValue: null,
-        errors: null,
-        children: [],
-        namedChildren: {},
-      };
+  if (
+    validation !== undefined &&
+    ast.children.length !== validation.children.length
+  ) {
+    console.error('ast.children.length !== evaluation.children.length');
+    // throw new Error('ast.children.length !== evaluation.children.length');
+  }
+
+  let evaluation: NodeEvaluation;
+
+  if (validation === undefined) {
+    evaluation = {
+      returnValue: null,
+      errors: null,
+      children: [],
+      namedChildren: {},
+    };
+  } else {
+    evaluation = validation;
+  }
 
   return {
     nodeId: nanoid(),
@@ -73,7 +86,7 @@ export function adaptAstNodeFromEditorViewModel(
 }
 
 export interface AstBuilder {
-  astViewModel: EditorNodeViewModel;
+  editorNodeViewModel: EditorNodeViewModel;
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
   setConstant(nodeId: string, newValue: ConstantType): void;
@@ -82,7 +95,6 @@ export interface AstBuilder {
   appendChild(nodeId: string, childAst: AstNode): void;
   remove(nodeId: string): void;
   save(): void;
-  // validate(): Promise<void>;
 }
 
 export function useAstBuilder({
@@ -94,7 +106,7 @@ export function useAstBuilder({
   onSave,
   onValidate,
 }: {
-  backendAst: AstNode;
+  backendAst: AstNode | null;
   backendValidation: NodeEvaluation;
   localValidation: NodeEvaluation | null;
   identifiers: EditorIdentifiersByType;
@@ -102,50 +114,60 @@ export function useAstBuilder({
   onSave: (toSave: AstNode) => void;
   onValidate: (ast: AstNode) => void;
 }): AstBuilder {
-  const [astViewModel, setAstViewModel] = useState<EditorNodeViewModel>(() =>
-    adaptEditorNodeViewModel({ ast: backendAst, validation: backendValidation })
+  const [editorNodeViewModel, setEditorNodeViewModel] =
+    useState<EditorNodeViewModel>(() => {
+      if (backendAst === null) {
+        // return default rule, ignore backend validation
+        const vm = adaptEditorNodeViewModel({
+          ast: wrapInOrAndGroups(),
+          validation: undefined,
+        });
+        validate(vm);
+        return vm;
+      }
+
+      return adaptEditorNodeViewModel({
+        ast: backendAst,
+        validation: backendValidation,
+      });
+    });
+
+  const validate = useCallback(
+    (vm: EditorNodeViewModel) => {
+      const editedAst = adaptAstNodeFromEditorViewModel(vm);
+      onValidate(editedAst);
+    },
+    [onValidate]
   );
 
+  // replace the node
   const replaceOneNode = useCallback(
     (
       nodeId: string,
-      fn: (node: EditorNodeViewModel) => EditorNodeViewModel
+      fn: (node: EditorNodeViewModel) => EditorNodeViewModel | null
     ) => {
-      function replaceNode(node: EditorNodeViewModel): EditorNodeViewModel {
-        if (node.nodeId === nodeId) {
-          return fn(node);
-        }
-
-        const children = node.children.map(replaceNode);
-        const namedChildren = R.mapValues(node.namedChildren, replaceNode);
-        return {
-          ...node,
-          children,
-          namedChildren,
-        };
+      const newViewModel = findAndReplaceNode(nodeId, fn, editorNodeViewModel);
+      if (newViewModel === null) {
+        throw Error("internal error: root node can't be removed");
       }
-
-      setAstViewModel((astViewModel) => replaceNode(astViewModel));
+      setEditorNodeViewModel(newViewModel);
+      validate(newViewModel);
     },
-    []
+    [editorNodeViewModel, validate]
   );
 
   const setConstant = useCallback(
     (nodeId: string, newValue: ConstantType) => {
-      // Todo: edit view
       replaceOneNode(nodeId, (node) => ({
         ...node,
         constant: newValue,
       }));
-
-      // Todo: debonced save
     },
     [replaceOneNode]
   );
 
   const setOperand = useCallback(
     (nodeId: string, operandAst: AstNode) => {
-      // Todo: edit view
       replaceOneNode(nodeId, () => {
         const newOperand = adaptEditorNodeViewModel({
           ast: operandAst,
@@ -153,30 +175,24 @@ export function useAstBuilder({
 
         return newOperand;
       });
-
-      // Todo: debonced save
     },
     [replaceOneNode]
   );
 
   const setOperator = useCallback(
     (nodeId: string, funcName: string) => {
-      // Todo: edit view
       replaceOneNode(nodeId, (node) => {
         return {
           ...node,
           funcName,
         };
       });
-
-      // Todo: debonced save
     },
     [replaceOneNode]
   );
 
   const appendChild = useCallback(
     (nodeId: string, childAst: AstNode) => {
-      // Todo: edit view
       replaceOneNode(nodeId, (node) => {
         const newChild = adaptEditorNodeViewModel({
           ast: childAst,
@@ -187,36 +203,14 @@ export function useAstBuilder({
           children: [...node.children, newChild],
         };
       });
-
-      // Todo: debonced save
     },
     [replaceOneNode]
   );
 
-  const remove = useCallback((nodeId: string) => {
-    function filterNode(node: EditorNodeViewModel): EditorNodeViewModel {
-      const children = node.children
-        .filter((child) => child.nodeId !== nodeId)
-        .map(filterNode);
-
-      const namedChildren = R.pipe(
-        R.toPairs(node.namedChildren),
-        R.filter(([_, child]) => child.nodeId !== nodeId),
-        R.map(([key, child]) => [key, filterNode(child)] as const),
-        (pairs) => R.fromPairs(pairs)
-      );
-
-      return {
-        ...node,
-        children,
-        namedChildren,
-      };
-    }
-
-    setAstViewModel((astViewModel) => filterNode(astViewModel));
-
-    // Todo: debonced save
-  }, []);
+  const remove = useCallback(
+    (nodeId: string) => replaceOneNode(nodeId, () => null),
+    [replaceOneNode]
+  );
 
   useEffect(() => {
     if (localValidation === null) {
@@ -224,9 +218,9 @@ export function useAstBuilder({
     }
 
     // use local viewmodel
-    // TODO: to not replace the astViewModel and merge the localValidation
+    // TODO: no need to replace the astViewModel: just merge the localValidation
 
-    setAstViewModel((vm) => {
+    setEditorNodeViewModel((vm) => {
       const editedAst = adaptAstNodeFromEditorViewModel(vm);
       return adaptEditorNodeViewModel({
         ast: editedAst,
@@ -235,19 +229,14 @@ export function useAstBuilder({
     });
   }, [localValidation]);
 
-  const validate = useCallback(() => {
-    const editedAst = adaptAstNodeFromEditorViewModel(astViewModel);
-    onValidate(editedAst);
-  }, [astViewModel, onValidate]);
-
   const save = useCallback(() => {
-    const newAst = adaptAstNodeFromEditorViewModel(astViewModel);
+    const newAst = adaptAstNodeFromEditorViewModel(editorNodeViewModel);
     onSave(newAst);
-    validate();
-  }, [astViewModel, onSave, validate]);
+    validate(editorNodeViewModel);
+  }, [editorNodeViewModel, onSave, validate]);
 
   return {
-    astViewModel,
+    editorNodeViewModel,
     identifiers,
     operators,
     setConstant,
@@ -256,6 +245,40 @@ export function useAstBuilder({
     appendChild,
     remove,
     save,
-    // validate,
+  };
+}
+
+// Find the node `nodeIdToReplace` by walking the tree bottom-up
+// When found, apply `fn` to the node and replace the node with the result
+// If fn return null, the node is removed.
+function findAndReplaceNode(
+  nodeIdToReplace: string,
+  fn: (node: EditorNodeViewModel) => EditorNodeViewModel | null,
+  node: EditorNodeViewModel
+): EditorNodeViewModel | null {
+  if (node.nodeId === nodeIdToReplace) {
+    return fn(node);
+  }
+
+  const children = R.pipe(
+    node.children,
+    R.map((child) => findAndReplaceNode(nodeIdToReplace, fn, child)),
+    R.compact
+  );
+
+  const namedChildren = R.pipe(
+    R.toPairs(node.namedChildren),
+    R.map(([key, child]) => {
+      const newChild = findAndReplaceNode(nodeIdToReplace, fn, child);
+      return newChild === null ? null : ([key, newChild] as const);
+    }),
+    R.compact,
+    (pairs) => R.fromPairs(pairs)
+  );
+
+  return {
+    ...node,
+    children,
+    namedChildren,
   };
 }

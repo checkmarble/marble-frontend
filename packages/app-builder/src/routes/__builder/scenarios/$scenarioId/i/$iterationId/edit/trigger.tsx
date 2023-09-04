@@ -2,7 +2,11 @@ import { Callout, Paper } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
-import { adaptAstNode, type AstNode } from '@app-builder/models';
+import {
+  adaptAstNode,
+  type AstNode,
+  NewUndefinedAstNode,
+} from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -80,7 +84,9 @@ export default function Trigger() {
   const fetcher = useFetcher<typeof action>();
 
   const formMethods = useForm({
-    defaultValues: { astNode: scenarioIteration.astNode },
+    defaultValues: (): { astNode: AstNode } => ({
+      astNode: scenarioIteration.trigger ?? NewUndefinedAstNode(),
+    }),
   });
 
   return (
