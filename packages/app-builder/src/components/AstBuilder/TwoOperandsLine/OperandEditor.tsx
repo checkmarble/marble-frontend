@@ -4,7 +4,6 @@ import {
   getAstNodeDisplayName,
   isAggregation,
   type LabelledAst,
-  NewAstNode,
   NewUndefinedAstNode,
   undefinedAstNodeName,
 } from '@app-builder/models';
@@ -22,6 +21,7 @@ import {
 } from '../AggregationEdit';
 import { ErrorMessage } from '../ErrorMessage';
 import { getBorderColor } from '../utils';
+import { coerceToConstantsLabelledAst } from './CoerceToConstantsLabelledAst';
 
 export type OperandViewModel = EditorNodeViewModel;
 
@@ -165,45 +165,4 @@ function OperandComboBoxOption({ option }: { option: LabelledAst }) {
       <span>{option.tooltip}</span>
     </Combobox.Option>
   );
-}
-
-function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
-  const results: LabelledAst[] = [];
-
-  const searchLowerCase = search.trim().toLocaleLowerCase();
-  if (searchLowerCase.length === 0) {
-    return [];
-  }
-
-  // Note: Number('') === 0
-  const parsedNumber = Number(searchLowerCase);
-  if (Number.isFinite(parsedNumber)) {
-    results.push({
-      label: search,
-      tooltip: '(number)',
-      astNode: NewAstNode({
-        constant: parsedNumber,
-      }),
-    });
-  }
-
-  if (searchLowerCase === 'true' || searchLowerCase === 'false') {
-    results.push({
-      label: search,
-      tooltip: '(boolean)',
-      astNode: NewAstNode({
-        constant: search === 'true',
-      }),
-    });
-  }
-
-  results.push({
-    label: `"${search}"`,
-    tooltip: '(string)',
-    astNode: NewAstNode({
-      constant: search,
-    }),
-  });
-
-  return results;
 }
