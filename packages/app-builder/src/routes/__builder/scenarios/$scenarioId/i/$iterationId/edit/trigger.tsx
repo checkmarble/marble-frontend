@@ -5,7 +5,7 @@ import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import {
   adaptAstNode,
   type AstNode,
-  NewUndefinedAstNode,
+  wrapInOrAndGroups,
 } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { serverServices } from '@app-builder/services/init.server';
@@ -83,10 +83,11 @@ export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
+  // @ts-ignore
   const formMethods = useForm({
-    defaultValues: (): { astNode: AstNode } => ({
-      astNode: scenarioIteration.trigger ?? NewUndefinedAstNode(),
-    }),
+    defaultValues: {
+      astNode: scenarioIteration.trigger ?? wrapInOrAndGroups(),
+    },
   });
 
   return (
