@@ -3,6 +3,7 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
+import { ErrorMessage } from '../ErrorMessage';
 import { OperandEditor, type OperandViewModel } from './OperandEditor';
 import {
   adaptOperatorEditorViewModel,
@@ -24,19 +25,26 @@ export function TwoOperandsLine({
   twoOperandsViewModel: TwoOperandsLineViewModel;
 }) {
   return (
-    <div className="flex flex-row gap-1">
-      <OperandEditor
-        builder={builder}
-        operandViewModel={twoOperandsViewModel.left}
-      />
-      <OperatorEditor
-        builder={builder}
-        operatorEditorViewModel={twoOperandsViewModel.operator}
-      />
-      <OperandEditor
-        builder={builder}
-        operandViewModel={twoOperandsViewModel.right}
-      />
+    <div className="flex flex-col gap-1">
+      <div className="flex flex-row gap-1">
+        <OperandEditor
+          builder={builder}
+          operandViewModel={twoOperandsViewModel.left}
+        />
+        <OperatorEditor
+          builder={builder}
+          operatorEditorViewModel={twoOperandsViewModel.operator}
+        />
+        <OperandEditor
+          builder={builder}
+          operandViewModel={twoOperandsViewModel.right}
+        />
+      </div>
+      {twoOperandsViewModel.operator.validation.state === 'fail' && (
+        <ErrorMessage
+          errors={twoOperandsViewModel.operator.validation.errors}
+        />
+      )}
     </div>
   );
 }
