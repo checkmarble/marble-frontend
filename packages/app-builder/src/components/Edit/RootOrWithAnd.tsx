@@ -1,4 +1,8 @@
-import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import {
+  type AstNode,
+  NewAstNode,
+  NewUndefinedAstNode,
+} from '@app-builder/models';
 import { Button, type ButtonProps } from '@ui-design-system';
 import { Plus } from '@ui-icons';
 import clsx from 'clsx';
@@ -50,12 +54,12 @@ export function RootOrOperator({
   });
 
   function appendOrOperand() {
-    append({
-      name: 'And',
-      children: [NewBinaryAstNode()],
-      namedChildren: {},
-      constant: null,
-    });
+    append(
+      NewAstNode({
+        name: 'And',
+        children: [NewBinaryAstNode()],
+      })
+    );
   }
 
   return (
