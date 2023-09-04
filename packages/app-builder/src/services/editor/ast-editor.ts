@@ -208,13 +208,9 @@ export function useAstBuilder({
       return;
     }
 
-    // use local viewmodel
-    // TODO: no need to replace the astViewModel: just merge the localValidation
-
     setEditorNodeViewModel((vm) => {
-      const editedAst = adaptAstNodeFromEditorViewModel(vm);
-      return adaptEditorNodeViewModel({
-        ast: editedAst,
+      return updateValidation({
+        editorNodeViewModel: vm,
         validation: localValidation,
       });
     });
@@ -272,5 +268,37 @@ function findAndReplaceNode(
     ...node,
     children,
     namedChildren,
+  };
+}
+
+function updateValidation({
+  editorNodeViewModel,
+  validation,
+}: {
+  editorNodeViewModel: EditorNodeViewModel;
+  validation: NodeEvaluation;
+}): EditorNodeViewModel {
+  // Ensure validation is consistent with view model (due to children, namedChildren recursion)
+  if (!validation) {
+    throw new Error('validation is required');
+  }
+
+  return {
+    ...editorNodeViewModel,
+    validation: adaptValidation(validation),
+    children: editorNodeViewModel.children.map((child, i) =>
+      updateValidation({
+        editorNodeViewModel: child,
+        validation: validation.children[i],
+      })
+    ),
+    namedChildren: R.mapValues(
+      editorNodeViewModel.namedChildren,
+      (child, namedKey) =>
+        updateValidation({
+          editorNodeViewModel: child,
+          validation: validation.namedChildren[namedKey],
+        })
+    ),
   };
 }
