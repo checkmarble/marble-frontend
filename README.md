@@ -45,7 +45,7 @@ pnpm --filter app-builder run dev
 
 ```bash
 # Start the builder app in dev mode
-pnpm --filter app-builder run dev
+pnpm --filter app-builder run dev --debug
 
 # Generate the marble-api client
 pnpm --filter marble-api run generate-api
