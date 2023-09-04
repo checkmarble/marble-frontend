@@ -13,6 +13,7 @@ import {
 import { Combobox } from '@ui-design-system';
 import { useCallback, useState } from 'react';
 
+import { ErrorMessage } from '../ErrorMessage';
 import { getBorderColor } from '../utils';
 
 export type OperandViewModel = EditorNodeViewModel;
@@ -95,27 +96,32 @@ export function OperandEditor({
   const isInvalid = operandViewModel.validation.state === 'fail';
 
   return (
-    <Combobox.Root<LabelledAst>
-      value={editViewModel.selectedOption ?? undefined}
-      onChange={handleSelectOption}
-    >
-      <div className="relative">
-        <Combobox.Input
-          displayValue={(item: LabelledAst) => item.label ?? '??'}
-          onChange={(event) => {
-            handleInputChanged(event.target.value);
-          }}
-          aria-invalid={isInvalid}
-          borderColor={getBorderColor(operandViewModel.validation)}
-        />
+    <div className="flex flex-col gap-1">
+      <Combobox.Root<LabelledAst>
+        value={editViewModel.selectedOption ?? undefined}
+        onChange={handleSelectOption}
+      >
+        <div className="relative">
+          <Combobox.Input
+            displayValue={(item: LabelledAst) => item.label ?? '??'}
+            onChange={(event) => {
+              handleInputChanged(event.target.value);
+            }}
+            aria-invalid={isInvalid}
+            borderColor={getBorderColor(operandViewModel.validation)}
+          />
 
-        <Combobox.Options className="w-fit">
-          {availableOptions.map((option, i) => (
-            <OperandComboBoxOption key={i} option={option} />
-          ))}
-        </Combobox.Options>
-      </div>
-    </Combobox.Root>
+          <Combobox.Options className="w-fit">
+            {availableOptions.map((option, i) => (
+              <OperandComboBoxOption key={i} option={option} />
+            ))}
+          </Combobox.Options>
+        </div>
+      </Combobox.Root>
+      {operandViewModel.validation.state === 'fail' && (
+        <ErrorMessage errors={operandViewModel.validation.errors} />
+      )}
+    </div>
   );
 }
 
