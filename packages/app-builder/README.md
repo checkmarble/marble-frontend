@@ -8,9 +8,18 @@ The application is built using the Remax framework. You can find the documentati
 
 ### Development
 
+#### VSCode users
+
+We recommand to use the launch task: "Launch app-builder" to start the app in dev mode. The debugger should be automatically attached (work for both SSR and client parts).
+
+#### From the CLI
+
 ```bash
 # Start the builder app in dev mode
 pnpm --filter app-builder run dev
+
+# Start the builder app in dev mode with debug
+pnpm --filter app-builder run dev --debug
 ```
 
 #### Add a new route
