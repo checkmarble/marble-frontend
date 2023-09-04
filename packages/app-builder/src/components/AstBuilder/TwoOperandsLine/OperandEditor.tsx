@@ -1,9 +1,16 @@
+import {
+  adaptAggregationViewModel,
+  AggregationEditModal,
+} from '@app-builder/components/Edit';
 import { stringifyConstant } from '@app-builder/components/Scenario/Formula/Operators';
 import {
   adaptLabelledAstFromIdentifier,
   type AstNode,
+  isAggregation,
   type LabelledAst,
   NewAstNode,
+  NewUndefinedAstNode,
+  undefinedAstNodeName,
 } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -53,6 +60,9 @@ export function OperandEditor({
         ...builder.identifiers.customListAccessors.map(
           adaptLabelledAstFromIdentifier
         ),
+        ...builder.identifiers.aggregatorAccessors.map(
+          adaptLabelledAstFromIdentifier
+        ),
       ];
 
       return {
@@ -79,6 +89,10 @@ export function OperandEditor({
         ...vm,
         selectedOption: newSelection,
       }));
+      if (isAggregation(newSelection.astNode)) {
+        editAggregation(newSelection.astNode);
+        return;
+      }
       builder.setOperand(operandViewModel.nodeId, newSelection.astNode);
     },
     [builder, operandViewModel.nodeId]
@@ -94,6 +108,14 @@ export function OperandEditor({
   ];
 
   const isInvalid = operandViewModel.validation.state === 'fail';
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [selectionAggregationOption, setSelectionAggregationOption] =
+    useState<AstNode>(NewUndefinedAstNode);
+  const editAggregation = (node: AstNode) => {
+    setSelectionAggregationOption(node);
+    setModalOpen(true);
+  };
 
   return (
     <div className="flex flex-col gap-1">
@@ -120,6 +142,17 @@ export function OperandEditor({
       </Combobox.Root>
       {operandViewModel.validation.state === 'fail' && (
         <ErrorMessage errors={operandViewModel.validation.errors} />
+      )}
+      {selectionAggregationOption.name !== undefinedAstNodeName && (
+        <AggregationEditModal
+          builder={builder}
+          initialAggregation={adaptAggregationViewModel(
+            operandViewModel.nodeId,
+            selectionAggregationOption
+          )}
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+        />
       )}
     </div>
   );

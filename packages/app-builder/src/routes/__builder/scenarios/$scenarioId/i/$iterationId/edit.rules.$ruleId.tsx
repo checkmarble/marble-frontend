@@ -15,7 +15,6 @@ import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import {
-  EditorDataModelsProvider,
   EditorIdentifiersProvider,
   EditorOperatorsProvider,
 } from '@app-builder/services/editor';
@@ -143,7 +142,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators, ruleValidation, dataModels } =
+  const { rule, identifiers, operators, ruleValidation } =
     useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
@@ -214,18 +213,14 @@ export default function RuleEdit() {
             <Paper.Container scrollable={false}>
               <EditorIdentifiersProvider identifiers={identifiers}>
                 <EditorOperatorsProvider operators={operators}>
-                  <EditorDataModelsProvider dataModels={dataModels}>
-                    <FormProvider {...formMethods}>
-                      {/* <RootOrOperator
+                  <FormProvider {...formMethods}>
+                    {/* <RootOrOperator
                   renderAstNode={({ name }) => <WildEditAstNode name={name} />}
                 /> */}
-                      <RootOrOperator
-                        renderAstNode={({ name }) => (
-                          <EditAstNode name={name} />
-                        )}
-                      />
-                    </FormProvider>
-                  </EditorDataModelsProvider>
+                    <RootOrOperator
+                      renderAstNode={({ name }) => <EditAstNode name={name} />}
+                    />
+                  </FormProvider>
                 </EditorOperatorsProvider>
               </EditorIdentifiersProvider>
               <div className="flex flex-row justify-end">
