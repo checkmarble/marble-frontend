@@ -5,11 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach",
-      "port": 9229,
-      "request": "attach",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "command": "pnpm --filter app-builder run dev",
+      "name": "Launch app-builder",
+      "request": "launch",
+      "type": "node-terminal"
     }
   ]
 }

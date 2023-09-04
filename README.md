@@ -41,6 +41,10 @@ Each packages are located in the `packages` folder. To work in a package, you ca
 pnpm --filter app-builder run dev
 ```
 
+#### (VSCode) Use launch configuration
+
+When available, you can use VSCode launch configuration to run the package scripts. You can find them in the `.vscode/launch.json` file.
+
 ### Some usefull commands
 
 ```bash
