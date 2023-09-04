@@ -2,6 +2,7 @@ export * from './ast-node';
 export * from './ast-operators';
 export * from './ast-view-model';
 export * from './auth-errors';
+export * from './data-model';
 export * from './http-errors';
 export * from './identifier';
 export * from './marble-session';

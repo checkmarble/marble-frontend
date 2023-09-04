@@ -1,17 +1,16 @@
-import {
-  useEditorIdentifiers,
-  useGetAggregatorName,
-} from '@app-builder/services/editor';
+import { type EditorIdentifier } from '@app-builder/models';
+import { useGetAggregatorName } from '@app-builder/services/editor';
 import { Select } from '@ui-design-system';
 
 export const AggregatorSelect = ({
   value,
   onChange,
+  aggretatorOptions,
 }: {
   value: string;
   onChange: (value: string) => void;
+  aggretatorOptions: EditorIdentifier[];
 }) => {
-  const { aggregatorAccessors: aggregators } = useEditorIdentifiers();
   const getAggregatorName = useGetAggregatorName();
 
   return (
@@ -28,7 +27,7 @@ export const AggregatorSelect = ({
         <Select.Value placeholder="..." />
       </Select.Trigger>
       <Select.Content className="max-h-60">
-        {aggregators.map((aggregator) => (
+        {aggretatorOptions.map((aggregator) => (
           <Select.Item
             className="min-w-[110px]"
             key={aggregator.name}

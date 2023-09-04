@@ -3,6 +3,7 @@ import {
   type AstNode,
   type AstOperator,
   type ConstantType,
+  type DataModel,
   type EditorIdentifiersByType,
   type NodeEvaluation,
   type Validation,
@@ -22,7 +23,7 @@ export interface EditorNodeViewModel {
   namedChildren: Record<string, EditorNodeViewModel>;
 }
 
-function adaptEditorNodeViewModel({
+export function adaptEditorNodeViewModel({
   ast,
   validation,
 }: {
@@ -75,6 +76,7 @@ export interface AstBuilder {
   editorNodeViewModel: EditorNodeViewModel;
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
+  dataModels: DataModel[];
   setConstant(nodeId: string, newValue: ConstantType): void;
   setOperand(nodeId: string, operandAst: AstNode): void;
   setOperator(nodeId: string, name: string): void;
@@ -89,6 +91,7 @@ export function useAstBuilder({
   localValidation,
   identifiers,
   operators,
+  dataModels,
   onSave,
   onValidate,
 }: {
@@ -97,6 +100,7 @@ export function useAstBuilder({
   localValidation: NodeEvaluation | null;
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
+  dataModels: DataModel[];
   onSave: (toSave: AstNode) => void;
   onValidate: (ast: AstNode) => void;
 }): AstBuilder {
@@ -226,6 +230,7 @@ export function useAstBuilder({
     editorNodeViewModel,
     identifiers,
     operators,
+    dataModels,
     setConstant,
     setOperand,
     setOperator,
