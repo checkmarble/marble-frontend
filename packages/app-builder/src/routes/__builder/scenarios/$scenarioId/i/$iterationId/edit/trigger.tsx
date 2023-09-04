@@ -1,7 +1,11 @@
 import { Callout, Paper } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { adaptNodeDto, type AstNode } from '@app-builder/models';
+import {
+  adaptNodeDto,
+  type AstNode,
+  NewUndefinedAstNode,
+} from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -77,7 +81,9 @@ export default function Trigger() {
   const fetcher = useFetcher<typeof action>();
 
   const formMethods = useForm({
-    defaultValues: { astNode: scenarioIteration.astNode },
+    defaultValues: (): { astNode: AstNode } => ({
+      astNode: scenarioIteration.trigger ?? NewUndefinedAstNode(),
+    }),
   });
 
   return (

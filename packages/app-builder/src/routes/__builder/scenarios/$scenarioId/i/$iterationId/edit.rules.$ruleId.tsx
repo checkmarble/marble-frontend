@@ -6,7 +6,11 @@ import {
 } from '@app-builder/components';
 import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { adaptValidationErrors, type AstNode } from '@app-builder/models';
+import {
+  adaptValidationErrors,
+  type AstNode,
+  NewUndefinedAstNode,
+} from '@app-builder/models';
 import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
@@ -150,7 +154,7 @@ export default function RuleEdit() {
 
   // @ts-expect-error recursive type is not supported
   const formMethods = useForm({
-    defaultValues: { astNode: rule.astNode },
+    defaultValues: { astNode: rule.formula ?? NewUndefinedAstNode() },
   });
 
   const { setError } = formMethods;

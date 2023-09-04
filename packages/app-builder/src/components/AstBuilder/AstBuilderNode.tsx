@@ -16,14 +16,15 @@ import {
 
 interface AstBuilderNodeProps {
   builder: AstBuilder;
-  astNodeViewModel: EditorNodeViewModel;
+  editorNodeViewModel: EditorNodeViewModel;
 }
 
 export function AstBuilderNode({
-  astNodeViewModel,
+  editorNodeViewModel,
   builder,
 }: AstBuilderNodeProps) {
-  const rootOrWithAndViewModel = adaptRootOrWithAndViewModel(astNodeViewModel);
+  const rootOrWithAndViewModel =
+    adaptRootOrWithAndViewModel(editorNodeViewModel);
   if (rootOrWithAndViewModel) {
     return (
       <RootOrWithAnd
@@ -33,14 +34,15 @@ export function AstBuilderNode({
     );
   }
 
-  const constantViewModel = adaptConstantViewModel(astNodeViewModel);
+  const constantViewModel = adaptConstantViewModel(editorNodeViewModel);
   if (constantViewModel) {
     return (
       <ConstantEditor builder={builder} constantViewModel={constantViewModel} />
     );
   }
 
-  const twoOperandsViewModel = adaptTwoOperandsLineViewModel(astNodeViewModel);
+  const twoOperandsViewModel =
+    adaptTwoOperandsLineViewModel(editorNodeViewModel);
   if (twoOperandsViewModel) {
     return (
       <TwoOperandsLine
@@ -50,7 +52,9 @@ export function AstBuilderNode({
     );
   }
 
-  return <Default node={adaptAstNodeFromEditorViewModel(astNodeViewModel)} />;
+  return (
+    <Default node={adaptAstNodeFromEditorViewModel(editorNodeViewModel)} />
+  );
 }
 
 interface ConstantViewModel {
@@ -59,18 +63,18 @@ interface ConstantViewModel {
 }
 
 function adaptConstantViewModel(
-  astNodeViewModel: EditorNodeViewModel
+  editorNodeViewModel: EditorNodeViewModel
 ): ConstantViewModel | null {
-  if (astNodeViewModel.constant === undefined) {
+  if (editorNodeViewModel.constant === undefined) {
     return null;
   }
-  if (astNodeViewModel.funcName) {
+  if (editorNodeViewModel.funcName) {
     throw new Error('Constant node must have no name');
   }
 
   return {
-    nodeId: astNodeViewModel.nodeId,
-    constant: astNodeViewModel.constant,
+    nodeId: editorNodeViewModel.nodeId,
+    constant: editorNodeViewModel.constant,
   };
 }
 

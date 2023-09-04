@@ -4,6 +4,9 @@ import { AstBuilderNode } from './AstBuilderNode';
 
 export function AstBuilder({ builder }: { builder: AstBuilder }) {
   return (
-    <AstBuilderNode builder={builder} astNodeViewModel={builder.astViewModel} />
+    <AstBuilderNode
+      builder={builder}
+      editorNodeViewModel={builder.editorNodeViewModel}
+    />
   );
 }

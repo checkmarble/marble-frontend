@@ -30,7 +30,9 @@ import { Consequence } from './Consequence';
  * In case this is not an OR/AND operator, we simulate an OR operator with a single operand
  */
 export function Rule({ rule }: { rule: ScenarioIterationRule }) {
-  const nestedConditions = getNestedConditions(rule.astNode);
+  const nestedConditions = rule.formula
+    ? getNestedConditions(rule.formula)
+    : [];
 
   return (
     <div className="flex flex-col gap-4">

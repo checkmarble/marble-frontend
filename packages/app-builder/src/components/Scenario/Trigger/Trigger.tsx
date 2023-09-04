@@ -32,10 +32,10 @@ import { ScenarioBox } from '../ScenarioBox';
  *
  */
 export function TriggerCondition() {
-  const { astNode } = useCurrentScenarioIteration();
+  const { trigger } = useCurrentScenarioIteration();
   const { triggerObjectType } = useCurrentScenario();
-  if (astNode == null) return;
-  const conditions = getNestedConditions(astNode);
+  if (trigger == null) return;
+  const conditions = getNestedConditions(trigger);
 
   return (
     <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">

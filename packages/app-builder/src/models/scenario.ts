@@ -4,12 +4,7 @@ import {
   type ScenarioIterationWithBodyDto,
 } from '@marble-api';
 
-import {
-  adaptAstNode,
-  type AstNode,
-  isOrAndGroup,
-  wrapInOrAndGroups,
-} from './ast-node';
+import { adaptAstNode, type AstNode } from './ast-node';
 
 export type ScenarioIterationRule = {
   id: string;
@@ -17,7 +12,7 @@ export type ScenarioIterationRule = {
   displayOrder: number;
   name: string;
   description: string;
-  astNode: AstNode;
+  formula: AstNode | null;
   scoreModifier: number;
   createdAt: string;
 };
@@ -40,30 +35,22 @@ export interface ScenarioIteration {
   scoreRejectThreshold?: number;
   rules: ScenarioIterationRule[];
   schedule?: string;
-  astNode: AstNode;
+  trigger: AstNode | null;
 }
 
 export function adaptScenarioIterationRule(
   scenarioIterationRuleDto: ScenarioIterationRuleDto
 ): ScenarioIterationRule {
-  let astNode: AstNode;
-  if (!scenarioIterationRuleDto.formula_ast_expression) {
-    astNode = wrapInOrAndGroups();
-  } else {
-    const unwrappedAstNode = adaptAstNode(
-      scenarioIterationRuleDto.formula_ast_expression
-    );
-    astNode = isOrAndGroup(unwrappedAstNode)
-      ? unwrappedAstNode
-      : wrapInOrAndGroups(unwrappedAstNode);
-  }
   return {
     id: scenarioIterationRuleDto.id,
     scenarioIterationId: scenarioIterationRuleDto.scenarioIterationId,
     displayOrder: scenarioIterationRuleDto.displayOrder,
     name: scenarioIterationRuleDto.name,
     description: scenarioIterationRuleDto.description,
-    astNode: astNode,
+    formula:
+      scenarioIterationRuleDto.formula_ast_expression === null
+        ? null
+        : adaptAstNode(scenarioIterationRuleDto.formula_ast_expression),
     scoreModifier: scenarioIterationRuleDto.scoreModifier,
     createdAt: scenarioIterationRuleDto.createdAt,
   };
@@ -72,17 +59,9 @@ export function adaptScenarioIterationRule(
 export function adaptScenarioIteration(
   scenarioIterationWithBody: ScenarioIterationWithBodyDto
 ): ScenarioIteration {
-  let astNode: AstNode;
-  if (!scenarioIterationWithBody.body.trigger_condition_ast_expression) {
-    astNode = wrapInOrAndGroups();
-  } else {
-    const unwrappedAstNode = adaptAstNode(
-      scenarioIterationWithBody.body.trigger_condition_ast_expression
-    );
-    astNode = isOrAndGroup(unwrappedAstNode)
-      ? unwrappedAstNode
-      : wrapInOrAndGroups(unwrappedAstNode);
-  }
+  const triggerDto =
+    scenarioIterationWithBody.body.trigger_condition_ast_expression;
+
   return {
     id: scenarioIterationWithBody.id,
     scenarioId: scenarioIterationWithBody.scenarioId,
@@ -93,7 +72,7 @@ export function adaptScenarioIteration(
     scoreRejectThreshold: scenarioIterationWithBody.body.scoreRejectThreshold,
     rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),
     schedule: scenarioIterationWithBody.body.schedule,
-    astNode: astNode,
+    trigger: triggerDto ? adaptAstNode(triggerDto) : null,
   };
 }
 
