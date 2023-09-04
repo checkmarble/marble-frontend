@@ -98,7 +98,7 @@ export function isConstant(node: AstNode): node is ConstantAstNode {
 
 export interface DatabaseAccessAstNode {
   name: 'DatabaseAccess';
-  constant: null;
+  constant: undefined;
   children: [];
   namedChildren: {
     path: ConstantAstNode<string[]>;
@@ -109,7 +109,7 @@ export interface DatabaseAccessAstNode {
 export const aggregationAstNodeName = 'Aggregator';
 export interface AggregationAstNode {
   name: 'Aggregator';
-  constant: null;
+  constant: undefined;
   children: [];
   namedChildren: {
     aggregator: ConstantAstNode<string>;
@@ -130,10 +130,10 @@ export function isAggregation(node: AstNode): node is AggregationAstNode {
 
 export interface OrAndGroupAstNode {
   name: 'Or';
-  constant: null;
+  constant: undefined;
   children: {
     name: 'And';
-    constant: null;
+    constant: undefined;
     children: AstNode[];
     namedChildren: Record<string, never>;
   }[];
@@ -155,24 +155,18 @@ export function isOrAndGroup(astNode: AstNode): astNode is OrAndGroupAstNode {
 export function wrapInOrAndGroups(astNode?: AstNode): AstNode {
   if (astNode?.name === 'Or') return astNode;
   if (astNode?.name === 'And') {
-    return {
+    return NewAstNode({
       name: 'Or',
-      constant: null,
       children: [astNode],
-      namedChildren: {},
-    };
+    });
   }
-  return {
+  return NewAstNode({
     name: 'Or',
-    constant: null,
     children: [
-      {
+      NewAstNode({
         name: 'And',
-        constant: null,
         children: astNode ? [astNode] : [],
-        namedChildren: {},
-      },
+      }),
     ],
-    namedChildren: {},
-  };
+  });
 }

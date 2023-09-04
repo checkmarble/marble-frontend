@@ -84,7 +84,7 @@ const adaptAggregationAstNode = (
   );
   return {
     name: aggregationAstNodeName,
-    constant: null,
+    constant: undefined,
     children: [],
     namedChildren: {
       label: NewConstantAstNode({
