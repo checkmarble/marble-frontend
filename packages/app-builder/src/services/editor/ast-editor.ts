@@ -29,26 +29,12 @@ function adaptEditorNodeViewModel({
   ast: AstNode;
   validation?: NodeEvaluation;
 }): EditorNodeViewModel {
-  if (
-    validation !== undefined &&
-    ast.children.length !== validation.children.length
-  ) {
-    console.error('ast.children.length !== evaluation.children.length');
-    // throw new Error('ast.children.length !== evaluation.children.length');
-  }
-
-  let evaluation: NodeEvaluation;
-
-  if (validation === undefined) {
-    evaluation = {
-      returnValue: null,
-      errors: null,
-      children: [],
-      namedChildren: {},
-    };
-  } else {
-    evaluation = validation;
-  }
+  const evaluation = validation ?? {
+    returnValue: null,
+    errors: null,
+    children: [],
+    namedChildren: {},
+  };
 
   return {
     nodeId: nanoid(),
@@ -140,20 +126,21 @@ export function useAstBuilder({
     [onValidate]
   );
 
-  // replace the node
   const replaceOneNode = useCallback(
     (
       nodeId: string,
       fn: (node: EditorNodeViewModel) => EditorNodeViewModel | null
     ) => {
-      const newViewModel = findAndReplaceNode(nodeId, fn, editorNodeViewModel);
-      if (newViewModel === null) {
-        throw Error("internal error: root node can't be removed");
-      }
-      setEditorNodeViewModel(newViewModel);
-      validate(newViewModel);
+      setEditorNodeViewModel((vm) => {
+        const newViewModel = findAndReplaceNode(nodeId, fn, vm);
+        if (newViewModel === null) {
+          throw Error("internal error: root node can't be removed");
+        }
+        validate(newViewModel);
+        return newViewModel;
+      });
     },
-    [editorNodeViewModel, validate]
+    [validate]
   );
 
   const setConstant = useCallback(

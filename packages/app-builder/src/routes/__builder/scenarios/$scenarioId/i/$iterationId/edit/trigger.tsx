@@ -4,7 +4,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import {
   adaptNodeDto,
   type AstNode,
-  NewUndefinedAstNode,
+  wrapInOrAndGroups,
 } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -80,10 +80,11 @@ export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
+  // @ts-ignore
   const formMethods = useForm({
-    defaultValues: (): { astNode: AstNode } => ({
-      astNode: scenarioIteration.trigger ?? NewUndefinedAstNode(),
-    }),
+    defaultValues: {
+      astNode: scenarioIteration.trigger ?? wrapInOrAndGroups(),
+    },
   });
 
   return (
