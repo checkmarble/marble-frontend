@@ -39,15 +39,9 @@ type DeploymentType = (typeof Deployment)[number];
 const formSchema = z.object({
   deploymentType: z.enum(Deployment),
   iterationId: z.string().uuid(),
-
-  // TODO: factorize common FormData parser, add superRefine to cast on known errors (ex: "required" in this context)
-  replaceCurrentLiveVersion: z.coerce
-    .boolean()
-    .refine((val) => val === true, 'Required'),
-
-  changeIsImmediate: z.coerce
-    .boolean()
-    .refine((val) => val === true, 'Required'),
+  hasLiveVersion: z.coerce.boolean(),
+  replaceCurrentLiveVersion: z.coerce.boolean(),
+  changeIsImmediate: z.coerce.boolean(),
 });
 
 export async function action({ request }: ActionArgs) {
@@ -67,7 +61,21 @@ export async function action({ request }: ActionArgs) {
     });
   }
   try {
-    const { iterationId, deploymentType } = parsedForm.data;
+    const {
+      iterationId,
+      deploymentType,
+      hasLiveVersion,
+      replaceCurrentLiveVersion,
+      changeIsImmediate,
+    } = parsedForm.data;
+
+    if (!changeIsImmediate || (hasLiveVersion && !replaceCurrentLiveVersion)) {
+      return json({
+        success: false as const,
+        error: null,
+        values: parsedForm.data,
+      });
+    }
 
     await apiClient.createScenarioPublication({
       publicationAction:
@@ -121,12 +129,13 @@ function ModalContent({
   //TODO(transition): add loading during form submission
   const fetcher = useFetcher<typeof action>();
 
+  const hasLiveVersion = !!liveVersionId;
   const deploymentType = getDeploymentType(currentIteration.type);
   const buttonConfig = getButtonConfig(deploymentType);
 
   const { state, data } = fetcher;
   const isSuccess = state === 'idle' && data?.success === true;
-  const error = data?.error;
+  const values = data?.values;
 
   return isSuccess ? (
     // In success modal, use data.values.deploymentType (action will update deploymentType to the new state)
@@ -170,33 +179,41 @@ function ModalContent({
           <p className="font-semibold">
             {t(`scenarios:deployment_modal.${deploymentType}.confirm`)}
           </p>
-          <div className="flex flex-col ">
+          <Checkbox
+            name="hasLiveVersion"
+            className="hidden"
+            defaultChecked={hasLiveVersion}
+          />
+          {hasLiveVersion && (
             <div className="flex flex-row items-center gap-2">
               <Checkbox
                 id="replaceCurrentLiveVersion"
                 name="replaceCurrentLiveVersion"
-                color={error?.replaceCurrentLiveVersion?._errors && 'red'}
+                color={
+                  values && !values.replaceCurrentLiveVersion
+                    ? 'red'
+                    : undefined
+                }
               />
+
               <Label htmlFor="replaceCurrentLiveVersion">
                 {t(
                   `scenarios:deployment_modal.${deploymentType}.replace_current_live_version`
                 )}
               </Label>
             </div>
-          </div>
-          <div className="flex flex-col">
-            <div className="flex flex-row gap-2">
-              <Checkbox
-                id="changeIsImmediate"
-                name="changeIsImmediate"
-                color={error?.changeIsImmediate?._errors && 'red'}
-              />
-              <Label htmlFor="changeIsImmediate">
-                {t(
-                  `scenarios:deployment_modal.${deploymentType}.change_is_immediate`
-                )}
-              </Label>
-            </div>
+          )}
+          <div className="flex flex-row gap-2">
+            <Checkbox
+              id="changeIsImmediate"
+              name="changeIsImmediate"
+              color={values && !values.changeIsImmediate ? 'red' : undefined}
+            />
+            <Label htmlFor="changeIsImmediate">
+              {t(
+                `scenarios:deployment_modal.${deploymentType}.change_is_immediate`
+              )}
+            </Label>
           </div>
         </div>
 
