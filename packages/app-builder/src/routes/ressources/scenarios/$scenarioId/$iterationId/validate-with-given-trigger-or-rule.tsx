@@ -72,7 +72,7 @@ export function useScenarioValidationFetcher(
 export function useTriggerOrRuleValidationFetcher(
   scenarioId: string,
   iterationId: string,
-  ruleId: string | null
+  ruleId: string | null = null
 ) {
   const { validate, validation: scenarioValidation } =
     useScenarioValidationFetcher(scenarioId, iterationId);
@@ -87,6 +87,8 @@ export function useTriggerOrRuleValidationFetcher(
   const triggerOrRuleValidation =
     scenarioValidation === null
       ? null
+      : ruleId === null
+      ? scenarioValidation.triggerEvaluation
       : findRuleValidation(scenarioValidation, ruleId);
 
   return {
