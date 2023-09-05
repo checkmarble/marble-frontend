@@ -80,6 +80,7 @@ export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const formMethods = useForm({
     defaultValues: {

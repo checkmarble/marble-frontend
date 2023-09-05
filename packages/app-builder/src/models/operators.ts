@@ -36,11 +36,6 @@ export function isMathAst(node: AstNode) {
   }
 }
 
-export function isPayload(node: AstNode) {
-  if (node.name === 'Payload') return true;
-  return false;
-}
-
 export function isIdentifier(
   node: AstNode,
   identifiers: EditorIdentifiersByType

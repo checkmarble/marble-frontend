@@ -119,12 +119,23 @@ export interface AggregationAstNode {
   };
 }
 
+export interface PayloadAstNode {
+  name: 'Payload';
+  constant: undefined;
+  children: [ConstantAstNode<string>];
+  namedChildren: Record<string, never>;
+}
+
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === 'DatabaseAccess';
 }
 
 export function isAggregation(node: AstNode): node is AggregationAstNode {
   return node.name === 'Aggregator';
+}
+
+export function isPayload(node: AstNode): node is PayloadAstNode {
+  return node.name === 'Payload';
 }
 
 export interface OrAndGroupAstNode {
