@@ -176,7 +176,7 @@ function RootAndOperator({
             <FormMessage />
 
             <div
-              className={clsx('my-1', !isFirstConditionOperand && 'ml-[70px]')}
+              className={clsx('my-1', !isFirstConditionOperand && 'ml-[50px]')}
             >
               <AddLogicalOperatorButton
                 variant="secondary"

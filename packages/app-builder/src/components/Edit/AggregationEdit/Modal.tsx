@@ -1,6 +1,7 @@
 import {
   adaptConstantAstNodeToString,
   type AggregationAstNode,
+  aggregationAstNodeName,
   type AstNode,
   NewAstNode,
   NewConstantAstNode,
@@ -82,7 +83,7 @@ const adaptAggregationAstNode = (
       })
   );
   return {
-    name: 'Aggregator',
+    name: aggregationAstNodeName,
     constant: null,
     children: [],
     namedChildren: {

@@ -102,6 +102,7 @@ export interface DatabaseAccessAstNode {
   };
 }
 
+export const aggregationAstNodeName = 'Aggregator';
 export interface AggregationAstNode {
   name: 'Aggregator';
   constant: null;
@@ -120,7 +121,7 @@ export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
 }
 
 export function isAggregation(node: AstNode): node is AggregationAstNode {
-  return node.name === 'Aggregator';
+  return node.name === aggregationAstNodeName;
 }
 
 export function isOrAndGroup(astNode: AstNode): boolean {

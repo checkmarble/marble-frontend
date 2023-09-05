@@ -42,7 +42,6 @@ export function TriggerCondition() {
       <ScenarioBox className="bg-grey-02 col-span-4 w-fit p-2 font-semibold text-purple-100">
         {triggerObjectType}
       </ScenarioBox>
-      {/* {conditions.map(({ condition, logicalOperator }, index) => { */}
       {conditions.map(({ condition, logicalOperator }, index) => {
         const isFirstCondition = index === 0;
         const isLastCondition = index === conditions.length - 1;

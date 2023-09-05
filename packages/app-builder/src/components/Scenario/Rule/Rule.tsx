@@ -6,6 +6,7 @@ import { Paper } from '../../Paper';
 import { Formula } from '../Formula';
 import { LogicalOperatorLabel } from '../LogicalOperator';
 import { Consequence } from './Consequence';
+import { NestedAggregation } from './NestedAggregation';
 
 /**
  * Design is opinionated: it assumes a rule will often be an OR operator with AND operands / AND operator with OR operands.
@@ -52,6 +53,12 @@ export function Rule({ rule }: { rule: ScenarioIterationRule }) {
                             operator={nestedOperand.logicalOperator}
                           />
                           <Formula formula={nestedOperand.operator} isRoot />
+                          <NestedAggregation
+                            formula={nestedOperand.operator.children[0]}
+                            displayRow={
+                              rootOperandIndex * nestedOperandIndex + 1
+                            }
+                          />
                         </Fragment>
                       );
                     }
