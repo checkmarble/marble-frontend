@@ -1,5 +1,5 @@
 import {
-  adaptAstNodeToViewModelFromIdentifier,
+  adaptLabelledAstFromAllIdentifiers,
   type AstNode,
 } from '@app-builder/models';
 import { useEditorIdentifiers } from '@app-builder/services/editor';
@@ -13,11 +13,8 @@ interface CustomListProps {
 }
 
 export function Identifier({ node, isRoot }: CustomListProps) {
-  const editorIdentifier = useEditorIdentifiers();
-  const viewModel = adaptAstNodeToViewModelFromIdentifier(
-    node,
-    editorIdentifier
-  );
+  const allIdentifiers = useEditorIdentifiers();
+  const viewModel = adaptLabelledAstFromAllIdentifiers(node, allIdentifiers);
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>

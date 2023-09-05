@@ -105,7 +105,7 @@ export default function DecisionsPage() {
       </Page.Header>
       <DecisionsRightPanel.Root>
         <Page.Content scrollable={false}>
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between gap-2">
             <Input
               className="w-full max-w-sm"
               type="search"

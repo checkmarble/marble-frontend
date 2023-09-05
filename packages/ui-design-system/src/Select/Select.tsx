@@ -21,7 +21,7 @@ import { Arrow2Down, Arrow2Up, SmallarrowDown } from '@ui-icons';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 
-import { type tagBorder } from './Select.constants';
+import { type selectBorder, type selectBorderColor } from './Select.constants';
 
 function SelectContent({
   children,
@@ -63,21 +63,30 @@ function SelectViewport({
 }
 
 export interface SelectTriggerProps extends PrimitiveSelectTriggerProps {
-  border?: (typeof tagBorder)[number];
+  border?: (typeof selectBorder)[number];
+  borderColor?: (typeof selectBorderColor)[number];
 }
 
 const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
-  ({ children, className, border = 'square', ...props }, ref) => {
+  (
+    { children, className, border = 'square', borderColor = 'grey', ...props },
+    ref
+  ) => {
     return (
       <Trigger
         ref={ref}
         className={clsx(
-          'bg-grey-00 border-grey-10 text-s text-grey-100 group flex h-10 items-center justify-between border font-medium outline-none',
+          'bg-grey-00 text-s text-grey-100 group flex h-10 items-center justify-between border font-medium outline-none',
           'radix-state-open:border-purple-100 radix-state-open:text-purple-100 focus:border-purple-100',
           'radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
           {
             'rounded px-2': border === 'square',
             'rounded-full pl-4 pr-2': border === 'rounded',
+          },
+          {
+            'border-grey-10': borderColor === 'grey',
+            'border-red-100': borderColor === 'red',
+            'border-green-100': borderColor === 'green',
           },
           className
         )}
@@ -112,13 +121,21 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
 
 export type SelectProps = RawSelectProps &
   Pick<SelectValueProps, 'placeholder'> &
-  Pick<SelectTriggerProps, 'border' | 'className'>;
+  Pick<SelectTriggerProps, 'border' | 'borderColor' | 'className'>;
 
 const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
-  ({ children, placeholder, border, className, ...props }, triggerRef) => {
+  (
+    { children, placeholder, border, borderColor, className, ...props },
+    triggerRef
+  ) => {
     return (
       <Root {...props}>
-        <Select.Trigger ref={triggerRef} border={border} className={className}>
+        <Select.Trigger
+          ref={triggerRef}
+          border={border}
+          borderColor={borderColor}
+          className={className}
+        >
           <Select.Value placeholder={placeholder} />
         </Select.Trigger>
         <Select.Content

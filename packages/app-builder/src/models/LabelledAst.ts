@@ -5,6 +5,7 @@ import {
   isAstNodeUnknown,
   isConstant,
   isDatabaseAccess,
+  isPayload,
 } from './ast-node';
 import {
   type EditorIdentifier,
@@ -12,13 +13,13 @@ import {
   getIdentifiersFromAstNode,
 } from './identifier';
 
-export interface AstViewModel {
+export interface LabelledAst {
   label: string;
   tooltip: string;
   astNode: AstNode;
 }
 
-export function adaptAstNodeToViewModel(astNode: AstNode): AstViewModel {
+export function adaptLabelledAst(astNode: AstNode): LabelledAst {
   return {
     label: getAstNodeDisplayName(astNode),
     tooltip: '',
@@ -35,13 +36,13 @@ export const adaptConstantAstNodeToString = (
   return String(astNode.constant);
 };
 
-export function adaptAstNodeToViewModelFromIdentifier(
+export function adaptLabelledAstFromAllIdentifiers(
   astNode: AstNode,
   identifiers: EditorIdentifiersByType
-): AstViewModel {
+): LabelledAst {
   const identifier = getIdentifiersFromAstNode(astNode, identifiers);
   if (identifier) {
-    return adaptEditorIdentifierToViewModel(identifier);
+    return adaptLabelledAstFromIdentifier(identifier);
   }
   return {
     label: getAstNodeDisplayName(astNode),
@@ -50,26 +51,14 @@ export function adaptAstNodeToViewModelFromIdentifier(
   };
 }
 
-const getEditorIdentifierName = (identifier: EditorIdentifier): string => {
-  if (isAggregation(identifier.node)) {
-    return getAggregatorName(identifier.name);
-  }
-  return identifier.name;
-};
-
-export function adaptEditorIdentifierToViewModel(
+export function adaptLabelledAstFromIdentifier(
   identifier: EditorIdentifier
-): AstViewModel {
+): LabelledAst {
   return {
-    label: getEditorIdentifierName(identifier),
-    tooltip: identifier.description,
+    label: getAstNodeDisplayName(identifier.node),
+    tooltip: '',
     astNode: identifier.node,
   };
-}
-export function adaptAstViewModelToAstNode(
-  astViewModel: AstViewModel
-): AstNode {
-  return astViewModel.astNode;
 }
 
 function getConstantDisplayName(constant: ConstantType) {
@@ -87,7 +76,7 @@ function getConstantDisplayName(constant: ConstantType) {
   return constant.toString();
 }
 
-function getAstNodeDisplayName(astNode: AstNode) {
+export function getAstNodeDisplayName(astNode: AstNode): string {
   if (isConstant(astNode)) {
     return getConstantDisplayName(astNode.constant);
   }
@@ -95,6 +84,11 @@ function getAstNodeDisplayName(astNode: AstNode) {
   if (isDatabaseAccess(astNode)) {
     const { path, fieldName } = astNode.namedChildren;
     return [...path.constant, fieldName.constant].join('.');
+  }
+
+  if (isPayload(astNode)) {
+    const payload = astNode.children[0].constant;
+    return payload;
   }
 
   if (isAggregation(astNode)) {
@@ -113,7 +107,7 @@ function getAstNodeDisplayName(astNode: AstNode) {
   if (process.env.NODE_ENV === 'development') {
     console.warn('Unhandled astNode', astNode);
   }
-  return '';
+  return astNode.name ?? '??';
 }
 
 export const getAggregatorName = (aggregatorName: string): string => {

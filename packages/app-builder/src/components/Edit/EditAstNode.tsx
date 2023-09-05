@@ -1,9 +1,7 @@
 import {
-  adaptAstNodeToViewModelFromIdentifier,
+  adaptLabelledAstFromAllIdentifiers,
   type AstNode,
-  isAggregation,
   NewUndefinedAstNode,
-  undefinedAstNodeName,
 } from '@app-builder/models';
 import {
   useEditorIdentifiers,
@@ -15,13 +13,8 @@ import {
 import { getInvalidStates } from '@app-builder/services/validation/scenario-validation';
 import { Combobox, Select } from '@ui-design-system';
 import { forwardRef, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
 
 import { FormControl, FormField, FormItem, FormMessage } from '../Form';
-import {
-  adaptAggregationViewModel,
-  AggregationEditModal,
-} from './AggregationEdit';
 
 export function EditAstNode({ name }: { name: string }) {
   const isFirstChildEditedOnce = useIsEditedOnce(`${name}.children.0`);
@@ -107,76 +100,49 @@ export const EditOperand = forwardRef<
     onBlur: () => void;
     invalid: boolean;
   }
->(({ name, onChange, onBlur, value, invalid }, ref) => {
+>(({ onChange, onBlur, value, invalid }, ref) => {
   const editorIdentifier = useEditorIdentifiers();
   const getIdentifierOptions = useGetIdentifierOptions();
   const selectedItem = value
-    ? adaptAstNodeToViewModelFromIdentifier(value, editorIdentifier)
+    ? adaptLabelledAstFromAllIdentifiers(value, editorIdentifier)
     : null;
 
   const [inputValue, setInputValue] = useState(selectedItem?.label ?? '');
 
   const items = getIdentifierOptions(inputValue);
 
-  const filteredItems = items.filter((item) =>
-    item.label.toLowerCase().includes(inputValue.toLowerCase())
-  );
-
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [editingAggregation, setEditingAggregation] =
-    useState<AstNode>(NewUndefinedAstNode);
-  const editAggregation = (node: AstNode) => {
-    setEditingAggregation(node);
-    setModalOpen(true);
-  };
-
-  const { setValue } = useFormContext();
+  const filteredItems = items.filter((item) => item.label.includes(inputValue));
 
   return (
-    <>
-      <Combobox.Root<(typeof items)[0]>
-        value={selectedItem}
-        onChange={(value) => {
-          setInputValue(value?.label ?? '');
-          if (value?.astNode && isAggregation(value.astNode)) {
-            editAggregation(value.astNode);
-          }
-          onChange(value?.astNode ?? NewUndefinedAstNode());
-        }}
-        nullable
-      >
-        <div className="relative">
-          <Combobox.Input
-            ref={ref}
-            aria-invalid={invalid}
-            displayValue={(item?: (typeof items)[number]) => item?.label ?? ''}
-            onChange={(event) => setInputValue(event.target.value)}
-            onBlur={onBlur}
-          />
-          <Combobox.Options className="w-fit">
-            {filteredItems.map((item) => (
-              <Combobox.Option
-                key={item.label}
-                value={item}
-                className="flex flex-col gap-1"
-              >
-                <span>{item.label}</span>
-              </Combobox.Option>
-            ))}
-          </Combobox.Options>
-        </div>
-      </Combobox.Root>
-      {editingAggregation.name !== undefinedAstNodeName && (
-        <AggregationEditModal
-          initialAggregation={adaptAggregationViewModel(editingAggregation)}
-          modalOpen={modalOpen}
-          setModalOpen={setModalOpen}
-          onSave={(aggregationAstNode) => {
-            setValue(name, aggregationAstNode);
-          }}
+    <Combobox.Root<(typeof items)[0]>
+      value={selectedItem}
+      onChange={(value) => {
+        setInputValue(value?.label ?? '');
+        onChange(value?.astNode ?? NewUndefinedAstNode());
+      }}
+      nullable
+    >
+      <div className="relative">
+        <Combobox.Input
+          ref={ref}
+          aria-invalid={invalid}
+          displayValue={(item?: (typeof items)[number]) => item?.label ?? ''}
+          onChange={(event) => setInputValue(event.target.value)}
+          onBlur={onBlur}
         />
-      )}
-    </>
+        <Combobox.Options className="w-fit">
+          {filteredItems.map((item) => (
+            <Combobox.Option
+              key={item.label}
+              value={item}
+              className="flex flex-col gap-1"
+            >
+              <span>{item.label}</span>
+            </Combobox.Option>
+          ))}
+        </Combobox.Options>
+      </div>
+    </Combobox.Root>
   );
 });
 EditOperand.displayName = 'EditOperand';

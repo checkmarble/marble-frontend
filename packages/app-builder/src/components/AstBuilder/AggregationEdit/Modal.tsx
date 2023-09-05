@@ -6,7 +6,7 @@ import {
   NewAstNode,
   NewConstantAstNode,
 } from '@app-builder/models';
-import { useEditorDataModels } from '@app-builder/services/editor';
+import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 import { Button, Input, Modal } from '@ui-design-system';
 import { Logo } from '@ui-icons';
 import { type Namespace } from 'i18next';
@@ -23,6 +23,7 @@ export const handle = {
 };
 
 interface AggregationViewModel {
+  nodeId: string;
   label: string;
   aggregator: string;
   aggregatedField: DataModelField | null;
@@ -30,6 +31,7 @@ interface AggregationViewModel {
 }
 
 export const adaptAggregationViewModel = (
+  nodeId: string,
   astNode: AstNode
 ): AggregationViewModel => {
   const aggregatedField: DataModelField = {
@@ -54,6 +56,7 @@ export const adaptAggregationViewModel = (
   }));
 
   return {
+    nodeId,
     label: adaptConstantAstNodeToString(astNode.namedChildren['label']),
     aggregator: adaptConstantAstNodeToString(
       astNode.namedChildren['aggregator']
@@ -84,7 +87,7 @@ const adaptAggregationAstNode = (
   );
   return {
     name: aggregationAstNodeName,
-    constant: null,
+    constant: undefined,
     children: [],
     namedChildren: {
       label: NewConstantAstNode({
@@ -130,19 +133,19 @@ const aggregationFormSchema = z.object({
 });
 
 export const AggregationEditModal = ({
+  builder,
   initialAggregation,
   modalOpen,
-  onSave,
   setModalOpen,
 }: {
+  builder: AstBuilder;
   initialAggregation: AggregationViewModel;
   modalOpen: boolean;
-  onSave: (aggregation: AggregationAstNode) => void;
   setModalOpen: (modalOpen: boolean) => void;
 }) => {
   const { t } = useTranslation(handle.i18n);
 
-  const dataModels = useEditorDataModels();
+  const dataModels = builder.dataModels;
   const dataModelFieldOptions: DataModelField[] = dataModels.flatMap((table) =>
     table.fields.map((field) => ({
       tableName: table.name,
@@ -165,7 +168,10 @@ export const AggregationEditModal = ({
   const save = () => {
     const validationData = validateAggregation();
     if (validationData.success) {
-      onSave(adaptAggregationAstNode(aggregation));
+      builder.setOperand(
+        initialAggregation.nodeId,
+        adaptAggregationAstNode(aggregation)
+      );
       setModalOpen(false);
     }
   };
@@ -224,6 +230,7 @@ export const AggregationEditModal = ({
               </div>
               <EditFilters
                 aggregatedField={aggregation.aggregatedField}
+                builder={builder}
                 value={aggregation.filters}
                 dataModelFieldOptions={dataModelFieldOptions}
                 onChange={(filters) =>

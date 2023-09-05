@@ -1,17 +1,23 @@
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 
+import { type inputBorderColor } from './Input.constants';
+
 export interface InputProps
   extends React.DetailedHTMLProps<
     React.InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
   > {
+  borderColor?: (typeof inputBorderColor)[number];
   startAdornment?: JSX.Element;
   endAdornment?: JSX.Element;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, startAdornment, endAdornment, ...props }, ref) => {
+  (
+    { className, startAdornment, endAdornment, borderColor = 'grey', ...props },
+    ref
+  ) => {
     return (
       <div className={clsx('relative h-10', className)}>
         <input
@@ -19,7 +25,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={clsx(
             'bg-grey-00 text-s text-grey-100 placeholder:text-grey-50 disabled:bg-grey-05 peer block h-full w-full rounded px-2 font-medium outline-none',
             // Border classes
-            'border-grey-10 border focus:border-purple-100 aria-[invalid=true]:border-red-100',
+            'border focus:border-purple-100',
+            {
+              'border-grey-10': borderColor === 'grey',
+              'border-red-100': borderColor === 'red',
+              'border-green-100': borderColor === 'green',
+            },
             startAdornment && 'pl-10',
             endAdornment && 'pr-10'
           )}

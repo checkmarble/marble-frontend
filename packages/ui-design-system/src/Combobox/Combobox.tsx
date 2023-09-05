@@ -2,7 +2,7 @@ import { Combobox as ComboboxPrimitive } from '@headlessui/react';
 import clsx, { type ClassValue } from 'clsx';
 import * as React from 'react';
 
-import Input from '../Input/Input';
+import Input, { type InputProps } from '../Input/Input';
 
 type WithoutRefAndCompatibleClassname<P extends React.ElementType> = Omit<
   React.ComponentPropsWithoutRef<P>,
@@ -14,8 +14,9 @@ type WithoutRefAndCompatibleClassname<P extends React.ElementType> = Omit<
 const ComboboxRoot = ComboboxPrimitive;
 
 const ComboboxInput = React.forwardRef<
-  React.ElementRef<typeof ComboboxPrimitive.Input>,
-  WithoutRefAndCompatibleClassname<typeof ComboboxPrimitive.Input>
+  React.ElementRef<typeof Input>,
+  WithoutRefAndCompatibleClassname<typeof ComboboxPrimitive.Input> &
+    Omit<InputProps, 'ref'>
 >(({ className, ...props }, ref) => (
   <ComboboxPrimitive.Input
     ref={ref}

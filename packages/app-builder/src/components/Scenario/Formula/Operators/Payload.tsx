@@ -1,7 +1,6 @@
 import {
-  adaptAstNodeToViewModelFromIdentifier,
+  adaptLabelledAstFromAllIdentifiers,
   type AstNode,
-  type AstViewModel,
 } from '@app-builder/models';
 import { useEditorIdentifiers } from '@app-builder/services/editor';
 import { Tooltip } from '@ui-design-system';
@@ -13,20 +12,17 @@ interface PayloadProps {
   isRoot?: boolean;
 }
 
-function format(viewModel: AstViewModel) {
+function format(label: string) {
   return {
     tooltip: 'This is from the payload',
-    inline: viewModel.label,
+    inline: label,
   };
 }
 
 export function Payload({ node, isRoot }: PayloadProps) {
   const editorIdentifier = useEditorIdentifiers();
-  const viewModel = adaptAstNodeToViewModelFromIdentifier(
-    node,
-    editorIdentifier
-  );
-  const { tooltip, inline } = format(viewModel);
+  const viewModel = adaptLabelledAstFromAllIdentifiers(node, editorIdentifier);
+  const { tooltip, inline } = format(viewModel.label);
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>

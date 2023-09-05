@@ -1,21 +1,19 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { adaptAstNode, type AstNode } from '@app-builder/models';
+import {
+  adaptEditorIdentifier,
+  adaptNodeDto,
+  type AstNode,
+  type EditorIdentifiersByType,
+} from '@app-builder/models';
 import {
   adaptAstOperatorDto,
   type AstOperator,
 } from '@app-builder/models/ast-operators';
-import {
-  adaptIdentifierDto,
-  type EditorIdentifier,
-} from '@app-builder/models/identifier';
 
 export interface EditorRepository {
-  listIdentifiers(args: { scenarioId: string }): Promise<{
-    databaseAccessors: EditorIdentifier[];
-    payloadAccessors: EditorIdentifier[];
-    customListAccessors: EditorIdentifier[];
-    aggregatorAccessors: EditorIdentifier[];
-  }>;
+  listIdentifiers(args: {
+    scenarioId: string;
+  }): Promise<EditorIdentifiersByType>;
   listOperators(args: { scenarioId: string }): Promise<AstOperator[]>;
   saveRule(args: {
     ruleId: string;
@@ -36,15 +34,14 @@ export function getEditorRepository() {
         custom_list_accessors,
         aggregator_accessors,
       } = await marbleApiClient.listIdentifiers(scenarioId);
-      const databaseAccessors = database_accessors.map(
-        adaptIdentifierDto ?? []
-      );
-      const payloadAccessors = payload_accessors.map(adaptIdentifierDto ?? []);
+      const databaseAccessors = database_accessors.map(adaptEditorIdentifier);
+      const payloadAccessors = payload_accessors.map(adaptEditorIdentifier);
       const customListAccessors = custom_list_accessors.map(
-        adaptIdentifierDto ?? []
+        adaptEditorIdentifier
       );
+
       const aggregatorAccessors = aggregator_accessors.map(
-        adaptIdentifierDto ?? []
+        adaptEditorIdentifier
       );
 
       return {
@@ -74,7 +71,7 @@ export function getEditorRepository() {
         displayOrder,
         name,
         description,
-        formula_ast_expression: adaptAstNode(astNode),
+        formula_ast_expression: adaptNodeDto(astNode),
         scoreModifier,
       });
     },

@@ -1,7 +1,7 @@
-import { adaptAggregationViewModel } from '@app-builder/components/Edit/AggregationEdit';
+import { adaptAggregationViewModel } from '@app-builder/components/Edit';
 import { type AstNode, isAggregationIdentifier } from '@app-builder/models';
 import { useEditorIdentifiers } from '@app-builder/services/editor';
-import { Fragment } from 'react';
+import { Fragment, useId } from 'react';
 
 import { Formula } from '../Formula';
 import { LogicalOperatorLabel } from '../LogicalOperator';
@@ -14,10 +14,11 @@ export const NestedAggregation = ({
   displayRow: number;
 }) => {
   const editorIdentifier = useEditorIdentifiers();
+  const id = useId();
   if (!isAggregationIdentifier(formula, editorIdentifier)) {
     return;
   }
-  const aggregation = adaptAggregationViewModel(formula);
+  const aggregation = adaptAggregationViewModel(id, formula);
   const aggregatedFieldName = `${
     aggregation.aggregatedField?.tableName ?? ''
   }.${aggregation.aggregatedField?.fieldName ?? ''}`;

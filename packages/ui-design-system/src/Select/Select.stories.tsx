@@ -1,9 +1,12 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 
 import { Select, type SelectProps } from './Select';
-import { tagBorder } from './Select.constants';
+import { selectBorder, selectBorderColor } from './Select.constants';
 
-type StoryProps = Pick<SelectProps, 'disabled' | 'placeholder' | 'border'>;
+type StoryProps = Pick<
+  SelectProps,
+  'disabled' | 'placeholder' | 'border' | 'borderColor'
+>;
 
 const Story: Meta<StoryProps> = {
   component: Select.Default,
@@ -11,14 +14,19 @@ const Story: Meta<StoryProps> = {
   args: {
     placeholder: 'Select a value...',
     disabled: false,
-    border: tagBorder[0],
+    border: selectBorder[0],
+    borderColor: selectBorderColor[0],
   },
   argTypes: {
     placeholder: { type: 'string' },
     disabled: { type: 'boolean' },
     border: {
       control: { type: 'radio' },
-      options: tagBorder,
+      options: selectBorder,
+    },
+    borderColor: {
+      control: { type: 'radio' },
+      options: selectBorderColor,
     },
   },
 };
@@ -58,10 +66,11 @@ const bookKeys = Array.from(books.keys());
 export const Complex: StoryFn<StoryProps> = ({
   placeholder,
   border,
+  borderColor,
   ...args
 }) => (
-  <Select.Root {...args}>
-    <Select.Trigger border={border}>
+  <Select.Root {...args} aria-invalid>
+    <Select.Trigger border={border} borderColor={borderColor}>
       <Select.Value placeholder={placeholder} />
     </Select.Trigger>
     <Select.Content className="max-h-60 w-full">

@@ -207,24 +207,24 @@ export type CreateScenarioPublicationBody = {
     scenarioIterationId: string;
     publicationAction: PublicationAction;
 };
-export type DataModelField = {
-    name: string;
+export type DataModelFieldDto = {
     data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
+    nullable: boolean;
 };
-export type LinkToSingle = {
+export type LinkToSingleDto = {
     linkedTableName: string;
     parentFieldName: string;
     childFieldName: string;
 };
-export type DataModel = {
+export type DataModelDto = {
     tables: {
         [key: string]: {
             name: string;
             fields: {
-                [key: string]: DataModelField;
+                [key: string]: DataModelFieldDto;
             };
             links_to_single?: {
-                [key: string]: LinkToSingle;
+                [key: string]: LinkToSingleDto;
             };
         };
     };
@@ -259,9 +259,7 @@ export type UpdateOrganizationBodyDto = {
     name?: string;
     database_name?: string;
 };
-export type Identifier = {
-    name: string;
-    description: string;
+export type IdentifierDto = {
     node: NodeDto;
 };
 export type FuncAttributes = {
@@ -975,7 +973,7 @@ export function getDataModel(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            data_model: DataModel;
+            data_model: DataModelDto;
         };
     } | {
         status: 401;
@@ -1238,10 +1236,10 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            database_accessors: Identifier[];
-            payload_accessors: Identifier[];
-            custom_list_accessors: Identifier[];
-            aggregator_accessors: Identifier[];
+            database_accessors: IdentifierDto[];
+            payload_accessors: IdentifierDto[];
+            custom_list_accessors: IdentifierDto[];
+            aggregator_accessors: IdentifierDto[];
         };
     } | {
         status: 401;

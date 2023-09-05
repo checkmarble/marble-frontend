@@ -1,10 +1,8 @@
-import { type Identifier } from '@marble-api';
+import { type IdentifierDto } from '@marble-api';
 
-import { adaptNodeDto, type AstNode } from './ast-node';
+import { adaptAstNode, type AstNode } from './ast-node';
 
 export interface EditorIdentifier {
-  name: string;
-  description: string;
   node: AstNode;
 }
 
@@ -15,25 +13,12 @@ export interface EditorIdentifiersByType {
   aggregatorAccessors: EditorIdentifier[];
 }
 
-// helper
-export function NewEditorIdentifier({
-  name,
-  description,
-  node,
-}: EditorIdentifier): EditorIdentifier {
+export function adaptEditorIdentifier(
+  identifier: IdentifierDto
+): EditorIdentifier {
   return {
-    name: name ?? '',
-    description: description ?? '',
-    node: node ?? null,
+    node: adaptAstNode(identifier.node),
   };
-}
-
-export function adaptIdentifierDto(identifier: Identifier): EditorIdentifier {
-  return NewEditorIdentifier({
-    name: identifier.name,
-    description: identifier.description,
-    node: adaptNodeDto(identifier.node),
-  });
 }
 
 // This implementation might be problematic in the future, we might need to standartise each node with something like a hash function

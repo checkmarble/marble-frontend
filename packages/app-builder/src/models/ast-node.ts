@@ -1,12 +1,12 @@
 import { type NodeDto } from '@marble-api';
 import * as R from 'remeda';
 
-export interface AstNode {
+export type AstNode = {
   name: string | null;
   constant?: ConstantType;
   children: AstNode[];
   namedChildren: Record<string, AstNode>;
-}
+};
 
 export const undefinedAstNodeName = 'Undefined';
 
@@ -46,25 +46,29 @@ export function NewUndefinedAstNode({
   });
 }
 
-export function adaptNodeDto(nodeDto: NodeDto): AstNode {
+export function adaptAstNode(nodeDto: NodeDto): AstNode {
   return {
     name: nodeDto.name === undefined ? null : nodeDto.name,
     constant: nodeDto.constant,
-    children: (nodeDto.children ?? []).map(adaptNodeDto),
-    namedChildren: R.mapValues(nodeDto.named_children ?? {}, adaptNodeDto),
+    children: (nodeDto.children ?? []).map(adaptAstNode),
+    namedChildren: R.mapValues(nodeDto.named_children ?? {}, adaptAstNode),
   };
 }
 
-export function adaptAstNode(astNode: AstNode): NodeDto {
+export function adaptNodeDto(astNode: AstNode): NodeDto {
   return {
     name: astNode.name ?? undefined,
     constant: astNode.constant,
-    children: astNode.children.map(adaptAstNode),
-    named_children: R.mapValues(astNode.namedChildren ?? {}, adaptAstNode),
+    children: astNode.children.map(adaptNodeDto),
+    named_children: R.mapValues(astNode.namedChildren ?? {}, adaptNodeDto),
   };
 }
 
-export function isAstNodeUnknown(node: AstNode): boolean {
+export interface UndefinedAstNode extends Omit<AstNode, 'name'> {
+  name: typeof undefinedAstNodeName;
+}
+
+export function isAstNodeUnknown(node: AstNode): node is UndefinedAstNode {
   return node.name === undefinedAstNodeName;
 }
 
@@ -94,7 +98,7 @@ export function isConstant(node: AstNode): node is ConstantAstNode {
 
 export interface DatabaseAccessAstNode {
   name: 'DatabaseAccess';
-  constant: null;
+  constant: undefined;
   children: [];
   namedChildren: {
     path: ConstantAstNode<string[]>;
@@ -105,7 +109,7 @@ export interface DatabaseAccessAstNode {
 export const aggregationAstNodeName = 'Aggregator';
 export interface AggregationAstNode {
   name: 'Aggregator';
-  constant: null;
+  constant: undefined;
   children: [];
   namedChildren: {
     aggregator: ConstantAstNode<string>;
@@ -116,6 +120,13 @@ export interface AggregationAstNode {
   };
 }
 
+export interface PayloadAstNode {
+  name: 'Payload';
+  constant: undefined;
+  children: [ConstantAstNode<string>];
+  namedChildren: Record<string, never>;
+}
+
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === 'DatabaseAccess';
 }
@@ -124,7 +135,23 @@ export function isAggregation(node: AstNode): node is AggregationAstNode {
   return node.name === aggregationAstNodeName;
 }
 
-export function isOrAndGroup(astNode: AstNode): boolean {
+export function isPayload(node: AstNode): node is PayloadAstNode {
+  return node.name === 'Payload';
+}
+
+export interface OrAndGroupAstNode {
+  name: 'Or';
+  constant: undefined;
+  children: {
+    name: 'And';
+    constant: undefined;
+    children: AstNode[];
+    namedChildren: Record<string, never>;
+  }[];
+  namedChildren: Record<string, never>;
+}
+
+export function isOrAndGroup(astNode: AstNode): astNode is OrAndGroupAstNode {
   if (astNode.name !== 'Or') {
     return false;
   }
@@ -139,24 +166,18 @@ export function isOrAndGroup(astNode: AstNode): boolean {
 export function wrapInOrAndGroups(astNode?: AstNode): AstNode {
   if (astNode?.name === 'Or') return astNode;
   if (astNode?.name === 'And') {
-    return {
+    return NewAstNode({
       name: 'Or',
-      constant: null,
       children: [astNode],
-      namedChildren: {},
-    };
+    });
   }
-  return {
+  return NewAstNode({
     name: 'Or',
-    constant: null,
     children: [
-      {
+      NewAstNode({
         name: 'And',
-        constant: null,
         children: astNode ? [astNode] : [],
-        namedChildren: {},
-      },
+      }),
     ],
-    namedChildren: {},
-  };
+  });
 }

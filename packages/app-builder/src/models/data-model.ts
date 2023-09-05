@@ -1,7 +1,7 @@
 import {
-  type DataModel as DataModelDto,
-  type DataModelField as DataModelFieldDto,
-  type LinkToSingle as LinkToSingleDto,
+  type DataModelDto,
+  type DataModelFieldDto,
+  type LinkToSingleDto,
 } from '@marble-api';
 
 export interface DataModelField {
@@ -24,14 +24,12 @@ export interface DataModel {
 function adaptFieldDto(dataModelFieldsDto: {
   [key: string]: DataModelFieldDto;
 }): DataModelField[] {
-  const dataFieldsModel: DataModelField[] = [];
-  Object.keys(dataModelFieldsDto).forEach((key) => {
-    dataFieldsModel.push({
-      name: key,
-      dataType: dataModelFieldsDto[key].data_type,
-    });
-  });
-  return dataFieldsModel;
+  return Object.entries(dataModelFieldsDto).map(
+    ([name, field]): DataModelField => ({
+      name: name,
+      dataType: field.data_type,
+    })
+  );
 }
 
 function adaptLinkToSingleDto(linksToSingleDto: {

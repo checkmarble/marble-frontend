@@ -1,22 +1,28 @@
+import { OperandEditor } from '@app-builder/components/AstBuilder/TwoOperandsLine/OperandEditor';
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { NewUndefinedAstNode } from '@app-builder/models';
+import {
+  adaptEditorNodeViewModel,
+  type AstBuilder,
+} from '@app-builder/services/editor/ast-editor';
 import { Button } from '@ui-design-system';
 import { Plus } from '@ui-icons';
 import { useTranslation } from 'react-i18next';
 
-import { EditOperand } from '../EditAstNode';
-import { RemoveButton } from '../RemoveButton';
+import { RemoveButton } from '../../Edit/RemoveButton';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { FilterOperatorSelect } from './FilterOperatorSelect';
 import { type FilterViewModel } from './Modal';
 
 export const EditFilters = ({
   aggregatedField,
+  builder,
   dataModelFieldOptions,
   onChange,
   value,
 }: {
   aggregatedField: DataModelField | null;
+  builder: AstBuilder;
   dataModelFieldOptions: DataModelField[];
   onChange: (value: FilterViewModel[]) => void;
   value: FilterViewModel[];
@@ -72,12 +78,11 @@ export const EditFilters = ({
               onChange={(operator) => onFilterChange({ operator }, filterIndex)}
             />
 
-            <EditOperand
-              name={`filters.${filterIndex}.value`}
-              invalid={false}
-              value={filter.value}
-              onChange={(value) => onFilterChange({ value }, filterIndex)}
-              onBlur={() => undefined}
+            <OperandEditor
+              builder={builder}
+              operandViewModel={adaptEditorNodeViewModel({
+                ast: filter.value,
+              })}
             />
             <RemoveButton onClick={() => removeFilter(filterIndex)} />
           </div>

@@ -6,15 +6,9 @@ import {
   type ScenariosLinkProps,
 } from '@app-builder/components';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
-import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
-import {
-  EditorDataModelsProvider,
-  EditorIdentifiersProvider,
-  EditorOperatorsProvider,
-} from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -42,21 +36,12 @@ const LINKS: ScenariosLinkProps[] = [
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient, editor, scenario, user } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: '/login',
-    });
+  const { scenario, user } = await authService.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
 
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
-
-  const operatorsPromise = editor.listOperators({
-    scenarioId,
-  });
-
-  const identifiersPromise = editor.listIdentifiers({
-    scenarioId,
-  });
 
   const scenarioValidationPromise = scenario.validate({
     iterationId: iterationId,
@@ -74,8 +59,6 @@ export async function loader({ request, params }: LoaderArgs) {
   const scenarioIterations = await scenario.listScenarioIterations({
     scenarioId,
   });
-
-  const { data_model } = await apiClient.getDataModel();
 
   let currentIteration = scenarioIterations.find(
     ({ id }) => id === iterationId
@@ -98,23 +81,14 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({
     scenarioIterations: scenarioIterations,
     currentIteration: currentIteration,
-    identifiers: await identifiersPromise,
-    operators: await operatorsPromise,
     scenarioValidation: await scenarioValidationPromise,
-    dataModels: adaptDataModelDto(data_model),
   });
 }
 
 export default function ScenarioEditLayout() {
   const currentScenario = useCurrentScenario();
-  const {
-    scenarioIterations,
-    currentIteration,
-    identifiers,
-    operators,
-    scenarioValidation,
-    dataModels,
-  } = useLoaderData<typeof loader>();
+  const { scenarioIterations, currentIteration, scenarioValidation } =
+    useLoaderData<typeof loader>();
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
@@ -135,45 +109,39 @@ export default function ScenarioEditLayout() {
 
   return (
     <ScenarioPage.Container>
-      <EditorIdentifiersProvider identifiers={identifiers}>
-        <EditorOperatorsProvider operators={operators}>
-          <EditorDataModelsProvider dataModels={dataModels}>
-            <ScenarioPage.Header className="justify-between">
-              <div className="flex flex-row items-center gap-4">
-                <Link to={getRoute('/scenarios')}>
-                  <ScenarioPage.BackButton />
-                </Link>
-                {currentScenario.name}
-                <VersionSelect
-                  scenarioIterations={sortedScenarioIterations}
-                  currentIteration={currentIterationSorted}
-                />
-                <Tag size="big" border="square">
-                  Edit
-                </Tag>
-              </div>
-              <div className="flex-column flex gap-4">
-                <DeploymentModal
-                  scenarioId={currentScenario.id}
-                  liveVersionId={currentScenario.liveVersionId}
-                  currentIteration={{ ...currentIteration, type: 'draft' }}
-                />
-              </div>
-            </ScenarioPage.Header>
-            <ScenarioPage.Content>
-              <SanityErrors errors={scenarioValidation?.errors ?? []} />
-              <Scenarios.Nav>
-                {LINKS.map((linkProps) => (
-                  <li key={linkProps.labelTKey}>
-                    <Scenarios.Link {...linkProps} />
-                  </li>
-                ))}
-              </Scenarios.Nav>
-              <Outlet />
-            </ScenarioPage.Content>
-          </EditorDataModelsProvider>
-        </EditorOperatorsProvider>
-      </EditorIdentifiersProvider>
+      <ScenarioPage.Header className="justify-between">
+        <div className="flex flex-row items-center gap-4">
+          <Link to={getRoute('/scenarios')}>
+            <ScenarioPage.BackButton />
+          </Link>
+          {currentScenario.name}
+          <VersionSelect
+            scenarioIterations={sortedScenarioIterations}
+            currentIteration={currentIterationSorted}
+          />
+          <Tag size="big" border="square">
+            Edit
+          </Tag>
+        </div>
+        <div className="flex-column flex gap-4">
+          <DeploymentModal
+            scenarioId={currentScenario.id}
+            liveVersionId={currentScenario.liveVersionId}
+            currentIteration={{ ...currentIteration, type: 'draft' }}
+          />
+        </div>
+      </ScenarioPage.Header>
+      <ScenarioPage.Content>
+        <SanityErrors errors={scenarioValidation?.errors ?? []} />
+        <Scenarios.Nav>
+          {LINKS.map((linkProps) => (
+            <li key={linkProps.labelTKey}>
+              <Scenarios.Link {...linkProps} />
+            </li>
+          ))}
+        </Scenarios.Nav>
+        <Outlet />
+      </ScenarioPage.Content>
     </ScenarioPage.Container>
   );
 }
