@@ -1059,7 +1059,7 @@ paths:
                   - data_model
                 properties:
                   data_model:
-                    $ref: '#/components/schemas/DataModel'
+                    $ref: '#/components/schemas/DataModelDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1439,19 +1439,24 @@ paths:
                   - database_accessors
                   - payload_accessors
                   - custom_list_accessors
+                  - aggregator_accessors
                 properties:
                   database_accessors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Identifier'
+                      $ref: '#/components/schemas/IdentifierDto'
                   payload_accessors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Identifier'
+                      $ref: '#/components/schemas/IdentifierDto'
                   custom_list_accessors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Identifier'
+                      $ref: '#/components/schemas/IdentifierDto'
+                  aggregator_accessors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IdentifierDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1572,7 +1577,7 @@ components:
           type: string
         role:
           type: string
-    LinkToSingle:
+    LinkToSingleDto:
       type: object
       required:
         - linkedTableName
@@ -1585,18 +1590,18 @@ components:
           type: string
         childFieldName:
           type: string
-    DataModelField:
+    DataModelFieldDto:
       type: object
       required:
-        - name
-        - dataType
+        - data_type
+        - nullable
       properties:
-        name:
-          type: string
-        dataType:
+        data_type:
           type: string
           enum: [Bool, Int, Float, String, Timestamp, unknown]
-    DataModel:
+        nullable:
+          type: boolean
+    DataModelDto:
       type: object
       required:
         - tables
@@ -1615,12 +1620,12 @@ components:
                 type: object
                 additionalProperties:
                   type: object
-                  $ref: '#/components/schemas/DataModelField'
+                  $ref: '#/components/schemas/DataModelFieldDto'
               links_to_single:
                 type: object
                 additionalProperties:
                   type: object
-                  $ref: '#/components/schemas/LinkToSingle'
+                  $ref: '#/components/schemas/LinkToSingleDto'
 
     Token:
       type: object
@@ -2174,17 +2179,11 @@ components:
         - ARGUMENT_MUST_BE_LIST
         - ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION
         - ARGUMENT_MUST_BE_TIME
-    Identifier:
+    IdentifierDto:
       type: object
       required:
-        - name
-        - description
         - node
       properties:
-        name:
-          type: string
-        description:
-          type: string
         node:
           $ref: '#/components/schemas/NodeDto'
     FuncAttributes:
