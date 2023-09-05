@@ -5,6 +5,7 @@ import {
   isAstNodeUnknown,
   isConstant,
   isDatabaseAccess,
+  isPayload,
 } from './ast-node';
 import {
   type EditorIdentifier,
@@ -82,7 +83,7 @@ function getConstantDisplayName(constant: ConstantType) {
   return constant.toString();
 }
 
-function getAstNodeDisplayName(astNode: AstNode) {
+export function getAstNodeDisplayName(astNode: AstNode): string {
   if (isConstant(astNode)) {
     return getConstantDisplayName(astNode.constant);
   }
@@ -90,6 +91,11 @@ function getAstNodeDisplayName(astNode: AstNode) {
   if (isDatabaseAccess(astNode)) {
     const { path, fieldName } = astNode.namedChildren;
     return [...path.constant, fieldName.constant].join('.');
+  }
+
+  if (isPayload(astNode)) {
+    const payload = astNode.children[0].constant;
+    return payload;
   }
 
   if (isAggregation(astNode)) {
@@ -108,7 +114,7 @@ function getAstNodeDisplayName(astNode: AstNode) {
   if (process.env.NODE_ENV === 'development') {
     console.warn('Unhandled astNode', astNode);
   }
-  return '';
+  return astNode.name ?? '??';
 }
 
 export const getAggregatorName = (aggregatorName: string): string => {

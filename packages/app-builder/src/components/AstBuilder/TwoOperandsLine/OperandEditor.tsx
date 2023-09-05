@@ -1,11 +1,7 @@
 import {
-  adaptAggregationViewModel,
-  AggregationEditModal,
-} from '@app-builder/components/Edit';
-import { stringifyConstant } from '@app-builder/components/Scenario/Formula/Operators';
-import {
   adaptLabelledAstFromIdentifier,
   type AstNode,
+  getAstNodeDisplayName,
   isAggregation,
   type LabelledAst,
   NewAstNode,
@@ -20,6 +16,10 @@ import {
 import { Combobox } from '@ui-design-system';
 import { useCallback, useState } from 'react';
 
+import {
+  adaptAggregationViewModel,
+  AggregationEditModal,
+} from '../AggregationEdit';
 import { ErrorMessage } from '../ErrorMessage';
 import { getBorderColor } from '../utils';
 
@@ -43,7 +43,7 @@ export function OperandEditor({
   const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
     () => {
       const initialOption: LabelledAst = {
-        label: adaptOperandLabel(
+        label: getAstNodeDisplayName(
           adaptAstNodeFromEditorViewModel(operandViewModel)
         ),
         tooltip: '(initial value)',
@@ -206,19 +206,4 @@ function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
   });
 
   return results;
-}
-
-function shortAstDescription(node: AstNode): string {
-  return node.name === null
-    ? `constant: ${stringifyConstant(node.constant)}`
-    : `func: ${node.name}`;
-}
-
-function adaptOperandLabel(node: AstNode) {
-  // TODO: merge with getAstNodeDisplayName()
-  return node.name === null
-    ? stringifyConstant(node.constant)
-    : node.name === 'Payload'
-    ? `Payload ${stringifyConstant(node.children[0].constant)}`
-    : shortAstDescription(node);
 }
