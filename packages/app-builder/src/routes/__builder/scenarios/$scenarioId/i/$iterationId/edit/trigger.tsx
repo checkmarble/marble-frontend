@@ -6,7 +6,6 @@ import {
   adaptDataModelDto,
   adaptNodeDto,
   type AstNode,
-  wrapInOrAndGroups,
 } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
@@ -125,7 +124,7 @@ export default function Trigger() {
     );
 
   const astEditor = useAstBuilder({
-    backendAst: scenarioIteration.trigger ?? wrapInOrAndGroups(),
+    backendAst: scenarioIteration.trigger,
     backendValidation: triggerEvaluation,
     localValidation,
     identifiers,
