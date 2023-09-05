@@ -51,19 +51,12 @@ export function adaptLabelledAstFromAllIdentifiers(
   };
 }
 
-const getEditorIdentifierName = (identifier: EditorIdentifier): string => {
-  if (isAggregation(identifier.node)) {
-    return getAggregatorName(identifier.name);
-  }
-  return identifier.name;
-};
-
 export function adaptLabelledAstFromIdentifier(
   identifier: EditorIdentifier
 ): LabelledAst {
   return {
-    label: getEditorIdentifierName(identifier),
-    tooltip: identifier.description,
+    label: getAstNodeDisplayName(identifier.node),
+    tooltip: '',
     astNode: identifier.node,
   };
 }
