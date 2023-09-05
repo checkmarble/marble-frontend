@@ -7,6 +7,7 @@ import {
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type AstNode } from '@app-builder/models';
+import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
@@ -35,12 +36,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { editor, scenario, user } = await authService.isAuthenticated(
-    request,
-    {
+  const { apiClient, editor, scenario, user } =
+    await authService.isAuthenticated(request, {
       failureRedirect: '/login',
-    }
-  );
+    });
 
   const ruleId = fromParams(params, 'ruleId');
   const scenarioId = fromParams(params, 'scenarioId');
@@ -68,6 +67,8 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
+  const { data_model } = await apiClient.getDataModel();
+
   return json({
     rule: await scenarioIterationRulePromise,
     identifiers: await identifiersPromise,
@@ -77,6 +78,7 @@ export async function loader({ request, params }: LoaderArgs) {
       ruleId
     ),
     scenarioId,
+    dataModels: adaptDataModelDto(data_model),
   });
 }
 
@@ -130,7 +132,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators, ruleValidation } =
+  const { rule, identifiers, operators, ruleValidation, dataModels } =
     useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
@@ -147,6 +149,7 @@ export default function RuleEdit() {
     localValidation,
     identifiers,
     operators,
+    dataModels,
     onSave: (astNodeToSave: AstNode) => {
       fetcher.submit(astNodeToSave, {
         method: 'PATCH',
