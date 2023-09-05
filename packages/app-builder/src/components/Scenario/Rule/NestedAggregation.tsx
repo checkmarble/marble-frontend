@@ -34,9 +34,10 @@ export const NestedAggregation = ({
             <LogicalOperatorLabel operator="where" />
             <div className="flex items-center">
               <p>
-                {` ${filter.filteredField?.fieldName ?? ''} ${
+                {`${filter.filteredField?.fieldName ?? ''} ${
                   filter.operator ?? ''
-                } `}
+                }`}
+                &nbsp;
               </p>
               <Formula formula={filter.value} />
             </div>

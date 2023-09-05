@@ -54,6 +54,6 @@ export function isAggregationIdentifier(
   node: AstNode,
   identifiers: EditorIdentifiersByType
 ) {
-  if (getAggregationFromAstNode(node, identifiers)) return true;
+  if (getAggregationFromAstNode(node, identifiers) !== null) return true;
   return false;
 }
