@@ -3,7 +3,7 @@ import { EditAstNode, RootOrOperator } from '@app-builder/components/Edit';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import {
-  adaptAstNode,
+  adaptNodeDto,
   type AstNode,
   wrapInOrAndGroups,
 } from '@app-builder/models';
