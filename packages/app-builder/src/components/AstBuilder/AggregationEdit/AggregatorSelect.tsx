@@ -1,17 +1,29 @@
-import { type EditorIdentifier } from '@app-builder/models';
-import { useGetAggregatorName } from '@app-builder/services/editor';
+import {
+  allAggregators,
+  useGetAggregatorName,
+} from '@app-builder/services/editor';
 import { Select } from '@ui-design-system';
+import { useMemo } from 'react';
 
 export const AggregatorSelect = ({
   value,
   onChange,
-  aggretatorOptions,
 }: {
   value: string;
   onChange: (value: string) => void;
-  aggretatorOptions: EditorIdentifier[];
 }) => {
   const getAggregatorName = useGetAggregatorName();
+
+  const availableAggregators = useMemo(
+    () =>
+      allAggregators.map((aggregator) => {
+        return {
+          aggregatorName: aggregator,
+          displayName: getAggregatorName(aggregator),
+        };
+      }),
+    [getAggregatorName]
+  );
 
   return (
     <Select.Root
@@ -27,16 +39,14 @@ export const AggregatorSelect = ({
         <Select.Value placeholder="..." />
       </Select.Trigger>
       <Select.Content className="max-h-60">
-        {aggretatorOptions.map((aggregator) => (
+        {availableAggregators.map(({ aggregatorName, displayName }) => (
           <Select.Item
             className="min-w-[110px]"
-            key={aggregator.name}
-            value={aggregator.name}
+            key={aggregatorName}
+            value={aggregatorName}
           >
             <Select.ItemText>
-              <span className="text-s text-grey-100">
-                {getAggregatorName(aggregator.name)}
-              </span>
+              <span className="text-s text-grey-100">{displayName}</span>
             </Select.ItemText>
           </Select.Item>
         ))}

@@ -214,7 +214,6 @@ export const AggregationEditModal = ({
               <div className="flex flex-1 gap-2">
                 <AggregatorSelect
                   value={aggregation.aggregator}
-                  aggretatorOptions={builder.identifiers.aggregatorAccessors}
                   onChange={(aggregator) =>
                     setAggregation({ ...aggregation, aggregator })
                   }

@@ -65,6 +65,15 @@ export function useGetIdentifierOptions() {
   );
 }
 
+export const allAggregators: string[] = [
+  'AVG',
+  'COUNT',
+  'COUNT_DISTINCT',
+  'MAX',
+  'MIN',
+  'SUM',
+];
+
 /**
  * Need to stay as a hook, because it will require translation in the future
  */

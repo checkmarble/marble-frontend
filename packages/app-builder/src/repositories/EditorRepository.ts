@@ -1,6 +1,6 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
-  adaptIdentifierDto,
+  adaptEditorIdentifier,
   adaptNodeDto,
   type AstNode,
   type EditorIdentifiersByType,
@@ -34,15 +34,14 @@ export function getEditorRepository() {
         custom_list_accessors,
         aggregator_accessors,
       } = await marbleApiClient.listIdentifiers(scenarioId);
-      const databaseAccessors = database_accessors.map(
-        adaptIdentifierDto ?? []
-      );
-      const payloadAccessors = payload_accessors.map(adaptIdentifierDto ?? []);
+      const databaseAccessors = database_accessors.map(adaptEditorIdentifier);
+      const payloadAccessors = payload_accessors.map(adaptEditorIdentifier);
       const customListAccessors = custom_list_accessors.map(
-        adaptIdentifierDto ?? []
+        adaptEditorIdentifier
       );
+
       const aggregatorAccessors = aggregator_accessors.map(
-        adaptIdentifierDto ?? []
+        adaptEditorIdentifier
       );
 
       return {
