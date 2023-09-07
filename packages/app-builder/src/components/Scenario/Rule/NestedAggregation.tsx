@@ -1,6 +1,7 @@
-import { adaptAggregationViewModel } from '@app-builder/components/Edit';
+import { adaptAggregationViewModel } from '@app-builder/components/AstBuilder/AggregationEdit';
 import { type AstNode, isAggregationIdentifier } from '@app-builder/models';
 import { useEditorIdentifiers } from '@app-builder/services/editor';
+import { adaptAstNodeFromEditorViewModel } from '@app-builder/services/editor/ast-editor';
 import { Fragment, useId } from 'react';
 
 import { Formula } from '../Formula';
@@ -40,7 +41,9 @@ export const NestedAggregation = ({
                 }`}
                 &nbsp;
               </p>
-              <Formula formula={filter.value} />
+              <Formula
+                formula={adaptAstNodeFromEditorViewModel(filter.value)}
+              />
             </div>
           </Fragment>
         ))}

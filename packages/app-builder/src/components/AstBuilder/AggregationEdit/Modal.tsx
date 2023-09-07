@@ -6,13 +6,17 @@ import {
   NewAstNode,
   NewConstantAstNode,
 } from '@app-builder/models';
-import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
+import {
+  adaptAstNodeFromEditorViewModel,
+  adaptEditorNodeViewModel,
+  type AstBuilder,
+  type EditorNodeViewModel,
+} from '@app-builder/services/editor/ast-editor';
 import { Button, Input, Modal } from '@ui-design-system';
 import { Logo } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
 
 import { AggregatorSelect } from './AggregatorSelect';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
@@ -22,12 +26,17 @@ export const handle = {
   i18n: ['scenarios', 'common'] satisfies Namespace,
 };
 
-interface AggregationViewModel {
+export interface AggregationViewModel {
   nodeId: string;
   label: string;
   aggregator: string;
   aggregatedField: DataModelField | null;
   filters: FilterViewModel[];
+}
+export interface FilterViewModel {
+  operator: string | null;
+  filteredField: DataModelField | null;
+  value: EditorNodeViewModel;
 }
 
 export const adaptAggregationViewModel = (
@@ -38,22 +47,8 @@ export const adaptAggregationViewModel = (
     tableName: adaptConstantAstNodeToString(astNode.namedChildren['tableName']),
     fieldName: adaptConstantAstNodeToString(astNode.namedChildren['fieldName']),
   };
-  const filters: FilterViewModel[] = astNode.namedChildren[
-    'filters'
-  ].children.map((filterAstNode: AstNode) => ({
-    operator: adaptConstantAstNodeToString(
-      filterAstNode.namedChildren['operator']
-    ),
-    filteredField: {
-      tableName: adaptConstantAstNodeToString(
-        filterAstNode.namedChildren['tableName']
-      ),
-      fieldName: adaptConstantAstNodeToString(
-        filterAstNode.namedChildren['fieldName']
-      ),
-    },
-    value: filterAstNode.namedChildren['value'],
-  }));
+  const filters: FilterViewModel[] =
+    astNode.namedChildren['filters'].children.map(adaptFilterViewModel);
 
   return {
     nodeId,
@@ -66,7 +61,24 @@ export const adaptAggregationViewModel = (
   };
 };
 
-const adaptAggregationAstNode = (
+const adaptFilterViewModel = (filterAstNode: AstNode): FilterViewModel => ({
+  operator: adaptConstantAstNodeToString(
+    filterAstNode.namedChildren['operator']
+  ),
+  filteredField: {
+    tableName: adaptConstantAstNodeToString(
+      filterAstNode.namedChildren['tableName']
+    ),
+    fieldName: adaptConstantAstNodeToString(
+      filterAstNode.namedChildren['fieldName']
+    ),
+  },
+  value: adaptEditorNodeViewModel({
+    ast: filterAstNode.namedChildren['value'],
+  }),
+});
+
+export const adaptAggregationAstNode = (
   aggregationViewModel: AggregationViewModel
 ): AggregationAstNode => {
   const filters: AstNode[] = aggregationViewModel.filters.map(
@@ -81,7 +93,7 @@ const adaptAggregationAstNode = (
           fieldName: NewConstantAstNode({
             constant: filter.filteredField?.fieldName ?? null,
           }),
-          value: filter.value,
+          value: adaptAstNodeFromEditorViewModel(filter.value),
         },
       })
   );
@@ -107,40 +119,17 @@ const adaptAggregationAstNode = (
   };
 };
 
-export interface FilterViewModel {
-  operator: string | null;
-  filteredField: DataModelField | null;
-  value: AstNode;
-}
-
-const aggregationFormSchema = z.object({
-  label: z.string().nonempty({ message: 'Required' }),
-  aggregator: z.string().nonempty({ message: 'Required' }),
-  aggregatedField: z.object({
-    tableName: z.string().nonempty({ message: 'Required' }),
-    fieldName: z.string().nonempty({ message: 'Required' }),
-  }),
-  filters: z.array(
-    z.object({
-      operator: z.string().nonempty({ message: 'Required' }),
-      filteredField: z.object({
-        tableName: z.string().nonempty({ message: 'Required' }),
-        fieldName: z.string().nonempty({ message: 'Required' }),
-      }),
-      value: z.any(),
-    })
-  ),
-});
-
 export const AggregationEditModal = ({
   builder,
   initialAggregation,
   modalOpen,
+  onSave,
   setModalOpen,
 }: {
   builder: AstBuilder;
   initialAggregation: AggregationViewModel;
   modalOpen: boolean;
+  onSave: (astNode: AstNode) => void;
   setModalOpen: (modalOpen: boolean) => void;
 }) => {
   const { t } = useTranslation(handle.i18n);
@@ -156,24 +145,10 @@ export const AggregationEditModal = ({
   const [aggregation, setAggregation] = useState<AggregationViewModel>(
     () => initialAggregation
   );
-  const [hasError, setHasError] = useState(false);
-
-  const validateAggregation = () => {
-    const result = aggregationFormSchema.safeParse(aggregation);
-    setHasError(!result.success);
-
-    return result;
-  };
 
   const save = () => {
-    const validationData = validateAggregation();
-    if (validationData.success) {
-      builder.setOperand(
-        initialAggregation.nodeId,
-        adaptAggregationAstNode(aggregation)
-      );
-      setModalOpen(false);
-    }
+    onSave(adaptAggregationAstNode(aggregation));
+    setModalOpen(false);
   };
 
   return (
@@ -239,7 +214,6 @@ export const AggregationEditModal = ({
               />
             </div>
           </div>
-          {hasError && <ErrorMessage>All fields are required</ErrorMessage>}
           <div className="flex flex-1 flex-row gap-2">
             <Modal.Close asChild>
               <Button className="flex-1" variant="secondary" name="cancel">
@@ -260,9 +234,3 @@ export const AggregationEditModal = ({
     </Modal.Root>
   );
 };
-
-const ErrorMessage = ({ children }: { children: React.ReactNode }) => (
-  <p className="text-s font-medium text-red-100 transition-opacity duration-200 ease-in-out">
-    {children}
-  </p>
-);

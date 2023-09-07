@@ -1,4 +1,5 @@
 import {
+  adaptLabelledAst,
   adaptLabelledAstFromIdentifier,
   type AstNode,
   getAstNodeDisplayName,
@@ -35,9 +36,11 @@ interface EditOperandViewModel {
 
 export function OperandEditor({
   builder,
+  onSave,
   operandViewModel,
 }: {
   builder: AstBuilder;
+  onSave: (astNode: AstNode) => void;
   operandViewModel: OperandViewModel;
 }) {
   const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
@@ -93,9 +96,9 @@ export function OperandEditor({
         editAggregation(newSelection.astNode);
         return;
       }
-      builder.setOperand(operandViewModel.nodeId, newSelection.astNode);
+      onSave(newSelection.astNode);
     },
-    [builder, operandViewModel.nodeId]
+    [onSave]
   );
 
   const availableOptions = [
@@ -117,10 +120,18 @@ export function OperandEditor({
     setModalOpen(true);
   };
 
+  const selectedOption: LabelledAst = {
+    label: getAstNodeDisplayName(
+      adaptAstNodeFromEditorViewModel(operandViewModel)
+    ),
+    tooltip: '(initial value)',
+    astNode: adaptAstNodeFromEditorViewModel(operandViewModel),
+  };
+
   return (
     <div className="flex flex-col gap-1">
       <Combobox.Root<LabelledAst>
-        value={editViewModel.selectedOption ?? undefined}
+        value={selectedOption ?? undefined}
         onChange={handleSelectOption}
       >
         <div className="relative">
@@ -152,6 +163,13 @@ export function OperandEditor({
           )}
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
+          onSave={(astNode: AstNode) => {
+            setEditViewModel((vm) => ({
+              ...vm,
+              selectedOption: adaptLabelledAst(astNode),
+            }));
+            onSave(astNode);
+          }}
         />
       )}
     </div>
