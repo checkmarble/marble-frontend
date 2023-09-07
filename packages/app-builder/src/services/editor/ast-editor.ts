@@ -106,6 +106,14 @@ export function useAstBuilder({
   onSave: (toSave: AstNode) => void;
   onValidate: (ast: AstNode) => void;
 }): AstBuilder {
+  const validate = useCallback(
+    (vm: EditorNodeViewModel) => {
+      const editedAst = adaptAstNodeFromEditorViewModel(vm);
+      onValidate(editedAst);
+    },
+    [onValidate]
+  );
+
   const [editorNodeViewModel, setEditorNodeViewModel] =
     useState<EditorNodeViewModel>(() => {
       if (backendAst === null) {
@@ -123,14 +131,6 @@ export function useAstBuilder({
         validation: backendValidation,
       });
     });
-
-  const validate = useCallback(
-    (vm: EditorNodeViewModel) => {
-      const editedAst = adaptAstNodeFromEditorViewModel(vm);
-      onValidate(editedAst);
-    },
-    [onValidate]
-  );
 
   const replaceOneNode = useCallback(
     (
