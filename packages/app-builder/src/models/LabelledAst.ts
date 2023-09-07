@@ -93,10 +93,10 @@ export function getAstNodeDisplayName(astNode: AstNode): string {
 
   if (isAggregation(astNode)) {
     const { aggregator, label } = astNode.namedChildren;
-    if (label == undefined || label.constant == undefined) {
-      return getAggregatorName(adaptConstantAstNodeToString(aggregator));
+    if (label?.constant != undefined && label?.constant != '') {
+      return adaptConstantAstNodeToString(label);
     }
-    return adaptConstantAstNodeToString(label);
+    return getAggregatorName(adaptConstantAstNodeToString(aggregator));
   }
 
   if (isAstNodeUnknown(astNode)) {

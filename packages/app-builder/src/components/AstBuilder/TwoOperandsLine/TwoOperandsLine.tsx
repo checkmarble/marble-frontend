@@ -1,3 +1,4 @@
+import { type AstNode } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
@@ -24,12 +25,16 @@ export function TwoOperandsLine({
   builder: AstBuilder;
   twoOperandsViewModel: TwoOperandsLineViewModel;
 }) {
+  const onSaveOperand = (nodeId: string) => (astNode: AstNode) => {
+    builder.setOperand(nodeId, astNode);
+  };
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-row gap-1">
         <OperandEditor
           builder={builder}
           operandViewModel={twoOperandsViewModel.left}
+          onSave={onSaveOperand(twoOperandsViewModel.left.nodeId)}
         />
         <OperatorEditor
           builder={builder}
@@ -38,6 +43,7 @@ export function TwoOperandsLine({
         <OperandEditor
           builder={builder}
           operandViewModel={twoOperandsViewModel.right}
+          onSave={onSaveOperand(twoOperandsViewModel.right.nodeId)}
         />
       </div>
       {twoOperandsViewModel.operator.validation.state === 'fail' && (

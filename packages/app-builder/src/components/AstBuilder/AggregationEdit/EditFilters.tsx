@@ -49,7 +49,11 @@ export const EditFilters = ({
   const addNewFilter = () => {
     onChange([
       ...value,
-      { operator: null, filteredField: null, value: NewUndefinedAstNode() },
+      {
+        operator: null,
+        filteredField: null,
+        value: adaptEditorNodeViewModel({ ast: NewUndefinedAstNode() }),
+      },
     ]);
   };
 
@@ -80,9 +84,13 @@ export const EditFilters = ({
 
             <OperandEditor
               builder={builder}
-              operandViewModel={adaptEditorNodeViewModel({
-                ast: filter.value,
-              })}
+              operandViewModel={filter.value}
+              onSave={(astNode) =>
+                onFilterChange(
+                  { value: adaptEditorNodeViewModel({ ast: astNode }) },
+                  filterIndex
+                )
+              }
             />
             <RemoveButton onClick={() => removeFilter(filterIndex)} />
           </div>
