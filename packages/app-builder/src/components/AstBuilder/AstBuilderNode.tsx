@@ -8,7 +8,12 @@ import { Input } from '@ui-design-system';
 import { useState } from 'react';
 
 import { Default } from '../Scenario/Formula/Operators/Default';
-import { adaptRootOrWithAndViewModel, RootOrWithAnd } from './RootOrWithAnd';
+import {
+  adaptRootAndViewModel,
+  adaptRootOrWithAndViewModel,
+  RootAnd,
+  RootOrWithAnd,
+} from './Root';
 import {
   adaptTwoOperandsLineViewModel,
   TwoOperandsLine,
@@ -32,6 +37,12 @@ export function AstBuilderNode({
         rootOrWithAndViewModel={rootOrWithAndViewModel}
       />
     );
+  }
+
+  //TODO: handle root case in a specific initialisation phase. With that, we will display the RootAnd for any child And node due to the recursive call of AstBuilderNode.
+  const rootAndViewModel = adaptRootAndViewModel(editorNodeViewModel);
+  if (rootAndViewModel) {
+    return <RootAnd builder={builder} rootAndViewModel={rootAndViewModel} />;
   }
 
   const constantViewModel = adaptConstantViewModel(editorNodeViewModel);

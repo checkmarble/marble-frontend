@@ -79,12 +79,12 @@ export interface AstBuilder {
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
   dataModels: DataModel[];
-  setConstant(nodeId: string, newValue: ConstantType): void;
-  setOperand(nodeId: string, operandAst: AstNode): void;
-  setOperator(nodeId: string, name: string): void;
-  appendChild(nodeId: string, childAst: AstNode): void;
-  remove(nodeId: string): void;
-  save(): void;
+  setConstant: (nodeId: string, newValue: ConstantType) => void;
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
+  appendChild: (nodeId: string, childAst: AstNode) => void;
+  remove: (nodeId: string) => void;
+  save: () => void;
 }
 
 export function useAstBuilder({
