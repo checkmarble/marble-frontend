@@ -8,6 +8,7 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import clsx from 'clsx';
 import React from 'react';
 
 import { AstBuilderNode } from '../AstBuilderNode';
@@ -86,6 +87,8 @@ export function RootOrWithAnd({
           );
         }
 
+        const isFirstAndChild = isFirstChild && andChild.children.length === 0;
+
         return (
           <React.Fragment key={andChild.nodeId}>
             {!isFirstChild && (
@@ -124,12 +127,12 @@ export function RootOrWithAnd({
               );
             })}
 
-            <AddLogicalOperatorButton
-              className="text-grey-25 h-fit w-fit text-xs"
-              variant="secondary"
-              onClick={appendAndChild}
-              operator="and"
-            />
+            <div className={clsx('my-1', !isFirstAndChild && 'ml-[50px]')}>
+              <AddLogicalOperatorButton
+                onClick={appendAndChild}
+                operator="and"
+              />
+            </div>
           </React.Fragment>
         );
       })}

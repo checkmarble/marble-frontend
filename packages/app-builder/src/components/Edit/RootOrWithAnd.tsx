@@ -108,7 +108,6 @@ export function RootOrOperator({
               <AddLogicalOperatorButton
                 onClick={appendOrOperand}
                 operator="or"
-                variant="secondary"
               />
             </div>
           </FormItem>
@@ -183,7 +182,6 @@ function RootAndOperator({
               className={clsx('my-1', !isFirstConditionOperand && 'ml-[50px]')}
             >
               <AddLogicalOperatorButton
-                variant="secondary"
                 onClick={appendAndOperand}
                 operator="and"
               />
