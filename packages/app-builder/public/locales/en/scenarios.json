@@ -89,6 +89,7 @@
   "validation.evaluation_error.argument_must_be_list": "argument must be a list",
   "validation.evaluation_error.argument_must_be_convertible_to_duration": "argument must be a duration",
   "validation.evaluation_error.argument_must_be_time": "argument must be a time",
+  "validation.evaluation_error.argument_required": "argument is required",
   "edit_aggregation.title": "Create a variable",
   "edit_aggregation.subtitle": "From Marble database",
   "edit_aggregation.label_title": "Variable name",

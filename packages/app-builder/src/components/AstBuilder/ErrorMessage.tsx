@@ -62,6 +62,8 @@ export function useGetNodeEvaluationErrorMessage() {
           return t(
             'scenarios:validation.evaluation_error.argument_must_be_time'
           );
+        case 'ARGUMENT_REQUIRED':
+          return t('validation.evaluation_error.argument_required');
 
         default:
           return `${evaluationError.error}:${evaluationError.message}`;
