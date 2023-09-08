@@ -66,36 +66,41 @@ export interface SelectTriggerProps extends PrimitiveSelectTriggerProps {
   border?: (typeof selectBorder)[number];
   borderColor?: (typeof selectBorderColor)[number];
 }
+const defaultBorder = 'square';
 
 const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
   (
-    { children, className, border = 'square', borderColor = 'grey', ...props },
+    {
+      children,
+      className,
+      border = defaultBorder,
+      borderColor = 'grey',
+      ...props
+    },
     ref
   ) => {
     return (
       <Trigger
         ref={ref}
+        data-border={border}
+        data-border-color={borderColor}
         className={clsx(
-          'bg-grey-00 text-s text-grey-100 group flex h-10 items-center justify-between border font-medium outline-none',
-          'radix-state-open:border-purple-100 radix-state-open:text-purple-100 focus:border-purple-100',
+          'group/trigger',
+          'bg-grey-00 text-s text-grey-100 group flex h-10 min-w-[40px] items-center justify-between border font-medium outline-none',
+          'radix-state-open:border-purple-100 radix-state-open:text-purple-100',
           'radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
-          {
-            'rounded px-2': border === 'square',
-            'rounded-full pl-4 pr-2': border === 'rounded',
-          },
-          {
-            'border-grey-10': borderColor === 'grey',
-            'border-red-100': borderColor === 'red',
-            'border-green-100': borderColor === 'green',
-          },
+          // Border variants
+          'data-[border=square]:gap-2 data-[border=square]:rounded data-[border=square]:px-2',
+          'data-[border=rounded]:rounded-full data-[border=rounded]:px-2',
+          // Border color variants
+          'data-[border-color=grey]:border-grey-10 data-[border-color=grey]:focus:border-purple-100',
+          'data-[border-color=red]:border-red-100 data-[border-color=red]:focus:border-purple-100',
+          'data-[border-color=green]:border-green-100 data-[border-color=green]:focus:border-purple-100',
           className
         )}
         {...props}
       >
         {children}
-        <Icon className="group-radix-state-open:rotate-180">
-          <SmallarrowDown height="24px" width="24px" />
-        </Icon>
       </Trigger>
     );
   }
@@ -119,6 +124,27 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
   }
 );
 
+const SelectValue = forwardRef<HTMLDivElement, SelectValueProps>(
+  ({ className, ...props }, ref) => {
+    return (
+      <span
+        className={clsx(
+          'w-full text-center group-data-[border=rounded]/trigger:px-2',
+          className
+        )}
+      >
+        <Value ref={ref} {...props} />
+      </span>
+    );
+  }
+);
+
+const SelectArrow = () => (
+  <Icon className="group-radix-state-open:rotate-180">
+    <SmallarrowDown height="24px" width="24px" />
+  </Icon>
+);
+
 export type SelectProps = RawSelectProps &
   Pick<SelectValueProps, 'placeholder'> &
   Pick<SelectTriggerProps, 'border' | 'borderColor' | 'className'>;
@@ -137,6 +163,7 @@ const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
           className={className}
         >
           <Select.Value placeholder={placeholder} />
+          <Select.Arrow />
         </Select.Trigger>
         <Select.Content
           className="max-h-60"
@@ -163,10 +190,11 @@ export const Select = {
   Default: SelectDefault,
   Root,
   Trigger: SelectTrigger,
+  Arrow: SelectArrow,
   Content: SelectContent,
   Viewport: SelectViewport,
   Item: SelectItem,
   DefaultItem: SelectDefaultItem,
   ItemText,
-  Value,
+  Value: SelectValue,
 };

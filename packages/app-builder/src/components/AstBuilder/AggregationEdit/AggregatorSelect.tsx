@@ -37,19 +37,22 @@ export const AggregatorSelect = ({
     >
       <Select.Trigger>
         <Select.Value placeholder="..." />
+        <Select.Arrow />
       </Select.Trigger>
       <Select.Content className="max-h-60">
-        {availableAggregators.map(({ aggregatorName, displayName }) => (
-          <Select.Item
-            className="min-w-[110px]"
-            key={aggregatorName}
-            value={aggregatorName}
-          >
-            <Select.ItemText>
-              <span className="text-s text-grey-100">{displayName}</span>
-            </Select.ItemText>
-          </Select.Item>
-        ))}
+        <Select.Viewport>
+          {availableAggregators.map(({ aggregatorName, displayName }) => (
+            <Select.Item
+              className="min-w-[110px]"
+              key={aggregatorName}
+              value={aggregatorName}
+            >
+              <Select.ItemText>
+                <span className="text-s text-grey-100">{displayName}</span>
+              </Select.ItemText>
+            </Select.Item>
+          ))}
+        </Select.Viewport>
       </Select.Content>
     </Select.Root>
   );
