@@ -50,12 +50,14 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 
   const dataModelPromise = apiClient.getDataModel();
+  const { custom_lists } = await apiClient.listCustomLists();
 
   return json({
     identifiers: await identifiersPromise,
     operators: await operatorsPromise,
     triggerEvaluation: (await scenarioValidationPromise).triggerEvaluation,
     dataModels: adaptDataModelDto((await dataModelPromise).data_model),
+    customLists: custom_lists,
   });
 }
 
@@ -112,7 +114,7 @@ export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
   const { triggerObjectType } = useCurrentScenario();
   const scenarioIteration = useCurrentScenarioIteration();
-  const { identifiers, operators, triggerEvaluation, dataModels } =
+  const { identifiers, operators, triggerEvaluation, dataModels, customLists } =
     useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
@@ -130,6 +132,7 @@ export default function Trigger() {
     identifiers,
     operators,
     dataModels,
+    customLists,
     onSave: (astNodeToSave: AstNode) => {
       fetcher.submit(astNodeToSave, {
         method: 'PATCH',
