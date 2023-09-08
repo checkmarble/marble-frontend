@@ -1,12 +1,7 @@
 import { scenarioI18n } from '@app-builder/components';
-import {
-  adaptLabelledAst,
-  adaptLabelledAstFromIdentifier,
-  NewAstNode,
-} from '@app-builder/models';
 import { type EditorIdentifiersByType } from '@app-builder/models/identifier';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const EditorIdentifiersContext =
@@ -27,43 +22,6 @@ export function EditorIdentifiersProvider({
 }
 
 export const useEditorIdentifiers = EditorIdentifiersContext.useValue;
-
-function coerceToConstant(search: string) {
-  const parsedNumber = Number(search);
-  const isNumber = !isNaN(parsedNumber);
-
-  if (isNumber) {
-    return NewAstNode({
-      constant: parsedNumber,
-    });
-  }
-
-  return NewAstNode({
-    constant: search,
-  });
-}
-
-export function useGetIdentifierOptions() {
-  const identifiers = useEditorIdentifiers();
-  const identifiersOptions = useMemo(
-    () => [
-      ...identifiers.databaseAccessors.map(adaptLabelledAstFromIdentifier),
-      ...identifiers.payloadAccessors.map(adaptLabelledAstFromIdentifier),
-      ...identifiers.customListAccessors.map(adaptLabelledAstFromIdentifier),
-      ...identifiers.aggregatorAccessors.map(adaptLabelledAstFromIdentifier),
-    ],
-    [identifiers]
-  );
-
-  return useCallback(
-    (search: string) => {
-      if (!search) return identifiersOptions;
-      const constantNode = coerceToConstant(search);
-      return [...identifiersOptions, adaptLabelledAst(constantNode)];
-    },
-    [identifiersOptions]
-  );
-}
 
 export const allAggregators: string[] = [
   'AVG',

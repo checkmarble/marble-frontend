@@ -1,6 +1,5 @@
 import { adaptAggregationViewModel } from '@app-builder/components/AstBuilder/AggregationEdit';
 import { type AstNode, isAggregationIdentifier } from '@app-builder/models';
-import { useEditorIdentifiers } from '@app-builder/services/editor';
 import { adaptAstNodeFromEditorViewModel } from '@app-builder/services/editor/ast-editor';
 import { Fragment, useId } from 'react';
 
@@ -14,9 +13,8 @@ export const NestedAggregation = ({
   formula: AstNode;
   displayRow: number;
 }) => {
-  const editorIdentifier = useEditorIdentifiers();
   const id = useId();
-  if (!isAggregationIdentifier(formula, editorIdentifier)) {
+  if (!isAggregationIdentifier(formula)) {
     return;
   }
   const aggregation = adaptAggregationViewModel(id, formula);

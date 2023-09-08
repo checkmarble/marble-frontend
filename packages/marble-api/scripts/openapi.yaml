@@ -1438,25 +1438,15 @@ paths:
                 required:
                   - database_accessors
                   - payload_accessors
-                  - custom_list_accessors
-                  - aggregator_accessors
                 properties:
                   database_accessors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/IdentifierDto'
+                      $ref: '#/components/schemas/NodeDto'
                   payload_accessors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/IdentifierDto'
-                  custom_list_accessors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/IdentifierDto'
-                  aggregator_accessors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/IdentifierDto'
+                      $ref: '#/components/schemas/NodeDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -2180,13 +2170,6 @@ components:
         - ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION
         - ARGUMENT_MUST_BE_TIME
         - ARGUMENT_REQUIRED
-    IdentifierDto:
-      type: object
-      required:
-        - node
-      properties:
-        node:
-          $ref: '#/components/schemas/NodeDto'
     FuncAttributes:
       type: object
       required:

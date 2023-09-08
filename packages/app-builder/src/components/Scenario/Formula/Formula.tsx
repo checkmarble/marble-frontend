@@ -39,7 +39,7 @@ export function Formula({ formula, isRoot = false }: FormulaProps) {
     return <Identifier node={formula} isRoot={isRoot} />;
   }
 
-  if (isAggregationIdentifier(formula, editorIdentifier)) {
+  if (isAggregationIdentifier(formula)) {
     return <Identifier node={formula} isRoot={isRoot} />;
   }
 

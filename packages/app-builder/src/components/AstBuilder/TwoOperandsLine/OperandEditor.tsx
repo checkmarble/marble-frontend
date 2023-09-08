@@ -1,14 +1,15 @@
 import {
   adaptLabelledAst,
   adaptLabelledAstFromCustomList,
-  adaptLabelledAstFromIdentifier,
   type AstNode,
   getAstNodeLabelName,
   isAggregation,
   type LabelledAst,
+  NewAggregatorAstNode,
   NewUndefinedAstNode,
   undefinedAstNodeName,
 } from '@app-builder/models';
+import { allAggregators } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
@@ -31,7 +32,7 @@ interface EditOperandViewModel {
   initialOption: LabelledAst;
   constantOptions: LabelledAst[];
   identifiersOptions: LabelledAst[];
-  selectedOption: LabelledAst | null;
+  selectedOption: LabelledAst;
   searchText: string;
 }
 
@@ -46,26 +47,32 @@ export function OperandEditor({
 }) {
   const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
     () => {
+      const operandAst = adaptAstNodeFromEditorViewModel(operandViewModel);
       const initialOption: LabelledAst = {
-        label: getAstNodeLabelName(
-          adaptAstNodeFromEditorViewModel(operandViewModel),
-          builder
-        ),
+        label: getAstNodeLabelName(operandAst, builder),
         tooltip: '(initial value)',
-        astNode: adaptAstNodeFromEditorViewModel(operandViewModel),
+        astNode: operandAst,
       };
 
       const identifiersOptions: LabelledAst[] = [
-        ...builder.identifiers.databaseAccessors.map(
-          adaptLabelledAstFromIdentifier
-        ),
-        ...builder.identifiers.payloadAccessors.map(
-          adaptLabelledAstFromIdentifier
-        ),
+        ...builder.identifiers.databaseAccessors.map((node) => ({
+          label: getAstNodeLabelName(node, builder),
+          // tooltip: '(database accessor)',
+          tooltip: '',
+          astNode: node,
+        })),
+        ...builder.identifiers.payloadAccessors.map((node) => ({
+          label: getAstNodeLabelName(node, builder),
+          // tooltip: '(payload accessor)',
+          tooltip: '',
+          astNode: node,
+        })),
+        ...allAggregators.map((aggregatorName) => ({
+          label: aggregatorName,
+          tooltip: '(aggregator)',
+          astNode: NewAggregatorAstNode(aggregatorName),
+        })),
         ...builder.customLists.map(adaptLabelledAstFromCustomList),
-        ...builder.identifiers.aggregatorAccessors.map(
-          adaptLabelledAstFromIdentifier
-        ),
       ];
 
       return {
@@ -88,15 +95,15 @@ export function OperandEditor({
 
   const handleSelectOption = useCallback(
     (newSelection: LabelledAst) => {
-      setEditViewModel((vm) => ({
-        ...vm,
-        selectedOption: newSelection,
-      }));
       if (isAggregation(newSelection.astNode)) {
         editAggregation(newSelection.astNode);
-        return;
+      } else {
+        setEditViewModel((vm) => ({
+          ...vm,
+          selectedOption: newSelection,
+        }));
+        onSave(newSelection.astNode);
       }
-      onSave(newSelection.astNode);
     },
     [onSave]
   );
@@ -120,19 +127,10 @@ export function OperandEditor({
     setModalOpen(true);
   };
 
-  const selectedOption: LabelledAst = {
-    label: getAstNodeLabelName(
-      adaptAstNodeFromEditorViewModel(operandViewModel),
-      builder
-    ),
-    tooltip: '(initial value)',
-    astNode: adaptAstNodeFromEditorViewModel(operandViewModel),
-  };
-
   return (
     <div className="flex flex-col gap-1">
       <Combobox.Root<LabelledAst>
-        value={selectedOption ?? undefined}
+        value={editViewModel.selectedOption ?? undefined}
         onChange={handleSelectOption}
       >
         <div className="relative">
@@ -167,7 +165,7 @@ export function OperandEditor({
           onSave={(astNode: AstNode) => {
             setEditViewModel((vm) => ({
               ...vm,
-              selectedOption: adaptLabelledAst(astNode),
+              selectedOption: adaptLabelledAst(astNode, builder),
             }));
             onSave(astNode);
           }}

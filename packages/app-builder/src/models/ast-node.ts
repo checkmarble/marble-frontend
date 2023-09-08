@@ -34,13 +34,11 @@ export function NewAstNode({
 }
 
 export function NewUndefinedAstNode({
-  constant,
   children,
   namedChildren,
 }: Partial<Omit<AstNode, 'name'>> = {}): AstNode {
   return NewAstNode({
     name: undefinedAstNodeName,
-    constant,
     children,
     namedChildren,
   });
@@ -158,6 +156,26 @@ export function NewCustomListAstNode(
     children: [],
     namedChildren: {
       customListId: NewConstantAstNode({ constant: customListId }),
+    },
+  };
+}
+
+export function NewAggregatorAstNode(
+  aggregatorName: string
+): AggregationAstNode {
+  return {
+    name: 'Aggregator',
+    constant: undefined,
+    children: [],
+    namedChildren: {
+      aggregator: NewConstantAstNode({ constant: aggregatorName }),
+      tableName: NewConstantAstNode({ constant: '' }),
+      fieldName: NewConstantAstNode({ constant: '' }),
+      label: NewConstantAstNode({ constant: '' }),
+      filters: NewAstNode({
+        name: 'List',
+        children: [],
+      }),
     },
   };
 }
