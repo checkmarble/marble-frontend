@@ -2179,6 +2179,7 @@ components:
         - ARGUMENT_MUST_BE_LIST
         - ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION
         - ARGUMENT_MUST_BE_TIME
+        - ARGUMENT_REQUIRED
     IdentifierDto:
       type: object
       required:

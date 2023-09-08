@@ -18,7 +18,8 @@ export type EvaluationErrorCode =
   | 'ARGUMENT_MUST_BE_BOOLEAN'
   | 'ARGUMENT_MUST_BE_LIST'
   | 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION'
-  | 'ARGUMENT_MUST_BE_TIME';
+  | 'ARGUMENT_MUST_BE_TIME'
+  | 'ARGUMENT_REQUIRED';
 
 export interface EvaluationError {
   error: EvaluationErrorCode;
