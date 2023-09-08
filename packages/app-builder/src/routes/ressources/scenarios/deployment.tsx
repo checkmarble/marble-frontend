@@ -50,14 +50,26 @@ export async function action({ request }: ActionArgs) {
     failureRedirect: '/login',
   });
 
+  type Error = Record<
+    'replaceCurrentLiveVersion' | 'changeIsImmediate',
+    boolean
+  >;
+
   const parsedForm = await parseFormSafe(request, formSchema);
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
 
+    const errs = parsedForm.error.format();
+
+    const error = {
+      replaceCurrentLiveVersion: !!errs?.replaceCurrentLiveVersion?._errors[0],
+      changeIsImmediate: !!errs?.changeIsImmediate?._errors[0],
+    } as Error;
+
     return json({
       success: false as const,
       values: parsedForm.formData,
-      error: parsedForm.error.format(),
+      error,
     });
   }
   try {
@@ -72,7 +84,11 @@ export async function action({ request }: ActionArgs) {
     if (!changeIsImmediate || (hasLiveVersion && !replaceCurrentLiveVersion)) {
       return json({
         success: false as const,
-        error: null,
+        error: {
+          replaceCurrentLiveVersion:
+            hasLiveVersion && !replaceCurrentLiveVersion,
+          changeIsImmediate: !changeIsImmediate,
+        },
         values: parsedForm.data,
       });
     }
@@ -135,7 +151,7 @@ function ModalContent({
 
   const { state, data } = fetcher;
   const isSuccess = state === 'idle' && data?.success === true;
-  const values = data?.values;
+  const errors = data?.error;
 
   return isSuccess ? (
     // In success modal, use data.values.deploymentType (action will update deploymentType to the new state)
@@ -189,11 +205,7 @@ function ModalContent({
               <Checkbox
                 id="replaceCurrentLiveVersion"
                 name="replaceCurrentLiveVersion"
-                color={
-                  values && !values.replaceCurrentLiveVersion
-                    ? 'red'
-                    : undefined
-                }
+                color={errors?.replaceCurrentLiveVersion ? 'red' : undefined}
               />
 
               <Label htmlFor="replaceCurrentLiveVersion">
@@ -207,7 +219,7 @@ function ModalContent({
             <Checkbox
               id="changeIsImmediate"
               name="changeIsImmediate"
-              color={values && !values.changeIsImmediate ? 'red' : undefined}
+              color={errors?.changeIsImmediate ? 'red' : undefined}
             />
             <Label htmlFor="changeIsImmediate">
               {t(
