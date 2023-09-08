@@ -1,7 +1,6 @@
 import { type AstNode } from './ast-node';
 import {
   type EditorIdentifiersByType,
-  getAggregationFromAstNode,
   getIdentifiersFromAstNode,
 } from './identifier';
 
@@ -45,10 +44,6 @@ export function isIdentifier(
   return false;
 }
 
-export function isAggregationIdentifier(
-  node: AstNode,
-  identifiers: EditorIdentifiersByType
-) {
-  if (getAggregationFromAstNode(node, identifiers) !== null) return true;
-  return false;
+export function isAggregationIdentifier(node: AstNode) {
+  return node.name === 'Aggregator';
 }

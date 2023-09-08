@@ -13,7 +13,6 @@ import {
   NewCustomListAstNode,
 } from './ast-node';
 import {
-  type EditorIdentifier,
   type EditorIdentifiersByType,
   getIdentifiersFromAstNode,
 } from './identifier';
@@ -24,9 +23,12 @@ export interface LabelledAst {
   astNode: AstNode;
 }
 
-export function adaptLabelledAst(astNode: AstNode): LabelledAst {
+export function adaptLabelledAst(
+  astNode: AstNode,
+  builder: AstBuilder
+): LabelledAst {
   return {
-    label: getAstNodeDisplayName(astNode),
+    label: getAstNodeLabelName(astNode, builder),
     tooltip: '',
     astNode,
   };
@@ -57,12 +59,12 @@ export function adaptLabelledAstFromAllIdentifiers(
 }
 
 export function adaptLabelledAstFromIdentifier(
-  identifier: EditorIdentifier
+  identifier: AstNode
 ): LabelledAst {
   return {
-    label: getAstNodeDisplayName(identifier.node),
+    label: getAstNodeDisplayName(identifier),
     tooltip: '',
-    astNode: identifier.node,
+    astNode: identifier,
   };
 }
 
@@ -98,7 +100,7 @@ export function getAstNodeLabelName(
   if (isCustomListAccess(astNode)) {
     const customList = builder.customLists.find(
       (customList) =>
-        customList.id === astNode.namedChildren.customListId?.constant
+        customList.id === astNode.namedChildren.customListId.constant
     );
     return customList?.name ?? 'Unknown list';
   }

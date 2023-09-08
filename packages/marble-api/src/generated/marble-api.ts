@@ -259,9 +259,6 @@ export type UpdateOrganizationBodyDto = {
     name?: string;
     database_name?: string;
 };
-export type IdentifierDto = {
-    node: NodeDto;
-};
 export type FuncAttributes = {
     name: string;
     number_of_arguments: number;
@@ -1236,10 +1233,8 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            database_accessors: IdentifierDto[];
-            payload_accessors: IdentifierDto[];
-            custom_list_accessors: IdentifierDto[];
-            aggregator_accessors: IdentifierDto[];
+            database_accessors: NodeDto[];
+            payload_accessors: NodeDto[];
         };
     } | {
         status: 401;
