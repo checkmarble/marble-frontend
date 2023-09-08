@@ -50,7 +50,7 @@ export async function action({ request }: ActionArgs) {
     failureRedirect: '/login',
   });
 
-  type Error = Record<
+  type Errors = Record<
     'replaceCurrentLiveVersion' | 'changeIsImmediate',
     boolean
   >;
@@ -61,15 +61,15 @@ export async function action({ request }: ActionArgs) {
 
     const errs = parsedForm.error.format();
 
-    const error = {
+    const errors = {
       replaceCurrentLiveVersion: !!errs?.replaceCurrentLiveVersion?._errors[0],
       changeIsImmediate: !!errs?.changeIsImmediate?._errors[0],
-    } as Error;
+    } as Errors;
 
     return json({
       success: false as const,
       values: parsedForm.formData,
-      error,
+      errors,
     });
   }
   try {
@@ -84,7 +84,7 @@ export async function action({ request }: ActionArgs) {
     if (!changeIsImmediate || (hasLiveVersion && !replaceCurrentLiveVersion)) {
       return json({
         success: false as const,
-        error: {
+        errors: {
           replaceCurrentLiveVersion:
             hasLiveVersion && !replaceCurrentLiveVersion,
           changeIsImmediate: !changeIsImmediate,
@@ -101,7 +101,7 @@ export async function action({ request }: ActionArgs) {
 
     return json({
       success: true as const,
-      error: null,
+      errors: null,
       values: parsedForm.data,
     });
   } catch (error) {
@@ -123,7 +123,7 @@ export async function action({ request }: ActionArgs) {
     return json(
       {
         success: false as const,
-        error: null,
+        errors: null,
         values: parsedForm.data,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
@@ -151,7 +151,7 @@ function ModalContent({
 
   const { state, data } = fetcher;
   const isSuccess = state === 'idle' && data?.success === true;
-  const errors = data?.error;
+  const errors = data?.errors;
 
   return isSuccess ? (
     // In success modal, use data.values.deploymentType (action will update deploymentType to the new state)
