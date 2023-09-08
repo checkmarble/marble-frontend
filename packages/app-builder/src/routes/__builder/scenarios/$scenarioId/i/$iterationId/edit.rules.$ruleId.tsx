@@ -35,7 +35,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { authService } = serverServices;
+  const { authService, makeScenarioService } = serverServices;
   const { apiClient, editor, scenario, user } =
     await authService.isAuthenticated(request, {
       failureRedirect: '/login',
@@ -55,10 +55,6 @@ export async function loader({ request, params }: LoaderArgs) {
     );
   }
 
-  const scenarioIterationRulePromise = scenario.getScenarioIterationRule({
-    ruleId,
-  });
-
   const operatorsPromise = editor.listOperators({
     scenarioId,
   });
@@ -70,13 +66,18 @@ export async function loader({ request, params }: LoaderArgs) {
   const dataModelPromise = apiClient.getDataModel();
   const { custom_lists } = await apiClient.listCustomLists();
 
-  const validationPromise = scenario.validate({ iterationId });
+  const scenarioService = makeScenarioService(scenario);
+  const scenarioIterationRulePromise = scenarioService.getScenarioIterationRule(
+    {
+      iterationId,
+      ruleId,
+    }
+  );
 
   return json({
     rule: await scenarioIterationRulePromise,
     identifiers: await identifiersPromise,
     operators: await operatorsPromise,
-    ruleValidation: findRuleValidation(await validationPromise, ruleId),
     dataModels: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
   });
@@ -130,14 +131,9 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const {
-    rule,
-    identifiers,
-    operators,
-    ruleValidation,
-    dataModels,
-    customLists,
-  } = useLoaderData<typeof loader>();
+
+  const { identifiers, operators, rule, dataModels, customLists } =
+    useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -148,8 +144,8 @@ export default function RuleEdit() {
     useTriggerOrRuleValidationFetcher(scenarioId, iterationId, ruleId);
 
   const astEditor = useAstBuilder({
-    backendAst: rule.formula,
-    backendValidation: ruleValidation,
+    backendAst: rule.ast,
+    backendValidation: rule.validation,
     localValidation,
     identifiers,
     operators,
@@ -171,7 +167,7 @@ export default function RuleEdit() {
           <Link to="./..">
             <ScenarioPage.BackButton />
           </Link>
-          {rule.name ?? fromUUID(rule.id)}
+          {rule.name ?? fromUUID(ruleId)}
           <Tag size="big" border="square">
             {/* TODO(builder): use transaltion */}
             Edit
@@ -181,7 +177,7 @@ export default function RuleEdit() {
       <ScenarioPage.Content className="max-w-3xl">
         <Callout variant="error">
           {t('common:validation_error', {
-            count: countNodeEvaluationErrors(ruleValidation),
+            count: countNodeEvaluationErrors(rule.validation),
           })}
         </Callout>
         <EditRule

@@ -26,7 +26,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { authService } = serverServices;
+  const { authService, makeScenarioService } = serverServices;
   const { apiClient, editor, scenario } = await authService.isAuthenticated(
     request,
     {
@@ -45,17 +45,19 @@ export async function loader({ request, params }: LoaderArgs) {
     scenarioId,
   });
 
-  const scenarioValidationPromise = scenario.validate({
-    iterationId: iterationId,
-  });
-
   const dataModelPromise = apiClient.getDataModel();
   const { custom_lists } = await apiClient.listCustomLists();
+
+  const scenarioService = makeScenarioService(scenario);
+  const scenarioIterationTriggerPromise =
+    scenarioService.getScenarioIterationTrigger({
+      iterationId,
+    });
 
   return json({
     identifiers: await identifiersPromise,
     operators: await operatorsPromise,
-    triggerEvaluation: (await scenarioValidationPromise).triggerEvaluation,
+    trigger: await scenarioIterationTriggerPromise,
     dataModels: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
   });
@@ -114,7 +116,7 @@ export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
   const { triggerObjectType } = useCurrentScenario();
   const scenarioIteration = useCurrentScenarioIteration();
-  const { identifiers, operators, triggerEvaluation, dataModels, customLists } =
+  const { identifiers, operators, trigger, dataModels, customLists } =
     useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
@@ -126,8 +128,8 @@ export default function Trigger() {
     );
 
   const astEditor = useAstBuilder({
-    backendAst: scenarioIteration.trigger,
-    backendValidation: triggerEvaluation,
+    backendAst: trigger.ast,
+    backendValidation: trigger.validation,
     localValidation,
     identifiers,
     operators,
