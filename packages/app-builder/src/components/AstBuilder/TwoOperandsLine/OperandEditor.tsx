@@ -1,5 +1,6 @@
 import {
   adaptLabelledAst,
+  adaptLabelledAstFromCustomList,
   adaptLabelledAstFromIdentifier,
   type AstNode,
   getAstNodeDisplayName,
@@ -60,9 +61,7 @@ export function OperandEditor({
         ...builder.identifiers.payloadAccessors.map(
           adaptLabelledAstFromIdentifier
         ),
-        ...builder.identifiers.customListAccessors.map(
-          adaptLabelledAstFromIdentifier
-        ),
+        ...builder.customLists.map(adaptLabelledAstFromCustomList),
         ...builder.identifiers.aggregatorAccessors.map(
           adaptLabelledAstFromIdentifier
         ),

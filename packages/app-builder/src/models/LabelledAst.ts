@@ -1,3 +1,5 @@
+import { type CustomList } from '@marble-api';
+
 import {
   type AstNode,
   type ConstantType,
@@ -6,6 +8,7 @@ import {
   isConstant,
   isDatabaseAccess,
   isPayload,
+  NewCustomListAstNode,
 } from './ast-node';
 import {
   type EditorIdentifier,
@@ -58,6 +61,16 @@ export function adaptLabelledAstFromIdentifier(
     label: getAstNodeDisplayName(identifier.node),
     tooltip: '',
     astNode: identifier.node,
+  };
+}
+
+export function adaptLabelledAstFromCustomList(
+  customList: CustomList
+): LabelledAst {
+  return {
+    label: customList.name ?? '',
+    tooltip: customList.description ?? '',
+    astNode: NewCustomListAstNode(customList.id),
   };
 }
 

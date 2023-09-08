@@ -127,6 +127,28 @@ export interface PayloadAstNode {
   namedChildren: Record<string, never>;
 }
 
+interface CustomListAccessAstNode {
+  name: 'CustomListAccess';
+  constant: undefined;
+  children: [];
+  namedChildren: {
+    customListId: ConstantAstNode<string>;
+  };
+}
+
+export function NewCustomListAstNode(
+  customListId: string
+): CustomListAccessAstNode {
+  return {
+    name: 'CustomListAccess',
+    constant: undefined,
+    children: [],
+    namedChildren: {
+      customListId: NewConstantAstNode({ constant: customListId }),
+    },
+  };
+}
+
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === 'DatabaseAccess';
 }

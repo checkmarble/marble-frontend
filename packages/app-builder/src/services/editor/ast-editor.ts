@@ -9,6 +9,7 @@ import {
   type Validation,
   wrapInOrAndGroups,
 } from '@app-builder/models';
+import { type CustomList } from '@marble-api';
 import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useState } from 'react';
 import * as R from 'remeda';
@@ -79,6 +80,7 @@ export interface AstBuilder {
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
   dataModels: DataModel[];
+  customLists: CustomList[];
   setConstant: (nodeId: string, newValue: ConstantType) => void;
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
@@ -94,6 +96,7 @@ export function useAstBuilder({
   identifiers,
   operators,
   dataModels,
+  customLists,
   onSave,
   onValidate,
 }: {
@@ -103,6 +106,7 @@ export function useAstBuilder({
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
   dataModels: DataModel[];
+  customLists: CustomList[];
   onSave: (toSave: AstNode) => void;
   onValidate: (ast: AstNode) => void;
 }): AstBuilder {
@@ -229,6 +233,7 @@ export function useAstBuilder({
     identifiers,
     operators,
     dataModels,
+    customLists,
     setConstant,
     setOperand,
     setOperator,

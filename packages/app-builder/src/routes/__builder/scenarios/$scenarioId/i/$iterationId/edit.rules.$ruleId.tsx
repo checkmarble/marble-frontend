@@ -68,6 +68,7 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 
   const dataModelPromise = apiClient.getDataModel();
+  const { custom_lists } = await apiClient.listCustomLists();
 
   const validationPromise = scenario.validate({ iterationId });
 
@@ -77,6 +78,7 @@ export async function loader({ request, params }: LoaderArgs) {
     operators: await operatorsPromise,
     ruleValidation: findRuleValidation(await validationPromise, ruleId),
     dataModels: adaptDataModelDto((await dataModelPromise).data_model),
+    customLists: custom_lists,
   });
 }
 
@@ -128,8 +130,14 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
-  const { rule, identifiers, operators, ruleValidation, dataModels } =
-    useLoaderData<typeof loader>();
+  const {
+    rule,
+    identifiers,
+    operators,
+    ruleValidation,
+    dataModels,
+    customLists,
+  } = useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -146,6 +154,7 @@ export default function RuleEdit() {
     identifiers,
     operators,
     dataModels,
+    customLists,
     onSave: (astNodeToSave: AstNode) => {
       fetcher.submit(astNodeToSave, {
         method: 'PATCH',
