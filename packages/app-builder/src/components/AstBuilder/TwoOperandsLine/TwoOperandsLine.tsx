@@ -7,14 +7,14 @@ import {
 import { ErrorMessage } from '../ErrorMessage';
 import { OperandEditor, type OperandViewModel } from './OperandEditor';
 import {
-  adaptOperatorEditorViewModel,
-  OperatorEditor,
-  type OperatorEditorViewModel,
-} from './OperatorEditor';
+  adaptOperatorViewModel,
+  Operator,
+  type OperatorViewModel,
+} from './Operator';
 
 interface TwoOperandsLineViewModel {
   left: OperandViewModel;
-  operator: OperatorEditorViewModel;
+  operator: OperatorViewModel;
   right: OperandViewModel;
 }
 
@@ -36,9 +36,9 @@ export function TwoOperandsLine({
           operandViewModel={twoOperandsViewModel.left}
           onSave={onSaveOperand(twoOperandsViewModel.left.nodeId)}
         />
-        <OperatorEditor
+        <Operator
           builder={builder}
-          operatorEditorViewModel={twoOperandsViewModel.operator}
+          operatorViewModel={twoOperandsViewModel.operator}
         />
         <OperandEditor
           builder={builder}
@@ -61,7 +61,7 @@ export function adaptTwoOperandsLineViewModel(
   if (vm.children.length !== 2) return null;
   if (Object.keys(vm.namedChildren).length > 0) return null;
 
-  const operatorVm = adaptOperatorEditorViewModel(vm);
+  const operatorVm = adaptOperatorViewModel(vm);
   if (operatorVm == null) return null;
 
   const left = vm.children[0];
