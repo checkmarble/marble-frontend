@@ -13,10 +13,7 @@ import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
 import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
-import {
-  countNodeEvaluationErrors,
-  findRuleValidation,
-} from '@app-builder/services/validation/scenario-validation';
+import { countNodeEvaluationErrors } from '@app-builder/services/validation/scenario-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import {
