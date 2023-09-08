@@ -46,13 +46,13 @@ export function NewUndefinedAstNode({
   });
 }
 
-export function NewEmpytyTriggerAstNode(): AstNode {
+export function NewEmptyTriggerAstNode(): AstNode {
   return NewAstNode({
     name: 'And',
   });
 }
 
-export function NewEmpytyRuleAstNode(): AstNode {
+export function NewEmptyRuleAstNode(): AstNode {
   return NewAstNode({
     name: 'Or',
     children: [],

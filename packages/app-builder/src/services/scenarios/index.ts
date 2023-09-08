@@ -1,7 +1,7 @@
 import {
   type AstNode,
-  NewEmpytyRuleAstNode,
-  NewEmpytyTriggerAstNode,
+  NewEmptyRuleAstNode,
+  NewEmptyTriggerAstNode,
   type NodeEvaluation,
   type ScenarioIterationRule,
 } from '@app-builder/models';
@@ -31,7 +31,7 @@ export function makeScenarioServerService(
       const scenarioIteration = await scenarioRepository.getScenarioIteration({
         iterationId,
       });
-      const ast = scenarioIteration.trigger ?? NewEmpytyTriggerAstNode();
+      const ast = scenarioIteration.trigger ?? NewEmptyTriggerAstNode();
       const validation =
         await scenarioRepository.validateScenarioIterationTrigger({
           iterationId,
@@ -48,7 +48,7 @@ export function makeScenarioServerService(
         await scenarioRepository.getScenarioIterationRule({
           ruleId,
         });
-      const ast = scenarioIterationRule.formula ?? NewEmpytyRuleAstNode();
+      const ast = scenarioIterationRule.formula ?? NewEmptyRuleAstNode();
       const validation = await scenarioRepository.validateScenarioIterationRule(
         {
           iterationId,
