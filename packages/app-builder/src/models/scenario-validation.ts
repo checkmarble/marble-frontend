@@ -19,7 +19,8 @@ export type EvaluationErrorCode =
   | 'ARGUMENT_MUST_BE_LIST'
   | 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION'
   | 'ARGUMENT_MUST_BE_TIME'
-  | 'ARGUMENT_REQUIRED';
+  | 'ARGUMENT_REQUIRED'
+  | 'AGGREGATION_ERROR';
 
 export interface EvaluationError {
   error: EvaluationErrorCode;
@@ -46,14 +47,26 @@ interface ValidationSuccess {
   state: 'valid';
 }
 
+const isValidationSuccess = (
+  validation: Validation
+): validation is ValidationSuccess => validation.state === 'valid';
+
 interface PendingValidation {
   state: 'pending';
 }
+
+export const NewPendingValidation = (): PendingValidation => ({
+  state: 'pending',
+});
 
 interface ValidationFailure {
   state: 'fail';
   errors: EvaluationError[];
 }
+
+export const isValidationFailure = (
+  validation: Validation
+): validation is ValidationFailure => validation.state === 'fail';
 
 export type Validation =
   | ValidationSuccess
@@ -136,3 +149,21 @@ export function adaptValidationErrors(
     ...namedChildrenPathErrors,
   ];
 }
+
+export const mergeValidations = (validations: Validation[]): Validation => {
+  if (validations.length === 1) {
+    return validations[0];
+  }
+  if (validations.every(isValidationSuccess)) {
+    return { state: 'valid' };
+  }
+
+  const failedValidations = validations.filter(isValidationFailure);
+  if (failedValidations.length > 0) {
+    return {
+      state: 'fail',
+      errors: failedValidations.flatMap((validation) => validation.errors),
+    };
+  }
+  return { state: 'pending' };
+};
