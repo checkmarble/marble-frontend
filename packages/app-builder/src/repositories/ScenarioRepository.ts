@@ -1,6 +1,9 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
+  adaptNodeDto,
   adaptScenarioValidation,
+  type AstNode,
+  type NodeEvaluation,
   type ScenarioValidation,
 } from '@app-builder/models';
 import {
@@ -11,6 +14,7 @@ import {
   type ScenarioIterationRule,
   type ScenarioIterationSummary,
 } from '@app-builder/models/scenario';
+import { findRuleValidation } from '@app-builder/services/validation/scenario-validation';
 
 export interface ScenarioRepository {
   getScenarioIterationRule(args: {
@@ -23,6 +27,15 @@ export interface ScenarioRepository {
     scenarioId: string;
   }): Promise<ScenarioIterationSummary[]>;
   validate(args: { iterationId: string }): Promise<ScenarioValidation>;
+  validateScenarioIterationTrigger(args: {
+    iterationId: string;
+    trigger: AstNode;
+  }): Promise<NodeEvaluation>;
+  validateScenarioIterationRule(args: {
+    iterationId: string;
+    ruleId: string;
+    rule: AstNode;
+  }): Promise<NodeEvaluation>;
 }
 
 export function getScenarioRepository() {
@@ -47,6 +60,30 @@ export function getScenarioRepository() {
         iterationId
       );
       return adaptScenarioValidation(result.scenario_validation);
+    },
+    validateScenarioIterationTrigger: async ({ iterationId, trigger }) => {
+      const { scenario_validation } =
+        await marbleApiClient.validateScenarioIterationWithGivenTriggerOrRule(
+          iterationId,
+          {
+            trigger_or_rule: adaptNodeDto(trigger),
+            rule_id: null,
+          }
+        );
+      const scenarioValidation = adaptScenarioValidation(scenario_validation);
+      return scenarioValidation.triggerEvaluation;
+    },
+    validateScenarioIterationRule: async ({ iterationId, ruleId, rule }) => {
+      const { scenario_validation } =
+        await marbleApiClient.validateScenarioIterationWithGivenTriggerOrRule(
+          iterationId,
+          {
+            trigger_or_rule: adaptNodeDto(rule),
+            rule_id: ruleId,
+          }
+        );
+      const scenarioValidation = adaptScenarioValidation(scenario_validation);
+      return findRuleValidation(scenarioValidation, ruleId);
     },
   });
 }

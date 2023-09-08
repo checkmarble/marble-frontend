@@ -97,7 +97,10 @@ export function EditRule({
   scenarioId,
   iterationId,
 }: {
-  rule: ScenarioIterationRule;
+  rule: Pick<
+    ScenarioIterationRule,
+    'id' | 'name' | 'description' | 'scoreModifier'
+  >;
   scenarioId: string;
   iterationId: string;
 }) {

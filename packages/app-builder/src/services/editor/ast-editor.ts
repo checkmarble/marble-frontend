@@ -7,7 +7,6 @@ import {
   type EditorIdentifiersByType,
   type NodeEvaluation,
   type Validation,
-  wrapInOrAndGroups,
 } from '@app-builder/models';
 import { type CustomList } from '@marble-api';
 import { nanoid } from 'nanoid';
@@ -100,7 +99,7 @@ export function useAstBuilder({
   onSave,
   onValidate,
 }: {
-  backendAst: AstNode | null;
+  backendAst: AstNode;
   backendValidation: NodeEvaluation;
   localValidation: NodeEvaluation | null;
   identifiers: EditorIdentifiersByType;
@@ -112,16 +111,6 @@ export function useAstBuilder({
 }): AstBuilder {
   const [editorNodeViewModel, setEditorNodeViewModel] =
     useState<EditorNodeViewModel>(() => {
-      if (backendAst === null) {
-        // return default rule, ignore backend validation
-        const vm = adaptEditorNodeViewModel({
-          ast: wrapInOrAndGroups(),
-          validation: undefined,
-        });
-        validate(vm);
-        return vm;
-      }
-
       return adaptEditorNodeViewModel({
         ast: backendAst,
         validation: backendValidation,
@@ -141,16 +130,17 @@ export function useAstBuilder({
       nodeId: string,
       fn: (node: EditorNodeViewModel) => EditorNodeViewModel | null
     ) => {
-      setEditorNodeViewModel((vm) => {
-        const newViewModel = findAndReplaceNode(nodeId, fn, vm);
-        if (newViewModel === null) {
-          throw Error("internal error: root node can't be removed");
-        }
-        validate(newViewModel);
-        return newViewModel;
-      });
+      const newViewModel = findAndReplaceNode(nodeId, fn, editorNodeViewModel);
+      if (newViewModel === null) {
+        throw Error("internal error: root node can't be removed");
+      }
+      // Validate is opaque (depends on external prop onValidate).
+      // A setState callback must be pure (no side effects) so we can't do setEditorNodeViewModel(vm => { validate(vm) }).
+      // source: https://github.com/facebook/react/issues/22633
+      validate(newViewModel);
+      setEditorNodeViewModel(newViewModel);
     },
-    [validate]
+    [editorNodeViewModel, validate]
   );
 
   const setConstant = useCallback(

@@ -8,6 +8,7 @@ import { getServerEnv } from '@app-builder/utils/environment.server';
 import { makeAuthenticationServerService } from './auth/auth.server';
 import { makeSessionService } from './auth/session.server';
 import { makeI18nextServerService } from './i18n/i18next.server';
+import { makeScenarioServerService } from './scenarios';
 
 function makeServerServices(repositories: ServerRepositories) {
   const sessionService = makeSessionService(
@@ -25,6 +26,7 @@ function makeServerServices(repositories: ServerRepositories) {
     i18nextService: makeI18nextServerService(
       repositories.sessionStorageRepository
     ),
+    makeScenarioService: makeScenarioServerService,
   };
 }
 

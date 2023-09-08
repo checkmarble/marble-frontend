@@ -46,6 +46,19 @@ export function NewUndefinedAstNode({
   });
 }
 
+export function NewEmptyTriggerAstNode(): AstNode {
+  return NewAstNode({
+    name: 'And',
+  });
+}
+
+export function NewEmptyRuleAstNode(): AstNode {
+  return NewAstNode({
+    name: 'Or',
+    children: [],
+  });
+}
+
 export function adaptAstNode(nodeDto: NodeDto): AstNode {
   return {
     name: nodeDto.name === undefined ? null : nodeDto.name,
@@ -189,23 +202,4 @@ export function isOrAndGroup(astNode: AstNode): astNode is OrAndGroupAstNode {
     }
   }
   return true;
-}
-
-export function wrapInOrAndGroups(astNode?: AstNode): AstNode {
-  if (astNode?.name === 'Or') return astNode;
-  if (astNode?.name === 'And') {
-    return NewAstNode({
-      name: 'Or',
-      children: [astNode],
-    });
-  }
-  return NewAstNode({
-    name: 'Or',
-    children: [
-      NewAstNode({
-        name: 'And',
-        children: astNode ? [astNode] : [],
-      }),
-    ],
-  });
 }
