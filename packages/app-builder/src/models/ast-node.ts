@@ -161,6 +161,12 @@ export function isPayload(node: AstNode): node is PayloadAstNode {
   return node.name === 'Payload';
 }
 
+export function isCustomListAccess(
+  node: AstNode
+): node is CustomListAccessAstNode {
+  return node.name === 'CustomListAccess';
+}
+
 export interface OrAndGroupAstNode {
   name: 'Or';
   constant: undefined;

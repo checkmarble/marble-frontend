@@ -3,7 +3,7 @@ import {
   adaptLabelledAstFromCustomList,
   adaptLabelledAstFromIdentifier,
   type AstNode,
-  getAstNodeDisplayName,
+  getAstNodeLabelName,
   isAggregation,
   type LabelledAst,
   NewUndefinedAstNode,
@@ -47,8 +47,9 @@ export function OperandEditor({
   const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
     () => {
       const initialOption: LabelledAst = {
-        label: getAstNodeDisplayName(
-          adaptAstNodeFromEditorViewModel(operandViewModel)
+        label: getAstNodeLabelName(
+          adaptAstNodeFromEditorViewModel(operandViewModel),
+          builder
         ),
         tooltip: '(initial value)',
         astNode: adaptAstNodeFromEditorViewModel(operandViewModel),
@@ -120,8 +121,9 @@ export function OperandEditor({
   };
 
   const selectedOption: LabelledAst = {
-    label: getAstNodeDisplayName(
-      adaptAstNodeFromEditorViewModel(operandViewModel)
+    label: getAstNodeLabelName(
+      adaptAstNodeFromEditorViewModel(operandViewModel),
+      builder
     ),
     tooltip: '(initial value)',
     astNode: adaptAstNodeFromEditorViewModel(operandViewModel),

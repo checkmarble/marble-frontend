@@ -1,3 +1,4 @@
+import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 import { type CustomList } from '@marble-api';
 
 import {
@@ -6,6 +7,7 @@ import {
   isAggregation,
   isAstNodeUnknown,
   isConstant,
+  isCustomListAccess,
   isDatabaseAccess,
   isPayload,
   NewCustomListAstNode,
@@ -87,6 +89,21 @@ function getConstantDisplayName(constant: ConstantType) {
 
   // Handle other cases when needed
   return constant.toString();
+}
+
+export function getAstNodeLabelName(
+  astNode: AstNode,
+  builder: AstBuilder
+): string {
+  if (isCustomListAccess(astNode)) {
+    const customList = builder.customLists.find(
+      (customList) =>
+        customList.id === astNode.namedChildren.customListId?.constant
+    );
+    return customList?.name ?? 'Unknown list';
+  }
+
+  return getAstNodeDisplayName(astNode);
 }
 
 export function getAstNodeDisplayName(astNode: AstNode): string {
