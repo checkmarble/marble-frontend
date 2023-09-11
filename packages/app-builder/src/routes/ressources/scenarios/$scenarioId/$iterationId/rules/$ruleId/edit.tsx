@@ -6,8 +6,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@app-builder/components/Form';
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { isStatusConflictHttpError } from '@app-builder/models';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
@@ -67,28 +65,11 @@ export async function action({ request, params }: ActionArgs) {
       })
     );
   } catch (error) {
-    if (isStatusConflictHttpError(error)) {
-      const { getSession, commitSession } = serverServices.sessionService;
-      const session = await getSession(request);
-      setToastMessage(session, {
-        type: 'error',
-        messageKey: 'common:errors.scenario.duplicate_rule_name',
-      });
-      return json(
-        {
-          success: false as const,
-          values: parsedForm.data,
-          error: error,
-        },
-        { headers: { 'Set-Cookie': await commitSession(session) } }
-      );
-    } else {
-      return json({
-        success: false as const,
-        values: parsedForm.data,
-        error: error,
-      });
-    }
+    return json({
+      success: false as const,
+      values: parsedForm.data,
+      error: error,
+    });
   }
 }
 
