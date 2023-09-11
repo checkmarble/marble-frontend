@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getBorderColor } from '../utils';
 
+//TOOD(builder): move the whitelist of operators to the backend
 const operatorEditorFunctions = [
   undefinedAstNodeName,
   '+',
@@ -55,9 +56,15 @@ export function OperatorEditor({
 }) {
   const getOperatorName = useGetOperatorName();
 
+  // We treat undefinedAstNodeName as "no value" to display the placeholder
+  const value =
+    operatorEditorViewModel.funcName !== undefinedAstNodeName
+      ? operatorEditorViewModel.funcName
+      : undefined;
+
   return (
     <Select.Root
-      value={operatorEditorViewModel.funcName ?? undefined}
+      value={value}
       onValueChange={(newFuncName) => {
         builder.setOperator(operatorEditorViewModel.nodeId, newFuncName);
       }}
