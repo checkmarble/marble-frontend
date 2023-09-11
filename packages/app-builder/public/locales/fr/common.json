@@ -15,6 +15,5 @@
   "save": "Sauvegarder",
   "success.save": "Sauvegarde réussie",
   "description": "Description",
-  "errors.scenario.duplicate_rule_name": "Une règle avec ce nom existe déjà",
   "name": "Nom"
 }
