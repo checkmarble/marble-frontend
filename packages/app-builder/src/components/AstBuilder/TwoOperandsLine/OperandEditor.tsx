@@ -2,6 +2,7 @@ import {
   adaptLabelledAst,
   adaptLabelledAstFromCustomList,
   type AstNode,
+  getAggregatorName,
   getAstNodeLabelName,
   isAggregation,
   type LabelledAst,
@@ -67,10 +68,10 @@ export function OperandEditor({
           tooltip: '',
           astNode: node,
         })),
-        ...allAggregators.map((aggregatorName) => ({
-          label: aggregatorName,
-          tooltip: '(aggregator)',
-          astNode: NewAggregatorAstNode(aggregatorName),
+        ...allAggregators.map((aggregator) => ({
+          label: getAggregatorName(aggregator),
+          tooltip: '',
+          astNode: NewAggregatorAstNode(aggregator),
         })),
         ...builder.customLists.map(adaptLabelledAstFromCustomList),
       ];
