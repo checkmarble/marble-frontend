@@ -1,27 +1,22 @@
 import { scenarioI18n } from '@app-builder/components/Scenario';
-import { type AstNode, getAstNodeDisplayName } from '@app-builder/models';
+import { getAstNodeDisplayName } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
-  type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { Button } from '@ui-design-system';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
   adaptAggregationAstNode,
   adaptAggregationViewModel,
-  AggregationEditModal,
-  type AggregationViewModel,
-} from '.';
+  useEditAggregation,
+} from './Modal';
 
 export const AggregationEditPanel = ({
   aggregations,
-  builder,
 }: {
   aggregations: EditorNodeViewModel[];
-  builder: AstBuilder;
 }) => {
   const { t } = useTranslation(scenarioI18n);
 
@@ -31,13 +26,7 @@ export const AggregationEditPanel = ({
       adaptAstNodeFromEditorViewModel(aggregation)
     )
   );
-  const [selectedAggregation, setSelectedAggregation] =
-    useState<AggregationViewModel>(aggregationViewModels[0]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const editAggregation = (aggregation: AggregationViewModel) => {
-    setSelectedAggregation(aggregation);
-    setModalOpen(true);
-  };
+  const editAggregation = useEditAggregation();
 
   return (
     <>
@@ -55,17 +44,6 @@ export const AggregationEditPanel = ({
                 {getAstNodeDisplayName(adaptAggregationAstNode(aggregation))}
               </Button>
             ))}
-            {modalOpen && (
-              <AggregationEditModal
-                builder={builder}
-                initialAggregation={selectedAggregation}
-                modalOpen={modalOpen}
-                onSave={(astNode: AstNode) =>
-                  builder.setOperand(selectedAggregation.nodeId, astNode)
-                }
-                setModalOpen={setModalOpen}
-              />
-            )}
           </div>
         </div>
       )}

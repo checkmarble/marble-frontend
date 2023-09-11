@@ -3,7 +3,7 @@ import type {
   EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
-import { AggregationEditPanel } from './AggregationEdit';
+import { AggregationEditModal, AggregationEditPanel } from './AggregationEdit';
 import { AstBuilderNode } from './AstBuilderNode';
 
 export function AstBuilder({ builder }: { builder: AstBuilder }) {
@@ -20,15 +20,14 @@ export function AstBuilder({ builder }: { builder: AstBuilder }) {
   };
 
   return (
-    <>
+    <AggregationEditModal builder={builder}>
       <AstBuilderNode
         builder={builder}
         editorNodeViewModel={builder.editorNodeViewModel}
       />
       <AggregationEditPanel
         aggregations={findAggregations(builder.editorNodeViewModel)}
-        builder={builder}
       />
-    </>
+    </AggregationEditModal>
   );
 }

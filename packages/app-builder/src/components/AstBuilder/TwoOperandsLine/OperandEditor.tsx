@@ -1,5 +1,4 @@
 import {
-  adaptLabelledAst,
   adaptLabelledAstFromCustomList,
   type AstNode,
   getAggregatorName,
@@ -7,8 +6,6 @@ import {
   isAggregation,
   type LabelledAst,
   NewAggregatorAstNode,
-  NewUndefinedAstNode,
-  undefinedAstNodeName,
 } from '@app-builder/models';
 import { allAggregators } from '@app-builder/services/editor';
 import {
@@ -16,15 +13,15 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import { Combobox } from '@ui-design-system';
-import { useCallback, useState } from 'react';
+import * as Popover from '@radix-ui/react-popover';
+import { Input, ScrollArea } from '@ui-design-system';
+import clsx from 'clsx';
+import { forwardRef, useCallback, useState } from 'react';
 
 import {
   adaptAggregationViewModel,
-  AggregationEditModal,
+  useEditAggregation,
 } from '../AggregationEdit';
-import { ErrorMessage } from '../ErrorMessage';
-import { getBorderColor } from '../utils';
 import { coerceToConstantsLabelledAst } from './CoerceToConstantsLabelledAst';
 
 export type OperandViewModel = EditorNodeViewModel;
@@ -46,25 +43,107 @@ export function OperandEditor({
   onSave: (astNode: AstNode) => void;
   operandViewModel: OperandViewModel;
 }) {
+  const [open, onOpenChange] = useState<boolean>(false);
+
+  const closeModal = useCallback(() => {
+    onOpenChange(false);
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-1">
+      <Popover.Root modal open={open} onOpenChange={onOpenChange}>
+        <OperandViewer builder={builder} operandViewModel={operandViewModel} />
+        <Popover.Portal>
+          <OperandEditorContent
+            builder={builder}
+            onSave={onSave}
+            closeModal={closeModal}
+            operandViewModel={operandViewModel}
+          />
+        </Popover.Portal>
+      </Popover.Root>
+    </div>
+  );
+}
+
+function OperandViewer({
+  builder,
+  operandViewModel,
+}: {
+  builder: AstBuilder;
+  operandViewModel: OperandViewModel;
+}) {
+  const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
+  const editAggregation = useEditAggregation();
+
+  const astNodeLabelName = getAstNodeLabelName(
+    adaptAstNodeFromEditorViewModel(operandViewModel),
+    builder
+  );
+
+  if (isAggregation(astNode)) {
+    return (
+      <TriggerOperandEdit
+        onClick={() => {
+          editAggregation(
+            adaptAggregationViewModel(operandViewModel.nodeId, astNode)
+          );
+        }}
+      >
+        {astNodeLabelName}
+      </TriggerOperandEdit>
+    );
+  }
+
+  return (
+    <Popover.Trigger asChild>
+      <TriggerOperandEdit>{astNodeLabelName}</TriggerOperandEdit>
+    </Popover.Trigger>
+  );
+}
+
+const TriggerOperandEdit = forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<'button'>
+>(({ ...props }, ref) => (
+  <button
+    ref={ref}
+    className={clsx(
+      'flex h-10 min-w-[40px] items-center justify-between px-2 outline-none',
+      'bg-grey-00 disabled:bg-grey-05 radix-state-open:bg-purple-05',
+      'border-grey-10 radix-state-open:border-purple-100 disabled:border-grey-10 rounded border focus:border-purple-100'
+    )}
+    {...props}
+  />
+));
+TriggerOperandEdit.displayName = 'TriggerOperandEdit';
+
+const OperandEditorContent = forwardRef<
+  HTMLDivElement,
+  {
+    builder: AstBuilder;
+    onSave: (astNode: AstNode) => void;
+    closeModal: () => void;
+    operandViewModel: OperandViewModel;
+  }
+>(({ builder, onSave, closeModal, operandViewModel }, ref) => {
   const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
     () => {
       const operandAst = adaptAstNodeFromEditorViewModel(operandViewModel);
       const initialOption: LabelledAst = {
         label: getAstNodeLabelName(operandAst, builder),
-        tooltip: '(initial value)',
+        tooltip: '',
         astNode: operandAst,
       };
 
       const identifiersOptions: LabelledAst[] = [
         ...builder.identifiers.databaseAccessors.map((node) => ({
           label: getAstNodeLabelName(node, builder),
-          // tooltip: '(database accessor)',
           tooltip: '',
           astNode: node,
         })),
         ...builder.identifiers.payloadAccessors.map((node) => ({
           label: getAstNodeLabelName(node, builder),
-          // tooltip: '(payload accessor)',
           tooltip: '',
           astNode: node,
         })),
@@ -94,10 +173,17 @@ export function OperandEditor({
     }));
   }, []);
 
+  const editAggregation = useEditAggregation();
+
   const handleSelectOption = useCallback(
     (newSelection: LabelledAst) => {
       if (isAggregation(newSelection.astNode)) {
-        editAggregation(newSelection.astNode);
+        editAggregation(
+          adaptAggregationViewModel(
+            operandViewModel.nodeId,
+            newSelection.astNode
+          )
+        );
       } else {
         setEditViewModel((vm) => ({
           ...vm,
@@ -105,8 +191,9 @@ export function OperandEditor({
         }));
         onSave(newSelection.astNode);
       }
+      closeModal();
     },
-    [onSave]
+    [closeModal, editAggregation, onSave, operandViewModel.nodeId]
   );
 
   const availableOptions = [
@@ -118,69 +205,44 @@ export function OperandEditor({
     ),
   ];
 
-  const isInvalid = operandViewModel.validation.state === 'fail';
-
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [selectionAggregationOption, setSelectionAggregationOption] =
-    useState<AstNode>(NewUndefinedAstNode);
-  const editAggregation = (node: AstNode) => {
-    setSelectionAggregationOption(node);
-    setModalOpen(true);
-  };
-
   return (
-    <div className="flex flex-col gap-1">
-      <Combobox.Root<LabelledAst>
-        value={editViewModel.selectedOption ?? undefined}
-        onChange={handleSelectOption}
+    <ScrollArea.Root>
+      <Popover.Content
+        ref={ref}
+        side="bottom"
+        align="start"
+        className="animate-slideUpAndFade bg-grey-00 border-grey-10 mt-1 flex max-h-[300px] flex-col gap-2 rounded border p-2 shadow-md will-change-[transform,opacity]"
       >
-        <div className="relative">
-          <Combobox.Input
-            displayValue={(item: LabelledAst) => item.label ?? '??'}
-            onChange={(event) => {
-              handleInputChanged(event.target.value);
-            }}
-            aria-invalid={isInvalid}
-            borderColor={getBorderColor(operandViewModel.validation)}
-          />
-
-          <Combobox.Options className="w-fit">
-            {availableOptions.map((option, i) => (
-              <OperandComboBoxOption key={i} option={option} />
-            ))}
-          </Combobox.Options>
-        </div>
-      </Combobox.Root>
-      {operandViewModel.validation.state === 'fail' && (
-        <ErrorMessage errors={operandViewModel.validation.errors} />
-      )}
-      {selectionAggregationOption.name !== undefinedAstNodeName && (
-        <AggregationEditModal
-          builder={builder}
-          initialAggregation={adaptAggregationViewModel(
-            operandViewModel.nodeId,
-            selectionAggregationOption
-          )}
-          modalOpen={modalOpen}
-          setModalOpen={setModalOpen}
-          onSave={(astNode: AstNode) => {
-            setEditViewModel((vm) => ({
-              ...vm,
-              selectedOption: adaptLabelledAst(astNode, builder),
-            }));
-            onSave(astNode);
+        <Input
+          className="flex-shrink-0"
+          value={editViewModel.searchText}
+          onChange={(event) => {
+            handleInputChanged(event.target.value);
           }}
         />
-      )}
-    </div>
+        <ScrollArea.Viewport className="h-full" tabIndex={-1}>
+          {availableOptions.map((option) => (
+            <button
+              key={option.label}
+              onClick={() => {
+                handleSelectOption(option);
+              }}
+              className={clsx(
+                'hover:bg-purple-05 text-s cursor-default select-none rounded-sm p-2 outline-none',
+                'ui-disabled:pointer-events-none ui-disabled:opacity-50',
+                'flex w-full flex-col gap-1'
+              )}
+            >
+              <span>{option.label}</span>
+              <span>{option.tooltip}</span>
+            </button>
+          ))}
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar>
+          <ScrollArea.Thumb />
+        </ScrollArea.Scrollbar>
+      </Popover.Content>
+    </ScrollArea.Root>
   );
-}
-
-function OperandComboBoxOption({ option }: { option: LabelledAst }) {
-  return (
-    <Combobox.Option value={option} className="flex flex-col gap-1">
-      <span>{option.label}</span>
-      <span>{option.tooltip}</span>
-    </Combobox.Option>
-  );
-}
+});
+OperandEditorContent.displayName = 'OperandEditorContent';
