@@ -47,10 +47,12 @@ export function adaptOperatorViewModel(
 export function Operator({
   builder,
   operatorViewModel,
+  onSave,
   viewOnly,
 }: {
   builder: AstBuilder;
   operatorViewModel: OperatorViewModel;
+  onSave: (operator: string) => void;
   viewOnly?: boolean;
 }) {
   const getOperatorName = useGetOperatorName();
@@ -62,13 +64,7 @@ export function Operator({
       : undefined;
 
   return (
-    <Select.Root
-      value={value}
-      onValueChange={(newFuncName) => {
-        builder.setOperator(operatorViewModel.nodeId, newFuncName);
-      }}
-      disabled={viewOnly}
-    >
+    <Select.Root value={value} onValueChange={onSave} disabled={viewOnly}>
       <Select.Trigger
         borderColor={getBorderColor(operatorViewModel.validation)}
       >

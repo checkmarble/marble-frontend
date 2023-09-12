@@ -1,6 +1,6 @@
 import { type LabelledAst, NewAstNode } from '@app-builder/models';
 
-import { coerceToConstantsLabelledAst } from './CoerceToConstantsLabelledAst';
+import { coerceToConstantsLabelledAst } from './coerceToConstantsLabelledAst';
 
 describe('coerceToConstantsLabelledAst', () => {
   it('returns nothing given empty string', () => {
