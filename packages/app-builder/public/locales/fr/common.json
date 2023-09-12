@@ -15,5 +15,6 @@
   "save": "Sauvegarder",
   "success.save": "Sauvegarde réussie",
   "description": "Description",
-  "name": "Nom"
+  "name": "Nom",
+  "edit": "Modifier"
 }
