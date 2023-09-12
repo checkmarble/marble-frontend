@@ -7,10 +7,6 @@ on:
         type: string
         description: 'Github environment to use'
         required: true
-      GCP_PROJECT_ID:
-        type: string
-        description: 'GCP Project ID'
-        required: true
     secrets:
       GCP_SA_KEY:
         required: true
@@ -24,8 +20,8 @@ jobs:
       actions: read
     environment: ${{ inputs.environment }}
     env:
-      TAG: europe-docker.pkg.dev/${{ inputs.GCP_PROJECT_ID }}/marble/marble-frontend:latest
-      SERVICE_ACCOUNT: marble-frontend-cloud-run@${{ inputs.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+      TAG: europe-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/marble/marble-frontend:latest
+      SERVICE_ACCOUNT: marble-frontend-cloud-run@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
     steps:
       - name: Checkout
         uses: actions/checkout@v3
