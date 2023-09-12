@@ -1,4 +1,3 @@
-import { OperandEditor } from '@app-builder/components/AstBuilder/TwoOperandsLine/OperandEditor';
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { NewPendingValidation, NewUndefinedAstNode } from '@app-builder/models';
 import {
@@ -11,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { RemoveButton } from '../../Edit/RemoveButton';
 import { ErrorMessage } from '../ErrorMessage';
+import { Operand } from '../Operand';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { FilterOperatorSelect } from './FilterOperatorSelect';
 import { type FilterViewModel } from './Modal';
@@ -104,7 +104,7 @@ export const EditFilters = ({
                   validation={filter.validation.operator}
                 />
 
-                <OperandEditor
+                <Operand
                   builder={builder}
                   operandViewModel={filter.value}
                   onSave={(astNode) =>

@@ -4,7 +4,6 @@ import {
   getAggregatorName,
   getAstNodeLabelName,
   isAggregation,
-  isValidationFailure,
   type LabelledAst,
   NewAggregatorAstNode,
 } from '@app-builder/models';
@@ -23,11 +22,11 @@ import { forwardRef, useCallback, useState } from 'react';
 import {
   adaptAggregationViewModel,
   type AggregationEditorNodeViewModel,
-  isAggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../AggregationEdit';
 import { ErrorMessage } from '../ErrorMessage';
-import { coerceToConstantsLabelledAst } from './CoerceToConstantsLabelledAst';
+import { coerceToConstantsLabelledAst } from './coerceToConstantsLabelledAst';
+import { OperandViewer } from './OperandViewer';
 
 export type OperandViewModel = EditorNodeViewModel;
 
@@ -41,86 +40,43 @@ interface EditOperandViewModel {
 
 export function OperandEditor({
   builder,
-  onSave,
   operandViewModel,
+  onSave,
 }: {
   builder: AstBuilder;
-  onSave: (astNode: AstNode) => void;
   operandViewModel: OperandViewModel;
+  onSave: (astNode: AstNode) => void;
 }) {
   const [open, onOpenChange] = useState<boolean>(false);
-
-  const closeModal = useCallback(() => {
-    onOpenChange(false);
-  }, []);
-
-  return (
-    <div className="flex flex-col gap-1">
-      <Popover.Root modal open={open} onOpenChange={onOpenChange}>
-        <OperandViewer builder={builder} operandViewModel={operandViewModel} />
-        <Popover.Portal>
-          <OperandEditorContent
-            builder={builder}
-            onSave={onSave}
-            closeModal={closeModal}
-            operandViewModel={operandViewModel}
-          />
-        </Popover.Portal>
-      </Popover.Root>
-    </div>
-  );
-}
-
-function OperandViewer({
-  builder,
-  operandViewModel,
-}: {
-  builder: AstBuilder;
-  operandViewModel: OperandViewModel;
-}) {
-  const editAggregation = useEditAggregation();
 
   const astNodeLabelName = getAstNodeLabelName(
     adaptAstNodeFromEditorViewModel(operandViewModel),
     builder
   );
 
-  if (isAggregationEditorNodeViewModel(operandViewModel)) {
-    const aggregation = adaptAggregationViewModel(operandViewModel);
-    return (
-      <>
-        <TriggerOperandEdit onClick={() => editAggregation(aggregation)}>
-          {astNodeLabelName}
-        </TriggerOperandEdit>
-        {isValidationFailure(aggregation.validation.aggregation) && (
-          <ErrorMessage errors={aggregation.validation.aggregation.errors} />
-        )}
-      </>
-    );
-  }
-
   return (
-    <Popover.Trigger asChild>
-      <TriggerOperandEdit>{astNodeLabelName}</TriggerOperandEdit>
-    </Popover.Trigger>
+    <div className="flex flex-col gap-1">
+      <Popover.Root modal open={open} onOpenChange={onOpenChange}>
+        <Popover.Trigger asChild>
+          <OperandViewer>{astNodeLabelName}</OperandViewer>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <OperandEditorContent
+            builder={builder}
+            onSave={onSave}
+            closeModal={() => {
+              onOpenChange(false);
+            }}
+            operandViewModel={operandViewModel}
+          />
+        </Popover.Portal>
+      </Popover.Root>
+      {operandViewModel.validation.state === 'fail' && (
+        <ErrorMessage errors={operandViewModel.validation.errors} />
+      )}
+    </div>
   );
 }
-
-const TriggerOperandEdit = forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<'button'>
->(({ ...props }, ref) => (
-  <button
-    ref={ref}
-    className={clsx(
-      'flex h-10 min-w-[40px] items-center justify-between px-2 outline-none',
-      'bg-grey-00 disabled:bg-grey-05 radix-state-open:bg-purple-05',
-      'border-grey-10 radix-state-open:border-purple-100 disabled:border-grey-10 rounded border focus:border-purple-100'
-    )}
-    {...props}
-  />
-));
-TriggerOperandEdit.displayName = 'TriggerOperandEdit';
 
 const OperandEditorContent = forwardRef<
   HTMLDivElement,
@@ -182,22 +138,18 @@ const OperandEditorContent = forwardRef<
   const handleSelectOption = useCallback(
     (newSelection: LabelledAst) => {
       if (isAggregation(newSelection.astNode)) {
-        editAggregation(
-          adaptAggregationViewModel({
+        editAggregation({
+          initialAggregation: adaptAggregationViewModel({
             ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
             nodeId: operandViewModel.nodeId,
-          } as AggregationEditorNodeViewModel)
-        );
+          } as AggregationEditorNodeViewModel),
+          onSave,
+        });
       } else {
-        setEditViewModel((vm) => ({
-          ...vm,
-          selectedOption: newSelection,
-        }));
         onSave(newSelection.astNode);
       }
-      closeModal();
     },
-    [closeModal, editAggregation, onSave, operandViewModel.nodeId]
+    [editAggregation, onSave, operandViewModel.nodeId]
   );
 
   const availableOptions = [
@@ -230,6 +182,7 @@ const OperandEditorContent = forwardRef<
               key={option.label}
               onClick={() => {
                 handleSelectOption(option);
+                closeModal();
               }}
               className={clsx(
                 'hover:bg-purple-05 text-s cursor-default select-none rounded-sm p-2 outline-none',

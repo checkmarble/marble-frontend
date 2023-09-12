@@ -1,9 +1,10 @@
-import type {
-  AstBuilder,
-  EditorNodeViewModel,
+import {
+  type AstBuilder,
+  type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
 import {
+  adaptAggregationViewModel,
   AggregationEditModal,
   type AggregationEditorNodeViewModel,
   AggregationEditPanel,
@@ -31,7 +32,14 @@ export function AstBuilder({ builder }: { builder: AstBuilder }) {
         editorNodeViewModel={builder.editorNodeViewModel}
       />
       <AggregationEditPanel
-        aggregations={findAggregations(builder.editorNodeViewModel)}
+        aggregations={findAggregations(builder.editorNodeViewModel).map(
+          (aggregation) => ({
+            initialAggregation: adaptAggregationViewModel(aggregation),
+            onSave: (astNode) => {
+              builder.setOperand(aggregation.nodeId, astNode);
+            },
+          })
+        )}
       />
     </AggregationEditModal>
   );
