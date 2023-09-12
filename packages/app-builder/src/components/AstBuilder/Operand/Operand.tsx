@@ -15,6 +15,7 @@ import {
   useEditAggregation,
 } from '../AggregationEdit';
 import { ErrorMessage } from '../ErrorMessage';
+import { getBorderColor } from '../utils';
 import { OperandEditor } from './OperandEditor';
 import { OperandViewer } from './OperandViewer';
 
@@ -44,6 +45,7 @@ export function Operand({
           onClick={() =>
             editAggregation({ initialAggregation: aggregation, onSave })
           }
+          borderColor={getBorderColor(operandViewModel.validation)}
         >
           {astNodeLabelName}
         </OperandViewer>

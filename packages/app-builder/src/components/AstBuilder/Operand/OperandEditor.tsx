@@ -30,6 +30,7 @@ import {
   useEditAggregation,
 } from '../AggregationEdit';
 import { ErrorMessage } from '../ErrorMessage';
+import { getBorderColor } from '../utils';
 import { OperandViewer } from './OperandViewer';
 
 export type OperandViewModel = EditorNodeViewModel;
@@ -61,7 +62,11 @@ export function OperandEditor({
     <div className="flex flex-col gap-1">
       <Popover.Root modal open={open} onOpenChange={onOpenChange}>
         <Popover.Trigger asChild>
-          <OperandViewer>{astNodeLabelName}</OperandViewer>
+          <OperandViewer
+            borderColor={getBorderColor(operandViewModel.validation)}
+          >
+            {astNodeLabelName}
+          </OperandViewer>
         </Popover.Trigger>
         <Popover.Portal>
           <OperandEditorContent
