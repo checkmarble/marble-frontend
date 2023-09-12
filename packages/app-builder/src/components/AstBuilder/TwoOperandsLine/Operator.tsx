@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { getBorderColor } from '../utils';
 
 //TOOD(builder): move the whitelist of operators to the backend
-const operatorEditorFunctions = [
+const operatorFunctions = [
   undefinedAstNodeName,
   '+',
   '-',
@@ -21,25 +21,22 @@ const operatorEditorFunctions = [
   '/',
   'IsInList',
 ] as const;
-type OperatorEditorFunctions = (typeof operatorEditorFunctions)[number];
+type OperatorFunctions = (typeof operatorFunctions)[number];
 
-function isOperatorEditorFunctions(
-  value: string
-): value is OperatorEditorFunctions {
-  return (operatorEditorFunctions as ReadonlyArray<string>).includes(value);
+function isOperatorFunctions(value: string): value is OperatorFunctions {
+  return (operatorFunctions as ReadonlyArray<string>).includes(value);
 }
 
-export interface OperatorEditorViewModel {
+export interface OperatorViewModel {
   nodeId: string;
-  funcName: OperatorEditorFunctions;
+  funcName: OperatorFunctions;
   validation: Validation;
 }
 
-export function adaptOperatorEditorViewModel(
+export function adaptOperatorViewModel(
   vm: EditorNodeViewModel
-): OperatorEditorViewModel | null {
-  if (vm.funcName == null || !isOperatorEditorFunctions(vm.funcName))
-    return null;
+): OperatorViewModel | null {
+  if (vm.funcName == null || !isOperatorFunctions(vm.funcName)) return null;
   return {
     nodeId: vm.nodeId,
     funcName: vm.funcName,
@@ -47,30 +44,33 @@ export function adaptOperatorEditorViewModel(
   };
 }
 
-export function OperatorEditor({
+export function Operator({
   builder,
-  operatorEditorViewModel,
+  operatorViewModel,
+  viewOnly,
 }: {
   builder: AstBuilder;
-  operatorEditorViewModel: OperatorEditorViewModel;
+  operatorViewModel: OperatorViewModel;
+  viewOnly?: boolean;
 }) {
   const getOperatorName = useGetOperatorName();
 
   // We treat undefinedAstNodeName as "no value" to display the placeholder
   const value =
-    operatorEditorViewModel.funcName !== undefinedAstNodeName
-      ? operatorEditorViewModel.funcName
+    operatorViewModel.funcName !== undefinedAstNodeName
+      ? operatorViewModel.funcName
       : undefined;
 
   return (
     <Select.Root
       value={value}
       onValueChange={(newFuncName) => {
-        builder.setOperator(operatorEditorViewModel.nodeId, newFuncName);
+        builder.setOperator(operatorViewModel.nodeId, newFuncName);
       }}
+      disabled={viewOnly}
     >
       <Select.Trigger
-        borderColor={getBorderColor(operatorEditorViewModel.validation)}
+        borderColor={getBorderColor(operatorViewModel.validation)}
       >
         <Select.Value placeholder="..." />
       </Select.Trigger>
