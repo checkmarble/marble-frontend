@@ -24,6 +24,5 @@ jobs:
     uses: ./.github/workflows/build_and_deploy.yaml
     with:
       environment: 'production'
-      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID_PRODUCTION }}
     secrets:
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_PRODUCTION }}
