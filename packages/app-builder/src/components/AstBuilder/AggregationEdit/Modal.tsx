@@ -3,7 +3,6 @@ import {
   aggregationAstNodeName,
   type AstNode,
   type EvaluationError,
-  isValidationFailure,
   mergeValidations,
   NewAstNode,
   NewConstantAstNode,
@@ -14,6 +13,7 @@ import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
+  flattenViewModelErrors,
 } from '@app-builder/services/editor/ast-editor';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { Button, Input, Modal } from '@ui-design-system';
@@ -112,18 +112,6 @@ const appendWithAggregationError = (
   { error: 'AGGREGATION_ERROR', message: 'aggregation has errors' },
   ...errors,
 ];
-
-const flattenViewModelErrors = (
-  viewModel: EditorNodeViewModel
-): EvaluationError[] => {
-  return [
-    ...(isValidationFailure(viewModel.validation)
-      ? viewModel.validation.errors
-      : []),
-    ...viewModel.children.flatMap(flattenViewModelErrors),
-    ...Object.values(viewModel.namedChildren).flatMap(flattenViewModelErrors),
-  ];
-};
 
 export const adaptAggregationViewModel = (
   vm: EditorNodeViewModel

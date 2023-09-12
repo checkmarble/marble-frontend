@@ -15,6 +15,13 @@ import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { FilterOperatorSelect } from './FilterOperatorSelect';
 import { type FilterViewModel } from './Modal';
 
+const newFilterValidation = () => ({
+  filter: NewPendingValidation(),
+  filteredField: NewPendingValidation(),
+  operator: NewPendingValidation(),
+  value: NewPendingValidation(),
+});
+
 export const EditFilters = ({
   aggregatedField,
   builder,
@@ -46,12 +53,7 @@ export const EditFilters = ({
           ? {
               ...filter,
               ...newFieldValue,
-              validation: {
-                filter: NewPendingValidation(),
-                filteredField: NewPendingValidation(),
-                operator: NewPendingValidation(),
-                value: NewPendingValidation(),
-              },
+              validation: newFilterValidation(),
             }
           : filter
       )
@@ -65,12 +67,7 @@ export const EditFilters = ({
         operator: null,
         filteredField: null,
         value: adaptEditorNodeViewModel({ ast: NewUndefinedAstNode() }),
-        validation: {
-          filter: NewPendingValidation(),
-          filteredField: NewPendingValidation(),
-          operator: NewPendingValidation(),
-          value: NewPendingValidation(),
-        },
+        validation: newFilterValidation(),
       },
     ]);
   };

@@ -5,6 +5,8 @@ import {
   type ConstantType,
   type DataModel,
   type EditorIdentifiersByType,
+  type EvaluationError,
+  isValidationFailure,
   type NodeEvaluation,
   type Validation,
 } from '@app-builder/models';
@@ -57,6 +59,18 @@ export function adaptEditorNodeViewModel({
       })
     ),
   };
+}
+
+export function flattenViewModelErrors(
+  viewModel: EditorNodeViewModel
+): EvaluationError[] {
+  return [
+    ...(isValidationFailure(viewModel.validation)
+      ? viewModel.validation.errors
+      : []),
+    ...viewModel.children.flatMap(flattenViewModelErrors),
+    ...Object.values(viewModel.namedChildren).flatMap(flattenViewModelErrors),
+  ];
 }
 
 // adapt ast node from editor view model
