@@ -18,5 +18,6 @@
   "empty_scenario_iteration_list": "You don't have any rules. Click on create rule to make a new one",
   "success.save": "Saved successfully",
   "name": "Name",
-  "description": "Description"
+  "description": "Description",
+  "edit": "Edit"
 }

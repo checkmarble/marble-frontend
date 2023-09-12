@@ -5,10 +5,16 @@ import {
   ScenarioPage,
 } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type AstNode } from '@app-builder/models';
 import { adaptDataModelDto } from '@app-builder/models/data-model';
-import { EditRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
 import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
@@ -16,6 +22,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { countNodeEvaluationErrors } from '@app-builder/services/validation/scenario-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type ActionArgs,
   json,
@@ -23,9 +30,12 @@ import {
   redirect,
 } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
-import { Button, Tag } from '@ui-design-system';
+import { Button, Input, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
+import { useEffect } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -80,24 +90,48 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 }
 
+const editRuleFormSchema = z.object({
+  name: z.string().nonempty(),
+  description: z.string(),
+  scoreModifier: z.coerce.number().int().min(-1000).max(1000),
+});
+
 export async function action({ request, params }: ActionArgs) {
   const {
     authService,
     sessionService: { getSession, commitSession },
   } = serverServices;
+  const { formValues: formValuesRaw, astNode } = (await request.json()) as {
+    formValues: z.infer<typeof editRuleFormSchema>;
+    astNode: AstNode;
+  };
+
   const session = await getSession(request);
   const { editor } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
+  const parsedForm = editRuleFormSchema.safeParse(formValuesRaw);
+  if (!parsedForm.success) {
+    parsedForm.error.flatten((issue) => issue);
+
+    return json({
+      success: false as const,
+      values: null,
+      errors: parsedForm.error.format(),
+    });
+  }
+
+  const formValues = parsedForm.data;
   try {
     const ruleId = fromParams(params, 'ruleId');
-
-    const astNode = (await request.json()) as AstNode;
 
     await editor.saveRule({
       ruleId,
       astNode,
+      name: formValues.name,
+      description: formValues.description,
+      scoreModifier: formValues.scoreModifier,
     });
 
     setToastMessage(session, {
@@ -107,7 +141,8 @@ export async function action({ request, params }: ActionArgs) {
     return json(
       {
         success: true as const,
-        error: null,
+        errors: null,
+        values: formValues,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -119,7 +154,8 @@ export async function action({ request, params }: ActionArgs) {
     return json(
       {
         success: false as const,
-        error: null,
+        errors: null,
+        values: formValues,
       },
       { headers: { 'Set-Cookie': await commitSession(session) } }
     );
@@ -148,14 +184,44 @@ export default function RuleEdit() {
     operators,
     dataModels,
     customLists,
-    onSave: (astNodeToSave: AstNode) => {
-      fetcher.submit(astNodeToSave, {
-        method: 'PATCH',
-        encType: 'application/json',
-      });
-    },
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onSave: () => {},
     onValidate: validate,
   });
+
+  const formMethods = useForm<z.infer<typeof editRuleFormSchema>>({
+    progressive: true,
+    resolver: zodResolver(editRuleFormSchema),
+    defaultValues: {
+      name: rule.name,
+      description: rule.description,
+      scoreModifier: rule.scoreModifier,
+    },
+  });
+  const { control, setError, clearErrors } = formMethods;
+  const { data } = fetcher;
+  const errors = data?.errors;
+
+  useEffect(() => {
+    if (errors?.name) {
+      setError('name', {
+        type: 'custom',
+        message: 'Rule name must not be empty',
+      });
+    } else {
+      clearErrors('name');
+    }
+  }, [errors?.name, setError, clearErrors]);
+  useEffect(() => {
+    if (errors?.scoreModifier) {
+      setError('scoreModifier', {
+        type: 'custom',
+        message: 'Score modifier must be a number between -1000 and 1000',
+      });
+    } else {
+      clearErrors('scoreModifier');
+    }
+  }, [errors?.scoreModifier, setError, clearErrors]);
 
   return (
     <ScenarioPage.Container>
@@ -166,37 +232,96 @@ export default function RuleEdit() {
           </Link>
           {rule.name ?? fromUUID(ruleId)}
           <Tag size="big" border="square">
-            {/* TODO(builder): use transaltion */}
-            Edit
+            {t('common:edit')}
           </Tag>
         </div>
+        <Button
+          onClick={() => {
+            const values = formMethods.getValues();
+            fetcher.submit(
+              {
+                astNode: astEditor.getCurrentAstNode(),
+                formValues: values,
+              },
+              {
+                method: 'PATCH',
+                encType: 'application/json',
+              }
+            );
+          }}
+        >
+          {t('common:save')}
+        </Button>
       </ScenarioPage.Header>
+
       <ScenarioPage.Content className="max-w-3xl">
+        <Paper.Container scrollable={false}>
+          <FormProvider {...formMethods}>
+            <FormField
+              name="name"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel>{t('common:name')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder={t('scenarios:edit_rule.name_placeholder')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="description"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel>{t('common:description')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder={t(
+                        'scenarios:edit_rule.description_placeholder'
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="scoreModifier"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel>{t('scenarios:create_rule.score')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder={t('scenarios:edit_rule.score_placeholder')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+          </FormProvider>
+        </Paper.Container>
+
         <Callout variant="error">
           {t('common:validation_error', {
             count: countNodeEvaluationErrors(rule.validation),
           })}
         </Callout>
-        <EditRule
-          rule={rule}
-          iterationId={iterationId}
-          scenarioId={scenarioId}
-        />
 
         <div className="max-w flex flex-col gap-4">
           <Paper.Container scrollable={false}>
             <AstBuilder builder={astEditor} />
-            <div className="flex flex-row justify-end">
-              <Button
-                type="submit"
-                className="w-fit"
-                onClick={() => {
-                  astEditor.save();
-                }}
-              >
-                {t('common:save')}
-              </Button>
-            </div>
           </Paper.Container>
         </div>
         <DeleteRule
