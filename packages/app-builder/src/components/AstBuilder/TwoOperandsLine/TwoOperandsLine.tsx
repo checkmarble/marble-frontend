@@ -30,7 +30,7 @@ export function TwoOperandsLine({
   };
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex flex-row gap-1">
+      <div className="flex flex-row gap-2">
         <OperandEditor
           builder={builder}
           operandViewModel={twoOperandsViewModel.left}

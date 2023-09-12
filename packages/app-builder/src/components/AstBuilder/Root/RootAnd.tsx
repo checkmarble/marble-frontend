@@ -69,12 +69,7 @@ export function RootAnd({
         );
       })}
 
-      <AddLogicalOperatorButton
-        className="text-grey-25 h-fit w-fit text-xs"
-        variant="secondary"
-        onClick={appendAndChild}
-        operator="and"
-      />
+      <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
     </div>
   );
 }
