@@ -208,8 +208,10 @@ export type CreateScenarioPublicationBody = {
     publicationAction: PublicationAction;
 };
 export type DataModelFieldDto = {
-    data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
+    name: string;
+    dataType: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
     nullable: boolean;
+    description: string;
 };
 export type LinkToSingleDto = {
     linkedTableName: string;
@@ -226,6 +228,7 @@ export type DataModelDto = {
             links_to_single?: {
                 [key: string]: LinkToSingleDto;
             };
+            description: string;
         };
     };
 };

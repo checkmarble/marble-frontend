@@ -27,7 +27,7 @@ function adaptFieldDto(dataModelFieldsDto: {
   return Object.entries(dataModelFieldsDto).map(
     ([name, field]): DataModelField => ({
       name: name,
-      dataType: field.data_type,
+      dataType: field.dataType,
     })
   );
 }
