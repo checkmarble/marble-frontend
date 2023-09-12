@@ -1583,14 +1583,20 @@ components:
     DataModelFieldDto:
       type: object
       required:
-        - data_type
+        - name
         - nullable
+        - dataType
+        - description
       properties:
-        data_type:
+        name:
+          type: string
+        dataType:
           type: string
           enum: [Bool, Int, Float, String, Timestamp, unknown]
         nullable:
           type: boolean
+        description:
+          type: string
     DataModelDto:
       type: object
       required:
@@ -1603,6 +1609,7 @@ components:
             required:
               - name
               - fields
+              - description
             properties:
               name:
                 type: string
@@ -1616,6 +1623,8 @@ components:
                 additionalProperties:
                   type: object
                   $ref: '#/components/schemas/LinkToSingleDto'
+              description:
+                type: string
 
     Token:
       type: object
