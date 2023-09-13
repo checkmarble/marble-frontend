@@ -17,12 +17,14 @@ import { type AstNode } from '@app-builder/models';
 import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
-import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
+import {
+  adaptAstNodeFromEditorViewModel,
+  useAstBuilder,
+} from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { countNodeEvaluationErrors } from '@app-builder/services/validation/scenario-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type ActionArgs,
   json,
@@ -35,6 +37,7 @@ import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { z } from 'zod';
 
 export const handle = {
@@ -113,12 +116,10 @@ export async function action({ request, params }: ActionArgs) {
 
   const parsedForm = editRuleFormSchema.safeParse(formValuesRaw);
   if (!parsedForm.success) {
-    parsedForm.error.flatten((issue) => issue);
-
     return json({
       success: false as const,
       values: null,
-      errors: parsedForm.error.format(),
+      errors: parsedForm.error.flatten(),
     });
   }
 
@@ -188,44 +189,37 @@ export default function RuleEdit() {
     onSave: () => {},
     onValidate: validate,
   });
+  const getCurrentAstNode = () =>
+    adaptAstNodeFromEditorViewModel(astEditor.editorNodeViewModel);
 
   const formMethods = useForm<z.infer<typeof editRuleFormSchema>>({
-    progressive: true,
-    resolver: zodResolver(editRuleFormSchema),
     defaultValues: {
       name: rule.name,
       description: rule.description,
       scoreModifier: rule.scoreModifier,
     },
+    mode: 'onChange',
   });
-  const { control, setError, clearErrors } = formMethods;
+  const { control, setError } = formMethods;
   const { data } = fetcher;
   const errors = data?.errors;
 
   useEffect(() => {
-    if (errors?.name) {
-      setError('name', {
+    if (!errors) return;
+
+    R.forEachObj.indexed(errors.fieldErrors, (err, name) => {
+      const message = err?.[0];
+      if (message === undefined) return;
+      setError(name, {
         type: 'custom',
-        message: 'Rule name must not be empty',
+        message,
       });
-    } else {
-      clearErrors('name');
-    }
-  }, [errors?.name, setError, clearErrors]);
-  useEffect(() => {
-    if (errors?.scoreModifier) {
-      setError('scoreModifier', {
-        type: 'custom',
-        message: 'Score modifier must be a number between -1000 and 1000',
-      });
-    } else {
-      clearErrors('scoreModifier');
-    }
-  }, [errors?.scoreModifier, setError, clearErrors]);
+    });
+  }, [errors, setError]);
 
   return (
     <ScenarioPage.Container>
-      <ScenarioPage.Header>
+      <ScenarioPage.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Link to="./..">
             <ScenarioPage.BackButton />
@@ -240,7 +234,7 @@ export default function RuleEdit() {
             const values = formMethods.getValues();
             fetcher.submit(
               {
-                astNode: astEditor.getCurrentAstNode(),
+                astNode: getCurrentAstNode(),
                 formValues: values,
               },
               {
@@ -253,6 +247,12 @@ export default function RuleEdit() {
           {t('common:save')}
         </Button>
       </ScenarioPage.Header>
+
+      <Callout variant="error">
+        {t('common:validation_error', {
+          count: countNodeEvaluationErrors(rule.validation),
+        })}
+      </Callout>
 
       <ScenarioPage.Content className="max-w-3xl">
         <Paper.Container scrollable={false}>
@@ -312,12 +312,6 @@ export default function RuleEdit() {
             />
           </FormProvider>
         </Paper.Container>
-
-        <Callout variant="error">
-          {t('common:validation_error', {
-            count: countNodeEvaluationErrors(rule.validation),
-          })}
-        </Callout>
 
         <div className="max-w flex flex-col gap-4">
           <Paper.Container scrollable={false}>
