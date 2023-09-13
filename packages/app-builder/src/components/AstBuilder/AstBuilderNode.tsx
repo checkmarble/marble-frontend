@@ -19,11 +19,13 @@ import {
 interface AstBuilderNodeProps {
   builder: AstBuilder;
   editorNodeViewModel: EditorNodeViewModel;
+  viewOnly?: boolean;
 }
 
 export function AstBuilderNode({
   editorNodeViewModel,
   builder,
+  viewOnly,
 }: AstBuilderNodeProps) {
   const rootOrWithAndViewModel =
     adaptRootOrWithAndViewModel(editorNodeViewModel);
@@ -32,6 +34,7 @@ export function AstBuilderNode({
       <RootOrWithAnd
         builder={builder}
         rootOrWithAndViewModel={rootOrWithAndViewModel}
+        viewOnly={viewOnly}
       />
     );
   }
@@ -39,7 +42,13 @@ export function AstBuilderNode({
   //TODO: handle root case in a specific initialisation phase. With that, we will display the RootAnd for any child And node due to the recursive call of AstBuilderNode.
   const rootAndViewModel = adaptRootAndViewModel(editorNodeViewModel);
   if (rootAndViewModel) {
-    return <RootAnd builder={builder} rootAndViewModel={rootAndViewModel} />;
+    return (
+      <RootAnd
+        builder={builder}
+        rootAndViewModel={rootAndViewModel}
+        viewOnly={viewOnly}
+      />
+    );
   }
 
   const twoOperandsViewModel =
@@ -49,6 +58,7 @@ export function AstBuilderNode({
       <TwoOperandsLine
         builder={builder}
         twoOperandsViewModel={twoOperandsViewModel}
+        viewOnly={viewOnly}
       />
     );
   }
