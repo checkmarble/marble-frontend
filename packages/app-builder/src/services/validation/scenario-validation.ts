@@ -22,21 +22,6 @@ function flattenNodeEvaluationErrors(
   ];
 }
 
-export function countScenarioValidationErrors(
-  validation: ScenarioValidation
-): number {
-  return (
-    validation.errors.length +
-    [
-      validation.triggerEvaluation,
-      ...Object.values(validation.rulesEvaluations),
-    ].reduce(
-      (acc, evaluation) => acc + flattenNodeEvaluationErrors(evaluation).length,
-      0
-    )
-  );
-}
-
 export function findRuleValidation(
   validation: ScenarioValidation,
   ruleId: string

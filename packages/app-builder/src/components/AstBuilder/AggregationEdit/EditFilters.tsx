@@ -1,6 +1,6 @@
 import { OperandEditor } from '@app-builder/components/AstBuilder/TwoOperandsLine/OperandEditor';
 import { scenarioI18n } from '@app-builder/components/Scenario';
-import { NewUndefinedAstNode } from '@app-builder/models';
+import { NewPendingValidation, NewUndefinedAstNode } from '@app-builder/models';
 import {
   adaptEditorNodeViewModel,
   type AstBuilder,
@@ -10,9 +10,17 @@ import { Plus } from '@ui-icons';
 import { useTranslation } from 'react-i18next';
 
 import { RemoveButton } from '../../Edit/RemoveButton';
+import { ErrorMessage } from '../ErrorMessage';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { FilterOperatorSelect } from './FilterOperatorSelect';
 import { type FilterViewModel } from './Modal';
+
+const newFilterValidation = () => ({
+  filter: NewPendingValidation(),
+  filteredField: NewPendingValidation(),
+  operator: NewPendingValidation(),
+  value: NewPendingValidation(),
+});
 
 export const EditFilters = ({
   aggregatedField,
@@ -41,7 +49,13 @@ export const EditFilters = ({
   ): void => {
     onChange(
       value.map((filter, index) =>
-        index === filterIndex ? { ...filter, ...newFieldValue } : filter
+        index === filterIndex
+          ? {
+              ...filter,
+              ...newFieldValue,
+              validation: newFilterValidation(),
+            }
+          : filter
       )
     );
   };
@@ -53,6 +67,7 @@ export const EditFilters = ({
         operator: null,
         filteredField: null,
         value: adaptEditorNodeViewModel({ ast: NewUndefinedAstNode() }),
+        validation: newFilterValidation(),
       },
     ]);
   };
@@ -64,37 +79,50 @@ export const EditFilters = ({
   return (
     <div>
       <div className="flex flex-col gap-2">
-        {value.map((filter, filterIndex) => (
-          <div key={filterIndex} className="flex flex-row items-center gap-1">
-            <span className="text-grey-50 text-xs">
-              {t('scenarios:edit_aggregation.filter_and')}
-            </span>
-            <EditDataModelField
-              className="grow"
-              value={filter.filteredField}
-              options={filteredDataModalFieldOptions}
-              onChange={(filteredField) =>
-                onFilterChange({ filteredField }, filterIndex)
-              }
-            />
-            <FilterOperatorSelect
-              value={filter.operator}
-              onChange={(operator) => onFilterChange({ operator }, filterIndex)}
-            />
+        {value.map((filter, filterIndex) => {
+          return (
+            <div key={filterIndex}>
+              <div className="flex flex-row items-center gap-1">
+                <span className="text-grey-50 text-xs">
+                  {t('scenarios:edit_aggregation.filter_and')}
+                </span>
+                <EditDataModelField
+                  className="grow"
+                  value={filter.filteredField}
+                  options={filteredDataModalFieldOptions}
+                  onChange={(filteredField) =>
+                    onFilterChange({ filteredField }, filterIndex)
+                  }
+                  validation={filter.validation.filteredField}
+                />
 
-            <OperandEditor
-              builder={builder}
-              operandViewModel={filter.value}
-              onSave={(astNode) =>
-                onFilterChange(
-                  { value: adaptEditorNodeViewModel({ ast: astNode }) },
-                  filterIndex
-                )
-              }
-            />
-            <RemoveButton onClick={() => removeFilter(filterIndex)} />
-          </div>
-        ))}
+                <FilterOperatorSelect
+                  value={filter.operator}
+                  onChange={(operator) =>
+                    onFilterChange({ operator }, filterIndex)
+                  }
+                  validation={filter.validation.operator}
+                />
+
+                <OperandEditor
+                  builder={builder}
+                  operandViewModel={filter.value}
+                  onSave={(astNode) =>
+                    onFilterChange(
+                      { value: adaptEditorNodeViewModel({ ast: astNode }) },
+                      filterIndex
+                    )
+                  }
+                />
+
+                <RemoveButton onClick={() => removeFilter(filterIndex)} />
+              </div>
+              {filter.validation.filter.state === 'fail' && (
+                <ErrorMessage errors={filter.validation.filter.errors} />
+              )}
+            </div>
+          );
+        })}
       </div>
       <Button className="my-2" onClick={addNewFilter}>
         <Plus width={'24px'} height={'24px'} />{' '}

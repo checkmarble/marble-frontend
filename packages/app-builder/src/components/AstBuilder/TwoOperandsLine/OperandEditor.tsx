@@ -4,12 +4,14 @@ import {
   getAggregatorName,
   getAstNodeLabelName,
   isAggregation,
+  isValidationFailure,
   type LabelledAst,
   NewAggregatorAstNode,
 } from '@app-builder/models';
 import { allAggregators } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
+  adaptEditorNodeViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
@@ -20,8 +22,11 @@ import { forwardRef, useCallback, useState } from 'react';
 
 import {
   adaptAggregationViewModel,
+  type AggregationEditorNodeViewModel,
+  isAggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../AggregationEdit';
+import { ErrorMessage } from '../ErrorMessage';
 import { coerceToConstantsLabelledAst } from './CoerceToConstantsLabelledAst';
 
 export type OperandViewModel = EditorNodeViewModel;
@@ -73,7 +78,6 @@ function OperandViewer({
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
 }) {
-  const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
   const editAggregation = useEditAggregation();
 
   const astNodeLabelName = getAstNodeLabelName(
@@ -81,17 +85,17 @@ function OperandViewer({
     builder
   );
 
-  if (isAggregation(astNode)) {
+  if (isAggregationEditorNodeViewModel(operandViewModel)) {
+    const aggregation = adaptAggregationViewModel(operandViewModel);
     return (
-      <TriggerOperandEdit
-        onClick={() => {
-          editAggregation(
-            adaptAggregationViewModel(operandViewModel.nodeId, astNode)
-          );
-        }}
-      >
-        {astNodeLabelName}
-      </TriggerOperandEdit>
+      <>
+        <TriggerOperandEdit onClick={() => editAggregation(aggregation)}>
+          {astNodeLabelName}
+        </TriggerOperandEdit>
+        {isValidationFailure(aggregation.validation.aggregation) && (
+          <ErrorMessage errors={aggregation.validation.aggregation.errors} />
+        )}
+      </>
     );
   }
 
@@ -179,10 +183,10 @@ const OperandEditorContent = forwardRef<
     (newSelection: LabelledAst) => {
       if (isAggregation(newSelection.astNode)) {
         editAggregation(
-          adaptAggregationViewModel(
-            operandViewModel.nodeId,
-            newSelection.astNode
-          )
+          adaptAggregationViewModel({
+            ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
+            nodeId: operandViewModel.nodeId,
+          } as AggregationEditorNodeViewModel)
         );
       } else {
         setEditViewModel((vm) => ({

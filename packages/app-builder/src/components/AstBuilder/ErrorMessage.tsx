@@ -64,6 +64,8 @@ export function useGetNodeEvaluationErrorMessage() {
           );
         case 'ARGUMENT_REQUIRED':
           return t('validation.evaluation_error.argument_required');
+        case 'AGGREGATION_ERROR':
+          return t('validation.evaluation_error.aggregation_error');
 
         default:
           return `${evaluationError.error}:${evaluationError.message}`;
