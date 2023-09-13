@@ -1,4 +1,7 @@
-import { adaptAggregationViewModel } from '@app-builder/components/AstBuilder/AggregationEdit';
+import {
+  adaptAggregationViewModel,
+  type AggregationEditorNodeViewModel,
+} from '@app-builder/components/AstBuilder/AggregationEdit';
 import { type AstNode, isAggregationIdentifier } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -20,7 +23,7 @@ export const NestedAggregation = ({
     return;
   }
   const aggregation = adaptAggregationViewModel(
-    adaptEditorNodeViewModel({ ast: formula })
+    adaptEditorNodeViewModel({ ast: formula }) as AggregationEditorNodeViewModel
   );
   const aggregatedFieldName = `${
     aggregation.aggregatedField?.tableName ?? ''

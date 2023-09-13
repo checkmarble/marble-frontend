@@ -3,7 +3,6 @@ import {
   getAstNodeDisplayName,
   isValidationFailure,
 } from '@app-builder/models';
-import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 import { Button, Tooltip } from '@ui-design-system';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,13 +11,14 @@ import { ErrorMessage } from '../ErrorMessage';
 import {
   adaptAggregationAstNode,
   adaptAggregationViewModel,
+  type AggregationEditorNodeViewModel,
   useEditAggregation,
 } from './Modal';
 
 export const AggregationEditPanel = ({
   aggregations,
 }: {
-  aggregations: EditorNodeViewModel[];
+  aggregations: AggregationEditorNodeViewModel[];
 }) => {
   const { t } = useTranslation(scenarioI18n);
 

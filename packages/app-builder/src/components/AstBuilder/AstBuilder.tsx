@@ -3,14 +3,19 @@ import type {
   EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
-import { AggregationEditModal, AggregationEditPanel } from './AggregationEdit';
+import {
+  AggregationEditModal,
+  type AggregationEditorNodeViewModel,
+  AggregationEditPanel,
+  isAggregationEditorNodeViewModel,
+} from './AggregationEdit';
 import { AstBuilderNode } from './AstBuilderNode';
 
 export function AstBuilder({ builder }: { builder: AstBuilder }) {
   const findAggregations = (editorNodeViewModel: EditorNodeViewModel) => {
-    const aggregations: EditorNodeViewModel[] =
+    const aggregations: AggregationEditorNodeViewModel[] =
       editorNodeViewModel.children.flatMap((child) => {
-        if (child.funcName == 'Aggregator') {
+        if (isAggregationEditorNodeViewModel(child)) {
           return child;
         } else {
           return findAggregations(child);

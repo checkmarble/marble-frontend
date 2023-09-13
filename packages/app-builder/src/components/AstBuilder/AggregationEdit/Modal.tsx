@@ -113,12 +113,27 @@ const appendWithAggregationError = (
   ...errors,
 ];
 
-export const adaptAggregationViewModel = (
+export type AggregationEditorNodeViewModel = {
+  nodeId: string;
+  funcName: string | null;
+  constant: string;
+  validation: Validation;
+  children: AggregationEditorNodeViewModel[];
+  namedChildren: Record<string, AggregationEditorNodeViewModel>;
+};
+
+export const isAggregationEditorNodeViewModel = (
   vm: EditorNodeViewModel
+): vm is AggregationEditorNodeViewModel => {
+  return vm.funcName === aggregationAstNodeName;
+};
+
+export const adaptAggregationViewModel = (
+  vm: AggregationEditorNodeViewModel
 ): AggregationViewModel => {
   const aggregatedField: DataModelField = {
-    tableName: vm.namedChildren['tableName']?.constant as string,
-    fieldName: vm.namedChildren['fieldName']?.constant as string,
+    tableName: vm.namedChildren['tableName']?.constant,
+    fieldName: vm.namedChildren['fieldName']?.constant,
   };
   const filters = vm.namedChildren['filters']
     ? vm.namedChildren['filters'].children.map(adaptFilterViewModel)
@@ -126,8 +141,8 @@ export const adaptAggregationViewModel = (
 
   return {
     nodeId: vm.nodeId,
-    label: vm.namedChildren['label']?.constant as string,
-    aggregator: vm.namedChildren['aggregator']?.constant as string,
+    label: vm.namedChildren['label']?.constant,
+    aggregator: vm.namedChildren['aggregator']?.constant,
     aggregatedField,
     filters,
     validation: {
@@ -143,12 +158,12 @@ export const adaptAggregationViewModel = (
 };
 
 const adaptFilterViewModel = (
-  filterVM: EditorNodeViewModel
+  filterVM: AggregationEditorNodeViewModel
 ): FilterViewModel => ({
-  operator: filterVM.namedChildren['operator']?.constant as string,
+  operator: filterVM.namedChildren['operator']?.constant,
   filteredField: {
-    tableName: filterVM.namedChildren['tableName']?.constant as string,
-    fieldName: filterVM.namedChildren['fieldName']?.constant as string,
+    tableName: filterVM.namedChildren['tableName']?.constant,
+    fieldName: filterVM.namedChildren['fieldName']?.constant,
   },
   value: filterVM.namedChildren['value'],
   validation: {

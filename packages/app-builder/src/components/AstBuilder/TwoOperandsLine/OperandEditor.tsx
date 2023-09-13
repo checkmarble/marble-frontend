@@ -22,6 +22,8 @@ import { forwardRef, useCallback, useState } from 'react';
 
 import {
   adaptAggregationViewModel,
+  type AggregationEditorNodeViewModel,
+  isAggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../AggregationEdit';
 import { ErrorMessage } from '../ErrorMessage';
@@ -83,7 +85,7 @@ function OperandViewer({
     builder
   );
 
-  if (operandViewModel.funcName === 'Aggregator') {
+  if (isAggregationEditorNodeViewModel(operandViewModel)) {
     const aggregation = adaptAggregationViewModel(operandViewModel);
     return (
       <>
@@ -184,7 +186,7 @@ const OperandEditorContent = forwardRef<
           adaptAggregationViewModel({
             ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
             nodeId: operandViewModel.nodeId,
-          })
+          } as AggregationEditorNodeViewModel)
         );
       } else {
         setEditViewModel((vm) => ({
