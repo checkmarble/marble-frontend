@@ -94,7 +94,6 @@ export interface AstBuilder {
   operators: AstOperator[];
   dataModels: DataModel[];
   customLists: CustomList[];
-  getCurrentAstNode: () => AstNode;
   setConstant: (nodeId: string, newValue: ConstantType) => void;
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
@@ -233,18 +232,12 @@ export function useAstBuilder({
     validate(editorNodeViewModel);
   }, [editorNodeViewModel, onSave, validate]);
 
-  const getCurrentAstNode = useCallback(
-    () => adaptAstNodeFromEditorViewModel(editorNodeViewModel),
-    [editorNodeViewModel]
-  );
-
   return {
     editorNodeViewModel,
     identifiers,
     operators,
     dataModels,
     customLists,
-    getCurrentAstNode,
     setConstant,
     setOperand,
     setOperator,
