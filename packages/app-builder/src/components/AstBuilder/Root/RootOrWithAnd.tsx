@@ -63,9 +63,11 @@ function NewOrChild() {
 export function RootOrWithAnd({
   builder,
   rootOrWithAndViewModel,
+  viewOnly,
 }: {
   builder: AstBuilder;
   rootOrWithAndViewModel: RootOrWithAndViewModel;
+  viewOnly?: boolean;
 }) {
   function appendOrChild() {
     builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
@@ -108,16 +110,19 @@ export function RootOrWithAnd({
                   key={child.nodeId}
                   className="flex flex-row-reverse items-center gap-2"
                 >
-                  <RemoveButton
-                    className="peer"
-                    onClick={() => {
-                      remove(child.nodeId);
-                    }}
-                  />
+                  {!viewOnly && (
+                    <RemoveButton
+                      className="peer"
+                      onClick={() => {
+                        remove(child.nodeId);
+                      }}
+                    />
+                  )}
                   <div className="peer-hover:border-grey-25 flex flex-1 flex-col rounded border border-transparent p-1 transition-colors duration-200 ease-in-out">
                     <AstBuilderNode
                       builder={builder}
                       editorNodeViewModel={child}
+                      viewOnly={viewOnly}
                     />
                   </div>
                   <LogicalOperatorLabel
@@ -127,16 +132,20 @@ export function RootOrWithAnd({
               );
             })}
 
-            <div className={clsx('my-1', !isFirstAndChild && 'ml-[50px]')}>
-              <AddLogicalOperatorButton
-                onClick={appendAndChild}
-                operator="and"
-              />
-            </div>
+            {!viewOnly && (
+              <div className={clsx('my-1', !isFirstAndChild && 'ml-[50px]')}>
+                <AddLogicalOperatorButton
+                  onClick={appendAndChild}
+                  operator="and"
+                />
+              </div>
+            )}
           </React.Fragment>
         );
       })}
-      <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
+      {!viewOnly && (
+        <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
+      )}
     </div>
   );
 }

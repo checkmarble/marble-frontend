@@ -12,12 +12,19 @@ import {
 } from './AggregationEdit';
 import { AstBuilderNode } from './AstBuilderNode';
 
-export function AstBuilder({ builder }: { builder: AstBuilder }) {
+export function AstBuilder({
+  builder,
+  viewOnly,
+}: {
+  builder: AstBuilder;
+  viewOnly?: boolean;
+}) {
   return (
     <AggregationEditModal builder={builder}>
       <AstBuilderNode
         builder={builder}
         editorNodeViewModel={builder.editorNodeViewModel}
+        viewOnly={viewOnly}
       />
       <AggregationEditPanel
         aggregations={findAggregations(builder.editorNodeViewModel).map(
