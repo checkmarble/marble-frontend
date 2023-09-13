@@ -1,5 +1,6 @@
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import {
+  type AstNode,
   getAstNodeDisplayName,
   isValidationFailure,
 } from '@app-builder/models';
@@ -10,14 +11,17 @@ import { useTranslation } from 'react-i18next';
 import { ErrorMessage } from '../ErrorMessage';
 import {
   adaptAggregationAstNode,
-  type AggregationEditModalProps,
+  type AggregationViewModel,
   useEditAggregation,
 } from './Modal';
 
 export const AggregationEditPanel = ({
   aggregations,
 }: {
-  aggregations: AggregationEditModalProps[];
+  aggregations: {
+    aggregation: AggregationViewModel;
+    onSave: (astNode: AstNode) => void;
+  }[];
 }) => {
   const { t } = useTranslation(scenarioI18n);
 
@@ -31,8 +35,7 @@ export const AggregationEditPanel = ({
             {t('scenarios:edit_rule.aggregation_list_title')}
           </span>
           <div className="flex flex-row gap-2">
-            {aggregations.map((aggregationEditModalProps) => {
-              const aggregation = aggregationEditModalProps.initialAggregation;
+            {aggregations.map(({ aggregation, onSave }) => {
               const isFail = isValidationFailure(
                 aggregation.validation.aggregation
               );
@@ -42,7 +45,9 @@ export const AggregationEditPanel = ({
 
               const AggregationEditButton = (
                 <Button
-                  onClick={() => editAggregation(aggregationEditModalProps)}
+                  onClick={() =>
+                    editAggregation({ initialAggregation: aggregation, onSave })
+                  }
                   color={isFail ? 'red' : 'purple'}
                 >
                   {aggregationDisplayName}
