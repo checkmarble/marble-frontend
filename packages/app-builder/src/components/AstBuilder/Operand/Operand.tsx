@@ -16,10 +16,12 @@ export function Operand({
   builder,
   operandViewModel,
   onSave,
+  viewOnly,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
   onSave: (astNode: AstNode) => void;
+  viewOnly?: boolean;
 }) {
   if (isAggregationEditorNodeViewModel(operandViewModel)) {
     return (
@@ -27,6 +29,7 @@ export function Operand({
         builder={builder}
         aggregationEditorNodeViewModel={operandViewModel}
         onSave={onSave}
+        viewOnly={viewOnly}
       />
     );
   }
@@ -36,6 +39,7 @@ export function Operand({
       builder={builder}
       operandViewModel={operandViewModel}
       onSave={onSave}
+      viewOnly={viewOnly}
     />
   );
 }

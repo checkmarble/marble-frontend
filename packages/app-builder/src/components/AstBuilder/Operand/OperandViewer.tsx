@@ -13,13 +13,13 @@ export const OperandViewer = forwardRef<HTMLButtonElement, OperandViewerProps>(
       ref={ref}
       data-border-color={borderColor}
       className={clsx(
-        'flex h-10 min-w-[40px] items-center justify-between px-2 outline-none',
-        'bg-grey-00 disabled:bg-grey-05 radix-state-open:bg-purple-05',
-        'radix-state-open:border-purple-100 disabled:border-grey-10 rounded border',
+        'bg-grey-00 flex h-10 min-w-[40px] items-center justify-between rounded border px-2 outline-none',
+        'disabled:bg-grey-02 disabled:border-grey-02',
+        'radix-state-open:border-purple-100 radix-state-open:bg-purple-05',
         // Border color variants
-        'data-[border-color=grey]:border-grey-10 data-[border-color=grey]:focus:border-purple-100',
-        'data-[border-color=red]:border-red-100 data-[border-color=red]:focus:border-purple-100',
-        'data-[border-color=green]:border-green-100 data-[border-color=green]:focus:border-purple-100'
+        'enabled:data-[border-color=grey]:border-grey-10 enabled:data-[border-color=grey]:focus:border-purple-100',
+        'enabled:data-[border-color=red]:border-red-100 enabled:data-[border-color=red]:focus:border-purple-100',
+        'enabled:data-[border-color=green]:border-green-100 enabled:data-[border-color=green]:focus:border-purple-100'
       )}
       {...props}
     />
