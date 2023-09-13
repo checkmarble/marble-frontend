@@ -9,7 +9,7 @@ import {
   adaptOperatorViewModel,
   Operator,
   type OperatorViewModel,
-} from './Operator';
+} from '../Operator';
 
 interface TwoOperandsLineViewModel {
   left: OperandViewModel;
@@ -20,9 +20,11 @@ interface TwoOperandsLineViewModel {
 export function TwoOperandsLine({
   builder,
   twoOperandsViewModel,
+  viewOnly,
 }: {
   builder: AstBuilder;
   twoOperandsViewModel: TwoOperandsLineViewModel;
+  viewOnly?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-1">
@@ -33,6 +35,7 @@ export function TwoOperandsLine({
           onSave={(astNode) => {
             builder.setOperand(twoOperandsViewModel.left.nodeId, astNode);
           }}
+          viewOnly={viewOnly}
         />
         <Operator
           builder={builder}
@@ -40,6 +43,7 @@ export function TwoOperandsLine({
           onSave={(operator) => {
             builder.setOperator(twoOperandsViewModel.operator.nodeId, operator);
           }}
+          viewOnly={viewOnly}
         />
         <Operand
           builder={builder}
@@ -47,6 +51,7 @@ export function TwoOperandsLine({
           onSave={(astNode) => {
             builder.setOperand(twoOperandsViewModel.right.nodeId, astNode);
           }}
+          viewOnly={viewOnly}
         />
       </div>
       {twoOperandsViewModel.operator.validation.state === 'fail' && (

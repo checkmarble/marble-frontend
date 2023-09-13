@@ -43,10 +43,12 @@ export function OperandEditor({
   builder,
   operandViewModel,
   onSave,
+  viewOnly,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
   onSave: (astNode: AstNode) => void;
+  viewOnly?: boolean;
 }) {
   const [open, onOpenChange] = useState<boolean>(false);
 
@@ -58,7 +60,7 @@ export function OperandEditor({
   return (
     <div className="flex flex-col gap-1">
       <Popover.Root modal open={open} onOpenChange={onOpenChange}>
-        <Popover.Trigger asChild>
+        <Popover.Trigger asChild disabled={viewOnly}>
           <OperandViewer
             borderColor={getBorderColor(operandViewModel.validation)}
           >
