@@ -21,10 +21,12 @@ export function AggregationOperand({
   builder,
   aggregationEditorNodeViewModel,
   onSave,
+  viewOnly,
 }: {
   builder: AstBuilder;
   aggregationEditorNodeViewModel: AggregationEditorNodeViewModel;
   onSave: (astNode: AstNode) => void;
+  viewOnly?: boolean;
 }) {
   const aggregation = adaptAggregationViewModel(aggregationEditorNodeViewModel);
   const editAggregation = useEditAggregation();
@@ -43,6 +45,7 @@ export function AggregationOperand({
           editAggregation({ initialAggregation: aggregation, onSave })
         }
         borderColor={getBorderColor(aggregationRootValidation)}
+        disabled={viewOnly}
       >
         {astNodeLabelName}
       </OperandViewer>

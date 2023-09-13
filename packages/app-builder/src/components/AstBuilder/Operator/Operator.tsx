@@ -8,6 +8,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getBorderColor } from '../utils';
+import { OperatorViewer } from './OperatorViewer';
 
 //TOOD(builder): move the whitelist of operators to the backend
 const operatorFunctions = [
@@ -65,11 +66,9 @@ export function Operator({
 
   return (
     <Select.Root value={value} onValueChange={onSave} disabled={viewOnly}>
-      <Select.Trigger
+      <OperatorViewer
         borderColor={getBorderColor(operatorViewModel.validation)}
-      >
-        <Select.Value placeholder="..." />
-      </Select.Trigger>
+      />
       <Select.Content className="max-h-60">
         <Select.Viewport>
           {builder.operators.map((operator) => {
