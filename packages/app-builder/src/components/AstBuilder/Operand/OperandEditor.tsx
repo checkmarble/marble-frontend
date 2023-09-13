@@ -143,11 +143,13 @@ const OperandEditorContent = forwardRef<
   const handleSelectOption = useCallback(
     (newSelection: LabelledAst) => {
       if (isAggregation(newSelection.astNode)) {
+        const initialAggregation = adaptAggregationViewModel({
+          ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
+          nodeId: operandViewModel.nodeId,
+        } as AggregationEditorNodeViewModel);
+
         editAggregation({
-          initialAggregation: adaptAggregationViewModel({
-            ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
-            nodeId: operandViewModel.nodeId,
-          } as AggregationEditorNodeViewModel),
+          initialAggregation,
           onSave,
         });
       } else {
