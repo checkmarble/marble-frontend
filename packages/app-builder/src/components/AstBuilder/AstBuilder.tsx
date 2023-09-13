@@ -13,18 +13,6 @@ import {
 import { AstBuilderNode } from './AstBuilderNode';
 
 export function AstBuilder({ builder }: { builder: AstBuilder }) {
-  const findAggregations = (editorNodeViewModel: EditorNodeViewModel) => {
-    const aggregations: AggregationEditorNodeViewModel[] =
-      editorNodeViewModel.children.flatMap((child) => {
-        if (isAggregationEditorNodeViewModel(child)) {
-          return child;
-        } else {
-          return findAggregations(child);
-        }
-      });
-    return aggregations;
-  };
-
   return (
     <AggregationEditModal builder={builder}>
       <AstBuilderNode
@@ -34,7 +22,7 @@ export function AstBuilder({ builder }: { builder: AstBuilder }) {
       <AggregationEditPanel
         aggregations={findAggregations(builder.editorNodeViewModel).map(
           (aggregation) => ({
-            initialAggregation: adaptAggregationViewModel(aggregation),
+            aggregation: adaptAggregationViewModel(aggregation),
             onSave: (astNode) => {
               builder.setOperand(aggregation.nodeId, astNode);
             },
@@ -44,3 +32,15 @@ export function AstBuilder({ builder }: { builder: AstBuilder }) {
     </AggregationEditModal>
   );
 }
+
+const findAggregations = (editorNodeViewModel: EditorNodeViewModel) => {
+  const aggregations: AggregationEditorNodeViewModel[] =
+    editorNodeViewModel.children.flatMap((child) => {
+      if (isAggregationEditorNodeViewModel(child)) {
+        return child;
+      } else {
+        return findAggregations(child);
+      }
+    });
+  return aggregations;
+};
