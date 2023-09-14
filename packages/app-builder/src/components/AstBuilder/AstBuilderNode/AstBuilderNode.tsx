@@ -1,10 +1,9 @@
 import {
-  adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
-import { Default } from '../../Scenario/Formula/Operators/Default';
+import { Default } from './Default';
 import {
   adaptTwoOperandsLineViewModel,
   TwoOperandsLine,
@@ -34,6 +33,10 @@ export function AstBuilderNode({
   }
 
   return (
-    <Default node={adaptAstNodeFromEditorViewModel(editorNodeViewModel)} />
+    <Default
+      editorNodeViewModel={editorNodeViewModel}
+      builder={builder}
+      displayErrors={viewOnly}
+    />
   );
 }

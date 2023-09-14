@@ -26,6 +26,7 @@ import {
   type AggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../AggregationEdit';
+import { Default } from '../Default';
 import { coerceToConstantsLabelledAst } from './coerceToConstantsLabelledAst';
 import { OperandViewer } from './OperandViewer';
 
@@ -52,10 +53,14 @@ export function OperandEditor({
 }) {
   const [open, onOpenChange] = useState<boolean>(false);
 
-  const astNodeLabelName = getAstNodeLabelName(
-    adaptAstNodeFromEditorViewModel(operandViewModel),
-    builder
-  );
+  // TODO: better handling of the viewOnly fallback when we get a specific UI per component (not a stringified version)
+  const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
+  const labelName = getAstNodeLabelName(astNode, builder, {
+    getDefaultDisplayName: () => undefined,
+  });
+  if (!labelName) {
+    return <Default editorNodeViewModel={operandViewModel} builder={builder} />;
+  }
 
   return (
     <div className="flex flex-col gap-1">
@@ -64,7 +69,7 @@ export function OperandEditor({
           <OperandViewer
             borderColor={getBorderColor(operandViewModel.validation)}
           >
-            {astNodeLabelName}
+            {labelName}
           </OperandViewer>
         </Popover.Trigger>
         <Popover.Portal>
