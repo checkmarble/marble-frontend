@@ -8,7 +8,7 @@ import { Button, Tooltip } from '@ui-design-system';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ErrorMessage } from '../ErrorMessage';
+import { ErrorMessage } from '../../ErrorMessage';
 import {
   adaptAggregationAstNode,
   type AggregationViewModel,

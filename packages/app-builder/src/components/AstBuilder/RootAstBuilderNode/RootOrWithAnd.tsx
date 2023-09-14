@@ -11,7 +11,7 @@ import {
 import clsx from 'clsx';
 import React from 'react';
 
-import { AstBuilderNode } from '../AstBuilderNode';
+import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 import { RemoveButton } from './RemoveButton';
 
