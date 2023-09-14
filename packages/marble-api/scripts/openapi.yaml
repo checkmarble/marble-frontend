@@ -1570,27 +1570,27 @@ components:
     LinkToSingleDto:
       type: object
       required:
-        - linkedTableName
-        - parentFieldName
-        - childFieldName
+        - linked_table_name
+        - parent_field_name
+        - child_field_name
       properties:
-        linkedTableName:
+        linked_table_name:
           type: string
-        parentFieldName:
+        parent_field_name:
           type: string
-        childFieldName:
+        child_field_name:
           type: string
     DataModelFieldDto:
       type: object
       required:
         - name
         - nullable
-        - dataType
+        - data_type
         - description
       properties:
         name:
           type: string
-        dataType:
+        data_type:
           type: string
           enum: [Bool, Int, Float, String, Timestamp, unknown]
         nullable:

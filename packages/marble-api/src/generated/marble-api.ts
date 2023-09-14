@@ -209,14 +209,14 @@ export type CreateScenarioPublicationBody = {
 };
 export type DataModelFieldDto = {
     name: string;
-    dataType: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
+    data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
     nullable: boolean;
     description: string;
 };
 export type LinkToSingleDto = {
-    linkedTableName: string;
-    parentFieldName: string;
-    childFieldName: string;
+    linked_table_name: string;
+    parent_field_name: string;
+    child_field_name: string;
 };
 export type DataModelDto = {
     tables: {
