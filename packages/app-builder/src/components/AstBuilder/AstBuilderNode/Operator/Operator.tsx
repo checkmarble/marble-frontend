@@ -7,7 +7,7 @@ import { Select } from '@ui-design-system';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getBorderColor } from '../utils';
+import { getBorderColor } from '../../utils';
 import { OperatorViewer } from './OperatorViewer';
 
 //TOOD(builder): move the whitelist of operators to the backend

@@ -19,13 +19,13 @@ import { Input, ScrollArea } from '@ui-design-system';
 import clsx from 'clsx';
 import { forwardRef, useCallback, useState } from 'react';
 
+import { ErrorMessage } from '../../ErrorMessage';
+import { getBorderColor } from '../../utils';
 import {
   adaptAggregationViewModel,
   type AggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../AggregationEdit';
-import { ErrorMessage } from '../ErrorMessage';
-import { getBorderColor } from '../utils';
 import { coerceToConstantsLabelledAst } from './coerceToConstantsLabelledAst';
 import { OperandViewer } from './OperandViewer';
 

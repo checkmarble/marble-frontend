@@ -2,7 +2,7 @@ import { type Validation } from '@app-builder/models';
 import { Combobox } from '@ui-design-system';
 import { useState } from 'react';
 
-import { getBorderColor } from '../utils';
+import { getBorderColor } from '../../utils';
 
 export type DataModelField = {
   tableName: string | null;

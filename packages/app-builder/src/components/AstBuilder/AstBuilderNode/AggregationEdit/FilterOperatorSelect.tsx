@@ -1,7 +1,7 @@
 import { type Validation } from '@app-builder/models';
 import { Select } from '@ui-design-system';
 
-import { getBorderColor } from '../utils';
+import { getBorderColor } from '../../utils';
 
 export const FilterOperatorSelect = ({
   value,

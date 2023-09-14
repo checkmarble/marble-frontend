@@ -8,9 +8,9 @@ import {
   type AstBuilder,
 } from '@app-builder/services/editor/ast-editor';
 
-import { ErrorMessage } from '../ErrorMessage';
+import { ErrorMessage } from '../../ErrorMessage';
+import { getBorderColor } from '../../utils';
 import { OperandViewer } from '../Operand/OperandViewer';
-import { getBorderColor } from '../utils';
 import {
   adaptAggregationViewModel,
   type AggregationEditorNodeViewModel,
