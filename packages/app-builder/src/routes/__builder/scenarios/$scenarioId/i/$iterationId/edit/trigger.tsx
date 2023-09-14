@@ -3,19 +3,28 @@ import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import {
+  adaptCronToScheduleOption,
+  adaptScheduleOptionToCron,
+  ScheduleOption,
+} from '@app-builder/components/Scenario/Trigger/ScheduleOption';
+import {
   adaptDataModelDto,
   adaptNodeDto,
   type AstNode,
 } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
-import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
+import {
+  adaptAstNodeFromEditorViewModel,
+  useAstBuilder,
+} from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Button } from '@ui-design-system';
 import { type Namespace } from 'i18next';
+import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -76,11 +85,15 @@ export async function action({ request, params }: ActionArgs) {
   try {
     const iterationId = fromParams(params, 'iterationId');
 
-    const astNode = (await request.json()) as AstNode;
+    const { astNode, schedule } = (await request.json()) as {
+      astNode: AstNode;
+      schedule: string;
+    };
 
     await apiClient.updateScenarioIteration(iterationId, {
       body: {
         trigger_condition_ast_expression: adaptNodeDto(astNode),
+        schedule,
       },
     });
 
@@ -128,6 +141,10 @@ export default function Trigger() {
     );
 
   const scenario = useCurrentScenario();
+  const [scheduleOption, setScheduleOption] = useState(
+    adaptCronToScheduleOption(scenarioIteration.schedule ?? '')
+  );
+
   const astEditor = useAstBuilder({
     backendAst: trigger.ast,
     backendValidation: trigger.validation,
@@ -137,14 +154,21 @@ export default function Trigger() {
     dataModels,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
-    onSave: (astNodeToSave: AstNode) => {
-      fetcher.submit(astNodeToSave, {
-        method: 'PATCH',
-        encType: 'application/json',
-      });
-    },
     onValidate: validate,
   });
+
+  const handleSave = () => {
+    fetcher.submit(
+      {
+        astNode: adaptAstNodeFromEditorViewModel(astEditor.editorNodeViewModel),
+        schedule: adaptScheduleOptionToCron(scheduleOption),
+      },
+      {
+        method: 'PATCH',
+        encType: 'application/json',
+      }
+    );
+  };
 
   return (
     <Paper.Container scrollable={false} className="max-w-3xl">
@@ -198,6 +222,10 @@ export default function Trigger() {
           />
         </p>
       </div>
+      <ScheduleOption
+        scheduleOption={scheduleOption}
+        setScheduleOption={setScheduleOption}
+      />
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
         <Callout>{t('scenarios:trigger.trigger_object.callout')}</Callout>
@@ -207,13 +235,7 @@ export default function Trigger() {
       </ScenarioBox>
       <AstBuilder builder={astEditor} />
       <div className="flex flex-row justify-end">
-        <Button
-          type="submit"
-          className="w-fit"
-          onClick={() => {
-            astEditor.save();
-          }}
-        >
+        <Button type="submit" className="w-fit" onClick={handleSave}>
           {t('common:save')}
         </Button>
       </div>

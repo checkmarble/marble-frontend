@@ -124,7 +124,7 @@ export function useAstBuilder({
   dataModels: DataModel[];
   customLists: CustomList[];
   triggerObjectType: string;
-  onSave: (toSave: AstNode) => void;
+  onSave?: (toSave: AstNode) => void;
   onValidate: (ast: AstNode) => void;
 }): AstBuilder {
   const [editorNodeViewModel, setEditorNodeViewModel] =
@@ -232,7 +232,7 @@ export function useAstBuilder({
 
   const save = useCallback(() => {
     const newAst = adaptAstNodeFromEditorViewModel(editorNodeViewModel);
-    onSave(newAst);
+    onSave && onSave(newAst);
     validate(editorNodeViewModel);
   }, [editorNodeViewModel, onSave, validate]);
 
