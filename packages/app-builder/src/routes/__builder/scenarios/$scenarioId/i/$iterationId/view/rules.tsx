@@ -64,7 +64,7 @@ export default function Rules() {
 
           return (
             <span
-              className={scoreModifier > 0 ? 'text-green-100' : 'text-red-100'}
+              className={scoreModifier < 0 ? 'text-green-100' : 'text-red-100'}
             >
               {Intl.NumberFormat(language, {
                 signDisplay: 'exceptZero',

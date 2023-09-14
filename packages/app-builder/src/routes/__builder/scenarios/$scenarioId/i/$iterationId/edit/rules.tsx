@@ -60,14 +60,19 @@ export default function Rules() {
       },
       {
         id: 'score',
-        accessorFn: (row) => {
-          const scoreIncrease = row.scoreModifier;
-
-          if (!scoreIncrease) return '';
-
-          return Intl.NumberFormat(language, {
-            signDisplay: 'exceptZero',
-          }).format(scoreIncrease);
+        accessorFn: (row) => row.scoreModifier,
+        cell: ({ getValue }) => {
+          const scoreModifier = getValue<number>();
+          if (!scoreModifier) return '';
+          return (
+            <span
+              className={scoreModifier < 0 ? 'text-green-100' : 'text-red-100'}
+            >
+              {Intl.NumberFormat(language, {
+                signDisplay: 'exceptZero',
+              }).format(scoreModifier)}
+            </span>
+          );
         },
         header: t('scenarios:rules.score'),
         size: 100,
