@@ -1,14 +1,18 @@
 import {
-  adaptLabelledAstFromCustomList,
   type AstNode,
-  getAggregatorName,
+  type DataModelField,
   getAstNodeLabelName,
   isAggregation,
   isValidationFailure,
   type LabelledAst,
-  NewAggregatorAstNode,
 } from '@app-builder/models';
-import { allAggregators } from '@app-builder/services/editor';
+import {
+  allAggregators,
+  newAggregatorLabelledAst,
+  newCustomListLabelledAst,
+  newDatabaseAccessorsLabelledAst,
+  newPayloadAccessorsLabelledAst,
+} from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
@@ -32,7 +36,6 @@ import { coerceToConstantsLabelledAst } from './CoerceToConstantsLabelledAst';
 export type OperandViewModel = EditorNodeViewModel;
 
 interface EditOperandViewModel {
-  initialOption: LabelledAst;
   constantOptions: LabelledAst[];
   identifiersOptions: LabelledAst[];
   selectedOption: LabelledAst;
@@ -134,36 +137,37 @@ const OperandEditorContent = forwardRef<
   const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
     () => {
       const operandAst = adaptAstNodeFromEditorViewModel(operandViewModel);
-      const initialOption: LabelledAst = {
+      const selectedOption: LabelledAst = {
         label: getAstNodeLabelName(operandAst, builder),
         tooltip: '',
         astNode: operandAst,
+        dataModelField: null,
       };
 
       const identifiersOptions: LabelledAst[] = [
-        ...builder.identifiers.databaseAccessors.map((node) => ({
-          label: getAstNodeLabelName(node, builder),
-          tooltip: '',
-          astNode: node,
-        })),
-        ...builder.identifiers.payloadAccessors.map((node) => ({
-          label: getAstNodeLabelName(node, builder),
-          tooltip: '',
-          astNode: node,
-        })),
-        ...allAggregators.map((aggregator) => ({
-          label: getAggregatorName(aggregator),
-          tooltip: '',
-          astNode: NewAggregatorAstNode(aggregator),
-        })),
-        ...builder.customLists.map(adaptLabelledAstFromCustomList),
+        ...builder.identifiers.databaseAccessors.map((node) =>
+          newDatabaseAccessorsLabelledAst({
+            dataModel: builder.dataModels,
+            node,
+          })
+        ),
+        ...builder.identifiers.payloadAccessors.map((node) =>
+          newPayloadAccessorsLabelledAst({
+            dataModel: builder.dataModels,
+            triggerObjectType: 'transactions',
+            node,
+          })
+        ),
+        ...allAggregators.map((aggregator) =>
+          newAggregatorLabelledAst(aggregator)
+        ),
+        ...builder.customLists.map(newCustomListLabelledAst),
       ];
 
       return {
-        initialOption,
         constantOptions: [],
         identifiersOptions,
-        selectedOption: initialOption,
+        selectedOption,
         searchText: '',
       };
     }
@@ -238,7 +242,11 @@ const OperandEditorContent = forwardRef<
               )}
             >
               <span>{option.label}</span>
-              <span>{option.tooltip}</span>
+              {option.tooltip ?? <span>{option.tooltip}</span>}
+
+              {option.dataModelField && (
+                <DescribeDataType field={option.dataModelField} />
+              )}
             </button>
           ))}
         </ScrollArea.Viewport>
@@ -250,3 +258,15 @@ const OperandEditorContent = forwardRef<
   );
 });
 OperandEditorContent.displayName = 'OperandEditorContent';
+
+function DescribeDataType({ field }: { field: DataModelField }) {
+  return (
+    <>
+      <span>
+        ({field.dataType}
+        {field.nullable ? ', optional' : ''})
+      </span>
+      {field.description && <span>{field.description}</span>}
+    </>
+  );
+}

@@ -1,8 +1,12 @@
-import { type AstNode } from './ast-node';
+import {
+  type AstNode,
+  type DatabaseAccessAstNode,
+  type PayloadAstNode,
+} from './ast-node';
 
 export interface EditorIdentifiersByType {
-  databaseAccessors: AstNode[];
-  payloadAccessors: AstNode[];
+  databaseAccessors: DatabaseAccessAstNode[];
+  payloadAccessors: PayloadAstNode[];
 }
 
 // This implementation might be problematic in the future, we might need to standartise each node with something like a hash function
