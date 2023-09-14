@@ -13,10 +13,11 @@ export const handle = {
 };
 
 export async function action({ request, params }: ActionArgs) {
-  const { authService } = serverServices;
+  const { authService, i18nextService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
+  const t = await i18nextService.getFixedT(request, 'scenarios');
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
@@ -25,7 +26,7 @@ export async function action({ request, params }: ActionArgs) {
       scenarioIterationId: iterationId,
       displayOrder: 1,
       formula_ast_expression: null,
-      name: '',
+      name: t('create_rule.default_name'),
       description: '',
       scoreModifier: 0,
     });
