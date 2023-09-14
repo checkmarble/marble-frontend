@@ -65,6 +65,7 @@
   "create_rule.button_accept": "Create a new rule",
   "create_rule.score": "Score Modifier",
   "create_rule.score_placeholder": "Add a score modifier to your rule",
+  "create_rule.default_name": "New rule",
   "delete_rule.button": "Delete this rule",
   "delete_rule.title": "Delete this rule",
   "delete_rule.content": "You are about to delete this rule. This action is irreversible, do you want to proceed ?",
