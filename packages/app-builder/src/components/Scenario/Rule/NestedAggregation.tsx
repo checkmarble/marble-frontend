@@ -1,7 +1,7 @@
 import {
   adaptAggregationViewModel,
   type AggregationEditorNodeViewModel,
-} from '@app-builder/components/AstBuilder/AggregationEdit';
+} from '@app-builder/components/AstBuilder/AstBuilderNode/AggregationEdit';
 import { type AstNode, isAggregationIdentifier } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
