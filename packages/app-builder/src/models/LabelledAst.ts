@@ -1,17 +1,18 @@
 import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
-import { type CustomList } from '@marble-api';
 
 import {
   type AstNode,
   type ConstantType,
+  type DatabaseAccessAstNode,
   isAggregation,
   isAstNodeUnknown,
   isConstant,
   isCustomListAccess,
   isDatabaseAccess,
   isPayload,
-  NewCustomListAstNode,
+  type PayloadAstNode,
 } from './ast-node';
+import { type DataModelField } from './data-model';
 import {
   type EditorIdentifiersByType,
   getIdentifiersFromAstNode,
@@ -21,17 +22,7 @@ export interface LabelledAst {
   label: string;
   tooltip: string;
   astNode: AstNode;
-}
-
-export function adaptLabelledAst(
-  astNode: AstNode,
-  builder: AstBuilder
-): LabelledAst {
-  return {
-    label: getAstNodeLabelName(astNode, builder),
-    tooltip: '',
-    astNode,
-  };
+  dataModelField: DataModelField | null;
 }
 
 export const adaptConstantAstNodeToString = (
@@ -55,6 +46,7 @@ export function adaptLabelledAstFromAllIdentifiers(
     label: getAstNodeDisplayName(astNode),
     tooltip: '',
     astNode,
+    dataModelField: null,
   };
 }
 
@@ -65,16 +57,7 @@ export function adaptLabelledAstFromIdentifier(
     label: getAstNodeDisplayName(identifier),
     tooltip: '',
     astNode: identifier,
-  };
-}
-
-export function adaptLabelledAstFromCustomList(
-  customList: CustomList
-): LabelledAst {
-  return {
-    label: customList.name ?? '',
-    tooltip: customList.description ?? '',
-    astNode: NewCustomListAstNode(customList.id),
+    dataModelField: null,
   };
 }
 
@@ -108,19 +91,28 @@ export function getAstNodeLabelName(
   return getAstNodeDisplayName(astNode);
 }
 
+export function databaseAccessorDisplayName(
+  node: DatabaseAccessAstNode
+): string {
+  const { path, fieldName } = node.namedChildren;
+  return [...path.constant, fieldName.constant].join('.');
+}
+
+export function payloadAccessorsDisplayName(node: PayloadAstNode): string {
+  return node.children[0].constant;
+}
+
 export function getAstNodeDisplayName(astNode: AstNode): string {
   if (isConstant(astNode)) {
     return getConstantDisplayName(astNode.constant);
   }
 
   if (isDatabaseAccess(astNode)) {
-    const { path, fieldName } = astNode.namedChildren;
-    return [...path.constant, fieldName.constant].join('.');
+    return databaseAccessorDisplayName(astNode);
   }
 
   if (isPayload(astNode)) {
-    const payload = astNode.children[0].constant;
-    return payload;
+    return payloadAccessorsDisplayName(astNode);
   }
 
   if (isAggregation(astNode)) {

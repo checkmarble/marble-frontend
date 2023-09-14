@@ -23,6 +23,7 @@ describe('coerceToConstantsLabelledAst', () => {
         astNode: NewAstNode({
           constant: 10,
         }),
+        dataModelField: null,
       },
       helperLabelledString('10'),
     ];
@@ -37,6 +38,7 @@ describe('coerceToConstantsLabelledAst', () => {
         astNode: NewAstNode({
           constant: true,
         }),
+        dataModelField: null,
       },
       helperLabelledString('True'),
     ];
@@ -51,6 +53,7 @@ describe('coerceToConstantsLabelledAst', () => {
         astNode: NewAstNode({
           constant: false,
         }),
+        dataModelField: null,
       },
       helperLabelledString('FALSE'),
     ];
@@ -65,6 +68,7 @@ describe('coerceToConstantsLabelledAst', () => {
         astNode: NewAstNode({
           constant: ['fr', 13, null],
         }),
+        dataModelField: null,
       },
       helperLabelledString('["fr", 13, null]'),
     ];
@@ -81,5 +85,6 @@ function helperLabelledString(label: string): LabelledAst {
     astNode: NewAstNode({
       constant: label,
     }),
+    dataModelField: null,
   };
 }

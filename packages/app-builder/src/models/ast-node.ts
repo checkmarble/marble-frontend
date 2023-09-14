@@ -109,11 +109,12 @@ export function isConstant(node: AstNode): node is ConstantAstNode {
 
 export interface DatabaseAccessAstNode {
   name: 'DatabaseAccess';
-  constant: undefined;
+  constant?: undefined;
   children: [];
   namedChildren: {
-    path: ConstantAstNode<string[]>;
     fieldName: ConstantAstNode<string>;
+    path: ConstantAstNode<string[]>;
+    tableName: ConstantAstNode<string>;
   };
 }
 
@@ -133,7 +134,7 @@ export interface AggregationAstNode {
 
 export interface PayloadAstNode {
   name: 'Payload';
-  constant: undefined;
+  constant?: undefined;
   children: [ConstantAstNode<string>];
   namedChildren: Record<string, never>;
 }

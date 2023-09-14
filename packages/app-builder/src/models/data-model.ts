@@ -63,3 +63,57 @@ export function adaptDataModelDto(dataModelDto: DataModelDto): DataModel[] {
     }))
   );
 }
+
+export function findDataModelTableByName({
+  dataModel,
+  tableName,
+}: {
+  dataModel: DataModel[];
+  tableName: string;
+}): DataModel {
+  const table = dataModel.find((t) => t.name == tableName);
+  if (!table) {
+    throw Error(`can't find table in data models named '${tableName}'`);
+  }
+  return table;
+}
+
+export function findDataModelTable({
+  dataModel,
+  tableName,
+  path,
+}: {
+  dataModel: DataModel[];
+  tableName: string;
+  path: string[];
+}): DataModel {
+  let table = findDataModelTableByName({ dataModel, tableName });
+
+  for (const linkName of path) {
+    const link = table.linksToSingle.find((link) => link.linkName === linkName);
+    if (!link) {
+      throw Error(`can't find link '${linkName}'' in table '${table.name}''`);
+    }
+    table = findDataModelTableByName({
+      dataModel,
+      tableName: link.linkedTableName,
+    });
+  }
+
+  return table;
+}
+
+export function findDataModelField({
+  table,
+  fieldName,
+}: {
+  table: DataModel;
+  fieldName: string;
+}): DataModelField {
+  const field = table.fields.find((f) => f.name == fieldName);
+  if (!field) {
+    throw Error("can't find field in datamodel");
+  }
+
+  return field;
+}

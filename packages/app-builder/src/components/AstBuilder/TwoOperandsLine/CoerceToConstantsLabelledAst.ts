@@ -1,4 +1,8 @@
-import { type LabelledAst, NewAstNode } from '@app-builder/models';
+import {
+  type ConstantType,
+  type LabelledAst,
+  NewAstNode,
+} from '@app-builder/models';
 
 export function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
   const results: LabelledAst[] = [];
@@ -11,34 +15,34 @@ export function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
   // Note: Number('') === 0
   const parsedNumber = Number(searchLowerCase);
   if (Number.isFinite(parsedNumber)) {
-    results.push({
-      label: search,
-      tooltip: '(number)',
-      astNode: NewAstNode({
+    results.push(
+      newLabelledAstOfConstant({
+        label: search,
+        type: 'number',
         constant: parsedNumber,
-      }),
-    });
+      })
+    );
   }
 
   if (searchLowerCase === 'true' || searchLowerCase === 'false') {
-    results.push({
-      label: searchLowerCase,
-      tooltip: '(boolean)',
-      astNode: NewAstNode({
+    results.push(
+      newLabelledAstOfConstant({
+        label: searchLowerCase,
+        type: 'boolean',
         constant: searchLowerCase === 'true',
-      }),
-    });
+      })
+    );
   }
 
   results.push(...coerceToConstantArray(search));
 
-  results.push({
-    label: `"${search}"`,
-    tooltip: '(string)',
-    astNode: NewAstNode({
+  results.push(
+    newLabelledAstOfConstant({
+      label: `"${search}"`,
+      type: 'string',
       constant: search,
-    }),
-  });
+    })
+  );
 
   return results;
 }
@@ -51,18 +55,34 @@ function coerceToConstantArray(search: string): LabelledAst[] {
     return [];
   }
 
-  const results: LabelledAst[] = [];
-
   if (Array.isArray(parsed)) {
     // let's accept anything in the array.
-    results.push({
-      label: search,
-      tooltip: '(array)',
-      astNode: NewAstNode({
+    return [
+      newLabelledAstOfConstant({
+        label: search,
+        type: 'array',
         constant: parsed,
       }),
-    });
+    ];
   }
+  return [];
+}
 
-  return results;
+function newLabelledAstOfConstant({
+  label,
+  type,
+  constant,
+}: {
+  label: string;
+  type: string;
+  constant: ConstantType;
+}): LabelledAst {
+  return {
+    label,
+    tooltip: `(${type})`,
+    astNode: NewAstNode({
+      constant: constant,
+    }),
+    dataModelField: null,
+  };
 }

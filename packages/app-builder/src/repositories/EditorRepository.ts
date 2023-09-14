@@ -3,7 +3,11 @@ import {
   adaptAstNode,
   adaptNodeDto,
   type AstNode,
+  type DatabaseAccessAstNode,
   type EditorIdentifiersByType,
+  isDatabaseAccess,
+  isPayload,
+  type PayloadAstNode,
 } from '@app-builder/models';
 import {
   adaptAstOperatorDto,
@@ -27,11 +31,27 @@ export interface EditorRepository {
 
 export function getEditorRepository() {
   return (marbleApiClient: MarbleApi): EditorRepository => ({
-    listIdentifiers: async ({ scenarioId }) => {
+    listIdentifiers: async ({
+      scenarioId,
+    }): Promise<EditorIdentifiersByType> => {
       const { database_accessors, payload_accessors } =
         await marbleApiClient.listIdentifiers(scenarioId);
-      const databaseAccessors = database_accessors.map(adaptAstNode);
-      const payloadAccessors = payload_accessors.map(adaptAstNode);
+      const databaseAccessors = database_accessors
+        .map(adaptAstNode)
+        .filter((node): node is DatabaseAccessAstNode => {
+          if (!isDatabaseAccess(node)) {
+            throw Error("a payload_accessors not a 'DatabaseAccess'");
+          }
+          return true;
+        });
+      const payloadAccessors = payload_accessors
+        .map(adaptAstNode)
+        .filter((node): node is PayloadAstNode => {
+          if (!isPayload(node)) {
+            throw Error("a payload_accessorsis not a 'Payload'");
+          }
+          return true;
+        });
 
       return {
         databaseAccessors,
