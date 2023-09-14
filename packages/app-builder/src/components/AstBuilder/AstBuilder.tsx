@@ -9,8 +9,8 @@ import {
   type AggregationEditorNodeViewModel,
   AggregationEditPanel,
   isAggregationEditorNodeViewModel,
-} from './AggregationEdit';
-import { AstBuilderNode } from './AstBuilderNode';
+} from './AstBuilderNode/AggregationEdit';
+import { RootAstBuilderNode } from './RootAstBuilderNode';
 
 export function AstBuilder({
   builder,
@@ -21,7 +21,7 @@ export function AstBuilder({
 }) {
   return (
     <AggregationEditModal builder={builder}>
-      <AstBuilderNode
+      <RootAstBuilderNode
         builder={builder}
         editorNodeViewModel={builder.editorNodeViewModel}
         viewOnly={viewOnly}

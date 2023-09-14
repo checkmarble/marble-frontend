@@ -5,7 +5,7 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
-import { AstBuilderNode } from '../AstBuilderNode';
+import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 import { RemoveButton } from './RemoveButton';
 

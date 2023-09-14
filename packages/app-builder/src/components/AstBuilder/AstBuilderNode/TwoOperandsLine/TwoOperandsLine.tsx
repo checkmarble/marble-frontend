@@ -3,7 +3,7 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
-import { ErrorMessage } from '../ErrorMessage';
+import { ErrorMessage } from '../../ErrorMessage';
 import { Operand, type OperandViewModel } from '../Operand';
 import {
   adaptOperatorViewModel,
