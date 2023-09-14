@@ -68,6 +68,57 @@ export function CreateDraftIteration({
   scenarioId: string;
   draftId: string | undefined;
 }) {
+  return (
+    <>
+      {draftId === undefined && (
+        <NewDraftButton iterationId={iterationId} scenarioId={scenarioId} />
+      )}
+      {draftId && (
+        <ExistingDraftModal
+          iterationId={iterationId}
+          scenarioId={scenarioId}
+          draftId={draftId}
+        />
+      )}
+    </>
+  );
+}
+
+const NewDraftButton = ({
+  iterationId,
+  scenarioId,
+}: {
+  iterationId: string;
+  scenarioId: string;
+}) => {
+  const { t } = useTranslation(handle.i18n);
+  const fetcher = useFetcher<typeof action>();
+
+  return (
+    <fetcher.Form
+      method="POST"
+      action={`/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
+        iterationId
+      )}/create_draft`}
+    >
+      <HiddenInputs iterationId={iterationId} />
+      <Button type="submit">
+        <Plus width={'24px'} height={'24px'} />
+        {t('scenarios:create_iteration.title')}
+      </Button>
+    </fetcher.Form>
+  );
+};
+
+const ExistingDraftModal = ({
+  iterationId,
+  scenarioId,
+  draftId,
+}: {
+  iterationId: string;
+  scenarioId: string;
+  draftId: string;
+}) => {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
   const navigate = useNavigate();
@@ -88,72 +139,45 @@ export function CreateDraftIteration({
           )}/create_draft`}
         >
           <HiddenInputs iterationId={iterationId} />
-          {draftId === undefined && (
-            <>
-              <Modal.Title>{t('scenarios:create_iteration.title')}</Modal.Title>
-              <div className="bg-grey-00 flex flex-col gap-8 p-8">
-                <div className="flex flex-1 flex-col gap-4"></div>
-                <div className="flex flex-1 flex-row gap-2">
-                  <Modal.Close asChild>
-                    <Button className="flex-1" variant="secondary">
-                      {t('common:cancel')}
-                    </Button>
-                  </Modal.Close>
-                  <Button
-                    className="flex-1"
-                    variant="primary"
-                    type="submit"
-                    name="create"
-                  >
-                    {t('scenarios:create_draft.button_accept')}
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-          {draftId && (
-            <>
-              <Modal.Title>{t('scenarios:create_iteration.title')}</Modal.Title>
-              <div className="bg-grey-00 flex flex-col gap-8 p-8">
-                <div className="flex flex-1 flex-col gap-4">
-                  <p className="text-center">
-                    {t('scenarios:create_rule.draft_already_exist')}
-                  </p>
-                  <p className="text-center">
-                    {t('scenarios:create_rule.draft_already_exist_possibility')}
-                  </p>
-                </div>
-                <div className="flex flex-1 flex-row gap-2">
-                  <Modal.Close asChild>
-                    <Button
-                      className="flex-1"
-                      variant="secondary"
-                      onClick={() =>
-                        navigate(
-                          location.pathname.replace(
-                            fromUUID(iterationId),
-                            fromUUID(draftId)
-                          )
-                        )
-                      }
-                    >
-                      {t('scenarios:create_draft.keep_existing_draft')}
-                    </Button>
-                  </Modal.Close>
-                  <Button
-                    className="flex-1"
-                    variant="primary"
-                    type="submit"
-                    name="create"
-                  >
-                    {t('scenarios:create_draft.override_existing_draft')}
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
+          <Modal.Title>{t('scenarios:create_iteration.title')}</Modal.Title>
+          <div className="bg-grey-00 flex flex-col gap-8 p-8">
+            <div className="text-s flex flex-1 flex-col gap-4">
+              <p className="text-center">
+                {t('scenarios:create_rule.draft_already_exist')}
+              </p>
+              <p className="text-center">
+                {t('scenarios:create_rule.draft_already_exist_possibility')}
+              </p>
+            </div>
+            <div className="flex flex-1 flex-row gap-2">
+              <Modal.Close asChild>
+                <Button
+                  className="flex-1"
+                  variant="secondary"
+                  onClick={() =>
+                    navigate(
+                      location.pathname.replace(
+                        fromUUID(iterationId),
+                        fromUUID(draftId)
+                      )
+                    )
+                  }
+                >
+                  {t('scenarios:create_draft.keep_existing_draft')}
+                </Button>
+              </Modal.Close>
+              <Button
+                className="flex-1"
+                variant="primary"
+                type="submit"
+                name="create"
+              >
+                {t('scenarios:create_draft.override_existing_draft')}
+              </Button>
+            </div>
+          </div>
         </fetcher.Form>
       </Modal.Content>
     </Modal.Root>
   );
-}
+};
