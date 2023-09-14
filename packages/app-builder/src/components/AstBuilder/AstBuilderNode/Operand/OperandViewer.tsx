@@ -13,7 +13,7 @@ export const OperandViewer = forwardRef<HTMLButtonElement, OperandViewerProps>(
       ref={ref}
       data-border-color={borderColor}
       className={clsx(
-        'bg-grey-00 flex h-10 min-w-[40px] items-center justify-between rounded border px-2 outline-none',
+        'bg-grey-00 flex h-fit min-h-[40px] w-fit min-w-[40px] items-center justify-between rounded border px-2 outline-none',
         'disabled:bg-grey-02 disabled:border-grey-02',
         'radix-state-open:border-purple-100 radix-state-open:bg-purple-05',
         // Border color variants
