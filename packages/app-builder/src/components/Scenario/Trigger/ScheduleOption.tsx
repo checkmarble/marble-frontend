@@ -254,7 +254,7 @@ const ScheduleDetailSelect = ({
   onChange: (value: string) => void;
   frequency: Frequency;
 }) => {
-  const { t } = useTranslation(handle.i18n);
+  const { i18n } = useTranslation(handle.i18n);
   const options = optionsForFrequency(frequency);
 
   const displayNameForFrequency =
@@ -263,9 +263,7 @@ const ScheduleDetailSelect = ({
         case 'daily':
           return option.padStart(2, '0') + ':00';
         case 'weekly':
-          return isWeeklyOption(option)
-            ? t(`scenarios:trigger.schedule_scenario.weekly.${option}`)
-            : 'unknown';
+          return getWeekDayName(option, i18n.language);
         case 'monthly':
           return option;
       }
@@ -312,10 +310,6 @@ const dailyScheduleOptions = Array.from({ length: 24 }, (_, i) => i).map(
   (hour) => hour.toString()
 );
 
-type WeeklyOption = '0' | '1' | '2' | '3' | '4' | '5' | '6';
-const isWeeklyOption = (value: string): value is WeeklyOption =>
-  ['0', '1', '2', '3', '4', '5', '6'].includes(value);
-
 const weekDays = Array.from({ length: 7 }, (_, i) => i).map((day) =>
   day.toString()
 );
@@ -328,3 +322,17 @@ const monthlyScheduleOptions = Array.from({ length: 31 }, (_, i) => i + 1).map(
 const weeklyRegex = new RegExp(/^0 0 \* \* [0-6]$/);
 const monthlyRegex = new RegExp(/^0 0 [1-31] \* \*$/);
 const dailyRegex = new RegExp(/^0 [0-23] \* \* \*$/);
+
+const getWeekDayName = (
+  option: string,
+  locale: string,
+  format?: 'long' | 'short' | 'narrow'
+) => {
+  const formatter = new Intl.DateTimeFormat(locale, {
+    weekday: format ?? 'long',
+    timeZone: 'UTC',
+  });
+  const day = parseInt(option) + 1;
+  const date = new Date(`2017-01-0${day}T00:00:00+00:00`);
+  return formatter.format(date);
+};

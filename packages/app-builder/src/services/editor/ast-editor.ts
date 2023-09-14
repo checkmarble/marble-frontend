@@ -101,7 +101,6 @@ export interface AstBuilder {
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
-  save: () => void;
 }
 
 export function useAstBuilder({
@@ -113,7 +112,6 @@ export function useAstBuilder({
   dataModels,
   customLists,
   triggerObjectType,
-  onSave,
   onValidate,
 }: {
   backendAst: AstNode;
@@ -124,7 +122,6 @@ export function useAstBuilder({
   dataModels: DataModel[];
   customLists: CustomList[];
   triggerObjectType: string;
-  onSave?: (toSave: AstNode) => void;
   onValidate: (ast: AstNode) => void;
 }): AstBuilder {
   const [editorNodeViewModel, setEditorNodeViewModel] =
@@ -230,12 +227,6 @@ export function useAstBuilder({
     });
   }, [localValidation]);
 
-  const save = useCallback(() => {
-    const newAst = adaptAstNodeFromEditorViewModel(editorNodeViewModel);
-    onSave && onSave(newAst);
-    validate(editorNodeViewModel);
-  }, [editorNodeViewModel, onSave, validate]);
-
   return {
     editorNodeViewModel,
     identifiers,
@@ -251,7 +242,6 @@ export function useAstBuilder({
     setOperator,
     appendChild,
     remove,
-    save,
   };
 }
 

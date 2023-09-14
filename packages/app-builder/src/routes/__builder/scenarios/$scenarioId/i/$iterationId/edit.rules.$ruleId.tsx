@@ -190,8 +190,6 @@ export default function RuleEdit() {
     dataModels,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onSave: () => {},
     onValidate: validate,
   });
   const getCurrentAstNode = () =>
