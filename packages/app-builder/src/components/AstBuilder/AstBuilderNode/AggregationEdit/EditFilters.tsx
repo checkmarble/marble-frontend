@@ -8,8 +8,8 @@ import { Button } from '@ui-design-system';
 import { Plus } from '@ui-icons';
 import { useTranslation } from 'react-i18next';
 
-import { RemoveButton } from '../../Edit/RemoveButton';
-import { ErrorMessage } from '../ErrorMessage';
+import { RemoveButton } from '../../../Edit/RemoveButton';
+import { ErrorMessage } from '../../ErrorMessage';
 import { Operand } from '../Operand';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { FilterOperatorSelect } from './FilterOperatorSelect';

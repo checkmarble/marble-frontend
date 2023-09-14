@@ -6,7 +6,7 @@ import {
 import { Select } from '@ui-design-system';
 import { useMemo } from 'react';
 
-import { getBorderColor } from '../utils';
+import { getBorderColor } from '../../utils';
 
 export const AggregatorSelect = ({
   value,

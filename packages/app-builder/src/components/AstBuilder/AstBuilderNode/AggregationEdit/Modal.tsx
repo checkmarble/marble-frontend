@@ -22,8 +22,8 @@ import { type Namespace } from 'i18next';
 import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ErrorMessage } from '../ErrorMessage';
-import { getBorderColor } from '../utils';
+import { ErrorMessage } from '../../ErrorMessage';
+import { getBorderColor } from '../../utils';
 import { AggregatorSelect } from './AggregatorSelect';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
