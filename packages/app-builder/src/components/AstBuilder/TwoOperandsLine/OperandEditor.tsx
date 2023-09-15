@@ -19,6 +19,7 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { coerceToConstantsLabelledAst } from '@app-builder/services/editor/CoerceToConstantsLabelledAst';
 import * as Popover from '@radix-ui/react-popover';
 import { Input, ScrollArea } from '@ui-design-system';
 import clsx from 'clsx';
@@ -31,7 +32,6 @@ import {
   useEditAggregation,
 } from '../AggregationEdit';
 import { ErrorMessage } from '../ErrorMessage';
-import { coerceToConstantsLabelledAst } from './CoerceToConstantsLabelledAst';
 
 export type OperandViewModel = EditorNodeViewModel;
 
