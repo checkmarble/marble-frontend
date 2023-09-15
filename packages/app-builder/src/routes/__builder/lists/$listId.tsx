@@ -1,4 +1,9 @@
-import { Callout, Page, usePermissionsContext } from '@app-builder/components';
+import {
+  Callout,
+  ErrorComponent,
+  Page,
+  usePermissionsContext,
+} from '@app-builder/components';
 import { DeleteList } from '@app-builder/routes/ressources/lists/delete';
 import { EditList } from '@app-builder/routes/ressources/lists/edit';
 import { NewListValue } from '@app-builder/routes/ressources/lists/value_create';
@@ -6,7 +11,7 @@ import { DeleteListValue } from '@app-builder/routes/ressources/lists/value_dele
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -145,6 +150,10 @@ export default function Lists() {
       </Page.Content>
     </Page.Container>
   );
+}
+
+export function ErrorBoundary() {
+  return <ErrorComponent error={useRouteError()} />;
 }
 
 // Correspond to this part of the UI : https://www.figma.com/file/JW6QvnhBtdZDcKvLdg9s5T/Marble-Portal?node-id=6377%3A53150&mode=dev

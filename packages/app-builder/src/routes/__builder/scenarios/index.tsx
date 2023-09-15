@@ -1,11 +1,11 @@
-import { Page } from '@app-builder/components';
+import { ErrorComponent, Page } from '@app-builder/components';
 import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { CreateScenario } from '@app-builder/routes/ressources/scenarios/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { Tag } from '@ui-design-system';
 import { Scenarios } from '@ui-icons';
 import { type Namespace } from 'i18next';
@@ -28,6 +28,7 @@ export async function loader({ request }: LoaderArgs) {
     ({ createdAt }) => createdAt,
     'desc',
   ]);
+
   return json({
     scenarios: sortedScenarios,
     dataModel: adaptDataModelDto(data_model),
@@ -87,4 +88,8 @@ export default function ScenariosPage() {
       </Page.Content>
     </Page.Container>
   );
+}
+
+export function ErrorBoundary() {
+  return <ErrorComponent error={useRouteError()} />;
 }

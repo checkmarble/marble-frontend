@@ -1,11 +1,16 @@
-import { Outcome, type OutcomeProps, Page } from '@app-builder/components';
+import {
+  ErrorComponent,
+  Outcome,
+  type OutcomeProps,
+  Page,
+} from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
 import { formatCreatedAt } from '@app-builder/utils/format';
 import { useVisibilityChange } from '@app-builder/utils/hooks';
 import { type Decision } from '@marble-api';
 import { Label } from '@radix-ui/react-label';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { useLoaderData, useRevalidator } from '@remix-run/react';
+import { useLoaderData, useRevalidator, useRouteError } from '@remix-run/react';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import { Checkbox, Input, Table, useVirtualTable } from '@ui-design-system';
 import { Decision as DecisionIcon, Search } from '@ui-icons';
@@ -187,4 +192,8 @@ function ToggleLiveUpdate() {
       </Label>
     </div>
   );
+}
+
+export function ErrorBoundary() {
+  return <ErrorComponent error={useRouteError()} />;
 }
