@@ -253,13 +253,12 @@ export default function RuleEdit() {
         </Button>
       </ScenarioPage.Header>
 
-      <Callout variant="error">
-        {t('common:validation_error', {
-          count: countNodeEvaluationErrors(rule.validation),
-        })}
-      </Callout>
-
       <ScenarioPage.Content className="max-w-3xl">
+        <Callout variant="error">
+          {t('common:validation_error', {
+            count: countNodeEvaluationErrors(rule.validation),
+          })}
+        </Callout>
         <Paper.Container scrollable={false}>
           <FormProvider {...formMethods}>
             <FormField
