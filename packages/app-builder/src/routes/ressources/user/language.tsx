@@ -61,7 +61,7 @@ export function LanguagePicker() {
   const { i18n } = useTranslation<'common'>();
   const fetcher = useFetcher<typeof action>();
 
-  if (supportedLngs.length === 1) return null;
+  if (supportedLngs.every((lng: string) => lng.startsWith('en'))) return null;
 
   return (
     <Select.Default

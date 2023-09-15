@@ -137,7 +137,7 @@ export const ScheduleOption = ({
 
   return (
     <>
-      <div className="flex items-center gap-1">
+      <div className="text-s flex items-center gap-1">
         <Checkbox
           name="scheduleScenario"
           defaultChecked={scheduleOption.isScenarioScheduled}
@@ -148,31 +148,30 @@ export const ScheduleOption = ({
             })
           }
         />
-        <Label htmlFor="scheduleScenario" className="text-s">
+        <Label htmlFor="scheduleScenario">
           {t('scenarios:trigger.schedule_scenario.option')}
         </Label>
       </div>
       {scheduleOption.isScenarioScheduled && (
         <>
-          <div className="flex items-center gap-2">
-            <span className="text-s">
-              {t('scenarios:trigger.schedule_scenario.frequency_label')}
-            </span>
+          <div className="text-s flex items-center gap-2">
+            {t('scenarios:trigger.schedule_scenario.frequency_label')}
             <ScheduleFrequencySelect
               onChange={(value: string) => {
                 if (isFrequency(value)) {
                   setScheduleOption({
                     ...scheduleOption,
                     frequency: value,
-                    scheduleDetail: optionsForFrequency(value)[0],
+                    scheduleDetail: optionsForFrequency(
+                      value,
+                      i18n.language
+                    )[0],
                   });
                 }
               }}
               value={scheduleOption.frequency}
             />
-            <span className="text-s">
-              {textForFrequency(scheduleOption.frequency)}
-            </span>
+            {textForFrequency(scheduleOption.frequency)}
             <ScheduleDetailSelect
               frequency={scheduleOption.frequency}
               onChange={(value: string) =>
@@ -255,7 +254,7 @@ const ScheduleDetailSelect = ({
   frequency: Frequency;
 }) => {
   const { i18n } = useTranslation(handle.i18n);
-  const options = optionsForFrequency(frequency);
+  const options = optionsForFrequency(frequency, i18n.language);
 
   const displayNameForFrequency =
     (frequency: Frequency) => (option: string) => {
@@ -293,12 +292,12 @@ const ScheduleDetailSelect = ({
   );
 };
 
-const optionsForFrequency = (frequency: Frequency) => {
+const optionsForFrequency = (frequency: Frequency, locale: string) => {
   switch (frequency) {
     case 'daily':
       return dailyScheduleOptions;
     case 'weekly':
-      return weeklyScheduleOptions;
+      return weeklyScheduleOptions(locale);
     case 'monthly':
       return monthlyScheduleOptions;
     case 'custom':
@@ -306,18 +305,33 @@ const optionsForFrequency = (frequency: Frequency) => {
   }
 };
 
-const dailyScheduleOptions = Array.from({ length: 24 }, (_, i) => i).map(
-  (hour) => hour.toString()
-);
+const dailyScheduleOptions = Array.from({ length: 24 }, (_, i) => `${i}`);
 
-const weekDays = Array.from({ length: 7 }, (_, i) => i).map((day) =>
-  day.toString()
-);
-const weeklyScheduleOptions = [...weekDays.slice(1), weekDays[0]]; // Display Monday as first day of the week
+const weekDays = Array.from({ length: 7 }, (_, i) => `${i}`);
 
-const monthlyScheduleOptions = Array.from({ length: 31 }, (_, i) => i + 1).map(
-  (day) => day.toString()
-);
+const getWeekInfo = (
+  locale: string
+): { firstDay: number; weekend: number[]; minimalDays: number } => {
+  const intl = new Intl.Locale(locale);
+  // Default to France weekInfo if not present
+  return (
+    // @ts-expect-error Property 'weekInfo' does not exist on type 'Locale'.
+    intl.weekInfo ??
+    // @ts-expect-error Property 'getWeekInfo' does not exist on type 'Locale'.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    intl.getWeekInfo?.() ?? { firstDay: 1, weekend: [6, 7], minimalDays: 4 }
+  );
+};
+
+const weeklyScheduleOptions = (locale: string) => {
+  const weekInfo = getWeekInfo(locale);
+  if (weekInfo.firstDay === 1) {
+    return [...weekDays.slice(1), weekDays[0]];
+  }
+  return weekDays;
+};
+
+const monthlyScheduleOptions = Array.from({ length: 31 }, (_, i) => `${i + 1}`);
 
 const weeklyRegex = new RegExp(/^0 0 \* \* [0-6]$/);
 const monthlyRegex = new RegExp(/^0 0 [1-31] \* \*$/);
