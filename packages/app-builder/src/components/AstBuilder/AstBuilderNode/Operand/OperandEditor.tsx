@@ -3,11 +3,11 @@ import {
   type DataModelField,
   getAstNodeLabelName,
   isAggregation,
-  isValidationFailure,
   type LabelledAst,
 } from '@app-builder/models';
 import {
   allAggregators,
+  coerceToConstantsLabelledAst,
   newAggregatorLabelledAst,
   newCustomListLabelledAst,
   newDatabaseAccessorsLabelledAst,
@@ -19,19 +19,20 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import { coerceToConstantsLabelledAst } from '@app-builder/services/editor/CoerceToConstantsLabelledAst';
 import * as Popover from '@radix-ui/react-popover';
 import { Input, ScrollArea } from '@ui-design-system';
 import clsx from 'clsx';
 import { forwardRef, useCallback, useState } from 'react';
 
+import { ErrorMessage } from '../../ErrorMessage';
+import { getBorderColor } from '../../utils';
 import {
   adaptAggregationViewModel,
   type AggregationEditorNodeViewModel,
-  isAggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../AggregationEdit';
-import { ErrorMessage } from '../ErrorMessage';
+import { Default } from '../Default';
+import { OperandViewer } from './OperandViewer';
 
 export type OperandViewModel = EditorNodeViewModel;
 
@@ -44,86 +45,53 @@ interface EditOperandViewModel {
 
 export function OperandEditor({
   builder,
-  onSave,
   operandViewModel,
+  onSave,
+  viewOnly,
 }: {
   builder: AstBuilder;
-  onSave: (astNode: AstNode) => void;
   operandViewModel: OperandViewModel;
+  onSave: (astNode: AstNode) => void;
+  viewOnly?: boolean;
 }) {
   const [open, onOpenChange] = useState<boolean>(false);
 
-  const closeModal = useCallback(() => {
-    onOpenChange(false);
-  }, []);
+  // TODO: better handling of the viewOnly fallback when we get a specific UI per component (not a stringified version)
+  const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
+  const labelName = getAstNodeLabelName(astNode, builder, {
+    getDefaultDisplayName: () => undefined,
+  });
+  if (labelName === undefined) {
+    return <Default editorNodeViewModel={operandViewModel} builder={builder} />;
+  }
 
   return (
     <div className="flex flex-col gap-1">
       <Popover.Root modal open={open} onOpenChange={onOpenChange}>
-        <OperandViewer builder={builder} operandViewModel={operandViewModel} />
+        <Popover.Trigger asChild disabled={viewOnly}>
+          <OperandViewer
+            borderColor={getBorderColor(operandViewModel.validation)}
+          >
+            {labelName}
+          </OperandViewer>
+        </Popover.Trigger>
         <Popover.Portal>
           <OperandEditorContent
             builder={builder}
             onSave={onSave}
-            closeModal={closeModal}
+            closeModal={() => {
+              onOpenChange(false);
+            }}
             operandViewModel={operandViewModel}
           />
         </Popover.Portal>
       </Popover.Root>
+      {operandViewModel.validation.state === 'fail' && (
+        <ErrorMessage errors={operandViewModel.validation.errors} />
+      )}
     </div>
   );
 }
-
-function OperandViewer({
-  builder,
-  operandViewModel,
-}: {
-  builder: AstBuilder;
-  operandViewModel: OperandViewModel;
-}) {
-  const editAggregation = useEditAggregation();
-
-  const astNodeLabelName = getAstNodeLabelName(
-    adaptAstNodeFromEditorViewModel(operandViewModel),
-    builder
-  );
-
-  if (isAggregationEditorNodeViewModel(operandViewModel)) {
-    const aggregation = adaptAggregationViewModel(operandViewModel);
-    return (
-      <>
-        <TriggerOperandEdit onClick={() => editAggregation(aggregation)}>
-          {astNodeLabelName}
-        </TriggerOperandEdit>
-        {isValidationFailure(aggregation.validation.aggregation) && (
-          <ErrorMessage errors={aggregation.validation.aggregation.errors} />
-        )}
-      </>
-    );
-  }
-
-  return (
-    <Popover.Trigger asChild>
-      <TriggerOperandEdit>{astNodeLabelName}</TriggerOperandEdit>
-    </Popover.Trigger>
-  );
-}
-
-const TriggerOperandEdit = forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<'button'>
->(({ ...props }, ref) => (
-  <button
-    ref={ref}
-    className={clsx(
-      'flex h-10 min-w-[40px] items-center justify-between px-2 outline-none',
-      'bg-grey-00 disabled:bg-grey-05 radix-state-open:bg-purple-05',
-      'border-grey-10 radix-state-open:border-purple-100 disabled:border-grey-10 rounded border focus:border-purple-100'
-    )}
-    {...props}
-  />
-));
-TriggerOperandEdit.displayName = 'TriggerOperandEdit';
 
 const OperandEditorContent = forwardRef<
   HTMLDivElement,
@@ -185,22 +153,20 @@ const OperandEditorContent = forwardRef<
   const handleSelectOption = useCallback(
     (newSelection: LabelledAst) => {
       if (isAggregation(newSelection.astNode)) {
-        editAggregation(
-          adaptAggregationViewModel({
-            ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
-            nodeId: operandViewModel.nodeId,
-          } as AggregationEditorNodeViewModel)
-        );
+        const initialAggregation = adaptAggregationViewModel({
+          ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
+          nodeId: operandViewModel.nodeId,
+        } as AggregationEditorNodeViewModel);
+
+        editAggregation({
+          initialAggregation,
+          onSave,
+        });
       } else {
-        setEditViewModel((vm) => ({
-          ...vm,
-          selectedOption: newSelection,
-        }));
         onSave(newSelection.astNode);
       }
-      closeModal();
     },
-    [closeModal, editAggregation, onSave, operandViewModel.nodeId]
+    [editAggregation, onSave, operandViewModel.nodeId]
   );
 
   const availableOptions = [
@@ -233,6 +199,7 @@ const OperandEditorContent = forwardRef<
               key={option.label}
               onClick={() => {
                 handleSelectOption(option);
+                closeModal();
               }}
               className={clsx(
                 'hover:bg-purple-05 text-s cursor-default select-none rounded-sm p-2 outline-none',

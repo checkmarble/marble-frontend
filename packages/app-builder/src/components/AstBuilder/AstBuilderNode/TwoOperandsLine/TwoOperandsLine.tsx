@@ -1,16 +1,15 @@
-import { type AstNode } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
-import { ErrorMessage } from '../ErrorMessage';
-import { OperandEditor, type OperandViewModel } from './OperandEditor';
+import { ErrorMessage } from '../../ErrorMessage';
+import { Operand, type OperandViewModel } from '../Operand';
 import {
   adaptOperatorViewModel,
   Operator,
   type OperatorViewModel,
-} from './Operator';
+} from '../Operator';
 
 interface TwoOperandsLineViewModel {
   left: OperandViewModel;
@@ -21,29 +20,38 @@ interface TwoOperandsLineViewModel {
 export function TwoOperandsLine({
   builder,
   twoOperandsViewModel,
+  viewOnly,
 }: {
   builder: AstBuilder;
   twoOperandsViewModel: TwoOperandsLineViewModel;
+  viewOnly?: boolean;
 }) {
-  const onSaveOperand = (nodeId: string) => (astNode: AstNode) => {
-    builder.setOperand(nodeId, astNode);
-  };
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-row gap-2">
-        <OperandEditor
+        <Operand
           builder={builder}
           operandViewModel={twoOperandsViewModel.left}
-          onSave={onSaveOperand(twoOperandsViewModel.left.nodeId)}
+          onSave={(astNode) => {
+            builder.setOperand(twoOperandsViewModel.left.nodeId, astNode);
+          }}
+          viewOnly={viewOnly}
         />
         <Operator
           builder={builder}
           operatorViewModel={twoOperandsViewModel.operator}
+          onSave={(operator) => {
+            builder.setOperator(twoOperandsViewModel.operator.nodeId, operator);
+          }}
+          viewOnly={viewOnly}
         />
-        <OperandEditor
+        <Operand
           builder={builder}
           operandViewModel={twoOperandsViewModel.right}
-          onSave={onSaveOperand(twoOperandsViewModel.right.nodeId)}
+          onSave={(astNode) => {
+            builder.setOperand(twoOperandsViewModel.right.nodeId, astNode);
+          }}
+          viewOnly={viewOnly}
         />
       </div>
       {twoOperandsViewModel.operator.validation.state === 'fail' && (

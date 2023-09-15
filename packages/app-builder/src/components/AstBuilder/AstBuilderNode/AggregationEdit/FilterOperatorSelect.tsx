@@ -1,7 +1,7 @@
 import { type Validation } from '@app-builder/models';
 import { Select } from '@ui-design-system';
 
-import { getBorderColor } from '../utils';
+import { getBorderColor } from '../../utils';
 
 export const FilterOperatorSelect = ({
   value,
@@ -28,17 +28,19 @@ export const FilterOperatorSelect = ({
         <Select.Value placeholder="..." />
       </Select.Trigger>
       <Select.Content className="max-h-60">
-        {filterOperators.map((operator) => (
-          <Select.Item
-            className="min-w-[110px]"
-            key={operator}
-            value={operator}
-          >
-            <Select.ItemText>
-              <span className="text-s text-grey-100">{operator}</span>
-            </Select.ItemText>
-          </Select.Item>
-        ))}
+        <Select.Viewport>
+          {filterOperators.map((operator) => (
+            <Select.Item
+              className="min-w-[110px]"
+              key={operator}
+              value={operator}
+            >
+              <Select.ItemText>
+                <span className="text-s text-grey-100">{operator}</span>
+              </Select.ItemText>
+            </Select.Item>
+          ))}
+        </Select.Viewport>
       </Select.Content>
     </Select.Root>
   );

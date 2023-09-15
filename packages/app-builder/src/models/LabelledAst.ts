@@ -79,7 +79,23 @@ function getConstantDisplayName(constant: ConstantType) {
 export function getAstNodeLabelName(
   astNode: AstNode,
   builder: AstBuilder
-): string {
+): string;
+export function getAstNodeLabelName(
+  astNode: AstNode,
+  builder: AstBuilder,
+  options: { getDefaultDisplayName: (astNode: AstNode) => string }
+): string;
+export function getAstNodeLabelName(
+  astNode: AstNode,
+  builder: AstBuilder,
+  options: { getDefaultDisplayName: (astNode: AstNode) => string | undefined }
+): string | undefined;
+
+export function getAstNodeLabelName(
+  astNode: AstNode,
+  builder: AstBuilder,
+  options: AstNodeDisplayNameOptions = defaultOptions
+): string | undefined {
   if (isCustomListAccess(astNode)) {
     const customList = builder.customLists.find(
       (customList) =>
@@ -88,7 +104,7 @@ export function getAstNodeLabelName(
     return customList?.name ?? 'Unknown list';
   }
 
-  return getAstNodeDisplayName(astNode);
+  return getAstNodeDisplayName(astNode, options);
 }
 
 export function databaseAccessorDisplayName(
@@ -102,7 +118,27 @@ export function payloadAccessorsDisplayName(node: PayloadAstNode): string {
   return node.children[0].constant;
 }
 
-export function getAstNodeDisplayName(astNode: AstNode): string {
+interface AstNodeDisplayNameOptions {
+  getDefaultDisplayName: (astNode: AstNode) => string | undefined;
+}
+const defaultOptions = {
+  getDefaultDisplayName: (astNode: AstNode) => astNode.name ?? '??',
+};
+
+export function getAstNodeDisplayName(astNode: AstNode): string;
+export function getAstNodeDisplayName(
+  astNode: AstNode,
+  options: { getDefaultDisplayName: (astNode: AstNode) => string }
+): string;
+export function getAstNodeDisplayName(
+  astNode: AstNode,
+  options: { getDefaultDisplayName: (astNode: AstNode) => string | undefined }
+): string | undefined;
+
+export function getAstNodeDisplayName(
+  astNode: AstNode,
+  options: AstNodeDisplayNameOptions = defaultOptions
+): string | undefined {
   if (isConstant(astNode)) {
     return getConstantDisplayName(astNode.constant);
   }
@@ -127,11 +163,7 @@ export function getAstNodeDisplayName(astNode: AstNode): string {
     return '';
   }
 
-  // eslint-disable-next-line no-restricted-properties
-  if (process.env.NODE_ENV === 'development') {
-    console.warn('Unhandled astNode', astNode);
-  }
-  return astNode.name ?? '??';
+  return options.getDefaultDisplayName(astNode);
 }
 
 export const getAggregatorName = (aggregatorName: string): string => {

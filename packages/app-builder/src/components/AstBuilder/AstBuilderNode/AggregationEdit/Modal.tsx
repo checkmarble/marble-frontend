@@ -22,8 +22,8 @@ import { type Namespace } from 'i18next';
 import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ErrorMessage } from '../ErrorMessage';
-import { getBorderColor } from '../utils';
+import { ErrorMessage } from '../../ErrorMessage';
+import { getBorderColor } from '../../utils';
 import { AggregatorSelect } from './AggregatorSelect';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
@@ -218,8 +218,13 @@ export const adaptAggregationAstNode = (
   };
 };
 
+export interface AggregationEditModalProps {
+  initialAggregation: AggregationViewModel;
+  onSave: (astNode: AstNode) => void;
+}
+
 const AggregationEditModalContext = createSimpleContext<
-  (initialAgregation: AggregationViewModel) => void
+  (agregationProps: AggregationEditModalProps) => void
 >('AggregationEditModal');
 
 export const useEditAggregation = AggregationEditModalContext.useValue;
@@ -231,20 +236,12 @@ export const AggregationEditModal = ({
   builder: AstBuilder;
 }>) => {
   const [open, onOpenChange] = useState<boolean>(false);
-  const [initialAggregation, setInitialAggregation] =
-    useState<AggregationViewModel>();
-
-  const handleOnSave = useCallback(
-    (nodeId: string, astNode: AstNode) => {
-      builder.setOperand(nodeId, astNode);
-      onOpenChange(false);
-    },
-    [builder]
-  );
+  const [aggregationEditModalProps, setAggregationEditModalProps] =
+    useState<AggregationEditModalProps>();
 
   const editAgregation = useCallback(
-    (initialAggregation: AggregationViewModel) => {
-      setInitialAggregation(initialAggregation);
+    (aggregationProps: AggregationEditModalProps) => {
+      setAggregationEditModalProps(aggregationProps);
       onOpenChange(true);
     },
     []
@@ -255,11 +252,14 @@ export const AggregationEditModal = ({
       <AggregationEditModalContext.Provider value={editAgregation}>
         {children}
         <Modal.Content>
-          {initialAggregation && (
+          {aggregationEditModalProps && (
             <AggregationEditModalContent
               builder={builder}
-              initialAggregation={initialAggregation}
-              onSave={handleOnSave}
+              initialAggregation={aggregationEditModalProps.initialAggregation}
+              onSave={(astNode) => {
+                aggregationEditModalProps.onSave(astNode);
+                onOpenChange(false);
+              }}
             />
           )}
         </Modal.Content>
@@ -275,7 +275,7 @@ const AggregationEditModalContent = ({
 }: {
   builder: AstBuilder;
   initialAggregation: AggregationViewModel;
-  onSave: (nodeId: string, astNode: AstNode) => void;
+  onSave: (astNode: AstNode) => void;
 }) => {
   const { t } = useTranslation(handle.i18n);
 
@@ -295,7 +295,7 @@ const AggregationEditModalContent = ({
   );
 
   const handleSave = () => {
-    onSave(initialAggregation.nodeId, adaptAggregationAstNode(aggregation));
+    onSave(adaptAggregationAstNode(aggregation));
   };
 
   return (

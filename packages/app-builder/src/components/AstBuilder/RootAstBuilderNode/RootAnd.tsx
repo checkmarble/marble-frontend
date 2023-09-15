@@ -5,7 +5,7 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
-import { AstBuilderNode } from '../AstBuilderNode';
+import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 import { RemoveButton } from './RemoveButton';
 
@@ -37,9 +37,11 @@ function NewAndChild() {
 export function RootAnd({
   builder,
   rootAndViewModel,
+  viewOnly,
 }: {
   builder: AstBuilder;
   rootAndViewModel: RootAndViewModel;
+  viewOnly?: boolean;
 }) {
   function appendAndChild() {
     builder.appendChild(rootAndViewModel.nodeId, NewAndChild());
@@ -53,14 +55,20 @@ export function RootAnd({
             key={child.nodeId}
             className="flex flex-row-reverse items-center gap-2"
           >
-            <RemoveButton
-              className="peer"
-              onClick={() => {
-                builder.remove(child.nodeId);
-              }}
-            />
+            {!viewOnly && (
+              <RemoveButton
+                className="peer"
+                onClick={() => {
+                  builder.remove(child.nodeId);
+                }}
+              />
+            )}
             <div className="peer-hover:border-grey-25 flex flex-1 flex-col rounded border border-transparent p-1 transition-colors duration-200 ease-in-out">
-              <AstBuilderNode builder={builder} editorNodeViewModel={child} />
+              <AstBuilderNode
+                builder={builder}
+                editorNodeViewModel={child}
+                viewOnly={viewOnly}
+              />
             </div>
             <LogicalOperatorLabel
               operator={childIndex === 0 ? 'where' : 'and'}
@@ -69,7 +77,9 @@ export function RootAnd({
         );
       })}
 
-      <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
+      {!viewOnly && (
+        <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
+      )}
     </div>
   );
 }

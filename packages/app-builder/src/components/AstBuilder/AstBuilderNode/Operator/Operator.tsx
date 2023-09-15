@@ -7,7 +7,8 @@ import { Select } from '@ui-design-system';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getBorderColor } from '../utils';
+import { getBorderColor } from '../../utils';
+import { OperatorViewer } from './OperatorViewer';
 
 //TOOD(builder): move the whitelist of operators to the backend
 const operatorFunctions = [
@@ -47,10 +48,12 @@ export function adaptOperatorViewModel(
 export function Operator({
   builder,
   operatorViewModel,
+  onSave,
   viewOnly,
 }: {
   builder: AstBuilder;
   operatorViewModel: OperatorViewModel;
+  onSave: (operator: string) => void;
   viewOnly?: boolean;
 }) {
   const getOperatorName = useGetOperatorName();
@@ -62,18 +65,10 @@ export function Operator({
       : undefined;
 
   return (
-    <Select.Root
-      value={value}
-      onValueChange={(newFuncName) => {
-        builder.setOperator(operatorViewModel.nodeId, newFuncName);
-      }}
-      disabled={viewOnly}
-    >
-      <Select.Trigger
+    <Select.Root value={value} onValueChange={onSave} disabled={viewOnly}>
+      <OperatorViewer
         borderColor={getBorderColor(operatorViewModel.validation)}
-      >
-        <Select.Value placeholder="..." />
-      </Select.Trigger>
+      />
       <Select.Content className="max-h-60">
         <Select.Viewport>
           {builder.operators.map((operator) => {
