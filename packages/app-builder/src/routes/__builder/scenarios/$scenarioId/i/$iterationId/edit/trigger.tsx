@@ -127,6 +127,7 @@ export default function Trigger() {
       scenarioIteration.id
     );
 
+  const scenario = useCurrentScenario();
   const astEditor = useAstBuilder({
     backendAst: trigger.ast,
     backendValidation: trigger.validation,
@@ -135,6 +136,7 @@ export default function Trigger() {
     operators,
     dataModels,
     customLists,
+    triggerObjectType: scenario.triggerObjectType,
     onSave: (astNodeToSave: AstNode) => {
       fetcher.submit(astNodeToSave, {
         method: 'PATCH',

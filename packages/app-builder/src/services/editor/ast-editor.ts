@@ -6,6 +6,7 @@ import {
   type DataModel,
   type EditorIdentifiersByType,
   type EvaluationError,
+  findDataModelTableByName,
   isValidationFailure,
   type NodeEvaluation,
   type Validation,
@@ -94,6 +95,7 @@ export interface AstBuilder {
   operators: AstOperator[];
   dataModels: DataModel[];
   customLists: CustomList[];
+  triggerObjectType: DataModel;
   setConstant: (nodeId: string, newValue: ConstantType) => void;
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
@@ -110,6 +112,7 @@ export function useAstBuilder({
   operators,
   dataModels,
   customLists,
+  triggerObjectType,
   onSave,
   onValidate,
 }: {
@@ -120,6 +123,7 @@ export function useAstBuilder({
   operators: AstOperator[];
   dataModels: DataModel[];
   customLists: CustomList[];
+  triggerObjectType: string;
   onSave: (toSave: AstNode) => void;
   onValidate: (ast: AstNode) => void;
 }): AstBuilder {
@@ -238,6 +242,10 @@ export function useAstBuilder({
     operators,
     dataModels,
     customLists,
+    triggerObjectType: findDataModelTableByName({
+      dataModel: dataModels,
+      tableName: triggerObjectType,
+    }),
     setConstant,
     setOperand,
     setOperator,

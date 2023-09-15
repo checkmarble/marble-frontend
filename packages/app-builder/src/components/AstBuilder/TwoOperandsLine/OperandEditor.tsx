@@ -153,8 +153,7 @@ const OperandEditorContent = forwardRef<
         ),
         ...builder.identifiers.payloadAccessors.map((node) =>
           newPayloadAccessorsLabelledAst({
-            dataModel: builder.dataModels,
-            triggerObjectType: 'transactions',
+            triggerObjectType: builder.triggerObjectType,
             node,
           })
         ),
