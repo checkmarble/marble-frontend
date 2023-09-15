@@ -1,26 +1,20 @@
 import {
   type DataModel,
   findDataModelField,
-  findDataModelTableByName,
   type LabelledAst,
   payloadAccessorsDisplayName,
   type PayloadAstNode,
 } from '@app-builder/models';
 
 export function newPayloadAccessorsLabelledAst({
-  dataModel,
   triggerObjectType,
   node,
 }: {
-  dataModel: DataModel[];
-  triggerObjectType: string;
+  triggerObjectType: DataModel;
   node: PayloadAstNode;
 }): LabelledAst {
   const field = findDataModelField({
-    table: findDataModelTableByName({
-      dataModel,
-      tableName: triggerObjectType,
-    }),
+    table: triggerObjectType,
     fieldName: node.children[0].constant,
   });
   return {

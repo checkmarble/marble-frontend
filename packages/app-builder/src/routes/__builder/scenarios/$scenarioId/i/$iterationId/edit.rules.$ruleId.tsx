@@ -40,6 +40,8 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { z } from 'zod';
 
+import { useCurrentScenario } from '../../../$scenarioId';
+
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
 };
@@ -177,6 +179,8 @@ export default function RuleEdit() {
   const { validate, validation: localValidation } =
     useTriggerOrRuleValidationFetcher(scenarioId, iterationId, ruleId);
 
+  const scenario = useCurrentScenario();
+
   const astEditor = useAstBuilder({
     backendAst: rule.ast,
     backendValidation: rule.validation,
@@ -185,6 +189,7 @@ export default function RuleEdit() {
     operators,
     dataModels,
     customLists,
+    triggerObjectType: scenario.triggerObjectType,
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     onSave: () => {},
     onValidate: validate,
