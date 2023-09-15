@@ -19,5 +19,8 @@
   "success.save": "Saved successfully",
   "name": "Name",
   "description": "Description",
-  "edit": "Edit"
+  "edit": "Edit",
+  "go_back": "Go back",
+  "error_boundary.default.title": "Did you lose your marbles?",
+  "error_boundary.default.subtitle": "It looks like something went wrong."
 }

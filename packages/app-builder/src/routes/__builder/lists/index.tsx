@@ -1,11 +1,11 @@
-import { Page } from '@app-builder/components';
+import { ErrorComponent, Page } from '@app-builder/components';
 import { usePermissionsContext } from '@app-builder/components/PermissionsContext';
 import { CreateList } from '@app-builder/routes/ressources/lists/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -113,4 +113,8 @@ export default function ListsPage() {
       </Page.Content>
     </Page.Container>
   );
+}
+
+export function ErrorBoundary() {
+  return <ErrorComponent error={useRouteError()} />;
 }
