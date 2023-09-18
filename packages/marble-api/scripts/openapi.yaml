@@ -1238,7 +1238,7 @@ paths:
                   organizations:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Organization'
+                      $ref: '#/components/schemas/OrganizationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1271,7 +1271,7 @@ paths:
                   - organization
                 properties:
                   organization:
-                    $ref: '#/components/schemas/Organization'
+                    $ref: '#/components/schemas/OrganizationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1304,7 +1304,7 @@ paths:
                   - organization
                 properties:
                   organization:
-                    $ref: '#/components/schemas/Organization'
+                    $ref: '#/components/schemas/OrganizationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1345,7 +1345,7 @@ paths:
                   - organization
                 properties:
                   organization:
-                    $ref: '#/components/schemas/Organization'
+                    $ref: '#/components/schemas/OrganizationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1487,7 +1487,7 @@ paths:
           $ref: '#/components/responses/403'
 components:
   schemas:
-    Organization:
+    OrganizationDto:
       type: object
       required:
         - id
@@ -1500,6 +1500,8 @@ components:
         name:
           type: string
         database_name:
+          type: string
+        export_scheduled_execution_s3:
           type: string
     CreateOrganizationBodyDto:
       type: object

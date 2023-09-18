@@ -250,10 +250,11 @@ export type CreateUser = {
     role: string;
     organization_id: string;
 };
-export type Organization = {
+export type OrganizationDto = {
     id: string;
     name: string;
     database_name: string;
+    export_scheduled_execution_s3?: string;
 };
 export type CreateOrganizationBodyDto = {
     name: string;
@@ -1106,7 +1107,7 @@ export function listOrganizations(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            organizations: Organization[];
+            organizations: OrganizationDto[];
         };
     } | {
         status: 401;
@@ -1128,7 +1129,7 @@ export function createOrganization(createOrganizationBodyDto: CreateOrganization
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            organization: Organization;
+            organization: OrganizationDto;
         };
     } | {
         status: 401;
@@ -1149,7 +1150,7 @@ export function getOrganization(organizationId: string, opts?: Oazapfts.RequestO
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            organization: Organization;
+            organization: OrganizationDto;
         };
     } | {
         status: 401;
@@ -1171,7 +1172,7 @@ export function updateOrganization(organizationId: string, updateOrganizationBod
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            organization: Organization;
+            organization: OrganizationDto;
         };
     } | {
         status: 401;
