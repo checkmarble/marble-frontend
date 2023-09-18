@@ -34,6 +34,8 @@ export function useGetOperatorName() {
     (operatorName: string) => {
       if (['+', '-', '<', '=', '>'].includes(operatorName)) return operatorName;
 
+      if (operatorName === '>=') return '≥';
+      if (operatorName === '<=') return '≤';
       if (operatorName === '*') return '×';
       if (operatorName === '/') return '÷';
 
