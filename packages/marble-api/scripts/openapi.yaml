@@ -1975,6 +1975,8 @@ components:
             scoreRejectThreshold:
               type: integer
               minimum: 0
+            schedule:
+              type: string
     ScenarioIterationRuleDto:
       type: object
       required:
