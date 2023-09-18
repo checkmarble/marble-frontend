@@ -20,6 +20,7 @@ function makeServerServices(repositories: ServerRepositories) {
       repositories.marbleAPIClient,
       repositories.userRepository,
       repositories.editorRepository,
+      repositories.organizationRepository,
       repositories.scenarioRepository,
       sessionService
     ),

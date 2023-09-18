@@ -2,6 +2,7 @@ import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { adaptAuthErrors, type User } from '@app-builder/models';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
+import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { getServerEnv } from '@app-builder/utils/environment.server';
@@ -18,6 +19,7 @@ import { type SessionService } from './session.server';
 interface AuthenticatedInfo {
   apiClient: MarbleApi;
   editor: EditorRepository;
+  organization: OrganizationRepository;
   scenario: ScenarioRepository;
   user: User;
 }
@@ -53,6 +55,10 @@ export function makeAuthenticationServerService(
   marbleAPIClient: MarbleAPIRepository,
   userRepository: (marbleApiClient: MarbleApi) => UserRepository,
   editorRepository: (marbleApiClient: MarbleApi) => EditorRepository,
+  organizationRepository: (
+    marbleApiClient: MarbleApi,
+    organizationId: string
+  ) => OrganizationRepository,
   scenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository,
   sessionService: SessionService
 ) {
@@ -158,6 +164,7 @@ export function makeAuthenticationServerService(
       apiClient,
       editor: editorRepository(apiClient),
       scenario: scenarioRepository(apiClient),
+      organization: organizationRepository(apiClient, user.organizationId),
       user,
     };
   }

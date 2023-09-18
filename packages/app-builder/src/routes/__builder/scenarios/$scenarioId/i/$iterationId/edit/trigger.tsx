@@ -12,7 +12,6 @@ import {
   adaptNodeDto,
   type AstNode,
 } from '@app-builder/models';
-import { adaptOrganizationDto } from '@app-builder/models/organization';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
 import {
@@ -37,7 +36,7 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService, makeScenarioService } = serverServices;
-  const { apiClient, editor, scenario, user } =
+  const { apiClient, editor, organization, scenario } =
     await authService.isAuthenticated(request, {
       failureRedirect: '/login',
     });
@@ -55,7 +54,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const dataModelPromise = apiClient.getDataModel();
   const { custom_lists } = await apiClient.listCustomLists();
-  const { organization } = await apiClient.getOrganization(user.organizationId);
+  const organizationPromise = organization.getCurrentOrganization();
 
   const scenarioService = makeScenarioService(scenario);
   const scenarioIterationTriggerPromise =
@@ -69,7 +68,7 @@ export async function loader({ request, params }: LoaderArgs) {
     trigger: await scenarioIterationTriggerPromise,
     dataModels: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
-    organization: adaptOrganizationDto(organization),
+    organization: await organizationPromise,
   });
 }
 
