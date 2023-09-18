@@ -118,6 +118,7 @@ export function ErrorBoundary() {
                   width={undefined}
                   height="40px"
                   preserveAspectRatio="xMinYMid meet"
+                  aria-labelledby="marble"
                 />
               </a>
             </div>

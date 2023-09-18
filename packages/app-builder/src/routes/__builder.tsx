@@ -79,6 +79,7 @@ export default function Builder() {
                     width="100%"
                     height="100%"
                     preserveAspectRatio="xMinYMid meet"
+                    aria-labelledby="marble"
                   />
                   <Arrow2Down
                     className="group-radix-state-open:rotate-180"
