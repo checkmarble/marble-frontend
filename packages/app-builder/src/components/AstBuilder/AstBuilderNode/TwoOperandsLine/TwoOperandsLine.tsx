@@ -30,6 +30,7 @@ export function TwoOperandsLine({
     <div className="flex flex-col gap-1">
       <div className="flex flex-row gap-2">
         <Operand
+          ariaLabel="left-operand"
           builder={builder}
           operandViewModel={twoOperandsViewModel.left}
           onSave={(astNode) => {
@@ -46,6 +47,7 @@ export function TwoOperandsLine({
           viewOnly={viewOnly}
         />
         <Operand
+          ariaLabel="right-operand"
           builder={builder}
           operandViewModel={twoOperandsViewModel.right}
           onSave={(astNode) => {

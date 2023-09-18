@@ -17,24 +17,22 @@ export function Operand({
   operandViewModel,
   onSave,
   viewOnly,
+  ariaLabel,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
   onSave: (astNode: AstNode) => void;
   viewOnly?: boolean;
+  ariaLabel?: string;
 }) {
-  if (isAggregationEditorNodeViewModel(operandViewModel)) {
-    return (
-      <AggregationOperand
-        builder={builder}
-        aggregationEditorNodeViewModel={operandViewModel}
-        onSave={onSave}
-        viewOnly={viewOnly}
-      />
-    );
-  }
-
-  return (
+  const operand = isAggregationEditorNodeViewModel(operandViewModel) ? (
+    <AggregationOperand
+      builder={builder}
+      aggregationEditorNodeViewModel={operandViewModel}
+      onSave={onSave}
+      viewOnly={viewOnly}
+    />
+  ) : (
     <OperandEditor
       builder={builder}
       operandViewModel={operandViewModel}
@@ -42,4 +40,6 @@ export function Operand({
       viewOnly={viewOnly}
     />
   );
+
+  return <div aria-label={ariaLabel}>{operand}</div>;
 }
