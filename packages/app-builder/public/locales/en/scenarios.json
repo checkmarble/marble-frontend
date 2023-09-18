@@ -15,6 +15,7 @@
   "trigger.schedule_scenario.frequency_weekly": "weekly",
   "trigger.schedule_scenario.frequency_monthly": "monthly",
   "trigger.schedule_scenario.monthly_warning": "This scenario will run exactly on day {{scheduleDetail}} of the month, and only on months that have this number of days",
+  "trigger.schedule_scenario.export_location_warning": "Contact Marble to configure decision export location.",
   "trigger.trigger_object.title": "Trigger object",
   "trigger.trigger_object.callout": "The object the scenario will make decisions on.",
   "decision.score_based.title": "Score based decision",

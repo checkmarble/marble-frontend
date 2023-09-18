@@ -86,9 +86,11 @@ export const adaptScheduleOptionToCron = ({
 export const ScheduleOption = ({
   scheduleOption,
   setScheduleOption,
+  hasExportBucket,
 }: {
   scheduleOption: ScheduleOption;
   setScheduleOption: (schedule: ScheduleOption) => void;
+  hasExportBucket: boolean;
 }) => {
   const { t, i18n } = useTranslation(handle.i18n);
 
@@ -114,24 +116,27 @@ export const ScheduleOption = ({
 
   if (scheduleOption.frequency === 'custom') {
     return (
-      <p className="text-s text-grey-100 font-normal">
-        <Trans
-          t={t}
-          i18nKey="scenarios:scheduled"
-          components={{
-            ScheduleLocale: <span style={{ fontWeight: 'bold' }} />,
-          }}
-          values={{
-            schedule: cronstrue
-              .toString(scheduleOption.scheduleDetail, {
-                verbose: false,
-                locale: i18n.language,
-                throwExceptionOnParseError: false,
-              })
-              .toLowerCase(),
-          }}
-        />
-      </p>
+      <>
+        <p className="text-s text-grey-100 font-normal">
+          <Trans
+            t={t}
+            i18nKey="scenarios:scheduled"
+            components={{
+              ScheduleLocale: <span style={{ fontWeight: 'bold' }} />,
+            }}
+            values={{
+              schedule: cronstrue
+                .toString(scheduleOption.scheduleDetail, {
+                  verbose: false,
+                  locale: i18n.language,
+                  throwExceptionOnParseError: false,
+                })
+                .toLowerCase(),
+            }}
+          />
+        </p>
+        {!hasExportBucket && <MissingExportBucketWarning />}
+      </>
     );
   }
 
@@ -190,6 +195,7 @@ export const ScheduleOption = ({
                 />
               </p>
             )}
+          {!hasExportBucket && <MissingExportBucketWarning />}
         </>
       )}
     </>
@@ -349,4 +355,13 @@ const getWeekDayName = (
   const day = parseInt(option) + 1;
   const date = new Date(`2017-01-0${day}T00:00:00+00:00`);
   return formatter.format(date);
+};
+
+const MissingExportBucketWarning = () => {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <p className="text-s text-red-110">
+      {t('scenarios:trigger.schedule_scenario.export_location_warning')}
+    </p>
+  );
 };

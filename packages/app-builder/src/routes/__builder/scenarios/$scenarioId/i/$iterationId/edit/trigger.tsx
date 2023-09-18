@@ -12,6 +12,7 @@ import {
   adaptNodeDto,
   type AstNode,
 } from '@app-builder/models';
+import { adaptOrganizationDto } from '@app-builder/models/organization';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
 import {
@@ -36,12 +37,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService, makeScenarioService } = serverServices;
-  const { apiClient, editor, scenario } = await authService.isAuthenticated(
-    request,
-    {
+  const { apiClient, editor, scenario, user } =
+    await authService.isAuthenticated(request, {
       failureRedirect: '/login',
-    }
-  );
+    });
 
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
@@ -56,6 +55,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const dataModelPromise = apiClient.getDataModel();
   const { custom_lists } = await apiClient.listCustomLists();
+  const { organization } = await apiClient.getOrganization(user.organizationId);
 
   const scenarioService = makeScenarioService(scenario);
   const scenarioIterationTriggerPromise =
@@ -69,6 +69,7 @@ export async function loader({ request, params }: LoaderArgs) {
     trigger: await scenarioIterationTriggerPromise,
     dataModels: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
+    organization: adaptOrganizationDto(organization),
   });
 }
 
@@ -129,8 +130,14 @@ export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
   const { triggerObjectType } = useCurrentScenario();
   const scenarioIteration = useCurrentScenarioIteration();
-  const { identifiers, operators, trigger, dataModels, customLists } =
-    useLoaderData<typeof loader>();
+  const {
+    identifiers,
+    operators,
+    trigger,
+    dataModels,
+    customLists,
+    organization,
+  } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
 
@@ -225,6 +232,7 @@ export default function Trigger() {
       <ScheduleOption
         scheduleOption={scheduleOption}
         setScheduleOption={setScheduleOption}
+        hasExportBucket={!!organization.exportScheduledExecutionS3}
       />
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
