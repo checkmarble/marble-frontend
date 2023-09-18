@@ -123,9 +123,9 @@ export default function Builder() {
               </Popover.Portal>
             </Popover.Root>
           </div>
-          <ScrollArea.Root className="flex flex-1 flex-col p-2" type="auto">
+          <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
             <ScrollArea.Viewport>
-              <Sidebar.Nav>
+              <Sidebar.Nav className="p-2">
                 {LINKS.map((linkProps) => (
                   <li key={linkProps.labelTKey}>
                     <Sidebar.Link {...linkProps} />
