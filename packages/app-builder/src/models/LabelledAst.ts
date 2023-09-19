@@ -1,6 +1,7 @@
 import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 
 import {
+  type AggregationAstNode,
   type AstNode,
   type ConstantType,
   type DatabaseAccessAstNode,
@@ -12,28 +13,23 @@ import {
   isPayload,
   type PayloadAstNode,
 } from './ast-node';
-import { type DataModelField } from './data-model';
 import {
   type EditorIdentifiersByType,
   getIdentifiersFromAstNode,
 } from './identifier';
 
+//TODO(combobox): find a better naming
 export interface LabelledAst {
-  label: string;
-  tooltip: string;
+  name: string;
+  description?: string;
+  operandType: string;
+  dataType: 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'unknown';
   astNode: AstNode;
-  dataModelField: DataModelField | null;
 }
 
-export const adaptConstantAstNodeToString = (
-  astNode: AstNode | null
-): string => {
-  if (!astNode || !astNode.constant) {
-    return '';
-  }
-  return String(astNode.constant);
-};
-
+/**
+ * @deprecated Only used in Scenario/Formula/*
+ */
 export function adaptLabelledAstFromAllIdentifiers(
   astNode: AstNode,
   identifiers: EditorIdentifiersByType
@@ -43,21 +39,22 @@ export function adaptLabelledAstFromAllIdentifiers(
     return adaptLabelledAstFromIdentifier(identifier);
   }
   return {
-    label: getAstNodeDisplayName(astNode),
-    tooltip: '',
+    name: getAstNodeDisplayName(astNode),
+    dataType: 'unknown',
+    operandType: '',
     astNode,
-    dataModelField: null,
   };
 }
 
-export function adaptLabelledAstFromIdentifier(
-  identifier: AstNode
-): LabelledAst {
+/**
+ * @deprecated Only used adaptLabelledAstFromAllIdentifiers
+ */
+function adaptLabelledAstFromIdentifier(identifier: AstNode): LabelledAst {
   return {
-    label: getAstNodeDisplayName(identifier),
-    tooltip: '',
+    name: getAstNodeDisplayName(identifier),
+    dataType: 'unknown',
+    operandType: '',
     astNode: identifier,
-    dataModelField: null,
   };
 }
 
@@ -118,6 +115,14 @@ export function payloadAccessorsDisplayName(node: PayloadAstNode): string {
   return node.children[0].constant;
 }
 
+export function aggregationDisplayName(node: AggregationAstNode): string {
+  const { aggregator, label } = node.namedChildren;
+  if (label?.constant !== undefined && label?.constant !== '') {
+    return label?.constant;
+  }
+  return getAggregatorName(aggregator?.constant ?? '');
+}
+
 interface AstNodeDisplayNameOptions {
   getDefaultDisplayName: (astNode: AstNode) => string | undefined;
 }
@@ -125,17 +130,17 @@ const defaultOptions = {
   getDefaultDisplayName: (astNode: AstNode) => astNode.name ?? '??',
 };
 
-export function getAstNodeDisplayName(astNode: AstNode): string;
-export function getAstNodeDisplayName(
+function getAstNodeDisplayName(astNode: AstNode): string;
+function getAstNodeDisplayName(
   astNode: AstNode,
   options: { getDefaultDisplayName: (astNode: AstNode) => string }
 ): string;
-export function getAstNodeDisplayName(
+function getAstNodeDisplayName(
   astNode: AstNode,
   options: { getDefaultDisplayName: (astNode: AstNode) => string | undefined }
 ): string | undefined;
 
-export function getAstNodeDisplayName(
+function getAstNodeDisplayName(
   astNode: AstNode,
   options: AstNodeDisplayNameOptions = defaultOptions
 ): string | undefined {
@@ -152,11 +157,7 @@ export function getAstNodeDisplayName(
   }
 
   if (isAggregation(astNode)) {
-    const { aggregator, label } = astNode.namedChildren;
-    if (label?.constant != undefined && label?.constant != '') {
-      return adaptConstantAstNodeToString(label);
-    }
-    return getAggregatorName(adaptConstantAstNodeToString(aggregator));
+    return aggregationDisplayName(astNode);
   }
 
   if (isAstNodeUnknown(astNode)) {

@@ -18,7 +18,7 @@ export function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
     results.push(
       newLabelledAstOfConstant({
         label: search,
-        type: 'number',
+        dataType: Number.isInteger(parsedNumber) ? 'Int' : 'Float',
         constant: parsedNumber,
       })
     );
@@ -28,7 +28,7 @@ export function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
     results.push(
       newLabelledAstOfConstant({
         label: searchLowerCase,
-        type: 'boolean',
+        dataType: 'Bool',
         constant: searchLowerCase === 'true',
       })
     );
@@ -39,7 +39,7 @@ export function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
   results.push(
     newLabelledAstOfConstant({
       label: `"${search}"`,
-      type: 'string',
+      dataType: 'String',
       constant: search,
     })
   );
@@ -60,7 +60,8 @@ function coerceToConstantArray(search: string): LabelledAst[] {
     return [
       newLabelledAstOfConstant({
         label: search,
-        type: 'array',
+        //TODO(combobox): infer/get array.dataType
+        dataType: 'unknown',
         constant: parsed,
       }),
     ];
@@ -70,19 +71,20 @@ function coerceToConstantArray(search: string): LabelledAst[] {
 
 function newLabelledAstOfConstant({
   label,
-  type,
+  dataType,
   constant,
 }: {
   label: string;
-  type: string;
+  dataType: LabelledAst['dataType'];
   constant: ConstantType;
 }): LabelledAst {
   return {
-    label,
-    tooltip: `(${type})`,
+    name: label,
+    description: '',
+    operandType: 'Constant',
+    dataType,
     astNode: NewAstNode({
       constant: constant,
     }),
-    dataModelField: null,
   };
 }

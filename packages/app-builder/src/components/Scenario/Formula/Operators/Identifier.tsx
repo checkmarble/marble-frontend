@@ -18,11 +18,11 @@ export function Identifier({ node, isRoot }: CustomListProps) {
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>
-        {viewModel.tooltip ? (
+        {viewModel.description ? (
           <Tooltip.Default
             content={
               <span className="font-medium text-purple-100">
-                {viewModel.tooltip}
+                {viewModel.description}
               </span>
             }
           >
@@ -31,7 +31,7 @@ export function Identifier({ node, isRoot }: CustomListProps) {
               dir="rtl"
               className="max-w-[250px] overflow-hidden text-ellipsis font-medium text-purple-100 max-md:max-w-[150px]"
             >
-              {viewModel.label}
+              {viewModel.name}
             </span>
           </Tooltip.Default>
         ) : (
@@ -40,7 +40,7 @@ export function Identifier({ node, isRoot }: CustomListProps) {
             dir="rtl"
             className="max-w-[250px] overflow-hidden text-ellipsis font-medium text-purple-100 max-md:max-w-[150px]"
           >
-            {viewModel.label}
+            {viewModel.name}
           </span>
         )}
       </Condition.Item>
