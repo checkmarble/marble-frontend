@@ -9,82 +9,108 @@ describe('coerceToConstantsLabelledAst', () => {
   });
 
   it('return a constant string given a random string', () => {
-    const expected: LabelledAst[] = [helperLabelledString('some string ')];
-    expect(coerceToConstantsLabelledAst('some string ')).toStrictEqual(
-      expected
-    );
+    const valueToCoerce = 'some string ';
+    const expected: LabelledAst[] = [
+      helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
+    ];
+    expect(coerceToConstantsLabelledAst(valueToCoerce)).toStrictEqual(expected);
   });
 
   it('returns two contants string and number given a string convertible to a numbers', () => {
+    const valueToCoerce = '10';
     const expected: LabelledAst[] = [
-      {
-        label: '10',
-        tooltip: '(number)',
-        astNode: NewAstNode({
-          constant: 10,
-        }),
-        dataModelField: null,
-      },
-      helperLabelledString('10'),
+      helperConstantOperandOption({ valueToCoerce, dataType: 'Int' }),
+      helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantsLabelledAst('10')).toStrictEqual(expected);
+    expect(coerceToConstantsLabelledAst(valueToCoerce)).toStrictEqual(expected);
   });
 
   it('returns constant true true and constant string given "True"', () => {
+    const valueToCoerce = 'True';
     const expected: LabelledAst[] = [
-      {
-        label: 'true',
-        tooltip: '(boolean)',
-        astNode: NewAstNode({
-          constant: true,
-        }),
-        dataModelField: null,
-      },
-      helperLabelledString('True'),
+      helperConstantOperandOption({ valueToCoerce, dataType: 'Bool' }),
+      helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantsLabelledAst('True')).toStrictEqual(expected);
+    expect(coerceToConstantsLabelledAst(valueToCoerce)).toStrictEqual(expected);
   });
 
   it('returns constant false and constant string given "FALSE"', () => {
+    const valueToCoerce = 'FALSE';
     const expected: LabelledAst[] = [
-      {
-        label: 'false',
-        tooltip: '(boolean)',
-        astNode: NewAstNode({
-          constant: false,
-        }),
-        dataModelField: null,
-      },
-      helperLabelledString('FALSE'),
+      helperConstantOperandOption({ valueToCoerce, dataType: 'Bool' }),
+      helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantsLabelledAst('FALSE')).toStrictEqual(expected);
+    expect(coerceToConstantsLabelledAst(valueToCoerce)).toStrictEqual(expected);
   });
 
   it('return an array given a string convertible to an array', () => {
+    const valueToCoerce = '["fr", 13, null]';
     const expected: LabelledAst[] = [
-      {
-        label: '["fr", 13, null]',
-        tooltip: '(array)',
-        astNode: NewAstNode({
-          constant: ['fr', 13, null],
-        }),
-        dataModelField: null,
-      },
-      helperLabelledString('["fr", 13, null]'),
+      helperConstantOperandOption({ valueToCoerce, dataType: 'Array' }),
+      helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantsLabelledAst('["fr", 13, null]')).toStrictEqual(
-      expected
-    );
+    expect(coerceToConstantsLabelledAst(valueToCoerce)).toStrictEqual(expected);
   });
 });
 
-function helperLabelledString(label: string): LabelledAst {
-  return {
-    label: `"${label}"`,
-    tooltip: '(string)',
-    astNode: NewAstNode({
-      constant: label,
-    }),
-    dataModelField: null,
-  };
+function helperConstantOperandOption({
+  valueToCoerce,
+  dataType,
+}: {
+  valueToCoerce: string;
+  dataType: 'String' | 'Int' | 'Float' | 'Bool' | 'Array';
+}): LabelledAst {
+  switch (dataType) {
+    case 'String':
+      return {
+        name: `"${valueToCoerce}"`,
+        description: '',
+        operandType: 'Constant',
+        dataType: dataType,
+        astNode: NewAstNode({
+          constant: valueToCoerce,
+        }),
+      };
+    case 'Int':
+      return {
+        name: valueToCoerce,
+        description: '',
+        operandType: 'Constant',
+        dataType: dataType,
+        astNode: NewAstNode({
+          constant: parseInt(valueToCoerce),
+        }),
+      };
+    case 'Float':
+      return {
+        name: valueToCoerce,
+        description: '',
+        operandType: 'Constant',
+        dataType: dataType,
+        astNode: NewAstNode({
+          constant: parseFloat(valueToCoerce),
+        }),
+      };
+    case 'Bool':
+      return {
+        name: valueToCoerce.toLowerCase(),
+        description: '',
+        operandType: 'Constant',
+        dataType: dataType,
+        astNode: NewAstNode({
+          constant: valueToCoerce.toLowerCase() === 'true',
+        }),
+      };
+    case 'Array':
+      return {
+        name: valueToCoerce,
+        description: '',
+        operandType: 'Constant',
+        dataType: 'unknown',
+        astNode: NewAstNode({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          constant: JSON.parse(valueToCoerce),
+        }),
+      };
+  }
 }

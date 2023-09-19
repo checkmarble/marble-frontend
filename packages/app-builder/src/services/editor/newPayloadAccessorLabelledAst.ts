@@ -3,6 +3,7 @@ import {
   type LabelledAst,
   payloadAccessorsDisplayName,
   type PayloadAstNode,
+  payloadAstNodeName,
   type TableModel,
 } from '@app-builder/models';
 
@@ -18,9 +19,10 @@ export function newPayloadAccessorsLabelledAst({
     fieldName: node.children[0].constant,
   });
   return {
-    label: payloadAccessorsDisplayName(node),
-    tooltip: '',
+    name: payloadAccessorsDisplayName(node),
+    description: field.description,
+    operandType: payloadAstNodeName,
+    dataType: field.dataType,
     astNode: node,
-    dataModelField: field,
   };
 }

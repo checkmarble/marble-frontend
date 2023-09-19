@@ -1,4 +1,5 @@
 import {
+  aggregationAstNodeName,
   getAggregatorName,
   type LabelledAst,
   NewAggregatorAstNode,
@@ -6,9 +7,11 @@ import {
 
 export function newAggregatorLabelledAst(aggregator: string): LabelledAst {
   return {
-    label: getAggregatorName(aggregator),
-    tooltip: '',
+    name: getAggregatorName(aggregator),
+    description: '',
+    operandType: aggregationAstNodeName,
+    //TODO(combobox): infer/get aggregator.dataType
+    dataType: 'unknown',
     astNode: NewAggregatorAstNode(aggregator),
-    dataModelField: null,
   };
 }

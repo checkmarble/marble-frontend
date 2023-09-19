@@ -116,5 +116,11 @@
   "aggregator.count_distinct": "Count distinct",
   "aggregator.max": "Max",
   "aggregator.min": "Min",
-  "aggregator.sum": "Sum"
+  "aggregator.sum": "Sum",
+  "edit_operand.search.placeholder": "Select or create an operand",
+  "edit_operand.result_one": "Result",
+  "edit_operand.result_other": "Results",
+  "edit_operand.constant.use_data_type.string": "Use string",
+  "edit_operand.constant.use_data_type.number": "Use number",
+  "edit_operand.constant.use_data_type.boolean": "Use boolean"
 }
