@@ -5,9 +5,17 @@ import {
 } from '@marble-api';
 import * as R from 'remeda';
 
+export type DataType =
+  | 'Bool'
+  | 'Int'
+  | 'Float'
+  | 'String'
+  | 'Timestamp'
+  | 'unknown';
+
 export interface DataModelField {
   name: string;
-  dataType: 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'unknown';
+  dataType: DataType;
   description: string;
   nullable: boolean;
 }

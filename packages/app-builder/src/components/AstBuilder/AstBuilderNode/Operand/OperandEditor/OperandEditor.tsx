@@ -1,6 +1,5 @@
 import {
   type AstNode,
-  type DataModelField,
   getAstNodeLabelName,
   isAggregation,
   type LabelledAst,
@@ -21,25 +20,27 @@ import {
 } from '@app-builder/services/editor/ast-editor';
 import * as Popover from '@radix-ui/react-popover';
 import { Input, ScrollArea } from '@ui-design-system';
-import clsx from 'clsx';
+import { Search } from '@ui-icons';
 import { forwardRef, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { ErrorMessage } from '../../ErrorMessage';
-import { getBorderColor } from '../../utils';
+import { ErrorMessage } from '../../../ErrorMessage';
+import { getBorderColor } from '../../../utils';
 import {
   adaptAggregationViewModel,
   type AggregationEditorNodeViewModel,
   useEditAggregation,
-} from '../AggregationEdit';
-import { Default } from '../Default';
-import { OperandViewer } from './OperandViewer';
+} from '../../AggregationEdit';
+import { Default } from '../../Default';
+import { OperandViewer } from '../OperandViewer';
+import { Count, Group, GroupHeader, Label } from './Group';
+import { ConstantOption, OperandOption } from './OperandOption';
 
 export type OperandViewModel = EditorNodeViewModel;
 
 interface EditOperandViewModel {
   constantOptions: LabelledAst[];
   identifiersOptions: LabelledAst[];
-  selectedOption: LabelledAst;
   searchText: string;
 }
 
@@ -102,16 +103,9 @@ const OperandEditorContent = forwardRef<
     operandViewModel: OperandViewModel;
   }
 >(({ builder, onSave, closeModal, operandViewModel }, ref) => {
+  const { t } = useTranslation('scenarios');
   const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
     () => {
-      const operandAst = adaptAstNodeFromEditorViewModel(operandViewModel);
-      const selectedOption: LabelledAst = {
-        label: getAstNodeLabelName(operandAst, builder),
-        tooltip: '',
-        astNode: operandAst,
-        dataModelField: null,
-      };
-
       const identifiersOptions: LabelledAst[] = [
         ...builder.identifiers.databaseAccessors.map((node) =>
           newDatabaseAccessorsLabelledAst({
@@ -134,7 +128,6 @@ const OperandEditorContent = forwardRef<
       return {
         constantOptions: [],
         identifiersOptions,
-        selectedOption,
         searchText: '',
       };
     }
@@ -169,52 +162,73 @@ const OperandEditorContent = forwardRef<
     [editAggregation, onSave, operandViewModel.nodeId]
   );
 
-  const availableOptions = [
-    ...editViewModel.constantOptions,
-    ...editViewModel.identifiersOptions.filter((option) =>
-      option.label
-        .toLocaleUpperCase()
-        .includes(editViewModel.searchText.toLocaleUpperCase())
-    ),
-  ];
+  const availableOptions = editViewModel.identifiersOptions.filter((option) =>
+    option.name
+      .toLocaleUpperCase()
+      .includes(editViewModel.searchText.toLocaleUpperCase())
+  );
 
   return (
-    <ScrollArea.Root>
+    <ScrollArea.Root asChild>
       <Popover.Content
         ref={ref}
         side="bottom"
         align="start"
-        className="animate-slideUpAndFade bg-grey-00 border-grey-10 mt-1 flex max-h-[300px] flex-col gap-2 rounded border p-2 shadow-md will-change-[transform,opacity]"
+        className="animate-slideUpAndFade bg-grey-00 border-grey-10 mt-1 flex max-h-[320px] w-[320px] flex-col rounded border shadow-md will-change-[transform,opacity]"
       >
         <Input
-          className="flex-shrink-0"
+          className="m-2 flex-shrink-0"
+          type="search"
           value={editViewModel.searchText}
           onChange={(event) => {
             handleInputChanged(event.target.value);
           }}
+          onKeyDownCapture={(e) => {
+            if (e.code === 'Escape') {
+              e.stopPropagation(); // To prevent the popover from closing
+              handleInputChanged('');
+            }
+          }}
+          startAdornment={<Search />}
+          placeholder={t('edit_operand.search.placeholder')}
         />
-        <ScrollArea.Viewport className="h-full" tabIndex={-1}>
-          {availableOptions.map((option) => (
-            <button
-              key={option.label}
-              onClick={() => {
-                handleSelectOption(option);
-                closeModal();
-              }}
-              className={clsx(
-                'hover:bg-purple-05 text-s cursor-default select-none rounded-sm p-2 outline-none',
-                'ui-disabled:pointer-events-none ui-disabled:opacity-50',
-                'flex w-full flex-col gap-1'
-              )}
-            >
-              <span>{option.label}</span>
-              {option.tooltip ?? <span>{option.tooltip}</span>}
-
-              {option.dataModelField && (
-                <DescribeDataType field={option.dataModelField} />
-              )}
-            </button>
-          ))}
+        <ScrollArea.Viewport tabIndex={-1}>
+          <div className="flex flex-col gap-2 p-2">
+            <Group>
+              {editViewModel.constantOptions.map((constant) => (
+                <ConstantOption
+                  key={constant.name}
+                  constant={constant}
+                  onClick={() => {
+                    handleSelectOption(constant);
+                    closeModal();
+                  }}
+                />
+              ))}
+            </Group>
+            <Group>
+              <GroupHeader.Container>
+                <GroupHeader.Title>
+                  <Label>
+                    {t('edit_operand.result', {
+                      count: availableOptions.length,
+                    })}
+                  </Label>
+                  <Count>{availableOptions.length}</Count>
+                </GroupHeader.Title>
+              </GroupHeader.Container>
+              {availableOptions.map((option) => (
+                <OperandOption
+                  key={option.name}
+                  option={option}
+                  onClick={() => {
+                    handleSelectOption(option);
+                    closeModal();
+                  }}
+                />
+              ))}
+            </Group>
+          </div>
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar>
           <ScrollArea.Thumb />
@@ -224,15 +238,3 @@ const OperandEditorContent = forwardRef<
   );
 });
 OperandEditorContent.displayName = 'OperandEditorContent';
-
-function DescribeDataType({ field }: { field: DataModelField }) {
-  return (
-    <>
-      <span>
-        ({field.dataType}
-        {field.nullable ? ', optional' : ''})
-      </span>
-      {field.description && <span>{field.description}</span>}
-    </>
-  );
-}
