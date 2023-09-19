@@ -3,6 +3,7 @@ import {
   getAstNodeLabelName,
   isAggregation,
   type LabelledAst,
+  undefinedAstNodeName,
 } from '@app-builder/models';
 import {
   allAggregators,
@@ -18,6 +19,7 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { newUndefinedLabelledAst } from '@app-builder/services/editor/newUndefinedLabelledAst';
 import * as Popover from '@radix-ui/react-popover';
 import { Input, ScrollArea } from '@ui-design-system';
 import { Search } from '@ui-icons';
@@ -34,7 +36,7 @@ import {
 import { Default } from '../../Default';
 import { OperandViewer } from '../OperandViewer';
 import { Count, Group, GroupHeader, Label } from './Group';
-import { ConstantOption, OperandOption } from './OperandOption';
+import { ClearOption, ConstantOption, OperandOption } from './OperandOption';
 
 export type OperandViewModel = EditorNodeViewModel;
 
@@ -168,6 +170,8 @@ const OperandEditorContent = forwardRef<
       .includes(editViewModel.searchText.toLocaleUpperCase())
   );
 
+  const showClearOption = operandViewModel.funcName !== undefinedAstNodeName;
+
   return (
     <ScrollArea.Root asChild>
       <Popover.Content
@@ -230,6 +234,16 @@ const OperandEditorContent = forwardRef<
             </Group>
           </div>
         </ScrollArea.Viewport>
+        {showClearOption && (
+          <div className="border-t-grey-10 border-t">
+            <ClearOption
+              onClick={() => {
+                handleSelectOption(newUndefinedLabelledAst());
+                closeModal();
+              }}
+            />
+          </div>
+        )}
         <ScrollArea.Scrollbar>
           <ScrollArea.Thumb />
         </ScrollArea.Scrollbar>
