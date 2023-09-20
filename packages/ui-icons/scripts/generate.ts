@@ -9,8 +9,8 @@ const OUT_DIR = join(process.cwd(), '/src');
 const IN_DIR = join(process.cwd(), '/svgs');
 
 function getComponentName(svgFileName: string) {
-  return parse(svgFileName).name.replace(/(?:^|-)(.)/g, ($1) =>
-    $1.toUpperCase().replace('-', '')
+  return parse(svgFileName).name.replace(/(?:^|-|_)(.)/g, ($1) =>
+    $1.toUpperCase().replace(/-|_/, '')
   );
 }
 
@@ -69,7 +69,9 @@ async function generateIcons() {
   const spinner = ora('Start generating icons...').start();
 
   try {
-    const svgFileNames = await readdir(IN_DIR);
+    const svgFileNames = (await readdir(IN_DIR)).filter((fileName) =>
+      fileName.endsWith('.svg')
+    );
 
     await pMap(svgFileNames, async (svgFileName) => buildIcon(svgFileName), {
       concurrency: 20,
