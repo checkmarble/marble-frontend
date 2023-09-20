@@ -5,9 +5,9 @@ export const routes = [
     "file": "root.tsx",
     "children": [
       {
-        "id": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit",
-        "path": "ressources/scenarios/:scenarioId/:iterationId/rules/:ruleId/edit",
-        "file": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/$ruleId/edit.tsx"
+        "id": "routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule",
+        "file": "routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule.tsx"
       },
       {
         "id": "routes/ressources/scenarios/$scenarioId/$iterationId/create_draft",
@@ -197,6 +197,11 @@ export const routes = [
             "id": "routes/__builder/decisions",
             "path": "decisions",
             "file": "routes/__builder/decisions.tsx"
+          },
+          {
+            "id": "routes/__builder/data",
+            "path": "data",
+            "file": "routes/__builder/data.tsx"
           },
           {
             "id": "routes/__builder/$",
