@@ -1,0 +1,8 @@
+{
+  "scheduledExecution": "Scheduled Execution",
+  "status": "Status",
+  "created_at": "Created at",
+  "started_at": "Started at",
+  "finished_at": "Finished at",
+  "download_decisions": "Download Decisions"
+}

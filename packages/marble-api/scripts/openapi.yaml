@@ -128,6 +128,40 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /scheduled-executions:
+    get:
+      tags:
+        - ScheduledExecutions
+      summary: List Scheduled Executions
+      operationId: listScheduledExecutions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenario_id
+          description: ID of the scenario used to filter the list
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of Scheduled Executions of the organization
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - scheduled_executions
+                properties:
+                  scheduled_executions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ScheduledExecution'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /decisions/{decisionId}:
     get:
       tags:
@@ -1779,6 +1813,29 @@ components:
           type: integer
         error:
           $ref: '#/components/schemas/Error'
+    ScheduledExecution:
+      type: object
+      required:
+        - id
+        - scenario_iteration_id
+        - status
+        - started_at
+        - finished_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        scenario_iteration_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        started_at:
+          type: string
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
     CreateDecisionBody:
       type: object
       required:

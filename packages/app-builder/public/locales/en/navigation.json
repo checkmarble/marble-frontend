@@ -8,5 +8,6 @@
   "scenario.trigger": "Trigger",
   "scenario.rules": "Rules",
   "scenario.decision": "Decision",
-  "data": "Your Data"
+  "data": "Your Data",
+  "scheduledExecution": "Scheduled Execution"
 }

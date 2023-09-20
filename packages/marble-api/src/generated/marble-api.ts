@@ -61,6 +61,13 @@ export type CreateDecisionBody = {
     trigger_object: object;
     object_type: string;
 };
+export type ScheduledExecution = {
+    id: string;
+    scenario_iteration_id: string;
+    status: string;
+    started_at: string;
+    finished_at: string | null;
+};
 export type UploadLog = {
     started_at: string;
     finished_at: string;
@@ -347,6 +354,29 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
         method: "POST",
         body: createDecisionBody
     })));
+}
+/**
+ * List Scheduled Executions
+ */
+export function listScheduledExecutions({ scenarioId }: {
+    scenarioId?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            scheduled_executions: ScheduledExecution[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/scheduled-executions${QS.query(QS.explode({
+        scenario_id: scenarioId
+    }))}`, {
+        ...opts
+    }));
 }
 /**
  * Get a decision by id
