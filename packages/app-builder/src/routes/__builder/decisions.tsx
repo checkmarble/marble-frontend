@@ -36,13 +36,7 @@ export async function loader({ request }: LoaderArgs) {
   });
 
   const decisions = await apiClient.listDecisions();
-
-  const sortedDecisions = R.sortBy(decisions, [
-    ({ created_at }) => created_at,
-    'desc',
-  ]);
-
-  return json(sortedDecisions);
+  return json(decisions);
 }
 
 export default function DecisionsPage() {
