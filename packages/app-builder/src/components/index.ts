@@ -1,5 +1,6 @@
 export * from './Callout';
 export * from './Decision';
+export * from './DecisionsList';
 export * from './ErrorComponent';
 export * from './Navigation';
 export * from './Page';

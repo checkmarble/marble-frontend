@@ -90,3 +90,5 @@ export const Scenarios = {
   Nav: ScenariosNav,
   Link: ScenariosLink,
 };
+
+export const Decisions = Scenarios;

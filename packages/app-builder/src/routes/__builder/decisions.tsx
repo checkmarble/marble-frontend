@@ -1,24 +1,21 @@
 import {
+  Decisions,
+  DecisionsList,
   ErrorComponent,
-  Outcome,
-  type OutcomeProps,
   Page,
+  type ScenariosLinkProps,
 } from '@app-builder/components';
+import { ScheduledExecutionsList } from '@app-builder/components/ScheduledExecutionsList';
 import { serverServices } from '@app-builder/services/init.server';
-import { formatDateTime } from '@app-builder/utils/format';
 import { useVisibilityChange } from '@app-builder/utils/hooks';
-import { type Decision } from '@marble-api';
 import { Label } from '@radix-ui/react-label';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData, useRevalidator, useRouteError } from '@remix-run/react';
-import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
-import { Checkbox, Input, Table, useVirtualTable } from '@ui-design-system';
+import { Checkbox, Input } from '@ui-design-system';
 import { Decision as DecisionIcon, Search } from '@ui-icons';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
 
 import {
   DecisionsRightPanel,
@@ -26,75 +23,56 @@ import {
 } from '../ressources/decisions/decision-detail.$decisionId';
 
 export const handle = {
-  i18n: ['decisions', 'navigation'] satisfies Namespace,
+  i18n: ['decisions', 'scheduledExecution', 'navigation'] satisfies Namespace,
 };
+
+// export type ScenariosLinkProps = {
+//   Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+//   labelTKey: ParseKeys<['scheduledExecution']>;
+//   to: string;
+// };
+
+const LINKS: ScenariosLinkProps[] = [
+  {
+    labelTKey: 'navigation:scenario.decision',
+    to: './decisions',
+    Icon: DecisionIcon,
+  },
+  {
+    labelTKey: 'navigation:scheduledExecution',
+    to: './scheduled_executions',
+    Icon: DecisionIcon,
+  },
+];
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+  const { apiClient, backendInfo } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: '/login',
+    }
+  );
+
+  const decisions = apiClient.listDecisions();
+  const scheduledExecutions = apiClient.listScheduledExecutions({
+    scenarioId: '',
   });
 
-  const decisions = await apiClient.listDecisions();
-  return json(decisions);
+  return json({
+    decisions: await decisions,
+    scheduledExecutions: (await scheduledExecutions).scheduled_executions,
+    backendInfo,
+  });
 }
 
 export default function DecisionsPage() {
   const { decisionId, setDecisionId } = useDecisionsRightPanelState();
 
-  const { t, i18n } = useTranslation(handle.i18n);
-  const decisions = useLoaderData<typeof loader>();
+  const { decisions, scheduledExecutions, backendInfo } =
+    useLoaderData<typeof loader>();
 
-  const columns = useMemo<ColumnDef<Decision, string>[]>(
-    () => [
-      {
-        id: 'scenario.name',
-        accessorFn: (row) => row.scenario.name,
-        header: t('decisions:scenario.name'),
-        size: 200,
-      },
-      {
-        id: 'trigger_object_type',
-        accessorFn: (row) => row.trigger_object_type,
-        header: t('decisions:trigger_object.type'),
-        size: 100,
-      },
-      {
-        id: 'score',
-        accessorFn: (row) => row.score,
-        header: t('decisions:score'),
-        size: 100,
-      },
-      {
-        id: 'outcome',
-        accessorFn: (row) => row.outcome,
-        header: t('decisions:outcome'),
-        size: 100,
-        cell: ({ getValue }) => (
-          <Outcome
-            border="square"
-            size="big"
-            outcome={getValue<OutcomeProps['outcome']>()}
-          />
-        ),
-      },
-      {
-        id: 'created_at',
-        accessorFn: (row) => formatDateTime(i18n.language, row.created_at),
-        header: t('decisions:created_at'),
-        size: 200,
-      },
-    ],
-    [i18n.language, t]
-  );
-
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
-    data: decisions,
-    columns,
-    columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    enableSorting: false,
-  });
+  const { t } = useTranslation(handle.i18n);
 
   return (
     <Page.Container>
@@ -102,6 +80,15 @@ export default function DecisionsPage() {
         <DecisionIcon className="mr-2" height="24px" width="24px" />
         {t('navigation:decisions')}
       </Page.Header>
+
+      <Decisions.Nav>
+        {LINKS.map((linkProps) => (
+          <li key={linkProps.labelTKey}>
+            <Decisions.Link {...linkProps} />
+          </li>
+        ))}
+      </Decisions.Nav>
+
       <DecisionsRightPanel.Root>
         <Page.Content scrollable={false}>
           <div className="flex flex-row justify-between gap-2">
@@ -126,27 +113,12 @@ export default function DecisionsPage() {
             />
             <ToggleLiveUpdate />
           </div>
-          <Table.Container {...getContainerProps()}>
-            <Table.Header headerGroups={table.getHeaderGroups()} />
-            <Table.Body {...getBodyProps()}>
-              {rows.map((row) => {
-                return (
-                  <Table.Row
-                    key={row.id}
-                    className={clsx(
-                      'hover:bg-grey-02 cursor-pointer',
-                      row.original.id === decisionId && 'bg-grey-02'
-                    )}
-                    row={row}
-                    onClick={(e) => {
-                      setDecisionId(row.original.id);
-                      e.stopPropagation(); // To prevent DecisionsRightPanel from closing
-                    }}
-                  />
-                );
-              })}
-            </Table.Body>
-          </Table.Container>
+          <ScheduledExecutionsList scheduledExecutions={scheduledExecutions} />
+          <DecisionsList
+            decisions={decisions}
+            selectedDecisionId={decisionId}
+            onSelectDecision={setDecisionId}
+          />
         </Page.Content>
       </DecisionsRightPanel.Root>
     </Page.Container>

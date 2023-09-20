@@ -5,6 +5,7 @@ import type lists from '../../../public/locales/en/lists.json';
 import type login from '../../../public/locales/en/login.json';
 import type navigation from '../../../public/locales/en/navigation.json';
 import type scenarios from '../../../public/locales/en/scenarios.json';
+import type scheduledExecution from '../../../public/locales/en/scheduledExecution.json';
 import type upload from '../../../public/locales/en/upload.json';
 import type defaultNS from './i18n-config';
 
@@ -20,6 +21,7 @@ declare module 'i18next' {
       login: typeof login;
       scenarios: typeof scenarios;
       upload: typeof upload;
+      scheduledExecution: typeof scheduledExecution;
     };
   }
 }
