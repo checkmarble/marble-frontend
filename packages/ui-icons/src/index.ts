@@ -36,6 +36,7 @@ export { default as Number } from './Number';
 export { default as Play } from './Play';
 export { default as Plus } from './Plus';
 export { default as Pushtolive } from './Pushtolive';
+export { default as RestartAlt } from './RestartAlt';
 export { default as Rules } from './Rules';
 export { default as Scenarios } from './Scenarios';
 export { default as Search } from './Search';
