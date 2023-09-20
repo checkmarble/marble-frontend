@@ -12,6 +12,7 @@ import { Button, ScrollArea } from '@ui-design-system';
 import {
   Arrow2Down,
   Decision,
+  Help,
   Lists,
   LogoStandard,
   Logout,
@@ -37,13 +38,10 @@ const LINKS: SidebarLinkProps[] = [
     to: getRoute('/decisions'),
     Icon: Decision,
   },
-  // { labelTKey: 'navigation:analytics', to: 'analytics', Icon: Analytics },
-  // { labelTKey: 'navigation:history', to: 'history', Icon: History },
 ];
 
 const BOTTOM_LINKS: SidebarLinkProps[] = [
-  // { labelTKey: 'navigation:settings', to: 'settings', Icon: Settings },
-  // { labelTKey: 'navigation:help-center', to: 'help-center', Icon: Helpcenter },
+  { labelTKey: 'navigation:data', to: getRoute('/data'), Icon: Help },
 ];
 
 export async function loader({ request }: LoaderArgs) {

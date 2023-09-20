@@ -23,6 +23,7 @@ export interface DataModel {
   name: string;
   fields: DataModelField[];
   linksToSingle: LinksToSingle[];
+  description?: string;
 }
 
 function adaptFieldDto(dataModelFieldsDto: {
@@ -60,6 +61,9 @@ export function adaptDataModelDto(dataModelDto: DataModelDto): DataModel[] {
       name: tableName,
       fields: adaptFieldDto(tableDto.fields),
       linksToSingle: adaptLinkToSingleDto(tableDto.links_to_single ?? {}),
+      description:
+        tableDto.description ||
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat',
     }))
   );
 }

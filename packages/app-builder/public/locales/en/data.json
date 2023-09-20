@@ -1,0 +1,8 @@
+{
+  "your_data_callout": "This is the list of all the objects you can send to Marble, as well as their properties. Get in touch with the Marble team if you'd like to make changes to your data model.",
+  "description": "Description",
+  "table_name": "Name",
+  "table_description": "Description",
+  "table_type": "Type, required?",
+  "table_relationship": "Relationship"
+}

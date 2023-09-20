@@ -1,4 +1,5 @@
 import type common from '../../../public/locales/en/common.json';
+import type data from '../../../public/locales/en/data.json';
 import type decisions from '../../../public/locales/en/decisions.json';
 import type lists from '../../../public/locales/en/lists.json';
 import type login from '../../../public/locales/en/login.json';
@@ -11,6 +12,7 @@ declare module 'i18next' {
     defaultNS: typeof defaultNS;
     resources: {
       common: typeof common;
+      data: typeof data;
       navigation: typeof navigation;
       decisions: typeof decisions;
       lists: typeof lists;
