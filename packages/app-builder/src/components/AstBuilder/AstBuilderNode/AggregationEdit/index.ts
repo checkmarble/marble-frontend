@@ -1,4 +1,3 @@
-export * from './AggregationOperand';
 export * from './AggregatorSelect';
 export * from './EditDataModelField';
 export * from './EditFilters';

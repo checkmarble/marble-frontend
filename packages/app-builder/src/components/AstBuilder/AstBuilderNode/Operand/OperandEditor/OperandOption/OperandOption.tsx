@@ -3,7 +3,7 @@ import { adaptHighlightedParts } from '@app-builder/utils/search';
 import { Tip } from '@ui-icons';
 import { Fragment } from 'react';
 
-import { OperandTooltip } from './OperandTooltip';
+import { OperandTooltip } from '../../OperandTooltip';
 import { getDataTypeIcon, Option } from './Option';
 
 export function OperandOption({
@@ -38,8 +38,17 @@ export function OperandOption({
           )
         )}
       </Option.Value>
-      <OperandTooltip option={option} sideOffset={24} alignOffset={-8}>
-        <Option.Icon className="text-grey-00 group-hover:text-purple-50 group-hover:hover:text-purple-100">
+      <OperandTooltip
+        operand={{
+          name: option.name,
+          operandType: option.operandType,
+          dataType: option.dataType,
+          description: option.description,
+        }}
+        sideOffset={24}
+        alignOffset={-8}
+      >
+        <Option.Icon className="text-transparent group-hover:text-purple-50 group-hover:hover:text-purple-100">
           <Tip />
         </Option.Icon>
       </OperandTooltip>

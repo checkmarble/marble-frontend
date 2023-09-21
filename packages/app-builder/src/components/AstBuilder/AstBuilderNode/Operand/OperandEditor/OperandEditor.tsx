@@ -1,6 +1,5 @@
 import {
   type AstNode,
-  getAstNodeLabelName,
   isAggregation,
   type LabelledAst,
   newAggregatorLabelledAst,
@@ -8,23 +7,20 @@ import {
   newDatabaseAccessorsLabelledAst,
   newPayloadAccessorsLabelledAst,
   newUndefinedLabelledAst,
-  undefinedAstNodeName,
 } from '@app-builder/models';
 import {
   allAggregators,
   coerceToConstantsLabelledAst,
 } from '@app-builder/services/editor';
 import {
-  adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
   type AstBuilder,
-  type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { matchSorter } from '@app-builder/utils/search';
 import * as Popover from '@radix-ui/react-popover';
 import { Input, ScrollArea } from '@ui-design-system';
 import { Search } from '@ui-icons';
-import { forwardRef, useCallback, useState } from 'react';
+import React, { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ErrorMessage } from '../../../ErrorMessage';
@@ -32,52 +28,43 @@ import { getBorderColor } from '../../../utils';
 import {
   adaptAggregationViewModel,
   type AggregationEditorNodeViewModel,
+  isAggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../../AggregationEdit';
-import { Default } from '../../Default';
+import { type EditableOperandViewModel } from '../Operand';
 import { OperandViewer } from '../OperandViewer';
 import { Count, Group, GroupHeader, Label } from './Group';
-import { ClearOption, ConstantOption, OperandOption } from './OperandOption';
-
-export type OperandViewModel = EditorNodeViewModel;
-
-interface EditOperandViewModel {
-  constantOptions: LabelledAst[];
-  identifiersOptions: LabelledAst[];
-  searchText: string;
-}
+import {
+  ClearOption,
+  ConstantOption,
+  EditOption,
+  OperandOption,
+} from './OperandOption';
 
 export function OperandEditor({
   builder,
-  operandViewModel,
+  editableOperandViewModel,
   onSave,
   viewOnly,
+  ariaLabel,
 }: {
   builder: AstBuilder;
-  operandViewModel: OperandViewModel;
+  editableOperandViewModel: EditableOperandViewModel;
   onSave: (astNode: AstNode) => void;
   viewOnly?: boolean;
+  ariaLabel?: string;
 }) {
   const [open, onOpenChange] = useState<boolean>(false);
-
-  // TODO: better handling of the viewOnly fallback when we get a specific UI per component (not a stringified version)
-  const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
-  const labelName = getAstNodeLabelName(astNode, builder, {
-    getDefaultDisplayName: () => undefined,
-  });
-  if (labelName === undefined) {
-    return <Default editorNodeViewModel={operandViewModel} builder={builder} />;
-  }
+  const { editorNodeViewModel } = editableOperandViewModel;
 
   return (
     <div className="flex flex-col gap-1">
       <Popover.Root modal open={open} onOpenChange={onOpenChange}>
-        <Popover.Trigger asChild disabled={viewOnly}>
+        <Popover.Trigger asChild disabled={viewOnly} aria-label={ariaLabel}>
           <OperandViewer
-            borderColor={getBorderColor(operandViewModel.validation)}
-          >
-            {labelName}
-          </OperandViewer>
+            borderColor={getBorderColor(editorNodeViewModel.validation)}
+            operandLabelledAst={editableOperandViewModel.labelledAst}
+          />
         </Popover.Trigger>
         <Popover.Portal>
           <OperandEditorContent
@@ -86,15 +73,21 @@ export function OperandEditor({
             closeModal={() => {
               onOpenChange(false);
             }}
-            operandViewModel={operandViewModel}
+            editableOperandViewModel={editableOperandViewModel}
           />
         </Popover.Portal>
       </Popover.Root>
-      {operandViewModel.validation.state === 'fail' && (
-        <ErrorMessage errors={operandViewModel.validation.errors} />
+      {editorNodeViewModel.validation.state === 'fail' && (
+        <ErrorMessage errors={editorNodeViewModel.validation.errors} />
       )}
     </div>
   );
+}
+
+interface EditOperandViewModel {
+  constantOptions: LabelledAst[];
+  identifiersOptions: LabelledAst[];
+  searchText: string;
 }
 
 const OperandEditorContent = forwardRef<
@@ -103,9 +96,10 @@ const OperandEditorContent = forwardRef<
     builder: AstBuilder;
     onSave: (astNode: AstNode) => void;
     closeModal: () => void;
-    operandViewModel: OperandViewModel;
+    editableOperandViewModel: EditableOperandViewModel;
   }
->(({ builder, onSave, closeModal, operandViewModel }, ref) => {
+>(({ builder, onSave, closeModal, editableOperandViewModel }, ref) => {
+  const { labelledAst, editorNodeViewModel } = editableOperandViewModel;
   const { t } = useTranslation('scenarios');
   const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
     () => {
@@ -151,7 +145,7 @@ const OperandEditorContent = forwardRef<
       if (isAggregation(newSelection.astNode)) {
         const initialAggregation = adaptAggregationViewModel({
           ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
-          nodeId: operandViewModel.nodeId,
+          nodeId: editorNodeViewModel.nodeId,
         } as AggregationEditorNodeViewModel);
 
         editAggregation({
@@ -162,7 +156,7 @@ const OperandEditorContent = forwardRef<
         onSave(newSelection.astNode);
       }
     },
-    [editAggregation, onSave, operandViewModel.nodeId]
+    [editAggregation, onSave, editorNodeViewModel.nodeId]
   );
 
   const availableOptions = matchSorter(
@@ -171,7 +165,7 @@ const OperandEditorContent = forwardRef<
     { keys: ['name'] }
   );
 
-  const showClearOption = operandViewModel.funcName !== undefinedAstNodeName;
+  const showClearOption = labelledAst.name !== '';
 
   return (
     <ScrollArea.Root asChild>
@@ -236,16 +230,30 @@ const OperandEditorContent = forwardRef<
             </Group>
           </div>
         </ScrollArea.Viewport>
-        {showClearOption && (
-          <div className="border-t-grey-10 border-t">
+        <BottomOptions>
+          {isAggregationEditorNodeViewModel(editorNodeViewModel) && (
+            <EditOption
+              onClick={() => {
+                const initialAggregation =
+                  adaptAggregationViewModel(editorNodeViewModel);
+
+                editAggregation({
+                  initialAggregation,
+                  onSave,
+                });
+                closeModal();
+              }}
+            />
+          )}
+          {showClearOption && (
             <ClearOption
               onClick={() => {
                 handleSelectOption(newUndefinedLabelledAst());
                 closeModal();
               }}
             />
-          </div>
-        )}
+          )}
+        </BottomOptions>
         <ScrollArea.Scrollbar>
           <ScrollArea.Thumb />
         </ScrollArea.Scrollbar>
@@ -254,3 +262,10 @@ const OperandEditorContent = forwardRef<
   );
 });
 OperandEditorContent.displayName = 'OperandEditorContent';
+
+function BottomOptions({ children }: { children: React.ReactNode }) {
+  if (React.Children.count(children) === 0) return null;
+  return (
+    <div className="border-t-grey-10 flex flex-col border-t">{children}</div>
+  );
+}

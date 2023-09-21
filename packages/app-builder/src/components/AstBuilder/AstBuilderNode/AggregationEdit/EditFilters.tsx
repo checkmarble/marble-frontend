@@ -106,7 +106,7 @@ export const EditFilters = ({
 
                 <Operand
                   builder={builder}
-                  operandViewModel={filter.value}
+                  editorViewModel={filter.value}
                   onSave={(astNode) =>
                     onFilterChange(
                       { value: adaptEditorNodeViewModel({ ast: astNode }) },
