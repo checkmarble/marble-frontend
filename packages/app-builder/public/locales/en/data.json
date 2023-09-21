@@ -1,8 +1,13 @@
 {
   "your_data_callout": "This is the list of all the objects you can send to Marble, as well as their properties. Get in touch with the Marble team if you'd like to make changes to your data model.",
   "description": "Description",
-  "table_name": "Name",
-  "table_description": "Description",
-  "table_type": "Type, required?",
-  "table_relationship": "Relationship"
+  "field_name": "Name",
+  "field_type": "Type",
+  "field_required": "Required",
+  "table_relationship": "Relationship",
+  "foreign_key": "Foreign Key",
+  "parent_table": "Related table",
+  "parent_field_name": "Parent table field name",
+  "example_usage": "Usage",
+  "links_from_table": "Links from to other entities from <TableLocale>{{tableName}}</TableLocale>"
 }

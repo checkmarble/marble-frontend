@@ -13,11 +13,11 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { Table, useVirtualTable } from '@ui-design-system';
+import { Table, useTable } from '@ui-design-system';
 import { Help as HelpIcon } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 export const handle = {
   i18n: ['navigation', 'data'] satisfies Namespace,
@@ -36,56 +36,55 @@ export async function loader({ request }: LoaderArgs) {
   });
 }
 
-const formatFieldRelationshipDisplay = (
-  fieldName: string,
-  links: LinksToSingle[]
-) => {
-  for (const link of links) {
-    if (link.childFieldName === fieldName) {
-      return `${link.linkName}: ${link.linkedTableName}.${link.parentFieldName}`;
-    }
-  }
-  return '';
-};
-
-const mapFieldToTableRow = (field: DataModelField, links: LinksToSingle[]) => ({
+const mapFieldToTableRow = (field: DataModelField) => ({
   name: field.name,
-  description: 'this is a ' + field.name + " and it's a " + field.dataType,
-  type: field.dataType + ', ' + (field.nullable ? 'optional' : 'required'),
-  relationship: formatFieldRelationshipDisplay(field.name, links),
+  description: field.description,
+  type: field.dataType,
+  required: field.nullable ? 'optional' : 'required',
+});
+
+const mapLinkToTableRow = (table: DataModel, link: LinksToSingle) => ({
+  foreignKey: link.childFieldName,
+  parentTable: link.linkedTableName,
+  parentFieldName: link.parentFieldName,
+  exampleUsage: `${table.name}.${link.linkName}.${link.parentFieldName} = ${table.name}.${link.childFieldName}`,
 });
 
 function TableFields({ tableModel }: { tableModel: DataModel }) {
   const { t } = useTranslation(handle.i18n);
 
-  const fields = tableModel.fields.map((field) =>
-    mapFieldToTableRow(field, tableModel.linksToSingle)
+  // Create table for client db table fields
+  const fields = useMemo(
+    () => tableModel.fields.map((field) => mapFieldToTableRow(field)),
+    [tableModel.fields]
   );
 
-  const columns = useMemo<ColumnDef<ReturnType<typeof mapFieldToTableRow>>[]>(
+  const columnsFields = useMemo<
+    ColumnDef<ReturnType<typeof mapFieldToTableRow>>[]
+  >(
     () => [
       {
+        id: 'name',
         accessorKey: 'name',
-        header: t('data:table_name'),
-        size: 200,
-        enableSorting: true,
+        header: t('data:field_name'),
+        size: 150,
       },
       {
         id: 'type',
         accessorKey: 'type',
-        size: 150,
-        header: t('data:table_type'),
+        size: 80,
+        header: t('data:field_type'),
       },
       {
-        id: 'relationship',
-        accessorKey: 'relationship',
-        header: t('data:table_relationship'),
-        size: 250,
+        id: 'required',
+        accessorKey: 'required',
+        size: 80,
+        header: t('data:field_required'),
       },
       {
         id: 'description',
         accessorKey: 'description',
-        header: t('data:table_description'),
+        header: t('data:description'),
         size: 500,
       },
     ],
@@ -93,41 +92,125 @@ function TableFields({ tableModel }: { tableModel: DataModel }) {
   );
 
   const {
-    table: tab,
-    getBodyProps,
-    rows,
-    getContainerProps,
-  } = useVirtualTable({
+    table: tableFields,
+    getBodyProps: getBodyPropsFields,
+    rows: rowsFields,
+    getContainerProps: getContainerPropsFields,
+  } = useTable({
     data: fields,
-    columns,
+    columns: columnsFields,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    enableSorting: false,
+  });
+
+  // Create table for links (relations)
+  const links = useMemo(
+    () =>
+      tableModel.linksToSingle.map((link) =>
+        mapLinkToTableRow(tableModel, link)
+      ),
+    [tableModel]
+  );
+
+  const columnsLinks = useMemo<
+    ColumnDef<ReturnType<typeof mapLinkToTableRow>>[]
+  >(
+    () => [
+      {
+        id: 'foreignKey',
+        accessorKey: 'foreignKey',
+        header: t('data:foreign_key'),
+        size: 50,
+        enableSorting: true,
+      },
+      {
+        id: 'parentTable',
+        accessorKey: 'parentTable',
+        size: 50,
+        header: t('data:parent_table'),
+      },
+      {
+        id: 'parentFieldName',
+        accessorKey: 'parentFieldName',
+        header: t('data:parent_field_name'),
+        size: 50,
+      },
+      {
+        id: 'exampleUsage',
+        accessorKey: 'exampleUsage',
+        header: t('data:example_usage'),
+        size: 100,
+      },
+    ],
+    [t]
+  );
+
+  const {
+    table: tableLinks,
+    getBodyProps: getBodyPropsLinks,
+    rows: rowsLinks,
+    getContainerProps: getContainerPropsLinks,
+  } = useTable({
+    data: links,
+    columns: columnsLinks,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    enableSorting: false,
   });
 
   return (
     <div
       key={tableModel.name}
-      className="mb-10 w-full overflow-hidden rounded-lg bg-white shadow-md"
+      className="w-fulloverflow-hidden mb-10 rounded-lg bg-white shadow-md"
     >
       <div className="bg-grey-02 border-grey-10 border px-8 py-6 text-lg font-bold capitalize">
         {tableModel.name}
       </div>
-      <hr className="border-grey-10 border-t" />
-      <div className="p-8 ">
-        <div className="mb-8 ">{tableModel.description}</div>
-        <Table.Container {...getContainerProps()}>
-          <Table.Header headerGroups={tab.getHeaderGroups()} />
-          <Table.Body {...getBodyProps()}>
-            {rows.map((row) => (
-              <Table.Row
-                key={row.id}
-                className="hover:bg-grey-02 mb-4 cursor-pointer"
-                row={row}
+      <div className="flex flex-col gap-6 px-6 py-8">
+        {tableModel.description && <div>{tableModel.description}</div>}
+        <div>
+          <Table.Container {...getContainerPropsFields()}>
+            <Table.Header headerGroups={tableFields.getHeaderGroups()} />
+            <Table.Body {...getBodyPropsFields()}>
+              {rowsFields.map((row) => (
+                <Table.Row key={row.id} className="mb-4 break-all" row={row} />
+              ))}
+            </Table.Body>
+          </Table.Container>
+        </div>
+        {links.length > 0 && (
+          <div>
+            <p className="pb-6">
+              <Trans
+                t={t}
+                i18nKey="data:links_from_table"
+                components={{
+                  TableLocale: <span style={{ fontWeight: 'bold' }} />,
+                }}
+                values={{
+                  tableName: tableModel.name,
+                }}
               />
-            ))}
-          </Table.Body>
-        </Table.Container>
+            </p>
+            <div>
+              <Table.Container {...getContainerPropsLinks()}>
+                <Table.Header headerGroups={tableLinks.getHeaderGroups()} />
+                <Table.Body {...getBodyPropsLinks()}>
+                  {rowsLinks.map((row) => (
+                    <Table.Row
+                      key={row.id}
+                      className="mb-4 break-all"
+                      row={row}
+                    />
+                  ))}
+                </Table.Body>
+              </Table.Container>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

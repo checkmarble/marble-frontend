@@ -177,6 +177,25 @@ export function useVirtualTable<TData extends RowData>(
   };
 }
 
+export function useTable<TData extends RowData>(options: TableOptions<TData>) {
+  const table = useReactTable(options);
+
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const { rows } = table.getRowModel();
+
+  return {
+    table,
+    getBodyProps: () => {
+      return { paddingTop: 0, paddingBottom: 0 };
+    },
+    getContainerProps: () => {
+      return { table, tableContainerRef };
+    },
+    rows,
+  };
+}
+
 function Body({
   paddingTop,
   paddingBottom,
