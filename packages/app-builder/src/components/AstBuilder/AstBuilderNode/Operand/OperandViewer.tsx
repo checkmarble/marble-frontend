@@ -1,4 +1,4 @@
-import { isUndefinedAstNode, type LabelledAst } from '@app-builder/models';
+import { type LabelledAst } from '@app-builder/models';
 import { Tip } from '@ui-icons';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
