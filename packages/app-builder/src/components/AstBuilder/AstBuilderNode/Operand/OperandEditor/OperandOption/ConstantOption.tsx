@@ -22,14 +22,16 @@ export function ConstantOption({
           <DataTypeIcon />
         </Option.Icon>
       )}
-      <Option.Value className="col-span-2 col-start-2 flex items-center justify-between gap-1">
-        <span className="overflow-hidden text-ellipsis">{constant.name}</span>
+      <div className="col-span-2 col-start-2 flex items-center justify-between gap-1">
+        <Option.Value className="overflow-hidden text-ellipsis">
+          {constant.name}
+        </Option.Value>
         {constantDataTypeTKey && (
           <span className="text-s shrink-0 font-semibold text-purple-100">
             {t(constantDataTypeTKey)}
           </span>
         )}
-      </Option.Value>
+      </div>
     </Option.Container>
   );
 }
