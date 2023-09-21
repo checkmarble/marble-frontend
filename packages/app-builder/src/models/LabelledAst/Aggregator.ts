@@ -5,14 +5,28 @@ import {
   NewAggregatorAstNode,
 } from '@app-builder/models';
 
-export function newAggregatorLabelledAst(aggregator: string): LabelledAst {
+export function newAggregatorLabelledAst(
+  nodeOrAggregator: string | AggregationAstNode
+): LabelledAst {
+  if (typeof nodeOrAggregator === 'string') {
+    return {
+      name: getAggregatorName(nodeOrAggregator),
+      description: '',
+      operandType: aggregationAstNodeName,
+      //TODO(combobox): infer/get aggregator.dataType
+      dataType: 'unknown',
+      astNode: NewAggregatorAstNode(nodeOrAggregator),
+    };
+  }
   return {
-    name: getAggregatorName(aggregator),
+    name: getAggregationDisplayName(nodeOrAggregator),
     description: '',
     operandType: aggregationAstNodeName,
     //TODO(combobox): infer/get aggregator.dataType
     dataType: 'unknown',
-    astNode: NewAggregatorAstNode(aggregator),
+    astNode: NewAggregatorAstNode(
+      nodeOrAggregator.namedChildren.aggregator.constant
+    ),
   };
 }
 

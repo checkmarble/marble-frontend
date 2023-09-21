@@ -89,9 +89,7 @@ export function adaptEditableOperandViewModel(
   }
 
   if (isAggregation(node)) {
-    const labelledAst = newAggregatorLabelledAst(
-      node.namedChildren.aggregator.constant
-    );
+    const labelledAst = newAggregatorLabelledAst(node);
     return {
       labelledAst,
       editorNodeViewModel,
