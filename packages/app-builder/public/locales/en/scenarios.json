@@ -130,5 +130,6 @@
   "edit_operand.data_type.timestamp": "Timestamp",
   "edit_operand.operator_type.list": "List",
   "edit_operand.operator_type.field": "Field",
-  "edit_operand.operator_type.variable": "Variable"
+  "edit_operand.operator_type.variable": "Variable",
+  "edit_operand.placeholder": "Select an operand..."
 }
