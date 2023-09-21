@@ -1,6 +1,7 @@
 export * from './ast-node';
 export * from './ast-operators';
 export * from './auth-errors';
+export * from './backend-info';
 export * from './data-model';
 export * from './http-errors';
 export * from './identifier';

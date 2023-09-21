@@ -1,5 +1,9 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { adaptAuthErrors, type User } from '@app-builder/models';
+import {
+  adaptAuthErrors,
+  type BackendInfo,
+  type User,
+} from '@app-builder/models';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
@@ -22,6 +26,7 @@ interface AuthenticatedInfo {
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   user: User;
+  backendInfo: BackendInfo;
 }
 
 export interface AuthenticationServerService {
@@ -73,6 +78,8 @@ export function makeAuthenticationServerService(
     return marbleAPIClient(tokenService);
   }
 
+  const backendUrl = getServerEnv('MARBLE_API_DOMAIN');
+
   async function authenticate(
     request: Request,
     options: {
@@ -97,7 +104,7 @@ export function makeAuthenticationServerService(
         {
           authorization: `Bearer ${idToken}`,
         },
-        { baseUrl: getServerEnv('MARBLE_API_DOMAIN') }
+        { baseUrl: backendUrl }
       );
 
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
@@ -166,6 +173,10 @@ export function makeAuthenticationServerService(
       scenario: scenarioRepository(apiClient),
       organization: organizationRepository(apiClient, user.organizationId),
       user,
+      backendInfo: {
+        accessToken: marbleToken.access_token,
+        backendUrl,
+      },
     };
   }
 
