@@ -224,6 +224,7 @@ const OperandEditorContent = forwardRef<
               {availableOptions.map((option) => (
                 <OperandOption
                   key={option.name}
+                  searchText={editViewModel.searchText}
                   option={option}
                   onClick={() => {
                     handleSelectOption(option);
