@@ -1,7 +1,7 @@
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import {
-  aggregationDisplayName,
   type AstNode,
+  getAggregationDisplayName,
   isValidationFailure,
 } from '@app-builder/models';
 import { Button, Tooltip } from '@ui-design-system';
@@ -47,7 +47,9 @@ export const AggregationEditPanel = ({
                   }
                   color={isFail ? 'red' : 'purple'}
                 >
-                  {aggregationDisplayName(adaptAggregationAstNode(aggregation))}
+                  {getAggregationDisplayName(
+                    adaptAggregationAstNode(aggregation)
+                  )}
                 </Button>
               );
 

@@ -1,7 +1,6 @@
 import {
   findDataModelField,
   type LabelledAst,
-  payloadAccessorsDisplayName,
   type PayloadAstNode,
   payloadAstNodeName,
   type TableModel,
@@ -19,10 +18,14 @@ export function newPayloadAccessorsLabelledAst({
     fieldName: node.children[0].constant,
   });
   return {
-    name: payloadAccessorsDisplayName(node),
+    name: getPayloadAccessorsDisplayName(node),
     description: field.description,
     operandType: payloadAstNodeName,
     dataType: field.dataType,
     astNode: node,
   };
+}
+
+export function getPayloadAccessorsDisplayName(node: PayloadAstNode): string {
+  return node.children[0].constant;
 }
