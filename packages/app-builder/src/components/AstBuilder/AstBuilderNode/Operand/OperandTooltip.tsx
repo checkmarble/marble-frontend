@@ -7,36 +7,44 @@ import {
   getDataTypeTKey,
   getOperatorTypeIcon,
   getOperatorTypeTKey,
-} from './Option';
+} from './OperandEditor/OperandOption/Option';
+
+interface OperandTooltipProps {
+  operand: {
+    name: string;
+    operandType: LabelledAst['operandType'];
+    dataType: LabelledAst['dataType'];
+    description?: string;
+  };
+  children: React.ReactNode;
+  side?: Tooltip.TooltipContentProps['side'];
+  align?: Tooltip.TooltipContentProps['align'];
+  sideOffset?: Tooltip.TooltipContentProps['sideOffset'];
+  alignOffset?: Tooltip.TooltipContentProps['alignOffset'];
+}
 
 export function OperandTooltip({
-  option,
+  operand,
   children,
   side = 'right',
   align = 'start',
   sideOffset,
   alignOffset,
-}: {
-  option: LabelledAst;
-  children: React.ReactNode;
-} & Pick<
-  Tooltip.TooltipContentProps,
-  'sideOffset' | 'side' | 'align' | 'alignOffset'
->) {
+}: OperandTooltipProps) {
   const typeInfos = [
     {
-      Icon: getOperatorTypeIcon(option.operandType),
-      tKey: getOperatorTypeTKey(option.operandType),
+      Icon: getOperatorTypeIcon(operand.operandType),
+      tKey: getOperatorTypeTKey(operand.operandType),
     },
     {
-      Icon: getDataTypeIcon(option.dataType),
-      tKey: getDataTypeTKey(option.dataType),
+      Icon: getDataTypeIcon(operand.dataType),
+      tKey: getDataTypeTKey(operand.dataType),
     },
   ];
 
   return (
     <Tooltip.Root delayDuration={0}>
-      <Tooltip.Trigger>{children}</Tooltip.Trigger>
+      <Tooltip.Trigger tabIndex={-1}>{children}</Tooltip.Trigger>
       <Tooltip.Portal>
         <Tooltip.Content
           side={side}
@@ -48,12 +56,12 @@ export function OperandTooltip({
           <div className="flex flex-col gap-1">
             <TypeInfos typeInfos={typeInfos} />
             <p className="text-grey-100 text-s overflow-hidden text-ellipsis font-normal">
-              {option.name}
+              {operand.name}
             </p>
           </div>
-          {option.description && (
+          {operand.description && (
             <p className="text-grey-50 text-xs font-normal">
-              {option.description}
+              {operand.description}
             </p>
           )}
         </Tooltip.Content>
