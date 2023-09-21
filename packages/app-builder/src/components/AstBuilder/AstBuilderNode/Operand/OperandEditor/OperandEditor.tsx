@@ -20,6 +20,7 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { newUndefinedLabelledAst } from '@app-builder/services/editor/newUndefinedLabelledAst';
+import { matchSorter } from '@app-builder/utils/search';
 import * as Popover from '@radix-ui/react-popover';
 import { Input, ScrollArea } from '@ui-design-system';
 import { Search } from '@ui-icons';
@@ -164,10 +165,10 @@ const OperandEditorContent = forwardRef<
     [editAggregation, onSave, operandViewModel.nodeId]
   );
 
-  const availableOptions = editViewModel.identifiersOptions.filter((option) =>
-    option.name
-      .toLocaleUpperCase()
-      .includes(editViewModel.searchText.toLocaleUpperCase())
+  const availableOptions = matchSorter(
+    editViewModel.identifiersOptions,
+    editViewModel.searchText,
+    { keys: ['name'] }
   );
 
   const showClearOption = operandViewModel.funcName !== undefinedAstNodeName;

@@ -20,6 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "autosuggest-highlight": "^3.3.4",
+    "match-sorter": "^6.3.1",
     "nanoid": "^4.0.2"
   }
 }

@@ -300,6 +300,9 @@ importers:
       autosuggest-highlight:
         specifier: ^3.3.4
         version: 3.3.4
+      match-sorter:
+        specifier: ^6.3.1
+        version: 6.3.1
       nanoid:
         specifier: ^4.0.2
         version: 4.0.2
@@ -11260,6 +11263,13 @@ packages:
     hasBin: true
     dev: false
 
+  /match-sorter@6.3.1:
+    resolution: {integrity: sha512-mxybbo3pPNuA+ZuCUhm5bwNkXrJTbsk5VWbR5wiwz/GC6LIiegBGn2w3O08UG/jdbYLinw51fSQ5xNU1U3MgBw==}
+    dependencies:
+      '@babel/runtime': 7.22.6
+      remove-accents: 0.4.2
+    dev: false
+
   /mdast-util-definitions@4.0.0:
     resolution: {integrity: sha512-k8AJ6aNnUkB7IE+5azR9h81O5EQ/cTDXtWdMq9Kk5KcEW/8ritU5CeLg/9HhOC++nALHBlaogJ5jz0Ybk3kPMQ==}
     dependencies:
@@ -13499,6 +13509,10 @@ packages:
   /remix@1.18.1:
     resolution: {integrity: sha512-r+pZNx5tBq8AHfP2l0xhR8YmH0vyIsf0365p2MaBLjzOcaPRBSAoKqc2C4Ix7YMmVTGJ3FJvB2dXN56HDdRjVA==}
     engines: {node: '>=14.0.0'}
+    dev: false
+
+  /remove-accents@0.4.2:
+    resolution: {integrity: sha512-7pXIJqJOq5tFgG1A2Zxti3Ht8jJF337m4sowbuHsW30ZnkQFnDzy9qBNhgzX8ZLW4+UBcXiiR7SwR6pokHsxiA==}
     dev: false
 
   /remove-accents@0.4.4:
