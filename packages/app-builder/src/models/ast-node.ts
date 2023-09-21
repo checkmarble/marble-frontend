@@ -79,7 +79,7 @@ export interface UndefinedAstNode extends Omit<AstNode, 'name'> {
   name: typeof undefinedAstNodeName;
 }
 
-export function isAstNodeUnknown(node: AstNode): node is UndefinedAstNode {
+export function isUndefinedAstNode(node: AstNode): node is UndefinedAstNode {
   return node.name === undefinedAstNodeName;
 }
 

@@ -6,9 +6,13 @@ import {
 
 export function newUndefinedLabelledAst(): LabelledAst {
   return {
-    name: '',
+    name: getUndefinedDisplayName(),
     operandType: undefinedAstNodeName,
     dataType: 'unknown',
     astNode: NewUndefinedAstNode(),
   };
+}
+
+export function getUndefinedDisplayName(): string {
+  return '';
 }

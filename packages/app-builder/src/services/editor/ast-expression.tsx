@@ -1,4 +1,4 @@
-import { type AstNode, isAstNodeUnknown } from '@app-builder/models';
+import { type AstNode, isUndefinedAstNode } from '@app-builder/models';
 import { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 
@@ -10,7 +10,7 @@ function isAstNodeFieldEmpty(field: ReturnType<typeof useWatchAstNode>) {
   if (field === null) return true;
 
   if (typeof field === 'string') return !field;
-  return isAstNodeUnknown(field);
+  return isUndefinedAstNode(field);
 }
 
 /**
