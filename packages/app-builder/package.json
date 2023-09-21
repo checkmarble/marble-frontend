@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "devDependencies": {
+    "@types/autosuggest-highlight": "^3.2.0",
     "@types/qs": "^6.9.7",
     "dotenv-cli": "^7.2.1"
   },
@@ -18,6 +19,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "autosuggest-highlight": "^3.3.4",
+    "match-sorter": "^6.3.1",
     "nanoid": "^4.0.2"
   }
 }
