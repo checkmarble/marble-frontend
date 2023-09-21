@@ -98,7 +98,11 @@ function TypeInfos({
         return (
           <div
             key={tKey}
-            className="bg-grey-02 group-radix-state-open:bg-purple-10 flex items-center justify-center rounded-sm p-1"
+            className={clsx(
+              'bg-grey-02 flex items-center justify-center rounded-sm p-1',
+              'group-radix-state-open:bg-purple-10',
+              'group-disabled:bg-grey-10'
+            )}
           >
             <Icon width="16px" height="16px" aria-label={tKey && t(tKey)} />
           </div>
