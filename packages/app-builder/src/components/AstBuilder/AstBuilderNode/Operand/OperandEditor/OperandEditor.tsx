@@ -31,7 +31,7 @@ import {
   isAggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../../AggregationEdit';
-import { type EditableOperandViewModel } from '../Operand';
+import { type OperandViewModel } from '../Operand';
 import { OperandViewer } from '../OperandViewer';
 import { Count, Group, GroupHeader, Label } from './Group';
 import {
@@ -43,27 +43,28 @@ import {
 
 export function OperandEditor({
   builder,
-  editableOperandViewModel,
+  operandViewModel,
+  labelledAst,
   onSave,
   viewOnly,
   ariaLabel,
 }: {
   builder: AstBuilder;
-  editableOperandViewModel: EditableOperandViewModel;
+  operandViewModel: OperandViewModel;
+  labelledAst: LabelledAst;
   onSave: (astNode: AstNode) => void;
   viewOnly?: boolean;
   ariaLabel?: string;
 }) {
   const [open, onOpenChange] = useState<boolean>(false);
-  const { editorNodeViewModel } = editableOperandViewModel;
 
   return (
     <div className="flex flex-col gap-1">
       <Popover.Root modal open={open} onOpenChange={onOpenChange}>
         <Popover.Trigger asChild disabled={viewOnly} aria-label={ariaLabel}>
           <OperandViewer
-            borderColor={getBorderColor(editorNodeViewModel.validation)}
-            operandLabelledAst={editableOperandViewModel.labelledAst}
+            borderColor={getBorderColor(operandViewModel.validation)}
+            operandLabelledAst={labelledAst}
           />
         </Popover.Trigger>
         <Popover.Portal>
@@ -73,12 +74,13 @@ export function OperandEditor({
             closeModal={() => {
               onOpenChange(false);
             }}
-            editableOperandViewModel={editableOperandViewModel}
+            labelledAst={labelledAst}
+            operandViewModel={operandViewModel}
           />
         </Popover.Portal>
       </Popover.Root>
-      {editorNodeViewModel.validation.state === 'fail' && (
-        <ErrorMessage errors={editorNodeViewModel.validation.errors} />
+      {operandViewModel.validation.state === 'fail' && (
+        <ErrorMessage errors={operandViewModel.validation.errors} />
       )}
     </div>
   );
@@ -96,10 +98,10 @@ const OperandEditorContent = forwardRef<
     builder: AstBuilder;
     onSave: (astNode: AstNode) => void;
     closeModal: () => void;
-    editableOperandViewModel: EditableOperandViewModel;
+    operandViewModel: OperandViewModel;
+    labelledAst: LabelledAst;
   }
->(({ builder, onSave, closeModal, editableOperandViewModel }, ref) => {
-  const { labelledAst, editorNodeViewModel } = editableOperandViewModel;
+>(({ builder, onSave, closeModal, labelledAst, operandViewModel }, ref) => {
   const { t } = useTranslation('scenarios');
   const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
     () => {
@@ -145,7 +147,7 @@ const OperandEditorContent = forwardRef<
       if (isAggregation(newSelection.astNode)) {
         const initialAggregation = adaptAggregationViewModel({
           ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
-          nodeId: editorNodeViewModel.nodeId,
+          nodeId: operandViewModel.nodeId,
         } as AggregationEditorNodeViewModel);
 
         editAggregation({
@@ -156,7 +158,7 @@ const OperandEditorContent = forwardRef<
         onSave(newSelection.astNode);
       }
     },
-    [editAggregation, onSave, editorNodeViewModel.nodeId]
+    [editAggregation, onSave, operandViewModel.nodeId]
   );
 
   const availableOptions = matchSorter(
@@ -231,11 +233,11 @@ const OperandEditorContent = forwardRef<
           </div>
         </ScrollArea.Viewport>
         <BottomOptions>
-          {isAggregationEditorNodeViewModel(editorNodeViewModel) && (
+          {isAggregationEditorNodeViewModel(operandViewModel) && (
             <EditOption
               onClick={() => {
                 const initialAggregation =
-                  adaptAggregationViewModel(editorNodeViewModel);
+                  adaptAggregationViewModel(operandViewModel);
 
                 editAggregation({
                   initialAggregation,
