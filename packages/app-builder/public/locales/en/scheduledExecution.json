@@ -1,8 +1,10 @@
 {
-  "scheduledExecution": "Scheduled Execution",
-  "status": "Status",
+  "scenario_name": "Scenario name",
+  "scenario_trigger_object_type": "Trigger Object",
+  "number_of_created_decisions": "Number of decisions",
   "created_at": "Created at",
   "started_at": "Started at",
   "finished_at": "Finished at",
-  "download_decisions": "Download Decisions"
+  "download_decisions": "Download Decisions",
+  "downloading_decisions": "Downloading decisions..."
 }

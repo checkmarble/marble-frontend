@@ -1,11 +1,12 @@
-import { useDownloadDecisions } from '@app-builder/services/DownloadDecisionsService';
 import { formatCreatedAt } from '@app-builder/utils/format';
 import { type ScheduledExecution } from '@marble-api';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
-import { Button, Table, useVirtualTable } from '@ui-design-system';
+import { Table, useVirtualTable } from '@ui-design-system';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { ScheduledExecutionDetails } from './ScheduledExecutionDetails';
 
 export function ScheduledExecutionsList({
   scheduledExecutions,
@@ -19,9 +20,21 @@ export function ScheduledExecutionsList({
   const columns = useMemo<ColumnDef<ScheduledExecution, string>[]>(
     () => [
       {
-        id: 'status',
-        accessorFn: (s) => s.status,
-        header: t('scheduledExecution:status'),
+        id: 'scenario-name',
+        accessorFn: (s) => s.scenario_name,
+        header: t('scheduledExecution:scenario_name'),
+        size: 200,
+      },
+      {
+        id: 'scenario-trigger_object_type',
+        accessorFn: (s) => s.scenario_trigger_object_type,
+        header: t('scheduledExecution:scenario_trigger_object_type'),
+        size: 200,
+      },
+      {
+        id: 'number-of-created-decisions',
+        accessorFn: (s) => s.number_of_created_decisions,
+        header: t('scheduledExecution:number_of_created_decisions'),
         size: 200,
       },
       {
@@ -68,37 +81,5 @@ export function ScheduledExecutionsList({
         })}
       </Table.Body>
     </Table.Container>
-  );
-}
-
-function ScheduledExecutionDetails({
-  scheduleExecutionId,
-}: {
-  scheduleExecutionId: string;
-}) {
-  const { downloadScheduledExecution, downloadLinkRef, downloadDecisionsLink } =
-    useDownloadDecisions(scheduleExecutionId);
-
-  const { t } = useTranslation(['scheduledExecution']);
-
-  const handleClick = () => {
-    // TODO: useAsync Something?
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    downloadScheduledExecution();
-  };
-
-  return (
-    <>
-      <a
-        style={{ display: 'none' }}
-        ref={downloadLinkRef}
-        href={downloadDecisionsLink}
-      >
-        {downloadDecisionsLink}
-      </a>
-      <Button variant="secondary" onClick={handleClick} name="download">
-        {t('scheduledExecution:download_decisions')}
-      </Button>
-    </>
   );
 }

@@ -1821,6 +1821,10 @@ components:
         - status
         - started_at
         - finished_at
+        - number_of_created_decisions
+        - scenario_id
+        - scenario_name
+        - scenario_trigger_object_type
       properties:
         id:
           type: string
@@ -1836,6 +1840,15 @@ components:
           type: string
           format: date-time
           nullable: true
+        number_of_created_decisions:
+          type: number
+        scenario_id:
+          type: string
+          format: uuid
+        scenario_name:
+          type: string
+        scenario_trigger_object_type:
+          type: string
     CreateDecisionBody:
       type: object
       required:
