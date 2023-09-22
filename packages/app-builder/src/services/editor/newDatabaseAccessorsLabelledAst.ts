@@ -1,17 +1,17 @@
 import {
   type DatabaseAccessAstNode,
   databaseAccessorDisplayName,
-  type DataModel,
   findDataModelField,
   findDataModelTable,
   type LabelledAst,
+  type TableModel,
 } from '@app-builder/models';
 
 export function newDatabaseAccessorsLabelledAst({
   dataModel,
   node,
 }: {
-  dataModel: DataModel[];
+  dataModel: TableModel[];
   node: DatabaseAccessAstNode;
 }): LabelledAst {
   const table = findDataModelTable({

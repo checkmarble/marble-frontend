@@ -1,4 +1,4 @@
-import { type DataModel } from '@app-builder/models/data-model';
+import { type TableModel } from '@app-builder/models/data-model';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -63,7 +63,7 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export function CreateScenario({ dataModels }: { dataModels: DataModel[] }) {
+export function CreateScenario({ dataModel }: { dataModel: TableModel[] }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
   const [triggerObjectType, setSelectedTriggerObjectType] = useState('');
@@ -106,7 +106,7 @@ export function CreateScenario({ dataModels }: { dataModels: DataModel[] }) {
                   setSelectedTriggerObjectType(dataModelName);
                 }}
               >
-                {dataModels.map((dataModel) => {
+                {dataModel.map((dataModel) => {
                   return (
                     <Select.DefaultItem
                       key={dataModel.name}

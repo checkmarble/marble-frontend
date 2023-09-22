@@ -19,7 +19,7 @@ export interface LinksToSingle {
   childFieldName: string;
 }
 
-export interface DataModel {
+export interface TableModel {
   name: string;
   fields: DataModelField[];
   linksToSingle: LinksToSingle[];
@@ -54,7 +54,7 @@ function adaptLinkToSingleDto(linksToSingleDto: {
   );
 }
 
-export function adaptDataModelDto(dataModelDto: DataModelDto): DataModel[] {
+export function adaptDataModelDto(dataModelDto: DataModelDto): TableModel[] {
   return R.pipe(
     R.toPairs(dataModelDto.tables),
     R.map(([tableName, tableDto]) => ({
@@ -70,9 +70,9 @@ export function findDataModelTableByName({
   dataModel,
   tableName,
 }: {
-  dataModel: DataModel[];
+  dataModel: TableModel[];
   tableName: string;
-}): DataModel {
+}): TableModel {
   const table = dataModel.find((t) => t.name == tableName);
   if (!table) {
     throw Error(`can't find table in data models named '${tableName}'`);
@@ -85,10 +85,10 @@ export function findDataModelTable({
   tableName,
   path,
 }: {
-  dataModel: DataModel[];
+  dataModel: TableModel[];
   tableName: string;
   path: string[];
-}): DataModel {
+}): TableModel {
   let table = findDataModelTableByName({ dataModel, tableName });
 
   for (const linkName of path) {
@@ -109,7 +109,7 @@ export function findDataModelField({
   table,
   fieldName,
 }: {
-  table: DataModel;
+  table: TableModel;
   fieldName: string;
 }): DataModelField {
   const field = table.fields.find((f) => f.name == fieldName);

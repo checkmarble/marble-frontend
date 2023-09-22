@@ -90,7 +90,7 @@ export async function loader({ request, params }: LoaderArgs) {
     rule: await scenarioIterationRulePromise,
     identifiers: await identifiersPromise,
     operators: await operatorsPromise,
-    dataModels: adaptDataModelDto((await dataModelPromise).data_model),
+    dataModel: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
   });
 }
@@ -168,7 +168,7 @@ export async function action({ request, params }: ActionArgs) {
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
 
-  const { identifiers, operators, rule, dataModels, customLists } =
+  const { identifiers, operators, rule, dataModel, customLists } =
     useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
@@ -187,7 +187,7 @@ export default function RuleEdit() {
     localValidation,
     identifiers,
     operators,
-    dataModels,
+    dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
     onValidate: validate,

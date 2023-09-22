@@ -66,7 +66,7 @@ export async function loader({ request, params }: LoaderArgs) {
     identifiers: await identifiersPromise,
     operators: await operatorsPromise,
     trigger: await scenarioIterationTriggerPromise,
-    dataModels: adaptDataModelDto((await dataModelPromise).data_model),
+    dataModel: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
     organization: await organizationPromise,
   });
@@ -133,7 +133,7 @@ export default function Trigger() {
     identifiers,
     operators,
     trigger,
-    dataModels,
+    dataModel,
     customLists,
     organization,
   } = useLoaderData<typeof loader>();
@@ -157,7 +157,7 @@ export default function Trigger() {
     localValidation,
     identifiers,
     operators,
-    dataModels,
+    dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
     onValidate: validate,

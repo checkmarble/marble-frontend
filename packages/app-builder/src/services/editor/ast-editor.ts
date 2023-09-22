@@ -3,12 +3,12 @@ import {
   type AstNode,
   type AstOperator,
   type ConstantType,
-  type DataModel,
   type EditorIdentifiersByType,
   type EvaluationError,
   findDataModelTableByName,
   isValidationFailure,
   type NodeEvaluation,
+  type TableModel,
   type Validation,
 } from '@app-builder/models';
 import { type CustomList } from '@marble-api';
@@ -93,9 +93,9 @@ export interface AstBuilder {
   editorNodeViewModel: EditorNodeViewModel;
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
-  dataModels: DataModel[];
+  dataModel: TableModel[];
   customLists: CustomList[];
-  triggerObjectType: DataModel;
+  triggerObjectType: TableModel;
   setConstant: (nodeId: string, newValue: ConstantType) => void;
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
@@ -109,7 +109,7 @@ export function useAstBuilder({
   localValidation,
   identifiers,
   operators,
-  dataModels,
+  dataModel,
   customLists,
   triggerObjectType,
   onValidate,
@@ -119,7 +119,7 @@ export function useAstBuilder({
   localValidation: NodeEvaluation | null;
   identifiers: EditorIdentifiersByType;
   operators: AstOperator[];
-  dataModels: DataModel[];
+  dataModel: TableModel[];
   customLists: CustomList[];
   triggerObjectType: string;
   onValidate: (ast: AstNode) => void;
@@ -231,10 +231,10 @@ export function useAstBuilder({
     editorNodeViewModel,
     identifiers,
     operators,
-    dataModels,
+    dataModel,
     customLists,
     triggerObjectType: findDataModelTableByName({
-      dataModel: dataModels,
+      dataModel: dataModel,
       tableName: triggerObjectType,
     }),
     setConstant,

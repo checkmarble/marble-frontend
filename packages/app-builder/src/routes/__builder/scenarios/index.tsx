@@ -48,7 +48,7 @@ export default function ScenariosPage() {
       <Page.Content className="max-w-3xl">
         <div className="flex flex-col gap-4">
           <div className="flex flex-row justify-end">
-            <CreateScenario dataModels={dataModel} />
+            <CreateScenario dataModel={dataModel} />
           </div>
           <div className="flex flex-col gap-2 lg:gap-4">
             {scenarios.length ? (
