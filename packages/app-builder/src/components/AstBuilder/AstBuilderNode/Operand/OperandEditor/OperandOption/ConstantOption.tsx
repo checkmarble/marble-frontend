@@ -22,8 +22,8 @@ export function ConstantOption({
           <DataTypeIcon />
         </Option.Icon>
       )}
-      <div className="col-span-2 col-start-2 flex items-center justify-between gap-1">
-        <Option.Value className="overflow-hidden text-ellipsis">
+      <div className="col-span-2 col-start-2 flex justify-between gap-1">
+        <Option.Value className="line-clamp-1 text-ellipsis">
           {constant.name}
         </Option.Value>
         {constantDataTypeTKey && (
@@ -47,6 +47,13 @@ export function getConstantDataTypeTKey(
       return 'edit_operand.constant.use_data_type.number';
     case 'Bool':
       return 'edit_operand.constant.use_data_type.boolean';
+    case 'String[]':
+      return 'edit_operand.constant.use_data_type.string[]';
+    case 'Int[]':
+    case 'Float[]':
+      return 'edit_operand.constant.use_data_type.number[]';
+    case 'Bool[]':
+      return 'edit_operand.constant.use_data_type.boolean[]';
     default:
       return undefined;
   }

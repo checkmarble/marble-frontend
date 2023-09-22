@@ -130,13 +130,18 @@ const OperandEditorContent = forwardRef<
     }
   );
 
-  const handleInputChanged = useCallback((newInputText: string) => {
-    setEditViewModel((vm) => ({
-      ...vm,
-      searchText: newInputText,
-      constantOptions: coerceToConstantsLabelledAst(newInputText),
-    }));
-  }, []);
+  const handleInputChanged = useCallback(
+    (newInputText: string) => {
+      setEditViewModel((vm) => ({
+        ...vm,
+        searchText: newInputText,
+        constantOptions: coerceToConstantsLabelledAst(newInputText, {
+          booleans: { true: [t('true')], false: [t('false')] },
+        }),
+      }));
+    },
+    [t]
+  );
 
   const editAggregation = useEditAggregation();
 

@@ -4,24 +4,30 @@ import {
   type DataType,
   type LabelledAst,
 } from '@app-builder/models';
+import { isArray, isBoolean, isNil, isNumber, isString } from 'remeda';
 
 export function newConstantLabelledAst(node: ConstantAstNode): LabelledAst {
   return {
     name: getConstantDisplayName(node.constant),
     dataType: getConstantDataType(node.constant),
+    operandType: 'Constant',
     astNode: node,
   };
 }
 
-export function getConstantDisplayName(constant: ConstantType) {
-  if (constant === null) return '';
+export function getConstantDisplayName(constant: ConstantType): string {
+  if (isNil(constant)) return '';
 
-  if (typeof constant === 'string') {
-    //TODO(combobox): handle Timestamp here, if we do manipulate them as ISOstring
-    return `"${constant}"`;
+  if (isArray(constant)) {
+    return `[${constant.map(getConstantDisplayName).join(', ')}]`;
   }
 
-  if (typeof constant === 'number') {
+  if (isString(constant)) {
+    //TODO(combobox): handle Timestamp here, if we do manipulate them as ISOstring
+    return `"${constant.toString()}"`;
+  }
+
+  if (isNumber(constant) || isBoolean(constant)) {
     return constant.toString();
   }
 
@@ -30,17 +36,25 @@ export function getConstantDisplayName(constant: ConstantType) {
 }
 
 function getConstantDataType(constant: ConstantType): DataType {
-  if (typeof constant === 'string') {
+  if (isString(constant)) {
     //TODO(combobox): handle Timestamp here, if we do manipulate them as ISOstring
     return 'String';
   }
 
-  if (typeof constant === 'number') {
+  if (isNumber(constant)) {
     return Number.isInteger(constant) ? 'Int' : 'Float';
   }
 
-  if (typeof constant === 'boolean') {
+  if (isBoolean(constant)) {
     return 'Bool';
+  }
+
+  if (isArray(constant)) {
+    if (constant.every(isString)) return 'String[]';
+    if (constant.every(isNumber)) {
+      return constant.every(Number.isInteger) ? 'Int[]' : 'Float[]';
+    }
+    if (constant.every(isBoolean)) return 'Bool[]';
   }
 
   return 'unknown';

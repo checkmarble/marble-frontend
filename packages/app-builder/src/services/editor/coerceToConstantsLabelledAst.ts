@@ -1,10 +1,21 @@
 import {
-  type ConstantType,
   type LabelledAst,
-  NewAstNode,
+  NewConstantAstNode,
+  newConstantLabelledAst,
 } from '@app-builder/models';
+import * as R from 'remeda';
 
-export function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
+export interface CoerceToConstantsLabelledAstOptions {
+  booleans: { true: string[]; false: string[] };
+}
+
+export function coerceToConstantsLabelledAst(
+  search: string,
+  options: CoerceToConstantsLabelledAstOptions
+): LabelledAst[] {
+  const { isCoerceableToBoolean, coerceToBoolean } = getBooleanCoercionLogic(
+    options.booleans
+  );
   const results: LabelledAst[] = [];
 
   const searchLowerCase = search.trim().toLocaleLowerCase();
@@ -15,76 +26,82 @@ export function coerceToConstantsLabelledAst(search: string): LabelledAst[] {
   // Note: Number('') === 0
   const parsedNumber = Number(searchLowerCase);
   if (Number.isFinite(parsedNumber)) {
-    results.push(
-      newLabelledAstOfConstant({
-        label: search,
-        dataType: Number.isInteger(parsedNumber) ? 'Int' : 'Float',
-        constant: parsedNumber,
-      })
-    );
+    const astNode = NewConstantAstNode({
+      constant: parsedNumber,
+    });
+    results.push(newConstantLabelledAst(astNode));
   }
 
-  if (searchLowerCase === 'true' || searchLowerCase === 'false') {
-    results.push(
-      newLabelledAstOfConstant({
-        label: searchLowerCase,
-        dataType: 'Bool',
-        constant: searchLowerCase === 'true',
-      })
-    );
+  if (isCoerceableToBoolean(searchLowerCase)) {
+    const astNode = NewConstantAstNode({
+      constant: coerceToBoolean(searchLowerCase),
+    });
+    results.push(newConstantLabelledAst(astNode));
   }
 
   results.push(...coerceToConstantArray(search));
 
-  results.push(
-    newLabelledAstOfConstant({
-      label: `"${search}"`,
-      dataType: 'String',
-      constant: search,
-    })
-  );
+  const astNode = NewConstantAstNode({
+    constant: search,
+  });
+  results.push(newConstantLabelledAst(astNode));
 
   return results;
 }
 
+const isNumberArray = /^\[(\s*(\d+(.\d+)?)\s*,?)*(\s*|\])$/;
+const isStringArray = /^\[(\s*"?(\w+)"?\s*,?)*(\s*|\])$/;
+
+const captureNumbers = /(?:\s*(?<numbers>\d+(.\d+)?)\s*,?)/g;
+const captureStrings = /(?:\s*"?(?<strings>\w(\w|\s)*\w)"?\s*,?)/g;
+
 function coerceToConstantArray(search: string): LabelledAst[] {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(search);
-  } catch {
-    return [];
+  const trimSearch = search.trim();
+
+  if (isNumberArray.test(trimSearch)) {
+    const astNode = R.pipe(
+      Array.from(trimSearch.matchAll(captureNumbers)),
+      R.map((match) => match.groups?.['numbers']),
+      R.filter(R.isDefined),
+      R.map(Number),
+      (constant) =>
+        NewConstantAstNode({
+          constant,
+        })
+    );
+    return [newConstantLabelledAst(astNode)];
   }
 
-  if (Array.isArray(parsed)) {
-    // let's accept anything in the array.
-    return [
-      newLabelledAstOfConstant({
-        label: search,
-        //TODO(combobox): infer/get array.dataType
-        dataType: 'unknown',
-        constant: parsed,
-      }),
-    ];
+  if (isStringArray.test(trimSearch)) {
+    const astNode = R.pipe(
+      Array.from(trimSearch.matchAll(captureStrings)),
+      R.map((match) => match.groups?.['strings']),
+      R.filter(R.isDefined),
+      (constant) =>
+        NewConstantAstNode({
+          constant,
+        })
+    );
+    return [newConstantLabelledAst(astNode)];
   }
+
   return [];
 }
 
-function newLabelledAstOfConstant({
-  label,
-  dataType,
-  constant,
-}: {
-  label: string;
-  dataType: LabelledAst['dataType'];
-  constant: ConstantType;
-}): LabelledAst {
+function getBooleanCoercionLogic(
+  options: CoerceToConstantsLabelledAstOptions['booleans']
+) {
   return {
-    name: label,
-    description: '',
-    operandType: 'Constant',
-    dataType,
-    astNode: NewAstNode({
-      constant: constant,
-    }),
+    isCoerceableToBoolean: (search: string) => {
+      const sanitizedSearch = search.trim().toLocaleLowerCase();
+      return (
+        options.true.includes(sanitizedSearch) ||
+        options.false.includes(sanitizedSearch)
+      );
+    },
+    coerceToBoolean: (search: string) => {
+      const sanitizedSearch = search.trim().toLocaleLowerCase();
+      return options.true.includes(sanitizedSearch);
+    },
   };
 }
