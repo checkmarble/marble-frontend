@@ -67,6 +67,10 @@ export type ScheduledExecution = {
     status: string;
     started_at: string;
     finished_at: string | null;
+    number_of_created_decisions: number;
+    scenario_id: string;
+    scenario_name: string;
+    scenario_trigger_object_type: string;
 };
 export type UploadLog = {
     started_at: string;

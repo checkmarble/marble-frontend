@@ -92,3 +92,4 @@ export const Scenarios = {
 };
 
 export const Decisions = Scenarios;
+export type DecisionsLinkProps = ScenariosLinkProps;

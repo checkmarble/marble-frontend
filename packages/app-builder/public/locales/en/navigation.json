@@ -9,5 +9,6 @@
   "scenario.rules": "Rules",
   "scenario.decision": "Decision",
   "data": "Your Data",
-  "scheduledExecution": "Scheduled Execution"
+  "decisions.decisions": "Decisions",
+  "decisions.scheduledExecution": "Scheduled Execution"
 }

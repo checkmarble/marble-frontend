@@ -1,41 +1,39 @@
-import { useBackendInfoContext } from '@app-builder/components';
 import { useEffect, useRef, useState } from 'react';
+
+import { useBackendInfo } from './auth/auth.client';
+import { clientServices } from './init.client';
 
 export function useDownloadDecisions(scheduleExecutionId: string) {
   const [downloadDecisionsLink, setDownloadDecisionsLink] = useState('');
   const downloadLinkRef = useRef<HTMLAnchorElement>(null);
   const [downloading, setDownloading] = useState(false);
-  const backendInfo = useBackendInfoContext();
+  const { backendUrl, accessToken } = useBackendInfo(
+    clientServices.authenticationClientService
+  );
 
   useEffect(() => {
     if (downloadDecisionsLink !== '' && downloadLinkRef.current) {
       downloadLinkRef.current.click();
-      URL.revokeObjectURL(downloadDecisionsLink);
       setDownloadDecisionsLink('');
     }
   }, [downloadDecisionsLink]);
 
-  const downloadScheduledExecution = async () => {
+  const downloadDecisions = async () => {
     if (downloading) {
       throw new Error('Internal error: Already downloading');
     }
     setDownloading(true);
 
     try {
-      // TODO: backend url ?
-      const downloadLink = `${
-        backendInfo.backendUrl
-      }/scheduled-executions/${encodeURIComponent(
+      const downloadLink = `${backendUrl}/scheduled-executions/${encodeURIComponent(
         scheduleExecutionId
       )}/decisions.zip`;
-      const response = await fetch(
-        new Request(downloadLink, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${backendInfo.accessToken}`,
-          },
-        })
-      );
+      const response = await fetch(downloadLink, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${await accessToken()}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(
@@ -53,8 +51,10 @@ export function useDownloadDecisions(scheduleExecutionId: string) {
   };
 
   return {
-    downloadScheduledExecution,
+    downloadDecisions,
     downloadLinkRef,
     downloadDecisionsLink,
+    downloadingDecisions: downloading,
+    decisionsFilename: `decisions-${scheduleExecutionId}`,
   };
 }
