@@ -1,7 +1,6 @@
 import { Callout, Paper } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import {
   adaptCronToScheduleOption,
   adaptScheduleOptionToCron,
@@ -127,7 +126,6 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
-  const { triggerObjectType } = useCurrentScenario();
   const scenarioIteration = useCurrentScenarioIteration();
   const {
     identifiers,
