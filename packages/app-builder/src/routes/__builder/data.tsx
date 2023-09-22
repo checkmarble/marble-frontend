@@ -1,9 +1,9 @@
 import { Callout, Page } from '@app-builder/components';
 import {
   adaptDataModelDto,
-  type DataModel,
   type DataModelField,
   type LinksToSingle,
+  type TableModel,
 } from '@app-builder/models/data-model';
 import { serverServices } from '@app-builder/services/init.server';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -32,7 +32,7 @@ export async function loader({ request }: LoaderArgs) {
   const dataModelPromise = apiClient.getDataModel();
 
   return json({
-    dataModels: adaptDataModelDto((await dataModelPromise).data_model),
+    dataModel: adaptDataModelDto((await dataModelPromise).data_model),
   });
 }
 
@@ -43,14 +43,14 @@ const mapFieldToTableRow = (field: DataModelField) => ({
   required: field.nullable ? 'optional' : 'required',
 });
 
-const mapLinkToTableRow = (table: DataModel, link: LinksToSingle) => ({
+const mapLinkToTableRow = (table: TableModel, link: LinksToSingle) => ({
   foreignKey: link.childFieldName,
   parentTable: link.linkedTableName,
   parentFieldName: link.parentFieldName,
   exampleUsage: `${table.name}.${link.linkName}.${link.parentFieldName} = ${table.name}.${link.childFieldName}`,
 });
 
-function TableFields({ tableModel }: { tableModel: DataModel }) {
+function TableFields({ tableModel }: { tableModel: TableModel }) {
   const { t } = useTranslation(handle.i18n);
 
   // Create table for client db table fields
@@ -218,7 +218,7 @@ function TableFields({ tableModel }: { tableModel: DataModel }) {
 
 export default function Data() {
   const { t } = useTranslation(handle.i18n);
-  const { dataModels } = useLoaderData<typeof loader>();
+  const { dataModel } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -231,7 +231,7 @@ export default function Data() {
           {t('data:your_data_callout')}
         </Callout>
         <div>
-          {dataModels.map((table) => (
+          {dataModel.map((table) => (
             <TableFields key={table.name} tableModel={table} />
           ))}
         </div>

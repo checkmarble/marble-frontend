@@ -115,7 +115,7 @@ const OperandEditorContent = forwardRef<
       const identifiersOptions: LabelledAst[] = [
         ...builder.identifiers.databaseAccessors.map((node) =>
           newDatabaseAccessorsLabelledAst({
-            dataModel: builder.dataModels,
+            dataModel: builder.dataModel,
             node,
           })
         ),
