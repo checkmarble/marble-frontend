@@ -1,7 +1,8 @@
 import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
 
 export interface AuthenticationClientRepository {
-  googleSignIn: (locale: string) => Promise<string | undefined>;
+  googleSignIn: (locale: string) => Promise<string>;
+  firebaseIdToken: () => Promise<string>;
 }
 
 export function getAuthenticationClientRepository({
@@ -24,5 +25,13 @@ export function getAuthenticationClientRepository({
     return credential.user.getIdToken();
   }
 
-  return { googleSignIn };
+  const firebaseIdToken = () => {
+    const currentUser = clientAuth.currentUser;
+    if (currentUser === null) {
+      throw Error('No authenticated user, no token');
+    }
+    return currentUser.getIdToken();
+  };
+
+  return { googleSignIn, firebaseIdToken };
 }

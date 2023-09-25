@@ -8,7 +8,6 @@ import {
   connectAuthEmulator,
   getAuth,
   GoogleAuthProvider,
-  inMemoryPersistence,
   signInWithPopup,
 } from 'firebase/auth';
 
@@ -19,17 +18,16 @@ export type FirebaseClientWrapper = {
   signIn: typeof signInWithPopup;
 };
 
-export async function initializeFirebaseClient({
+export function initializeFirebaseClient({
   firebaseOptions,
   authEmulatorHost,
 }: {
   firebaseOptions: FirebaseOptions;
   authEmulatorHost?: string;
-}): Promise<FirebaseClientWrapper> {
+}): FirebaseClientWrapper {
   const app = initializeApp(firebaseOptions);
 
   const clientAuth = getAuth(app);
-  await clientAuth.setPersistence(inMemoryPersistence);
 
   if (authEmulatorHost && !('emulator' in clientAuth.config)) {
     connectAuthEmulator(clientAuth, authEmulatorHost);
@@ -38,5 +36,10 @@ export async function initializeFirebaseClient({
   const googleAuthProvider = new GoogleAuthProvider();
   googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
 
-  return { app, clientAuth, googleAuthProvider, signIn: signInWithPopup };
+  return {
+    app,
+    clientAuth,
+    googleAuthProvider,
+    signIn: signInWithPopup,
+  };
 }
