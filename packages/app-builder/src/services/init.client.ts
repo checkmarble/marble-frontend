@@ -11,18 +11,18 @@ import { makeI18nextClientService } from './i18n/i18next.client';
 function makeClientServices(repositories: ClientRepositories) {
   return {
     authenticationClientService: makeAuthenticationClientService(
-      repositories.authenticationClientRepositoryPromise
+      repositories.authenticationClientRepository
     ),
     i18nextClientService: makeI18nextClientService(),
   };
 }
 
 function initClientServices() {
-  const firebaseClientPromise = initializeFirebaseClient({
+  const firebaseClient = initializeFirebaseClient({
     firebaseOptions: getClientEnv('FIREBASE_OPTIONS'),
     authEmulatorHost: getClientEnv('AUTH_EMULATOR_HOST', ''),
   });
-  const clientRepositories = makeClientRepositories(firebaseClientPromise);
+  const clientRepositories = makeClientRepositories(firebaseClient);
   return makeClientServices(clientRepositories);
 }
 

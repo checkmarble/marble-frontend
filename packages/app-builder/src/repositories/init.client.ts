@@ -6,15 +6,14 @@ import {
 } from './AuthenticationRepository';
 
 export interface ClientRepositories {
-  authenticationClientRepositoryPromise: Promise<AuthenticationClientRepository>;
+  authenticationClientRepository: AuthenticationClientRepository;
 }
 
 export function makeClientRepositories(
-  firebaseClientPromise: Promise<FirebaseClientWrapper>
+  firebaseClient: FirebaseClientWrapper
 ): ClientRepositories {
   return {
-    authenticationClientRepositoryPromise: firebaseClientPromise.then(
-      (firebaseClient) => getAuthenticationClientRepository(firebaseClient)
-    ),
+    authenticationClientRepository:
+      getAuthenticationClientRepository(firebaseClient),
   };
 }

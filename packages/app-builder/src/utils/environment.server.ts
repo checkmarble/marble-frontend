@@ -83,5 +83,6 @@ export function getClientEnvVars(): ClientEnvVars {
       messagingSenderId: getServerEnv('FIREBASE_MESSAGING_SENDER_ID'),
       appId: getServerEnv('FIREBASE_APP_ID'),
     },
+    MARBLE_API_DOMAIN: getServerEnv('MARBLE_API_DOMAIN'),
   };
 }
