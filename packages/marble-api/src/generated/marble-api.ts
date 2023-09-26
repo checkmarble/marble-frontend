@@ -223,6 +223,7 @@ export type CreateScenarioPublicationBody = {
     publicationAction: PublicationAction;
 };
 export type DataModelFieldDto = {
+    id?: string;
     name: string;
     data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
     nullable: boolean;
@@ -236,6 +237,7 @@ export type LinkToSingleDto = {
 export type DataModelDto = {
     tables: {
         [key: string]: {
+            id?: string;
             name: string;
             fields: {
                 [key: string]: DataModelFieldDto;
@@ -246,6 +248,29 @@ export type DataModelDto = {
             description: string;
         };
     };
+};
+export type CreateTableBody = {
+    name: string;
+    description: string;
+};
+export type UpdateTableBody = {
+    description?: string;
+};
+export type CreateTableFieldBody = {
+    name: string;
+    description: string;
+    "type": "Bool" | "Int" | "Float" | "String" | "Timestamp";
+    nullable: boolean;
+};
+export type UpdateTableFieldBody = {
+    description?: string;
+};
+export type CreateTableLinkBody = {
+    name: string;
+    parent_table_id: string;
+    parent_field_id: string;
+    child_table_id: string;
+    child_field_id: string;
 };
 export type ApiKey = {
     api_key_id: string;
@@ -1045,6 +1070,133 @@ export function getDataModel(opts?: Oazapfts.RequestOpts) {
     }>("/data-model", {
         ...opts
     }));
+}
+/**
+ * Get the data model associated with the current organization (present in the JWT) (new version)
+ */
+export function getDataModelV2(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            data_model: DataModelDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/data-model/v2", {
+        ...opts
+    }));
+}
+/**
+ * Create a new table on the data model
+ */
+export function postDataModelTable(createTableBody: CreateTableBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/data-model/tables", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createTableBody
+    })));
+}
+/**
+ * Update data model table
+ */
+export function patchDataModelTable(tableId: string, updateTableBody: UpdateTableBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateTableBody
+    })));
+}
+/**
+ * Create a new field on a table from the data model
+ */
+export function postDataModelTableField(tableId: string, createTableFieldBody: CreateTableFieldBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}/fields`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createTableFieldBody
+    })));
+}
+/**
+ * Update data model field
+ */
+export function patchDataModelField(fieldId: string, updateTableFieldBody: UpdateTableFieldBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/fields/${encodeURIComponent(fieldId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateTableFieldBody
+    })));
+}
+/**
+ * Create a new link on a table from the data model
+ */
+export function postDataModelTableLink(createTableLinkBody: CreateTableLinkBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/data-model/links", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createTableLinkBody
+    })));
 }
 /**
  * List api keys associated with the current organization (present in the JWT)
