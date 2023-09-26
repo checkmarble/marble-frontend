@@ -386,6 +386,7 @@ paths:
           $ref: '#/components/responses/409'
         '422':
           $ref: '#/components/responses/422'
+  /custom-lists/{customListId}/values/{customListValueId}:
     delete:
       tags:
         - CustomList
@@ -401,13 +402,13 @@ paths:
           schema:
             type: string
             format: uuid
-      requestBody:
-        description: 'Delete custom list value object'
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DeleteCustomListValueBody'
-        required: true
+        - name: customListValueId
+          description: ID of the custom value
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: The deleted custom list value corresponding to the provided `customListId`
@@ -1831,15 +1832,6 @@ components:
       properties:
         value:
           type: string
-    DeleteCustomListValueBody:
-      type: object
-      required:
-        - id
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: id of the custom list value to delete
     Scenario:
       type: object
       required:

@@ -86,9 +86,6 @@ export type UpdateCustomListBody = {
 export type CreateCustomListValueBody = {
     value: string;
 };
-export type DeleteCustomListValueBody = {
-    id: string;
-};
 export type Scenario = {
     id: string;
     name: string;
@@ -524,7 +521,7 @@ export function createCustomListValue(customListId: string, createCustomListValu
 /**
  * Delete a custom list value
  */
-export function deleteCustomListValue(customListId: string, deleteCustomListValueBody: DeleteCustomListValueBody, opts?: Oazapfts.RequestOpts) {
+export function deleteCustomListValue(customListId: string, customListValueId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: CustomListValue;
@@ -537,11 +534,10 @@ export function deleteCustomListValue(customListId: string, deleteCustomListValu
     } | {
         status: 404;
         data: string;
-    }>(`/custom-lists/${encodeURIComponent(customListId)}/values`, oazapfts.json({
+    }>(`/custom-lists/${encodeURIComponent(customListId)}/values/${encodeURIComponent(customListValueId)}`, {
         ...opts,
-        method: "DELETE",
-        body: deleteCustomListValueBody
-    })));
+        method: "DELETE"
+    }));
 }
 /**
  * List scenarios
