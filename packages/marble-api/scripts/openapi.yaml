@@ -1066,6 +1066,174 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /data-model/v2:
+    get:
+      tags:
+        - Data Model
+      summary: Get the data model associated with the current organization (present in the JWT)
+      operationId: getDataModelV2
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The scenario publication corresponding to the provided `scenarioPublicationId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data_model
+                properties:
+                  data_model:
+                    $ref: '#/components/schemas/DataModelDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/tables:
+    post:
+      tags:
+        - Data model
+      summary: Create a table in the organization data models schema
+      operationId: addDataModelTable
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Create table object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTableBody'
+        required: true
+      responses:
+        '204':
+          description: The table was successfully created.
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/tables/{tableID}:
+    patch:
+      tags:
+        - Data model
+      summary: Update a table
+      operationId: updateDataModelTable
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tableID
+          description: ID of the table that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Update table object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTableBody'
+      responses:
+        '204':
+          description: The table was successfully updated.
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/{tableID}/fields:
+    post:
+      tags:
+        - Data model
+      summary: Create a field on the associated table.
+      operationId: addDataModelField
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tableID
+          description: ID of the table that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Create field object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFieldBody'
+        required: true
+      responses:
+        '204':
+          description: The field was successfully created.
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/fields/{fieldID}:
+    patch:
+      tags:
+        - Data model
+      summary: Update a field
+      operationId: updateDataModelField
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: fieldID
+          description: ID of the field that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Update field object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFieldBody'
+      responses:
+        '204':
+          description: The field was successfully updated.
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/links:
+    post:
+      tags:
+        - Data model
+      summary: Create a link between two tables.
+      operationId: addDataModelLink
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Create link object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLinkBody'
+        required: true
+      responses:
+        '204':
+          description: The link was successfully created.
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /apikeys:
     get:
       tags:
@@ -2197,6 +2365,65 @@ components:
           type: array
           items:
             type: string
+    CreateTableBody:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    CreateFieldBody:
+      type: object
+      required:
+        - name
+        - description
+        - type
+        - nullable
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        nullable:
+          type: boolean
+    CreateLinkBody:
+      type: object
+      required:
+        - name
+        - parent_table_id
+        - parent_field_id
+        - child_table_id
+        - child_field_id
+      properties:
+        name:
+          type: string
+        parent_table_id:
+          type: string
+        parent_field_id:
+          type: string
+        child_table_id:
+          type: string
+        child_field_id:
+          type: string
+    UpdateTableBody:
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
+    UpdateFieldBody:
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
   securitySchemes:
     bearerAuth:
       type: http
