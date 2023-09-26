@@ -1051,7 +1051,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: The scenario publication corresponding to the provided `scenarioPublicationId`
+          description: The data model from the organization
           content:
             application/json:
               schema:
@@ -1061,6 +1061,176 @@ paths:
                 properties:
                   data_model:
                     $ref: '#/components/schemas/DataModelDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/v2:
+    get:
+      tags:
+        - Data Model
+      summary: Get the data model associated with the current organization (present in the JWT) (new version)
+      operationId: getDataModelV2
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The data model from the organization
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data_model
+                properties:
+                  data_model:
+                    $ref: '#/components/schemas/DataModelDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/tables:
+    post:
+      tags:
+        - Data Model
+      summary: Create a new table on the data model
+      operationId: postDataModelTable
+      requestBody:
+        description: 'Describe the table to create'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTableBody'
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Empty response body
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/tables/{tableId}:
+    patch:
+      tags:
+        - Data Model
+      summary: Update data model table
+      operationId: patchDataModelTable
+      parameters:
+        - name: tableId
+          description: ID of the table to update
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Describe the modifications to make to the table'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTableBody'
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Empty response body
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/tables/{tableId}/fields:
+    post:
+      tags:
+        - Data Model
+      summary: Create a new field on a table from the data model
+      operationId: postDataModelTableField
+      parameters:
+        - name: tableId
+          description: ID of the table in which to create the field
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Describe the content of the field to create'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTableFieldBody'
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Empty response body
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/fields/{fieldId}:
+    patch:
+      tags:
+        - Data Model
+      summary: Update data model field
+      operationId: patchDataModelField
+      parameters:
+        - name: fieldId
+          description: ID of the field to update
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Describe the modifications to make to the field'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTableFieldBody'
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Empty response body
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /data-model/links:
+    post:
+      tags:
+        - Data Model
+      summary: Create a new link on a table from the data model
+      operationId: postDataModelTableLink
+      requestBody:
+        description: 'Describe the link to create'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTableLinkBody'
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Empty response body
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1591,6 +1761,8 @@ components:
         - data_type
         - description
       properties:
+        id:
+          type: string
         name:
           type: string
         data_type:
@@ -1614,6 +1786,8 @@ components:
               - fields
               - description
             properties:
+              id:
+                type: string
               name:
                 type: string
               fields:
@@ -1628,6 +1802,62 @@ components:
                   $ref: '#/components/schemas/LinkToSingleDto'
               description:
                 type: string
+    CreateTableBody:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    UpdateTableBody:
+      type: object
+      properties:
+        description:
+          type: string
+    CreateTableFieldBody:
+      type: object
+      required:
+        - name
+        - type
+        - nullable
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [Bool, Int, Float, String, Timestamp]
+        nullable:
+          type: boolean
+    UpdateTableFieldBody:
+      type: object
+      properties:
+        description:
+          type: string
+    CreateTableLinkBody:
+      type: object
+      required:
+        - name
+        - parent_table_id
+        - parent_field_id
+        - child_table_id
+        - child_field_id
+      properties:
+        name:
+          type: string
+        parent_table_id:
+          type: string
+        parent_field_id:
+          type: string
+        child_table_id:
+          type: string
+        child_field_id:
+          type: string
 
     Token:
       type: object
