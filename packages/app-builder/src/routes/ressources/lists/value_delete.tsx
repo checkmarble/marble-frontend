@@ -34,7 +34,7 @@ export async function action({ request }: ActionArgs) {
     });
   }
   const { listId, listValueId } = parsedForm.data;
-  await apiClient.deleteCustomListValue(listId, { id: listValueId });
+  await apiClient.deleteCustomListValue(listId, listValueId);
 
   return json({
     success: true as const,
