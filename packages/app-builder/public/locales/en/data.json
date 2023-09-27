@@ -10,5 +10,13 @@
   "parent_field_name": "Parent table field name",
   "example_usage": "Usage",
   "links_from_table": "Links from to other entities from <TableLocale>{{tableName}}</TableLocale>",
+  "create_field.title": "Create a new field",
+  "create_table.title": "Create a new table",
+  "create_field.name_placeholder": "Field name",
+  "create_table.name_placeholder": "Table name",
+  "create_field.button_accept": "Create field",
+  "create_table.button_accept": "Create table",
+  "create_field.description_placeholder": "Field description",
+  "create_table.description_placeholder": "Table description",
   "upload_data": "Upload data"
 }
