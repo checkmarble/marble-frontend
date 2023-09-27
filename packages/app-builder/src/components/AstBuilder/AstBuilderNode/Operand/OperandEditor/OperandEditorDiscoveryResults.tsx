@@ -1,0 +1,195 @@
+import {
+  isDatabaseAccess,
+  isPayload,
+  type LabelledAst,
+  type TableModel,
+} from '@app-builder/models';
+import { ArrowRight } from '@ui-icons';
+import type React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import * as R from 'remeda';
+
+import { Count, Group, GroupHeader, Label } from './Group';
+import { OperandDropdownMenu } from './OperandDropdownMenu';
+import { OperandOption } from './OperandOption';
+import {
+  getOperatorTypeIcon,
+  getOperatorTypeTKey,
+} from './OperandOption/Option';
+
+interface OperandEditorDiscoveryResultsProps {
+  options: LabelledAst[];
+  onSelect: (option: LabelledAst) => void;
+  triggerObjectType: TableModel;
+}
+
+export function OperandEditorDiscoveryResults({
+  options,
+  onSelect,
+  triggerObjectType,
+}: OperandEditorDiscoveryResultsProps) {
+  const { t } = useTranslation('scenarios');
+  const { customListOptions, fieldOptions, variableOptions } = R.pipe(
+    options,
+    R.groupBy((option) => option.operandType),
+    ({ Field, CustomList, Variable }) => {
+      return {
+        customListOptions: CustomList,
+        fieldOptions: Field,
+        variableOptions: Variable,
+      };
+    }
+  );
+
+  const fieldByPathOptions = R.pipe(
+    fieldOptions,
+    R.groupBy((option) => {
+      const { astNode } = option;
+      if (isPayload(astNode)) {
+        return triggerObjectType.name;
+      }
+      if (isDatabaseAccess(astNode)) {
+        return [
+          astNode.namedChildren.tableName.constant,
+          ...astNode.namedChildren.path.constant,
+        ].join('.');
+      }
+    }),
+    R.toPairs
+  );
+
+  return (
+    <>
+      <Group>
+        <GroupHeader.Container>
+          <OperandDiscoveryTitle
+            operandType="Field"
+            operandsCount={fieldOptions.length}
+          />
+        </GroupHeader.Container>
+
+        {fieldByPathOptions.map(([path, options]) => (
+          <OperandDiscoverySubmenu
+            key={path}
+            options={options}
+            onSelect={onSelect}
+          >
+            <GroupHeader.Container className="pl-9">
+              <GroupHeader.Title className="overflow-hidden text-ellipsis whitespace-nowrap">
+                <Label className="text-grey-100 text-s overflow-hidden text-ellipsis whitespace-nowrap">
+                  <Trans
+                    t={t}
+                    i18nKey="edit_operand.operator_discovery.from"
+                    components={{
+                      Path: (
+                        <span className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold" />
+                      ),
+                    }}
+                    values={{
+                      path,
+                    }}
+                  />
+                </Label>
+                <Count>{options.length}</Count>
+              </GroupHeader.Title>
+              <GroupHeader.Icon>
+                <ArrowRight />
+              </GroupHeader.Icon>
+            </GroupHeader.Container>
+          </OperandDiscoverySubmenu>
+        ))}
+      </Group>
+
+      <OperandDiscoverySubmenu options={customListOptions} onSelect={onSelect}>
+        <GroupHeader.Container>
+          <OperandDiscoveryTitle
+            operandType="CustomList"
+            operandsCount={customListOptions.length}
+          />
+          <GroupHeader.Icon>
+            <ArrowRight />
+          </GroupHeader.Icon>
+        </GroupHeader.Container>
+      </OperandDiscoverySubmenu>
+
+      <OperandDiscoverySubmenu options={variableOptions} onSelect={onSelect}>
+        <GroupHeader.Container>
+          <OperandDiscoveryTitle
+            operandType="Variable"
+            operandsCount={variableOptions.length}
+          />
+          <GroupHeader.Icon>
+            <ArrowRight />
+          </GroupHeader.Icon>
+        </GroupHeader.Container>
+      </OperandDiscoverySubmenu>
+    </>
+  );
+}
+
+function OperandDiscoveryTitle({
+  operandType,
+  operandsCount,
+}: {
+  operandType: LabelledAst['operandType'];
+  operandsCount: number;
+}) {
+  const { t } = useTranslation('scenarios');
+  const Icon = getOperatorTypeIcon(operandType);
+  const tKey = getOperatorTypeTKey(operandType);
+
+  return (
+    <>
+      {Icon && (
+        <GroupHeader.Icon className="text-purple-100">
+          <Icon />
+        </GroupHeader.Icon>
+      )}
+      {tKey && (
+        <GroupHeader.Title>
+          <Label className="text-grey-100 text-m font-semibold">
+            {t(tKey, {
+              count: operandsCount,
+            })}
+          </Label>
+          <Count>{operandsCount}</Count>
+        </GroupHeader.Title>
+      )}
+    </>
+  );
+}
+
+function OperandDiscoverySubmenu({
+  options,
+  onSelect,
+  children,
+}: {
+  options: LabelledAst[];
+  onSelect: (option: LabelledAst) => void;
+  children: React.ReactNode;
+}) {
+  if (options.length === 0) return null;
+
+  return (
+    <Group>
+      <OperandDropdownMenu.Sub>
+        <OperandDropdownMenu.SubTrigger>
+          {children}
+        </OperandDropdownMenu.SubTrigger>
+        <OperandDropdownMenu.SubContent>
+          <OperandDropdownMenu.ScrollableViewport className="flex flex-col gap-2 p-2">
+            {options.map((option) => (
+              <OperandOption
+                key={option.name}
+                option={option}
+                onSelect={() => {
+                  onSelect(option);
+                }}
+              />
+            ))}
+          </OperandDropdownMenu.ScrollableViewport>
+        </OperandDropdownMenu.SubContent>
+      </OperandDropdownMenu.Sub>
+    </Group>
+  );
+}

@@ -1,6 +1,5 @@
 import {
   type DatabaseAccessAstNode,
-  databaseAccessAstNodeName,
   findDataModelField,
   findDataModelTable,
   type LabelledAst,
@@ -27,7 +26,7 @@ export function newDatabaseAccessorsLabelledAst({
   return {
     name: getDatabaseAccessorDisplayName(node),
     description: field.description,
-    operandType: databaseAccessAstNodeName,
+    operandType: 'Field',
     dataType: field.dataType,
     astNode: node,
   };

@@ -8,19 +8,14 @@ import {
   newPayloadAccessorsLabelledAst,
   newUndefinedLabelledAst,
 } from '@app-builder/models';
-import {
-  allAggregators,
-  coerceToConstantsLabelledAst,
-} from '@app-builder/services/editor';
+import { allAggregators } from '@app-builder/services/editor';
 import {
   adaptEditorNodeViewModel,
   type AstBuilder,
 } from '@app-builder/services/editor/ast-editor';
-import { matchSorter } from '@app-builder/utils/search';
-import * as Popover from '@radix-ui/react-popover';
-import { Input, ScrollArea } from '@ui-design-system';
+import { Input } from '@ui-design-system';
 import { Search } from '@ui-icons';
-import React, { forwardRef, useCallback, useState } from 'react';
+import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ErrorMessage } from '../../../ErrorMessage';
@@ -33,13 +28,10 @@ import {
 } from '../../AggregationEdit';
 import { type OperandViewModel } from '../Operand';
 import { OperandViewer } from '../OperandViewer';
-import { Count, Group, GroupHeader, Label } from './Group';
-import {
-  ClearOption,
-  ConstantOption,
-  EditOption,
-  OperandOption,
-} from './OperandOption';
+import { OperandDropdownMenu } from './OperandDropdownMenu';
+import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
+import { OperandEditorSearchResults } from './OperandEditorSearchResults';
+import { ClearOption, EditOption } from './OperandOption';
 
 export function OperandEditor({
   builder,
@@ -60,14 +52,18 @@ export function OperandEditor({
 
   return (
     <div className="flex flex-col gap-1">
-      <Popover.Root modal open={open} onOpenChange={onOpenChange}>
-        <Popover.Trigger asChild disabled={viewOnly} aria-label={ariaLabel}>
+      <OperandDropdownMenu.Root modal open={open} onOpenChange={onOpenChange}>
+        <OperandDropdownMenu.Trigger
+          disabled={viewOnly}
+          asChild
+          aria-label={ariaLabel}
+        >
           <OperandViewer
             borderColor={getBorderColor(operandViewModel.validation)}
             operandLabelledAst={labelledAst}
           />
-        </Popover.Trigger>
-        <Popover.Portal>
+        </OperandDropdownMenu.Trigger>
+        <OperandDropdownMenu.Portal>
           <OperandEditorContent
             builder={builder}
             onSave={onSave}
@@ -77,19 +73,13 @@ export function OperandEditor({
             labelledAst={labelledAst}
             operandViewModel={operandViewModel}
           />
-        </Popover.Portal>
-      </Popover.Root>
+        </OperandDropdownMenu.Portal>
+      </OperandDropdownMenu.Root>
       {operandViewModel.validation.state === 'fail' && (
         <ErrorMessage errors={operandViewModel.validation.errors} />
       )}
     </div>
   );
-}
-
-interface EditOperandViewModel {
-  constantOptions: LabelledAst[];
-  identifiersOptions: LabelledAst[];
-  searchText: string;
 }
 
 const OperandEditorContent = forwardRef<
@@ -102,48 +92,39 @@ const OperandEditorContent = forwardRef<
     labelledAst: LabelledAst;
   }
 >(({ builder, onSave, closeModal, labelledAst, operandViewModel }, ref) => {
-  const { t } = useTranslation('scenarios');
-  const [editViewModel, setEditViewModel] = useState<EditOperandViewModel>(
-    () => {
-      const identifiersOptions: LabelledAst[] = [
-        ...builder.identifiers.databaseAccessors.map((node) =>
-          newDatabaseAccessorsLabelledAst({
-            dataModel: builder.dataModel,
-            node,
-          })
-        ),
-        ...builder.identifiers.payloadAccessors.map((node) =>
-          newPayloadAccessorsLabelledAst({
-            triggerObjectType: builder.triggerObjectType,
-            node,
-          })
-        ),
-        ...allAggregators.map((aggregator) =>
-          newAggregatorLabelledAst(aggregator)
-        ),
-        ...builder.customLists.map(newCustomListLabelledAst),
-      ];
+  const options = useMemo(() => {
+    const databaseAccessors = builder.identifiers.databaseAccessors.map(
+      (node) =>
+        newDatabaseAccessorsLabelledAst({
+          dataModel: builder.dataModel,
+          node,
+        })
+    );
+    const payloadAccessors = builder.identifiers.payloadAccessors.map((node) =>
+      newPayloadAccessorsLabelledAst({
+        triggerObjectType: builder.triggerObjectType,
+        node,
+      })
+    );
+    const customList = builder.customLists.map(newCustomListLabelledAst);
+    const aggregtor = allAggregators.map((aggregator) =>
+      newAggregatorLabelledAst(aggregator)
+    );
+    return [
+      ...payloadAccessors,
+      ...databaseAccessors,
+      ...customList,
+      ...aggregtor,
+    ];
+  }, [
+    builder.customLists,
+    builder.dataModel,
+    builder.identifiers.databaseAccessors,
+    builder.identifiers.payloadAccessors,
+    builder.triggerObjectType,
+  ]);
 
-      return {
-        constantOptions: [],
-        identifiersOptions,
-        searchText: '',
-      };
-    }
-  );
-
-  const handleInputChanged = useCallback(
-    (newInputText: string) => {
-      setEditViewModel((vm) => ({
-        ...vm,
-        searchText: newInputText,
-        constantOptions: coerceToConstantsLabelledAst(newInputText, {
-          booleans: { true: [t('true')], false: [t('false')] },
-        }),
-      }));
-    },
-    [t]
-  );
+  const [searchText, setSearchText] = useState('');
 
   const editAggregation = useEditAggregation();
 
@@ -162,113 +143,86 @@ const OperandEditorContent = forwardRef<
       } else {
         onSave(newSelection.astNode);
       }
+      closeModal();
     },
-    [editAggregation, onSave, operandViewModel.nodeId]
-  );
-
-  const availableOptions = matchSorter(
-    editViewModel.identifiersOptions,
-    editViewModel.searchText,
-    { keys: ['name'] }
+    [closeModal, editAggregation, onSave, operandViewModel.nodeId]
   );
 
   const showClearOption = labelledAst.name !== '';
 
   return (
-    <ScrollArea.Root asChild>
-      <Popover.Content
-        ref={ref}
-        side="bottom"
-        align="start"
-        className="animate-slideUpAndFade bg-grey-00 border-grey-10 mt-1 flex max-h-[320px] w-[320px] flex-col rounded border shadow-md will-change-[transform,opacity]"
-      >
-        <Input
-          className="m-2 flex-shrink-0"
-          type="search"
-          value={editViewModel.searchText}
-          onChange={(event) => {
-            handleInputChanged(event.target.value);
-          }}
-          onKeyDownCapture={(e) => {
-            if (e.code === 'Escape') {
-              e.stopPropagation(); // To prevent the popover from closing
-              handleInputChanged('');
-            }
-          }}
-          startAdornment={<Search />}
-          placeholder={t('edit_operand.search.placeholder')}
-        />
-        <ScrollArea.Viewport tabIndex={-1}>
-          <div className="flex flex-col gap-2 p-2">
-            <Group>
-              {editViewModel.constantOptions.map((constant) => (
-                <ConstantOption
-                  key={constant.name}
-                  constant={constant}
-                  onClick={() => {
-                    handleSelectOption(constant);
-                    closeModal();
-                  }}
-                />
-              ))}
-            </Group>
-            <Group>
-              <GroupHeader.Container>
-                <GroupHeader.Title>
-                  <Label>
-                    {t('edit_operand.result', {
-                      count: availableOptions.length,
-                    })}
-                  </Label>
-                  <Count>{availableOptions.length}</Count>
-                </GroupHeader.Title>
-              </GroupHeader.Container>
-              {availableOptions.map((option) => (
-                <OperandOption
-                  key={option.name}
-                  searchText={editViewModel.searchText}
-                  option={option}
-                  onClick={() => {
-                    handleSelectOption(option);
-                    closeModal();
-                  }}
-                />
-              ))}
-            </Group>
-          </div>
-        </ScrollArea.Viewport>
-        <BottomOptions>
-          {isAggregationEditorNodeViewModel(operandViewModel) && (
-            <EditOption
-              onClick={() => {
-                const initialAggregation =
-                  adaptAggregationViewModel(operandViewModel);
+    <OperandDropdownMenu.Content ref={ref}>
+      <SearchInput value={searchText} onValueChange={setSearchText} />
+      <OperandDropdownMenu.ScrollableViewport className="flex flex-col gap-2 p-2">
+        {searchText === '' ? (
+          <OperandEditorDiscoveryResults
+            options={options}
+            onSelect={handleSelectOption}
+            triggerObjectType={builder.triggerObjectType}
+          />
+        ) : (
+          <OperandEditorSearchResults
+            searchText={searchText}
+            options={options}
+            onSelect={handleSelectOption}
+          />
+        )}
+      </OperandDropdownMenu.ScrollableViewport>
+      <BottomOptions>
+        {isAggregationEditorNodeViewModel(operandViewModel) && (
+          <EditOption
+            onSelect={() => {
+              const initialAggregation =
+                adaptAggregationViewModel(operandViewModel);
 
-                editAggregation({
-                  initialAggregation,
-                  onSave,
-                });
-                closeModal();
-              }}
-            />
-          )}
-          {showClearOption && (
-            <ClearOption
-              onClick={() => {
-                handleSelectOption(newUndefinedLabelledAst());
-                closeModal();
-              }}
-            />
-          )}
-        </BottomOptions>
-        <ScrollArea.Scrollbar>
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </Popover.Content>
-    </ScrollArea.Root>
+              editAggregation({
+                initialAggregation,
+                onSave,
+              });
+              closeModal();
+            }}
+          />
+        )}
+        {showClearOption && (
+          <ClearOption
+            onSelect={() => {
+              handleSelectOption(newUndefinedLabelledAst());
+            }}
+          />
+        )}
+      </BottomOptions>
+    </OperandDropdownMenu.Content>
   );
 });
 OperandEditorContent.displayName = 'OperandEditorContent';
+
+function SearchInput({
+  value,
+  onValueChange,
+}: {
+  value: string;
+  onValueChange: (value: string) => void;
+}) {
+  const { t } = useTranslation('scenarios');
+  return (
+    <Input
+      className="m-2 flex-shrink-0"
+      type="search"
+      value={value}
+      onChange={(event) => {
+        onValueChange(event.target.value);
+      }}
+      onKeyDownCapture={(e) => {
+        e.stopPropagation();
+        if (e.code === 'Escape') {
+          onValueChange('');
+        }
+      }}
+      startAdornment={<Search />}
+      placeholder={t('edit_operand.search.placeholder')}
+    />
+  );
+}
 
 function BottomOptions({ children }: { children: React.ReactNode }) {
   if (React.Children.count(children) === 0) return null;

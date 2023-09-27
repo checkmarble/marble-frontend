@@ -131,8 +131,12 @@
   "edit_operand.data_type.number": "Number",
   "edit_operand.data_type.boolean": "Boolean",
   "edit_operand.data_type.timestamp": "Timestamp",
-  "edit_operand.operator_type.list": "List",
-  "edit_operand.operator_type.field": "Field",
-  "edit_operand.operator_type.variable": "Variable",
-  "edit_operand.placeholder": "Select an operand..."
+  "edit_operand.operator_type.list_one": "List",
+  "edit_operand.operator_type.list_other": "Lists",
+  "edit_operand.operator_type.field_one": "Field",
+  "edit_operand.operator_type.field_other": "Fields",
+  "edit_operand.operator_type.variable_one": "Variable",
+  "edit_operand.operator_type.variable_other": "Variables",
+  "edit_operand.placeholder": "Select an operand...",
+  "edit_operand.operator_discovery.from": "From <Path>{{path}}</Path>"
 }

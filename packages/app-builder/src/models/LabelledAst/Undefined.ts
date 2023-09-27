@@ -1,13 +1,9 @@
-import {
-  type LabelledAst,
-  NewUndefinedAstNode,
-  undefinedAstNodeName,
-} from '@app-builder/models';
+import { type LabelledAst, NewUndefinedAstNode } from '@app-builder/models';
 
 export function newUndefinedLabelledAst(): LabelledAst {
   return {
     name: getUndefinedDisplayName(),
-    operandType: undefinedAstNodeName,
+    operandType: 'Undefined',
     dataType: 'unknown',
     astNode: NewUndefinedAstNode(),
   };

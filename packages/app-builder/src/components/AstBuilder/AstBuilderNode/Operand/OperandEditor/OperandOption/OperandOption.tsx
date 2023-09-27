@@ -7,18 +7,18 @@ import { OperandTooltip } from '../../OperandTooltip';
 import { getDataTypeIcon, Option } from './Option';
 
 export function OperandOption({
-  searchText,
+  searchText = '',
   option,
-  onClick,
+  onSelect,
 }: {
-  searchText: string;
+  searchText?: string;
   option: LabelledAst;
-  onClick: () => void;
+  onSelect: () => void;
 }) {
   const DataTypeIcon = getDataTypeIcon(option.dataType);
   const parts = adaptHighlightedParts(option.name, searchText);
   return (
-    <Option.Container onClick={onClick} className="group">
+    <Option.Container onSelect={onSelect} className="group">
       {DataTypeIcon && (
         <Option.Icon className="col-start-1">
           <DataTypeIcon />
@@ -48,7 +48,7 @@ export function OperandOption({
         sideOffset={24}
         alignOffset={-8}
       >
-        <Option.Icon className="text-transparent group-hover:text-purple-50 group-hover:hover:text-purple-100">
+        <Option.Icon className="group-radix-highlighted:text-purple-50 group-radix-highlighted:hover:text-purple-100 text-transparent">
           <Tip />
         </Option.Icon>
       </OperandTooltip>
