@@ -5,6 +5,8 @@ import {
   type LinksToSingle,
   type TableModel,
 } from '@app-builder/models/data-model';
+import { CreateField } from '@app-builder/routes/ressources/data/createField';
+import { CreateTable } from '@app-builder/routes/ressources/data/createTable';
 import { serverServices } from '@app-builder/services/init.server';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -29,10 +31,11 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const dataModelPromise = apiClient.getDataModel();
+  const { data_model } = await apiClient.getDataModelV2();
+  console.log(data_model);
 
   return json({
-    dataModel: adaptDataModelDto((await dataModelPromise).data_model),
+    dataModel: adaptDataModelDto(data_model),
   });
 }
 
@@ -166,8 +169,9 @@ function TableFields({ tableModel }: { tableModel: TableModel }) {
       key={tableModel.name}
       className="w-fulloverflow-hidden mb-10 rounded-lg bg-white shadow-md"
     >
-      <div className="bg-grey-02 border-grey-10 border px-8 py-6 text-lg font-bold capitalize">
+      <div className="bg-grey-02 border-grey-10 align-items: flex flex-row items-center justify-between border px-8 py-4 text-lg font-bold capitalize">
         {tableModel.name}
+        <CreateField tableId={tableModel.id} />
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
         {tableModel.description && <div>{tableModel.description}</div>}
@@ -222,9 +226,12 @@ export default function Data() {
 
   return (
     <Page.Container>
-      <Page.Header>
-        <HelpIcon className="mr-2" height="24px" width="24px" />
-        {t('navigation:data')}
+      <Page.Header className="justify-between">
+        <div className="items-center: flex flex-row items-center">
+          <HelpIcon className="mr-2" height="24px" width="24px" />
+          {t('navigation:data')}
+        </div>
+        <CreateTable />
       </Page.Header>
       <Page.Content>
         <Callout className="whitespace-normal">
