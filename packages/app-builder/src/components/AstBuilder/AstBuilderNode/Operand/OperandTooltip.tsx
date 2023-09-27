@@ -44,7 +44,9 @@ export function OperandTooltip({
 
   return (
     <Tooltip.Root delayDuration={0}>
-      <Tooltip.Trigger tabIndex={-1}>{children}</Tooltip.Trigger>
+      <Tooltip.Trigger tabIndex={-1} asChild>
+        <span>{children}</span>
+      </Tooltip.Trigger>
       <Tooltip.Portal>
         <Tooltip.Content
           side={side}
@@ -92,7 +94,7 @@ function TypeInfos({
             className="inline-flex items-center gap-[2px] text-xs font-normal text-purple-50"
           >
             {Icon && <Icon className="text-[12px]" />}
-            {t(tKey)}
+            {t(tKey, { count: 1 })}
           </span>
         );
       })}

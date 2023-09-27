@@ -46,10 +46,7 @@ function GroupHeaderTitle({
 }: React.ComponentProps<'span'>) {
   return (
     <span
-      className={clsx(
-        'not-last:pr-1 inline-block w-full align-baseline',
-        className
-      )}
+      className={clsx('not-last:pr-1 flex w-full items-baseline', className)}
       {...props}
     />
   );
@@ -76,7 +73,7 @@ export function Label({ className, ...props }: React.ComponentProps<'span'>) {
     <span
       id={labelId}
       className={clsx(
-        'text-grey-100 text-m inline-block whitespace-pre align-baseline font-semibold',
+        'text-grey-100 text-m flex items-baseline whitespace-pre',
         className
       )}
       {...props}

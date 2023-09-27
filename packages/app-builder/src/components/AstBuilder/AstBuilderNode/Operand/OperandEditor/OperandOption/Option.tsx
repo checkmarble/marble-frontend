@@ -1,22 +1,17 @@
-import {
-  aggregationAstNodeName,
-  customListAccessAstNodeName,
-  databaseAccessAstNodeName,
-  type DataType,
-  payloadAstNodeName,
-} from '@app-builder/models';
+import { type DataType, type LabelledAst } from '@app-builder/models';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Boolean, Field, List, Number, String, Variable } from '@ui-icons';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 
-function OptionContainer({ className, ...props }: React.ComponentProps<'div'>) {
+function OptionContainer({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownMenu.Item>) {
   return (
-    <div
-      role="option"
-      // TODO(combobox): handle aria-selected when keyboard navigation is implemented (+ style w\ hover:bg-purple-05)
-      aria-selected="false"
+    <DropdownMenu.Item
       className={clsx(
-        'hover:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr_20px] gap-1 rounded-sm p-2 outline-none transition-colors',
+        'radix-highlighted:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr_20px] gap-1 rounded-sm p-2 outline-none transition-colors',
 
         className
       )}
@@ -38,7 +33,7 @@ function OptionValue({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={clsx(
-        'text-grey-100 text-s text-start font-normal transition-colors',
+        'text-grey-100 text-s overflow-hidden text-ellipsis text-start font-normal transition-colors',
 
         className
       )}
@@ -85,14 +80,13 @@ export function getDataTypeTKey(
   }
 }
 
-export function getOperatorTypeIcon(operatorType?: string) {
+export function getOperatorTypeIcon(operatorType: LabelledAst['operandType']) {
   switch (operatorType) {
-    case customListAccessAstNodeName:
+    case 'CustomList':
       return List;
-    case databaseAccessAstNodeName:
-    case payloadAstNodeName:
+    case 'Field':
       return Field;
-    case aggregationAstNodeName:
+    case 'Variable':
       return Variable;
     default:
       return undefined;
@@ -100,15 +94,14 @@ export function getOperatorTypeIcon(operatorType?: string) {
 }
 
 export function getOperatorTypeTKey(
-  operatorType?: string
+  operatorType: LabelledAst['operandType']
 ): ParseKeys<'scenarios'> | undefined {
   switch (operatorType) {
-    case customListAccessAstNodeName:
+    case 'CustomList':
       return 'edit_operand.operator_type.list';
-    case databaseAccessAstNodeName:
-    case payloadAstNodeName:
+    case 'Field':
       return 'edit_operand.operator_type.field';
-    case aggregationAstNodeName:
+    case 'Variable':
       return 'edit_operand.operator_type.variable';
     default:
       return undefined;

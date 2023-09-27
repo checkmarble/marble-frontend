@@ -9,7 +9,7 @@ import {
   isPayload,
   isUndefinedAstNode,
 } from '../ast-node';
-import { type DataModel, type DataType } from '../data-model';
+import { type DataType, type TableModel } from '../data-model';
 import {
   type EditorIdentifiersByType,
   getIdentifiersFromAstNode,
@@ -26,7 +26,13 @@ import { newUndefinedLabelledAst } from './Undefined';
 export interface LabelledAst {
   name: string;
   description?: string;
-  operandType?: string;
+  operandType:
+    | 'Constant'
+    | 'CustomList'
+    | 'Field'
+    | 'Variable'
+    | 'Undefined'
+    | 'unknown';
   dataType: DataType;
   astNode: AstNode;
 }
@@ -38,8 +44,8 @@ export function adaptLabelledAst(
     dataModel,
     customLists,
   }: {
-    triggerObjectType: DataModel;
-    dataModel: DataModel[];
+    triggerObjectType: TableModel;
+    dataModel: TableModel[];
     customLists: CustomList[];
   }
 ): LabelledAst | null {
@@ -93,7 +99,7 @@ export function adaptLabelledAstFromAllIdentifiers(
   return {
     name: getAstNodeDisplayName(astNode),
     dataType: 'unknown',
-    operandType: '',
+    operandType: 'unknown',
     astNode,
   };
 }
@@ -105,7 +111,7 @@ function adaptLabelledAstFromIdentifier(identifier: AstNode): LabelledAst {
   return {
     name: getAstNodeDisplayName(identifier),
     dataType: 'unknown',
-    operandType: '',
+    operandType: 'unknown',
     astNode: identifier,
   };
 }

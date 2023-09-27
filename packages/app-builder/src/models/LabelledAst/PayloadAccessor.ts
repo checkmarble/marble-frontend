@@ -2,7 +2,6 @@ import {
   findDataModelField,
   type LabelledAst,
   type PayloadAstNode,
-  payloadAstNodeName,
   type TableModel,
 } from '@app-builder/models';
 
@@ -20,7 +19,7 @@ export function newPayloadAccessorsLabelledAst({
   return {
     name: getPayloadAccessorsDisplayName(node),
     description: field.description,
-    operandType: payloadAstNodeName,
+    operandType: 'Field',
     dataType: field.dataType,
     astNode: node,
   };

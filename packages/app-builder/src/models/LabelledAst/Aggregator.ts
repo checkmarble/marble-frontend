@@ -1,6 +1,5 @@
 import {
   type AggregationAstNode,
-  aggregationAstNodeName,
   type LabelledAst,
   NewAggregatorAstNode,
 } from '@app-builder/models';
@@ -12,7 +11,7 @@ export function newAggregatorLabelledAst(
     return {
       name: getAggregatorName(nodeOrAggregator),
       description: '',
-      operandType: aggregationAstNodeName,
+      operandType: 'Variable',
       //TODO(combobox): infer/get aggregator.dataType
       dataType: 'unknown',
       astNode: NewAggregatorAstNode(nodeOrAggregator),
@@ -21,7 +20,7 @@ export function newAggregatorLabelledAst(
   return {
     name: getAggregationDisplayName(nodeOrAggregator),
     description: '',
-    operandType: aggregationAstNodeName,
+    operandType: 'Variable',
     //TODO(combobox): infer/get aggregator.dataType
     dataType: 'unknown',
     astNode: NewAggregatorAstNode(

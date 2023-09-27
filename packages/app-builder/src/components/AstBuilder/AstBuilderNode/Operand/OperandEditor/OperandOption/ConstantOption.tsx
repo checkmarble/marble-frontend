@@ -6,17 +6,17 @@ import { getDataTypeIcon, Option } from './Option';
 
 export function ConstantOption({
   constant,
-  onClick,
+  onSelect,
 }: {
   constant: LabelledAst;
-  onClick: () => void;
+  onSelect: () => void;
 }) {
   const { t } = useTranslation('scenarios');
   const DataTypeIcon = getDataTypeIcon(constant.dataType);
   const constantDataTypeTKey = getConstantDataTypeTKey(constant.dataType);
 
   return (
-    <Option.Container onClick={onClick}>
+    <Option.Container onSelect={onSelect}>
       {DataTypeIcon && (
         <Option.Icon className="col-start-1">
           <DataTypeIcon />
