@@ -23,6 +23,7 @@ export interface LinksToSingle {
 }
 
 export interface TableModel {
+  id: string;
   name: string;
   fields: DataModelField[];
   linksToSingle: LinksToSingle[];
@@ -61,6 +62,7 @@ export function adaptDataModelDto(dataModelDto: DataModelDto): TableModel[] {
   return R.pipe(
     R.toPairs(dataModelDto.tables),
     R.map(([tableName, tableDto]) => ({
+      id: tableDto.id || '', // temp hack until we have ids in all the datamodels
       name: tableName,
       fields: adaptFieldDto(tableDto.fields),
       linksToSingle: adaptLinkToSingleDto(tableDto.links_to_single ?? {}),
@@ -117,7 +119,7 @@ export function findDataModelField({
 }): DataModelField {
   const field = table.fields.find((f) => f.name == fieldName);
   if (!field) {
-    throw Error("can't find field in datamodel");
+    throw Error("can't find field in table");
   }
 
   return field;

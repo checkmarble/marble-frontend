@@ -4,6 +4,8 @@ import {
   type LinksToSingle,
   type TableModel,
 } from '@app-builder/models/data-model';
+import { CreateField } from '@app-builder/routes/ressources/data/createField';
+import { CreateTable } from '@app-builder/routes/ressources/data/createTable';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -30,9 +32,8 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const dataModelPromise = dataModelRepository.getDataModel();
-
-  return json({ dataModel: await dataModelPromise });
+  const dataModel = await dataModelRepository.getDataModel();
+  return json({ dataModel });
 }
 
 const mapFieldToTableRow = (field: DataModelField) => ({
@@ -168,6 +169,7 @@ function TableFields({ tableModel }: { tableModel: TableModel }) {
     >
       <div className="bg-grey-02 border-grey-10 flex items-center justify-between border px-8 py-6 text-lg font-bold capitalize">
         {tableModel.name}
+        <CreateField tableId={tableModel.id} />
         {canIngestData && (
           <NavLink
             className={clsx(
@@ -236,9 +238,12 @@ export default function Data() {
 
   return (
     <Page.Container>
-      <Page.Header>
-        <HelpIcon className="mr-2" height="24px" width="24px" />
-        {t('navigation:data')}
+      <Page.Header className="justify-between">
+        <div className="items-center: flex flex-row items-center">
+          <HelpIcon className="mr-2" height="24px" width="24px" />
+          {t('navigation:data')}
+        </div>
+        <CreateTable />
       </Page.Header>
       <Page.Content>
         <Callout className="whitespace-normal">

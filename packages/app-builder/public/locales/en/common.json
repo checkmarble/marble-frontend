@@ -9,6 +9,8 @@
   "errors.unknown": "An unknown error as occured",
   "errors.edit.forbidden_not_draft": "You can only edit a draft version of a scenario.",
   "errors.list.duplicate_list_name": "A list with this name already exist",
+  "errors.data.duplicate_field_name": "A field with this name already exist",
+  "errors.data.duplicate_table_name": "A table with this name already exist",
   "errors.draft.invalid": "Invalid draft. Please check your draft for error messages, fix them and try again.",
   "cancel": "Cancel",
   "save": "Save",
