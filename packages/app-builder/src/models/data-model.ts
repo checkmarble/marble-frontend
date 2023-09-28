@@ -6,6 +6,7 @@ import {
 import * as R from 'remeda';
 
 export interface DataModelField {
+  id: string;
   name: string;
   dataType: 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'unknown';
   description: string;
@@ -33,6 +34,7 @@ function adaptFieldDto(dataModelFieldsDto: {
   return R.pipe(
     R.toPairs(dataModelFieldsDto),
     R.map(([name, field]) => ({
+      id: field.id || '', // temp hack until we have ids in all the datamodels
       name: name,
       dataType: field.data_type,
       description: field.description,

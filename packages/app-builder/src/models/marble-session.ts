@@ -14,6 +14,7 @@ export const toastMessageScema = z.object({
     'common:errors.list.duplicate_list_name',
     'common:errors.data.duplicate_field_name',
     'common:errors.data.duplicate_table_name',
+    'common:errors.data.duplicate_link_name',
     'common:success.save',
     'common:errors.draft.invalid',
   ]),
