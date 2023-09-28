@@ -33,5 +33,7 @@
   "create_field.type_string": "String",
   "create_field.type_float": "Number",
   "create_field.type_bool": "Boolean",
-  "create_field.type_timestamp": "Timestamp"
+  "create_field.type_timestamp": "Timestamp",
+  "edit_field.button_accept": "Save changes",
+  "edit_field.title": "Edit description"
 }
