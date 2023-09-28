@@ -48,9 +48,6 @@ export async function action({ request }: ActionArgs) {
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
 
-    console.log({
-      valErrors: parsedForm.error.format(),
-    });
     return json({
       success: false as const,
       values: parsedForm.formData,
@@ -59,13 +56,6 @@ export async function action({ request }: ActionArgs) {
   }
   const { name, parentFieldId, childFieldId, parentTableId, childTableId } =
     parsedForm.data;
-  console.log({
-    name,
-    parentFieldId,
-    childFieldId,
-    parentTableId,
-    childTableId,
-  });
 
   try {
     await apiClient.postDataModelTableLink({
@@ -97,7 +87,6 @@ export async function action({ request }: ActionArgs) {
         { headers: { 'Set-Cookie': await commitSession(session) } }
       );
     } else {
-      console.log({ error });
       return json({
         success: false as const,
         values: parsedForm.data,
@@ -144,14 +133,13 @@ export function CreateLink({
     }
   }, [fetcher.data?.success, fetcher.state, reset]);
   useEffect(() => {
-    console.log({ selectedParentTableFields });
     setValue('parentFieldId', selectedParentTableFields[0].id);
   }, [setValue, selectedParentTableFields]);
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
-        <Button className="w-48" color="grey">
+        <Button className="w-48" variant="secondary">
           <Plus width={'24px'} height={'24px'} />
           {t('data:create_link.title')}
         </Button>
@@ -159,8 +147,7 @@ export function CreateLink({
       <Modal.Content>
         <Form
           control={control}
-          onSubmit={({ formData, formDataJson }) => {
-            console.log(formDataJson);
+          onSubmit={({ formData }) => {
             fetcher.submit(formData, {
               method: 'POST',
               action: '/ressources/data/createLink',
