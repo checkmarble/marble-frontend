@@ -1,6 +1,6 @@
+import { formatSchedule } from '@app-builder/utils/format';
 import { Label } from '@radix-ui/react-label';
 import { Checkbox, Select } from '@ui-design-system';
-import cronstrue from 'cronstrue';
 import { type Namespace } from 'i18next';
 import { useCallback, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -125,13 +125,9 @@ export const ScheduleOption = ({
               ScheduleLocale: <span style={{ fontWeight: 'bold' }} />,
             }}
             values={{
-              schedule: cronstrue
-                .toString(scheduleOption.scheduleDetail, {
-                  verbose: false,
-                  locale: i18n.language,
-                  throwExceptionOnParseError: false,
-                })
-                .toLowerCase(),
+              schedule: formatSchedule(scheduleOption.scheduleDetail, {
+                language: i18n.language,
+              }),
             }}
           />
         </p>
