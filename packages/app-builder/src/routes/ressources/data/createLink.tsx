@@ -188,13 +188,75 @@ export function CreateLink({
                     </FormItem>
                   )}
                 />
+
+                <div className="flex flex-row justify-around gap-2">
+                  <FormField
+                    name="childTableId"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <FormItem className="flex flex-1 flex-col gap-2">
+                        <FormLabel>
+                          {t('data:create_link.child_table')}
+                        </FormLabel>
+                        <FormControl>
+                          <Select.Default
+                            disabled={true}
+                            onValueChange={(type) => {
+                              field.onChange(type);
+                            }}
+                            value={field.value}
+                          >
+                            {[thisTable].map(({ id, name }) => {
+                              return (
+                                <Select.DefaultItem key={id} value={id}>
+                                  {name}
+                                </Select.DefaultItem>
+                              );
+                            })}
+                          </Select.Default>
+                        </FormControl>
+                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    name="childFieldId"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <FormItem className="flex flex-1 flex-col gap-2">
+                        <FormLabel>
+                          {t('data:create_link.child_field')}
+                        </FormLabel>
+                        <FormControl>
+                          <Select.Default
+                            onValueChange={(type) => {
+                              field.onChange(type);
+                            }}
+                            value={field.value}
+                          >
+                            {thisTable.fields.map(({ id, name }) => {
+                              return (
+                                <Select.DefaultItem key={id} value={id}>
+                                  {name}
+                                </Select.DefaultItem>
+                              );
+                            })}
+                          </Select.Default>
+                        </FormControl>
+                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <div className="flex flex-row justify-around gap-2">
                   <FormField
                     name="parentTableId"
                     control={control}
                     render={({ field, fieldState }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{'Parent table'}</FormLabel>
+                        <FormLabel>
+                          {t('data:create_link.parent_table')}
+                        </FormLabel>
                         <FormControl>
                           <Select.Default
                             onValueChange={(id) => {
@@ -225,7 +287,9 @@ export function CreateLink({
                     control={control}
                     render={({ field, fieldState }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{'Parent table field'}</FormLabel>
+                        <FormLabel>
+                          {t('data:create_link.parent_field')}
+                        </FormLabel>
                         <FormControl>
                           <Select.Default
                             defaultValue={selectedParentTableFields[0].id}
@@ -235,61 +299,6 @@ export function CreateLink({
                             value={field.value}
                           >
                             {selectedParentTableFields.map(({ id, name }) => {
-                              return (
-                                <Select.DefaultItem key={id} value={id}>
-                                  {name}
-                                </Select.DefaultItem>
-                              );
-                            })}
-                          </Select.Default>
-                        </FormControl>
-                        <FormMessage>{fieldState.error?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex flex-row justify-around gap-2">
-                  <FormField
-                    name="childTableId"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{'This table'}</FormLabel>
-                        <FormControl>
-                          <Select.Default
-                            disabled={true}
-                            onValueChange={(type) => {
-                              field.onChange(type);
-                            }}
-                            value={field.value}
-                          >
-                            {[thisTable].map(({ id, name }) => {
-                              return (
-                                <Select.DefaultItem key={id} value={id}>
-                                  {name}
-                                </Select.DefaultItem>
-                              );
-                            })}
-                          </Select.Default>
-                        </FormControl>
-                        <FormMessage>{fieldState.error?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    name="childFieldId"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{'Child table foreign key'}</FormLabel>
-                        <FormControl>
-                          <Select.Default
-                            onValueChange={(type) => {
-                              field.onChange(type);
-                            }}
-                            value={field.value}
-                          >
-                            {thisTable.fields.map(({ id, name }) => {
                               return (
                                 <Select.DefaultItem key={id} value={id}>
                                   {name}

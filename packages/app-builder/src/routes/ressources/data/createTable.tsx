@@ -180,7 +180,7 @@ export function CreateTable() {
                   type="submit"
                   name="create"
                 >
-                  {t('data:create_field.button_accept')}
+                  {t('data:create_table.button_accept')}
                 </Button>
               </div>
             </div>
