@@ -179,7 +179,7 @@ function TableDetails({
       key={tableModel.name}
       className="w-fulloverflow-hidden mb-10 rounded-lg bg-white shadow-md"
     >
-      <div className="bg-grey-02 border-grey-10 flex items-center justify-between border px-8 py-6 text-lg font-bold capitalize">
+      <div className="bg-grey-02 border-grey-10 flex flex-row items-center justify-between border px-8 py-4 text-lg font-bold capitalize">
         {tableModel.name}
         <CreateField tableId={tableModel.id} />
         {canIngestData && (
@@ -258,12 +258,14 @@ export default function Data() {
           <HelpIcon className="mr-2" height="24px" width="24px" />
           {t('navigation:data')}
         </div>
-        <CreateTable />
       </Page.Header>
       <Page.Content>
         <Callout className="whitespace-normal">
           {t('data:your_data_callout')}
         </Callout>
+        <div className="max-w-150">
+          <CreateTable />
+        </div>
         <div>
           {dataModel.map((table) => (
             <TableDetails
