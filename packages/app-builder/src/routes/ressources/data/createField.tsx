@@ -35,8 +35,16 @@ const createFieldFormSchema = z.object({
   tableId: z.string(),
 });
 
-const VALUE_TYPES = ['String', 'Bool', 'Timestamp', 'Float', 'Int'];
-const REQUIRED_OPTIONS = ['optional', 'required'];
+const VALUE_TYPES = [
+  { value: 'String', display: 'data:create_field.type_string' },
+  { value: 'Bool', display: 'data:create_field.type_bool' },
+  { value: 'Timestamp', display: 'data:create_field.type_timestamp' },
+  { value: 'Float', display: 'data:create_field.type_float' },
+] as const;
+const REQUIRED_OPTIONS = [
+  { value: 'optional', display: 'data:create_field.option_optional' },
+  { value: 'required', display: 'data:create_field.option_required' },
+] as const;
 
 export async function action({ request }: ActionArgs) {
   const { authService } = serverServices;
@@ -104,10 +112,10 @@ export function CreateField({ tableId }: { tableId: string }) {
     progressive: true,
     resolver: zodResolver(createFieldFormSchema),
     defaultValues: {
-      required: REQUIRED_OPTIONS[0],
+      required: REQUIRED_OPTIONS[0].value,
       name: '',
       description: '',
-      type: 'String',
+      type: VALUE_TYPES[0].value,
       tableId: tableId,
     },
   });
@@ -186,19 +194,19 @@ export function CreateField({ tableId }: { tableId: string }) {
                     control={control}
                     render={({ field, fieldState }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{'Required'}</FormLabel>
+                        <FormLabel>{t('data:create_field.required')}</FormLabel>
                         <FormControl>
                           <Select.Default
-                            className="w-full"
+                            className="w-full overflow-hidden"
                             onValueChange={(type) => {
                               field.onChange(type);
                             }}
                             value={field.value}
                           >
-                            {REQUIRED_OPTIONS.map((val) => {
+                            {REQUIRED_OPTIONS.map(({ value, display }) => {
                               return (
-                                <Select.DefaultItem key={val} value={val}>
-                                  {val}
+                                <Select.DefaultItem key={value} value={value}>
+                                  {t(display)}
                                 </Select.DefaultItem>
                               );
                             })}
@@ -213,7 +221,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                     control={control}
                     render={({ field, fieldState }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{'Type'}</FormLabel>
+                        <FormLabel>{t('data:create_field.type')}</FormLabel>
                         <FormControl>
                           <Select.Default
                             className="w-full"
@@ -222,10 +230,10 @@ export function CreateField({ tableId }: { tableId: string }) {
                             }}
                             value={field.value}
                           >
-                            {VALUE_TYPES.map((val) => {
+                            {VALUE_TYPES.map(({ value, display }) => {
                               return (
-                                <Select.DefaultItem key={val} value={val}>
-                                  {val}
+                                <Select.DefaultItem key={value} value={value}>
+                                  {t(display)}
                                 </Select.DefaultItem>
                               );
                             })}
