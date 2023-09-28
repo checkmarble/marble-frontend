@@ -81,14 +81,20 @@ export function CreateScenario({ dataModel }: { dataModel: TableModel[] }) {
           <Modal.Title>{t('scenarios:create_scenario.title')}</Modal.Title>
           <div className="bg-grey-00 flex flex-col gap-8 p-8">
             <div className="flex flex-1 flex-col gap-4">
-              <label>{t('scenarios:create_scenario.name')}</label>
+              <label htmlFor="name">
+                {t('scenarios:create_scenario.name')}
+              </label>
               <Input
+                id="name"
                 name="name"
                 type="text"
                 placeholder={t('scenarios:create_scenario.name_placeholder')}
               />
-              <label>{t('scenarios:create_scenario.description')}</label>
+              <label htmlFor="description">
+                {t('scenarios:create_scenario.description')}
+              </label>
               <Input
+                id="description"
                 name="description"
                 type="text"
                 placeholder={t(

@@ -140,6 +140,7 @@ export const ScheduleOption = ({
     <>
       <div className="text-s flex items-center gap-1">
         <Checkbox
+          id="scheduleScenario"
           name="scheduleScenario"
           defaultChecked={scheduleOption.isScenarioScheduled}
           onCheckedChange={() =>
