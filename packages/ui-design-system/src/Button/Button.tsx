@@ -53,7 +53,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             'hover:bg-red-110 active:bg-red-120 text-grey-00 border-bg-red-100 focus:border-grey-100 bg-red-100 disabled:bg-red-50':
               variant === 'primary' && color === 'red',
 
-            'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 disabled:bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 focus:border-purple-100':
+            'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100 ':
               variant === 'secondary' && color === 'grey',
           },
           className

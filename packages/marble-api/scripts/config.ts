@@ -10,4 +10,5 @@ export const OPENAPI_OPTIONS: Opts = {
   optimistic: true,
   useEnumType: false,
   unionUndefined: false,
+  mergeReadWriteOnly: true,
 };

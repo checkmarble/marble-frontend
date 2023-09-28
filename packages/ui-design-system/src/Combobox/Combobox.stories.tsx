@@ -75,7 +75,7 @@ export const Default: StoryFn<typeof Combobox.Root> = ({ ...args }) => {
           </Combobox.Options>
         </div>
       </Combobox.Root>
-      <p className="bg-grey-05 flex flex-col gap-1 rounded p-2">
+      <div className="bg-grey-05 flex flex-col gap-1 rounded p-2">
         Selected book:
         {selectedValue ? (
           <>
@@ -85,7 +85,7 @@ export const Default: StoryFn<typeof Combobox.Root> = ({ ...args }) => {
         ) : (
           <p>None</p>
         )}
-      </p>
+      </div>
     </div>
   );
 };

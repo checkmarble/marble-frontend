@@ -39,10 +39,10 @@ const TemplateWithIcon: StoryFn<StoryProps> = ({ children, ...args }) => {
   );
 };
 
+const primaryArgss = {
+  variant: 'primary',
+} as const;
 const primaryArgTypes = {
-  variant: {
-    defaultValue: 'primary',
-  },
   color: {
     control: { type: 'select' },
     options: variantColors['primary'],
@@ -51,15 +51,17 @@ const primaryArgTypes = {
 };
 
 export const Primary = Template.bind({});
+Primary.args = primaryArgss;
 Primary.argTypes = primaryArgTypes;
 
 export const PrimaryWithIcon = TemplateWithIcon.bind({});
+PrimaryWithIcon.args = primaryArgss;
 PrimaryWithIcon.argTypes = primaryArgTypes;
 
+const secondaryArgs = {
+  variant: 'secondary',
+} as const;
 const secondaryArgTypes = {
-  variant: {
-    defaultValue: 'secondary',
-  },
   color: {
     control: { type: 'select' },
     options: variantColors['secondary'],
@@ -68,7 +70,9 @@ const secondaryArgTypes = {
 };
 
 export const Secondary = Template.bind({});
+Secondary.args = secondaryArgs;
 Secondary.argTypes = secondaryArgTypes;
 
 export const SecondaryWithIcon = TemplateWithIcon.bind({});
+SecondaryWithIcon.args = secondaryArgs;
 SecondaryWithIcon.argTypes = secondaryArgTypes;
