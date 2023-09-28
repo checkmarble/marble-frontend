@@ -1,8 +1,10 @@
 import 'cronstrue/locales/en';
 
+import { type InitOptions } from 'i18next';
+
 export const defaultNS = 'common';
 
-// When adding a new supported lng, add corresponding construe locale above too
+// When adding a new supported lng, add corresponding cronstrue locale above too
 export const supportedLngs = ['en-GB', 'en'] as const;
 
 export const i18nConfig = {
@@ -14,4 +16,4 @@ export const i18nConfig = {
   fallbackLng: 'en-GB',
   // Disabling suspense is recommended
   react: { useSuspense: false },
-};
+} satisfies InitOptions;
