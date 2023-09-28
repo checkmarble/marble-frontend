@@ -8,6 +8,7 @@ import {
 import { CreateField } from '@app-builder/routes/ressources/data/createField';
 import { CreateLink } from '@app-builder/routes/ressources/data/createLink';
 import { CreateTable } from '@app-builder/routes/ressources/data/createTable';
+import { EditField } from '@app-builder/routes/ressources/data/editField';
 import { serverServices } from '@app-builder/services/init.server';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -40,6 +41,7 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 const mapFieldToTableRow = (field: DataModelField) => ({
+  id: field.id,
   name: field.name,
   description: field.description,
   type: field.dataType,
@@ -100,6 +102,17 @@ function TableDetails({
         accessorKey: 'description',
         header: t('data:description'),
         size: 500,
+        cell: ({ cell }) => {
+          return (
+            <div className="group-hover:bg-grey-02 group flex items-center justify-between">
+              <p className="text-grey-100">{cell.row.original.description}</p>
+              <EditField
+                fieldId={cell.row.original.id}
+                description={cell.row.original.description}
+              />
+            </div>
+          );
+        },
       },
     ],
     [t]
