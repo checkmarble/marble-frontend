@@ -9,6 +9,7 @@ type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
 
 export interface DataModelField {
+  id: string;
   name: string;
   dataType: DataType;
   description: string;
@@ -36,6 +37,7 @@ function adaptFieldDto(dataModelFieldsDto: {
   return R.pipe(
     R.toPairs(dataModelFieldsDto),
     R.map(([name, field]) => ({
+      id: field.id || '', // temp hack until we have ids in all the datamodels
       name: name,
       dataType: field.data_type,
       description: field.description,

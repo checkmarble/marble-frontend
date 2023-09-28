@@ -5,6 +5,7 @@ import {
   type TableModel,
 } from '@app-builder/models/data-model';
 import { CreateField } from '@app-builder/routes/ressources/data/createField';
+import { CreateLink } from '@app-builder/routes/ressources/data/createLink';
 import { CreateTable } from '@app-builder/routes/ressources/data/createTable';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -50,9 +51,20 @@ const mapLinkToTableRow = (table: TableModel, link: LinksToSingle) => ({
   exampleUsage: `${table.name}.${link.linkName}.${link.parentFieldName} = ${table.name}.${link.childFieldName}`,
 });
 
-function TableFields({ tableModel }: { tableModel: TableModel }) {
+function TableDetails({
+  tableModel,
+  dataModel,
+}: {
+  tableModel: TableModel;
+  dataModel: TableModel[];
+}) {
   const { t } = useTranslation(handle.i18n);
   const { canIngestData } = usePermissionsContext();
+
+  const otherTables = useMemo(
+    () => dataModel.filter((table) => table.id !== tableModel.id),
+    [dataModel, tableModel]
+  );
 
   // Create table for client db table fields
   const fields = useMemo(
@@ -227,6 +239,9 @@ function TableFields({ tableModel }: { tableModel: TableModel }) {
             </div>
           </div>
         )}
+        {otherTables.length > 0 && (
+          <CreateLink thisTable={tableModel} otherTables={otherTables} />
+        )}
       </div>
     </div>
   );
@@ -251,7 +266,11 @@ export default function Data() {
         </Callout>
         <div>
           {dataModel.map((table) => (
-            <TableFields key={table.name} tableModel={table} />
+            <TableDetails
+              key={table.name}
+              tableModel={table}
+              dataModel={dataModel}
+            />
           ))}
         </div>
       </Page.Content>

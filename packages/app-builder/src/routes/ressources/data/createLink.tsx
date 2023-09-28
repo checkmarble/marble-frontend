@@ -7,15 +7,16 @@ import {
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
+import { type TableModel } from '@app-builder/models/data-model';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { Button, HiddenInputs, Input, Modal, Select } from '@ui-design-system';
+import { Button, Input, Modal, Select } from '@ui-design-system';
 import { Plus } from '@ui-icons';
 import { type Namespace } from 'i18next';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -24,19 +25,18 @@ export const handle = {
   i18n: ['data', 'navigation', 'common'] satisfies Namespace,
 };
 
-const createFieldFormSchema = z.object({
+const createLinkFormSchema = z.object({
   name: z
     .string()
     .nonempty()
-    .regex(/^[a-zA-Z0-9_]+$/, { message: 'Only alphanumeric and _' }),
-  description: z.string(),
-  required: z.string(),
-  type: z.enum(['String', 'Bool', 'Timestamp', 'Float', 'Int']),
-  tableId: z.string(),
+    .regex(/^[a-zA-Z0-9_]+$/, {
+      message: 'Only alphanumeric and _',
+    }),
+  parentTableId: z.string().nonempty().uuid(),
+  parentFieldId: z.string().nonempty().uuid(),
+  childTableId: z.string().nonempty().uuid(),
+  childFieldId: z.string().nonempty().uuid(),
 });
-
-const VALUE_TYPES = ['String', 'Bool', 'Timestamp', 'Float', 'Int'];
-const REQUIRED_OPTIONS = ['optional', 'required'];
 
 export async function action({ request }: ActionArgs) {
   const { authService } = serverServices;
@@ -44,25 +44,36 @@ export async function action({ request }: ActionArgs) {
     failureRedirect: '/login',
   });
 
-  const parsedForm = await parseFormSafe(request, createFieldFormSchema);
+  const parsedForm = await parseFormSafe(request, createLinkFormSchema);
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
 
-    console.log(parsedForm.error.format());
+    console.log({
+      valErrors: parsedForm.error.format(),
+    });
     return json({
       success: false as const,
       values: parsedForm.formData,
       error: parsedForm.error.format(),
     });
   }
-  const { name, description, type, required, tableId } = parsedForm.data;
+  const { name, parentFieldId, childFieldId, parentTableId, childTableId } =
+    parsedForm.data;
+  console.log({
+    name,
+    parentFieldId,
+    childFieldId,
+    parentTableId,
+    childTableId,
+  });
 
   try {
-    await apiClient.postDataModelTableField(tableId, {
-      name: name,
-      description: description,
-      type,
-      nullable: required === 'optional',
+    await apiClient.postDataModelTableLink({
+      name,
+      parent_field_id: parentFieldId,
+      child_field_id: childFieldId,
+      parent_table_id: parentTableId,
+      child_table_id: childTableId,
     });
     return json({
       success: true as const,
@@ -75,7 +86,7 @@ export async function action({ request }: ActionArgs) {
       const session = await getSession(request);
       setToastMessage(session, {
         type: 'error',
-        messageKey: 'common:errors.data.duplicate_field_name',
+        messageKey: 'common:errors.data.duplicate_link_name',
       });
       return json(
         {
@@ -86,7 +97,7 @@ export async function action({ request }: ActionArgs) {
         { headers: { 'Set-Cookie': await commitSession(session) } }
       );
     } else {
-      console.log(error);
+      console.log({ error });
       return json({
         success: false as const,
         values: parsedForm.data,
@@ -96,83 +107,80 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export function CreateField({ tableId }: { tableId: string }) {
+export function CreateLink({
+  thisTable,
+  otherTables,
+}: {
+  otherTables: TableModel[];
+  thisTable: TableModel;
+}) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
+  const [selectedParentTable, setSelectedParentTable] = useState(
+    otherTables[0]
+  );
+  const selectedParentTableFields = useMemo(() => {
+    return selectedParentTable.fields;
+  }, [selectedParentTable]);
 
-  const formMethods = useForm<z.infer<typeof createFieldFormSchema>>({
+  const formMethods = useForm<z.infer<typeof createLinkFormSchema>>({
     progressive: true,
-    resolver: zodResolver(createFieldFormSchema),
+    resolver: zodResolver(createLinkFormSchema),
     defaultValues: {
-      required: REQUIRED_OPTIONS[0],
       name: '',
-      description: '',
-      type: 'String',
-      tableId: tableId,
+      parentTableId: otherTables[0].id,
+      parentFieldId: selectedParentTableFields[0].id,
+      childTableId: thisTable.id,
+      childFieldId: thisTable.fields[0].id,
     },
   });
-  const { control, register, reset } = formMethods;
+  const { control, reset, setValue } = formMethods;
   const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
       setIsOpen(false);
       reset();
     }
   }, [fetcher.data?.success, fetcher.state, reset]);
+  useEffect(() => {
+    console.log({ selectedParentTableFields });
+    setValue('parentFieldId', selectedParentTableFields[0].id);
+  }, [setValue, selectedParentTableFields]);
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
-        <Button>
+        <Button className="w-48" color="grey">
           <Plus width={'24px'} height={'24px'} />
-          {t('data:create_field.title')}
+          {t('data:create_link.title')}
         </Button>
       </Modal.Trigger>
       <Modal.Content>
         <Form
           control={control}
-          onSubmit={({ formData }) => {
+          onSubmit={({ formData, formDataJson }) => {
+            console.log(formDataJson);
             fetcher.submit(formData, {
               method: 'POST',
-              action: '/ressources/data/createField',
+              action: '/ressources/data/createLink',
             });
           }}
         >
           <FormProvider {...formMethods}>
-            <HiddenInputs tableId={'dummy value'} />
-            <Modal.Title>{t('data:create_field.title')}</Modal.Title>
+            <Modal.Title>{t('data:create_link.title')}</Modal.Title>
             <div className="bg-grey-00 flex flex-col gap-8 p-8">
               <div className="flex flex-1 flex-col gap-4">
-                <input hidden {...register('tableId')} />
                 <FormField
                   name="name"
                   control={control}
                   render={({ field, fieldState }) => (
                     <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('data:field_name')}</FormLabel>
+                      <FormLabel>{t('data:link_name')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder={t('data:create_field.name_placeholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage>{fieldState.error?.message}</FormMessage>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="description"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('data:description')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t(
-                            'data:create_field.description_placeholder'
-                          )}
+                          placeholder={t('data:create_link.name_placeholder')}
                           {...field}
                         />
                       </FormControl>
@@ -182,23 +190,27 @@ export function CreateField({ tableId }: { tableId: string }) {
                 />
                 <div className="flex flex-row justify-around gap-2">
                   <FormField
-                    name="required"
+                    name="parentTableId"
                     control={control}
                     render={({ field, fieldState }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{'Required'}</FormLabel>
+                        <FormLabel>{'Parent table'}</FormLabel>
                         <FormControl>
                           <Select.Default
-                            className="w-full"
-                            onValueChange={(type) => {
-                              field.onChange(type);
+                            onValueChange={(id) => {
+                              field.onChange(id);
+                              const newTable =
+                                otherTables.find(
+                                  ({ id: tableId }) => tableId === id
+                                ) ?? otherTables[0];
+                              setSelectedParentTable(newTable);
                             }}
                             value={field.value}
                           >
-                            {REQUIRED_OPTIONS.map((val) => {
+                            {otherTables.map(({ id, name }) => {
                               return (
-                                <Select.DefaultItem key={val} value={val}>
-                                  {val}
+                                <Select.DefaultItem key={id} value={id}>
+                                  {name}
                                 </Select.DefaultItem>
                               );
                             })}
@@ -209,23 +221,78 @@ export function CreateField({ tableId }: { tableId: string }) {
                     )}
                   />
                   <FormField
-                    name="type"
+                    name="parentFieldId"
                     control={control}
                     render={({ field, fieldState }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{'Type'}</FormLabel>
+                        <FormLabel>{'Parent table field'}</FormLabel>
                         <FormControl>
                           <Select.Default
-                            className="w-full"
+                            defaultValue={selectedParentTableFields[0].id}
                             onValueChange={(type) => {
                               field.onChange(type);
                             }}
                             value={field.value}
                           >
-                            {VALUE_TYPES.map((val) => {
+                            {selectedParentTableFields.map(({ id, name }) => {
                               return (
-                                <Select.DefaultItem key={val} value={val}>
-                                  {val}
+                                <Select.DefaultItem key={id} value={id}>
+                                  {name}
+                                </Select.DefaultItem>
+                              );
+                            })}
+                          </Select.Default>
+                        </FormControl>
+                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex flex-row justify-around gap-2">
+                  <FormField
+                    name="childTableId"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <FormItem className="flex flex-1 flex-col gap-2">
+                        <FormLabel>{'This table'}</FormLabel>
+                        <FormControl>
+                          <Select.Default
+                            disabled={true}
+                            onValueChange={(type) => {
+                              field.onChange(type);
+                            }}
+                            value={field.value}
+                          >
+                            {[thisTable].map(({ id, name }) => {
+                              return (
+                                <Select.DefaultItem key={id} value={id}>
+                                  {name}
+                                </Select.DefaultItem>
+                              );
+                            })}
+                          </Select.Default>
+                        </FormControl>
+                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    name="childFieldId"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <FormItem className="flex flex-1 flex-col gap-2">
+                        <FormLabel>{'Child table foreign key'}</FormLabel>
+                        <FormControl>
+                          <Select.Default
+                            onValueChange={(type) => {
+                              field.onChange(type);
+                            }}
+                            value={field.value}
+                          >
+                            {thisTable.fields.map(({ id, name }) => {
+                              return (
+                                <Select.DefaultItem key={id} value={id}>
+                                  {name}
                                 </Select.DefaultItem>
                               );
                             })}
