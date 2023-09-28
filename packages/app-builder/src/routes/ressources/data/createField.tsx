@@ -56,7 +56,6 @@ export async function action({ request }: ActionArgs) {
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
 
-    console.log(parsedForm.error.format());
     return json({
       success: false as const,
       values: parsedForm.formData,
@@ -94,7 +93,6 @@ export async function action({ request }: ActionArgs) {
         { headers: { 'Set-Cookie': await commitSession(session) } }
       );
     } else {
-      console.log(error);
       return json({
         success: false as const,
         values: parsedForm.data,
