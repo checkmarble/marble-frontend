@@ -11,6 +11,7 @@
   "errors.list.duplicate_list_name": "A list with this name already exist",
   "errors.data.duplicate_field_name": "A field with this name already exist",
   "errors.data.duplicate_table_name": "A table with this name already exist",
+  "errors.data.duplicate_link_name": "A link with this name already exist",
   "errors.draft.invalid": "Invalid draft. Please check your draft for error messages, fix them and try again.",
   "cancel": "Cancel",
   "save": "Save",

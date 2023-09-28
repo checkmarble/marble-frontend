@@ -3,6 +3,7 @@
   "description": "Description",
   "field_name": "Name",
   "field_type": "Type",
+  "link_name": "Name",
   "field_required": "Required",
   "table_relationship": "Relationship",
   "foreign_key": "Foreign Key",
@@ -11,11 +12,14 @@
   "example_usage": "Usage",
   "links_from_table": "Links from to other entities from <TableLocale>{{tableName}}</TableLocale>",
   "create_field.title": "Create a new field",
-  "create_table.title": "Create a new table",
   "create_field.name_placeholder": "Field name",
-  "create_table.name_placeholder": "Table name",
   "create_field.button_accept": "Create field",
-  "create_table.button_accept": "Create table",
   "create_field.description_placeholder": "Field description",
-  "create_table.description_placeholder": "Table description"
+  "create_table.title": "Create a new table",
+  "create_table.name_placeholder": "Table name",
+  "create_table.button_accept": "Create table",
+  "create_table.description_placeholder": "Table description",
+  "create_link.title": "Create a new link",
+  "create_link.name_placeholder": "Link name",
+  "create_link.button_accept": "Create link"
 }

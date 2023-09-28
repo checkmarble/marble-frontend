@@ -24,7 +24,7 @@ export const handle = {
   i18n: ['data', 'navigation', 'common'] satisfies Namespace,
 };
 
-const createFieldFormSchema = z.object({
+const createTableFormSchema = z.object({
   name: z
     .string()
     .nonempty()
@@ -38,7 +38,7 @@ export async function action({ request }: ActionArgs) {
     failureRedirect: '/login',
   });
 
-  const parsedForm = await parseFormSafe(request, createFieldFormSchema);
+  const parsedForm = await parseFormSafe(request, createTableFormSchema);
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
 
@@ -92,9 +92,9 @@ export function CreateTable() {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const formMethods = useForm<z.infer<typeof createFieldFormSchema>>({
+  const formMethods = useForm<z.infer<typeof createTableFormSchema>>({
     progressive: true,
-    resolver: zodResolver(createFieldFormSchema),
+    resolver: zodResolver(createTableFormSchema),
     defaultValues: {
       name: '',
       description: '',
