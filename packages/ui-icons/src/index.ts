@@ -18,6 +18,7 @@ export { default as Duplicate } from './Duplicate';
 export { default as Edit } from './Edit';
 export { default as Filters } from './Filters';
 export { default as GoogleLogo } from './GoogleLogo';
+export { default as Harddrive } from './Harddrive';
 export { default as Help } from './Help';
 export { default as Helpcenter } from './Helpcenter';
 export { default as History } from './History';

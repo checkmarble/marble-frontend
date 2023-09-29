@@ -17,7 +17,7 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { Table, useTable } from '@ui-design-system';
-import { Database as DatabaseIcon } from '@ui-icons';
+import { Harddrive } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -242,7 +242,7 @@ export default function Data() {
     <Page.Container>
       <Page.Header className="justify-between">
         <div className="items-center: flex flex-row items-center">
-          <DatabaseIcon className="mr-2" height="24px" width="24px" />
+          <Harddrive className="mr-2" height="24px" width="24px" />
           {t('navigation:data')}
         </div>
       </Page.Header>
