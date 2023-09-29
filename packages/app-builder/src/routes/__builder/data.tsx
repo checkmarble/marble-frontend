@@ -39,10 +39,6 @@ export async function loader({ request }: LoaderArgs) {
   return json({ dataModel });
 }
 
-const capitalizeFirstLetter = (s: string) => {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-};
-
 const mapFieldToTableRow = (field: DataModelField) => ({
   id: field.id,
   name: field.name,
@@ -58,6 +54,19 @@ const mapLinkToTableRow = (table: TableModel, link: LinksToSingle) => ({
   exampleUsage: `${table.name}.${link.linkName}.${link.parentFieldName} = ${table.name}.${link.childFieldName}`,
 });
 
+function EditableText({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="before:hover:bg-grey-05 group relative flex flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out">
+      <span className="text-grey-100 relative">{children}</span>
+      <Edit
+        className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
+        width={'24px'}
+        height={'24px'}
+      />
+    </div>
+  );
+}
+
 function TableDetails({
   tableModel,
   dataModel,
@@ -68,10 +77,6 @@ function TableDetails({
   const { t } = useTranslation(handle.i18n);
   const { canIngestData } = usePermissionsContext();
 
-  const tableDescription = useMemo(
-    () => capitalizeFirstLetter(tableModel.description || ''),
-    [tableModel.description]
-  );
   const otherTables = useMemo(
     () => dataModel.filter((table) => table.id !== tableModel.id),
     [dataModel, tableModel]
@@ -116,7 +121,7 @@ function TableDetails({
               fieldId={cell.row.original.id}
               description={cell.row.original.description}
             >
-              <div className="before:hover:bg-grey-05 group relative flex flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out">
+              <EditableText>
                 <span className="text-grey-100 relative">
                   {cell.row.original.description ? (
                     cell.row.original.description
@@ -124,12 +129,7 @@ function TableDetails({
                     <p className="text-grey-25">t('data:empty_description')</p>
                   )}
                 </span>
-                <Edit
-                  className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out "
-                  width={'24px'}
-                  height={'24px'}
-                />
-              </div>
+              </EditableText>
             </EditField>
           );
         },
@@ -233,20 +233,15 @@ function TableDetails({
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
         <EditTable table={tableModel}>
-          <div className="before:hover:bg-grey-05 group relative flex flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out">
-            <span className="text-grey-100 relative">
-              {tableDescription ? (
-                tableDescription
+          <EditableText>
+            <span className="text-grey-100 relative first-letter:capitalize">
+              {tableModel.description ? (
+                tableModel.description
               ) : (
                 <p className="text-grey-25">t('data:empty_description')</p>
               )}
             </span>
-            <Edit
-              className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
-              width={'24px'}
-              height={'24px'}
-            />
-          </div>
+          </EditableText>
         </EditTable>
 
         <div>
