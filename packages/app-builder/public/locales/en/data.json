@@ -36,5 +36,7 @@
   "create_field.type_timestamp": "Timestamp",
   "edit_field.button_accept": "Save changes",
   "edit_field.title": "Edit description",
+  "edit_table.button_accept": "Save changes",
+  "edit_table.title": "Edit description",
   "upload_data": "Upload data"
 }
