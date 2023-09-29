@@ -17,7 +17,7 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { Table, useTable } from '@ui-design-system';
-import { Help as HelpIcon, Plus } from '@ui-icons';
+import { Database as DatabaseIcon, Plus } from '@ui-icons';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
@@ -255,7 +255,7 @@ export default function Data() {
     <Page.Container>
       <Page.Header className="justify-between">
         <div className="items-center: flex flex-row items-center">
-          <HelpIcon className="mr-2" height="24px" width="24px" />
+          <DatabaseIcon className="mr-2" height="24px" width="24px" />
           {t('navigation:data')}
         </div>
       </Page.Header>

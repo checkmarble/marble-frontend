@@ -11,8 +11,8 @@ import { Form, Outlet, useLoaderData } from '@remix-run/react';
 import { Button, ScrollArea } from '@ui-design-system';
 import {
   Arrow2Down,
+  Database,
   Decision,
-  Help,
   Lists,
   LogoStandard,
   Logout,
@@ -41,7 +41,7 @@ const LINKS: SidebarLinkProps[] = [
 ];
 
 const BOTTOM_LINKS: SidebarLinkProps[] = [
-  { labelTKey: 'navigation:data', to: getRoute('/data'), Icon: Help },
+  { labelTKey: 'navigation:data', to: getRoute('/data'), Icon: Database },
 ];
 
 export async function loader({ request }: LoaderArgs) {
