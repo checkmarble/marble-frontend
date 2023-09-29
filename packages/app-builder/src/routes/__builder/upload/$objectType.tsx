@@ -1,4 +1,5 @@
 import { Callout, Page, Paper } from '@app-builder/components';
+import { type TableModel } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
@@ -44,13 +45,14 @@ export async function loader({ request, params }: LoaderArgs) {
   }
 
   const dataModel = await dataModelRepository.getDataModel();
-  if (!dataModel.map((table) => table.name).includes(objectType)) {
+  const table = dataModel.find((table) => table.name == objectType);
+  if (!table) {
     return redirect(getRoute('/data'));
   }
 
   const uploadLogs = await apiClient.getIngestionUploadLogs(objectType);
 
-  return json({ objectType, uploadLogs });
+  return json({ objectType, table, uploadLogs });
 }
 
 type ModalContent = {
@@ -315,11 +317,7 @@ const getStatusTKey = (status: string): ParseKeys<['upload']> => {
 
 export default function Upload() {
   const { t } = useTranslation(handle.i18n);
-  const { objectType, uploadLogs } = useLoaderData<typeof loader>();
-
-  // const downloadTemplateCsv = () => {
-  //   alert('I wil download your template, i promise');
-  // };
+  const { objectType, table, uploadLogs } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -334,12 +332,23 @@ export default function Upload() {
             <p>{t('upload:upload_callout_2')}</p>
           </div>
         </Callout>
-        {/* <div>
-          <Button variant="secondary" onClick={downloadTemplateCsv}>
-            <HelpIcon className="mr-2" height="24px" width="24px" />
-            {t('upload:download_template_cta')}
-          </Button>
-        </div> */}
+        <div className="flex">
+          <ClientOnly fallback={<LoadingButton />}>
+            {() => (
+              <a
+                href={generateCsvTemplateLink(table)}
+                download={`${objectType}_template.csv`}
+                className={clsx(
+                  'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
+                  'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100'
+                )}
+              >
+                <HelpIcon className="mr-2" height="24px" width="24px" />
+                {t('upload:download_template_cta')}
+              </a>
+            )}
+          </ClientOnly>
+        </div>
         <ClientOnly fallback={<Loading />}>
           {() => <UploadForm objectType={objectType} />}
         </ClientOnly>
@@ -356,4 +365,20 @@ const Loading = () => {
       {t('common:loading')}
     </div>
   );
+};
+
+const LoadingButton = () => {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <Button variant="secondary" className="cursor-wait">
+      <HelpIcon className="mr-2" height="24px" width="24px" />
+      {t('upload:download_template_cta')}
+    </Button>
+  );
+};
+
+const generateCsvTemplateLink = (table: TableModel): string => {
+  const csvContent = table.fields.map((field) => field.name).join(',') + '\n';
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8,' });
+  return URL.createObjectURL(blob);
 };
