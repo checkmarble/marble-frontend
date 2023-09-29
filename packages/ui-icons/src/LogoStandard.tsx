@@ -6,7 +6,6 @@ const LogoStandard = (props: SVGProps<SVGSVGElement>) => (
     height="1em"
     fill="none"
     viewBox="0 0 357 80"
-    aria-labelledby="marble"
     {...props}
   >
     <path
