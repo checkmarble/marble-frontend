@@ -231,9 +231,9 @@ export default function Upload() {
   const { t } = useTranslation(handle.i18n);
   const { objectType } = useLoaderData<typeof loader>();
 
-  const downloadTemplateCsv = () => {
-    alert('I wil download your template, i promise');
-  };
+  // const downloadTemplateCsv = () => {
+  //   alert('I wil download your template, i promise');
+  // };
 
   return (
     <Page.Container>
@@ -248,12 +248,12 @@ export default function Upload() {
             <p>{t('upload:upload_callout_2')}</p>
           </div>
         </Callout>
-        <div>
+        {/* <div>
           <Button variant="secondary" onClick={downloadTemplateCsv}>
             <HelpIcon className="mr-2" height="24px" width="24px" />
             {t('upload:download_template_cta')}
           </Button>
-        </div>
+        </div> */}
         <ClientOnly fallback={<Loading />}>
           {() => <UploadForm objectType={objectType} />}
         </ClientOnly>
