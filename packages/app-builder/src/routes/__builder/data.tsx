@@ -19,7 +19,7 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { Table, useTable } from '@ui-design-system';
-import { Harddrive, Plus } from '@ui-icons';
+import { Edit, Harddrive, Plus } from '@ui-icons';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
@@ -112,13 +112,25 @@ function TableDetails({
         size: 500,
         cell: ({ cell }) => {
           return (
-            <div className="group-hover:bg-grey-02 group flex items-center justify-between">
-              <p className="text-grey-100">{cell.row.original.description}</p>
-              <EditField
-                fieldId={cell.row.original.id}
-                description={cell.row.original.description}
-              />
-            </div>
+            <EditField
+              fieldId={cell.row.original.id}
+              description={cell.row.original.description}
+            >
+              <div className="before:hover:bg-grey-05 group relative flex flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out">
+                <span className="text-grey-100 relative">
+                  {cell.row.original.description ? (
+                    cell.row.original.description
+                  ) : (
+                    <p className="text-grey-25">t('data:empty_description')</p>
+                  )}
+                </span>
+                <Edit
+                  className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out "
+                  width={'24px'}
+                  height={'24px'}
+                />
+              </div>
+            </EditField>
           );
         },
       },
@@ -220,12 +232,23 @@ function TableDetails({
         )}
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
-        {tableModel.description && (
-          <div className="hover:bg-grey-02 group flex flex-row items-center gap-5 ">
-            <p className="text-grey-100">{tableDescription}</p>
-            <EditTable table={tableModel} />
+        <EditTable table={tableModel}>
+          <div className="before:hover:bg-grey-05 group relative flex flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out">
+            <span className="text-grey-100 relative">
+              {tableDescription ? (
+                tableDescription
+              ) : (
+                <p className="text-grey-25">t('data:empty_description')</p>
+              )}
+            </span>
+            <Edit
+              className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
+              width={'24px'}
+              height={'24px'}
+            />
           </div>
-        )}
+        </EditTable>
+
         <div>
           <Table.Container {...getContainerPropsFields()}>
             <Table.Header headerGroups={tableFields.getHeaderGroups()} />
