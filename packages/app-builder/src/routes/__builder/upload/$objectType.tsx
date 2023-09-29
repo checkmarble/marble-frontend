@@ -1,16 +1,24 @@
-import { Callout, Page } from '@app-builder/components';
+import { Callout, Page, Paper } from '@app-builder/components';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
+import { formatCreatedAt } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { type UploadLog } from '@marble-api';
 import { json, type LoaderArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { Button, Modal } from '@ui-design-system';
-import { Cross, Help as HelpIcon, Plus as PlusIcon, Tick } from '@ui-icons';
+import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
+import { Button, Modal, Table, useVirtualTable } from '@ui-design-system';
+import {
+  Cross,
+  Help as HelpIcon,
+  Plus as PlusIcon,
+  RestartAlt,
+  Tick,
+} from '@ui-icons';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
@@ -21,12 +29,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { user, dataModelRepository } = await authService.isAuthenticated(
-    request,
-    {
+  const { apiClient, user, dataModelRepository } =
+    await authService.isAuthenticated(request, {
       failureRedirect: '/login',
-    }
-  );
+    });
 
   if (!user.permissions.canIngestData) {
     return redirect(getRoute('/data'));
@@ -42,7 +48,9 @@ export async function loader({ request, params }: LoaderArgs) {
     return redirect(getRoute('/data'));
   }
 
-  return json({ objectType });
+  const uploadLogs = await apiClient.getIngestionUploadLogs(objectType);
+
+  return json({ objectType, uploadLogs });
 }
 
 type ModalContent = {
@@ -228,9 +236,89 @@ const ResultModal = ({
   );
 };
 
+const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
+  const { t, i18n } = useTranslation(handle.i18n);
+  const getStatusIcon = useCallback((status: string) => {
+    if (status === 'success') {
+      return <Tick className="text-green-100" height="24px" width="24px" />;
+    }
+    return <RestartAlt className="text-grey-50" height="24px" width="24px" />;
+  }, []);
+  const getStatusMessage = useCallback(
+    (status: string) => {
+      if (status === 'success') {
+        return t('upload:status_success');
+      }
+      return t('upload:status_pending');
+    },
+    [t]
+  );
+
+  const columns = useMemo<ColumnDef<UploadLog>[]>(
+    () => [
+      {
+        id: 'upload.started_at',
+        accessorFn: (row) => formatCreatedAt(i18n.language, row.started_at),
+        header: t('upload:started_at'),
+        size: 200,
+      },
+      {
+        id: 'upload.finished_at',
+        accessorFn: (row) =>
+          row.finished_at
+            ? formatCreatedAt(i18n.language, row.finished_at)
+            : '',
+        header: t('upload:finished_at'),
+        size: 200,
+      },
+      {
+        id: 'upload.lines_processed',
+        accessorFn: (row) => row.lines_processed,
+        header: t('upload:lines_processed'),
+        size: 200,
+      },
+      {
+        id: 'upload.status',
+        accessorFn: (row) => row.status,
+        cell: ({ getValue }) => (
+          <div className="flex flex-row items-center gap-2">
+            {getStatusIcon(getValue<string>())}
+            <p className="capitalize">{getStatusMessage(getValue<string>())}</p>
+          </div>
+        ),
+        header: t('upload:upload_status'),
+        size: 200,
+      },
+    ],
+    [getStatusIcon, getStatusMessage, i18n.language, t]
+  );
+
+  const { getBodyProps, getContainerProps, table, rows } = useVirtualTable({
+    data: uploadLogs,
+    columns,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    enableSorting: false,
+  });
+
+  return (
+    <Paper.Container className="mb-10 w-full">
+      <Paper.Title> {t('upload:past_uploads')} </Paper.Title>
+      <Table.Container {...getContainerProps()}>
+        <Table.Header headerGroups={table.getHeaderGroups()} />
+        <Table.Body {...getBodyProps()}>
+          {rows.map((row) => (
+            <Table.Row key={row.id} row={row} />
+          ))}
+        </Table.Body>
+      </Table.Container>
+    </Paper.Container>
+  );
+};
+
 export default function Upload() {
   const { t } = useTranslation(handle.i18n);
-  const { objectType } = useLoaderData<typeof loader>();
+  const { objectType, uploadLogs } = useLoaderData<typeof loader>();
 
   // const downloadTemplateCsv = () => {
   //   alert('I wil download your template, i promise');
@@ -258,6 +346,7 @@ export default function Upload() {
         <ClientOnly fallback={<Loading />}>
           {() => <UploadForm objectType={objectType} />}
         </ClientOnly>
+        {uploadLogs && <PastUploads uploadLogs={uploadLogs} />}
       </Page.Content>
     </Page.Container>
   );
@@ -266,7 +355,7 @@ export default function Upload() {
 const Loading = () => {
   const { t } = useTranslation(handle.i18n);
   return (
-    <div className="border-grey-50 border-2border-dashed flex h-60 flex-col items-center justify-center gap-4 rounded">
+    <div className="border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed">
       {t('common:loading')}
     </div>
   );
