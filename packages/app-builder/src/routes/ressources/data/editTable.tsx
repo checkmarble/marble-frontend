@@ -12,7 +12,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { Button, HiddenInputs, Input, Modal } from '@ui-design-system';
-import { Edit } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
@@ -64,7 +63,13 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export function EditTable({ table }: { table: TableModel }) {
+export function EditTable({
+  table,
+  children,
+}: {
+  table: TableModel;
+  children: React.ReactNode;
+}) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
@@ -87,14 +92,7 @@ export function EditTable({ table }: { table: TableModel }) {
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Modal.Trigger asChild>
-        <button
-          className="text-grey-00 group-hover:text-grey-100 min-h-100 transition-colors duration-200 ease-in-out"
-          name="edit"
-        >
-          <Edit width={'24px'} height={'24px'} />
-        </button>
-      </Modal.Trigger>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
         <Form
           control={control}
