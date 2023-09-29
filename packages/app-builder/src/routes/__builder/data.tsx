@@ -8,6 +8,7 @@ import { CreateField } from '@app-builder/routes/ressources/data/createField';
 import { CreateLink } from '@app-builder/routes/ressources/data/createLink';
 import { CreateTable } from '@app-builder/routes/ressources/data/createTable';
 import { EditField } from '@app-builder/routes/ressources/data/editField';
+import { EditTable } from '@app-builder/routes/ressources/data/editTable';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -38,6 +39,10 @@ export async function loader({ request }: LoaderArgs) {
   return json({ dataModel });
 }
 
+const capitalizeFirstLetter = (s: string) => {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
 const mapFieldToTableRow = (field: DataModelField) => ({
   id: field.id,
   name: field.name,
@@ -63,6 +68,10 @@ function TableDetails({
   const { t } = useTranslation(handle.i18n);
   const { canIngestData } = usePermissionsContext();
 
+  const tableDescription = useMemo(
+    () => capitalizeFirstLetter(tableModel.description || ''),
+    [tableModel.description]
+  );
   const otherTables = useMemo(
     () => dataModel.filter((table) => table.id !== tableModel.id),
     [dataModel, tableModel]
@@ -211,7 +220,12 @@ function TableDetails({
         )}
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
-        {tableModel.description && <div>{tableModel.description}</div>}
+        {tableModel.description && (
+          <div className="hover:bg-grey-02 group flex flex-row items-center gap-5 ">
+            <p className="text-grey-100">{tableDescription}</p>
+            <EditTable table={tableModel} />
+          </div>
+        )}
         <div>
           <Table.Container {...getContainerPropsFields()}>
             <Table.Header headerGroups={tableFields.getHeaderGroups()} />
