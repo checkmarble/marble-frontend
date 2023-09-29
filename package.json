@@ -94,6 +94,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.46.2",
+    "react-dropzone": "^14.2.3",
     "react-hot-toast": "^2.4.1",
     "react-i18next": "^13.2.2",
     "react-json-view-lite": "^0.9.8",

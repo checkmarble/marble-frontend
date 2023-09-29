@@ -1,4 +1,4 @@
-import { Callout, Page } from '@app-builder/components';
+import { Callout, Page, usePermissionsContext } from '@app-builder/components';
 import {
   adaptDataModelDto,
   type DataModelField,
@@ -7,14 +7,14 @@ import {
 } from '@app-builder/models/data-model';
 import { serverServices } from '@app-builder/services/init.server';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, useNavigate } from '@remix-run/react';
 import {
   type ColumnDef,
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { Table, useTable } from '@ui-design-system';
-import { Help as HelpIcon } from '@ui-icons';
+import { Button, Table, useTable } from '@ui-design-system';
+import { Help as HelpIcon, Plus } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -52,6 +52,8 @@ const mapLinkToTableRow = (table: TableModel, link: LinksToSingle) => ({
 
 function TableFields({ tableModel }: { tableModel: TableModel }) {
   const { t } = useTranslation(handle.i18n);
+  const navigate = useNavigate();
+  const { canIngestData } = usePermissionsContext();
 
   // Create table for client db table fields
   const fields = useMemo(
@@ -166,8 +168,14 @@ function TableFields({ tableModel }: { tableModel: TableModel }) {
       key={tableModel.name}
       className="w-fulloverflow-hidden mb-10 rounded-lg bg-white shadow-md"
     >
-      <div className="bg-grey-02 border-grey-10 border px-8 py-6 text-lg font-bold capitalize">
+      <div className="bg-grey-02 border-grey-10 flex items-center justify-between border px-8 py-6 text-lg font-bold capitalize">
         {tableModel.name}
+        {canIngestData && (
+          <Button onClick={() => navigate(`/upload/${tableModel.name}`)}>
+            <Plus />
+            {t('data:upload_data')}
+          </Button>
+        )}
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
         {tableModel.description && <div>{tableModel.description}</div>}

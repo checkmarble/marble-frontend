@@ -17,6 +17,7 @@ function NewPermissionsList() {
     canManageListItem: 'CUSTOM_LISTS_PUBLISH',
     canManageScenario: 'SCENARIO_CREATE',
     canPublishScenario: 'SCENARIO_PUBLISH',
+    canIngestData: 'INGESTION',
   } as const;
 }
 

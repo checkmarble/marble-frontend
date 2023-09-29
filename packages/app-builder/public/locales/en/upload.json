@@ -1,0 +1,14 @@
+{
+  "upload_cta": "Upload {{objectType}}",
+  "upload_callout_1": "You can manually add transactions to your Marble instance from this page by uploading a .csv file here.",
+  "upload_callout_2": "The .csv file must follow the same schema as defined in your data model. We have build a template that you can use to get started quickly.",
+  "download_template_cta": "Download template .csv",
+  "drop_file_cta": "Drop your filled .csv here",
+  "pick_file_cta": "Pick a file",
+  "success_message": "{{linesProcessed}} transactions will be added to your data",
+  "failure_message": "We found an error : {{errorMessage}}.",
+  "failure_additional_message": "No transactions were added to your data",
+  "results": "Results",
+  "past_uploads": "Past uploads",
+  "upload_status": "Status"
+}

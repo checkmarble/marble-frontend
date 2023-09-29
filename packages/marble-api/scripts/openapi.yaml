@@ -188,6 +188,36 @@ paths:
           $ref: '#/components/responses/403'
         '422':
           $ref: '#/components/responses/422'
+  /ingestion/{objectType}/upload-logs:
+    get:
+      tags:
+        - Ingestions
+      summary: Get ingestion upload logs for an object type
+      operationId: getIngestionUploadLogs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: objectType
+          description: Type of the data that needs to be ingested
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ingestion upload logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UploadLog'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /custom-lists:
     get:
       tags:
@@ -2189,6 +2219,24 @@ components:
           type: array
           items:
             type: string
+    UploadLog:
+      type: object
+      required:
+        - started_at
+        - finished_at
+        - status
+        - lines_processed
+      properties:
+        started_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+        lines_processed:
+          type: integer
   securitySchemes:
     bearerAuth:
       type: http
