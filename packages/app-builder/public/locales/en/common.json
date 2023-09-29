@@ -22,5 +22,9 @@
   "edit": "Edit",
   "go_back": "Go back",
   "error_boundary.default.title": "Did you lose your marbles?",
-  "error_boundary.default.subtitle": "It looks like something went wrong."
+  "error_boundary.default.subtitle": "It looks like something went wrong.",
+  "or": "or",
+  "loading": "Loading...",
+  "understand": "I understand",
+  "global_error": "Something went wrong."
 }

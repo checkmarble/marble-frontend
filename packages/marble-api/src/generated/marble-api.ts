@@ -61,6 +61,12 @@ export type CreateDecisionBody = {
     trigger_object: object;
     object_type: string;
 };
+export type UploadLog = {
+    started_at: string;
+    finished_at: string;
+    status: string;
+    lines_processed: number;
+};
 export type CustomList = {
     id: string;
     name: string;
@@ -382,6 +388,26 @@ export function createIngestion(objectType: string, body: object, opts?: Oazapft
         method: "POST",
         body
     })));
+}
+/**
+ * Get ingestion upload logs for an object type
+ */
+export function getIngestionUploadLogs(objectType: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: UploadLog[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/ingestion/${encodeURIComponent(objectType)}/upload-logs`, {
+        ...opts
+    }));
 }
 /**
  * List custom list

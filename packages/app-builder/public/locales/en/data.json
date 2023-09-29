@@ -9,5 +9,6 @@
   "parent_table": "Related table",
   "parent_field_name": "Parent table field name",
   "example_usage": "Usage",
-  "links_from_table": "Links from to other entities from <TableLocale>{{tableName}}</TableLocale>"
+  "links_from_table": "Links from to other entities from <TableLocale>{{tableName}}</TableLocale>",
+  "upload_data": "Upload data"
 }

@@ -1,5 +1,6 @@
 import { type GetMarbleAPIClient } from '@app-builder/infra/marble-api';
 
+import { getDataModelRepository } from './DataModelRepository';
 import { getEditorRepository } from './EditorRepository';
 import { getMarbleAPIRepository } from './MarbleAPIRepository';
 import { getOrganizationRepository } from './OrganizationRepository';
@@ -26,6 +27,7 @@ export function makeServerRepositories({
     editorRepository: getEditorRepository(),
     scenarioRepository: getScenarioRepository(),
     organizationRepository: getOrganizationRepository(),
+    dataModelRepository: getDataModelRepository(),
   };
 }
 
