@@ -10,7 +10,6 @@ export { default as CompanyExcel } from './CompanyExcel';
 export { default as CompanySlack } from './CompanySlack';
 export { default as Cross } from './Cross';
 export { default as CurrencyDollar } from './CurrencyDollar';
-export { default as Database } from './Database';
 export { default as Decision } from './Decision';
 export { default as Delete } from './Delete';
 export { default as Draft } from './Draft';
