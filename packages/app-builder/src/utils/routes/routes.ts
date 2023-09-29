@@ -177,6 +177,11 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/__builder/upload/$objectType",
+            "path": "upload/:objectType",
+            "file": "routes/__builder/upload/$objectType.tsx"
+          },
+          {
             "id": "routes/__builder/scenarios/index",
             "index": true,
             "path": "scenarios",

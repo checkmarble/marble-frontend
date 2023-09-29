@@ -1,8 +1,8 @@
 import { Callout, Page } from '@app-builder/components';
-import { adaptDataModelDto } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
 import { type UploadLog } from '@marble-api';
 import { json, type LoaderArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -21,23 +21,25 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient, user } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
+  const { user, dataModelRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: '/login',
+    }
+  );
 
   if (!user.permissions.canIngestData) {
-    return redirect('/data');
+    return redirect(getRoute('/data'));
   }
 
   const objectType = params['objectType'];
   if (!objectType) {
-    return redirect('/data');
+    return redirect(getRoute('/data'));
   }
 
-  const dataModelPromise = apiClient.getDataModel();
-  const dataModel = adaptDataModelDto((await dataModelPromise).data_model);
+  const dataModel = await dataModelRepository.getDataModel();
   if (!dataModel.map((table) => table.name).includes(objectType)) {
-    return redirect('/data');
+    return redirect(getRoute('/data'));
   }
 
   return json({ objectType });
@@ -77,7 +79,6 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
           success: true,
         });
       } else {
-        console.log(errorMessage);
         setModalContent({
           message: t('upload:failure_message', { replace: { errorMessage } }),
           success: false,
@@ -131,7 +132,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
       computeModalMessage({
         success: false,
         errorMessage:
-          error instanceof Error ? error.message : 'Something went wrong',
+          error instanceof Error ? error.message : t('common:global_error'),
       });
     } finally {
       setLoading(false);

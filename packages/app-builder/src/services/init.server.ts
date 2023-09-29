@@ -22,6 +22,7 @@ function makeServerServices(repositories: ServerRepositories) {
       repositories.editorRepository,
       repositories.organizationRepository,
       repositories.scenarioRepository,
+      repositories.dataModelRepository,
       sessionService
     ),
     i18nextService: makeI18nextServerService(

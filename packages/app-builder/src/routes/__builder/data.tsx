@@ -1,20 +1,21 @@
 import { Callout, Page, usePermissionsContext } from '@app-builder/components';
 import {
-  adaptDataModelDto,
   type DataModelField,
   type LinksToSingle,
   type TableModel,
 } from '@app-builder/models/data-model';
 import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import { NavLink, useLoaderData } from '@remix-run/react';
 import {
   type ColumnDef,
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { Button, Table, useTable } from '@ui-design-system';
+import { Table, useTable } from '@ui-design-system';
 import { Help as HelpIcon, Plus } from '@ui-icons';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -25,15 +26,13 @@ export const handle = {
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { dataModelRepository } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
-  const dataModelPromise = apiClient.getDataModel();
+  const dataModelPromise = dataModelRepository.getDataModel();
 
-  return json({
-    dataModel: adaptDataModelDto((await dataModelPromise).data_model),
-  });
+  return json({ dataModel: await dataModelPromise });
 }
 
 const mapFieldToTableRow = (field: DataModelField) => ({
@@ -52,7 +51,6 @@ const mapLinkToTableRow = (table: TableModel, link: LinksToSingle) => ({
 
 function TableFields({ tableModel }: { tableModel: TableModel }) {
   const { t } = useTranslation(handle.i18n);
-  const navigate = useNavigate();
   const { canIngestData } = usePermissionsContext();
 
   // Create table for client db table fields
@@ -171,10 +169,18 @@ function TableFields({ tableModel }: { tableModel: TableModel }) {
       <div className="bg-grey-02 border-grey-10 flex items-center justify-between border px-8 py-6 text-lg font-bold capitalize">
         {tableModel.name}
         {canIngestData && (
-          <Button onClick={() => navigate(`/upload/${tableModel.name}`)}>
+          <NavLink
+            className={clsx(
+              'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
+              'hover:bg-purple-110 active:bg-purple-120 text-grey-00  border-bg-purple-100 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50'
+            )}
+            to={getRoute('/upload/:objectType', {
+              objectType: tableModel.name,
+            })}
+          >
             <Plus />
             {t('data:upload_data')}
-          </Button>
+          </NavLink>
         )}
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
