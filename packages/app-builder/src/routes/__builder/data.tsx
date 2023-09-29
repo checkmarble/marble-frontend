@@ -56,13 +56,8 @@ const mapLinkToTableRow = (table: TableModel, link: LinksToSingle) => ({
 
 function EditableText({ children }: { children: React.ReactNode }) {
   return (
-    <div className="before:hover:bg-grey-05 group relative flex flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out">
+    <div className="before:hover:bg-grey-05 group relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out">
       <span className="text-grey-100 relative">{children}</span>
-      <Edit
-        className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
-        width={'24px'}
-        height={'24px'}
-      />
     </div>
   );
 }
@@ -117,20 +112,29 @@ function TableDetails({
         size: 500,
         cell: ({ cell }) => {
           return (
-            <EditField
-              fieldId={cell.row.original.id}
-              description={cell.row.original.description}
-            >
-              <EditableText>
-                <span className="text-grey-100 relative">
-                  {cell.row.original.description ? (
-                    cell.row.original.description
-                  ) : (
-                    <p className="text-grey-25">t('data:empty_description')</p>
-                  )}
-                </span>
-              </EditableText>
-            </EditField>
+            <EditableText>
+              <EditField
+                fieldId={cell.row.original.id}
+                description={cell.row.original.description}
+              >
+                <div className="flex flex-row gap-5">
+                  <span className="text-grey-100 relative">
+                    {cell.row.original.description ? (
+                      cell.row.original.description
+                    ) : (
+                      <p className="text-grey-25">
+                        t('data:empty_description')
+                      </p>
+                    )}
+                  </span>
+                  <Edit
+                    className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
+                    width={'24px'}
+                    height={'24px'}
+                  />
+                </div>
+              </EditField>
+            </EditableText>
           );
         },
       },
@@ -232,17 +236,24 @@ function TableDetails({
         )}
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
-        <EditTable table={tableModel}>
-          <EditableText>
-            <span className="text-grey-100 relative first-letter:capitalize">
-              {tableModel.description ? (
-                tableModel.description
-              ) : (
-                <p className="text-grey-25">t('data:empty_description')</p>
-              )}
-            </span>
-          </EditableText>
-        </EditTable>
+        <EditableText>
+          <EditTable table={tableModel}>
+            <div className="flex flex-row gap-5">
+              <span className="text-grey-100 relative first-letter:capitalize">
+                {tableModel.description ? (
+                  tableModel.description
+                ) : (
+                  <p className="text-grey-25">t('data:empty_description')</p>
+                )}
+              </span>
+              <Edit
+                className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
+                width={'24px'}
+                height={'24px'}
+              />
+            </div>
+          </EditTable>
+        </EditableText>
 
         <div>
           <Table.Container {...getContainerPropsFields()}>
