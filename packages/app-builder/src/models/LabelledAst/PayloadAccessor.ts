@@ -1,7 +1,6 @@
 import {
   findDataModelField,
   type LabelledAst,
-  payloadAccessorsDisplayName,
   type PayloadAstNode,
   type TableModel,
 } from '@app-builder/models';
@@ -18,9 +17,14 @@ export function newPayloadAccessorsLabelledAst({
     fieldName: node.children[0].constant,
   });
   return {
-    label: payloadAccessorsDisplayName(node),
-    tooltip: '',
+    name: getPayloadAccessorsDisplayName(node),
+    description: field.description,
+    operandType: 'Field',
+    dataType: field.dataType,
     astNode: node,
-    dataModelField: field,
   };
+}
+
+export function getPayloadAccessorsDisplayName(node: PayloadAstNode): string {
+  return node.children[0].constant;
 }

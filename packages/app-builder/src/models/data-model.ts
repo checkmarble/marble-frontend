@@ -5,9 +5,12 @@ import {
 } from '@marble-api';
 import * as R from 'remeda';
 
+type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
+export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
+
 export interface DataModelField {
   name: string;
-  dataType: 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'unknown';
+  dataType: DataType;
   description: string;
   nullable: boolean;
 }

@@ -1,7 +1,6 @@
 import { Callout, Paper } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
 import {
   adaptCronToScheduleOption,
   adaptScheduleOptionToCron,
@@ -127,7 +126,6 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
-  const { triggerObjectType } = useCurrentScenario();
   const scenarioIteration = useCurrentScenarioIteration();
   const {
     identifiers,
@@ -237,9 +235,6 @@ export default function Trigger() {
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
         <Callout>{t('scenarios:trigger.trigger_object.callout')}</Callout>
       </div>
-      <ScenarioBox className="bg-grey-02 col-span-4 w-fit p-2 font-semibold text-purple-100">
-        {triggerObjectType}
-      </ScenarioBox>
       <AstBuilder builder={astEditor} />
       <div className="flex flex-row justify-end">
         <Button type="submit" className="w-fit" onClick={handleSave}>

@@ -79,7 +79,7 @@ export interface UndefinedAstNode extends Omit<AstNode, 'name'> {
   name: typeof undefinedAstNodeName;
 }
 
-export function isAstNodeUnknown(node: AstNode): node is UndefinedAstNode {
+export function isUndefinedAstNode(node: AstNode): node is UndefinedAstNode {
   return node.name === undefinedAstNodeName;
 }
 
@@ -107,8 +107,9 @@ export function isConstant(node: AstNode): node is ConstantAstNode {
   return !node.name && node.constant !== undefined;
 }
 
+export const databaseAccessAstNodeName = 'DatabaseAccess';
 export interface DatabaseAccessAstNode {
-  name: 'DatabaseAccess';
+  name: typeof databaseAccessAstNodeName;
   constant?: undefined;
   children: [];
   namedChildren: {
@@ -120,7 +121,7 @@ export interface DatabaseAccessAstNode {
 
 export const aggregationAstNodeName = 'Aggregator';
 export interface AggregationAstNode {
-  name: 'Aggregator';
+  name: typeof aggregationAstNodeName;
   constant: undefined;
   children: [];
   namedChildren: {
@@ -132,15 +133,17 @@ export interface AggregationAstNode {
   };
 }
 
+export const payloadAstNodeName = 'Payload';
 export interface PayloadAstNode {
-  name: 'Payload';
+  name: typeof payloadAstNodeName;
   constant?: undefined;
   children: [ConstantAstNode<string>];
   namedChildren: Record<string, never>;
 }
 
+export const customListAccessAstNodeName = 'CustomListAccess';
 interface CustomListAccessAstNode {
-  name: 'CustomListAccess';
+  name: typeof customListAccessAstNodeName;
   constant: undefined;
   children: [];
   namedChildren: {
@@ -152,7 +155,7 @@ export function NewCustomListAstNode(
   customListId: string
 ): CustomListAccessAstNode {
   return {
-    name: 'CustomListAccess',
+    name: customListAccessAstNodeName,
     constant: undefined,
     children: [],
     namedChildren: {
@@ -165,7 +168,7 @@ export function NewAggregatorAstNode(
   aggregatorName: string
 ): AggregationAstNode {
   return {
-    name: 'Aggregator',
+    name: aggregationAstNodeName,
     constant: undefined,
     children: [],
     namedChildren: {
@@ -182,7 +185,7 @@ export function NewAggregatorAstNode(
 }
 
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
-  return node.name === 'DatabaseAccess';
+  return node.name === databaseAccessAstNodeName;
 }
 
 export function isAggregation(node: AstNode): node is AggregationAstNode {
@@ -190,13 +193,13 @@ export function isAggregation(node: AstNode): node is AggregationAstNode {
 }
 
 export function isPayload(node: AstNode): node is PayloadAstNode {
-  return node.name === 'Payload';
+  return node.name === payloadAstNodeName;
 }
 
 export function isCustomListAccess(
   node: AstNode
 ): node is CustomListAccessAstNode {
-  return node.name === 'CustomListAccess';
+  return node.name === customListAccessAstNodeName;
 }
 
 export interface OrAndGroupAstNode {

@@ -17,5 +17,11 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-radix')(), require('@headlessui/tailwindcss')],
+  plugins: [
+    require('tailwindcss-radix')(),
+    require('@headlessui/tailwindcss'),
+    function ({ addVariant }) {
+      addVariant('not-last', '&>*:not(:last-child)');
+    },
+  ],
 };

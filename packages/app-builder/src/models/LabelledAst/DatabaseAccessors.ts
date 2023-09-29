@@ -1,6 +1,5 @@
 import {
   type DatabaseAccessAstNode,
-  databaseAccessorDisplayName,
   findDataModelField,
   findDataModelTable,
   type LabelledAst,
@@ -25,9 +24,17 @@ export function newDatabaseAccessorsLabelledAst({
   });
 
   return {
-    label: databaseAccessorDisplayName(node),
-    tooltip: '',
+    name: getDatabaseAccessorDisplayName(node),
+    description: field.description,
+    operandType: 'Field',
+    dataType: field.dataType,
     astNode: node,
-    dataModelField: field,
   };
+}
+
+export function getDatabaseAccessorDisplayName(
+  node: DatabaseAccessAstNode
+): string {
+  const { path, fieldName } = node.namedChildren;
+  return [...path.constant, fieldName.constant].join('.');
 }

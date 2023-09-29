@@ -22,7 +22,7 @@ function format(label: string) {
 export function Payload({ node, isRoot }: PayloadProps) {
   const editorIdentifier = useEditorIdentifiers();
   const viewModel = adaptLabelledAstFromAllIdentifiers(node, editorIdentifier);
-  const { tooltip, inline } = format(viewModel.label);
+  const { tooltip, inline } = format(viewModel.name);
   return (
     <Condition.Container isRoot={isRoot}>
       <Condition.Item isRoot={isRoot}>

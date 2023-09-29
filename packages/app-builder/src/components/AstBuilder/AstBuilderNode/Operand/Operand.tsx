@@ -1,16 +1,34 @@
-import { type AstNode } from '@app-builder/models';
 import {
+  adaptLabelledAst,
+  type AstNode,
+  isAggregation,
+  isConstant,
+  isCustomListAccess,
+  isDatabaseAccess,
+  isPayload,
+  isUndefinedAstNode,
+} from '@app-builder/models';
+import {
+  adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
-import {
-  AggregationOperand,
-  isAggregationEditorNodeViewModel,
-} from '../AggregationEdit';
+import { Default } from '../Default';
 import { OperandEditor } from './OperandEditor';
 
 export type OperandViewModel = EditorNodeViewModel;
+
+export function isEditableOperand(node: AstNode): boolean {
+  return (
+    isConstant(node) ||
+    isCustomListAccess(node) ||
+    isDatabaseAccess(node) ||
+    isPayload(node) ||
+    isAggregation(node) ||
+    isUndefinedAstNode(node)
+  );
+}
 
 export function Operand({
   builder,
@@ -25,21 +43,32 @@ export function Operand({
   viewOnly?: boolean;
   ariaLabel?: string;
 }) {
-  const operand = isAggregationEditorNodeViewModel(operandViewModel) ? (
-    <AggregationOperand
-      builder={builder}
-      aggregationEditorNodeViewModel={operandViewModel}
-      onSave={onSave}
-      viewOnly={viewOnly}
-    />
-  ) : (
+  const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
+  const labelledAst = adaptLabelledAst(astNode, {
+    dataModel: builder.dataModel,
+    triggerObjectType: builder.triggerObjectType,
+    customLists: builder.customLists,
+  });
+  const isEditable = !!labelledAst && isEditableOperand(astNode);
+
+  if (!isEditable) {
+    return (
+      <Default
+        ariaLabel={ariaLabel}
+        editorNodeViewModel={operandViewModel}
+        builder={builder}
+      />
+    );
+  }
+
+  return (
     <OperandEditor
+      ariaLabel={ariaLabel}
       builder={builder}
       operandViewModel={operandViewModel}
+      labelledAst={labelledAst}
       onSave={onSave}
       viewOnly={viewOnly}
     />
   );
-
-  return <div aria-label={ariaLabel}>{operand}</div>;
 }
