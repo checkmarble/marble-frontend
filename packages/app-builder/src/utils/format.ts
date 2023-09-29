@@ -1,3 +1,5 @@
+import cronstrue from 'cronstrue';
+
 export function formatCreatedAt(locale: string, createdAt: string) {
   return Intl.DateTimeFormat(locale, {
     dateStyle: 'short',
@@ -7,4 +9,20 @@ export function formatCreatedAt(locale: string, createdAt: string) {
 
 export function formatNumber(locale: string, number: number) {
   return Intl.NumberFormat(locale).format(number);
+}
+
+export function formatSchedule(
+  schedule: string,
+  { language }: { language: string }
+) {
+  // Cronstrue only expose locale for lng, without country code
+  const locale = language.split('-')[0];
+
+  return cronstrue
+    .toString(schedule, {
+      verbose: false,
+      locale,
+      throwExceptionOnParseError: false,
+    })
+    .toLowerCase();
 }

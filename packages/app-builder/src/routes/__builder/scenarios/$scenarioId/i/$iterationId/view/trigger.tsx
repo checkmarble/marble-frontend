@@ -1,6 +1,6 @@
 import { Callout, Paper } from '@app-builder/components';
 import { TriggerCondition } from '@app-builder/components/Scenario/Trigger/Trigger';
-import cronstrue from 'cronstrue';
+import { formatSchedule } from '@app-builder/utils/format';
 import { type Namespace } from 'i18next';
 import { toast } from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
@@ -48,13 +48,7 @@ function HowToRun() {
               ScheduleLocale: <span style={{ fontWeight: 'bold' }} />,
             }}
             values={{
-              schedule: cronstrue
-                .toString(schedule, {
-                  verbose: false,
-                  locale: i18n.language,
-                  throwExceptionOnParseError: false,
-                })
-                .toLowerCase(),
+              schedule: formatSchedule(schedule, { language: i18n.language }),
             }}
           />
         ) : (
