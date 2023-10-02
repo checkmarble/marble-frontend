@@ -1,15 +1,7 @@
-import {
-  type AstBuilder,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
+import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 
-import {
-  adaptAggregationViewModel,
-  AggregationEditModal,
-  type AggregationEditorNodeViewModel,
-  AggregationEditPanel,
-  isAggregationEditorNodeViewModel,
-} from './AstBuilderNode/AggregationEdit';
+import { AggregationEditModal } from './AstBuilderNode/AggregationEdit';
+import { TimeAddEditModal } from './AstBuilderNode/TimeAddEdit/Modal';
 import { RootAstBuilderNode } from './RootAstBuilderNode';
 
 export function AstBuilder({
@@ -20,34 +12,14 @@ export function AstBuilder({
   viewOnly?: boolean;
 }) {
   return (
-    <AggregationEditModal builder={builder}>
-      <RootAstBuilderNode
-        builder={builder}
-        editorNodeViewModel={builder.editorNodeViewModel}
-        viewOnly={viewOnly}
-      />
-      <AggregationEditPanel
-        aggregations={findAggregations(builder.editorNodeViewModel).map(
-          (aggregation) => ({
-            aggregation: adaptAggregationViewModel(aggregation),
-            onSave: (astNode) => {
-              builder.setOperand(aggregation.nodeId, astNode);
-            },
-          })
-        )}
-      />
-    </AggregationEditModal>
+    <TimeAddEditModal builder={builder}>
+      <AggregationEditModal builder={builder}>
+        <RootAstBuilderNode
+          builder={builder}
+          editorNodeViewModel={builder.editorNodeViewModel}
+          viewOnly={viewOnly}
+        />
+      </AggregationEditModal>
+    </TimeAddEditModal>
   );
 }
-
-const findAggregations = (editorNodeViewModel: EditorNodeViewModel) => {
-  const aggregations: AggregationEditorNodeViewModel[] =
-    editorNodeViewModel.children.flatMap((child) => {
-      if (isAggregationEditorNodeViewModel(child)) {
-        return child;
-      } else {
-        return findAggregations(child);
-      }
-    });
-  return aggregations;
-};

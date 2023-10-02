@@ -251,7 +251,7 @@ export const AggregationEditModal = ({
     <Modal.Root open={open} onOpenChange={onOpenChange}>
       <AggregationEditModalContext.Provider value={editAgregation}>
         {children}
-        <Modal.Content>
+        <Modal.Content size="medium">
           {aggregationEditModalProps && (
             <AggregationEditModalContent
               builder={builder}

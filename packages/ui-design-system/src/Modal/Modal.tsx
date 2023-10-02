@@ -2,8 +2,12 @@ import * as Dialog from '@radix-ui/react-dialog';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 
-const ModalContent = forwardRef<HTMLDivElement, Dialog.DialogContentProps>(
-  ({ className, ...props }, ref) => {
+type ModalContentProps = Dialog.DialogContentProps & {
+  size?: 'small' | 'medium' | 'large';
+};
+
+const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
+  ({ className, size = 'small', ...props }, ref) => {
     return (
       <Dialog.Portal>
         <Dialog.Overlay className="animate-overlayShow bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4">
@@ -12,6 +16,11 @@ const ModalContent = forwardRef<HTMLDivElement, Dialog.DialogContentProps>(
             {...props}
             className={clsx(
               'border-grey-10 flex h-fit w-full max-w-lg flex-col overflow-hidden rounded-lg border drop-shadow-xl',
+              {
+                'max-w-lg': size === 'small',
+                'max-w-2xl': size === 'medium',
+                'max-w-5xl': size === 'large',
+              },
               className
             )}
           />

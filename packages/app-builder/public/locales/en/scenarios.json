@@ -138,5 +138,9 @@
   "edit_operand.operator_type.variable_one": "Variable",
   "edit_operand.operator_type.variable_other": "Variables",
   "edit_operand.placeholder": "Select an operand...",
-  "edit_operand.operator_discovery.from": "From <Path>{{path}}</Path>"
+  "edit_operand.operator_discovery.from": "From <Path>{{path}}</Path>",
+  "edit_date.title": "Create a date",
+  "edit_date.interval_unit_s": "seconds",
+  "edit_date.interval_unit_m": "minutes",
+  "edit_date.interval_unit_h": "hours"
 }

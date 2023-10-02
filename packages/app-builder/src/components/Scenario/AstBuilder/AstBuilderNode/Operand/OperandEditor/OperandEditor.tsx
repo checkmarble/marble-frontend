@@ -1,6 +1,5 @@
 import {
   type AstNode,
-  isAggregation,
   type LabelledAst,
   newAggregatorLabelledAst,
   newCustomListLabelledAst,
@@ -8,6 +7,7 @@ import {
   newPayloadAccessorsLabelledAst,
   newUndefinedLabelledAst,
 } from '@app-builder/models';
+import { newTimeAddLabelledAst } from '@app-builder/models/LabelledAst/TimeAdd';
 import { allAggregators } from '@app-builder/services/editor';
 import {
   adaptEditorNodeViewModel,
@@ -22,10 +22,14 @@ import { ErrorMessage } from '../../../ErrorMessage';
 import { getBorderColor } from '../../../utils';
 import {
   adaptAggregationViewModel,
-  type AggregationEditorNodeViewModel,
   isAggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../../AggregationEdit';
+import {
+  adaptTimeAddViewModal,
+  isTimeAddEditorNodeViewModel,
+  useEditTimeAdd,
+} from '../../TimeAddEdit/Modal';
 import { type OperandViewModel } from '../Operand';
 import { OperandViewer } from '../OperandViewer';
 import { OperandDropdownMenu } from './OperandDropdownMenu';
@@ -106,15 +110,16 @@ const OperandEditorContent = forwardRef<
         node,
       })
     );
-    const customList = builder.customLists.map(newCustomListLabelledAst);
-    const aggregtor = allAggregators.map((aggregator) =>
-      newAggregatorLabelledAst(aggregator)
-    );
+    const customLists = builder.customLists.map(newCustomListLabelledAst);
+    const variables = [
+      ...allAggregators.map(newAggregatorLabelledAst),
+      newTimeAddLabelledAst(),
+    ];
     return [
       ...payloadAccessors,
       ...databaseAccessors,
-      ...customList,
-      ...aggregtor,
+      ...customLists,
+      ...variables,
     ];
   }, [
     builder.customLists,
@@ -127,17 +132,27 @@ const OperandEditorContent = forwardRef<
   const [searchText, setSearchText] = useState('');
 
   const editAggregation = useEditAggregation();
+  const editTimeAdd = useEditTimeAdd();
 
   const handleSelectOption = useCallback(
     (newSelection: LabelledAst) => {
-      if (isAggregation(newSelection.astNode)) {
-        const initialAggregation = adaptAggregationViewModel({
-          ...adaptEditorNodeViewModel({ ast: newSelection.astNode }),
-          nodeId: operandViewModel.nodeId,
-        } as AggregationEditorNodeViewModel);
-
+      const editorNodeViewModel = adaptEditorNodeViewModel({
+        ast: newSelection.astNode,
+      });
+      if (isAggregationEditorNodeViewModel(editorNodeViewModel)) {
         editAggregation({
-          initialAggregation,
+          initialAggregation: adaptAggregationViewModel({
+            ...editorNodeViewModel,
+            nodeId: operandViewModel.nodeId,
+          }),
+          onSave,
+        });
+      } else if (isTimeAddEditorNodeViewModel(editorNodeViewModel)) {
+        editTimeAdd({
+          initialValue: adaptTimeAddViewModal({
+            ...editorNodeViewModel,
+            nodeId: operandViewModel.nodeId,
+          }),
           onSave,
         });
       } else {
@@ -145,7 +160,7 @@ const OperandEditorContent = forwardRef<
       }
       closeModal();
     },
-    [closeModal, editAggregation, onSave, operandViewModel.nodeId]
+    [closeModal, editAggregation, editTimeAdd, onSave, operandViewModel.nodeId]
   );
 
   const showClearOption = labelledAst.name !== '';
@@ -179,6 +194,15 @@ const OperandEditorContent = forwardRef<
                 initialAggregation,
                 onSave,
               });
+              closeModal();
+            }}
+          />
+        )}
+        {isTimeAddEditorNodeViewModel(operandViewModel) && (
+          <EditOption
+            onSelect={() => {
+              const initialValue = adaptTimeAddViewModal(operandViewModel);
+              editTimeAdd({ initialValue, onSave });
               closeModal();
             }}
           />

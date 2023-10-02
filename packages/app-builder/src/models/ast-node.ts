@@ -133,6 +133,26 @@ export interface AggregationAstNode {
   };
 }
 
+export function NewAggregatorAstNode(
+  aggregatorName: string
+): AggregationAstNode {
+  return {
+    name: aggregationAstNodeName,
+    constant: undefined,
+    children: [],
+    namedChildren: {
+      aggregator: NewConstantAstNode({ constant: aggregatorName }),
+      tableName: NewConstantAstNode({ constant: '' }),
+      fieldName: NewConstantAstNode({ constant: '' }),
+      label: NewConstantAstNode({ constant: '' }),
+      filters: NewAstNode({
+        name: 'List',
+        children: [],
+      }),
+    },
+  };
+}
+
 export const payloadAstNodeName = 'Payload';
 export interface PayloadAstNode {
   name: typeof payloadAstNodeName;
@@ -164,23 +184,29 @@ export function NewCustomListAstNode(
   };
 }
 
-export function NewAggregatorAstNode(
-  aggregatorName: string
-): AggregationAstNode {
+export const timeAddAstNodeName = 'TimeAdd';
+export interface TimeAddAstNode {
+  name: typeof timeAddAstNodeName;
+  constant?: undefined;
+  children: [TimestampFieldAstNode, ConstantAstNode<string>];
+  namedChildren: Record<string, never>;
+}
+export type TimestampFieldAstNode =
+  | DatabaseAccessAstNode
+  | PayloadAstNode
+  | UndefinedAstNode;
+
+export function NewTimeAddAstNode(
+  timestampFieldAstNode: TimestampFieldAstNode = NewUndefinedAstNode() as UndefinedAstNode,
+  intervalAstNode: ConstantAstNode<string> = NewConstantAstNode({
+    constant: '',
+  })
+): TimeAddAstNode {
   return {
-    name: aggregationAstNodeName,
+    name: timeAddAstNodeName,
     constant: undefined,
-    children: [],
-    namedChildren: {
-      aggregator: NewConstantAstNode({ constant: aggregatorName }),
-      tableName: NewConstantAstNode({ constant: '' }),
-      fieldName: NewConstantAstNode({ constant: '' }),
-      label: NewConstantAstNode({ constant: '' }),
-      filters: NewAstNode({
-        name: 'List',
-        children: [],
-      }),
-    },
+    children: [timestampFieldAstNode, intervalAstNode],
+    namedChildren: {},
   };
 }
 
@@ -200,6 +226,10 @@ export function isCustomListAccess(
   node: AstNode
 ): node is CustomListAccessAstNode {
   return node.name === customListAccessAstNodeName;
+}
+
+export function isTimeAdd(node: AstNode): node is TimeAddAstNode {
+  return node.name === timeAddAstNodeName;
 }
 
 export interface OrAndGroupAstNode {
