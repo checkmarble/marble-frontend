@@ -1,6 +1,6 @@
 import cronstrue from 'cronstrue';
 
-export function formatCreatedAt(locale: string, createdAt: string) {
+export function formatDateTime(locale: string, createdAt: string) {
   return Intl.DateTimeFormat(locale, {
     dateStyle: 'short',
     timeStyle: 'short',

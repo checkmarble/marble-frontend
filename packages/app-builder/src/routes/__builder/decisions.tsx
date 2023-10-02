@@ -5,7 +5,7 @@ import {
   Page,
 } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
-import { formatCreatedAt } from '@app-builder/utils/format';
+import { formatDateTime } from '@app-builder/utils/format';
 import { useVisibilityChange } from '@app-builder/utils/hooks';
 import { type Decision } from '@marble-api';
 import { Label } from '@radix-ui/react-label';
@@ -86,7 +86,7 @@ export default function DecisionsPage() {
       },
       {
         id: 'created_at',
-        accessorFn: (row) => formatCreatedAt(i18n.language, row.created_at),
+        accessorFn: (row) => formatDateTime(i18n.language, row.created_at),
         header: t('decisions:created_at'),
         size: 200,
       },

@@ -2,7 +2,7 @@ import { Callout, Page, Paper } from '@app-builder/components';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
-import { formatCreatedAt } from '@app-builder/utils/format';
+import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { type UploadLog } from '@marble-api';
 import { json, type LoaderArgs, redirect } from '@remix-run/node';
@@ -17,7 +17,7 @@ import {
   Tick,
 } from '@ui-icons';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
+import { type Namespace, type ParseKeys } from 'i18next';
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
@@ -238,36 +238,19 @@ const ResultModal = ({
 
 const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
   const { t, i18n } = useTranslation(handle.i18n);
-  const getStatusIcon = useCallback((status: string) => {
-    if (status === 'success') {
-      return <Tick className="text-green-100" height="24px" width="24px" />;
-    }
-    return <RestartAlt className="text-grey-50" height="24px" width="24px" />;
-  }, []);
-  const getStatusMessage = useCallback(
-    (status: string) => {
-      if (status === 'success') {
-        return t('upload:status_success');
-      }
-      return t('upload:status_pending');
-    },
-    [t]
-  );
 
   const columns = useMemo<ColumnDef<UploadLog>[]>(
     () => [
       {
         id: 'upload.started_at',
-        accessorFn: (row) => formatCreatedAt(i18n.language, row.started_at),
+        accessorFn: (row) => formatDateTime(i18n.language, row.started_at),
         header: t('upload:started_at'),
         size: 200,
       },
       {
         id: 'upload.finished_at',
         accessorFn: (row) =>
-          row.finished_at
-            ? formatCreatedAt(i18n.language, row.finished_at)
-            : '',
+          row.finished_at ? formatDateTime(i18n.language, row.finished_at) : '',
         header: t('upload:finished_at'),
         size: 200,
       },
@@ -283,14 +266,14 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
         cell: ({ getValue }) => (
           <div className="flex flex-row items-center gap-2">
             {getStatusIcon(getValue<string>())}
-            <p className="capitalize">{getStatusMessage(getValue<string>())}</p>
+            <p className="capitalize">{t(getStatusTKey(getValue<string>()))}</p>
           </div>
         ),
         header: t('upload:upload_status'),
         size: 200,
       },
     ],
-    [getStatusIcon, getStatusMessage, i18n.language, t]
+    [i18n.language, t]
   );
 
   const { getBodyProps, getContainerProps, table, rows } = useVirtualTable({
@@ -314,6 +297,20 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
       </Table.Container>
     </Paper.Container>
   );
+};
+
+const getStatusIcon = (status: string) => {
+  if (status === 'success') {
+    return <Tick className="text-green-100" height="24px" width="24px" />;
+  }
+  return <RestartAlt className="text-grey-50" height="24px" width="24px" />;
+};
+
+const getStatusTKey = (status: string): ParseKeys<['upload']> => {
+  if (status === 'success') {
+    return 'upload:status_success';
+  }
+  return 'upload:status_pending';
 };
 
 export default function Upload() {
