@@ -4,7 +4,7 @@ import {
   type RightPanelRootProps,
 } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
-import { formatCreatedAt } from '@app-builder/utils/format';
+import { formatDateTime } from '@app-builder/utils/format';
 import { parseParams } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
@@ -161,7 +161,7 @@ function DecisionDetail({ data }: { data: SerializeFrom<typeof loader> }) {
           />
           <p className="font-light">{t('decisions:created_at')}:</p>
           <p className="font-medium">
-            {formatCreatedAt(i18n.language, decision.created_at)}
+            {formatDateTime(i18n.language, decision.created_at)}
           </p>
         </Card>
         <div className="flex overflow-hidden">
