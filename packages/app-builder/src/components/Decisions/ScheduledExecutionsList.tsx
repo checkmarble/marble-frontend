@@ -1,4 +1,4 @@
-import { formatCreatedAt } from '@app-builder/utils/format';
+import { formatDateTime } from '@app-builder/utils/format';
 import { type ScheduledExecution } from '@marble-api';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import { Table, useVirtualTable } from '@ui-design-system';
@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { decisionsI18n } from './decisions-i18n';
 import { ScheduledExecutionDetails } from './ScheduledExecutionDetails';
 
 export function ScheduledExecutionsList({
@@ -13,9 +14,7 @@ export function ScheduledExecutionsList({
 }: {
   scheduledExecutions: ScheduledExecution[];
 }) {
-  const { t, i18n } = useTranslation(['scheduledExecution']);
-
-  const selected = false;
+  const { t, i18n } = useTranslation(decisionsI18n);
 
   const columns = useMemo<ColumnDef<ScheduledExecution, string>[]>(
     () => [
@@ -39,7 +38,7 @@ export function ScheduledExecutionsList({
       },
       {
         id: 'created_at',
-        accessorFn: (s) => formatCreatedAt(i18n.language, s.started_at),
+        accessorFn: (s) => formatDateTime(i18n.language, s.started_at),
         header: t('scheduledExecution:created_at'),
         size: 200,
       },
@@ -71,10 +70,7 @@ export function ScheduledExecutionsList({
           return (
             <Table.Row
               key={row.id}
-              className={clsx(
-                'hover:bg-grey-02 cursor-pointer',
-                selected && 'bg-grey-02'
-              )}
+              className={clsx('hover:bg-grey-02 cursor-pointer')}
               row={row}
             />
           );

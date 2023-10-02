@@ -20,7 +20,7 @@ export function useDownloadDecisions(scheduleExecutionId: string) {
 
   const downloadDecisions = async () => {
     if (downloading) {
-      throw new Error('Internal error: Already downloading');
+      throw new AlreadyDownloadingError('Internal error: Already downloading');
     }
     setDownloading(true);
 
@@ -36,7 +36,7 @@ export function useDownloadDecisions(scheduleExecutionId: string) {
       });
 
       if (!response.ok) {
-        throw new Error(
+        throw new FetchLinkError(
           'Internal error: Failed to download decisions: ' + response.statusText
         );
       }
@@ -58,3 +58,7 @@ export function useDownloadDecisions(scheduleExecutionId: string) {
     decisionsFilename: `decisions-${scheduleExecutionId}`,
   };
 }
+
+export class AlreadyDownloadingError extends Error {}
+
+export class FetchLinkError extends Error {}

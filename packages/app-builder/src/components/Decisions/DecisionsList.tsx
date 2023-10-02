@@ -1,5 +1,9 @@
-import { Outcome, type OutcomeProps } from '@app-builder/components';
-import { formatCreatedAt } from '@app-builder/utils/format';
+import {
+  decisionsI18n,
+  Outcome,
+  type OutcomeProps,
+} from '@app-builder/components';
+import { formatDateTime } from '@app-builder/utils/format';
 import { type Decision } from '@marble-api';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import { Table, useVirtualTable } from '@ui-design-system';
@@ -16,7 +20,7 @@ export function DecisionsList({
   selectedDecisionId: string | null;
   onSelectDecision: (decisionId: string) => void;
 }) {
-  const { t, i18n } = useTranslation(['decisions']);
+  const { t, i18n } = useTranslation(decisionsI18n);
 
   const columns = useMemo<ColumnDef<Decision, string>[]>(
     () => [
@@ -53,7 +57,7 @@ export function DecisionsList({
       },
       {
         id: 'created_at',
-        accessorFn: (row) => formatCreatedAt(i18n.language, row.created_at),
+        accessorFn: (row) => formatDateTime(i18n.language, row.created_at),
         header: t('decisions:created_at'),
         size: 200,
       },

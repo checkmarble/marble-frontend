@@ -1,13 +1,19 @@
-import { DecisionsList } from '@app-builder/components';
+import { decisionsI18n, DecisionsList } from '@app-builder/components';
 import { useDecisionsRightPanelState } from '@app-builder/routes/ressources/decisions/decision-detail.$decisionId';
 import { serverServices } from '@app-builder/services/init.server';
 import { useVisibilityChange } from '@app-builder/utils/hooks';
+import { Label } from '@radix-ui/react-label';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData, useRevalidator } from '@remix-run/react';
 import { Checkbox, Input } from '@ui-design-system';
 import { Search } from '@ui-icons';
+import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+export const handle = {
+  i18n: [...decisionsI18n] satisfies Namespace,
+};
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -15,10 +21,10 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const decisions = apiClient.listDecisions();
+  const decisions = await apiClient.listDecisions();
 
   return json({
-    decisions: await decisions,
+    decisions,
   });
 }
 
@@ -27,7 +33,7 @@ export default function LastDecisions() {
 
   const { decisions } = useLoaderData<typeof loader>();
 
-  const { t } = useTranslation(['decisions']);
+  const { t } = useTranslation(handle.i18n);
 
   return (
     <>
@@ -64,7 +70,7 @@ export default function LastDecisions() {
 
 function ToggleLiveUpdate() {
   const id = useId();
-  const { t } = useTranslation(['decisions']);
+  const { t } = useTranslation(handle.i18n);
   const revalidator = useRevalidator();
   const [liveUpdate, setLiveUpdate] = useState(false);
   const visibilityState = useVisibilityChange();
@@ -90,9 +96,9 @@ function ToggleLiveUpdate() {
           setLiveUpdate(checked);
         }}
       />
-      <label htmlFor={id} className="text-s whitespace-nowrap">
+      <Label htmlFor={id} className="text-s whitespace-nowrap">
         {t('decisions:live_update')}
-      </label>
+      </Label>
     </div>
   );
 }

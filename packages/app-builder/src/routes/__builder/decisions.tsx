@@ -2,43 +2,42 @@ import {
   Decisions,
   type DecisionsLinkProps,
   ErrorComponent,
-  Page,
 } from '@app-builder/components';
+import { DecisionsPage } from '@app-builder/components/Decisions';
+import { getRoute } from '@app-builder/utils/routes';
 import { Outlet, useRouteError } from '@remix-run/react';
-import { Decision as DecisionIcon } from '@ui-icons';
+import { Decision } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { DecisionsRightPanel } from '../ressources/decisions/decision-detail.$decisionId';
-
 export const handle = {
-  i18n: ['decisions', 'scheduledExecution', 'navigation'] satisfies Namespace,
+  i18n: ['navigation'] satisfies Namespace,
 };
 
 const LINKS: DecisionsLinkProps[] = [
   {
     labelTKey: 'navigation:decisions.decisions',
-    to: './last-decisions',
-    Icon: DecisionIcon,
+    to: getRoute('/decisions/last-decisions'),
+    Icon: Decision,
   },
   {
     labelTKey: 'navigation:decisions.scheduledExecution',
-    to: './scheduled-executions',
-    Icon: DecisionIcon,
+    to: getRoute('/decisions/scheduled-executions'),
+    Icon: Decision,
   },
 ];
 
-export default function DecisionsPage() {
-  const { t } = useTranslation(['navigation']);
+export default function DecisionsLayout() {
+  const { t } = useTranslation(handle.i18n);
 
   return (
-    <Page.Container>
-      <Page.Header>
-        <DecisionIcon className="mr-2" height="24px" width="24px" />
+    <DecisionsPage.Container>
+      <DecisionsPage.Header>
+        <Decision className="mr-2" height="24px" width="24px" />
         {t('navigation:decisions')}
-      </Page.Header>
+      </DecisionsPage.Header>
 
-      <Page.Header className="border-b-0">
+      <DecisionsPage.Content scrollable={false}>
         <Decisions.Nav>
           {LINKS.map((linkProps) => (
             <li key={linkProps.labelTKey}>
@@ -46,14 +45,9 @@ export default function DecisionsPage() {
             </li>
           ))}
         </Decisions.Nav>
-      </Page.Header>
-
-      <DecisionsRightPanel.Root>
-        <Page.Content scrollable={false}>
-          <Outlet />
-        </Page.Content>
-      </DecisionsRightPanel.Root>
-    </Page.Container>
+        <Outlet />
+      </DecisionsPage.Content>
+    </DecisionsPage.Container>
   );
 }
 
