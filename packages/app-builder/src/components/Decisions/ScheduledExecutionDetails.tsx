@@ -1,7 +1,13 @@
-import { useDownloadDecisions } from '@app-builder/services/DownloadDecisionsService';
+import {
+  AlreadyDownloadingError,
+  useDownloadDecisions,
+} from '@app-builder/services/DownloadDecisionsService';
 import { Button } from '@ui-design-system';
+import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
+
+import { decisionsI18n } from './decisions-i18n';
 
 export function ScheduledExecutionDetails({
   scheduleExecutionId,
@@ -32,10 +38,18 @@ function ScheduledExecutionDetailsInternal({
     decisionsFilename,
   } = useDownloadDecisions(scheduleExecutionId);
 
-  const { t } = useTranslation(['scheduledExecution']);
+  const { t } = useTranslation(decisionsI18n);
 
-  const handleClick = () => {
-    void downloadDecisions();
+  const handleClick = async () => {
+    try {
+      await downloadDecisions();
+    } catch (e) {
+      if (e instanceof AlreadyDownloadingError) {
+        // Already downloading, do nothing
+        return;
+      }
+      toast.error(t('scheduledExecution:errors.downloading_decisions_link'));
+    }
   };
 
   return (
@@ -50,7 +64,9 @@ function ScheduledExecutionDetailsInternal({
       </a>
       <Button
         variant="secondary"
-        onClick={handleClick}
+        onClick={() => {
+          void handleClick();
+        }}
         name="download"
         disabled={downloadingDecisions}
       >

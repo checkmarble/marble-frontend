@@ -1,6 +1,5 @@
 export * from './Callout';
-export * from './Decision';
-export * from './DecisionsList';
+export * from './Decisions';
 export * from './ErrorComponent';
 export * from './Navigation';
 export * from './Page';
@@ -8,5 +7,3 @@ export * from './Paper';
 export * from './PermissionsContext';
 export * from './RightPanel';
 export * from './Scenario';
-export * from './ScheduledExecutionDetails';
-export * from './ScheduledExecutionsList';

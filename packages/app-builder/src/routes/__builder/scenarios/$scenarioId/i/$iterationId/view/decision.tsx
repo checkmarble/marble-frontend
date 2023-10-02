@@ -1,4 +1,9 @@
-import { Callout, decisionI18n, Outcome, Paper } from '@app-builder/components';
+import {
+  Callout,
+  decisionsI18n,
+  Outcome,
+  Paper,
+} from '@app-builder/components';
 import { Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useCurrentScenarioIteration } from '../../$iterationId';
 
 export const handle = {
-  i18n: [...decisionI18n, 'scenarios'] satisfies Namespace,
+  i18n: [...decisionsI18n, 'scenarios'] satisfies Namespace,
 };
 
 export default function Decision() {

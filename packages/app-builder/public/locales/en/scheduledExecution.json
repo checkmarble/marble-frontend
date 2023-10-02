@@ -6,5 +6,6 @@
   "started_at": "Started at",
   "finished_at": "Finished at",
   "download_decisions": "Download Decisions",
-  "downloading_decisions": "Downloading decisions..."
+  "downloading_decisions": "Downloading decisions...",
+  "errors.downloading_decisions_link": "An unknown error as occured while generating the download link. Please try again later."
 }

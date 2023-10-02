@@ -1,4 +1,9 @@
-import { Callout, decisionI18n, Outcome, Paper } from '@app-builder/components';
+import {
+  Callout,
+  decisionsI18n,
+  Outcome,
+  Paper,
+} from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
@@ -15,7 +20,7 @@ import * as z from 'zod';
 import { useCurrentScenarioIteration } from '../../$iterationId';
 
 export const handle = {
-  i18n: [...decisionI18n, 'scenarios', 'common'] satisfies Namespace,
+  i18n: [...decisionsI18n, 'scenarios', 'common'] satisfies Namespace,
 };
 
 const formSchema = z

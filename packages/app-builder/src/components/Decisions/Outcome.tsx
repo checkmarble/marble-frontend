@@ -3,7 +3,7 @@ import { Tag, type TagProps } from '@ui-design-system';
 import { type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { decisionI18n } from './decision-i18n';
+import { decisionsI18n } from './decisions-i18n';
 
 export interface OutcomeProps extends Omit<TagProps, 'color'> {
   outcome: Decision['outcome'];
@@ -21,7 +21,7 @@ const outcomeMapping: Record<
 };
 
 export function Outcome({ outcome, ...tagProps }: OutcomeProps) {
-  const { t } = useTranslation(decisionI18n);
+  const { t } = useTranslation(decisionsI18n);
 
   const { color, tKey } = outcomeMapping[outcome] ?? outcomeMapping.unknown;
 
