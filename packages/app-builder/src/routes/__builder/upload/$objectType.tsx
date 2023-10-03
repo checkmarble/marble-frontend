@@ -243,14 +243,17 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
     () => [
       {
         id: 'upload.started_at',
-        accessorFn: (row) => formatDateTime(i18n.language, row.started_at),
+        accessorFn: (row) =>
+          formatDateTime(row.started_at, { language: i18n.language }),
         header: t('upload:started_at'),
         size: 200,
       },
       {
         id: 'upload.finished_at',
         accessorFn: (row) =>
-          row.finished_at ? formatDateTime(i18n.language, row.finished_at) : '',
+          row.finished_at
+            ? formatDateTime(row.finished_at, { language: i18n.language })
+            : '',
         header: t('upload:finished_at'),
         size: 200,
       },

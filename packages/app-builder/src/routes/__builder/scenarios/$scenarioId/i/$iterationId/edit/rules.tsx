@@ -1,5 +1,6 @@
 import { CreateRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/create';
 import { serverServices } from '@app-builder/services/init.server';
+import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ScenarioIterationRuleDto } from '@marble-api';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -68,9 +69,10 @@ export default function Rules() {
             <span
               className={scoreModifier < 0 ? 'text-green-100' : 'text-red-100'}
             >
-              {Intl.NumberFormat(language, {
+              {formatNumber(scoreModifier, {
+                language,
                 signDisplay: 'exceptZero',
-              }).format(scoreModifier)}
+              })}
             </span>
           );
         },

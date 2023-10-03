@@ -86,7 +86,8 @@ export default function DecisionsPage() {
       },
       {
         id: 'created_at',
-        accessorFn: (row) => formatDateTime(i18n.language, row.created_at),
+        accessorFn: (row) =>
+          formatDateTime(row.created_at, { language: i18n.language }),
         header: t('decisions:created_at'),
         size: 200,
       },
