@@ -1,6 +1,14 @@
 import { type DataType, type LabelledAst } from '@app-builder/models';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { Boolean, Field, List, Number, String, Variable } from '@ui-icons';
+import {
+  Boolean,
+  Field,
+  List,
+  Number,
+  Schedule,
+  String,
+  Variable,
+} from '@ui-icons';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 
@@ -50,6 +58,8 @@ export const Option = {
 
 export function getDataTypeIcon(dataType?: DataType) {
   switch (dataType) {
+    case 'Timestamp':
+      return Schedule;
     case 'String':
       return String;
     case 'Int':
