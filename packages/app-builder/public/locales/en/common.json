@@ -14,6 +14,7 @@
   "save": "Save",
   "delete": "Delete",
   "close": "Close",
+  "clipboard.aria-label": "Copy to clipboard: {{value}}",
   "clipboard.copy": "Copied in clipboard: {{value}}",
   "empty_scenario_iteration_list": "You don't have any rules. Click on create rule to make a new one",
   "success.save": "Saved successfully",
