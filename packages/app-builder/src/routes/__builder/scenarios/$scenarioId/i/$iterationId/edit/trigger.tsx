@@ -1,11 +1,7 @@
 import { Callout, Paper } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import {
-  adaptCronToScheduleOption,
-  adaptScheduleOptionToCron,
-  ScheduleOption,
-} from '@app-builder/components/Scenario/Trigger/ScheduleOption';
+import { ScheduleOption } from '@app-builder/components/Scenario/Trigger/ScheduleOption';
 import {
   adaptDataModelDto,
   adaptNodeDto,
@@ -145,9 +141,7 @@ export default function Trigger() {
     );
 
   const scenario = useCurrentScenario();
-  const [scheduleOption, setScheduleOption] = useState(
-    adaptCronToScheduleOption(scenarioIteration.schedule ?? '')
-  );
+  const [schedule, setSchedule] = useState(scenarioIteration.schedule ?? '');
 
   const astEditor = useAstBuilder({
     backendAst: trigger.ast,
@@ -165,7 +159,7 @@ export default function Trigger() {
     fetcher.submit(
       {
         astNode: adaptAstNodeFromEditorViewModel(astEditor.editorNodeViewModel),
-        schedule: adaptScheduleOptionToCron(scheduleOption),
+        schedule,
       },
       {
         method: 'PATCH',
@@ -227,14 +221,16 @@ export default function Trigger() {
         </p>
       </div>
       <ScheduleOption
-        scheduleOption={scheduleOption}
-        setScheduleOption={setScheduleOption}
+        schedule={schedule}
+        setSchedule={setSchedule}
         hasExportBucket={!!organization.exportScheduledExecutionS3}
       />
+
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
         <Callout>{t('scenarios:trigger.trigger_object.callout')}</Callout>
       </div>
+
       <AstBuilder builder={astEditor} />
       <div className="flex flex-row justify-end">
         <Button type="submit" className="w-fit" onClick={handleSave}>
