@@ -161,7 +161,7 @@ function DecisionDetail({ data }: { data: SerializeFrom<typeof loader> }) {
           />
           <p className="font-light">{t('decisions:created_at')}:</p>
           <p className="font-medium">
-            {formatDateTime(i18n.language, decision.created_at)}
+            {formatDateTime(decision.created_at, { language: i18n.language })}
           </p>
         </Card>
         <div className="flex overflow-hidden">
