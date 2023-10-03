@@ -147,7 +147,7 @@ function SanityErrors({ errors }: { errors: string[] }) {
   if (errors.length === 0) return null;
 
   return (
-    <Callout variant="error">
+    <Callout variant="error" className="w-fit">
       <div className="flex flex-col">
         <p>
           {t('common:error', {
