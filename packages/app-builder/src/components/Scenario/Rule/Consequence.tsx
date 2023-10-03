@@ -1,3 +1,4 @@
+import { formatNumber } from '@app-builder/utils/format';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { scenarioI18n } from '../scenario-i18n';
@@ -18,9 +19,10 @@ export function Consequence({ scoreIncrease }: ConsequenceProps) {
           Score: <span className="font-semibold" />,
         }}
         values={{
-          score: Intl.NumberFormat(i18n.language, {
+          score: formatNumber(scoreIncrease, {
+            language: i18n.language,
             signDisplay: 'always',
-          }).format(scoreIncrease),
+          }),
         }}
       />
     </div>
