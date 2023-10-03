@@ -91,7 +91,7 @@ export function Constant({
     case 'number':
       return (
         <DefaultConstant isRoot={isRoot}>
-          {formatNumber(i18n.language, node.constant)}
+          {formatNumber(node.constant, { language: i18n.language })}
         </DefaultConstant>
       );
     case 'boolean':
