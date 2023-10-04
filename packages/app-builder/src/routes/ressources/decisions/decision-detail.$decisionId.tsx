@@ -128,7 +128,10 @@ function DecisionDetailLoading() {
 }
 
 function DecisionDetail({ data }: { data: SerializeFrom<typeof loader> }) {
-  const { t, i18n } = useTranslation(handle.i18n);
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(handle.i18n);
 
   if (data.success) {
     const decision = data.decision;
@@ -161,7 +164,7 @@ function DecisionDetail({ data }: { data: SerializeFrom<typeof loader> }) {
           />
           <p className="font-light">{t('decisions:created_at')}:</p>
           <p className="font-medium">
-            {formatDateTime(decision.created_at, { language: i18n.language })}
+            {formatDateTime(decision.created_at, { language })}
           </p>
         </Card>
         <div className="flex overflow-hidden">

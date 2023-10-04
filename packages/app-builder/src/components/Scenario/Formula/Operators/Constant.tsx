@@ -62,7 +62,10 @@ export function Constant({
   node: AstNode;
   isRoot?: boolean;
 }) {
-  const { t, i18n } = useTranslation(scenarioI18n);
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(scenarioI18n);
 
   switch (typeof node.constant) {
     case 'object': {
@@ -91,7 +94,7 @@ export function Constant({
     case 'number':
       return (
         <DefaultConstant isRoot={isRoot}>
-          {formatNumber(node.constant, { language: i18n.language })}
+          {formatNumber(node.constant, { language })}
         </DefaultConstant>
       );
     case 'boolean':

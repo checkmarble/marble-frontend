@@ -19,13 +19,15 @@ export type AuthenticationClientService = ReturnType<
 export function useGoogleSignIn({
   authenticationClientRepository,
 }: AuthenticationClientService) {
-  const { i18n } = useTranslation();
+  const {
+    i18n: { language },
+  } = useTranslation();
   const csrf = useAuthenticityToken();
 
   return async () => {
     try {
       const idToken = await authenticationClientRepository.googleSignIn(
-        i18n.language
+        language
       );
       return { idToken, csrf };
     } catch (error) {
