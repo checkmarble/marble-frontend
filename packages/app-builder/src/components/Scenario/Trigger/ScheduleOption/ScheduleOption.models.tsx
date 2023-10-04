@@ -12,8 +12,8 @@ export const isCron = (value: string | undefined): value is Cron => {
 };
 
 const weeklyRegex = new RegExp(/^0 0 \* \* [0-6]$/);
-const monthlyRegex = new RegExp(/^0 0 \b([1-9]|1[0-9]|2[0-9]|3[01])\b \* \*$/);
-const dailyRegex = new RegExp(/^0 \b([0-9]|1[0-9]|2[0-3])\b \* \* \*$/);
+const monthlyRegex = new RegExp(/^0 0 ([1-9]|[12][0-9]|3[01]) \* \*$/);
+const dailyRegex = new RegExp(/^0 ([0-9]|1[0-9]|[2][0-3]) \* \* \*$/);
 
 export function adaptCronToScheduleOption(
   cron: string
