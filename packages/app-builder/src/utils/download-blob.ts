@@ -1,4 +1,4 @@
-// This is an empirique value to wait for the download modal to open (in ms)
+// This is an empirical value to wait for the download modal to open (in ms)
 // Usefull to await for downloadBlob and display a loading indicator
 const TIME_TO_OPEN_DOWNLOAD_MODALE = 150;
 
