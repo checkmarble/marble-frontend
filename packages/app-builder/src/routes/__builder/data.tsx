@@ -62,6 +62,19 @@ function EditableText({ children }: { children: React.ReactNode }) {
   );
 }
 
+function FormatDescription({ description }: { description: string }) {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <span className="text-grey-100 relative first-letter:capitalize">
+      {description ? (
+        description
+      ) : (
+        <p className="text-grey-25">{t('data:empty_description')}</p>
+      )}
+    </span>
+  );
+}
+
 function TableDetails({
   tableModel,
   dataModel,
@@ -111,22 +124,16 @@ function TableDetails({
         header: t('data:description'),
         size: 500,
         cell: ({ cell }) => {
-          return (
+          return canEditDataModel ? (
             <EditableText key={cell.row.original.id}>
               <EditField
                 fieldId={cell.row.original.id}
                 description={cell.row.original.description}
               >
                 <div className="flex flex-row gap-5">
-                  <span className="text-grey-100 relative">
-                    {cell.row.original.description ? (
-                      cell.row.original.description
-                    ) : (
-                      <p className="text-grey-25">
-                        t('data:empty_description')
-                      </p>
-                    )}
-                  </span>
+                  <FormatDescription
+                    description={cell.row.original.description}
+                  />
                   <Edit
                     className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
                     width={'24px'}
@@ -135,11 +142,13 @@ function TableDetails({
                 </div>
               </EditField>
             </EditableText>
+          ) : (
+            <FormatDescription description={cell.row.original.description} />
           );
         },
       },
     ],
-    [t]
+    [canEditDataModel, t]
   );
 
   const {
@@ -238,24 +247,22 @@ function TableDetails({
         </div>
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
-        <EditableText>
-          <EditTable table={tableModel}>
-            <div className="flex flex-row gap-5">
-              <span className="text-grey-100 relative first-letter:capitalize">
-                {tableModel.description ? (
-                  tableModel.description
-                ) : (
-                  <p className="text-grey-25">t('data:empty_description')</p>
-                )}
-              </span>
-              <Edit
-                className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
-                width={'24px'}
-                height={'24px'}
-              />
-            </div>
-          </EditTable>
-        </EditableText>
+        {canEditDataModel ? (
+          <EditableText>
+            <EditTable table={tableModel}>
+              <div className="flex flex-row gap-5">
+                <FormatDescription description={tableModel.description || ''} />
+                <Edit
+                  className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
+                  width={'24px'}
+                  height={'24px'}
+                />
+              </div>
+            </EditTable>
+          </EditableText>
+        ) : (
+          <FormatDescription description={tableModel.description || ''} />
+        )}
 
         <div>
           <Table.Container {...getContainerPropsFields()}>
