@@ -30,50 +30,33 @@ function ScheduledExecutionDetailsInternal({
 }: {
   scheduleExecutionId: string;
 }) {
-  const {
-    downloadDecisions,
-    downloadLinkRef,
-    downloadDecisionsLink,
-    downloadingDecisions,
-    decisionsFilename,
-  } = useDownloadDecisions(scheduleExecutionId);
+  const { downloadDecisions, downloadingDecisions } = useDownloadDecisions(
+    scheduleExecutionId,
+    {
+      onError: (e) => {
+        if (e instanceof AlreadyDownloadingError) {
+          // Already downloading, do nothing
+          return;
+        }
+        toast.error(t('scheduledExecution:errors.downloading_decisions_link'));
+      },
+    }
+  );
 
   const { t } = useTranslation(decisionsI18n);
 
-  const handleClick = async () => {
-    try {
-      await downloadDecisions();
-    } catch (e) {
-      if (e instanceof AlreadyDownloadingError) {
-        // Already downloading, do nothing
-        return;
-      }
-      toast.error(t('scheduledExecution:errors.downloading_decisions_link'));
-    }
-  };
-
   return (
-    <>
-      <a
-        style={{ display: 'none' }}
-        ref={downloadLinkRef}
-        href={downloadDecisionsLink}
-        download={decisionsFilename}
-      >
-        {downloadDecisionsLink}
-      </a>
-      <Button
-        variant="secondary"
-        onClick={() => {
-          void handleClick();
-        }}
-        name="download"
-        disabled={downloadingDecisions}
-      >
-        {downloadingDecisions
-          ? t('scheduledExecution:downloading_decisions')
-          : t('scheduledExecution:download_decisions')}
-      </Button>
-    </>
+    <Button
+      variant="secondary"
+      onClick={() => {
+        void downloadDecisions();
+      }}
+      name="download"
+      disabled={downloadingDecisions}
+    >
+      {downloadingDecisions
+        ? t('scheduledExecution:downloading_decisions')
+        : t('scheduledExecution:download_decisions')}
+    </Button>
   );
 }

@@ -1,30 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
+import { downloadBlob, DownloadError } from '@app-builder/utils/download-blob';
+import { UnknownError } from '@app-builder/utils/unknown-error';
+import { useState } from 'react';
 
 import { useBackendInfo } from './auth/auth.client';
 import { clientServices } from './init.client';
 
-export function useDownloadDecisions(scheduleExecutionId: string) {
-  const [downloadDecisionsLink, setDownloadDecisionsLink] = useState('');
-  const downloadLinkRef = useRef<HTMLAnchorElement>(null);
+export class AlreadyDownloadingError extends Error {}
+export class FetchLinkError extends Error {}
+type DownloadDecisionsError =
+  | AlreadyDownloadingError
+  | FetchLinkError
+  | DownloadError
+  | UnknownError;
+
+export function useDownloadDecisions(
+  scheduleExecutionId: string,
+  { onError }: { onError?: (error: DownloadDecisionsError) => void } = {}
+) {
   const [downloading, setDownloading] = useState(false);
   const { backendUrl, accessToken } = useBackendInfo(
     clientServices.authenticationClientService
   );
 
-  useEffect(() => {
-    if (downloadDecisionsLink !== '' && downloadLinkRef.current) {
-      downloadLinkRef.current.click();
-      setDownloadDecisionsLink('');
-    }
-  }, [downloadDecisionsLink]);
-
   const downloadDecisions = async () => {
-    if (downloading) {
-      throw new AlreadyDownloadingError('Internal error: Already downloading');
-    }
-    setDownloading(true);
-
     try {
+      if (downloading) {
+        throw new AlreadyDownloadingError(
+          'Internal error: Already downloading'
+        );
+      }
+      setDownloading(true);
+
       const downloadLink = `${backendUrl}/scheduled-executions/${encodeURIComponent(
         scheduleExecutionId
       )}/decisions.zip`;
@@ -42,9 +48,17 @@ export function useDownloadDecisions(scheduleExecutionId: string) {
       }
 
       const file = await response.blob();
-      const link = URL.createObjectURL(file);
-
-      setDownloadDecisionsLink(link);
+      await downloadBlob(file, `decisions-${scheduleExecutionId}`);
+    } catch (error) {
+      if (
+        error instanceof AlreadyDownloadingError ||
+        error instanceof FetchLinkError ||
+        error instanceof DownloadError
+      ) {
+        onError?.(error);
+      } else {
+        onError?.(new UnknownError(error));
+      }
     } finally {
       setDownloading(false);
     }
@@ -52,13 +66,6 @@ export function useDownloadDecisions(scheduleExecutionId: string) {
 
   return {
     downloadDecisions,
-    downloadLinkRef,
-    downloadDecisionsLink,
     downloadingDecisions: downloading,
-    decisionsFilename: `decisions-${scheduleExecutionId}`,
   };
 }
-
-export class AlreadyDownloadingError extends Error {}
-
-export class FetchLinkError extends Error {}
