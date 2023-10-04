@@ -224,9 +224,9 @@ function TableDetails({
   return (
     <div
       key={tableModel.name}
-      className="w-fulloverflow-hidden mb-10 rounded-lg bg-white shadow-md"
+      className="mb-10 w-full overflow-hidden rounded-lg bg-white shadow-md"
     >
-      <div className="bg-grey-02 border-grey-10 flex flex-row items-center justify-between rounded-lg border px-8 py-4 text-lg font-bold capitalize">
+      <div className="bg-grey-02 border-grey-10 flex flex-row items-center justify-between border px-8 py-4 text-lg font-bold capitalize">
         {tableModel.name}
         <div className="flex flex-row justify-end gap-3">
           {canEditDataModel && <CreateField tableId={tableModel.id} />}
