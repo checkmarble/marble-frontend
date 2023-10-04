@@ -43,7 +43,7 @@ export default function Rules() {
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
-  const mode = useEditorMode();
+  const editorMode = useEditorMode();
 
   const navigate = useNavigate();
   const rules = useLoaderData<typeof loader>();
@@ -99,7 +99,7 @@ export default function Rules() {
 
   return (
     <div className="flex flex-col gap-4">
-      {mode === 'edit' && (
+      {editorMode === 'edit' && (
         <div className="flex flex-row justify-end">
           <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
         </div>

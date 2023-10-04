@@ -81,10 +81,10 @@ export default function ScenarioEditLayout() {
   );
   invariant(currentIteration, 'currentIteration is required');
 
-  const mode =
+  const editorMode =
     canManageScenario && currentIteration.type === 'draft' ? 'edit' : 'view';
 
-  const withEditTag = mode === 'edit';
+  const withEditTag = editorMode === 'edit';
   const withCreateDraftIteration =
     canManageScenario && currentIteration.type !== 'draft';
   const withDeploymentModal = canPublishScenario;
@@ -133,7 +133,7 @@ export default function ScenarioEditLayout() {
             </li>
           ))}
         </Scenarios.Nav>
-        <EditorModeContextProvider value={mode}>
+        <EditorModeContextProvider value={editorMode}>
           <Outlet />
         </EditorModeContextProvider>
       </ScenarioPage.Content>

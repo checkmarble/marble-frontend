@@ -8,7 +8,10 @@ interface ConsequenceProps {
 }
 
 export function Consequence({ scoreIncrease }: ConsequenceProps) {
-  const { t, i18n } = useTranslation(scenarioI18n);
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(scenarioI18n);
 
   return (
     <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
@@ -20,7 +23,7 @@ export function Consequence({ scoreIncrease }: ConsequenceProps) {
         }}
         values={{
           score: formatNumber(scoreIncrease, {
-            language: i18n.language,
+            language,
             signDisplay: 'always',
           }),
         }}
