@@ -14,7 +14,10 @@ export function ScheduledExecutionsList({
 }: {
   scheduledExecutions: ScheduledExecution[];
 }) {
-  const { t, i18n } = useTranslation(decisionsI18n);
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(decisionsI18n);
 
   const columns = useMemo<ColumnDef<ScheduledExecution, string>[]>(
     () => [
@@ -38,7 +41,7 @@ export function ScheduledExecutionsList({
       },
       {
         id: 'created_at',
-        accessorFn: (s) => formatDateTime(i18n.language, s.started_at),
+        accessorFn: (s) => formatDateTime(s.started_at, { language }),
         header: t('scheduledExecution:created_at'),
         size: 200,
       },
@@ -52,7 +55,7 @@ export function ScheduledExecutionsList({
         ),
       },
     ],
-    [i18n.language, t]
+    [language, t]
   );
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: scheduledExecutions,

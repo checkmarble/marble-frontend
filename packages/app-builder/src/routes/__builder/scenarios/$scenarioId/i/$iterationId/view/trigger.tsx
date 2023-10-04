@@ -31,7 +31,10 @@ export default function Trigger() {
 }
 
 function HowToRun() {
-  const { t, i18n } = useTranslation(handle.i18n);
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(handle.i18n);
 
   const { scenarioId, schedule } = useCurrentScenarioIteration();
 
@@ -48,7 +51,7 @@ function HowToRun() {
               ScheduleLocale: <span style={{ fontWeight: 'bold' }} />,
             }}
             values={{
-              schedule: formatSchedule(schedule, { language: i18n.language }),
+              schedule: formatSchedule(schedule, { language }),
             }}
           />
         ) : (

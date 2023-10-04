@@ -58,14 +58,16 @@ export async function action({ request }: ActionArgs) {
  * The component is hidden when there is only one language available.
  */
 export function LanguagePicker() {
-  const { i18n } = useTranslation<'common'>();
+  const {
+    i18n: { language },
+  } = useTranslation<'common'>();
   const fetcher = useFetcher<typeof action>();
 
   if (supportedLngs.every((lng: string) => lng.startsWith('en'))) return null;
 
   return (
     <Select.Default
-      value={i18n.language}
+      value={language}
       onValueChange={(newPreferredLanguage) => {
         fetcher.submit(
           { preferredLanguage: newPreferredLanguage },

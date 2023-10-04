@@ -92,7 +92,10 @@ export const ScheduleOption = ({
   setScheduleOption: (schedule: ScheduleOption) => void;
   hasExportBucket: boolean;
 }) => {
-  const { t, i18n } = useTranslation(handle.i18n);
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(handle.i18n);
 
   const textForFrequency = useCallback(
     (frequency: Frequency) => {
@@ -126,7 +129,7 @@ export const ScheduleOption = ({
             }}
             values={{
               schedule: formatSchedule(scheduleOption.scheduleDetail, {
-                language: i18n.language,
+                language,
               }),
             }}
           />
@@ -164,10 +167,7 @@ export const ScheduleOption = ({
                   setScheduleOption({
                     ...scheduleOption,
                     frequency: value,
-                    scheduleDetail: optionsForFrequency(
-                      value,
-                      i18n.language
-                    )[0],
+                    scheduleDetail: optionsForFrequency(value, language)[0],
                   });
                 }
               }}
@@ -256,8 +256,10 @@ const ScheduleDetailSelect = ({
   onChange: (value: string) => void;
   frequency: Frequency;
 }) => {
-  const { i18n } = useTranslation(handle.i18n);
-  const options = optionsForFrequency(frequency, i18n.language);
+  const {
+    i18n: { language },
+  } = useTranslation(handle.i18n);
+  const options = optionsForFrequency(frequency, language);
 
   const displayNameForFrequency =
     (frequency: Frequency) => (option: string) => {
@@ -265,7 +267,7 @@ const ScheduleDetailSelect = ({
         case 'daily':
           return option.padStart(2, '0') + ':00';
         case 'weekly':
-          return getWeekDayName(option, i18n.language);
+          return getWeekDayName(option, language);
         case 'monthly':
           return option;
       }
