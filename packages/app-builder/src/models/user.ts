@@ -18,6 +18,7 @@ function NewPermissionsList() {
     canManageScenario: 'SCENARIO_CREATE',
     canPublishScenario: 'SCENARIO_PUBLISH',
     canIngestData: 'INGESTION',
+    canEditDataModel: 'DATA_MODEL_WRITE',
   } as const;
 }
 

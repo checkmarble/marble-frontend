@@ -70,7 +70,7 @@ function TableDetails({
   dataModel: TableModel[];
 }) {
   const { t } = useTranslation(handle.i18n);
-  const { canIngestData } = usePermissionsContext();
+  const { canIngestData, canEditDataModel } = usePermissionsContext();
 
   const otherTables = useMemo(
     () => dataModel.filter((table) => table.id !== tableModel.id),
@@ -112,7 +112,7 @@ function TableDetails({
         size: 500,
         cell: ({ cell }) => {
           return (
-            <EditableText>
+            <EditableText key={cell.row.original.id}>
               <EditField
                 fieldId={cell.row.original.id}
                 description={cell.row.original.description}
@@ -217,23 +217,25 @@ function TableDetails({
       key={tableModel.name}
       className="w-fulloverflow-hidden mb-10 rounded-lg bg-white shadow-md"
     >
-      <div className="bg-grey-02 border-grey-10 flex flex-row items-center justify-between border px-8 py-4 text-lg font-bold capitalize">
+      <div className="bg-grey-02 border-grey-10 flex flex-row items-center justify-between rounded-lg border px-8 py-4 text-lg font-bold capitalize">
         {tableModel.name}
-        <CreateField tableId={tableModel.id} />
-        {canIngestData && (
-          <NavLink
-            className={clsx(
-              'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
-              'hover:bg-purple-110 active:bg-purple-120 text-grey-00  border-bg-purple-100 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50'
-            )}
-            to={getRoute('/upload/:objectType', {
-              objectType: tableModel.name,
-            })}
-          >
-            <Plus />
-            {t('data:upload_data')}
-          </NavLink>
-        )}
+        <div className="flex flex-row justify-end gap-3">
+          {canEditDataModel && <CreateField tableId={tableModel.id} />}
+          {canIngestData && (
+            <NavLink
+              className={clsx(
+                'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
+                'hover:bg-purple-110 active:bg-purple-120 text-grey-00  border-bg-purple-100 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50'
+              )}
+              to={getRoute('/upload/:objectType', {
+                objectType: tableModel.name,
+              })}
+            >
+              <Plus width={'24px'} height={'24px'} />
+              {t('data:upload_data')}
+            </NavLink>
+          )}
+        </div>
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
         <EditableText>
@@ -295,7 +297,7 @@ function TableDetails({
             </div>
           </div>
         )}
-        {otherTables.length > 0 && (
+        {canEditDataModel && otherTables.length > 0 && (
           <CreateLink thisTable={tableModel} otherTables={otherTables} />
         )}
       </div>
@@ -305,6 +307,7 @@ function TableDetails({
 
 export default function Data() {
   const { t } = useTranslation(handle.i18n);
+  const { canEditDataModel } = usePermissionsContext();
   const { dataModel } = useLoaderData<typeof loader>();
 
   return (
@@ -319,9 +322,11 @@ export default function Data() {
         <Callout className="whitespace-normal">
           {t('data:your_data_callout')}
         </Callout>
-        <div className="max-w-150">
-          <CreateTable />
-        </div>
+        {canEditDataModel && (
+          <div className="max-w-150">
+            <CreateTable />
+          </div>
+        )}
         <div>
           {dataModel.map((table) => (
             <TableDetails
