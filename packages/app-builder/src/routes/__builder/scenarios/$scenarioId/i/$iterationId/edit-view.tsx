@@ -61,6 +61,7 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export default function ScenarioEditLayout() {
+  const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
   const { scenarioIterations, scenarioValidation } =
     useLoaderData<typeof loader>();
@@ -103,7 +104,7 @@ export default function ScenarioEditLayout() {
           />
           {withEditTag && (
             <Tag size="big" border="square">
-              Edit
+              {t('common:edit')}
             </Tag>
           )}
         </div>
