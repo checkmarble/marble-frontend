@@ -1,7 +1,7 @@
 import { Callout, Paper, scenarioI18n } from '@app-builder/components';
-import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { ScheduleOption } from '@app-builder/components/Scenario/Trigger/ScheduleOption';
+import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
+import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
 import {
   adaptDataModelDto,
   adaptNodeDto,

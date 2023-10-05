@@ -4,7 +4,6 @@ import {
   scenarioI18n,
   ScenarioPage,
 } from '@app-builder/components';
-import { AstBuilder } from '@app-builder/components/AstBuilder';
 import {
   FormControl,
   FormField,
@@ -13,6 +12,7 @@ import {
   FormMessage,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { type AstNode } from '@app-builder/models';
 import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
