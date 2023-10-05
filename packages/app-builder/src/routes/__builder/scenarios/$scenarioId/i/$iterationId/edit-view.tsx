@@ -11,7 +11,7 @@ import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { CreateDraftIteration } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/create_draft';
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
-import { EditorModeContextProvider } from '@app-builder/services/editor';
+import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, useParam } from '@app-builder/utils/short-uuid';
@@ -82,8 +82,7 @@ export default function ScenarioEditLayout() {
   );
   invariant(currentIteration, 'currentIteration is required');
 
-  const editorMode =
-    canManageScenario && currentIteration.type === 'draft' ? 'edit' : 'view';
+  const editorMode = useEditorMode();
 
   const withEditTag = editorMode === 'edit';
   const withCreateDraftIteration =
@@ -134,9 +133,7 @@ export default function ScenarioEditLayout() {
             </li>
           ))}
         </Scenarios.Nav>
-        <EditorModeContextProvider value={editorMode}>
-          <Outlet />
-        </EditorModeContextProvider>
+        <Outlet />
       </ScenarioPage.Content>
     </ScenarioPage.Container>
   );
