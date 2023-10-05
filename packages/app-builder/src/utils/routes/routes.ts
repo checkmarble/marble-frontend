@@ -99,71 +99,33 @@ export const routes = [
                 "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId.tsx",
                 "children": [
                   {
-                    "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit.rules.$ruleId",
-                    "path": "edit/rules/:ruleId",
-                    "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit.rules.$ruleId.tsx"
+                    "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/rules.$ruleId",
+                    "path": "rules/:ruleId",
+                    "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/rules.$ruleId.tsx"
                   },
                   {
-                    "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view.rules.$ruleId",
-                    "path": "view/rules/:ruleId",
-                    "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view.rules.$ruleId.tsx"
-                  },
-                  {
-                    "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/index",
-                    "index": true,
-                    "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/index.tsx"
-                  },
-                  {
-                    "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit",
-                    "path": "edit",
-                    "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit.tsx",
+                    "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view",
+                    "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view.tsx",
                     "children": [
                       {
-                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/decision",
+                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/decision",
                         "path": "decision",
-                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/decision.tsx"
+                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/decision.tsx"
                       },
                       {
-                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/trigger",
+                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/trigger",
                         "path": "trigger",
-                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/trigger.tsx"
+                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/trigger.tsx"
                       },
                       {
-                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/index",
-                        "index": true,
-                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/index.tsx"
-                      },
-                      {
-                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/rules",
+                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/rules",
                         "path": "rules",
-                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit/rules.tsx"
-                      }
-                    ]
-                  },
-                  {
-                    "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view",
-                    "path": "view",
-                    "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view.tsx",
-                    "children": [
-                      {
-                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/decision",
-                        "path": "decision",
-                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/decision.tsx"
+                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/rules.tsx"
                       },
                       {
-                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/trigger",
-                        "path": "trigger",
-                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/trigger.tsx"
-                      },
-                      {
-                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/index",
-                        "index": true,
-                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/index.tsx"
-                      },
-                      {
-                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/rules",
-                        "path": "rules",
-                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/view/rules.tsx"
+                        "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/$",
+                        "path": "*",
+                        "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/$.tsx"
                       }
                     ]
                   }
