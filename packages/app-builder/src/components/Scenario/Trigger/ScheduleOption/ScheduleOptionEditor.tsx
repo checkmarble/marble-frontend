@@ -4,7 +4,7 @@ import { type ParseKeys } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { scenarioI18n } from '../../scenario-i18n';
-import { type ScheduleOption } from './ScheduleOption.models';
+import { type ScheduleOption } from './models';
 
 const textForFrequency = {
   daily: 'scenarios:trigger.schedule_scenario.schedule_detail_daily_label',
