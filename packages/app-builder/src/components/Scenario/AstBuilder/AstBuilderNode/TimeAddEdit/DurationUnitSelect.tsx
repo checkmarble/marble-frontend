@@ -1,32 +1,38 @@
+import { type Validation } from '@app-builder/models';
 import { Select } from '@ui-design-system';
 import { useTranslation } from 'react-i18next';
 
-const options = ['s', 'm', 'h'] as const;
-export type IntervalUnit = (typeof options)[number];
+import { getBorderColor } from '../../utils';
 
-export const IntervalUnitSelect = ({
+const options = ['seconds', 'minutes', 'hours', 'days'] as const;
+export type DurationUnit = (typeof options)[number];
+
+export const DurationUnitSelect = ({
   value,
   onChange,
+  validation,
 }: {
-  value: IntervalUnit | null;
-  onChange: (value: IntervalUnit) => void;
+  value: DurationUnit | null;
+  onChange: (value: DurationUnit) => void;
+  validation: Validation;
 }) => {
   const { t } = useTranslation(['scenarios']);
   return (
     <Select.Default
       value={value ?? undefined}
-      onValueChange={(selectedValue: IntervalUnit) => {
+      onValueChange={(selectedValue: DurationUnit) => {
         if (selectedValue === null) return;
         onChange(selectedValue);
       }}
       placeholder="..."
       className="min-w-fit"
+      borderColor={getBorderColor(validation)}
     >
       {options.map((operator) => (
         <Select.Item key={operator} value={operator}>
           <Select.ItemText>
             <span className="text-s text-grey-100">
-              {t(`scenarios:edit_date.interval_unit_${operator}`)}
+              {t(`scenarios:edit_date.duration_unit_${operator}`)}
             </span>
           </Select.ItemText>
         </Select.Item>

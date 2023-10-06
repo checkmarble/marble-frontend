@@ -7,6 +7,7 @@ import {
   NewTimeAddAstNode,
   type TimeAddAstNode,
 } from '@app-builder/models';
+import { Temporal } from 'temporal-polyfill';
 
 export function newTimeAddLabelledAst(
   node: TimeAddAstNode = NewTimeAddAstNode()
@@ -15,25 +16,53 @@ export function newTimeAddLabelledAst(
     name: getTimeAddName(node),
     description: '',
     operandType: 'Variable',
-    dataType: 'Timestamp',
+    dataType: 'unknown',
     astNode: node,
   };
 }
 
 const getTimeAddName = (node: TimeAddAstNode): string => {
-  const operator = node.children[1].constant.slice(0, 1);
-  const interval = node.children[1].constant.slice(1);
+  const sign = node.namedChildren['sign']?.constant ?? '';
+  const isoDuration = node.namedChildren['duration']?.constant ?? '';
+
   let timestamp = '';
-  if (isDatabaseAccess(node.children[0])) {
-    timestamp = getDatabaseAccessorDisplayName(node.children[0]);
+  if (isDatabaseAccess(node.namedChildren['timestampField'])) {
+    timestamp = getDatabaseAccessorDisplayName(
+      node.namedChildren['timestampField']
+    );
   }
-  if (isPayload(node.children[0])) {
-    timestamp = getPayloadAccessorsDisplayName(node.children[0]);
+  if (isPayload(node.namedChildren['timestampField'])) {
+    timestamp = getPayloadAccessorsDisplayName(
+      node.namedChildren['timestampField']
+    );
   }
 
-  if (operator === '' || interval === '' || timestamp === '') {
+  if (sign === '' || isoDuration === '' || timestamp === '') {
     return 'Date';
   }
 
-  return `${timestamp} ${operator} ${interval}`;
+  const temporalDuration = Temporal.Duration.from(isoDuration);
+  return `${timestamp} ${sign} ${temporalDurationToString(temporalDuration)}`;
+};
+
+const temporalDurationToString = (
+  temporalDuration: Temporal.Duration
+): string => {
+  let durationString = '';
+  if (temporalDuration.days !== 0) {
+    durationString += `${temporalDuration.days} days`;
+  }
+  if (temporalDuration.hours !== 0) {
+    durationString += `${temporalDuration.hours} hours`;
+  }
+  if (temporalDuration.minutes !== 0) {
+    durationString += `${temporalDuration.minutes} minutes`;
+  }
+  if (temporalDuration.seconds !== 0) {
+    durationString += `${temporalDuration.seconds} seconds`;
+  }
+  if (durationString === '') {
+    durationString += `${temporalDuration.seconds} seconds`;
+  }
+  return durationString;
 };

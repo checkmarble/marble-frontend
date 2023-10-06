@@ -1,4 +1,7 @@
+import { type Validation } from '@app-builder/models';
 import { Select } from '@ui-design-system';
+
+import { getBorderColor } from '../../utils';
 
 const options = ['+', '-'] as const;
 export type PlusOrMinus = (typeof options)[number];
@@ -6,9 +9,11 @@ export type PlusOrMinus = (typeof options)[number];
 export const PlusMinusSelect = ({
   value,
   onChange,
+  validation,
 }: {
   value: PlusOrMinus | null;
   onChange: (value: PlusOrMinus) => void;
+  validation: Validation;
 }) => {
   return (
     <Select.Default
@@ -19,6 +24,7 @@ export const PlusMinusSelect = ({
       }}
       placeholder="..."
       className="min-w-fit"
+      borderColor={getBorderColor(validation)}
     >
       {options.map((operator) => (
         <Select.Item key={operator} value={operator}>

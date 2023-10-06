@@ -36,12 +36,12 @@ export function NewAstNode({
 export function NewUndefinedAstNode({
   children,
   namedChildren,
-}: Partial<Omit<AstNode, 'name'>> = {}): AstNode {
-  return NewAstNode({
+}: Partial<Omit<AstNode, 'name'>> = {}): UndefinedAstNode {
+  return {
     name: undefinedAstNodeName,
-    children,
-    namedChildren,
-  });
+    children: children ?? [],
+    namedChildren: namedChildren ?? {},
+  };
 }
 
 export function NewEmptyTriggerAstNode(): AstNode {
@@ -188,8 +188,12 @@ export const timeAddAstNodeName = 'TimeAdd';
 export interface TimeAddAstNode {
   name: typeof timeAddAstNodeName;
   constant?: undefined;
-  children: [TimestampFieldAstNode, ConstantAstNode<string>];
-  namedChildren: Record<string, never>;
+  children: [];
+  namedChildren: {
+    timestampField: TimestampFieldAstNode;
+    sign: ConstantAstNode<string>;
+    duration: ConstantAstNode<string>;
+  };
 }
 export type TimestampFieldAstNode =
   | DatabaseAccessAstNode
@@ -197,16 +201,23 @@ export type TimestampFieldAstNode =
   | UndefinedAstNode;
 
 export function NewTimeAddAstNode(
-  timestampFieldAstNode: TimestampFieldAstNode = NewUndefinedAstNode() as UndefinedAstNode,
-  intervalAstNode: ConstantAstNode<string> = NewConstantAstNode({
+  timestampFieldAstNode: TimestampFieldAstNode = NewUndefinedAstNode(),
+  signAstNode: ConstantAstNode<string> = NewConstantAstNode({
+    constant: '',
+  }),
+  durationAstNode: ConstantAstNode<string> = NewConstantAstNode({
     constant: '',
   })
 ): TimeAddAstNode {
   return {
     name: timeAddAstNodeName,
     constant: undefined,
-    children: [timestampFieldAstNode, intervalAstNode],
-    namedChildren: {},
+    children: [],
+    namedChildren: {
+      timestampField: timestampFieldAstNode,
+      sign: signAstNode,
+      duration: durationAstNode,
+    },
   };
 }
 

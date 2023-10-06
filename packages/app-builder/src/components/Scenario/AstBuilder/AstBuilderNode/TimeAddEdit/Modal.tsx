@@ -1,8 +1,7 @@
 import {
   type AstNode,
-  type EvaluationError,
+  computeValidationForNamedChildren,
   isValidationFailure,
-  mergeValidations,
   NewConstantAstNode,
   NewPendingValidation,
   NewTimeAddAstNode,
@@ -21,22 +20,25 @@ import { createSimpleContext } from '@app-builder/utils/create-context';
 import { Button, Input, Modal } from '@ui-design-system';
 import { type PropsWithChildren, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Temporal } from 'temporal-polyfill';
 
 import { ErrorMessage } from '../../ErrorMessage';
 import { getBorderColor } from '../../utils';
-import { type IntervalUnit, IntervalUnitSelect } from './IntervalUnitSelect';
+import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
 import { PlusMinusSelect, type PlusOrMinus } from './PlusMinusSelect';
 import { TimestampField } from './TimestampField';
 
 export interface TimeAddViewModal {
   nodeId: string;
   timestampField: EditorNodeViewModel | null;
-  operator: PlusOrMinus;
-  interval: string;
-  intervalUnit: IntervalUnit;
+  sign: PlusOrMinus;
+  duration: string;
+  durationUnit: DurationUnit;
   validation: {
     timestampField: Validation;
-    interval: Validation;
+    sign: Validation;
+    duration: Validation;
+    durationUnit: Validation;
   };
 }
 
@@ -55,63 +57,38 @@ export type TimeAddEditorNodeViewModel = {
   namedChildren: Record<string, TimeAddEditorNodeViewModel>;
 };
 
+export const defaultISO8601Duration = 'PT0S';
 export const adaptTimeAddViewModal = (
   vm: TimeAddEditorNodeViewModel
 ): TimeAddViewModal => {
-  const { operator, interval, intervalUnit } = parseIntervalAstNode(
-    vm.children[1]
-  );
+  const iso8601Duration =
+    vm.namedChildren['duration']?.constant !== ''
+      ? vm.namedChildren['duration']?.constant
+      : defaultISO8601Duration;
+  const temporalDuration =
+    Temporal.Duration.from(iso8601Duration).round('seconds');
+  const { duration, durationUnit } =
+    adaptDurationAndUnitFromTemporalDuration(temporalDuration);
+
+  const sign = (
+    vm.namedChildren['sign']?.constant !== ''
+      ? vm.namedChildren['sign']?.constant
+      : '+'
+  ) as PlusOrMinus;
 
   return {
     nodeId: vm.nodeId,
-    timestampField: vm.children[0],
-    operator,
-    interval,
-    intervalUnit,
+    timestampField: vm.namedChildren['timestampField'],
+    sign,
+    duration: duration.toString(),
+    durationUnit,
     validation: {
-      timestampField: computeValidationForChildren(vm, 0),
-      interval: computeValidationForChildren(vm, 1),
+      timestampField: computeValidationForNamedChildren(vm, 'timestampField'),
+      sign: computeValidationForNamedChildren(vm, 'sign'),
+      duration: computeValidationForNamedChildren(vm, 'duration'),
+      durationUnit: computeValidationForNamedChildren(vm, 'durationUnit'),
     },
   };
-};
-
-const computeValidationForChildren = (
-  vm: TimeAddEditorNodeViewModel,
-  index: number
-): Validation =>
-  mergeValidations([
-    vm.children[index]?.validation ?? NewPendingValidation(),
-    parentValidationForChildren(vm, index),
-  ]);
-
-const parentValidationForChildren = (
-  vm: TimeAddEditorNodeViewModel,
-  index: number
-): Validation => {
-  if (vm.validation.state !== 'fail') return { state: vm.validation.state };
-
-  const childErrors: EvaluationError[] = vm.validation.errors.filter(
-    (error) => error.argumentIndex == index
-  );
-  if (childErrors.length > 0) return { state: 'fail', errors: childErrors };
-  return { state: 'pending' };
-};
-
-const parseIntervalAstNode = (vm: TimeAddEditorNodeViewModel) => {
-  const intervalString = vm.constant;
-  if (intervalString === '')
-    return {
-      operator: '+' as PlusOrMinus,
-      interval: '0',
-      intervalUnit: 's' as IntervalUnit,
-    };
-
-  const operator =
-    intervalString.slice(0, 1) === '-' ? '-' : ('+' as PlusOrMinus);
-  const interval = intervalString.slice(1, -1);
-  const intervalUnit = intervalString.slice(-1) as IntervalUnit;
-
-  return { operator, interval, intervalUnit };
 };
 
 const adaptTimeAddAstNode = (
@@ -120,16 +97,21 @@ const adaptTimeAddAstNode = (
   const timestampFieldAstNode = timeAddViewModel.timestampField
     ? adaptAstNodeFromEditorViewModel(timeAddViewModel.timestampField)
     : NewUndefinedAstNode();
-  const intervalAstNode = NewConstantAstNode({
-    constant:
-      timeAddViewModel.operator +
-      timeAddViewModel.interval +
-      timeAddViewModel.intervalUnit,
+  const signAstNode = NewConstantAstNode({
+    constant: timeAddViewModel.sign,
+  });
+  const temporalDuration = adaptTemporalDurationFromDurationAndUnit({
+    duration: parseInt(timeAddViewModel.duration),
+    durationUnit: timeAddViewModel.durationUnit,
+  });
+  const durationAstNode = NewConstantAstNode({
+    constant: temporalDuration.toString(),
   });
 
   return NewTimeAddAstNode(
     timestampFieldAstNode as TimestampFieldAstNode,
-    intervalAstNode
+    signAstNode,
+    durationAstNode
   );
 };
 
@@ -217,37 +199,54 @@ const TimeAddEditModalContent = ({
               className="flex-grow"
             />
             <PlusMinusSelect
-              value={value.operator}
-              onChange={(operator) => setValue({ ...value, operator })}
-            />
-            <Input
-              value={value.interval ?? undefined}
-              onChange={(e) =>
+              value={value.sign}
+              onChange={(sign) =>
                 setValue({
                   ...value,
-                  interval: e.target.value,
+                  sign,
                   validation: {
                     ...value.validation,
-                    interval: NewPendingValidation(),
+                    sign: NewPendingValidation(),
                   },
                 })
               }
-              borderColor={getBorderColor(value.validation.interval)}
+              validation={value.validation.sign}
+            />
+            <Input
+              value={value.duration ?? undefined}
+              onChange={(e) =>
+                setValue({
+                  ...value,
+                  duration: e.target.value,
+                  validation: {
+                    ...value.validation,
+                    duration: NewPendingValidation(),
+                  },
+                })
+              }
+              borderColor={getBorderColor(value.validation.duration)}
               min="0"
               placeholder="0"
               type="number"
               className="basis-[60px]"
             />
-            <IntervalUnitSelect
-              value={value.intervalUnit}
-              onChange={(intervalUnit) => setValue({ ...value, intervalUnit })}
+            <DurationUnitSelect
+              value={value.durationUnit}
+              onChange={(durationUnit) => setValue({ ...value, durationUnit })}
+              validation={value.validation.durationUnit}
             />
           </div>
           {isValidationFailure(value.validation.timestampField) && (
             <ErrorMessage errors={value.validation.timestampField?.errors} />
           )}
-          {isValidationFailure(value.validation.interval) && (
-            <ErrorMessage errors={value.validation.interval.errors} />
+          {isValidationFailure(value.validation.sign) && (
+            <ErrorMessage errors={value.validation.sign.errors} />
+          )}
+          {isValidationFailure(value.validation.duration) && (
+            <ErrorMessage errors={value.validation.duration.errors} />
+          )}
+          {isValidationFailure(value.validation.durationUnit) && (
+            <ErrorMessage errors={value.validation.durationUnit.errors} />
           )}
         </div>
         <div className="flex flex-1 flex-row gap-2">
@@ -268,4 +267,39 @@ const TimeAddEditModalContent = ({
       </div>
     </>
   );
+};
+
+const adaptDurationAndUnitFromTemporalDuration = (
+  temporalDuration: Temporal.Duration
+): { duration: number; durationUnit: DurationUnit } => {
+  if (temporalDuration.seconds > 0) {
+    return {
+      duration: temporalDuration.total('second'),
+      durationUnit: 'seconds',
+    };
+  } else if (temporalDuration.minutes > 0) {
+    return {
+      duration: temporalDuration.total('minute'),
+      durationUnit: 'minutes',
+    };
+  } else if (temporalDuration.hours > 0) {
+    return {
+      duration: temporalDuration.total('hour'),
+      durationUnit: 'hours',
+    };
+  }
+  return {
+    duration: temporalDuration.total('day'),
+    durationUnit: 'days',
+  };
+};
+
+const adaptTemporalDurationFromDurationAndUnit = ({
+  duration,
+  durationUnit,
+}: {
+  duration: number;
+  durationUnit: DurationUnit;
+}): Temporal.Duration => {
+  return Temporal.Duration.from({ [durationUnit]: duration });
 };

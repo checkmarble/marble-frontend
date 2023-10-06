@@ -2,6 +2,7 @@ import {
   type AggregationAstNode,
   aggregationAstNodeName,
   type AstNode,
+  computeValidationForNamedChildren,
   type EvaluationError,
   mergeValidations,
   NewAstNode,
@@ -57,33 +58,7 @@ export interface FilterViewModel {
   };
 }
 
-const parentValidationForNamedChildren = (
-  editorNodeViewModel: EditorNodeViewModel,
-  namedArgumentKey: string
-): Validation => {
-  if (editorNodeViewModel.validation.state !== 'fail') {
-    return { state: editorNodeViewModel.validation.state };
-  }
-  const namedErrors: EvaluationError[] =
-    editorNodeViewModel.validation.errors.filter(
-      (error) => error.argumentName === namedArgumentKey
-    );
-  if (namedErrors.length > 0) {
-    return { state: 'fail', errors: namedErrors };
-  }
-  return { state: 'pending' };
-};
-
-const computeValidationForNamedChildren = (
-  editorNodeViewModel: EditorNodeViewModel,
-  namedArgumentKey: string
-): Validation =>
-  mergeValidations([
-    editorNodeViewModel.namedChildren[namedArgumentKey]?.validation ??
-      NewPendingValidation(),
-    parentValidationForNamedChildren(editorNodeViewModel, namedArgumentKey),
-  ]);
-
+// Not used since AggregationEditPanel was removed
 const computeAggregationValidation = (vm: EditorNodeViewModel): Validation => {
   if (!vm.validation) {
     return NewPendingValidation();

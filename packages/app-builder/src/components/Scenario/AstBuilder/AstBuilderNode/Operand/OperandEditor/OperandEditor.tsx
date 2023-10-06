@@ -111,7 +111,7 @@ const OperandEditorContent = forwardRef<
       })
     );
     const customLists = builder.customLists.map(newCustomListLabelledAst);
-    const variables = [
+    const functions = [
       ...allAggregators.map(newAggregatorLabelledAst),
       newTimeAddLabelledAst(),
     ];
@@ -119,7 +119,7 @@ const OperandEditorContent = forwardRef<
       ...payloadAccessors,
       ...databaseAccessors,
       ...customLists,
-      ...variables,
+      ...functions,
     ];
   }, [
     builder.customLists,

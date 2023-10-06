@@ -137,6 +137,9 @@ importers:
       short-uuid:
         specifier: ^4.2.2
         version: 4.2.2
+      temporal-polyfill:
+        specifier: ^0.1.1
+        version: 0.1.1
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.1
@@ -14716,6 +14719,16 @@ packages:
     dependencies:
       rimraf: 2.6.3
     dev: true
+
+  /temporal-polyfill@0.1.1:
+    resolution: {integrity: sha512-/5e4EVRA0wBI/bEhWLirSjwUg1lELhQyTXxw9zNbVhqjKvI9BLczs+3wtsoD9sn3HN2ImAMW5XJQwAiXgWT+GA==}
+    dependencies:
+      temporal-spec: 0.1.0
+    dev: false
+
+  /temporal-spec@0.1.0:
+    resolution: {integrity: sha512-sMNggMeS6trCgMQuudgFHhX1gtBK3e+AT1zGrMsFYG1wlqtRT5E9rcvm3I1iNlvHpJX/3DO6L4qtWAuEl/T04Q==}
+    dev: false
 
   /tempy@1.0.1:
     resolution: {integrity: sha512-biM9brNqxSc04Ee71hzFbryD11nX7VPhQQY32AdDmjFvodsRFz/3ufeoTZ6uYkRFfGo188tENcASNs3vTdsM0w==}
