@@ -9,6 +9,7 @@
   "scenario.rules": "Rules",
   "scenario.decision": "Decision",
   "data": "Your Data",
+  "api": "Marble API",
   "decisions.decisions": "Decisions",
   "decisions.scheduledExecution": "Scheduled Execution"
 }

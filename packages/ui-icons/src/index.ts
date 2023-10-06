@@ -54,3 +54,4 @@ export { default as String } from './String';
 export { default as Tick } from './Tick';
 export { default as Tip } from './Tip';
 export { default as Trigger } from './Trigger';
+export { default as World } from './World';

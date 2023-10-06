@@ -1301,6 +1301,43 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /data-model/openapi:
+    get:
+      tags:
+        - Data Model
+      summary: Get the OpenAPI specification of the client specific API for data ingestion and decision making
+      operationId: getDataModelOpenApi
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The OpenAPI specification of the client specific API for data ingestion and decision making
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    type: object
+                  openapi:
+                    type: string
+                  tags:
+                    type: array
+                    items:
+                      type: object
+                  paths:
+                    type: object
+                  components:
+                    type: object
+                    properties:
+                      schemas:
+                        type: object
+                      securitySchemes:
+                        type: object
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /apikeys:
     get:
       tags:

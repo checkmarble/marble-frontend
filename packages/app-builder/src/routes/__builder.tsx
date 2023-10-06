@@ -17,6 +17,7 @@ import {
   LogoStandard,
   Logout,
   Scenarios,
+  World,
 } from '@ui-icons';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
@@ -42,6 +43,7 @@ const LINKS: SidebarLinkProps[] = [
 
 const BOTTOM_LINKS: SidebarLinkProps[] = [
   { labelTKey: 'navigation:data', to: getRoute('/data'), Icon: Harddrive },
+  { labelTKey: 'navigation:api', to: getRoute('/api'), Icon: World },
 ];
 
 export async function loader({ request }: LoaderArgs) {

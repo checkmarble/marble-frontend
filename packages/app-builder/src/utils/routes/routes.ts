@@ -45,9 +45,34 @@ export const routes = [
         "file": "routes/ressources/lists/value_delete.tsx"
       },
       {
+        "id": "routes/ressources/data/createField",
+        "path": "ressources/data/createField",
+        "file": "routes/ressources/data/createField.tsx"
+      },
+      {
+        "id": "routes/ressources/data/createTable",
+        "path": "ressources/data/createTable",
+        "file": "routes/ressources/data/createTable.tsx"
+      },
+      {
         "id": "routes/ressources/scenarios/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources/scenarios/create.tsx"
+      },
+      {
+        "id": "routes/ressources/data/createLink",
+        "path": "ressources/data/createLink",
+        "file": "routes/ressources/data/createLink.tsx"
+      },
+      {
+        "id": "routes/ressources/data/editField",
+        "path": "ressources/data/editField",
+        "file": "routes/ressources/data/editField.tsx"
+      },
+      {
+        "id": "routes/ressources/data/editTable",
+        "path": "ressources/data/editTable",
+        "file": "routes/ressources/data/editTable.tsx"
       },
       {
         "id": "routes/ressources/user/language",
@@ -186,6 +211,11 @@ export const routes = [
             "id": "routes/__builder/data",
             "path": "data",
             "file": "routes/__builder/data.tsx"
+          },
+          {
+            "id": "routes/__builder/api",
+            "path": "api",
+            "file": "routes/__builder/api.tsx"
           },
           {
             "id": "routes/__builder/$",
