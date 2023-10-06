@@ -50,7 +50,7 @@ export default function Login() {
             aria-labelledby="marble"
           />
         </div>
-        <div className="bg-grey-00 min-w-xs mb-10 flex flex-shrink-0 flex-col items-center rounded-2xl p-10 text-center shadow-md">
+        <div className="bg-grey-00 mb-10 flex shrink-0 flex-col items-center rounded-2xl p-10 text-center shadow-md">
           <h1 className="text-l mb-12 font-semibold">{t('login:title')}</h1>
 
           <div className="mb-1 w-full">

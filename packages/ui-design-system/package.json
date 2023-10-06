@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@storybook/addon-interactions": "^7.0.26",
-    "@storybook/addon-links": "^7.0.26"
+    "@storybook/addon-links": "^7.0.26",
+    "eslint-plugin-tailwindcss": "^3.13.0"
   }
 }

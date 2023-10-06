@@ -237,17 +237,17 @@ function TableDetails({
   return (
     <div
       key={tableModel.name}
-      className="mb-10 w-full overflow-hidden rounded-lg bg-white shadow-md"
+      className="border-grey-10 w-full overflow-hidden rounded-lg border"
     >
-      <div className="bg-grey-02 border-grey-10 flex flex-row items-center justify-between border px-8 py-4 text-lg font-bold capitalize">
+      <div className="bg-grey-02 border-b-grey-10 flex flex-row items-center justify-between border-b px-8 py-4 font-bold capitalize">
         {tableModel.name}
-        <div className="flex flex-row justify-end gap-3">
+        <div className="flex flex-row gap-3">
           {canEditDataModel && <CreateField tableId={tableModel.id} />}
           {canIngestData && (
             <NavLink
               className={clsx(
-                'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
-                'hover:bg-purple-110 active:bg-purple-120 text-grey-00  border-bg-purple-100 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50'
+                'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
+                'hover:bg-purple-110 active:bg-purple-120 text-grey-00 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50'
               )}
               to={getRoute('/upload/:objectType', {
                 objectType: tableModel.name,
@@ -342,20 +342,14 @@ export default function Data() {
         <Callout className="whitespace-normal">
           {t('data:your_data_callout')}
         </Callout>
-        {canEditDataModel && (
-          <div className="max-w-150">
-            <CreateTable />
-          </div>
-        )}
-        <div>
-          {dataModel.map((table) => (
-            <TableDetails
-              key={table.name}
-              tableModel={table}
-              dataModel={dataModel}
-            />
-          ))}
-        </div>
+        {canEditDataModel && <CreateTable />}
+        {dataModel.map((table) => (
+          <TableDetails
+            key={table.name}
+            tableModel={table}
+            dataModel={dataModel}
+          />
+        ))}
       </Page.Content>
     </Page.Container>
   );

@@ -122,7 +122,7 @@ export function ErrorBoundary() {
                 />
               </a>
             </div>
-            <div className="bg-grey-00 min-w-xs mb-10 flex flex-shrink-0 rounded-2xl p-10 text-center shadow-md ">
+            <div className="bg-grey-00 mb-10 flex shrink-0 rounded-2xl p-10 text-center shadow-md">
               <ErrorComponent error={error} />
             </div>
           </div>

@@ -206,7 +206,7 @@ function SearchInput({
   const { t } = useTranslation('scenarios');
   return (
     <Input
-      className="m-2 flex-shrink-0"
+      className="m-2 shrink-0"
       type="search"
       value={value}
       onChange={(event) => {

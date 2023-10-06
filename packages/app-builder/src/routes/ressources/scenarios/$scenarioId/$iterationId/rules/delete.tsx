@@ -78,7 +78,7 @@ export function DeleteRule({
               <div className="bg-red-10 mb-8 box-border rounded-[90px] p-4">
                 <Delete width={'64px'} height={'64px'} color="red" />
               </div>
-              <h1 className="text-xl font-semibold">
+              <h1 className="text-l font-semibold">
                 {t('scenarios:delete_rule.title')}
               </h1>
               <p className="text-center">

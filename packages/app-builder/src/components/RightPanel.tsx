@@ -76,7 +76,7 @@ export function createRightPanel(name: string) {
         ref={ref}
         {...props}
         className={clsx(
-          'bg-grey-00 absolute bottom-0 right-0 top-0 flex w-full flex-col shadow',
+          'bg-grey-00 absolute inset-y-0 right-0 flex w-full flex-col shadow',
           'radix-state-open:animate-slideRightAndFadeIn radix-state-closed:animate-slideRightAndFadeOut',
           'gap-4 p-4 lg:gap-8 lg:p-8',
           className

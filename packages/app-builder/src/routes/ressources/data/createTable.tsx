@@ -110,7 +110,7 @@ export function CreateTable() {
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
-        <Button>
+        <Button className="w-fit">
           <Plus width={'24px'} height={'24px'} />
           {t('data:create_table.title')}
         </Button>

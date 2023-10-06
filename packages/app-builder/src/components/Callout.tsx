@@ -25,7 +25,7 @@ export function Callout({
         className
       )}
     >
-      <Lightbulb height="24px" width="24px" className="flex-shrink-0" />
+      <Lightbulb height="24px" width="24px" className="shrink-0" />
       {children}
     </div>
   );

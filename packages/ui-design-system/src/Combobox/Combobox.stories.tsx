@@ -68,7 +68,7 @@ export const Default: StoryFn<typeof Combobox.Root> = ({ ...args }) => {
                   value={book}
                 >
                   <span>{book.title}</span>
-                  <span className="text-grey-50 text-sm">{book.author}</span>
+                  <span className="text-grey-50 text-xs">{book.author}</span>
                 </Combobox.Option>
               ))
             )}
@@ -80,7 +80,7 @@ export const Default: StoryFn<typeof Combobox.Root> = ({ ...args }) => {
         {selectedValue ? (
           <>
             <span>{selectedValue.title}</span>
-            <span className="text-grey-50 text-sm">{selectedValue.author}</span>
+            <span className="text-grey-50 text-xs">{selectedValue.author}</span>
           </>
         ) : (
           <p>None</p>
