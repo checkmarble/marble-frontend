@@ -2,9 +2,10 @@ import { useTranslation } from 'react-i18next';
 
 import { scenarioI18n } from '../../scenario-i18n';
 import {
-  adaptCronToScheduleOption,
+  adaptScheduleOption,
   adaptScheduleOptionToCron,
-} from './ScheduleOption.models';
+  isEditableScheduleOption,
+} from './models';
 import { ScheduleOptionEditor } from './ScheduleOptionEditor';
 import { ScheduleOptionViewer } from './ScheduleOptionViewer';
 
@@ -20,19 +21,18 @@ export function ScheduleOption({
   viewOnly?: boolean;
 }) {
   const { t } = useTranslation(scenarioI18n);
-  const scheduleOption = adaptCronToScheduleOption(schedule ?? '');
 
   return (
     <>
-      {viewOnly || scheduleOption === undefined ? (
-        <ScheduleOptionViewer schedule={schedule} />
-      ) : (
+      {!viewOnly && isEditableScheduleOption(schedule) ? (
         <ScheduleOptionEditor
-          scheduleOption={scheduleOption}
+          scheduleOption={adaptScheduleOption(schedule)}
           setScheduleOption={(scheduleOption) => {
             setSchedule(adaptScheduleOptionToCron(scheduleOption));
           }}
         />
+      ) : (
+        <ScheduleOptionViewer schedule={schedule} />
       )}
       {!hasExportBucket && (
         <p className="text-s text-red-110">
