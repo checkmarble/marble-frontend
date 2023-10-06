@@ -54,9 +54,20 @@ const mapLinkToTableRow = (table: TableModel, link: LinksToSingle) => ({
   exampleUsage: `${table.name}.${link.linkName}.${link.parentFieldName} = ${table.name}.${link.childFieldName}`,
 });
 
-function EditableText({ children }: { children: React.ReactNode }) {
+function EditableText({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="before:hover:bg-grey-05 group relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out">
+    <div
+      className={clsx(
+        'before:hover:bg-grey-05 relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out hover:cursor-pointer',
+        className
+      )}
+    >
       <span className="text-grey-100 relative">{children}</span>
     </div>
   );
@@ -64,13 +75,15 @@ function EditableText({ children }: { children: React.ReactNode }) {
 
 function FormatDescription({ description }: { description: string }) {
   const { t } = useTranslation(handle.i18n);
+
   return (
-    <span className="text-grey-100 relative first-letter:capitalize">
-      {description ? (
-        description
-      ) : (
-        <p className="text-grey-25">{t('data:empty_description')}</p>
+    <span
+      className={clsx(
+        'relative first-letter:capitalize',
+        description ? 'text-grey-100' : 'text-grey-25'
       )}
+    >
+      {description || t('data:empty_description')}
     </span>
   );
 }
@@ -125,7 +138,7 @@ function TableDetails({
         size: 500,
         cell: ({ cell }) => {
           return canEditDataModel ? (
-            <EditableText key={cell.row.original.id}>
+            <EditableText key={cell.row.original.id} className="group">
               <EditField
                 fieldId={cell.row.original.id}
                 description={cell.row.original.description}
@@ -248,7 +261,7 @@ function TableDetails({
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
         {canEditDataModel ? (
-          <EditableText>
+          <EditableText className="group">
             <EditTable table={tableModel}>
               <div className="flex flex-row gap-5">
                 <FormatDescription description={tableModel.description || ''} />
@@ -320,7 +333,7 @@ export default function Data() {
   return (
     <Page.Container>
       <Page.Header className="justify-between">
-        <div className="items-center: flex flex-row items-center">
+        <div className="flex flex-row items-center">
           <Harddrive className="mr-2" height="24px" width="24px" />
           {t('navigation:data')}
         </div>
