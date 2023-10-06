@@ -2,14 +2,14 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionArgs, json, redirect } from '@remix-run/node';
-import { Form, useFetcher } from '@remix-run/react';
+import { useFetcher } from '@remix-run/react';
 import { Button } from '@ui-design-system';
 import { Plus } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 export const handle = {
-  i18n: ['scenarios', 'navigation', 'common'] satisfies Namespace,
+  i18n: ['scenarios'] satisfies Namespace,
 };
 
 export async function action({ request, params }: ActionArgs) {
@@ -57,20 +57,16 @@ export function CreateRule({
   const fetcher = useFetcher<typeof action>();
 
   return (
-    <Form
-      onSubmit={() => {
-        fetcher.submit(null, {
-          method: 'POST',
-          action: `/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
-            iterationId
-          )}/rules/create`,
-        });
-      }}
+    <fetcher.Form
+      method="POST"
+      action={`/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
+        iterationId
+      )}/rules/create`}
     >
-      <Button type="submit">
+      <Button type="submit" disabled={fetcher.state === 'submitting'}>
         <Plus width={'24px'} height={'24px'} />
         {t('scenarios:create_rule.title')}
       </Button>
-    </Form>
+    </fetcher.Form>
   );
 }

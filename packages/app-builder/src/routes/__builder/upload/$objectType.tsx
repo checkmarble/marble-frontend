@@ -85,7 +85,9 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
     }) => {
       if (success) {
         setModalContent({
-          message: t('upload:success_message', { replace: { linesProcessed } }),
+          message: t('upload:success_message', {
+            replace: { linesProcessed, objectType },
+          }),
           success: true,
         });
       } else {
@@ -95,7 +97,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         });
       }
     },
-    [t]
+    [objectType, t]
   );
 
   const onDrop = async (acceptedFiles: File[]) => {
@@ -170,7 +172,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         )}
       >
         <input {...getInputProps()} />
-        {loading && <Loading />}
+        {loading && <Loading className="border-none" />}
         {!loading && (
           <>
             <p>{t('upload:drop_file_cta')}</p>
@@ -185,6 +187,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
       <ResultModal
         isOpen={isModalOpen}
         modalContent={modalContent}
+        objectType={objectType}
         onOpenChange={() => setIsModalOpen(!isModalOpen)}
       />
     </>
@@ -195,10 +198,12 @@ const ResultModal = ({
   onOpenChange,
   isOpen,
   modalContent,
+  objectType,
 }: {
   onOpenChange: () => void;
   isOpen: boolean;
   modalContent: ModalContent;
+  objectType: string;
 }) => {
   const { t } = useTranslation(handle.i18n);
   const Icon = modalContent.success ? Tick : Cross;
@@ -221,7 +226,11 @@ const ResultModal = ({
             <p className="text-l font-semibold">{t('upload:results')}</p>
             <p>{modalContent.message}</p>
             {!modalContent.success && (
-              <p className="mt-6">{t('upload:failure_additional_message')}</p>
+              <p className="mt-6">
+                {t('upload:failure_additional_message', {
+                  replace: { objectType },
+                })}
+              </p>
             )}
           </div>
           <Modal.Close asChild>
@@ -328,7 +337,7 @@ export default function Upload() {
       <Page.Content>
         <Callout className="whitespace-normal">
           <div className="leading-8">
-            <p>{t('upload:upload_callout_1')}</p>
+            <p>{t('upload:upload_callout_1', { replace: { objectType } })}</p>
             <p>{t('upload:upload_callout_2')}</p>
           </div>
         </Callout>
@@ -352,16 +361,21 @@ export default function Upload() {
         <ClientOnly fallback={<Loading />}>
           {() => <UploadForm objectType={objectType} />}
         </ClientOnly>
-        {uploadLogs && <PastUploads uploadLogs={uploadLogs} />}
+        {uploadLogs.length > 0 && <PastUploads uploadLogs={uploadLogs} />}
       </Page.Content>
     </Page.Container>
   );
 }
 
-const Loading = () => {
+const Loading = ({ className }: { className?: string }) => {
   const { t } = useTranslation(handle.i18n);
   return (
-    <div className="border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed">
+    <div
+      className={clsx(
+        className,
+        'border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed'
+      )}
+    >
       {t('common:loading')}
     </div>
   );
