@@ -1199,6 +1199,32 @@ export function postDataModelTableLink(createTableLinkBody: CreateTableLinkBody,
     })));
 }
 /**
+ * Get the OpenAPI specification of the client specific API for data ingestion and decision making
+ */
+export function getDataModelOpenApi(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            info?: object;
+            openapi?: string;
+            tags?: object[];
+            paths?: object;
+            components?: {
+                schemas?: object;
+                securitySchemes?: object;
+            };
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/data-model/openapi", {
+        ...opts
+    }));
+}
+/**
  * List api keys associated with the current organization (present in the JWT)
  */
 export function listApiKeys(opts?: Oazapfts.RequestOpts) {
