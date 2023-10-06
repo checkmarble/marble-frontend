@@ -20,7 +20,10 @@ export function DecisionsList({
   selectedDecisionId: string | null;
   onSelectDecision: (decisionId: string) => void;
 }) {
-  const { t, i18n } = useTranslation(decisionsI18n);
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(decisionsI18n);
 
   const columns = useMemo<ColumnDef<Decision, string>[]>(
     () => [
@@ -57,12 +60,12 @@ export function DecisionsList({
       },
       {
         id: 'created_at',
-        accessorFn: (row) => formatDateTime(i18n.language, row.created_at),
+        accessorFn: (row) => formatDateTime(row.created_at, { language }),
         header: t('decisions:created_at'),
         size: 200,
       },
     ],
-    [i18n.language, t]
+    [language, t]
   );
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: decisions,

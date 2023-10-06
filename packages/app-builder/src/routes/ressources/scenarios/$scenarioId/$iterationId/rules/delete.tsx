@@ -34,7 +34,7 @@ export async function action({ request }: ActionArgs) {
   const { ruleId, scenarioId, iterationId } = parsedForm.data;
   await apiClient.deleteScenarioIterationRule(ruleId);
   return redirect(
-    getRoute('/scenarios/:scenarioId/i/:iterationId/edit/rules', {
+    getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
       scenarioId: fromUUID(scenarioId),
       iterationId: fromUUID(iterationId),
     })

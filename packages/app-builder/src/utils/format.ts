@@ -1,19 +1,27 @@
 import cronstrue from 'cronstrue';
+import { type Options as ConstrueOptions } from 'cronstrue/dist/options';
 
-export function formatDateTime(locale: string, createdAt: string) {
-  return Intl.DateTimeFormat(locale, {
+export function formatDateTime(
+  createdAt: string,
+  { language, ...options }: { language: string } & Intl.DateTimeFormatOptions
+) {
+  return Intl.DateTimeFormat(language, {
     dateStyle: 'short',
     timeStyle: 'short',
+    ...options,
   }).format(new Date(createdAt));
 }
 
-export function formatNumber(locale: string, number: number) {
-  return Intl.NumberFormat(locale).format(number);
+export function formatNumber(
+  number: number,
+  { language, ...options }: { language: string } & Intl.NumberFormatOptions
+) {
+  return Intl.NumberFormat(language, options).format(number);
 }
 
 export function formatSchedule(
   schedule: string,
-  { language }: { language: string }
+  { language, ...options }: { language: string } & ConstrueOptions
 ) {
   // Cronstrue only expose locale for lng, without country code
   const locale = language.split('-')[0];
@@ -23,6 +31,7 @@ export function formatSchedule(
       verbose: false,
       locale,
       throwExceptionOnParseError: false,
+      ...options,
     })
     .toLowerCase();
 }

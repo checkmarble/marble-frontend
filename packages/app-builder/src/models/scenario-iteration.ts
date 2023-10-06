@@ -2,14 +2,15 @@ import * as R from 'remeda';
 
 import { type ScenarioIterationSummary } from './scenario';
 
+//TODO(merge view/edit): create an adapter + extract the sort logic. Move to a repository/service
 export function sortScenarioIterations<T extends ScenarioIterationSummary>(
   scenarioIterations: T[],
   liveVersionId?: string
 ) {
   return R.pipe(
     scenarioIterations,
-    R.partition(({ version }) => version === undefined),
-    ([drafts, versions]) => {
+    R.partition(({ version }) => R.isDefined(version)),
+    ([versions, drafts]) => {
       const sortedDrafts = R.pipe(
         drafts,
         R.map((draft) => ({ ...draft, type: 'draft' as const })),

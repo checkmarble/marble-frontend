@@ -248,20 +248,23 @@ const ResultModal = ({
 };
 
 const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
-  const { t, i18n } = useTranslation(handle.i18n);
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(handle.i18n);
 
   const columns = useMemo<ColumnDef<UploadLog>[]>(
     () => [
       {
         id: 'upload.started_at',
-        accessorFn: (row) => formatDateTime(i18n.language, row.started_at),
+        accessorFn: (row) => formatDateTime(row.started_at, { language }),
         header: t('upload:started_at'),
         size: 200,
       },
       {
         id: 'upload.finished_at',
         accessorFn: (row) =>
-          row.finished_at ? formatDateTime(i18n.language, row.finished_at) : '',
+          row.finished_at ? formatDateTime(row.finished_at, { language }) : '',
         header: t('upload:finished_at'),
         size: 200,
       },
@@ -284,7 +287,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
         size: 200,
       },
     ],
-    [i18n.language, t]
+    [language, t]
   );
 
   const { getBodyProps, getContainerProps, table, rows } = useVirtualTable({
