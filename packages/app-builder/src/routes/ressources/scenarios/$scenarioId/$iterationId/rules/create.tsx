@@ -32,7 +32,7 @@ export async function action({ request, params }: ActionArgs) {
     });
 
     return redirect(
-      getRoute('/scenarios/:scenarioId/i/:iterationId/edit/rules/:ruleId', {
+      getRoute('/scenarios/:scenarioId/i/:iterationId/rules/:ruleId', {
         scenarioId: fromUUID(scenarioId),
         iterationId: fromUUID(iterationId),
         ruleId: fromUUID(rule.id),

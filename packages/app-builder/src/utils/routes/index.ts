@@ -7,17 +7,18 @@ import { type routes } from './routes';
 type Route = {
   readonly id: string;
   readonly path?: string;
-  readonly file: string;
   children?: readonly Route[];
 };
 
 type JoinPath<
   Prefix extends string | undefined,
   Path extends string | undefined
-> = Path extends string
-  ? Prefix extends string
+> = Prefix extends string
+  ? Path extends string
     ? `${Prefix}/${Path}`
-    : Path
+    : Prefix
+  : Path extends string
+  ? Path
   : '';
 
 type GetRoutePaths<

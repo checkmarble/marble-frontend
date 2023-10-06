@@ -1,4 +1,4 @@
-import { LogicalOperatorLabel } from '@app-builder/components/Scenario/LogicalOperator';
+import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
   NewAstNode,
   NewUndefinedAstNode,
@@ -12,8 +12,8 @@ import clsx from 'clsx';
 import React from 'react';
 
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
+import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
-import { RemoveButton } from './RemoveButton';
 
 export interface RootOrWithAndViewModel {
   orNodeId: string;

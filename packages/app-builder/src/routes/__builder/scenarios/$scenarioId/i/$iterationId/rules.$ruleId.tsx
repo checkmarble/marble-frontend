@@ -4,7 +4,6 @@ import {
   scenarioI18n,
   ScenarioPage,
 } from '@app-builder/components';
-import { AstBuilder } from '@app-builder/components/AstBuilder';
 import {
   FormControl,
   FormField,
@@ -13,30 +12,33 @@ import {
   FormMessage,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { type AstNode } from '@app-builder/models';
 import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
+import { useEditorMode } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
+  type AstBuilder as AstBuilderType,
   useAstBuilder,
 } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { countNodeEvaluationErrors } from '@app-builder/services/validation/scenario-validation';
-import { getRoute } from '@app-builder/utils/routes';
+import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import {
   type ActionArgs,
   json,
   type LoaderArgs,
-  redirect,
+  type SerializeFrom,
 } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button, Input, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { z } from 'zod';
 
@@ -48,24 +50,16 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService, makeScenarioService } = serverServices;
-  const { apiClient, editor, scenario, user } =
-    await authService.isAuthenticated(request, {
+  const { apiClient, editor, scenario } = await authService.isAuthenticated(
+    request,
+    {
       failureRedirect: '/login',
-    });
+    }
+  );
 
   const ruleId = fromParams(params, 'ruleId');
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
-
-  if (!user.permissions.canManageScenario) {
-    return redirect(
-      getRoute('/scenarios/:scenarioId/i/:iterationId/view/rules/:ruleId', {
-        scenarioId: fromUUID(scenarioId),
-        iterationId: fromUUID(iterationId),
-        ruleId: fromUUID(ruleId),
-      })
-    );
-  }
 
   const operatorsPromise = editor.listOperators({
     scenarioId,
@@ -100,6 +94,7 @@ const editRuleFormSchema = z.object({
   description: z.string(),
   scoreModifier: z.coerce.number().int().min(-1000).max(1000),
 });
+type EditRuleFormValues = z.infer<typeof editRuleFormSchema>;
 
 export async function action({ request, params }: ActionArgs) {
   const {
@@ -181,6 +176,8 @@ export default function RuleEdit() {
 
   const scenario = useCurrentScenario();
 
+  const editorMode = useEditorMode();
+
   const astEditor = useAstBuilder({
     backendAst: rule.ast,
     backendValidation: rule.validation,
@@ -195,7 +192,7 @@ export default function RuleEdit() {
   const getCurrentAstNode = () =>
     adaptAstNodeFromEditorViewModel(astEditor.editorNodeViewModel);
 
-  const formMethods = useForm<z.infer<typeof editRuleFormSchema>>({
+  const formMethods = useForm<EditRuleFormValues>({
     defaultValues: {
       name: rule.name,
       description: rule.description,
@@ -203,7 +200,7 @@ export default function RuleEdit() {
     },
     mode: 'onChange',
   });
-  const { control, setError } = formMethods;
+  const { setError } = formMethods;
   const { data } = fetcher;
   const errors = data?.errors;
 
@@ -228,104 +225,194 @@ export default function RuleEdit() {
             <ScenarioPage.BackButton />
           </Link>
           {rule.name ?? fromUUID(ruleId)}
-          <Tag size="big" border="square">
-            {t('common:edit')}
-          </Tag>
+          {editorMode === 'edit' && (
+            <Tag size="big" border="square">
+              {t('common:edit')}
+            </Tag>
+          )}
         </div>
-        <Button
-          onClick={() => {
-            const values = formMethods.getValues();
-            fetcher.submit(
-              {
-                astNode: getCurrentAstNode(),
-                formValues: values,
-              },
-              {
-                method: 'PATCH',
-                encType: 'application/json',
-              }
-            );
-          }}
-        >
-          {t('common:save')}
-        </Button>
+        {editorMode === 'edit' && (
+          <Button
+            onClick={() => {
+              const values = formMethods.getValues();
+              fetcher.submit(
+                {
+                  astNode: getCurrentAstNode(),
+                  formValues: values,
+                },
+                {
+                  method: 'PATCH',
+                  encType: 'application/json',
+                }
+              );
+            }}
+          >
+            {t('common:save')}
+          </Button>
+        )}
       </ScenarioPage.Header>
 
-      <ScenarioPage.Content className="max-w-3xl">
-        <Callout variant="error">
-          {t('common:validation_error', {
-            count: countNodeEvaluationErrors(rule.validation),
-          })}
-        </Callout>
-        <Paper.Container scrollable={false}>
-          <FormProvider {...formMethods}>
-            <FormField
-              name="name"
-              control={control}
-              render={({ field, fieldState }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>{t('common:name')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder={t('scenarios:edit_rule.name_placeholder')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="description"
-              control={control}
-              render={({ field, fieldState }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>{t('common:description')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder={t(
-                        'scenarios:edit_rule.description_placeholder'
-                      )}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="scoreModifier"
-              control={control}
-              render={({ field, fieldState }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>{t('scenarios:create_rule.score')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder={t('scenarios:edit_rule.score_placeholder')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-          </FormProvider>
-        </Paper.Container>
-
-        <div className="max-w flex flex-col gap-4">
-          <Paper.Container scrollable={false}>
-            <AstBuilder builder={astEditor} />
-          </Paper.Container>
-        </div>
-        <DeleteRule
-          ruleId={ruleId}
+      {editorMode === 'view' ? (
+        <RuleViewContent builder={astEditor} rule={rule} />
+      ) : (
+        <RuleEditContent
+          builder={astEditor}
+          rule={rule}
           iterationId={iterationId}
           scenarioId={scenarioId}
+          ruleId={ruleId}
+          formMethods={formMethods}
         />
-      </ScenarioPage.Content>
+      )}
     </ScenarioPage.Container>
+  );
+}
+
+function RuleViewContent({
+  builder,
+  rule,
+}: {
+  builder: AstBuilderType;
+  rule: SerializeFrom<typeof loader>['rule'];
+}) {
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(handle.i18n);
+
+  const validationErrorsCount = countNodeEvaluationErrors(rule.validation);
+
+  return (
+    <ScenarioPage.Content className="max-w-3xl">
+      {validationErrorsCount > 0 && (
+        <Callout variant="error">
+          {t('common:validation_error', {
+            count: validationErrorsCount,
+          })}
+        </Callout>
+      )}
+      <Callout className="w-full">{rule.description}</Callout>
+
+      <div className="max-w flex flex-col gap-4">
+        <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
+          <Trans
+            t={t}
+            i18nKey="scenarios:rules.consequence.score_modifier"
+            components={{
+              Score: <span className="font-semibold" />,
+            }}
+            values={{
+              score: formatNumber(rule.scoreModifier, {
+                language,
+                signDisplay: 'always',
+              }),
+            }}
+          />
+        </div>
+        <Paper.Container scrollable={false}>
+          <AstBuilder builder={builder} viewOnly={true} />
+        </Paper.Container>
+      </div>
+    </ScenarioPage.Content>
+  );
+}
+
+function RuleEditContent({
+  ruleId,
+  iterationId,
+  scenarioId,
+  builder,
+  rule,
+  formMethods,
+}: {
+  builder: AstBuilderType;
+  rule: SerializeFrom<typeof loader>['rule'];
+  ruleId: string;
+  scenarioId: string;
+  iterationId: string;
+  formMethods: UseFormReturn<EditRuleFormValues>;
+}) {
+  const { t } = useTranslation(handle.i18n);
+
+  const validationErrorsCount = countNodeEvaluationErrors(rule.validation);
+
+  return (
+    <ScenarioPage.Content className="max-w-3xl">
+      {validationErrorsCount > 0 && (
+        <Callout variant="error">
+          {t('common:validation_error', {
+            count: validationErrorsCount,
+          })}
+        </Callout>
+      )}
+      <Paper.Container scrollable={false}>
+        <FormProvider {...formMethods}>
+          <FormField
+            name="name"
+            control={formMethods.control}
+            render={({ field, fieldState }) => (
+              <FormItem className="flex flex-col gap-2">
+                <FormLabel>{t('common:name')}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder={t('scenarios:edit_rule.name_placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage>{fieldState.error?.message}</FormMessage>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="description"
+            control={formMethods.control}
+            render={({ field, fieldState }) => (
+              <FormItem className="flex flex-col gap-2">
+                <FormLabel>{t('common:description')}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder={t(
+                      'scenarios:edit_rule.description_placeholder'
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage>{fieldState.error?.message}</FormMessage>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="scoreModifier"
+            control={formMethods.control}
+            render={({ field, fieldState }) => (
+              <FormItem className="flex flex-col gap-2">
+                <FormLabel>{t('scenarios:create_rule.score')}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder={t('scenarios:edit_rule.score_placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage>{fieldState.error?.message}</FormMessage>
+              </FormItem>
+            )}
+          />
+        </FormProvider>
+      </Paper.Container>
+
+      <div className="max-w flex flex-col gap-4">
+        <Paper.Container scrollable={false}>
+          <AstBuilder builder={builder} />
+        </Paper.Container>
+      </div>
+      <DeleteRule
+        ruleId={ruleId}
+        iterationId={iterationId}
+        scenarioId={scenarioId}
+      />
+    </ScenarioPage.Content>
   );
 }

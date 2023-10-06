@@ -1,5 +1,4 @@
-import { LogicalOperatorLabel } from '@app-builder/components/Scenario/LogicalOperator';
-import { ScenarioBox } from '@app-builder/components/Scenario/ScenarioBox';
+import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import { NewUndefinedAstNode, type Validation } from '@app-builder/models';
 import {
   type AstBuilder,
@@ -9,8 +8,8 @@ import clsx from 'clsx';
 import { Fragment } from 'react';
 
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
+import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
-import { RemoveButton } from './RemoveButton';
 
 export interface RootAndViewModel {
   nodeId: string;
@@ -70,9 +69,9 @@ export function RootAnd({
    */
   return (
     <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">
-      <ScenarioBox className="bg-grey-02 col-span-4 w-fit p-2 font-semibold text-purple-100">
+      <div className="text-s bg-grey-02 col-span-4 flex h-fit min-h-[40px] w-fit min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
         {builder.triggerObjectType.name}
-      </ScenarioBox>
+      </div>
       {rootAndViewModel.children.map((child, childIndex) => {
         const isFirstCondition = childIndex === 0;
         const isLastCondition =

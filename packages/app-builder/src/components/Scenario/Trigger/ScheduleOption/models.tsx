@@ -60,7 +60,7 @@ export function adaptScheduleOptionToCron({
   isScenarioScheduled,
   frequency,
   scheduleDetail,
-}: ScheduleOption): Cron {
+}: ScheduleOption): string {
   if (!isScenarioScheduled) {
     return '';
   }
