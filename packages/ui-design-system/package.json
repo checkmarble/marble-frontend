@@ -16,8 +16,8 @@
     "vite": "^4.4.11"
   },
   "devDependencies": {
-"@storybook/addon-interactions": "^7.4.6",
-"@storybook/addon-links": "^7.4.6",
+    "@storybook/addon-interactions": "^7.4.6",
+    "@storybook/addon-links": "^7.4.6",
     "eslint-plugin-tailwindcss": "^3.13.0"
   }
 }
