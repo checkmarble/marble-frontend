@@ -1,15 +1,19 @@
 import { Page } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
-import { json, type LoaderArgs } from '@remix-run/node';
+import { json, type LinksFunction, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { Harddrive } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui-react';
+import swaggercss from 'swagger-ui-react/swagger-ui.css';
 
 export const handle = {
   i18n: ['navigation'] satisfies Namespace,
 };
+
+export const links: LinksFunction = () =>
+  swaggercss ? [{ rel: 'stylesheet', href: swaggercss }] : [];
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;

@@ -23,7 +23,6 @@ import {
   AuthenticityTokenProvider,
   createAuthenticityToken,
 } from 'remix-utils';
-import swaggercss from 'swagger-ui-react/swagger-ui.css';
 
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
@@ -32,7 +31,6 @@ import tailwindStyles from './tailwind.css';
 import { getClientEnvVars } from './utils/environment.server';
 
 export const links: LinksFunction = () => [
-  ...(swaggercss ? [{ rel: 'stylesheet', href: swaggercss }] : []),
   { rel: 'stylesheet', href: tailwindStyles },
   { rel: 'stylesheet', href: '/fonts/Inter/inter.css' },
   {
