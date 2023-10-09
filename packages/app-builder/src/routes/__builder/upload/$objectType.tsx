@@ -58,6 +58,7 @@ export async function loader({ request, params }: LoaderArgs) {
 type ModalContent = {
   message: string;
   success: boolean;
+  error?: string;
 };
 
 const UploadForm = ({ objectType }: { objectType: string }) => {
@@ -92,7 +93,8 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         });
       } else {
         setModalContent({
-          message: t('upload:failure_message', { replace: { errorMessage } }),
+          message: t('upload:failure_message'),
+          error: errorMessage,
           success: false,
         });
       }
@@ -226,11 +228,14 @@ const ResultModal = ({
             <p className="text-l font-semibold">{t('upload:results')}</p>
             <p>{modalContent.message}</p>
             {!modalContent.success && (
-              <p className="mt-6">
-                {t('upload:failure_additional_message', {
-                  replace: { objectType },
-                })}
-              </p>
+              <>
+                <p>{modalContent.error}</p>
+                <p className="mt-6">
+                  {t('upload:failure_additional_message', {
+                    replace: { objectType },
+                  })}
+                </p>
+              </>
             )}
           </div>
           <Modal.Close asChild>
