@@ -6,7 +6,7 @@
   "drop_file_cta": "Drop your filled .csv here",
   "pick_file_cta": "Pick a file",
   "success_message": "{{linesProcessed}} {{objectType}} will be added to your data",
-  "failure_message": "We found an error : {{errorMessage}}.",
+  "failure_message": "We found an error:",
   "failure_additional_message": "No {{objectType}} were added to your data",
   "results": "Results",
   "past_uploads": "Past uploads",
