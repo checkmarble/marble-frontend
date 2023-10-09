@@ -272,6 +272,16 @@ export type CreateTableLinkBody = {
     child_table_id: string;
     child_field_id: string;
 };
+export type OpenApiSpec = {
+    info?: object;
+    openapi: string;
+    tags: object[];
+    paths: object;
+    components?: {
+        schemas?: object;
+        securitySchemes?: object;
+    };
+};
 export type ApiKey = {
     api_key_id: string;
     organization_id: string;
@@ -1204,16 +1214,7 @@ export function postDataModelTableLink(createTableLinkBody: CreateTableLinkBody,
 export function getDataModelOpenApi(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: {
-            info?: object;
-            openapi?: string;
-            tags?: object[];
-            paths?: object;
-            components?: {
-                schemas?: object;
-                securitySchemes?: object;
-            };
-        };
+        data: OpenApiSpec;
     } | {
         status: 401;
         data: string;

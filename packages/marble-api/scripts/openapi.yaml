@@ -1315,25 +1315,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  info:
-                    type: object
-                  openapi:
-                    type: string
-                  tags:
-                    type: array
-                    items:
-                      type: object
-                  paths:
-                    type: object
-                  components:
-                    type: object
-                    properties:
-                      schemas:
-                        type: object
-                      securitySchemes:
-                        type: object
+                $ref: '#/components/schemas/OpenAPISpec'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1959,6 +1941,30 @@ components:
           type: string
         child_field_id:
           type: string
+    OpenAPISpec:
+      type: object
+      required:
+        - openapi
+        - tags
+        - paths
+      properties:
+        info:
+          type: object
+        openapi:
+          type: string
+        tags:
+          type: array
+          items:
+            type: object
+        paths:
+          type: object
+        components:
+          type: object
+          properties:
+            schemas:
+              type: object
+            securitySchemes:
+              type: object
 
     Token:
       type: object

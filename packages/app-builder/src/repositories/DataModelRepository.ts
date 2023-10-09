@@ -1,13 +1,10 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import {
-  adaptDataModelDto,
-  type OpenAPISpec,
-  type TableModel,
-} from '@app-builder/models';
+import { adaptDataModelDto, type TableModel } from '@app-builder/models';
+import { type OpenApiSpec } from '@marble-api';
 
 export interface DataModelRepository {
   getDataModel(): Promise<TableModel[]>;
-  getOpenApiSpec(): Promise<OpenAPISpec>;
+  getOpenApiSpec(): Promise<OpenApiSpec>;
 }
 
 export function getDataModelRepository() {
