@@ -1,7 +1,7 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type DialogTriggerProps } from '@radix-ui/react-dialog';
 import { assertNever } from '@typescript-utils';
-import { Variable } from '@ui-icons';
+import { Function } from '@ui-icons';
 import { type ParseKeys } from 'i18next';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -87,7 +87,7 @@ function ScenarioRightPanelContent({ data }: { data: State['data'] }) {
   return (
     <RightPanel.Content className="max-w-xs lg:max-w-sm">
       <RightPanel.Title>
-        <Variable height="24px" width="24px" />
+        <Function height="24px" width="24px" />
         <span className="w-full capitalize">
           {t(titleK[data.type]) ?? data.type}
         </span>
@@ -102,7 +102,7 @@ const titleK: Record<
   NonNullable<State['data']>['type'],
   ParseKeys<['scenarios']>
 > = {
-  formulaAggregation: 'scenarios:rules.variable.title',
+  formulaAggregation: 'scenarios:rules.function.title',
 };
 
 function ScenarioRightPanelDetail({

@@ -11,7 +11,7 @@ export function newAggregatorLabelledAst(
     return {
       name: getAggregatorName(nodeOrAggregator),
       description: '',
-      operandType: 'Variable',
+      operandType: 'Function',
       //TODO(combobox): infer/get aggregator.dataType
       dataType: 'unknown',
       astNode: NewAggregatorAstNode(nodeOrAggregator),
@@ -20,7 +20,7 @@ export function newAggregatorLabelledAst(
   return {
     name: getAggregationDisplayName(nodeOrAggregator),
     description: '',
-    operandType: 'Variable',
+    operandType: 'Function',
     //TODO(combobox): infer/get aggregator.dataType
     dataType: 'unknown',
     astNode: NewAggregatorAstNode(

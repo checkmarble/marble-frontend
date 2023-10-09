@@ -6,6 +6,7 @@ import {
   isCustomListAccess,
   isDatabaseAccess,
   isPayload,
+  isTimeAdd,
   isUndefinedAstNode,
 } from '@app-builder/models';
 import {
@@ -26,6 +27,7 @@ export function isEditableOperand(node: AstNode): boolean {
     isDatabaseAccess(node) ||
     isPayload(node) ||
     isAggregation(node) ||
+    isTimeAdd(node) ||
     isUndefinedAstNode(node)
   );
 }

@@ -1,3 +1,4 @@
+import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 import {
   type EvaluationErrorDto,
   type NodeEvaluationDto,
@@ -167,3 +168,30 @@ export const mergeValidations = (validations: Validation[]): Validation => {
   }
   return { state: 'pending' };
 };
+
+export const parentValidationForNamedChildren = (
+  editorNodeViewModel: EditorNodeViewModel,
+  namedArgumentKey: string
+): Validation => {
+  if (editorNodeViewModel.validation.state !== 'fail') {
+    return { state: editorNodeViewModel.validation.state };
+  }
+  const namedErrors: EvaluationError[] =
+    editorNodeViewModel.validation.errors.filter(
+      (error) => error.argumentName === namedArgumentKey
+    );
+  if (namedErrors.length > 0) {
+    return { state: 'fail', errors: namedErrors };
+  }
+  return { state: 'pending' };
+};
+
+export const computeValidationForNamedChildren = (
+  editorNodeViewModel: EditorNodeViewModel,
+  namedArgumentKey: string
+): Validation =>
+  mergeValidations([
+    editorNodeViewModel.namedChildren[namedArgumentKey]?.validation ??
+      NewPendingValidation(),
+    parentValidationForNamedChildren(editorNodeViewModel, namedArgumentKey),
+  ]);

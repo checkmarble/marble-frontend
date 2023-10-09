@@ -7,6 +7,7 @@ import {
   isCustomListAccess,
   isDatabaseAccess,
   isPayload,
+  isTimeAdd,
   isUndefinedAstNode,
 } from '../ast-node';
 import { type DataType, type TableModel } from '../data-model';
@@ -20,6 +21,7 @@ import { newCustomListLabelledAst } from './CustomList';
 import { newDatabaseAccessorsLabelledAst } from './DatabaseAccessors';
 import { getAstNodeDisplayName } from './getAstNodeDisplayName';
 import { newPayloadAccessorsLabelledAst } from './PayloadAccessor';
+import { newTimeAddLabelledAst } from './TimeAdd';
 import { newUndefinedLabelledAst } from './Undefined';
 
 //TODO(combobox): find a better naming
@@ -30,7 +32,7 @@ export interface LabelledAst {
     | 'Constant'
     | 'CustomList'
     | 'Field'
-    | 'Variable'
+    | 'Function'
     | 'Undefined'
     | 'unknown';
   dataType: DataType;
@@ -76,6 +78,10 @@ export function adaptLabelledAst(
 
   if (isAggregation(node)) {
     return newAggregatorLabelledAst(node);
+  }
+
+  if (isTimeAdd(node)) {
+    return newTimeAddLabelledAst(node);
   }
 
   if (isUndefinedAstNode(node)) {

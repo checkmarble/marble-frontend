@@ -3,11 +3,11 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   Boolean,
   Field,
+  Function,
   List,
   Number,
   Schedule,
   String,
-  Variable,
 } from '@ui-icons';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
@@ -96,8 +96,8 @@ export function getOperatorTypeIcon(operatorType: LabelledAst['operandType']) {
       return List;
     case 'Field':
       return Field;
-    case 'Variable':
-      return Variable;
+    case 'Function':
+      return Function;
     default:
       return undefined;
   }
@@ -111,8 +111,8 @@ export function getOperatorTypeTKey(
       return 'edit_operand.operator_type.list';
     case 'Field':
       return 'edit_operand.operator_type.field';
-    case 'Variable':
-      return 'edit_operand.operator_type.variable';
+    case 'Function':
+      return 'edit_operand.operator_type.function';
     default:
       return undefined;
   }

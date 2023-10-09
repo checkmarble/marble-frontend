@@ -36,12 +36,12 @@ export function NewAstNode({
 export function NewUndefinedAstNode({
   children,
   namedChildren,
-}: Partial<Omit<AstNode, 'name'>> = {}): AstNode {
-  return NewAstNode({
+}: Partial<Omit<AstNode, 'name'>> = {}): UndefinedAstNode {
+  return {
     name: undefinedAstNodeName,
-    children,
-    namedChildren,
-  });
+    children: children ?? [],
+    namedChildren: namedChildren ?? {},
+  };
 }
 
 export function NewEmptyTriggerAstNode(): AstNode {
@@ -133,6 +133,26 @@ export interface AggregationAstNode {
   };
 }
 
+export function NewAggregatorAstNode(
+  aggregatorName: string
+): AggregationAstNode {
+  return {
+    name: aggregationAstNodeName,
+    constant: undefined,
+    children: [],
+    namedChildren: {
+      aggregator: NewConstantAstNode({ constant: aggregatorName }),
+      tableName: NewConstantAstNode({ constant: '' }),
+      fieldName: NewConstantAstNode({ constant: '' }),
+      label: NewConstantAstNode({ constant: '' }),
+      filters: NewAstNode({
+        name: 'List',
+        children: [],
+      }),
+    },
+  };
+}
+
 export const payloadAstNodeName = 'Payload';
 export interface PayloadAstNode {
   name: typeof payloadAstNodeName;
@@ -164,22 +184,39 @@ export function NewCustomListAstNode(
   };
 }
 
-export function NewAggregatorAstNode(
-  aggregatorName: string
-): AggregationAstNode {
+export const timeAddAstNodeName = 'TimeAdd';
+export interface TimeAddAstNode {
+  name: typeof timeAddAstNodeName;
+  constant?: undefined;
+  children: [];
+  namedChildren: {
+    timestampField: TimestampFieldAstNode;
+    sign: ConstantAstNode<string>;
+    duration: ConstantAstNode<string>;
+  };
+}
+export type TimestampFieldAstNode =
+  | DatabaseAccessAstNode
+  | PayloadAstNode
+  | UndefinedAstNode;
+
+export function NewTimeAddAstNode(
+  timestampFieldAstNode: TimestampFieldAstNode = NewUndefinedAstNode(),
+  signAstNode: ConstantAstNode<string> = NewConstantAstNode({
+    constant: '',
+  }),
+  durationAstNode: ConstantAstNode<string> = NewConstantAstNode({
+    constant: '',
+  })
+): TimeAddAstNode {
   return {
-    name: aggregationAstNodeName,
+    name: timeAddAstNodeName,
     constant: undefined,
     children: [],
     namedChildren: {
-      aggregator: NewConstantAstNode({ constant: aggregatorName }),
-      tableName: NewConstantAstNode({ constant: '' }),
-      fieldName: NewConstantAstNode({ constant: '' }),
-      label: NewConstantAstNode({ constant: '' }),
-      filters: NewAstNode({
-        name: 'List',
-        children: [],
-      }),
+      timestampField: timestampFieldAstNode,
+      sign: signAstNode,
+      duration: durationAstNode,
     },
   };
 }
@@ -200,6 +237,10 @@ export function isCustomListAccess(
   node: AstNode
 ): node is CustomListAccessAstNode {
   return node.name === customListAccessAstNodeName;
+}
+
+export function isTimeAdd(node: AstNode): node is TimeAddAstNode {
+  return node.name === timeAddAstNodeName;
 }
 
 export interface OrAndGroupAstNode {
