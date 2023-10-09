@@ -293,26 +293,24 @@ function RuleViewContent({
       )}
       <Callout className="w-full">{rule.description}</Callout>
 
-      <div className="max-w flex flex-col gap-4">
-        <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
-          <Trans
-            t={t}
-            i18nKey="scenarios:rules.consequence.score_modifier"
-            components={{
-              Score: <span className="font-semibold" />,
-            }}
-            values={{
-              score: formatNumber(rule.scoreModifier, {
-                language,
-                signDisplay: 'always',
-              }),
-            }}
-          />
-        </div>
-        <Paper.Container scrollable={false}>
-          <AstBuilder builder={builder} viewOnly={true} />
-        </Paper.Container>
+      <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
+        <Trans
+          t={t}
+          i18nKey="scenarios:rules.consequence.score_modifier"
+          components={{
+            Score: <span className="font-semibold" />,
+          }}
+          values={{
+            score: formatNumber(rule.scoreModifier, {
+              language,
+              signDisplay: 'always',
+            }),
+          }}
+        />
       </div>
+      <Paper.Container scrollable={false}>
+        <AstBuilder builder={builder} viewOnly={true} />
+      </Paper.Container>
     </ScenarioPage.Content>
   );
 }
@@ -403,11 +401,10 @@ function RuleEditContent({
         </FormProvider>
       </Paper.Container>
 
-      <div className="max-w flex flex-col gap-4">
-        <Paper.Container scrollable={false}>
-          <AstBuilder builder={builder} />
-        </Paper.Container>
-      </div>
+      <Paper.Container scrollable={false}>
+        <AstBuilder builder={builder} />
+      </Paper.Container>
+
       <DeleteRule
         ruleId={ruleId}
         iterationId={iterationId}

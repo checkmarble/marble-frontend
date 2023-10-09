@@ -112,7 +112,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
       <Item
         ref={ref}
         className={clsx(
-          'text-color text-s rounded-sm p-2 font-medium outline-none',
+          'text-s rounded-sm p-2 font-medium outline-none',
           'radix-highlighted:bg-purple-05 radix-highlighted:text-purple-100',
           className
         )}

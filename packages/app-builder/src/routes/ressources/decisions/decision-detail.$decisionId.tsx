@@ -107,7 +107,7 @@ function Card({
   return (
     <div
       className={clsx(
-        'border-grey-10 w-full flex-shrink-0 items-center gap-x-1 gap-y-2 rounded border',
+        'border-grey-10 w-full shrink-0 items-center gap-x-1 gap-y-2 rounded border',
         className
       )}
       {...otherProps}

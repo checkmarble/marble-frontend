@@ -35,7 +35,7 @@ export const AggregationEditPanel = ({
   return (
     <div className="bg-grey-02 flex flex-col gap-2 rounded border-l-2 border-l-purple-100 p-2">
       <div className="text-grey-50 text-s flex flex-row items-center gap-2">
-        <Edit className="flex-shrink-0" />
+        <Edit className="shrink-0" />
         {t('scenarios:edit_rule.aggregation_list_title')}
       </div>
       <div className="flex flex-row gap-2">

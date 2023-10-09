@@ -75,15 +75,13 @@ export function OperandEditorDiscoveryResults({
             onSelect={onSelect}
           >
             <GroupHeader.Container className="pl-9">
-              <GroupHeader.Title className="overflow-hidden text-ellipsis whitespace-nowrap">
-                <Label className="text-grey-100 text-s overflow-hidden text-ellipsis whitespace-nowrap">
+              <GroupHeader.Title className="truncate">
+                <Label className="text-grey-100 text-s truncate">
                   <Trans
                     t={t}
                     i18nKey="edit_operand.operator_discovery.from"
                     components={{
-                      Path: (
-                        <span className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold" />
-                      ),
+                      Path: <span className="truncate font-semibold" />,
                     }}
                     values={{
                       path,

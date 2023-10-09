@@ -107,7 +107,7 @@ export default function ScenarioEditLayout() {
             </Tag>
           )}
         </div>
-        <div className="flex-column flex gap-4">
+        <div className="flex flex-row items-center gap-4">
           {withCreateDraftIteration && (
             <CreateDraftIteration
               iterationId={currentIteration.id}
