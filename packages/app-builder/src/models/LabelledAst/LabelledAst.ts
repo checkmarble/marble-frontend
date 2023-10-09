@@ -32,7 +32,7 @@ export interface LabelledAst {
     | 'Constant'
     | 'CustomList'
     | 'Field'
-    | 'Variable'
+    | 'Function'
     | 'Undefined'
     | 'unknown';
   dataType: DataType;

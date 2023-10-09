@@ -29,14 +29,14 @@ export function OperandEditorDiscoveryResults({
   triggerObjectType,
 }: OperandEditorDiscoveryResultsProps) {
   const { t } = useTranslation('scenarios');
-  const { customListOptions, fieldOptions, variableOptions } = R.pipe(
+  const { customListOptions, fieldOptions, functionOptions } = R.pipe(
     options,
     R.groupBy((option) => option.operandType),
-    ({ Field, CustomList, Variable }) => {
+    ({ Field, CustomList, Function }) => {
       return {
         customListOptions: CustomList,
         fieldOptions: Field,
-        variableOptions: Variable,
+        functionOptions: Function,
       };
     }
   );
@@ -110,11 +110,11 @@ export function OperandEditorDiscoveryResults({
         </GroupHeader.Container>
       </OperandDiscoverySubmenu>
 
-      <OperandDiscoverySubmenu options={variableOptions} onSelect={onSelect}>
+      <OperandDiscoverySubmenu options={functionOptions} onSelect={onSelect}>
         <GroupHeader.Container>
           <OperandDiscoveryTitle
-            operandType="Variable"
-            operandsCount={variableOptions.length}
+            operandType="Function"
+            operandsCount={functionOptions.length}
           />
           <GroupHeader.Icon>
             <ArrowRight />

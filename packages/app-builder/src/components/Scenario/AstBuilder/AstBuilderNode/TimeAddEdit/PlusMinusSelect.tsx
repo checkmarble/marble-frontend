@@ -6,6 +6,10 @@ import { getBorderColor } from '../../utils';
 const options = ['+', '-'] as const;
 export type PlusOrMinus = (typeof options)[number];
 
+export const isPlusOrMinus = (value: string): value is PlusOrMinus => {
+  return (options as ReadonlyArray<string>).includes(value);
+};
+
 export const PlusMinusSelect = ({
   value,
   onChange,

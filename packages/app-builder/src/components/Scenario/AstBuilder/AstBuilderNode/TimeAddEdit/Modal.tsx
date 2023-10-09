@@ -25,7 +25,11 @@ import { Temporal } from 'temporal-polyfill';
 import { ErrorMessage } from '../../ErrorMessage';
 import { getBorderColor } from '../../utils';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
-import { PlusMinusSelect, type PlusOrMinus } from './PlusMinusSelect';
+import {
+  isPlusOrMinus,
+  PlusMinusSelect,
+  type PlusOrMinus,
+} from './PlusMinusSelect';
 import { TimestampField } from './TimestampField';
 
 export interface TimeAddViewModal {
@@ -70,11 +74,9 @@ export const adaptTimeAddViewModal = (
   const { duration, durationUnit } =
     adaptDurationAndUnitFromTemporalDuration(temporalDuration);
 
-  const sign = (
-    vm.namedChildren['sign']?.constant !== ''
-      ? vm.namedChildren['sign']?.constant
-      : '+'
-  ) as PlusOrMinus;
+  const sign = isPlusOrMinus(vm.namedChildren['sign']?.constant)
+    ? vm.namedChildren['sign']?.constant
+    : '+';
 
   return {
     nodeId: vm.nodeId,
@@ -196,7 +198,7 @@ const TimeAddEditModalContent = ({
                 })
               }
               validation={value.validation.timestampField}
-              className="flex-grow"
+              className="grow"
             />
             <PlusMinusSelect
               value={value.sign}

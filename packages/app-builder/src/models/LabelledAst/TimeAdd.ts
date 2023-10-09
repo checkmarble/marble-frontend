@@ -15,7 +15,7 @@ export function newTimeAddLabelledAst(
   return {
     name: getTimeAddName(node),
     description: '',
-    operandType: 'Variable',
+    operandType: 'Function',
     dataType: 'unknown',
     astNode: node,
   };
@@ -45,6 +45,7 @@ const getTimeAddName = (node: TimeAddAstNode): string => {
   return `${timestamp} ${sign} ${temporalDurationToString(temporalDuration)}`;
 };
 
+// TODO (i18n): translate & pluralize
 const temporalDurationToString = (
   temporalDuration: Temporal.Duration
 ): string => {

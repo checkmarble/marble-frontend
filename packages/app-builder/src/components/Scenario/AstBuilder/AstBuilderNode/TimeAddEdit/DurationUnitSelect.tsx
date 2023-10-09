@@ -28,11 +28,11 @@ export const DurationUnitSelect = ({
       className="min-w-fit"
       borderColor={getBorderColor(validation)}
     >
-      {options.map((operator) => (
-        <Select.Item key={operator} value={operator}>
+      {options.map((option) => (
+        <Select.Item key={option} value={option}>
           <Select.ItemText>
             <span className="text-s text-grey-100">
-              {t(`scenarios:edit_date.duration_unit_${operator}`)}
+              {t(`scenarios:edit_date.duration_unit_${option}`)}
             </span>
           </Select.ItemText>
         </Select.Item>
