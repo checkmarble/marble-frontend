@@ -14,6 +14,7 @@ export { default as Cross } from './Cross';
 export { default as CurrencyDollar } from './CurrencyDollar';
 export { default as Decision } from './Decision';
 export { default as Delete } from './Delete';
+export { default as Download } from './Download';
 export { default as Draft } from './Draft';
 export { default as Duplicate } from './Duplicate';
 export { default as Edit } from './Edit';

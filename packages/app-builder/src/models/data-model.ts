@@ -126,14 +126,3 @@ export function findDataModelField({
 
   return field;
 }
-
-export interface OpenAPISpec {
-  info?: object | undefined;
-  openapi?: string | undefined;
-  tags?: object[] | undefined;
-  paths?: object | undefined;
-  components?: {
-    schemas?: object;
-    securitySchemes?: object;
-  };
-}
