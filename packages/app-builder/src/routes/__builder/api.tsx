@@ -2,14 +2,17 @@ import { Page } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
 import { json, type LinksFunction, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { Harddrive } from '@ui-icons';
+import { Button } from '@ui-design-system';
+import { Download, Harddrive } from '@ui-icons';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { ClientOnly } from 'remix-utils';
 import SwaggerUI from 'swagger-ui-react';
 import swaggercss from 'swagger-ui-react/swagger-ui.css';
 
 export const handle = {
-  i18n: ['navigation'] satisfies Namespace,
+  i18n: ['navigation', 'api'] satisfies Namespace,
 };
 
 export const links: LinksFunction = () =>
@@ -29,6 +32,23 @@ export async function loader({ request }: LoaderArgs) {
   return json({ openapi });
 }
 
+const LoadingButton = () => {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <Button variant="secondary" className="cursor-wait">
+      <Download className="mr-2" height="24px" width="24px" />
+      {t('api:download_openapi_spec')}
+    </Button>
+  );
+};
+
+const generateJsonOpenapiLink = (openapi: string): string => {
+  const blob = new Blob([openapi], {
+    type: 'application/json;charset=utf-8,',
+  });
+  return URL.createObjectURL(blob);
+};
+
 export default function Api() {
   const { t } = useTranslation(handle.i18n);
   const { openapi } = useLoaderData<typeof loader>();
@@ -42,6 +62,23 @@ export default function Api() {
         </div>
       </Page.Header>
       <Page.Content>
+        <div className="flex">
+          <ClientOnly fallback={<LoadingButton />}>
+            {() => (
+              <a
+                href={generateJsonOpenapiLink(JSON.stringify(openapi))}
+                download={'openapi.json'}
+                className={clsx(
+                  'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
+                  'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100'
+                )}
+              >
+                <Download className="mr-2" height="24px" width="24px" />
+                {t('api:download_openapi_spec')}
+              </a>
+            )}
+          </ClientOnly>
+        </div>
         <SwaggerUI
           spec={openapi}
           supportedSubmitMethods={[]}

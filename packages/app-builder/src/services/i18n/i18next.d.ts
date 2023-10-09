@@ -1,3 +1,4 @@
+import type api from '../../../public/locales/en/api.json';
 import type common from '../../../public/locales/en/common.json';
 import type data from '../../../public/locales/en/data.json';
 import type decisions from '../../../public/locales/en/decisions.json';
@@ -13,15 +14,16 @@ declare module 'i18next' {
   interface CustomTypeOptions {
     defaultNS: typeof defaultNS;
     resources: {
+      api: typeof api;
       common: typeof common;
       data: typeof data;
-      navigation: typeof navigation;
       decisions: typeof decisions;
+      navigation: typeof navigation;
       lists: typeof lists;
       login: typeof login;
       scenarios: typeof scenarios;
-      upload: typeof upload;
       scheduledExecution: typeof scheduledExecution;
+      upload: typeof upload;
     };
   }
 }
