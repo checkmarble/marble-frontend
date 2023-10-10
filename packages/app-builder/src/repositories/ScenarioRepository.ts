@@ -14,7 +14,7 @@ import {
   type ScenarioIterationRule,
   type ScenarioIterationSummary,
 } from '@app-builder/models/scenario';
-import { findRuleValidation } from '@app-builder/services/validation/scenario-validation';
+import { findRuleValidation } from '@app-builder/services/validation';
 
 export interface ScenarioRepository {
   getScenarioIterationRule(args: {

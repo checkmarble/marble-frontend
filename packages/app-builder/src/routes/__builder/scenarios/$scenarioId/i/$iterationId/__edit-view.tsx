@@ -1,11 +1,10 @@
 import {
-  Callout,
   navigationI18n,
   ScenarioPage,
   Scenarios,
-  type ScenariosLinkProps,
   usePermissionsContext,
 } from '@app-builder/components';
+import { withCornerPing } from '@app-builder/components/Ping';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
@@ -13,6 +12,11 @@ import { CreateDraftIteration } from '@app-builder/routes/ressources/scenarios/$
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
+import {
+  hasDecisionErrors,
+  hasRulesErrors,
+  hasTriggerErrors,
+} from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -26,16 +30,6 @@ import invariant from 'tiny-invariant';
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
 };
-
-const LINKS: ScenariosLinkProps[] = [
-  { labelTKey: 'navigation:scenario.trigger', to: './trigger', Icon: Trigger },
-  { labelTKey: 'navigation:scenario.rules', to: './rules', Icon: Rules },
-  {
-    labelTKey: 'navigation:scenario.decision',
-    to: './decision',
-    Icon: Decision,
-  },
-];
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
@@ -126,11 +120,48 @@ export default function ScenarioEditLayout() {
       </ScenarioPage.Header>
       <ScenarioPage.Content>
         <Scenarios.Nav>
-          {LINKS.map((linkProps) => (
-            <li key={linkProps.labelTKey}>
-              <Scenarios.Link {...linkProps} />
-            </li>
-          ))}
+          <li>
+            <Scenarios.Link
+              labelTKey="navigation:scenario.trigger"
+              to="./trigger"
+              Icon={
+                hasTriggerErrors(scenarioValidation)
+                  ? withCornerPing({
+                      children: <Trigger />,
+                      variant: 'top-right',
+                    })
+                  : Trigger
+              }
+            />
+          </li>
+          <li>
+            <Scenarios.Link
+              labelTKey="navigation:scenario.rules"
+              to="./rules"
+              Icon={
+                hasRulesErrors(scenarioValidation)
+                  ? withCornerPing({
+                      children: <Rules />,
+                      variant: 'top-right',
+                    })
+                  : Rules
+              }
+            />
+          </li>
+          <li>
+            <Scenarios.Link
+              labelTKey="navigation:scenario.decision"
+              to="./decision"
+              Icon={
+                hasDecisionErrors(scenarioValidation)
+                  ? withCornerPing({
+                      children: <Decision />,
+                      variant: 'top-right',
+                    })
+                  : Decision
+              }
+            />
+          </li>
         </Scenarios.Nav>
         <Outlet />
       </ScenarioPage.Content>

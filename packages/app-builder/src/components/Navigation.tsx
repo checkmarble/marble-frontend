@@ -69,7 +69,7 @@ function ScenariosLink({ Icon, labelTKey, to }: SidebarLinkProps) {
       }
       to={to}
     >
-      <Icon height="24px" width="24px" />
+      <Icon className="text-[24px]" />
       {t(labelTKey)}
     </NavLink>
   );

@@ -24,7 +24,7 @@ import {
   useAstBuilder,
 } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
-import { countNodeEvaluationErrors } from '@app-builder/services/validation/scenario-validation';
+import { countNodeEvaluationErrors } from '@app-builder/services/validation';
 import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import {

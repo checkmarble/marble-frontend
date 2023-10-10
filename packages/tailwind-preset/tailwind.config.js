@@ -19,6 +19,16 @@ module.exports = {
         maxWidth: {
           75: '75%',
         },
+        'ping-slow': {
+          '10%': {
+            transform: 'scale(2)',
+            opacity: 0,
+          },
+          '100%': {
+            transform: 'scale(2)',
+            opacity: 0,
+          },
+        },
         overlayShow: {
           from: {
             opacity: 0,
@@ -59,6 +69,7 @@ module.exports = {
         },
       },
       animation: {
+        'ping-slow': 'ping-slow 5s ease infinite',
         slideUpAndFade: 'slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
         overlayShow: 'overlayShow 200ms cubic-bezier(0.16, 1, 0.3, 1)',
         slideRightAndFadeIn:
