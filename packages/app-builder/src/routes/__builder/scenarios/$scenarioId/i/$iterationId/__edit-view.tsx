@@ -125,7 +125,6 @@ export default function ScenarioEditLayout() {
         </div>
       </ScenarioPage.Header>
       <ScenarioPage.Content>
-        <SanityErrors errors={scenarioValidation?.errors ?? []} />
         <Scenarios.Nav>
           {LINKS.map((linkProps) => (
             <li key={linkProps.labelTKey}>
@@ -136,28 +135,5 @@ export default function ScenarioEditLayout() {
         <Outlet />
       </ScenarioPage.Content>
     </ScenarioPage.Container>
-  );
-}
-
-function SanityErrors({ errors }: { errors: string[] }) {
-  const { t } = useTranslation(handle.i18n);
-
-  if (errors.length === 0) return null;
-
-  return (
-    <Callout variant="error" className="w-fit">
-      <div className="flex flex-col">
-        <p>
-          {t('common:error', {
-            count: errors.length,
-          })}
-        </p>
-        <ul className="list-inside list-disc">
-          {errors.map((error) => (
-            <li key={error}>{error}</li>
-          ))}
-        </ul>
-      </div>
-    </Callout>
   );
 }

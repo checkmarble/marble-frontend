@@ -71,7 +71,7 @@ export function getScenarioRepository() {
           }
         );
       const scenarioValidation = adaptScenarioValidation(scenario_validation);
-      return scenarioValidation.triggerEvaluation;
+      return scenarioValidation.trigger.triggerEvaluation;
     },
     validateScenarioIterationRule: async ({ iterationId, ruleId, rule }) => {
       const { scenario_validation } =

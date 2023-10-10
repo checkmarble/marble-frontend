@@ -26,11 +26,11 @@ export function findRuleValidation(
   validation: ScenarioValidation,
   ruleId: string
 ): NodeEvaluation {
-  const evaluation = validation.rulesEvaluations[ruleId];
+  const evaluation = validation.rules.rules[ruleId];
 
   invariant(evaluation !== undefined, `Rule ${ruleId} not found in validation`);
 
-  return evaluation;
+  return evaluation.ruleEvaluation;
 }
 
 export function countNodeEvaluationErrors(evaluation: NodeEvaluation): number {
