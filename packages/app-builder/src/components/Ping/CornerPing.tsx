@@ -22,8 +22,9 @@ export function CornerPing({
     <span className={clsx('relative', className)}>
       {children}
       <Ping
+        aria-hidden="true"
         className={clsx(
-          'border-grey-00 absolute h-[10px] w-[10px] border-2 text-red-100',
+          'border-grey-00 absolute box-content h-[6px] w-[6px] border-2 text-red-100',
           style[variant]
         )}
       />

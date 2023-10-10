@@ -16,6 +16,7 @@ import {
   hasDecisionErrors,
   hasRulesErrors,
   hasTriggerErrors,
+  useCurrentScenarioValidation,
 } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, useParam } from '@app-builder/utils/short-uuid';
@@ -38,11 +39,6 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
-  const iterationId = fromParams(params, 'iterationId');
-
-  const scenarioValidationPromise = scenario.validate({
-    iterationId: iterationId,
-  });
 
   const scenarioIterationsPromise = scenario.listScenarioIterations({
     scenarioId,
@@ -50,15 +46,14 @@ export async function loader({ request, params }: LoaderArgs) {
 
   return json({
     scenarioIterations: await scenarioIterationsPromise,
-    scenarioValidation: await scenarioValidationPromise,
   });
 }
 
 export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
-  const { scenarioIterations, scenarioValidation } =
-    useLoaderData<typeof loader>();
+  const scenarioValidation = useCurrentScenarioValidation();
+  const { scenarioIterations } = useLoaderData<typeof loader>();
   const { canManageScenario, canPublishScenario } = usePermissionsContext();
 
   const sortedScenarioIterations = sortScenarioIterations(
@@ -122,6 +117,7 @@ export default function ScenarioEditLayout() {
         <Scenarios.Nav>
           <li>
             <Scenarios.Link
+              aria-invalid={hasTriggerErrors(scenarioValidation)}
               labelTKey="navigation:scenario.trigger"
               to="./trigger"
               Icon={
@@ -136,6 +132,7 @@ export default function ScenarioEditLayout() {
           </li>
           <li>
             <Scenarios.Link
+              aria-invalid={hasRulesErrors(scenarioValidation)}
               labelTKey="navigation:scenario.rules"
               to="./rules"
               Icon={
@@ -150,6 +147,7 @@ export default function ScenarioEditLayout() {
           </li>
           <li>
             <Scenarios.Link
+              aria-invalid={hasDecisionErrors(scenarioValidation)}
               labelTKey="navigation:scenario.decision"
               to="./decision"
               Icon={

@@ -57,3 +57,10 @@ export function hasDecisionErrors(validation: ScenarioValidation): boolean {
 
   return false;
 }
+
+export function hasRuleErrors(
+  validation: ScenarioValidation,
+  ruleId: string
+): boolean {
+  return countNodeEvaluationErrors(findRuleValidation(validation, ruleId)) > 0;
+}

@@ -1,9 +1,11 @@
 import { usePermissionsContext } from '@app-builder/components';
 import { EditorModeContextProvider } from '@app-builder/services/editor';
+import { CurrentScenarioIterationContextProvider } from '@app-builder/services/editor/current-scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
+import { CurrentScenarioValidationContextProvider } from '@app-builder/services/validation/current-scenario-validation';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
-import { Outlet, useLoaderData, useRouteLoaderData } from '@remix-run/react';
+import { json, type LoaderArgs } from '@remix-run/node';
+import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { isDefined } from 'remeda';
 
@@ -19,28 +21,38 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const iterationId = fromParams(params, 'iterationId');
 
-  const scenarioIteration = await scenario.getScenarioIteration({
+  const scenarioIterationPromise = scenario.getScenarioIteration({
     iterationId,
   });
-  return json(scenarioIteration);
-}
 
-export const useCurrentScenarioIteration = () =>
-  useRouteLoaderData(
-    'routes/__builder/scenarios/$scenarioId/i/$iterationId'
-  ) as SerializeFrom<typeof loader>;
+  const scenarioValidationPromise = scenario.validate({
+    iterationId,
+  });
+
+  return json({
+    scenarioIteration: await scenarioIterationPromise,
+    scenarioValidation: await scenarioValidationPromise,
+  });
+}
 
 export default function CurrentScenarioIterationProvider() {
   const { canManageScenario } = usePermissionsContext();
-  const currentIteration = useLoaderData<typeof loader>();
+  const { scenarioIteration, scenarioValidation } =
+    useLoaderData<typeof loader>();
 
   //TODO(merge view/edit): move this logic in an adapter from DTO
   const editorMode =
-    canManageScenario && !isDefined(currentIteration.version) ? 'edit' : 'view';
+    canManageScenario && !isDefined(scenarioIteration.version)
+      ? 'edit'
+      : 'view';
 
   return (
-    <EditorModeContextProvider value={editorMode}>
-      <Outlet />
-    </EditorModeContextProvider>
+    <CurrentScenarioIterationContextProvider value={scenarioIteration}>
+      <CurrentScenarioValidationContextProvider value={scenarioValidation}>
+        <EditorModeContextProvider value={editorMode}>
+          <Outlet />
+        </EditorModeContextProvider>
+      </CurrentScenarioValidationContextProvider>
+    </CurrentScenarioIterationContextProvider>
   );
 }

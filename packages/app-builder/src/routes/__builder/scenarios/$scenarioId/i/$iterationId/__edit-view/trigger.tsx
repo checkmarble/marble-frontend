@@ -9,7 +9,10 @@ import {
 } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
-import { useEditorMode } from '@app-builder/services/editor';
+import {
+  useCurrentScenarioIteration,
+  useEditorMode,
+} from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   useAstBuilder,
@@ -23,8 +26,6 @@ import { Button } from '@ui-design-system';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-
-import { useCurrentScenarioIteration } from '../../$iterationId';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
