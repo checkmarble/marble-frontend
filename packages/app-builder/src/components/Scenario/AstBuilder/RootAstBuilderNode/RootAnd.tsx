@@ -70,7 +70,7 @@ export function RootAnd({
   return (
     <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">
       <div className="text-s bg-grey-02 col-span-4 flex h-fit min-h-[40px] w-fit min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
-        {builder.triggerObjectType.name}
+        {builder.triggerObjectTable.name}
       </div>
       {rootAndViewModel.children.map((child, childIndex) => {
         const isFirstCondition = childIndex === 0;

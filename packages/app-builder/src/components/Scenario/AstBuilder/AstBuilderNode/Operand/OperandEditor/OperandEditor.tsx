@@ -106,7 +106,7 @@ const OperandEditorContent = forwardRef<
     );
     const payloadAccessors = builder.identifiers.payloadAccessors.map((node) =>
       newPayloadAccessorsLabelledAst({
-        triggerObjectType: builder.triggerObjectType,
+        triggerObjectTable: builder.triggerObjectTable,
         node,
       })
     );
@@ -126,7 +126,7 @@ const OperandEditorContent = forwardRef<
     builder.dataModel,
     builder.identifiers.databaseAccessors,
     builder.identifiers.payloadAccessors,
-    builder.triggerObjectType,
+    builder.triggerObjectTable,
   ]);
 
   const [searchText, setSearchText] = useState('');
@@ -173,7 +173,7 @@ const OperandEditorContent = forwardRef<
           <OperandEditorDiscoveryResults
             options={options}
             onSelect={handleSelectOption}
-            triggerObjectType={builder.triggerObjectType}
+            triggerObjectTable={builder.triggerObjectTable}
           />
         ) : (
           <OperandEditorSearchResults

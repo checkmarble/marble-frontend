@@ -20,13 +20,13 @@ import {
 interface OperandEditorDiscoveryResultsProps {
   options: LabelledAst[];
   onSelect: (option: LabelledAst) => void;
-  triggerObjectType: TableModel;
+  triggerObjectTable: TableModel;
 }
 
 export function OperandEditorDiscoveryResults({
   options,
   onSelect,
-  triggerObjectType,
+  triggerObjectTable,
 }: OperandEditorDiscoveryResultsProps) {
   const { t } = useTranslation('scenarios');
   const { customListOptions, fieldOptions, functionOptions } = R.pipe(
@@ -46,7 +46,7 @@ export function OperandEditorDiscoveryResults({
     R.groupBy((option) => {
       const { astNode } = option;
       if (isPayload(astNode)) {
-        return triggerObjectType.name;
+        return triggerObjectTable.name;
       }
       if (isDatabaseAccess(astNode)) {
         return [

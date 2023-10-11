@@ -95,7 +95,7 @@ export interface AstBuilder {
   operators: AstOperator[];
   dataModel: TableModel[];
   customLists: CustomList[];
-  triggerObjectType: TableModel;
+  triggerObjectTable: TableModel;
   setConstant: (nodeId: string, newValue: ConstantType) => void;
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
@@ -233,7 +233,7 @@ export function useAstBuilder({
     operators,
     dataModel,
     customLists,
-    triggerObjectType: findDataModelTableByName({
+    triggerObjectTable: findDataModelTableByName({
       dataModel: dataModel,
       tableName: triggerObjectType,
     }),

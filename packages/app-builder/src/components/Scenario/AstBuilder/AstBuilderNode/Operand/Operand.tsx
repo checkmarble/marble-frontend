@@ -48,7 +48,7 @@ export function Operand({
   const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
   const labelledAst = adaptLabelledAst(astNode, {
     dataModel: builder.dataModel,
-    triggerObjectType: builder.triggerObjectType,
+    triggerObjectTable: builder.triggerObjectTable,
     customLists: builder.customLists,
   });
   const isEditable = !!labelledAst && isEditableOperand(astNode);
