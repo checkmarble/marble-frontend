@@ -14,7 +14,7 @@ import {
   type ScenarioIterationRule,
   type ScenarioIterationSummary,
 } from '@app-builder/models/scenario';
-import { findRuleValidation } from '@app-builder/services/validation/scenario-validation';
+import { findRuleValidation } from '@app-builder/services/validation';
 
 export interface ScenarioRepository {
   getScenarioIterationRule(args: {
@@ -71,7 +71,7 @@ export function getScenarioRepository() {
           }
         );
       const scenarioValidation = adaptScenarioValidation(scenario_validation);
-      return scenarioValidation.triggerEvaluation;
+      return scenarioValidation.trigger.triggerEvaluation;
     },
     validateScenarioIterationRule: async ({ iterationId, ruleId, rule }) => {
       const { scenario_validation } =

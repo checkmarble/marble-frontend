@@ -1,11 +1,10 @@
 import {
-  Callout,
   navigationI18n,
   ScenarioPage,
   Scenarios,
-  type ScenariosLinkProps,
   usePermissionsContext,
 } from '@app-builder/components';
+import { withCornerPing } from '@app-builder/components/Ping';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
@@ -13,6 +12,12 @@ import { CreateDraftIteration } from '@app-builder/routes/ressources/scenarios/$
 import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
+import {
+  hasDecisionErrors,
+  hasRulesErrors,
+  hasTriggerErrors,
+  useCurrentScenarioValidation,
+} from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -27,16 +32,6 @@ export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
 };
 
-const LINKS: ScenariosLinkProps[] = [
-  { labelTKey: 'navigation:scenario.trigger', to: './trigger', Icon: Trigger },
-  { labelTKey: 'navigation:scenario.rules', to: './rules', Icon: Rules },
-  {
-    labelTKey: 'navigation:scenario.decision',
-    to: './decision',
-    Icon: Decision,
-  },
-];
-
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
   const { scenario } = await authService.isAuthenticated(request, {
@@ -44,11 +39,6 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
-  const iterationId = fromParams(params, 'iterationId');
-
-  const scenarioValidationPromise = scenario.validate({
-    iterationId: iterationId,
-  });
 
   const scenarioIterationsPromise = scenario.listScenarioIterations({
     scenarioId,
@@ -56,15 +46,14 @@ export async function loader({ request, params }: LoaderArgs) {
 
   return json({
     scenarioIterations: await scenarioIterationsPromise,
-    scenarioValidation: await scenarioValidationPromise,
   });
 }
 
 export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
-  const { scenarioIterations, scenarioValidation } =
-    useLoaderData<typeof loader>();
+  const scenarioValidation = useCurrentScenarioValidation();
+  const { scenarioIterations } = useLoaderData<typeof loader>();
   const { canManageScenario, canPublishScenario } = usePermissionsContext();
 
   const sortedScenarioIterations = sortScenarioIterations(
@@ -125,39 +114,55 @@ export default function ScenarioEditLayout() {
         </div>
       </ScenarioPage.Header>
       <ScenarioPage.Content>
-        <SanityErrors errors={scenarioValidation?.errors ?? []} />
         <Scenarios.Nav>
-          {LINKS.map((linkProps) => (
-            <li key={linkProps.labelTKey}>
-              <Scenarios.Link {...linkProps} />
-            </li>
-          ))}
+          <li>
+            <Scenarios.Link
+              aria-invalid={hasTriggerErrors(scenarioValidation)}
+              labelTKey="navigation:scenario.trigger"
+              to="./trigger"
+              Icon={
+                hasTriggerErrors(scenarioValidation)
+                  ? withCornerPing({
+                      children: <Trigger />,
+                      variant: 'top-right',
+                    })
+                  : Trigger
+              }
+            />
+          </li>
+          <li>
+            <Scenarios.Link
+              aria-invalid={hasRulesErrors(scenarioValidation)}
+              labelTKey="navigation:scenario.rules"
+              to="./rules"
+              Icon={
+                hasRulesErrors(scenarioValidation)
+                  ? withCornerPing({
+                      children: <Rules />,
+                      variant: 'top-right',
+                    })
+                  : Rules
+              }
+            />
+          </li>
+          <li>
+            <Scenarios.Link
+              aria-invalid={hasDecisionErrors(scenarioValidation)}
+              labelTKey="navigation:scenario.decision"
+              to="./decision"
+              Icon={
+                hasDecisionErrors(scenarioValidation)
+                  ? withCornerPing({
+                      children: <Decision />,
+                      variant: 'top-right',
+                    })
+                  : Decision
+              }
+            />
+          </li>
         </Scenarios.Nav>
         <Outlet />
       </ScenarioPage.Content>
     </ScenarioPage.Container>
-  );
-}
-
-function SanityErrors({ errors }: { errors: string[] }) {
-  const { t } = useTranslation(handle.i18n);
-
-  if (errors.length === 0) return null;
-
-  return (
-    <Callout variant="error" className="w-fit">
-      <div className="flex flex-col">
-        <p>
-          {t('common:error', {
-            count: errors.length,
-          })}
-        </p>
-        <ul className="list-inside list-disc">
-          {errors.map((error) => (
-            <li key={error}>{error}</li>
-          ))}
-        </ul>
-      </div>
-    </Callout>
   );
 }

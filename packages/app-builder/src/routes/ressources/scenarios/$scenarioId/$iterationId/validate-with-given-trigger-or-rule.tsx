@@ -4,7 +4,7 @@ import {
   type AstNode,
 } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
-import { findRuleValidation } from '@app-builder/services/validation/scenario-validation';
+import { findRuleValidation } from '@app-builder/services/validation';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type NodeDto } from '@marble-api';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -88,7 +88,7 @@ export function useTriggerOrRuleValidationFetcher(
     scenarioValidation === null
       ? null
       : ruleId === null
-      ? scenarioValidation.triggerEvaluation
+      ? scenarioValidation.trigger.triggerEvaluation
       : findRuleValidation(scenarioValidation, ruleId);
 
   return {

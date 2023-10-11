@@ -75,9 +75,22 @@ export type Validation =
   | ValidationFailure;
 
 export interface ScenarioValidation {
-  errors: string[];
-  triggerEvaluation: NodeEvaluation;
-  rulesEvaluations: Record<string, NodeEvaluation>;
+  trigger: {
+    errors: string[];
+    triggerEvaluation: NodeEvaluation;
+  };
+  rules: {
+    errors: string[];
+    rules: {
+      [key: string]: {
+        errors: string[];
+        ruleEvaluation: NodeEvaluation;
+      };
+    };
+  };
+  decision: {
+    errors: string[];
+  };
 }
 
 function adaptEvaluationError(dto: EvaluationErrorDto): EvaluationError {
@@ -117,9 +130,20 @@ export function adaptScenarioValidation(
   dto: ScenarioValidationDto
 ): ScenarioValidation {
   return {
-    errors: dto.errors,
-    triggerEvaluation: adaptNodeEvaluation(dto.trigger_evaluation),
-    rulesEvaluations: R.mapValues(dto.rules_evaluations, adaptNodeEvaluation),
+    trigger: {
+      errors: dto.trigger.errors.map(({ error }) => error),
+      triggerEvaluation: adaptNodeEvaluation(dto.trigger.trigger_evaluation),
+    },
+    rules: {
+      errors: dto.rules.errors.map(({ error }) => error),
+      rules: R.mapValues(dto.rules.rules, (rule) => ({
+        errors: rule.errors.map(({ error }) => error),
+        ruleEvaluation: adaptNodeEvaluation(rule.rule_evaluation),
+      })),
+    },
+    decision: {
+      errors: dto.decision.errors.map(({ error }) => error),
+    },
   };
 }
 

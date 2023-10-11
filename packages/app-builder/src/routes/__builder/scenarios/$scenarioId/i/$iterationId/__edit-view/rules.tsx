@@ -1,6 +1,11 @@
+import { Ping } from '@app-builder/components/Ping';
 import { CreateRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/create';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
+import {
+  hasRuleErrors,
+  useCurrentScenarioValidation,
+} from '@app-builder/services/validation';
 import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ScenarioIterationRuleDto } from '@marble-api';
@@ -47,14 +52,29 @@ export default function Rules() {
 
   const navigate = useNavigate();
   const rules = useLoaderData<typeof loader>();
+  const scenarioValidation = useCurrentScenarioValidation();
 
   const columns = useMemo<ColumnDef<ScenarioIterationRuleDto>[]>(
     () => [
       {
         id: 'name',
         accessorFn: (row) => row.name,
-        header: t('scenarios:rules.name'),
+        header: () => <span className="ml-4">{t('scenarios:rules.name')}</span>,
         size: 200,
+        cell: ({ getValue, row }) => {
+          const hasErrors = hasRuleErrors(scenarioValidation, row.original.id);
+
+          return (
+            <span className="flex items-center gap-2">
+              <span className="flex w-2 items-center justify-center">
+                {hasErrors && (
+                  <Ping className="relative box-content h-[6px] w-[6px] border border-transparent text-red-100" />
+                )}
+              </span>
+              <span>{getValue<string>()}</span>
+            </span>
+          );
+        },
       },
       {
         id: 'description',

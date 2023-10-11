@@ -2380,20 +2380,54 @@ components:
     ScenarioValidationDto:
       type: object
       required:
-        - errors
-        - trigger_evaluation
-        - rules_evaluations
+        - trigger
+        - rules
+        - decision
       properties:
-        errors:
-          type: array
-          items:
-            type: string
-        trigger_evaluation:
-          $ref: '#/components/schemas/NodeEvaluationDto'
-        rules_evaluations:
+        trigger:
           type: object
-          additionalProperties:
-            $ref: '#/components/schemas/NodeEvaluationDto'
+          required:
+            - errors
+            - trigger_evaluation
+          properties:
+            errors:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScenarioValidationErrorDto'
+            trigger_evaluation:
+              $ref: '#/components/schemas/NodeEvaluationDto'
+        rules:
+          type: object
+          required:
+            - errors
+            - rules
+          properties:
+            errors:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScenarioValidationErrorDto'
+            rules:
+              additionalProperties:
+                type: object
+                required:
+                  - errors
+                  - rule_evaluation
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ScenarioValidationErrorDto'
+                  rule_evaluation:
+                    $ref: '#/components/schemas/NodeEvaluationDto'
+        decision:
+          type: object
+          required:
+            - errors
+          properties:
+            errors:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScenarioValidationErrorDto'
     CreateScenarioIterationRuleBody:
       type: object
       required:
@@ -2519,6 +2553,26 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/NodeEvaluationDto'
+    ScenarioValidationErrorDto:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          $ref: '#/components/schemas/ScenarioValidationErrorCodeDto'
+        message:
+          type: string
+    ScenarioValidationErrorCodeDto:
+      type: string
+      enum:
+        - DATA_MODEL_NOT_FOUND
+        - TRIGGER_OBJECT_NOT_FOUND
+        - TRIGGER_CONDITION_REQUIRED
+        - RULE_FORMULA_REQUIRED
+        - SCORE_REVIEW_THRESHOLD_REQUIRED
+        - SCORE_REJECT_THRESHOLD_REQUIRED
+        - SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH
     EvaluationErrorDto:
       type: object
       required:
