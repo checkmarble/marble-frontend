@@ -1857,7 +1857,7 @@ components:
           type: string
         is_enum:
           type: boolean
-        enum_values:
+        values:
           type: array
           items:
             type: string
