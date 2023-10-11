@@ -10,7 +10,7 @@ export interface DataModelRepository {
 export function getDataModelRepository() {
   return (marbleApiClient: MarbleApi): DataModelRepository => ({
     getDataModel: async () => {
-      const { data_model } = await marbleApiClient.getDataModelV2();
+      const { data_model } = await marbleApiClient.getDataModel();
 
       return adaptDataModelDto(data_model);
     },

@@ -1131,32 +1131,6 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-  /data-model/v2:
-    get:
-      tags:
-        - Data Model
-      summary: Get the data model associated with the current organization (present in the JWT) (new version)
-      operationId: getDataModelV2
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: The data model from the organization
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - data_model
-                properties:
-                  data_model:
-                    $ref: '#/components/schemas/DataModelDto'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
   /data-model/tables:
     post:
       tags:
