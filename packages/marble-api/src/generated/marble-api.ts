@@ -1098,28 +1098,6 @@ export function getDataModel(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
- * Get the data model associated with the current organization (present in the JWT) (new version)
- */
-export function getDataModelV2(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            data_model: DataModelDto;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>("/data-model/v2", {
-        ...opts
-    }));
-}
-/**
  * Create a new table on the data model
  */
 export function postDataModelTable(createTableBody: CreateTableBody, opts?: Oazapfts.RequestOpts) {
