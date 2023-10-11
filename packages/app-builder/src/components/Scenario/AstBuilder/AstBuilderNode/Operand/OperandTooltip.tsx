@@ -1,6 +1,5 @@
 import { type LabelledAst } from '@app-builder/models';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { t } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +10,7 @@ import {
   getOperatorTypeTKey,
 } from './OperandEditor/OperandOption/Option';
 
-const MAX_ENUM_VALUES = 100;
+const MAX_ENUM_VALUES = 50;
 
 interface OperandTooltipProps {
   operand: {
@@ -36,6 +35,7 @@ export function OperandTooltip({
   sideOffset,
   alignOffset,
 }: OperandTooltipProps) {
+  const { t } = useTranslation(['data']);
   const typeInfos = [
     {
       Icon: getOperatorTypeIcon(operand.operandType),
@@ -114,7 +114,7 @@ function TypeInfos({
     tKey: ReturnType<typeof getDataTypeTKey>;
   }[];
 }) {
-  const { t } = useTranslation('scenarios');
+  const { t } = useTranslation(['scenarios']);
 
   if (typeInfos.filter(({ tKey }) => !!tKey).length === 0) return null;
 
