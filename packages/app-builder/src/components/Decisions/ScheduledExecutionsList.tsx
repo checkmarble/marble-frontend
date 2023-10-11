@@ -2,7 +2,9 @@ import { formatDateTime } from '@app-builder/utils/format';
 import { type ScheduledExecution } from '@marble-api';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import { Table, useVirtualTable } from '@ui-design-system';
+import { Cross, RestartAlt, Tick } from '@ui-icons';
 import clsx from 'clsx';
+import { type ParseKeys } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -35,8 +37,21 @@ export function ScheduledExecutionsList({
       },
       {
         id: 'number-of-created-decisions',
-        accessorFn: (s) => s.number_of_created_decisions,
+        accessorFn: (s) =>
+          s.status == 'success' ? s.number_of_created_decisions : '0',
         header: t('scheduledExecution:number_of_created_decisions'),
+        size: 100,
+      },
+      {
+        id: 'status',
+        accessorFn: (s) => s.status,
+        cell: ({ getValue }) => (
+          <div className="flex flex-row items-center gap-2">
+            {getStatusIcon(getValue<string>())}
+            <p className="capitalize">{t(getStatusTKey(getValue<string>()))}</p>
+          </div>
+        ),
+        header: t('scheduledExecution:status'),
         size: 200,
       },
       {
@@ -47,12 +62,13 @@ export function ScheduledExecutionsList({
       },
       {
         id: 'download',
-        accessorFn: (s) => s.id,
+        accessorFn: (s) => s.status == 'success' && s.id,
         header: '',
         size: 200,
-        cell: (r) => (
-          <ScheduledExecutionDetails scheduleExecutionId={r.getValue()} />
-        ),
+        cell: (r) =>
+          r.getValue() ? (
+            <ScheduledExecutionDetails scheduleExecutionId={r.getValue()} />
+          ) : null,
       },
     ],
     [language, t]
@@ -82,3 +98,23 @@ export function ScheduledExecutionsList({
     </Table.Container>
   );
 }
+
+const getStatusIcon = (status: string) => {
+  if (status === 'success') {
+    return <Tick className="text-green-100" height="24px" width="24px" />;
+  }
+  if (status === 'failure') {
+    return <Cross className="text-red-100" height="24px" width="24px" />;
+  }
+  return <RestartAlt className="text-grey-50" height="24px" width="24px" />;
+};
+
+const getStatusTKey = (status: string): ParseKeys<['scheduledExecution']> => {
+  if (status === 'success') {
+    return 'scheduledExecution:status_success';
+  }
+  if (status === 'failure') {
+    return 'scheduledExecution:status_failure';
+  }
+  return 'scheduledExecution:status_pending';
+};

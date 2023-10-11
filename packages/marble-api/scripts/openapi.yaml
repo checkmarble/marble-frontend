@@ -755,6 +755,31 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /scenario-iterations/{scenarioIterationId}/schedule-execution:
+    post:
+      tags:
+        - Scenario Iterations
+      summary: Schedule a scenario execution
+      operationId: scheduleScenarioExecution
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioIterationId
+          description: ID of the scenario iteration that need to be scheduled
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: Data created
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scenario-iterations/{scenarioIterationId}/validate:
     get:
       tags:
