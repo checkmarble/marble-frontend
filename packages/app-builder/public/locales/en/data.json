@@ -39,5 +39,6 @@
   "edit_table.button_accept": "Save changes",
   "edit_table.title": "Edit description",
   "empty_description": "No description",
-  "upload_data": "Upload data"
+  "upload_data": "Upload data",
+  "enum_options": "Options:"
 }

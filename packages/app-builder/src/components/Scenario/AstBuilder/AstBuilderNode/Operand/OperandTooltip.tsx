@@ -1,5 +1,6 @@
 import { type LabelledAst } from '@app-builder/models';
 import * as Tooltip from '@radix-ui/react-tooltip';
+import { t } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -77,13 +78,13 @@ export function OperandTooltip({
               </p>
             </div>
             {operand.description && (
-              <p className="text-grey-50 text-xs font-normal">
+              <p className="text-grey-50 text-xs font-normal first-letter:capitalize">
                 {operand.description}
               </p>
             )}
             {enumValues && enumValues.length > 0 && (
               <div>
-                <p className="text-grey-50 text-s">{'Enum options:'}</p>
+                <p className="text-grey-50 text-s">{t('data:enum_options')}</p>
                 <div className="px-1">
                   {enumValues.map((value, index) => {
                     return (

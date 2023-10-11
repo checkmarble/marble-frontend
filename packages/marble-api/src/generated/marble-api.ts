@@ -245,7 +245,7 @@ export type DataModelFieldDto = {
     nullable: boolean;
     description: string;
     is_enum: boolean;
-    enum_values?: string[];
+    values?: string[];
 };
 export type LinkToSingleDto = {
     linked_table_name: string;
