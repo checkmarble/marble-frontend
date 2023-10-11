@@ -14,6 +14,8 @@ export interface DataModelField {
   dataType: DataType;
   description: string;
   nullable: boolean;
+  isEnum: boolean;
+  enumValues?: string[];
 }
 
 export interface LinksToSingle {
@@ -42,6 +44,44 @@ function adaptFieldDto(dataModelFieldsDto: {
       dataType: field.data_type,
       description: field.description,
       nullable: field.nullable,
+      isEnum: field.is_enum || true,
+      enumValues: field.enum_values || [
+        'bla',
+        'and bla',
+        'TRANSFER',
+        'CARD',
+        'PAYIN',
+        'PAYOUT',
+        'DIRECT_DEBIT',
+        'and bla',
+        'PAYOUT',
+        'DIRECT_DEBIT',
+        'and bla',
+        'TRANSFER',
+        'CARD',
+        'PAYIN',
+        'PAYOUT',
+        'DIRECT_DEBIT',
+        'bla',
+        'and bla',
+        'TRANSFER',
+        'CARD',
+        'PAYIN',
+        'PAYOUT',
+        'DIRECT_DEBITDIRECT_DEBITDIRECT_DEBITDIRECT_DEBITDIRECT_DEBITDIRECT_DEBIT',
+        'and bla',
+        'TRANSFER',
+        'CARD',
+        'PAYIN',
+        'PAYOUT',
+        'DIRECT_DEBIT',
+        'and bla',
+        'TRANSFER',
+        'CARD',
+        'PAYIN',
+        'PAYOUT',
+        'DIRECT_DEBIT',
+      ],
     }))
   );
 }
