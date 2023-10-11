@@ -1,9 +1,9 @@
 import {
   FormControl,
+  FormError,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
@@ -161,7 +161,7 @@ export function CreateLink({
                 <FormField
                   name="name"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem className="flex flex-col gap-2">
                       <FormLabel>{t('data:link_name')}</FormLabel>
                       <FormControl>
@@ -171,7 +171,7 @@ export function CreateLink({
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage>{fieldState.error?.message}</FormMessage>
+                      <FormError />
                     </FormItem>
                   )}
                 />
@@ -180,7 +180,7 @@ export function CreateLink({
                   <FormField
                     name="childTableId"
                     control={control}
-                    render={({ field, fieldState }) => (
+                    render={({ field }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
                         <FormLabel>
                           {t('data:create_link.child_table')}
@@ -202,14 +202,14 @@ export function CreateLink({
                             })}
                           </Select.Default>
                         </FormControl>
-                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                        <FormError />
                       </FormItem>
                     )}
                   />
                   <FormField
                     name="childFieldId"
                     control={control}
-                    render={({ field, fieldState }) => (
+                    render={({ field }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
                         <FormLabel>
                           {t('data:create_link.child_field')}
@@ -230,7 +230,7 @@ export function CreateLink({
                             })}
                           </Select.Default>
                         </FormControl>
-                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                        <FormError />
                       </FormItem>
                     )}
                   />
@@ -239,7 +239,7 @@ export function CreateLink({
                   <FormField
                     name="parentTableId"
                     control={control}
-                    render={({ field, fieldState }) => (
+                    render={({ field }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
                         <FormLabel>
                           {t('data:create_link.parent_table')}
@@ -265,14 +265,14 @@ export function CreateLink({
                             })}
                           </Select.Default>
                         </FormControl>
-                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                        <FormError />
                       </FormItem>
                     )}
                   />
                   <FormField
                     name="parentFieldId"
                     control={control}
-                    render={({ field, fieldState }) => (
+                    render={({ field }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
                         <FormLabel>
                           {t('data:create_link.parent_field')}
@@ -294,7 +294,7 @@ export function CreateLink({
                             })}
                           </Select.Default>
                         </FormControl>
-                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                        <FormError />
                       </FormItem>
                     )}
                   />

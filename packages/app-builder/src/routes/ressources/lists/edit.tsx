@@ -1,9 +1,9 @@
 import {
   FormControl,
+  FormError,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@app-builder/components/Form';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
@@ -114,7 +114,7 @@ export function EditList({
                 <FormField
                   name="name"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem className="flex flex-col gap-2">
                       <FormLabel>{t('lists:name')}</FormLabel>
                       <FormControl>
@@ -124,14 +124,14 @@ export function EditList({
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage>{fieldState.error?.message}</FormMessage>
+                      <FormError />
                     </FormItem>
                   )}
                 />
                 <FormField
                   name="description"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem className="flex flex-col gap-2">
                       <FormLabel>{t('lists:description')}</FormLabel>
                       <FormControl>
@@ -143,7 +143,7 @@ export function EditList({
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage>{fieldState.error?.message}</FormMessage>
+                      <FormError />
                     </FormItem>
                   )}
                 />

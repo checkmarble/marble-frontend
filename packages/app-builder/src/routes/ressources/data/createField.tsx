@@ -1,9 +1,9 @@
 import {
   FormControl,
+  FormError,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
@@ -153,7 +153,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                 <FormField
                   name="name"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem className="flex flex-col gap-2">
                       <FormLabel>{t('data:field_name')}</FormLabel>
                       <FormControl>
@@ -163,14 +163,14 @@ export function CreateField({ tableId }: { tableId: string }) {
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage>{fieldState.error?.message}</FormMessage>
+                      <FormError />
                     </FormItem>
                   )}
                 />
                 <FormField
                   name="description"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem className="flex flex-col gap-2">
                       <FormLabel>{t('data:description')}</FormLabel>
                       <FormControl>
@@ -182,7 +182,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage>{fieldState.error?.message}</FormMessage>
+                      <FormError />
                     </FormItem>
                   )}
                 />
@@ -190,7 +190,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                   <FormField
                     name="required"
                     control={control}
-                    render={({ field, fieldState }) => (
+                    render={({ field }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
                         <FormLabel>{t('data:create_field.required')}</FormLabel>
                         <FormControl>
@@ -210,14 +210,14 @@ export function CreateField({ tableId }: { tableId: string }) {
                             })}
                           </Select.Default>
                         </FormControl>
-                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                        <FormError />
                       </FormItem>
                     )}
                   />
                   <FormField
                     name="type"
                     control={control}
-                    render={({ field, fieldState }) => (
+                    render={({ field }) => (
                       <FormItem className="flex flex-1 flex-col gap-2">
                         <FormLabel>{t('data:create_field.type')}</FormLabel>
                         <FormControl>
@@ -237,7 +237,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                             })}
                           </Select.Default>
                         </FormControl>
-                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                        <FormError />
                       </FormItem>
                     )}
                   />

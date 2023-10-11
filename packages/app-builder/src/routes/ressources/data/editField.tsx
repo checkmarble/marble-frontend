@@ -1,9 +1,9 @@
 import {
   FormControl,
+  FormError,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@app-builder/components/Form';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
@@ -113,7 +113,7 @@ export function EditField({
                 <FormField
                   name="description"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem className="flex flex-col gap-2">
                       <FormLabel>{t('data:description')}</FormLabel>
                       <FormControl>
@@ -125,7 +125,7 @@ export function EditField({
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage>{fieldState.error?.message}</FormMessage>
+                      <FormError />
                     </FormItem>
                   )}
                 />

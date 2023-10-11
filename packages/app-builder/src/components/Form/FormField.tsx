@@ -8,6 +8,7 @@ import {
   type FieldPath,
   type FieldValues,
   useFormContext,
+  useFormState,
 } from 'react-hook-form';
 
 type FormFieldContextValue<
@@ -136,15 +137,16 @@ const FormDescription = React.forwardRef<
 });
 FormDescription.displayName = 'FormDescription';
 
-const FormMessage = React.forwardRef<
+const FormError = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
   const { error, formMessageId } = useFormField();
+  const { isValid } = useFormState();
 
-  const body = error ? error?.message : children;
+  const body = children ?? error?.message ?? error?.root?.message;
 
-  if (!body) {
+  if (isValid || !body) {
     return null;
   }
 
@@ -162,14 +164,14 @@ const FormMessage = React.forwardRef<
     </p>
   );
 });
-FormMessage.displayName = 'FormMessage';
+FormError.displayName = 'FormError';
 
 export {
   FormControl,
   FormDescription,
+  FormError,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   useFormField,
 };

@@ -3,6 +3,7 @@ import {
   type EvaluationErrorDto,
   type NodeEvaluationDto,
   type ScenarioValidationDto,
+  type ScenarioValidationErrorCodeDto,
 } from '@marble-api';
 import * as R from 'remeda';
 
@@ -76,20 +77,20 @@ export type Validation =
 
 export interface ScenarioValidation {
   trigger: {
-    errors: string[];
+    errors: ScenarioValidationErrorCodeDto[];
     triggerEvaluation: NodeEvaluation;
   };
   rules: {
-    errors: string[];
+    errors: ScenarioValidationErrorCodeDto[];
     rules: {
       [key: string]: {
-        errors: string[];
+        errors: ScenarioValidationErrorCodeDto[];
         ruleEvaluation: NodeEvaluation;
       };
     };
   };
   decision: {
-    errors: string[];
+    errors: ScenarioValidationErrorCodeDto[];
   };
 }
 

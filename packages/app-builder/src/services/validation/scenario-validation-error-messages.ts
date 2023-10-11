@@ -1,4 +1,5 @@
 import { type EvaluationError } from '@app-builder/models';
+import { type ScenarioValidationErrorCodeDto } from '@marble-api';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -49,6 +50,32 @@ export function useGetNodeEvaluationErrorMessage() {
 
         default:
           return `${evaluationError.error}:${evaluationError.message}`;
+      }
+    },
+    [t]
+  );
+}
+
+export function useGetScenarioEvaluationErrorMessage() {
+  const { t } = useTranslation(['scenarios']);
+
+  return useCallback(
+    (evaluationErrorCode: ScenarioValidationErrorCodeDto) => {
+      switch (evaluationErrorCode) {
+        case 'SCORE_REVIEW_THRESHOLD_REQUIRED':
+          return t(
+            'scenarios:validation.decision.score_review_threshold_required'
+          );
+        case 'SCORE_REJECT_THRESHOLD_REQUIRED':
+          return t(
+            'scenarios:validation.decision.score_reject_threshold_required'
+          );
+        case 'SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH':
+          return t(
+            'scenarios:validation.decision.score_reject_review_thresholds_missmatch'
+          );
+        default:
+          return evaluationErrorCode;
       }
     },
     [t]

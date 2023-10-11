@@ -1,9 +1,9 @@
 import {
   FormControl,
+  FormError,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@app-builder/components/Form';
 import { type TableModel } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
@@ -112,7 +112,7 @@ export function EditTable({
                 <FormField
                   name="description"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem className="flex flex-col gap-2">
                       <FormLabel>{t('data:description')}</FormLabel>
                       <FormControl>
@@ -124,7 +124,7 @@ export function EditTable({
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage>{fieldState.error?.message}</FormMessage>
+                      <FormError />
                     </FormItem>
                   )}
                 />

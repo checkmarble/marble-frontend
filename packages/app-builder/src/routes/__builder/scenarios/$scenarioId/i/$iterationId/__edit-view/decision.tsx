@@ -5,6 +5,13 @@ import {
   Paper,
   scenarioI18n,
 } from '@app-builder/components';
+import {
+  FormControl,
+  FormError,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import {
   useCurrentScenarioIteration,
@@ -16,9 +23,10 @@ import { fromParams } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useSubmit } from '@remix-run/react';
-import { Button, Input, Tag } from '@ui-design-system';
-import { type Namespace } from 'i18next';
-import { Form, useForm } from 'react-hook-form';
+import { Button, Input } from '@ui-design-system';
+import { type Namespace, type TFunction } from 'i18next';
+import { useEffect } from 'react';
+import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 
@@ -26,29 +34,46 @@ export const handle = {
   i18n: [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace,
 };
 
-const formSchema = z
-  .object({
-    thresholds: z.object({
-      scoreReviewThreshold: z.coerce.number().int(),
-      scoreRejectThreshold: z.coerce.number().int(),
-    }),
-  })
-  .refine(
-    ({ thresholds: { scoreReviewThreshold, scoreRejectThreshold } }) => {
-      return scoreRejectThreshold >= scoreReviewThreshold;
-    },
-    {
-      message: 'Reject threshold must be greater than review threshold',
-      path: ['thresholds'],
-    }
-  );
+function getFormSchema(t: TFunction<typeof handle.i18n>) {
+  return z
+    .object({
+      thresholds: z.object({
+        scoreReviewThreshold: z.coerce
+          .number({
+            required_error: t(
+              'scenarios:validation.decision.score_review_threshold_required'
+            ),
+          })
+          .int(),
+        scoreRejectThreshold: z.coerce
+          .number({
+            required_error: t(
+              'scenarios:validation.decision.score_reject_threshold_required'
+            ),
+          })
+          .int(),
+      }),
+    })
+    .refine(
+      ({ thresholds: { scoreReviewThreshold, scoreRejectThreshold } }) => {
+        return scoreRejectThreshold >= scoreReviewThreshold;
+      },
+      {
+        message: t(
+          'scenarios:validation.decision.score_reject_review_thresholds_missmatch'
+        ),
+        path: ['thresholds'],
+      }
+    );
+}
 
 export async function action({ request, params }: ActionArgs) {
-  const { authService } = serverServices;
+  const { authService, i18nextService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  const parsedForm = await parseFormSafe(request, formSchema);
+  const t = await i18nextService.getFixedT(request, 'scenarios');
+  const parsedForm = await parseFormSafe(request, getFormSchema(t));
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
 
@@ -105,75 +130,9 @@ export default function Decision() {
 
   const editorMode = useEditorMode();
 
-  return (
-    <Paper.Container className="max-w-3xl">
-      <div className="flex flex-col gap-2 lg:gap-4">
-        <Paper.Title>{t('scenarios:decision.score_based.title')}</Paper.Title>
-        <Callout>{t('scenarios:decision.score_based.callout')}</Callout>
-      </div>
-
-      {editorMode === 'view' ? (
-        <DecisionViewer
-          scoreReviewThreshold={scoreReviewThreshold}
-          scoreRejectThreshold={scoreRejectThreshold}
-        />
-      ) : (
-        <DecisionEditor
-          scoreReviewThreshold={scoreReviewThreshold}
-          scoreRejectThreshold={scoreRejectThreshold}
-        />
-      )}
-    </Paper.Container>
-  );
-}
-
-function DecisionViewer({
-  scoreReviewThreshold,
-  scoreRejectThreshold,
-}: {
-  scoreReviewThreshold?: number;
-  scoreRejectThreshold?: number;
-}) {
-  const { t } = useTranslation(handle.i18n);
-  return (
-    <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
-      <Outcome border="square" size="big" outcome="approve" />
-      <div className="flex flex-row items-center gap-1 lg:gap-2">
-        {t('scenarios:decision.score_based.approve_condition')}
-        <Tag border="square" size="big" color="grey">
-          {scoreReviewThreshold}
-        </Tag>
-      </div>
-
-      <Outcome border="square" size="big" outcome="review" />
-      {t('scenarios:decision.score_based.review_condition')}
-
-      <Outcome border="square" size="big" outcome="decline" />
-      <div className="flex flex-row items-center gap-1 lg:gap-2">
-        {t('scenarios:decision.score_based.decline_condition')}
-        <Tag border="square" size="big" color="grey">
-          {scoreRejectThreshold}
-        </Tag>
-      </div>
-    </div>
-  );
-}
-
-function DecisionEditor({
-  scoreReviewThreshold,
-  scoreRejectThreshold,
-}: {
-  scoreReviewThreshold?: number;
-  scoreRejectThreshold?: number;
-}) {
-  const { t } = useTranslation(handle.i18n);
   const submit = useSubmit();
-  const {
-    control,
-    register,
-    formState: { errors, isValid },
-  } = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const formMethods = useForm<z.infer<ReturnType<typeof getFormSchema>>>({
+    resolver: zodResolver(getFormSchema(t)),
     defaultValues: {
       thresholds: {
         scoreReviewThreshold,
@@ -181,46 +140,101 @@ function DecisionEditor({
       },
     },
   });
+  const { control, trigger } = formMethods;
+
+  useEffect(() => {
+    void trigger();
+  }, [trigger]);
+
+  const disabled = editorMode === 'view';
 
   return (
-    <Form
-      control={control}
-      onSubmit={({ formData }) => {
-        submit(formData, { method: 'POST' });
-      }}
-    >
-      <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
-        <Outcome border="square" size="big" outcome="approve" />
-        <div className="flex flex-row items-center gap-1 lg:gap-2">
-          {t('scenarios:decision.score_based.approve_condition')}
-          <Input
-            {...register('thresholds.scoreReviewThreshold')}
-            type="number"
-            className="relative w-fit"
-          />
-        </div>
-
-        <Outcome border="square" size="big" outcome="review" />
-        {t('scenarios:decision.score_based.review_condition')}
-
-        <Outcome border="square" size="big" outcome="decline" />
-        <div className="flex flex-row items-center gap-1 lg:gap-2">
-          {t('scenarios:decision.score_based.decline_condition')}
-          <Input
-            className="relative w-fit"
-            {...register('thresholds.scoreRejectThreshold')}
-            type="number"
-          />
-        </div>
+    <Paper.Container className="max-w-3xl">
+      <div className="flex flex-col gap-2 lg:gap-4">
+        <Paper.Title>{t('scenarios:decision.score_based.title')}</Paper.Title>
+        <Callout>{t('scenarios:decision.score_based.callout')}</Callout>
       </div>
-      <div className="flex flex-row-reverse items-center justify-between">
-        <Button type="submit">{t('common:save')}</Button>
-        {!isValid && (
-          <div className="bg-grey-00 text-s text-red-100">
-            {errors?.thresholds?.root?.message}
+
+      <Form
+        control={control}
+        onSubmit={({ formData }) => {
+          submit(formData, { method: 'POST' });
+        }}
+        className="flex flex-col gap-2"
+      >
+        <FormProvider {...formMethods}>
+          <div className="grid grid-cols-[repeat(2,auto)] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
+            <Outcome border="square" size="big" outcome="approve" />
+            <FormField
+              control={control}
+              name="thresholds.scoreReviewThreshold"
+              disabled={disabled}
+              render={({ field }) => (
+                <FormItem className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
+                  {t('scenarios:decision.score_based.approve_condition')}
+                  <FormLabel className="sr-only">
+                    {t('scenarios:decision.score_based.score_review_threshold')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      className="relative w-fit"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormError className={style.errorMessage} />
+                </FormItem>
+              )}
+            />
+
+            <Outcome border="square" size="big" outcome="review" />
+            {t('scenarios:decision.score_based.review_condition')}
+
+            <Outcome border="square" size="big" outcome="decline" />
+            <FormField
+              control={control}
+              name="thresholds.scoreRejectThreshold"
+              disabled={disabled}
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center gap-1 lg:gap-2">
+                  {t('scenarios:decision.score_based.decline_condition')}
+                  <FormLabel className="sr-only">
+                    {t('scenarios:decision.score_based.score_reject_threshold')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      className="relative w-fit"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormError className={style.errorMessage} />
+                </FormItem>
+              )}
+            />
           </div>
-        )}
-      </div>
-    </Form>
+          <div className="flex flex-row items-center justify-between">
+            <span>
+              <FormField
+                control={control}
+                name="thresholds"
+                disabled={disabled}
+                render={() => <FormError className={style.errorMessage} />}
+              />
+            </span>
+            <span>
+              {editorMode === 'edit' && (
+                <Button type="submit">{t('common:save')}</Button>
+              )}
+            </span>
+          </div>
+        </FormProvider>
+      </Form>
+    </Paper.Container>
   );
 }
+
+const style = {
+  errorMessage:
+    'bg-red-05 rounded px-2 py-1 h-8 flex items-center justify-center',
+} as const;
