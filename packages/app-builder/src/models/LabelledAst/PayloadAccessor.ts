@@ -6,14 +6,14 @@ import {
 } from '@app-builder/models';
 
 export function newPayloadAccessorsLabelledAst({
-  triggerObjectType,
+  triggerObjectTable,
   node,
 }: {
-  triggerObjectType: TableModel;
+  triggerObjectTable: TableModel;
   node: PayloadAstNode;
 }): LabelledAst {
   const field = findDataModelField({
-    table: triggerObjectType,
+    table: triggerObjectTable,
     fieldName: node.children[0].constant,
   });
   return {

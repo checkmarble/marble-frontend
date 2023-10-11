@@ -41,7 +41,7 @@ export const TimestampField = ({
     );
     const payloadAccessors = builder.identifiers.payloadAccessors.map((node) =>
       newPayloadAccessorsLabelledAst({
-        triggerObjectType: builder.triggerObjectType,
+        triggerObjectTable: builder.triggerObjectTable,
         node,
       })
     );
@@ -55,7 +55,7 @@ export const TimestampField = ({
     builder.dataModel,
     builder.identifiers.databaseAccessors,
     builder.identifiers.payloadAccessors,
-    builder.triggerObjectType,
+    builder.triggerObjectTable,
   ]);
 
   const onSelect = useCallback(
@@ -72,7 +72,7 @@ export const TimestampField = ({
   let initialValue: LabelledAst | null = null;
   if (node && isPayload(node)) {
     initialValue = newPayloadAccessorsLabelledAst({
-      triggerObjectType: builder.triggerObjectType,
+      triggerObjectTable: builder.triggerObjectTable,
       node,
     });
   }

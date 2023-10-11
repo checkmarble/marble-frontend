@@ -42,11 +42,11 @@ export interface LabelledAst {
 export function adaptLabelledAst(
   node: AstNode,
   {
-    triggerObjectType,
+    triggerObjectTable,
     dataModel,
     customLists,
   }: {
-    triggerObjectType: TableModel;
+    triggerObjectTable: TableModel;
     dataModel: TableModel[];
     customLists: CustomList[];
   }
@@ -71,7 +71,7 @@ export function adaptLabelledAst(
 
   if (isPayload(node)) {
     return newPayloadAccessorsLabelledAst({
-      triggerObjectType,
+      triggerObjectTable,
       node,
     });
   }
