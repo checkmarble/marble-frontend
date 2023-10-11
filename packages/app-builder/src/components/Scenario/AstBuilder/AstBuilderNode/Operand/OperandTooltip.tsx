@@ -1,5 +1,6 @@
 import { type LabelledAst } from '@app-builder/models';
 import * as Tooltip from '@radix-ui/react-tooltip';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -9,12 +10,15 @@ import {
   getOperatorTypeTKey,
 } from './OperandEditor/OperandOption/Option';
 
+const MAX_ENUM_VALUES = 100;
+
 interface OperandTooltipProps {
   operand: {
     name: string;
     operandType: LabelledAst['operandType'];
     dataType: LabelledAst['dataType'];
     description?: string;
+    enumValues?: string[];
   };
   children: React.ReactNode;
   side?: Tooltip.TooltipContentProps['side'];
@@ -41,6 +45,16 @@ export function OperandTooltip({
       tKey: getDataTypeTKey(operand.dataType),
     },
   ];
+  const enumValues = useMemo(() => {
+    if (!operand.enumValues) return null;
+    const sorted = [...operand.enumValues].sort();
+    if (sorted.length > MAX_ENUM_VALUES) {
+      const sliced = sorted.slice(0, MAX_ENUM_VALUES);
+      sliced.push('...');
+      return sliced;
+    }
+    return sorted;
+  }, [operand.enumValues]);
 
   return (
     <Tooltip.Root delayDuration={0}>
@@ -53,19 +67,38 @@ export function OperandTooltip({
           align={align}
           sideOffset={sideOffset}
           alignOffset={alignOffset}
-          className="bg-grey-00 border-grey-10 flex max-w-[200px] flex-col gap-2 rounded border p-4 shadow-md"
+          className="bg-grey-00 border-grey-10 flex max-h-[400px] max-w-[300px] overflow-y-auto overflow-x-hidden rounded border shadow-md"
         >
-          <div className="flex flex-col gap-1">
-            <TypeInfos typeInfos={typeInfos} />
-            <p className="text-grey-100 text-s overflow-hidden text-ellipsis font-normal">
-              {operand.name}
-            </p>
+          <div className="flex flex-col gap-2 p-4">
+            <div className="flex flex-col gap-1">
+              <TypeInfos typeInfos={typeInfos} />
+              <p className="text-grey-100 text-s text-ellipsis font-normal">
+                {operand.name}
+              </p>
+            </div>
+            {operand.description && (
+              <p className="text-grey-50 text-xs font-normal">
+                {operand.description}
+              </p>
+            )}
+            {enumValues && enumValues.length > 0 && (
+              <div>
+                <p className="text-grey-50 text-s">{'Enum options:'}</p>
+                <div className="px-1">
+                  {enumValues.map((value, index) => {
+                    return (
+                      <p
+                        key={-index}
+                        className="text-grey-50 text-xs font-normal"
+                      >
+                        {value}
+                      </p>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
-          {operand.description && (
-            <p className="text-grey-50 text-xs font-normal">
-              {operand.description}
-            </p>
-          )}
         </Tooltip.Content>
       </Tooltip.Portal>
     </Tooltip.Root>

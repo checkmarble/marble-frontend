@@ -244,6 +244,8 @@ export type DataModelFieldDto = {
     data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
     nullable: boolean;
     description: string;
+    is_enum: boolean;
+    enum_values?: string[];
 };
 export type LinkToSingleDto = {
     linked_table_name: string;

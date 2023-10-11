@@ -1842,6 +1842,7 @@ components:
         - nullable
         - data_type
         - description
+        - is_enum
       properties:
         id:
           type: string
@@ -1854,6 +1855,12 @@ components:
           type: boolean
         description:
           type: string
+        is_enum:
+          type: boolean
+        enum_values:
+          type: array
+          items:
+            type: string
     DataModelDto:
       type: object
       required:

@@ -44,6 +44,7 @@ export function OperandOption({
           operandType: option.operandType,
           dataType: option.dataType,
           description: option.description,
+          enumValues: option.enumValues,
         }}
         sideOffset={24}
         alignOffset={-8}

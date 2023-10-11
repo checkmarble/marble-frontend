@@ -61,6 +61,7 @@ export const OperandViewer = forwardRef<HTMLButtonElement, OperandViewerProps>(
                 operandType: operandLabelledAst.operandType,
                 dataType: operandLabelledAst.dataType,
                 description: operandLabelledAst.description,
+                enumValues: operandLabelledAst.enumValues,
               }}
               sideOffset={16}
               alignOffset={-16}
