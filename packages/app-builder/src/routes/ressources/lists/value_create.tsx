@@ -1,9 +1,9 @@
 import {
   FormControl,
+  FormError,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@app-builder/components/Form';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
@@ -99,7 +99,7 @@ export function NewListValue({ listId }: { listId: string }) {
               <FormField
                 name="value"
                 control={control}
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel>{t('lists:value', { count: 1 })}</FormLabel>
                     <FormControl>
@@ -109,7 +109,7 @@ export function NewListValue({ listId }: { listId: string }) {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                    <FormError />
                   </FormItem>
                 )}
               />

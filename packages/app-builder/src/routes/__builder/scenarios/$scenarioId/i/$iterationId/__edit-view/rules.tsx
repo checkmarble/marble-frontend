@@ -103,7 +103,7 @@ export default function Rules() {
         size: 100,
       },
     ],
-    [language, t]
+    [language, scenarioValidation, t]
   );
 
   const hasRules = rules.length > 0;

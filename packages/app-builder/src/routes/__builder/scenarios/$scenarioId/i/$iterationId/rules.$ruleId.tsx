@@ -6,10 +6,10 @@ import {
 } from '@app-builder/components';
 import {
   FormControl,
+  FormError,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
@@ -348,7 +348,7 @@ function RuleEditContent({
           <FormField
             name="name"
             control={formMethods.control}
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
                 <FormLabel>{t('common:name')}</FormLabel>
                 <FormControl>
@@ -358,14 +358,14 @@ function RuleEditContent({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage>{fieldState.error?.message}</FormMessage>
+                <FormError />
               </FormItem>
             )}
           />
           <FormField
             name="description"
             control={formMethods.control}
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
                 <FormLabel>{t('common:description')}</FormLabel>
                 <FormControl>
@@ -377,14 +377,14 @@ function RuleEditContent({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage>{fieldState.error?.message}</FormMessage>
+                <FormError />
               </FormItem>
             )}
           />
           <FormField
             name="scoreModifier"
             control={formMethods.control}
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
                 <FormLabel>{t('scenarios:create_rule.score')}</FormLabel>
                 <FormControl>
@@ -394,7 +394,7 @@ function RuleEditContent({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage>{fieldState.error?.message}</FormMessage>
+                <FormError />
               </FormItem>
             )}
           />
