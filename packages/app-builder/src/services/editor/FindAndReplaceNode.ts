@@ -8,7 +8,8 @@ import type { EditorNodeViewModel } from './ast-editor';
 export function findAndReplaceNode(
   nodeIdToReplace: string,
   fn: (node: EditorNodeViewModel) => EditorNodeViewModel | null,
-  node: EditorNodeViewModel
+  node: EditorNodeViewModel,
+  parent: EditorNodeViewModel | null = null
 ): EditorNodeViewModel | null {
   if (node.nodeId === nodeIdToReplace) {
     return fn(node);
@@ -16,14 +17,14 @@ export function findAndReplaceNode(
 
   const children = R.pipe(
     node.children,
-    R.map((child) => findAndReplaceNode(nodeIdToReplace, fn, child)),
+    R.map((child) => findAndReplaceNode(nodeIdToReplace, fn, child, node)),
     R.compact
   );
 
   const namedChildren = R.pipe(
     R.toPairs(node.namedChildren),
     R.map(([key, child]) => {
-      const newChild = findAndReplaceNode(nodeIdToReplace, fn, child);
+      const newChild = findAndReplaceNode(nodeIdToReplace, fn, child, node);
       return newChild === null ? null : ([key, newChild] as const);
     }),
     R.compact,
@@ -32,6 +33,7 @@ export function findAndReplaceNode(
 
   return {
     ...node,
+    parent,
     children,
     namedChildren,
   };
