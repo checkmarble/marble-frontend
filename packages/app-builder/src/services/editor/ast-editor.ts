@@ -86,6 +86,20 @@ export function flattenViewModelErrors(
   ];
 }
 
+export function findIndexedErrorsFromParent(
+  viewModel: EditorNodeViewModel
+): EvaluationError[] {
+  return viewModel.parent && isValidationFailure(viewModel.parent?.validation)
+    ? viewModel.parent?.validation.errors.filter(
+        (error) =>
+          error.argumentIndex ==
+          viewModel.parent?.children.findIndex(
+            (child) => child.nodeId == viewModel.nodeId
+          )
+      )
+    : [];
+}
+
 // adapt ast node from editor view model
 export function adaptAstNodeFromEditorViewModel(
   vm: EditorNodeViewModel

@@ -95,6 +95,7 @@ export type AggregationEditorNodeViewModel = {
   validation: Validation;
   children: AggregationEditorNodeViewModel[];
   namedChildren: Record<string, AggregationEditorNodeViewModel>;
+  parent: AggregationEditorNodeViewModel;
 };
 
 export const isAggregationEditorNodeViewModel = (

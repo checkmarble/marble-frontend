@@ -1,8 +1,9 @@
 import { ScenarioValidatioError } from '@app-builder/components/Scenario/ScenarioValidatioError';
-import { type EvaluationError, isValidationFailure } from '@app-builder/models';
+import { type EvaluationError } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
+  findIndexedErrorsFromParent,
   flattenViewModelErrors,
 } from '@app-builder/services/editor/ast-editor';
 import { useGetNodeEvaluationErrorMessage } from '@app-builder/services/validation';
@@ -78,15 +79,6 @@ export function adaptTwoOperandsLineViewModel(
   if (vm.children.length !== 2) return null;
   if (Object.keys(vm.namedChildren).length > 0) return null;
 
-  const indexedErrorsFromParent =
-    vm.parent && isValidationFailure(vm.parent?.validation)
-      ? vm.parent?.validation.errors.filter(
-          (error) =>
-            error.argumentIndex ==
-            vm.parent?.children.findIndex((child) => child.nodeId == vm.nodeId)
-        )
-      : [];
-
   const operatorVm = adaptOperatorViewModel(vm);
   if (operatorVm == null) return null;
 
@@ -96,6 +88,6 @@ export function adaptTwoOperandsLineViewModel(
     left,
     operator: operatorVm,
     right,
-    errors: [...flattenViewModelErrors(vm), ...indexedErrorsFromParent],
+    errors: [...flattenViewModelErrors(vm), ...findIndexedErrorsFromParent(vm)],
   };
 }
