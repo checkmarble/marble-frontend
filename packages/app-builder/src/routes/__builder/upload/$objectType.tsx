@@ -7,7 +7,7 @@ import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { type UploadLog } from '@marble-api';
 import { json, type LoaderArgs, redirect } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, useRevalidator } from '@remix-run/react';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import { Button, Modal, Table, useVirtualTable } from '@ui-design-system';
 import {
@@ -69,6 +69,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
     message: '',
     success: true,
   });
+  const revalidator = useRevalidator();
 
   const { accessToken, backendUrl } = useBackendInfo(
     clientServices.authenticationClientService
@@ -141,6 +142,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         success: true,
         linesProcessed: uploadLog.lines_processed,
       });
+      revalidator.revalidate();
     } catch (error) {
       setIsModalOpen(true);
       computeModalMessage({
