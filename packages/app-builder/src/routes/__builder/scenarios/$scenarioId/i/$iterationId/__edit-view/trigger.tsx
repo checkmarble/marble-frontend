@@ -1,11 +1,13 @@
 import { Callout, Paper, scenarioI18n } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
+import { ScenarioValidatioError } from '@app-builder/components/Scenario/ScenarioValidatioError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
 import {
   adaptDataModelDto,
   adaptNodeDto,
   type AstNode,
+  NewEmptyTriggerAstNode,
 } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
@@ -18,6 +20,10 @@ import {
   useAstBuilder,
 } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
+import {
+  useCurrentScenarioValidation,
+  useGetScenarioEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
@@ -32,14 +38,15 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { authService, makeScenarioService } = serverServices;
-  const { apiClient, editor, organization, scenario } =
-    await authService.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { apiClient, editor, organization } = await authService.isAuthenticated(
+    request,
+    {
       failureRedirect: '/login',
-    });
+    }
+  );
 
   const scenarioId = fromParams(params, 'scenarioId');
-  const iterationId = fromParams(params, 'iterationId');
 
   const operatorsPromise = editor.listOperators({
     scenarioId,
@@ -53,16 +60,9 @@ export async function loader({ request, params }: LoaderArgs) {
   const { custom_lists } = await apiClient.listCustomLists();
   const organizationPromise = organization.getCurrentOrganization();
 
-  const scenarioService = makeScenarioService(scenario);
-  const scenarioIterationTriggerPromise =
-    scenarioService.getScenarioIterationTrigger({
-      iterationId,
-    });
-
   return json({
     identifiers: await identifiersPromise,
     operators: await operatorsPromise,
-    trigger: await scenarioIterationTriggerPromise,
     dataModel: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
     organization: await organizationPromise,
@@ -125,17 +125,13 @@ export async function action({ request, params }: ActionArgs) {
 export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
   const scenarioIteration = useCurrentScenarioIteration();
-  const {
-    identifiers,
-    operators,
-    trigger,
-    dataModel,
-    customLists,
-    organization,
-  } = useLoaderData<typeof loader>();
+  const scenarioValidation = useCurrentScenarioValidation();
+
+  const { identifiers, operators, dataModel, customLists, organization } =
+    useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
-  const mode = useEditorMode();
+  const editorMode = useEditorMode();
 
   const [schedule, setSchedule] = useState(scenarioIteration.schedule ?? '');
 
@@ -146,10 +142,12 @@ export default function Trigger() {
     );
 
   const scenario = useCurrentScenario();
+  const getScenarioEvaluationErrorMessage =
+    useGetScenarioEvaluationErrorMessage();
 
   const astEditor = useAstBuilder({
-    backendAst: trigger.ast,
-    backendValidation: trigger.validation,
+    backendAst: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),
+    backendValidation: scenarioValidation.trigger.triggerEvaluation,
     localValidation,
     identifiers,
     operators,
@@ -181,7 +179,7 @@ export default function Trigger() {
           schedule={schedule}
           setSchedule={setSchedule}
           hasExportBucket={!!organization.exportScheduledExecutionS3}
-          viewOnly={mode === 'view'}
+          viewOnly={editorMode === 'view'}
         />
       </div>
 
@@ -192,15 +190,24 @@ export default function Trigger() {
         </Callout>
       </div>
 
-      <AstBuilder builder={astEditor} viewOnly={mode === 'view'} />
+      <AstBuilder builder={astEditor} viewOnly={editorMode === 'view'} />
 
-      {mode === 'edit' && (
-        <div className="flex flex-row justify-end">
-          <Button type="submit" className="w-fit" onClick={handleSave}>
-            {t('common:save')}
-          </Button>
+      <div className="flex flex-row items-end justify-between gap-2">
+        <div className="flex min-h-[40px] flex-row flex-wrap gap-1">
+          {scenarioValidation.trigger.errors.map((error) => (
+            <ScenarioValidatioError key={error}>
+              {getScenarioEvaluationErrorMessage(error)}
+            </ScenarioValidatioError>
+          ))}
         </div>
-      )}
+        <span>
+          {editorMode === 'edit' && (
+            <Button type="submit" onClick={handleSave}>
+              {t('common:save')}
+            </Button>
+          )}
+        </span>
+      </div>
     </Paper.Container>
   );
 }
