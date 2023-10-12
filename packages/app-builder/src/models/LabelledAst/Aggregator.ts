@@ -15,6 +15,7 @@ export function newAggregatorLabelledAst(
       //TODO(combobox): infer/get aggregator.dataType
       dataType: 'unknown',
       astNode: NewAggregatorAstNode(nodeOrAggregator),
+      isEnum: false,
     };
   }
   return {
@@ -26,6 +27,7 @@ export function newAggregatorLabelledAst(
     astNode: NewAggregatorAstNode(
       nodeOrAggregator.namedChildren.aggregator.constant
     ),
+    isEnum: false,
   };
 }
 

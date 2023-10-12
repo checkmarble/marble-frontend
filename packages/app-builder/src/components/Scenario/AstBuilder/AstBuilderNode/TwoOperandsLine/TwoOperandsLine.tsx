@@ -1,4 +1,6 @@
+import { adaptLabelledAst } from '@app-builder/models/LabelledAst';
 import {
+  adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
@@ -26,6 +28,19 @@ export function TwoOperandsLine({
   twoOperandsViewModel: TwoOperandsLineViewModel;
   viewOnly?: boolean;
 }) {
+  const leftAstNode = adaptAstNodeFromEditorViewModel(
+    twoOperandsViewModel.left
+  );
+  const leftLabelledAst = adaptLabelledAst(leftAstNode, {
+    dataModel: builder.dataModel,
+    triggerObjectTable: builder.triggerObjectTable,
+    customLists: builder.customLists,
+  });
+  const shouldDisplayEnumOptions =
+    twoOperandsViewModel.operator.funcName == '=' &&
+    leftLabelledAst?.isEnum &&
+    !!leftLabelledAst?.values?.length;
+
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-row gap-2">
@@ -54,6 +69,7 @@ export function TwoOperandsLine({
             builder.setOperand(twoOperandsViewModel.right.nodeId, astNode);
           }}
           viewOnly={viewOnly}
+          shouldDisplayEnumOptions={shouldDisplayEnumOptions}
         />
       </div>
       {twoOperandsViewModel.operator.validation.state === 'fail' && (

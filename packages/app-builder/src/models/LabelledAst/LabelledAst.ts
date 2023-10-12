@@ -37,6 +37,7 @@ export interface LabelledAst {
     | 'unknown';
   dataType: DataType;
   astNode: AstNode;
+  isEnum: boolean;
   values?: string[];
 }
 
@@ -108,6 +109,7 @@ export function adaptLabelledAstFromAllIdentifiers(
     dataType: 'unknown',
     operandType: 'unknown',
     astNode,
+    isEnum: false,
   };
 }
 
@@ -120,5 +122,6 @@ function adaptLabelledAstFromIdentifier(identifier: AstNode): LabelledAst {
     dataType: 'unknown',
     operandType: 'unknown',
     astNode: identifier,
+    isEnum: false,
   };
 }

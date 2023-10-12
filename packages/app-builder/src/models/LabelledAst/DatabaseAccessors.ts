@@ -30,6 +30,7 @@ export function newDatabaseAccessorsLabelledAst({
     dataType: field.dataType,
     astNode: node,
     values: field.isEnum ? field.values : undefined,
+    isEnum: field.isEnum,
   };
 }
 

@@ -9,5 +9,6 @@ export function newCustomListLabelledAst(customList: CustomList): LabelledAst {
     //TODO(combobox): infer/get customList.dataType
     dataType: 'unknown',
     astNode: NewCustomListAstNode(customList.id),
+    isEnum: true,
   };
 }

@@ -38,12 +38,14 @@ export function Operand({
   onSave,
   viewOnly,
   ariaLabel,
+  shouldDisplayEnumOptions,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
   onSave: (astNode: AstNode) => void;
   viewOnly?: boolean;
   ariaLabel?: string;
+  shouldDisplayEnumOptions?: boolean;
 }) {
   const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
   const labelledAst = adaptLabelledAst(astNode, {
@@ -71,6 +73,7 @@ export function Operand({
       labelledAst={labelledAst}
       onSave={onSave}
       viewOnly={viewOnly}
+      shouldDisplayEnumOptions={shouldDisplayEnumOptions}
     />
   );
 }

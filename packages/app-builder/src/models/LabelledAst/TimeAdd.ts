@@ -18,6 +18,7 @@ export function newTimeAddLabelledAst(
     operandType: 'Function',
     dataType: 'unknown',
     astNode: node,
+    isEnum: false,
   };
 }
 

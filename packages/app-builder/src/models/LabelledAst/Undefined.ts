@@ -6,6 +6,7 @@ export function newUndefinedLabelledAst(): LabelledAst {
     operandType: 'Undefined',
     dataType: 'unknown',
     astNode: NewUndefinedAstNode(),
+    isEnum: false,
   };
 }
 

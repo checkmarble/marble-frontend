@@ -21,12 +21,14 @@ interface OperandEditorDiscoveryResultsProps {
   options: LabelledAst[];
   onSelect: (option: LabelledAst) => void;
   triggerObjectTable: TableModel;
+  shouldDisplayEnumOptions?: boolean;
 }
 
 export function OperandEditorDiscoveryResults({
   options,
   onSelect,
   triggerObjectTable,
+  shouldDisplayEnumOptions,
 }: OperandEditorDiscoveryResultsProps) {
   const { t } = useTranslation('scenarios');
   const { customListOptions, fieldOptions, functionOptions } = R.pipe(
@@ -60,6 +62,20 @@ export function OperandEditorDiscoveryResults({
 
   return (
     <>
+      {shouldDisplayEnumOptions && (
+        <Group>
+          <GroupHeader.Container>
+            <OperandDiscoveryTitle
+              operandType="Field"
+              operandsCount={fieldOptions.length}
+            />
+          </GroupHeader.Container>
+          {['TRANSFER', 'CARD', 'DIRECT_DEBIT'].map((value) => (
+            // render enum options here
+          ))}
+        </Group>
+      )}
+
       <Group>
         <GroupHeader.Container>
           <OperandDiscoveryTitle
@@ -97,7 +113,6 @@ export function OperandEditorDiscoveryResults({
           </OperandDiscoverySubmenu>
         ))}
       </Group>
-
       <OperandDiscoverySubmenu options={customListOptions} onSelect={onSelect}>
         <GroupHeader.Container>
           <OperandDiscoveryTitle
@@ -109,7 +124,6 @@ export function OperandEditorDiscoveryResults({
           </GroupHeader.Icon>
         </GroupHeader.Container>
       </OperandDiscoverySubmenu>
-
       <OperandDiscoverySubmenu options={functionOptions} onSelect={onSelect}>
         <GroupHeader.Container>
           <OperandDiscoveryTitle

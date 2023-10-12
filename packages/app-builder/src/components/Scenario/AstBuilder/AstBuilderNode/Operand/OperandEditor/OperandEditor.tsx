@@ -44,6 +44,7 @@ export function OperandEditor({
   onSave,
   viewOnly,
   ariaLabel,
+  shouldDisplayEnumOptions,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
@@ -51,6 +52,7 @@ export function OperandEditor({
   onSave: (astNode: AstNode) => void;
   viewOnly?: boolean;
   ariaLabel?: string;
+  shouldDisplayEnumOptions?: boolean;
 }) {
   const [open, onOpenChange] = useState<boolean>(false);
 
@@ -76,6 +78,7 @@ export function OperandEditor({
             }}
             labelledAst={labelledAst}
             operandViewModel={operandViewModel}
+            shouldDisplayEnumOptions={shouldDisplayEnumOptions}
           />
         </OperandDropdownMenu.Portal>
       </OperandDropdownMenu.Root>
@@ -94,130 +97,151 @@ const OperandEditorContent = forwardRef<
     closeModal: () => void;
     operandViewModel: OperandViewModel;
     labelledAst: LabelledAst;
+    shouldDisplayEnumOptions?: boolean;
   }
->(({ builder, onSave, closeModal, labelledAst, operandViewModel }, ref) => {
-  const options = useMemo(() => {
-    const databaseAccessors = builder.identifiers.databaseAccessors.map(
-      (node) =>
-        newDatabaseAccessorsLabelledAst({
-          dataModel: builder.dataModel,
-          node,
-        })
-    );
-    const payloadAccessors = builder.identifiers.payloadAccessors.map((node) =>
-      newPayloadAccessorsLabelledAst({
-        triggerObjectTable: builder.triggerObjectTable,
-        node,
-      })
-    );
-    const customLists = builder.customLists.map(newCustomListLabelledAst);
-    const functions = [
-      ...allAggregators.map(newAggregatorLabelledAst),
-      newTimeAddLabelledAst(),
-    ];
-    return [
-      ...payloadAccessors,
-      ...databaseAccessors,
-      ...customLists,
-      ...functions,
-    ];
-  }, [
-    builder.customLists,
-    builder.dataModel,
-    builder.identifiers.databaseAccessors,
-    builder.identifiers.payloadAccessors,
-    builder.triggerObjectTable,
-  ]);
-
-  const [searchText, setSearchText] = useState('');
-
-  const editAggregation = useEditAggregation();
-  const editTimeAdd = useEditTimeAdd();
-
-  const handleSelectOption = useCallback(
-    (newSelection: LabelledAst) => {
-      const editorNodeViewModel = adaptEditorNodeViewModel({
-        ast: newSelection.astNode,
-      });
-      if (isAggregationEditorNodeViewModel(editorNodeViewModel)) {
-        editAggregation({
-          initialAggregation: adaptAggregationViewModel({
-            ...editorNodeViewModel,
-            nodeId: operandViewModel.nodeId,
-          }),
-          onSave,
-        });
-      } else if (isTimeAddEditorNodeViewModel(editorNodeViewModel)) {
-        editTimeAdd({
-          initialValue: adaptTimeAddViewModal({
-            ...editorNodeViewModel,
-            nodeId: operandViewModel.nodeId,
-          }),
-          onSave,
-        });
-      } else {
-        onSave(newSelection.astNode);
-      }
-      closeModal();
+>(
+  (
+    {
+      builder,
+      onSave,
+      closeModal,
+      labelledAst,
+      operandViewModel,
+      shouldDisplayEnumOptions,
     },
-    [closeModal, editAggregation, editTimeAdd, onSave, operandViewModel.nodeId]
-  );
+    ref
+  ) => {
+    const options = useMemo(() => {
+      const databaseAccessors = builder.identifiers.databaseAccessors.map(
+        (node) =>
+          newDatabaseAccessorsLabelledAst({
+            dataModel: builder.dataModel,
+            node,
+          })
+      );
+      const payloadAccessors = builder.identifiers.payloadAccessors.map(
+        (node) =>
+          newPayloadAccessorsLabelledAst({
+            triggerObjectTable: builder.triggerObjectTable,
+            node,
+          })
+      );
+      const customLists = builder.customLists.map(newCustomListLabelledAst);
+      const functions = [
+        ...allAggregators.map(newAggregatorLabelledAst),
+        newTimeAddLabelledAst(),
+      ];
+      return [
+        ...payloadAccessors,
+        ...databaseAccessors,
+        ...customLists,
+        ...functions,
+      ];
+    }, [
+      builder.customLists,
+      builder.dataModel,
+      builder.identifiers.databaseAccessors,
+      builder.identifiers.payloadAccessors,
+      builder.triggerObjectTable,
+    ]);
 
-  const showClearOption = labelledAst.name !== '';
+    const [searchText, setSearchText] = useState('');
 
-  return (
-    <OperandDropdownMenu.Content ref={ref}>
-      <SearchInput value={searchText} onValueChange={setSearchText} />
-      <OperandDropdownMenu.ScrollableViewport className="flex flex-col gap-2 p-2">
-        {searchText === '' ? (
-          <OperandEditorDiscoveryResults
-            options={options}
-            onSelect={handleSelectOption}
-            triggerObjectTable={builder.triggerObjectTable}
-          />
-        ) : (
-          <OperandEditorSearchResults
-            searchText={searchText}
-            options={options}
-            onSelect={handleSelectOption}
-          />
-        )}
-      </OperandDropdownMenu.ScrollableViewport>
-      <BottomOptions>
-        {isAggregationEditorNodeViewModel(operandViewModel) && (
-          <EditOption
-            onSelect={() => {
-              const initialAggregation =
-                adaptAggregationViewModel(operandViewModel);
+    const editAggregation = useEditAggregation();
+    const editTimeAdd = useEditTimeAdd();
 
-              editAggregation({
-                initialAggregation,
-                onSave,
-              });
-              closeModal();
-            }}
-          />
-        )}
-        {isTimeAddEditorNodeViewModel(operandViewModel) && (
-          <EditOption
-            onSelect={() => {
-              const initialValue = adaptTimeAddViewModal(operandViewModel);
-              editTimeAdd({ initialValue, onSave });
-              closeModal();
-            }}
-          />
-        )}
-        {showClearOption && (
-          <ClearOption
-            onSelect={() => {
-              handleSelectOption(newUndefinedLabelledAst());
-            }}
-          />
-        )}
-      </BottomOptions>
-    </OperandDropdownMenu.Content>
-  );
-});
+    const handleSelectOption = useCallback(
+      (newSelection: LabelledAst) => {
+        const editorNodeViewModel = adaptEditorNodeViewModel({
+          ast: newSelection.astNode,
+        });
+        if (isAggregationEditorNodeViewModel(editorNodeViewModel)) {
+          editAggregation({
+            initialAggregation: adaptAggregationViewModel({
+              ...editorNodeViewModel,
+              nodeId: operandViewModel.nodeId,
+            }),
+            onSave,
+          });
+        } else if (isTimeAddEditorNodeViewModel(editorNodeViewModel)) {
+          editTimeAdd({
+            initialValue: adaptTimeAddViewModal({
+              ...editorNodeViewModel,
+              nodeId: operandViewModel.nodeId,
+            }),
+            onSave,
+          });
+        } else {
+          onSave(newSelection.astNode);
+        }
+        closeModal();
+      },
+      [
+        closeModal,
+        editAggregation,
+        editTimeAdd,
+        onSave,
+        operandViewModel.nodeId,
+      ]
+    );
+
+    const showClearOption = labelledAst.name !== '';
+
+    return (
+      <OperandDropdownMenu.Content ref={ref}>
+        <SearchInput value={searchText} onValueChange={setSearchText} />
+        <OperandDropdownMenu.ScrollableViewport className="flex flex-col gap-2 p-2">
+          {searchText === '' ? (
+            <OperandEditorDiscoveryResults
+              options={options}
+              onSelect={handleSelectOption}
+              triggerObjectTable={builder.triggerObjectTable}
+              shouldDisplayEnumOptions={shouldDisplayEnumOptions}
+            />
+          ) : (
+            <OperandEditorSearchResults
+              searchText={searchText}
+              options={options}
+              onSelect={handleSelectOption}
+            />
+          )}
+        </OperandDropdownMenu.ScrollableViewport>
+        <BottomOptions>
+          {isAggregationEditorNodeViewModel(operandViewModel) && (
+            <EditOption
+              onSelect={() => {
+                const initialAggregation =
+                  adaptAggregationViewModel(operandViewModel);
+
+                editAggregation({
+                  initialAggregation,
+                  onSave,
+                });
+                closeModal();
+              }}
+            />
+          )}
+          {isTimeAddEditorNodeViewModel(operandViewModel) && (
+            <EditOption
+              onSelect={() => {
+                const initialValue = adaptTimeAddViewModal(operandViewModel);
+                editTimeAdd({ initialValue, onSave });
+                closeModal();
+              }}
+            />
+          )}
+          {showClearOption && (
+            <ClearOption
+              onSelect={() => {
+                handleSelectOption(newUndefinedLabelledAst());
+              }}
+            />
+          )}
+        </BottomOptions>
+      </OperandDropdownMenu.Content>
+    );
+  }
+);
 OperandEditorContent.displayName = 'OperandEditorContent';
 
 function SearchInput({

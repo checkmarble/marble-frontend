@@ -12,6 +12,7 @@ export function newConstantLabelledAst(node: ConstantAstNode): LabelledAst {
     dataType: getConstantDataType(node.constant),
     operandType: 'Constant',
     astNode: node,
+    isEnum: false,
   };
 }
 
