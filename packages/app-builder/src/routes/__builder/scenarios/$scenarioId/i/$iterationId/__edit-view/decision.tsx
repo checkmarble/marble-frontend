@@ -40,7 +40,11 @@ export const handle = {
   i18n: [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace,
 };
 
-const validationErrorsHandledWithSchema: string[] = [
+/**
+ * This is a list of validation errors comming from the backend that are handled by the form schema.
+ * The form schema is responsible for displaying the error message.
+ */
+const conflictingWithSchemaValidationErrors: string[] = [
   'SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH',
   'SCORE_REJECT_THRESHOLD_REQUIRED',
   'SCORE_REVIEW_THRESHOLD_REQUIRED',
@@ -238,7 +242,8 @@ export default function Decision() {
               />
               {scenarioValidation.decision.errors
                 .filter(
-                  (error) => !validationErrorsHandledWithSchema.includes(error)
+                  (error) =>
+                    !conflictingWithSchemaValidationErrors.includes(error)
                 )
                 .map((error) => (
                   <ScenarioValidationError key={error}>

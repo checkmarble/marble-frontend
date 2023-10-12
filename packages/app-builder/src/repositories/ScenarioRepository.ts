@@ -34,7 +34,7 @@ export interface ScenarioRepository {
     iterationId: string;
     ruleId: string;
     rule: AstNode;
-  }): Promise<ScenarioValidation['rules']['rules'][number]>;
+  }): Promise<ScenarioValidation['rules']['ruleItems'][number]>;
 }
 
 export function getScenarioRepository() {

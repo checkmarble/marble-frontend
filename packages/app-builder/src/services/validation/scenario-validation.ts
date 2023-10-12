@@ -22,7 +22,7 @@ export function findRuleValidation(
   validation: ScenarioValidation,
   ruleId: string
 ) {
-  const ruleValidation = validation.rules.rules[ruleId];
+  const ruleValidation = validation.rules.ruleItems[ruleId];
 
   invariant(
     ruleValidation !== undefined,
@@ -48,7 +48,7 @@ export function hasTriggerErrors(validation: ScenarioValidation): boolean {
 export function hasRulesErrors(validation: ScenarioValidation): boolean {
   if (validation.rules.errors.length > 0) return true;
 
-  for (const rule of Object.values(validation.rules.rules)) {
+  for (const rule of Object.values(validation.rules.ruleItems)) {
     if (hasRuleErrors(rule)) return true;
   }
 
@@ -62,7 +62,7 @@ export function hasDecisionErrors(validation: ScenarioValidation): boolean {
 }
 
 export function hasRuleErrors(
-  ruleValidation: ScenarioValidation['rules']['rules'][number]
+  ruleValidation: ScenarioValidation['rules']['ruleItems'][number]
 ): boolean {
   return (
     ruleValidation.errors.length > 1 ||
