@@ -18,7 +18,7 @@ interface OperandTooltipProps {
     operandType: LabelledAst['operandType'];
     dataType: LabelledAst['dataType'];
     description?: string;
-    enumValues?: string[];
+    values?: string[];
   };
   children: React.ReactNode;
   side?: Tooltip.TooltipContentProps['side'];
@@ -35,7 +35,7 @@ export function OperandTooltip({
   sideOffset,
   alignOffset,
 }: OperandTooltipProps) {
-  const { t } = useTranslation(['data']);
+  const { t } = useTranslation(['scenarios']);
   const typeInfos = [
     {
       Icon: getOperatorTypeIcon(operand.operandType),
@@ -46,16 +46,16 @@ export function OperandTooltip({
       tKey: getDataTypeTKey(operand.dataType),
     },
   ];
-  const enumValues = useMemo(() => {
-    if (!operand.enumValues) return null;
-    const sorted = [...operand.enumValues].sort();
+  const values = useMemo(() => {
+    if (!operand.values) return null;
+    const sorted = [...operand.values].sort();
     if (sorted.length > MAX_ENUM_VALUES) {
       const sliced = sorted.slice(0, MAX_ENUM_VALUES);
       sliced.push('...');
       return sliced;
     }
     return sorted;
-  }, [operand.enumValues]);
+  }, [operand.values]);
 
   return (
     <Tooltip.Root delayDuration={0}>
@@ -82,11 +82,13 @@ export function OperandTooltip({
                 {operand.description}
               </p>
             )}
-            {enumValues && enumValues.length > 0 && (
+            {values && values.length > 0 && (
               <div>
-                <p className="text-grey-50 text-s">{t('data:enum_options')}</p>
+                <p className="text-grey-50 text-s">
+                  {t('scenarios:enum_options')}
+                </p>
                 <div className="px-1">
-                  {enumValues.map((value, index) => {
+                  {values.map((value, index) => {
                     return (
                       <p
                         key={-index}

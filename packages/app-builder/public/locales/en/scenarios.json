@@ -149,5 +149,6 @@
   "edit_date.duration_unit_seconds": "seconds",
   "edit_date.duration_unit_minutes": "minutes",
   "edit_date.duration_unit_hours": "hours",
-  "edit_date.duration_unit_days": "days"
+  "edit_date.duration_unit_days": "days",
+  "enum_options": "Options:"
 }

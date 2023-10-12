@@ -15,7 +15,7 @@ export interface DataModelField {
   description: string;
   nullable: boolean;
   isEnum: boolean;
-  enumValues?: string[];
+  values?: string[];
 }
 
 export interface LinksToSingle {
@@ -45,7 +45,7 @@ function adaptFieldDto(dataModelFieldsDto: {
       description: field.description,
       nullable: field.nullable,
       isEnum: field.is_enum,
-      enumValues: field.values,
+      values: field.values,
     }))
   );
 }

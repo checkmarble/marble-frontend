@@ -22,7 +22,7 @@ export function newPayloadAccessorsLabelledAst({
     operandType: 'Field',
     dataType: field.dataType,
     astNode: node,
-    enumValues: field.isEnum ? field.enumValues : undefined,
+    values: field.isEnum ? field.values : undefined,
   };
 }
 

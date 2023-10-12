@@ -37,7 +37,7 @@ export interface LabelledAst {
     | 'unknown';
   dataType: DataType;
   astNode: AstNode;
-  enumValues?: string[];
+  values?: string[];
 }
 
 export function adaptLabelledAst(
