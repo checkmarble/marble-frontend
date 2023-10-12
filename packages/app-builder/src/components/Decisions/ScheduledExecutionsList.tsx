@@ -40,7 +40,7 @@ export function ScheduledExecutionsList({
         accessorFn: (s) =>
           s.status == 'success' ? s.number_of_created_decisions : '0',
         header: t('scheduledExecution:number_of_created_decisions'),
-        size: 100,
+        size: 200,
       },
       {
         id: 'status',
@@ -52,7 +52,7 @@ export function ScheduledExecutionsList({
           </div>
         ),
         header: t('scheduledExecution:status'),
-        size: 200,
+        size: 150,
       },
       {
         id: 'created_at',
@@ -62,7 +62,7 @@ export function ScheduledExecutionsList({
       },
       {
         id: 'download',
-        accessorFn: (s) => s.status == 'success' && s.id,
+        accessorFn: (s) => s.number_of_created_decisions > 0 && s.id,
         header: '',
         size: 200,
         cell: (r) =>
