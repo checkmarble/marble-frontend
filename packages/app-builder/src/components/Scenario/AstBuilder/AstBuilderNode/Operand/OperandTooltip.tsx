@@ -88,10 +88,10 @@ export function OperandTooltip({
                   {t('scenarios:enum_options')}
                 </p>
                 <div className="px-1">
-                  {values.map((value, index) => {
+                  {values.map((value) => {
                     return (
                       <p
-                        key={-index}
+                        key={value}
                         className="text-grey-50 text-xs font-normal"
                       >
                         {value}
