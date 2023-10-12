@@ -1,5 +1,5 @@
 import { Ping } from '@app-builder/components/Ping';
-import { ScenarioValidatioError } from '@app-builder/components/Scenario/ScenarioValidatioError';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidatioError';
 import { CreateRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/create';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
@@ -129,9 +129,9 @@ export default function Rules() {
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row flex-wrap gap-1">
           {scenarioValidation.rules.errors.map((error) => (
-            <ScenarioValidatioError key={error}>
+            <ScenarioValidationError key={error}>
               {getScenarioEvaluationErrorMessage(error)}
-            </ScenarioValidatioError>
+            </ScenarioValidationError>
           ))}
         </div>
         <span>

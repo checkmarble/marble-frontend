@@ -13,7 +13,7 @@ import {
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { ScenarioValidatioError } from '@app-builder/components/Scenario/ScenarioValidatioError';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidatioError';
 import {
   type AstNode,
   NewEmptyRuleAstNode,
@@ -384,9 +384,9 @@ function RuleEditContent({
         {ruleValidation.errors && (
           <div className="flex flex-row flex-wrap gap-1">
             {ruleValidation.errors.map((error) => (
-              <ScenarioValidatioError key={error}>
+              <ScenarioValidationError key={error}>
                 {getScenarioEvaluationErrorMessage(error)}
-              </ScenarioValidatioError>
+              </ScenarioValidationError>
             ))}
           </div>
         )}

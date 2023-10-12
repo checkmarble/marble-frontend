@@ -6,7 +6,7 @@ import {
 } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { ScenarioValidatioError } from '@app-builder/components/Scenario/ScenarioValidatioError';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidatioError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
 import {
   adaptDataModelDto,
@@ -240,9 +240,9 @@ export default function Trigger() {
       <div className="flex flex-row items-end justify-between gap-2">
         <div className="flex min-h-[40px] flex-row flex-wrap gap-1">
           {scenarioValidation.trigger.errors.map((error) => (
-            <ScenarioValidatioError key={error}>
+            <ScenarioValidationError key={error}>
               {getScenarioEvaluationErrorMessage(error)}
-            </ScenarioValidatioError>
+            </ScenarioValidationError>
           ))}
         </div>
         <span>

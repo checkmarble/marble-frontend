@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import type React from 'react';
 
-export function ScenarioValidatioError({
+export function ScenarioValidationError({
   className,
   children,
 }: {

@@ -13,7 +13,7 @@ import {
   FormLabel,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { ScenarioValidatioError } from '@app-builder/components/Scenario/ScenarioValidatioError';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidatioError';
 import {
   useCurrentScenarioIteration,
   useEditorMode,
@@ -241,9 +241,9 @@ export default function Decision() {
                   (error) => !validationErrorsHandledWithSchema.includes(error)
                 )
                 .map((error) => (
-                  <ScenarioValidatioError key={error}>
+                  <ScenarioValidationError key={error}>
                     {getScenarioEvaluationErrorMessage(error)}
-                  </ScenarioValidatioError>
+                  </ScenarioValidationError>
                 ))}
             </div>
             <span>
