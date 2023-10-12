@@ -843,6 +843,26 @@ export function updateScenarioIteration(scenarioIterationId: string, updateScena
     })));
 }
 /**
+ * Schedule a scenario execution
+ */
+export function scheduleScenarioExecution(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/schedule-execution`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
  * Validate a scenario iteration by id
  */
 export function validateScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {

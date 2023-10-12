@@ -18,6 +18,8 @@
   "trigger.schedule_scenario.export_location_warning": "Contact Marble to configure decision export location.",
   "trigger.trigger_object.title": "Trigger object",
   "trigger.trigger_object.callout": "The object the scenario will make decisions on.",
+  "trigger.trigger_manual_execution.button": "Launch now",
+  "trigger.trigger_manual_execution.warning": "This scenario is currently being evaluated. Check the <Link>Decisions page</Link> for details.",
   "decision.score_based.title": "Score based decision",
   "decision.score_based.callout": "The decision is made by comparing the total score computed by the rules to the thresholds defined below.",
   "decision.score_based.approve_condition": "When the score is equal to or below",

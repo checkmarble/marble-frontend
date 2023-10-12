@@ -1,4 +1,9 @@
-import { Callout, Paper, scenarioI18n } from '@app-builder/components';
+import {
+  Callout,
+  Paper,
+  scenarioI18n,
+  usePermissionsContext,
+} from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
@@ -18,11 +23,13 @@ import {
   useAstBuilder,
 } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button } from '@ui-design-system';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -52,6 +59,9 @@ export async function loader({ request, params }: LoaderArgs) {
   const dataModelPromise = apiClient.getDataModel();
   const { custom_lists } = await apiClient.listCustomLists();
   const organizationPromise = organization.getCurrentOrganization();
+  const { scheduled_executions } = await apiClient.listScheduledExecutions({
+    scenarioId,
+  });
 
   const scenarioService = makeScenarioService(scenario);
   const scenarioIterationTriggerPromise =
@@ -66,6 +76,7 @@ export async function loader({ request, params }: LoaderArgs) {
     dataModel: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
     organization: await organizationPromise,
+    scheduledExecutions: scheduled_executions,
   });
 }
 
@@ -82,30 +93,38 @@ export async function action({ request, params }: ActionArgs) {
   try {
     const iterationId = fromParams(params, 'iterationId');
 
-    const { astNode, schedule } = (await request.json()) as {
-      astNode: AstNode;
-      schedule: string;
-    };
+    const { action, ...payload } = (await request.json()) as { action: string };
 
-    await apiClient.updateScenarioIteration(iterationId, {
-      body: {
-        trigger_condition_ast_expression: adaptNodeDto(astNode),
-        schedule,
-      },
-    });
+    if (action === 'trigger') {
+      await apiClient.scheduleScenarioExecution(iterationId);
+      return json({ success: true, error: null });
+    }
 
-    setToastMessage(session, {
-      type: 'success',
-      messageKey: 'common:success.save',
-    });
+    if (action === 'save') {
+      const { astNode, schedule } = payload as {
+        astNode: AstNode;
+        schedule: string;
+      };
+      await apiClient.updateScenarioIteration(iterationId, {
+        body: {
+          trigger_condition_ast_expression: adaptNodeDto(astNode),
+          schedule,
+        },
+      });
 
-    return json(
-      {
-        success: true as const,
-        error: null,
-      },
-      { headers: { 'Set-Cookie': await commitSession(session) } }
-    );
+      setToastMessage(session, {
+        type: 'success',
+        messageKey: 'common:success.save',
+      });
+
+      return json(
+        {
+          success: true as const,
+          error: null,
+        },
+        { headers: { 'Set-Cookie': await commitSession(session) } }
+      );
+    }
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
@@ -132,10 +151,12 @@ export default function Trigger() {
     dataModel,
     customLists,
     organization,
+    scheduledExecutions,
   } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
   const mode = useEditorMode();
+  const { canManageDecision } = usePermissionsContext();
 
   const [schedule, setSchedule] = useState(scenarioIteration.schedule ?? '');
 
@@ -162,6 +183,7 @@ export default function Trigger() {
   const handleSave = () => {
     fetcher.submit(
       {
+        action: 'save',
         astNode: adaptAstNodeFromEditorViewModel(astEditor.editorNodeViewModel),
         schedule,
       },
@@ -169,6 +191,18 @@ export default function Trigger() {
         method: 'PATCH',
         encType: 'application/json',
       }
+    );
+  };
+
+  const isLive = scenarioIteration.version !== null;
+  const pendingExecutions = scheduledExecutions.filter((execution) =>
+    ['pending', 'processing'].includes(execution.status)
+  );
+  const triggerFetcher = useFetcher<typeof action>();
+  const handleTriggerExecution = () => {
+    triggerFetcher.submit(
+      { action: 'trigger' },
+      { method: 'POST', encType: 'application/json' }
     );
   };
 
@@ -184,6 +218,12 @@ export default function Trigger() {
           viewOnly={mode === 'view'}
         />
       </div>
+      {isLive && canManageDecision && (
+        <ManualTriggerButton
+          handleTriggerExecution={handleTriggerExecution}
+          hasPendingExecution={pendingExecutions.length > 0}
+        />
+      )}
 
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
@@ -202,6 +242,45 @@ export default function Trigger() {
         </div>
       )}
     </Paper.Container>
+  );
+}
+
+function ManualTriggerButton({
+  hasPendingExecution,
+  handleTriggerExecution,
+}: {
+  hasPendingExecution: boolean;
+  handleTriggerExecution: () => void;
+}) {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <div>
+      <Button
+        type="submit"
+        disabled={hasPendingExecution}
+        onClick={handleTriggerExecution}
+        className={clsx({ 'cursor-not-allowed': hasPendingExecution })}
+      >
+        {t('scenarios:trigger.trigger_manual_execution.button')}
+      </Button>
+      {hasPendingExecution && (
+        <p className="my-2 text-xs">
+          <Trans
+            t={t}
+            i18nKey="scenarios:trigger.trigger_manual_execution.warning"
+            components={{
+              Link: (
+                // eslint-disable-next-line jsx-a11y/anchor-has-content
+                <Link
+                  to={getRoute('/decisions/scheduled-executions')}
+                  className="text-purple-100"
+                />
+              ),
+            }}
+          />
+        </p>
+      )}
+    </div>
   );
 }
 

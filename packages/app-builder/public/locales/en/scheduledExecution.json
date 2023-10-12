@@ -2,10 +2,14 @@
   "scenario_name": "Scenario name",
   "scenario_trigger_object_type": "Trigger Object",
   "number_of_created_decisions": "Number of decisions",
+  "status": "Status",
   "created_at": "Created at",
   "started_at": "Started at",
   "finished_at": "Finished at",
   "download_decisions": "Download Decisions",
   "downloading_decisions": "Downloading decisions...",
-  "errors.downloading_decisions_link": "An unknown error as occured while generating the download link. Please try again later."
+  "errors.downloading_decisions_link": "An unknown error as occured while generating the download link. Please try again later.",
+  "status_pending": "Pending",
+  "status_success": "Success",
+  "status_failure": "Failure"
 }
