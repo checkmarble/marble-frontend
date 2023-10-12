@@ -4,14 +4,12 @@ import { type EditorNodeViewModel } from './ast-editor';
 import { findAndReplaceNode } from './FindAndReplaceNode';
 
 describe('findAndReplaceNode', () => {
-  const first_child = helperMakeEditorViewModel('first_child');
-  const second_child = helperMakeEditorViewModel('second_child');
-  const rootNode = helperMakeEditorViewModel('root', [
-    first_child,
-    second_child,
-  ]);
+  const rootNode = helperMakeEditorViewModel('root');
+  const first_child = helperMakeEditorViewModel('first_child', rootNode);
+  const second_child = helperMakeEditorViewModel('second_child', rootNode);
+  rootNode.children = [first_child, second_child];
 
-  const newNode = helperMakeEditorViewModel('newNode');
+  const newNode = helperMakeEditorViewModel('newNode', rootNode);
 
   it('replace the node with the given id', () => {
     const callback = vi.fn(() => newNode);
@@ -39,13 +37,14 @@ describe('findAndReplaceNode', () => {
 
 function helperMakeEditorViewModel(
   nodeId: string,
-  children?: EditorNodeViewModel[]
+  parent?: EditorNodeViewModel
 ): EditorNodeViewModel {
   return {
     nodeId,
     funcName: 'funcName',
     validation: { state: 'valid' },
-    children: children ?? [],
+    children: [],
+    parent: parent || null,
     namedChildren: {},
   };
 }

@@ -59,6 +59,7 @@ export type TimeAddEditorNodeViewModel = {
   validation: Validation;
   children: TimeAddEditorNodeViewModel[];
   namedChildren: Record<string, TimeAddEditorNodeViewModel>;
+  parent: TimeAddEditorNodeViewModel;
 };
 
 export const defaultISO8601Duration = 'PT0S';
