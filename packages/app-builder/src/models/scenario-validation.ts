@@ -231,3 +231,11 @@ export const separateChildrenErrors = (
     return error.argumentIndex != undefined;
   });
 };
+
+export function hasIndexError(validation: Validation, index: number) {
+  if (!isValidationFailure(validation)) return false;
+  return (
+    validation.errors.find((error) => error.argumentIndex === index) !==
+    undefined
+  );
+}

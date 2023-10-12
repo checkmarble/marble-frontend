@@ -1,5 +1,6 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
+  hasIndexError,
   NewUndefinedAstNode,
   separateChildrenErrors,
   type Validation,
@@ -108,9 +109,13 @@ export function RootAnd({
               />
               <div className="border-grey-10 h-5 border-b" />
               <LogicalOperatorLabel
-                className="bg-grey-02 mr-2 p-2"
                 operator={isFirstCondition ? 'where' : 'and'}
-                color={andChildrenErrors.length > 0 ? 'red' : 'grey'}
+                className={clsx(
+                  'bg-grey-02 mr-2 border p-2',
+                  hasIndexError(rootAndViewModel.validation, childIndex)
+                    ? ' border-red-100 text-red-100'
+                    : 'border-grey-02 text-grey-25'
+                )}
               />
 
               <div className="flex items-center gap-2">
