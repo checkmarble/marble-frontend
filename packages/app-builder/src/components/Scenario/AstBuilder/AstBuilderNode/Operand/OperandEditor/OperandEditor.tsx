@@ -18,7 +18,6 @@ import { Search } from '@ui-icons';
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ErrorMessage } from '../../../ErrorMessage';
 import { getBorderColor } from '../../../utils';
 import {
   adaptAggregationViewModel,
@@ -79,9 +78,6 @@ export function OperandEditor({
           />
         </OperandDropdownMenu.Portal>
       </OperandDropdownMenu.Root>
-      {operandViewModel.validation.state === 'fail' && (
-        <ErrorMessage errors={operandViewModel.validation.errors} />
-      )}
     </div>
   );
 }

@@ -1,9 +1,12 @@
+import { ScenarioValidatioError } from '@app-builder/components/Scenario/ScenarioValidatioError';
+import { type EvaluationError } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
+  flattenViewModelErrors,
 } from '@app-builder/services/editor/ast-editor';
+import { useGetNodeEvaluationErrorMessage } from '@app-builder/services/validation';
 
-import { ErrorMessage } from '../../ErrorMessage';
 import { Operand, type OperandViewModel } from '../Operand';
 import {
   adaptOperatorViewModel,
@@ -15,6 +18,7 @@ interface TwoOperandsLineViewModel {
   left: OperandViewModel;
   operator: OperatorViewModel;
   right: OperandViewModel;
+  errors: EvaluationError[];
 }
 
 export function TwoOperandsLine({
@@ -26,8 +30,9 @@ export function TwoOperandsLine({
   twoOperandsViewModel: TwoOperandsLineViewModel;
   viewOnly?: boolean;
 }) {
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <div className="flex flex-row gap-2">
         <Operand
           ariaLabel="left-operand"
@@ -56,11 +61,13 @@ export function TwoOperandsLine({
           viewOnly={viewOnly}
         />
       </div>
-      {twoOperandsViewModel.operator.validation.state === 'fail' && (
-        <ErrorMessage
-          errors={twoOperandsViewModel.operator.validation.errors}
-        />
-      )}
+      <div className="flex flex-row flex-wrap gap-2">
+        {twoOperandsViewModel.errors.map((error, index) => (
+          <ScenarioValidatioError key={index}>
+            {getNodeEvaluationErrorMessage(error)}
+          </ScenarioValidatioError>
+        ))}
+      </div>
     </div>
   );
 }
@@ -80,5 +87,6 @@ export function adaptTwoOperandsLineViewModel(
     left,
     operator: operatorVm,
     right,
+    errors: flattenViewModelErrors(vm),
   };
 }
