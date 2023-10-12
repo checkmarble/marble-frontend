@@ -245,7 +245,6 @@ export default function Trigger() {
   );
 }
 
-// TODO Zoé i18n
 function ManualTriggerButton({
   hasPendingExecution,
   handleTriggerExecution,
