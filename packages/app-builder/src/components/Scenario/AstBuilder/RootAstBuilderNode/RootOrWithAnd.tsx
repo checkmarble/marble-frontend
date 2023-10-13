@@ -1,5 +1,6 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
+  isValidationFailure,
   NewAstNode,
   NewUndefinedAstNode,
   type Validation,
@@ -77,6 +78,11 @@ export function RootOrWithAnd({
     <div className="flex flex-col gap-2">
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
+        const hasChildError =
+          isValidationFailure(andChild.validation) &&
+          andChild.validation.errors.filter(
+            (error) => error.argumentIndex != undefined
+          ).length > 0;
 
         function appendAndChild() {
           builder.appendChild(andChild.nodeId, NewAndChild());
@@ -98,6 +104,7 @@ export function RootOrWithAnd({
                 <LogicalOperatorLabel
                   operator="or"
                   className="bg-grey-02 uppercase"
+                  color={hasChildError ? 'red' : 'grey'}
                 />
                 <div className="flex flex-1 items-center">
                   <div className="bg-grey-10 h-[1px] w-full" />
@@ -127,6 +134,7 @@ export function RootOrWithAnd({
                   </div>
                   <LogicalOperatorLabel
                     operator={childIndex === 0 ? 'if' : 'and'}
+                    color={hasChildError ? 'red' : 'grey'}
                   />
                 </div>
               );
