@@ -239,11 +239,13 @@ export default function Trigger() {
 
       <div className="flex flex-row items-end justify-between gap-2">
         <div className="flex min-h-[40px] flex-row flex-wrap gap-1">
-          {scenarioValidation.trigger.errors.map((error) => (
-            <ScenarioValidationError key={error}>
-              {getScenarioEvaluationErrorMessage(error)}
-            </ScenarioValidationError>
-          ))}
+          {scenarioValidation.trigger.errors
+            .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
+            .map((error) => (
+              <ScenarioValidationError key={error}>
+                {getScenarioEvaluationErrorMessage(error)}
+              </ScenarioValidationError>
+            ))}
         </div>
         <span>
           {editorMode === 'edit' && (

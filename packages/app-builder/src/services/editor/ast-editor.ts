@@ -166,6 +166,11 @@ export function useAstBuilder({
     [onValidate]
   );
 
+  useEffect(() => {
+    validate(editorNodeViewModel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const replaceOneNode = useCallback(
     (
       nodeId: string,
