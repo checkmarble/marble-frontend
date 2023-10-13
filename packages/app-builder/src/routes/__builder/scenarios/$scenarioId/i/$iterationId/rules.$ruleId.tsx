@@ -200,7 +200,6 @@ export default function RuleEdit() {
   const errors = data?.errors;
 
   useEffect(() => {
-    validate(initialAst);
     if (!errors) return;
 
     R.forEachObj.indexed(errors.fieldErrors, (err, name) => {
@@ -385,11 +384,13 @@ function RuleEditContent({
 
         {ruleValidation.errors && (
           <div className="flex flex-row flex-wrap gap-1">
-            {ruleValidation.errors.map((error) => (
-              <ScenarioValidationError key={error}>
-                {getScenarioEvaluationErrorMessage(error)}
-              </ScenarioValidationError>
-            ))}
+            {ruleValidation.errors
+              .filter((error) => error != 'RULE_FORMULA_REQUIRED')
+              .map((error) => (
+                <ScenarioValidationError key={error}>
+                  {getScenarioEvaluationErrorMessage(error)}
+                </ScenarioValidationError>
+              ))}
           </div>
         )}
       </Paper.Container>

@@ -8,12 +8,12 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { useGetOrAndNodeEvaluationErrorMessage } from '@app-builder/services/validation';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
 import { ScenarioValidationError } from '../../ScenarioValidatioError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
-import { useGetNodeEvaluationErrorMessage } from '../ErrorMessage';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
@@ -54,7 +54,7 @@ export function RootAnd({
   rootAndViewModel: RootAndViewModel;
   viewOnly?: boolean;
 }) {
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+  const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
   const [andChildrenErrors, andNonChildrenErrors] = separateChildrenErrors(
     rootAndViewModel.validation
   );
@@ -133,15 +133,15 @@ export function RootAnd({
             </Fragment>
           );
         })}
-
+      </div>
+      <div className="flex flex-row flex-wrap gap-2">
         {!viewOnly && (
           <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
         )}
-      </div>
-      <div className="flex flex-row flex-wrap gap-2">
+
         {andNonChildrenErrors.map((error, index) => (
           <ScenarioValidationError key={index}>
-            {getNodeEvaluationErrorMessage(error)}
+            {getEvaluationErrorMessage(error)}
           </ScenarioValidationError>
         ))}
       </div>

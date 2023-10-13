@@ -9,12 +9,12 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { useGetOrAndNodeEvaluationErrorMessage } from '@app-builder/services/validation';
 import clsx from 'clsx';
 import React from 'react';
 
 import { ScenarioValidationError } from '../../ScenarioValidatioError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
-import { useGetNodeEvaluationErrorMessage } from '../ErrorMessage';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
@@ -72,7 +72,7 @@ export function RootOrWithAnd({
   rootOrWithAndViewModel: RootOrWithAndViewModel;
   viewOnly?: boolean;
 }) {
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+  const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
   function appendOrChild() {
     builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
   }
@@ -143,33 +143,34 @@ export function RootOrWithAnd({
               );
             })}
 
-            {!viewOnly && (
-              <div className={clsx('my-1', !isFirstAndChild && 'ml-[50px]')}>
-                <AddLogicalOperatorButton
-                  onClick={appendAndChild}
-                  operator="and"
-                />
-              </div>
-            )}
-
             <div className="flex flex-row flex-wrap gap-2">
+              {!viewOnly && (
+                <div className={clsx('my-1', !isFirstAndChild && 'ml-[50px]')}>
+                  <AddLogicalOperatorButton
+                    onClick={appendAndChild}
+                    operator="and"
+                  />
+                </div>
+              )}
+
               {andNonChildrenErrors.map((error, index) => (
                 <ScenarioValidationError key={index}>
-                  {getNodeEvaluationErrorMessage(error)}
+                  {getEvaluationErrorMessage(error)}
                 </ScenarioValidationError>
               ))}
             </div>
           </React.Fragment>
         );
       })}
-      {!viewOnly && (
-        <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
-      )}
 
       <div className="flex flex-row flex-wrap gap-2">
+        {!viewOnly && (
+          <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
+        )}
+
         {rootOrNonChildrenErrors.map((error, index) => (
           <ScenarioValidationError key={index}>
-            {getNodeEvaluationErrorMessage(error)}
+            {getEvaluationErrorMessage(error)}
           </ScenarioValidationError>
         ))}
       </div>
