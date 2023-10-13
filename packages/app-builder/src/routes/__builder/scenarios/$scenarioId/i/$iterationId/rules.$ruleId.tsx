@@ -172,8 +172,9 @@ export default function RuleEdit() {
 
   const editorMode = useEditorMode();
 
+  const initialAst = rule.formula ?? NewEmptyRuleAstNode();
   const astEditor = useAstBuilder({
-    backendAst: rule.formula ?? NewEmptyRuleAstNode(),
+    backendAst: initialAst,
     backendValidation: ruleValidation.ruleEvaluation,
     localValidation,
     identifiers,
@@ -199,6 +200,7 @@ export default function RuleEdit() {
   const errors = data?.errors;
 
   useEffect(() => {
+    validate(initialAst);
     if (!errors) return;
 
     R.forEachObj.indexed(errors.fieldErrors, (err, name) => {

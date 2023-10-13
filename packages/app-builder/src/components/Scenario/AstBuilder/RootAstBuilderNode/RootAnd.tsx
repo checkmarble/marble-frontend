@@ -1,5 +1,9 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
-import { NewUndefinedAstNode, type Validation } from '@app-builder/models';
+import {
+  NewUndefinedAstNode,
+  separateChildrenErrors,
+  type Validation,
+} from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
@@ -7,7 +11,9 @@ import {
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
+import { ScenarioValidationError } from '../../ScenarioValidatioError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
+import { useGetNodeEvaluationErrorMessage } from '../ErrorMessage';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
@@ -48,6 +54,11 @@ export function RootAnd({
   rootAndViewModel: RootAndViewModel;
   viewOnly?: boolean;
 }) {
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+  const [andChildrenErrors, andNonChildrenErrors] = separateChildrenErrors(
+    rootAndViewModel.validation
+  );
+
   function appendAndChild() {
     builder.appendChild(rootAndViewModel.nodeId, NewAndChild());
   }
@@ -98,6 +109,7 @@ export function RootAnd({
             <LogicalOperatorLabel
               className="bg-grey-02 mr-2 p-2"
               operator={isFirstCondition ? 'where' : 'and'}
+              color={andChildrenErrors.length > 0 ? 'red' : 'grey'}
             />
 
             <div className="flex items-center gap-2">
@@ -124,6 +136,14 @@ export function RootAnd({
       {!viewOnly && (
         <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
       )}
+
+      <div className="flex flex-row flex-wrap gap-2">
+        {andNonChildrenErrors.map((error, index) => (
+          <ScenarioValidationError key={index}>
+            {getNodeEvaluationErrorMessage(error)}
+          </ScenarioValidationError>
+        ))}
+      </div>
     </div>
   );
 }
