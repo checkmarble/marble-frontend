@@ -242,7 +242,7 @@ export default function Trigger() {
             .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
             .map((error) => (
               <ScenarioValidationError key={error}>
-                {getScenarioEvaluationErrorMessage(error)}
+                {getScenarioErrorMessage(error)}
               </ScenarioValidationError>
             ))}
         </div>

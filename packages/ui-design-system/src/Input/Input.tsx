@@ -15,7 +15,13 @@ export interface InputProps
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
-    { className, startAdornment, endAdornment, borderColor = 'grey', ...props },
+    {
+      className,
+      startAdornment,
+      endAdornment,
+      borderColor = 'grey-10',
+      ...props
+    },
     ref
   ) => {
     return (
@@ -27,9 +33,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             // Border classes
             'border focus:border-purple-100',
             {
-              'border-grey-10': borderColor === 'grey',
-              'border-red-100': borderColor === 'red',
-              'border-green-100': borderColor === 'green',
+              'border-grey-10': borderColor === 'grey-10',
+              'border-red-25': borderColor === 'red-25',
+              'border-red-100': borderColor === 'red-100',
             },
             startAdornment && 'pl-10',
             endAdornment && 'pr-10'

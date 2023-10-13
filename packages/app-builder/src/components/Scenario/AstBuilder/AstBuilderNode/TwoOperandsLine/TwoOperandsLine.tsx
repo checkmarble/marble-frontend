@@ -3,7 +3,7 @@ import { type EvaluationError } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
-  findIndexedErrorsFromParent,
+  findArgumentIndexErrorsFromParent,
   flattenViewModelErrors,
 } from '@app-builder/services/editor/ast-editor';
 import { useGetNodeEvaluationErrorMessage } from '@app-builder/services/validation';
@@ -90,6 +90,9 @@ export function adaptTwoOperandsLineViewModel(
     left,
     operator: operatorVm,
     right,
-    errors: [...flattenViewModelErrors(vm), ...findIndexedErrorsFromParent(vm)],
+    errors: [
+      ...flattenViewModelErrors(vm),
+      ...findArgumentIndexErrorsFromParent(vm),
+    ],
   };
 }

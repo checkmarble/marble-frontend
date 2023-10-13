@@ -1,14 +1,14 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
-  hasIndexError,
+  type EvaluationError,
   NewAstNode,
   NewUndefinedAstNode,
   separateChildrenErrors,
-  type Validation,
 } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
+  hasArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
 import { useGetOrAndNodeEvaluationErrorMessage } from '@app-builder/services/validation';
 import clsx from 'clsx';
@@ -21,10 +21,10 @@ import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
 export interface RootOrWithAndViewModel {
   orNodeId: string;
-  orValidation: Validation;
+  orValidation: { errors: EvaluationError[] };
   ands: {
     nodeId: string;
-    validation: Validation;
+    validation: { errors: EvaluationError[] };
     children: EditorNodeViewModel[];
   }[];
 }
@@ -78,15 +78,17 @@ export function RootOrWithAnd({
     builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
   }
 
-  const [rootOrChildrenErrors, rootOrNonChildrenErrors] =
-    separateChildrenErrors(rootOrWithAndViewModel.orValidation);
+  const [_, rootOrNonChildrenErrors] = separateChildrenErrors(
+    rootOrWithAndViewModel.orValidation
+  );
 
   return (
     <div className="flex flex-col gap-4">
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
-        const [andChildrenErrors, andNonChildrenErrors] =
-          separateChildrenErrors(andChild.validation);
+        const [_, andNonChildrenErrors] = separateChildrenErrors(
+          andChild.validation
+        );
 
         function appendAndChild() {
           builder.appendChild(andChild.nodeId, NewAndChild());
@@ -120,7 +122,7 @@ export function RootOrWithAnd({
                   <LogicalOperatorLabel
                     operator={childIndex === 0 ? 'if' : 'and'}
                     className={
-                      hasIndexError(andChild.validation, childIndex)
+                      hasArgumentIndexErrorsFromParent(child)
                         ? 'border border-red-100 text-red-100'
                         : 'text-grey-25 border border-transparent'
                     }

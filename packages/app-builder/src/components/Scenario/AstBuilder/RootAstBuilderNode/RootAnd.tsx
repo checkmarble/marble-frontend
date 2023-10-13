@@ -1,13 +1,13 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
-  hasIndexError,
+  type EvaluationError,
   NewUndefinedAstNode,
   separateChildrenErrors,
-  type Validation,
 } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
+  hasArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
 import { useGetOrAndNodeEvaluationErrorMessage } from '@app-builder/services/validation';
 import clsx from 'clsx';
@@ -20,7 +20,7 @@ import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
 export interface RootAndViewModel {
   nodeId: string;
-  validation: Validation;
+  validation: { errors: EvaluationError[] };
   children: EditorNodeViewModel[];
 }
 
@@ -56,7 +56,7 @@ export function RootAnd({
   viewOnly?: boolean;
 }) {
   const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
-  const [andChildrenErrors, andNonChildrenErrors] = separateChildrenErrors(
+  const [_, andNonChildrenErrors] = separateChildrenErrors(
     rootAndViewModel.validation
   );
 
@@ -112,7 +112,7 @@ export function RootAnd({
                 operator={isFirstCondition ? 'where' : 'and'}
                 className={clsx(
                   'bg-grey-02 border p-2',
-                  hasIndexError(rootAndViewModel.validation, childIndex)
+                  hasArgumentIndexErrorsFromParent(child)
                     ? ' border-red-100 text-red-100'
                     : 'border-grey-02 text-grey-25'
                 )}

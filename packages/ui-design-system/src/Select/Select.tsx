@@ -74,7 +74,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
       children,
       className,
       border = defaultBorder,
-      borderColor = 'grey',
+      borderColor = 'grey-10',
       ...props
     },
     ref
@@ -93,9 +93,9 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
           'data-[border=square]:gap-2 data-[border=square]:rounded data-[border=square]:px-2',
           'data-[border=rounded]:rounded-full data-[border=rounded]:px-2',
           // Border color variants
-          'data-[border-color=grey]:border-grey-10 data-[border-color=grey]:focus:border-purple-100',
-          'data-[border-color=red]:border-red-100 data-[border-color=red]:focus:border-purple-100',
-          'data-[border-color=green]:border-green-100 data-[border-color=green]:focus:border-purple-100',
+          'data-[border-color=grey-10]:border-grey-10 data-[border-color=grey-10]:focus:border-purple-100',
+          'data-[border-color=red-100]:border-red-100 data-[border-color=red-100]:focus:border-purple-100',
+          'data-[border-color=red-25]:border-red-25 data-[border-color=red-25]:focus:border-purple-100',
           className
         )}
         {...props}

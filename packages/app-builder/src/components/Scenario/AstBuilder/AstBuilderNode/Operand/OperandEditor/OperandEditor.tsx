@@ -18,8 +18,6 @@ import { Search } from '@ui-icons';
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ErrorMessage } from '../../../ErrorMessage';
-import { getBorderColor } from '../../../utils';
 import {
   adaptAggregationViewModel,
   isAggregationEditorNodeViewModel,
@@ -63,7 +61,11 @@ export function OperandEditor({
           aria-label={ariaLabel}
         >
           <OperandViewer
-            borderColor={getBorderColor(operandViewModel.validation)}
+            borderColor={
+              operandViewModel.validation.errors.length > 0
+                ? 'red-100'
+                : 'grey-10'
+            }
             operandLabelledAst={labelledAst}
           />
         </OperandDropdownMenu.Trigger>
