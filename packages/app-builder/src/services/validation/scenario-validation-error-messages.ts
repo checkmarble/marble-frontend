@@ -62,6 +62,10 @@ export function useGetScenarioEvaluationErrorMessage() {
   return useCallback(
     (evaluationErrorCode: ScenarioValidationErrorCodeDto) => {
       switch (evaluationErrorCode) {
+        case 'TRIGGER_CONDITION_REQUIRED':
+          return t('scenarios:validation.decision.trigger_condition_required');
+        case 'RULE_FORMULA_REQUIRED':
+          return t('scenarios:validation.decision.rule_formula_required');
         case 'SCORE_REVIEW_THRESHOLD_REQUIRED':
           return t(
             'scenarios:validation.decision.score_review_threshold_required'

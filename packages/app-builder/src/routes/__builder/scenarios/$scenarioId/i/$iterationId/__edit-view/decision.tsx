@@ -13,14 +13,20 @@ import {
   FormLabel,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidatioError';
 import {
   useCurrentScenarioIteration,
   useEditorMode,
 } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
+import {
+  useCurrentScenarioValidation,
+  useGetScenarioEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { type ScenarioValidationErrorCodeDto } from '@marble-api';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useSubmit } from '@remix-run/react';
 import { Button, Input } from '@ui-design-system';
@@ -34,6 +40,15 @@ export const handle = {
   i18n: [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace,
 };
 
+/**
+ * This is a list of validation errors comming from the backend that are handled by the form schema.
+ * The form schema is responsible for displaying the error message.
+ */
+const conflictingWithSchemaValidationErrors: string[] = [
+  'SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH',
+  'SCORE_REJECT_THRESHOLD_REQUIRED',
+  'SCORE_REVIEW_THRESHOLD_REQUIRED',
+] satisfies ScenarioValidationErrorCodeDto[];
 function getFormSchema(t: TFunction<typeof handle.i18n>) {
   return z
     .object({
@@ -127,6 +142,10 @@ export default function Decision() {
   const { t } = useTranslation(handle.i18n);
   const { scoreRejectThreshold, scoreReviewThreshold } =
     useCurrentScenarioIteration();
+
+  const scenarioValidation = useCurrentScenarioValidation();
+  const getScenarioEvaluationErrorMessage =
+    useGetScenarioEvaluationErrorMessage();
 
   const editorMode = useEditorMode();
 
@@ -246,14 +265,24 @@ export default function Decision() {
             />
           </div>
           <div className="flex flex-row items-center justify-between">
-            <span>
+            <div className="flex min-h-[40px] flex-row flex-wrap gap-1">
               <FormField
                 control={control}
                 name="thresholds"
                 disabled={disabled}
                 render={() => <FormError className={style.errorMessage} />}
               />
-            </span>
+              {scenarioValidation.decision.errors
+                .filter(
+                  (error) =>
+                    !conflictingWithSchemaValidationErrors.includes(error)
+                )
+                .map((error) => (
+                  <ScenarioValidationError key={error}>
+                    {getScenarioEvaluationErrorMessage(error)}
+                  </ScenarioValidationError>
+                ))}
+            </div>
             <span>
               {editorMode === 'edit' && (
                 <Button type="submit">{t('common:save')}</Button>
