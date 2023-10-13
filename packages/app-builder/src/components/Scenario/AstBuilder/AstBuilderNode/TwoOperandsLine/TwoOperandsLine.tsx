@@ -1,6 +1,9 @@
+import { type EvaluationError } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
+  findIndexedErrorsFromParent,
+  flattenViewModelErrors,
 } from '@app-builder/services/editor/ast-editor';
 
 import { ErrorMessage } from '../../ErrorMessage';
@@ -15,6 +18,7 @@ interface TwoOperandsLineViewModel {
   left: OperandViewModel;
   operator: OperatorViewModel;
   right: OperandViewModel;
+  errors: EvaluationError[];
 }
 
 export function TwoOperandsLine({
@@ -80,5 +84,6 @@ export function adaptTwoOperandsLineViewModel(
     left,
     operator: operatorVm,
     right,
+    errors: [...flattenViewModelErrors(vm), ...findIndexedErrorsFromParent(vm)],
   };
 }
