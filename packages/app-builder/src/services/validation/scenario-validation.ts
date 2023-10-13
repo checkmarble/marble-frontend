@@ -21,12 +21,15 @@ function flattenNodeEvaluationErrors(
 export function findRuleValidation(
   validation: ScenarioValidation,
   ruleId: string
-): NodeEvaluation {
-  const evaluation = validation.rules.rules[ruleId];
+) {
+  const ruleValidation = validation.rules.ruleItems[ruleId];
 
-  invariant(evaluation !== undefined, `Rule ${ruleId} not found in validation`);
+  invariant(
+    ruleValidation !== undefined,
+    `Rule ${ruleId} not found in validation`
+  );
 
-  return evaluation.ruleEvaluation;
+  return ruleValidation;
 }
 
 export function countNodeEvaluationErrors(evaluation: NodeEvaluation): number {
@@ -45,8 +48,8 @@ export function hasTriggerErrors(validation: ScenarioValidation): boolean {
 export function hasRulesErrors(validation: ScenarioValidation): boolean {
   if (validation.rules.errors.length > 0) return true;
 
-  for (const rule of Object.values(validation.rules.rules)) {
-    if (countNodeEvaluationErrors(rule.ruleEvaluation) > 0) return true;
+  for (const rule of Object.values(validation.rules.ruleItems)) {
+    if (hasRuleErrors(rule)) return true;
   }
 
   return false;
@@ -59,8 +62,10 @@ export function hasDecisionErrors(validation: ScenarioValidation): boolean {
 }
 
 export function hasRuleErrors(
-  validation: ScenarioValidation,
-  ruleId: string
+  ruleValidation: ScenarioValidation['rules']['ruleItems'][number]
 ): boolean {
-  return countNodeEvaluationErrors(findRuleValidation(validation, ruleId)) > 0;
+  return (
+    ruleValidation.errors.length > 1 ||
+    countNodeEvaluationErrors(ruleValidation.ruleEvaluation) > 0
+  );
 }

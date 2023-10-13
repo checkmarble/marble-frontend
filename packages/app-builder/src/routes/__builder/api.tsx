@@ -55,7 +55,7 @@ export default function Api() {
             href={generateJsonOpenapiLink(JSON.stringify(openapi))}
             download={'openapi.json'}
             className={clsx(
-              'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
+              'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
               'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100'
             )}
           >

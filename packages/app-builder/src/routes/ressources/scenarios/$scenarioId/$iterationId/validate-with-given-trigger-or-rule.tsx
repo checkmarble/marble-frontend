@@ -89,7 +89,7 @@ export function useTriggerOrRuleValidationFetcher(
       ? null
       : ruleId === null
       ? scenarioValidation.trigger.triggerEvaluation
-      : findRuleValidation(scenarioValidation, ruleId);
+      : findRuleValidation(scenarioValidation, ruleId).ruleEvaluation;
 
   return {
     validate: validateTriggerOrRule,

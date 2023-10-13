@@ -82,7 +82,7 @@ export interface ScenarioValidation {
   };
   rules: {
     errors: ScenarioValidationErrorCodeDto[];
-    rules: {
+    ruleItems: {
       [key: string]: {
         errors: ScenarioValidationErrorCodeDto[];
         ruleEvaluation: NodeEvaluation;
@@ -137,7 +137,7 @@ export function adaptScenarioValidation(
     },
     rules: {
       errors: dto.rules.errors.map(({ error }) => error),
-      rules: R.mapValues(dto.rules.rules, (rule) => ({
+      ruleItems: R.mapValues(dto.rules.rules, (rule) => ({
         errors: rule.errors.map(({ error }) => error),
         ruleEvaluation: adaptNodeEvaluation(rule.rule_evaluation),
       })),

@@ -1,10 +1,13 @@
 import { Ping } from '@app-builder/components/Ping';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidatioError';
 import { CreateRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/create';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import {
+  findRuleValidation,
   hasRuleErrors,
   useCurrentScenarioValidation,
+  useGetScenarioEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -53,6 +56,8 @@ export default function Rules() {
   const navigate = useNavigate();
   const rules = useLoaderData<typeof loader>();
   const scenarioValidation = useCurrentScenarioValidation();
+  const getScenarioEvaluationErrorMessage =
+    useGetScenarioEvaluationErrorMessage();
 
   const columns = useMemo<ColumnDef<ScenarioIterationRuleDto>[]>(
     () => [
@@ -62,7 +67,9 @@ export default function Rules() {
         header: () => <span className="ml-4">{t('scenarios:rules.name')}</span>,
         size: 200,
         cell: ({ getValue, row }) => {
-          const hasErrors = hasRuleErrors(scenarioValidation, row.original.id);
+          const hasErrors = hasRuleErrors(
+            findRuleValidation(scenarioValidation, row.original.id)
+          );
 
           return (
             <span className="flex items-center gap-2">
@@ -119,11 +126,20 @@ export default function Rules() {
 
   return (
     <div className="flex flex-col gap-4">
-      {editorMode === 'edit' && (
-        <div className="flex flex-row justify-end">
-          <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
+      <div className="flex flex-row items-center justify-between gap-2">
+        <div className="flex flex-row flex-wrap gap-1">
+          {scenarioValidation.rules.errors.map((error) => (
+            <ScenarioValidationError key={error}>
+              {getScenarioEvaluationErrorMessage(error)}
+            </ScenarioValidationError>
+          ))}
         </div>
-      )}
+        <span>
+          {editorMode === 'edit' && (
+            <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
+          )}
+        </span>
+      </div>
       <Table.Container {...getContainerProps()}>
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
