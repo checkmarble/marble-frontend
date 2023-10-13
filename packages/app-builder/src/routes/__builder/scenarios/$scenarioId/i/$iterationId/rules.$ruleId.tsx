@@ -172,8 +172,9 @@ export default function RuleEdit() {
 
   const editorMode = useEditorMode();
 
+  const initialAst = rule.formula ?? NewEmptyRuleAstNode();
   const astEditor = useAstBuilder({
-    backendAst: rule.formula ?? NewEmptyRuleAstNode(),
+    backendAst: initialAst,
     backendValidation: ruleValidation.ruleEvaluation,
     localValidation,
     identifiers,
@@ -383,11 +384,13 @@ function RuleEditContent({
 
         {ruleValidation.errors && (
           <div className="flex flex-row flex-wrap gap-1">
-            {ruleValidation.errors.map((error) => (
-              <ScenarioValidationError key={error}>
-                {getScenarioEvaluationErrorMessage(error)}
-              </ScenarioValidationError>
-            ))}
+            {ruleValidation.errors
+              .filter((error) => error != 'RULE_FORMULA_REQUIRED')
+              .map((error) => (
+                <ScenarioValidationError key={error}>
+                  {getScenarioEvaluationErrorMessage(error)}
+                </ScenarioValidationError>
+              ))}
           </div>
         )}
       </Paper.Container>

@@ -220,3 +220,14 @@ export const computeValidationForNamedChildren = (
       NewPendingValidation(),
     parentValidationForNamedChildren(editorNodeViewModel, namedArgumentKey),
   ]);
+
+export const separateChildrenErrors = (
+  validation: Validation
+): [EvaluationError[], EvaluationError[]] => {
+  if (!isValidationFailure(validation)) {
+    return [[], []];
+  }
+  return R.partition(validation.errors, (error) => {
+    return error.argumentIndex != undefined;
+  });
+};
