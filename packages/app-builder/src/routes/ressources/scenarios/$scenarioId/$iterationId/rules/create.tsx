@@ -1,3 +1,4 @@
+import { adaptNodeDto, NewEmptyRuleAstNode } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -25,7 +26,7 @@ export async function action({ request, params }: ActionArgs) {
     const { rule } = await apiClient.createScenarioIterationRule({
       scenarioIterationId: iterationId,
       displayOrder: 1,
-      formula_ast_expression: null,
+      formula_ast_expression: adaptNodeDto(NewEmptyRuleAstNode()),
       name: t('create_rule.default_name'),
       description: '',
       scoreModifier: 0,
