@@ -82,7 +82,7 @@ export function RootOrWithAnd({
     separateChildrenErrors(rootOrWithAndViewModel.orValidation);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
         const [andChildrenErrors, andNonChildrenErrors] =
@@ -116,25 +116,7 @@ export function RootOrWithAnd({
             )}
             {andChild.children.map((child, childIndex) => {
               return (
-                <div
-                  key={child.nodeId}
-                  className="flex flex-row-reverse items-center gap-2"
-                >
-                  {!viewOnly && (
-                    <RemoveButton
-                      className="peer"
-                      onClick={() => {
-                        remove(child.nodeId);
-                      }}
-                    />
-                  )}
-                  <div className="peer-hover:border-grey-25 flex flex-1 flex-col rounded border border-transparent p-1 transition-colors duration-200 ease-in-out">
-                    <AstBuilderNode
-                      builder={builder}
-                      editorNodeViewModel={child}
-                      viewOnly={viewOnly}
-                    />
-                  </div>
+                <div key={child.nodeId} className="flex flex-row gap-2">
                   <LogicalOperatorLabel
                     operator={childIndex === 0 ? 'if' : 'and'}
                     className={
@@ -143,6 +125,22 @@ export function RootOrWithAnd({
                         : 'text-grey-25 border border-transparent'
                     }
                   />
+                  <div className="flex flex-1">
+                    <AstBuilderNode
+                      builder={builder}
+                      editorNodeViewModel={child}
+                      viewOnly={viewOnly}
+                    />
+                  </div>
+                  {!viewOnly && (
+                    <div className="flex h-10 flex-col items-center justify-center">
+                      <RemoveButton
+                        onClick={() => {
+                          remove(child.nodeId);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             })}

@@ -73,7 +73,7 @@ const commonErrorMessages =
     }
   };
 
-export function useGetScenarioEvaluationErrorMessage() {
+export function useGetScenarioErrorMessage() {
   const { t } = useTranslation(['scenarios']);
 
   return useCallback(

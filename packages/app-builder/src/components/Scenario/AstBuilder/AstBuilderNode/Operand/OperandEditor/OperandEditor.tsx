@@ -79,9 +79,6 @@ export function OperandEditor({
           />
         </OperandDropdownMenu.Portal>
       </OperandDropdownMenu.Root>
-      {operandViewModel.validation.state === 'fail' && (
-        <ErrorMessage errors={operandViewModel.validation.errors} />
-      )}
     </div>
   );
 }

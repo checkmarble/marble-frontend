@@ -34,7 +34,7 @@ import {
 import { serverServices } from '@app-builder/services/init.server';
 import {
   useCurrentRuleValidationRule,
-  useGetScenarioEvaluationErrorMessage,
+  useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
 import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -316,8 +316,7 @@ function RuleEditContent({
   const { t } = useTranslation(handle.i18n);
 
   const ruleValidation = useCurrentRuleValidationRule();
-  const getScenarioEvaluationErrorMessage =
-    useGetScenarioEvaluationErrorMessage();
+  const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   return (
     <ScenarioPage.Content className="max-w-3xl">
@@ -388,7 +387,7 @@ function RuleEditContent({
               .filter((error) => error != 'RULE_FORMULA_REQUIRED')
               .map((error) => (
                 <ScenarioValidationError key={error}>
-                  {getScenarioEvaluationErrorMessage(error)}
+                  {getScenarioErrorMessage(error)}
                 </ScenarioValidationError>
               ))}
           </div>

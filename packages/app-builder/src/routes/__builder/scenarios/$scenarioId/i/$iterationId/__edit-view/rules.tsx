@@ -7,7 +7,7 @@ import {
   findRuleValidation,
   hasRuleErrors,
   useCurrentScenarioValidation,
-  useGetScenarioEvaluationErrorMessage,
+  useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
 import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -56,8 +56,7 @@ export default function Rules() {
   const navigate = useNavigate();
   const rules = useLoaderData<typeof loader>();
   const scenarioValidation = useCurrentScenarioValidation();
-  const getScenarioEvaluationErrorMessage =
-    useGetScenarioEvaluationErrorMessage();
+  const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   const columns = useMemo<ColumnDef<ScenarioIterationRuleDto>[]>(
     () => [
@@ -130,7 +129,7 @@ export default function Rules() {
         <div className="flex flex-row flex-wrap gap-1">
           {scenarioValidation.rules.errors.map((error) => (
             <ScenarioValidationError key={error}>
-              {getScenarioEvaluationErrorMessage(error)}
+              {getScenarioErrorMessage(error)}
             </ScenarioValidationError>
           ))}
         </div>

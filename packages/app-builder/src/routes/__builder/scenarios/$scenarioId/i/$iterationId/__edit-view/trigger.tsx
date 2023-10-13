@@ -27,7 +27,7 @@ import {
 import { serverServices } from '@app-builder/services/init.server';
 import {
   useCurrentScenarioValidation,
-  useGetScenarioEvaluationErrorMessage,
+  useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -168,8 +168,7 @@ export default function Trigger() {
     );
 
   const scenario = useCurrentScenario();
-  const getScenarioEvaluationErrorMessage =
-    useGetScenarioEvaluationErrorMessage();
+  const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   const astEditor = useAstBuilder({
     backendAst: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),

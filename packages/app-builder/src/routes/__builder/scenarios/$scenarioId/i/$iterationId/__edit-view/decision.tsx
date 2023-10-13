@@ -21,7 +21,7 @@ import {
 import { serverServices } from '@app-builder/services/init.server';
 import {
   useCurrentScenarioValidation,
-  useGetScenarioEvaluationErrorMessage,
+  useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -144,8 +144,7 @@ export default function Decision() {
     useCurrentScenarioIteration();
 
   const scenarioValidation = useCurrentScenarioValidation();
-  const getScenarioEvaluationErrorMessage =
-    useGetScenarioEvaluationErrorMessage();
+  const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   const editorMode = useEditorMode();
 
@@ -247,7 +246,7 @@ export default function Decision() {
                 )
                 .map((error) => (
                   <ScenarioValidationError key={error}>
-                    {getScenarioEvaluationErrorMessage(error)}
+                    {getScenarioErrorMessage(error)}
                   </ScenarioValidationError>
                 ))}
             </div>
