@@ -4,17 +4,13 @@ import {
   type AstNode,
   computeValidationForNamedChildren,
   type EvaluationError,
-  mergeValidations,
   NewAstNode,
   NewConstantAstNode,
-  NewPendingValidation,
-  type Validation,
 } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
-  flattenViewModelErrors,
 } from '@app-builder/services/editor/ast-editor';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { Button, Input, Modal } from '@ui-design-system';
@@ -24,7 +20,6 @@ import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ErrorMessage } from '../../ErrorMessage';
-import { getBorderColor } from '../../utils';
 import { AggregatorSelect } from './AggregatorSelect';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
@@ -40,10 +35,9 @@ export interface AggregationViewModel {
   aggregatedField: DataModelField | null;
   filters: FilterViewModel[];
   validation: {
-    aggregation: Validation;
-    label: Validation;
-    aggregator: Validation;
-    aggregatedField: Validation;
+    label: { errors: EvaluationError[] };
+    aggregator: { errors: EvaluationError[] };
+    aggregatedField: { errors: EvaluationError[] };
   };
 }
 export interface FilterViewModel {
@@ -51,48 +45,18 @@ export interface FilterViewModel {
   filteredField: DataModelField | null;
   value: EditorNodeViewModel;
   validation: {
-    filter: Validation;
-    operator: Validation;
-    filteredField: Validation;
-    value: Validation;
+    filter: { errors: EvaluationError[] };
+    operator: { errors: EvaluationError[] };
+    filteredField: { errors: EvaluationError[] };
+    value: { errors: EvaluationError[] };
   };
 }
-
-// Not used since AggregationEditPanel was removed
-const computeAggregationValidation = (vm: EditorNodeViewModel): Validation => {
-  if (!vm.validation) {
-    return NewPendingValidation();
-  }
-  switch (vm.validation.state) {
-    case 'pending':
-      return flattenViewModelErrors(vm).length > 0
-        ? {
-            state: 'fail',
-            errors: appendWithAggregationError([]),
-          }
-        : { state: 'pending' };
-    case 'fail':
-      return {
-        state: 'fail',
-        errors: appendWithAggregationError(vm.validation.errors),
-      };
-    case 'valid':
-      return vm.validation;
-  }
-};
-
-const appendWithAggregationError = (
-  errors: EvaluationError[]
-): EvaluationError[] => [
-  { error: 'AGGREGATION_ERROR', message: 'aggregation has errors' },
-  ...errors,
-];
 
 export type AggregationEditorNodeViewModel = {
   nodeId: string;
   funcName: string | null;
   constant: string;
-  validation: Validation;
+  validation: { errors: EvaluationError[] };
   children: AggregationEditorNodeViewModel[];
   namedChildren: Record<string, AggregationEditorNodeViewModel>;
   parent: AggregationEditorNodeViewModel;
@@ -122,12 +86,11 @@ export const adaptAggregationViewModel = (
     aggregatedField,
     filters,
     validation: {
-      aggregation: computeAggregationValidation(vm),
       label: computeValidationForNamedChildren(vm, 'label'),
       aggregator: computeValidationForNamedChildren(vm, 'aggregator'),
-      aggregatedField: mergeValidations([
-        computeValidationForNamedChildren(vm, 'tableName'),
-        computeValidationForNamedChildren(vm, 'fieldName'),
+      aggregatedField: computeValidationForNamedChildren(vm, [
+        'tableName',
+        'fieldName',
       ]),
     },
   };
@@ -143,11 +106,11 @@ const adaptFilterViewModel = (
   },
   value: filterVM.namedChildren['value'],
   validation: {
-    filter: filterVM.validation ?? NewPendingValidation(),
+    filter: filterVM.validation,
     operator: computeValidationForNamedChildren(filterVM, 'operator'),
-    filteredField: mergeValidations([
-      computeValidationForNamedChildren(filterVM, 'tableName'),
-      computeValidationForNamedChildren(filterVM, 'fieldName'),
+    filteredField: computeValidationForNamedChildren(filterVM, [
+      'tableName',
+      'fieldName',
     ]),
     value: computeValidationForNamedChildren(filterVM, 'value'),
   },
@@ -304,13 +267,17 @@ const AggregationEditModalContent = ({
                   label: e.target.value,
                   validation: {
                     ...aggregation.validation,
-                    label: NewPendingValidation(),
+                    label: { errors: [] },
                   },
                 })
               }
-              borderColor={getBorderColor(aggregation.validation.label)}
+              borderColor={
+                aggregation.validation.label.errors.length > 0
+                  ? 'red-100'
+                  : 'grey-10'
+              }
             />
-            {aggregation.validation.label.state === 'fail' && (
+            {aggregation.validation.label.errors.length > 0 && (
               <ErrorMessage errors={aggregation.validation.label.errors} />
             )}
           </div>
@@ -325,7 +292,7 @@ const AggregationEditModalContent = ({
                     aggregator,
                     validation: {
                       ...aggregation.validation,
-                      aggregator: NewPendingValidation(),
+                      aggregator: { errors: [] },
                     },
                   })
                 }
@@ -341,7 +308,7 @@ const AggregationEditModalContent = ({
                     aggregatedField,
                     validation: {
                       ...aggregation.validation,
-                      aggregatedField: NewPendingValidation(),
+                      aggregatedField: { errors: [] },
                     },
                   })
                 }
@@ -349,14 +316,14 @@ const AggregationEditModalContent = ({
               />
 
               <div>
-                {aggregation.validation.aggregator.state === 'fail' && (
+                {aggregation.validation.aggregator.errors.length > 0 && (
                   <ErrorMessage
                     errors={aggregation.validation.aggregator.errors}
                   />
                 )}
               </div>
               <div>
-                {aggregation.validation.aggregatedField.state === 'fail' && (
+                {aggregation.validation.aggregatedField.errors.length > 0 && (
                   <ErrorMessage
                     errors={aggregation.validation.aggregatedField.errors}
                   />

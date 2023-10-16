@@ -1,15 +1,13 @@
 import {
   type AstNode,
   computeValidationForNamedChildren,
-  isValidationFailure,
+  type EvaluationError,
   NewConstantAstNode,
-  NewPendingValidation,
   NewTimeAddAstNode,
   NewUndefinedAstNode,
   type TimeAddAstNode,
   timeAddAstNodeName,
   type TimestampFieldAstNode,
-  type Validation,
 } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -23,7 +21,6 @@ import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 
 import { ErrorMessage } from '../../ErrorMessage';
-import { getBorderColor } from '../../utils';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
 import {
   isPlusOrMinus,
@@ -39,10 +36,10 @@ export interface TimeAddViewModal {
   duration: string;
   durationUnit: DurationUnit;
   validation: {
-    timestampField: Validation;
-    sign: Validation;
-    duration: Validation;
-    durationUnit: Validation;
+    timestampField: { errors: EvaluationError[] };
+    sign: { errors: EvaluationError[] };
+    duration: { errors: EvaluationError[] };
+    durationUnit: { errors: EvaluationError[] };
   };
 }
 
@@ -56,7 +53,7 @@ export type TimeAddEditorNodeViewModel = {
   nodeId: string;
   funcName: string | null;
   constant: string;
-  validation: Validation;
+  validation: { errors: EvaluationError[] };
   children: TimeAddEditorNodeViewModel[];
   namedChildren: Record<string, TimeAddEditorNodeViewModel>;
   parent: TimeAddEditorNodeViewModel;
@@ -194,7 +191,7 @@ const TimeAddEditModalContent = ({
                   timestampField,
                   validation: {
                     ...value.validation,
-                    timestampField: NewPendingValidation(),
+                    timestampField: { errors: [] },
                   },
                 })
               }
@@ -209,7 +206,7 @@ const TimeAddEditModalContent = ({
                   sign,
                   validation: {
                     ...value.validation,
-                    sign: NewPendingValidation(),
+                    sign: { errors: [] },
                   },
                 })
               }
@@ -223,11 +220,15 @@ const TimeAddEditModalContent = ({
                   duration: e.target.value,
                   validation: {
                     ...value.validation,
-                    duration: NewPendingValidation(),
+                    duration: { errors: [] },
                   },
                 })
               }
-              borderColor={getBorderColor(value.validation.duration)}
+              borderColor={
+                value.validation.duration.errors.length > 0
+                  ? 'red-100'
+                  : 'grey-10'
+              }
               min="0"
               placeholder="0"
               type="number"
@@ -239,16 +240,16 @@ const TimeAddEditModalContent = ({
               validation={value.validation.durationUnit}
             />
           </div>
-          {isValidationFailure(value.validation.timestampField) && (
-            <ErrorMessage errors={value.validation.timestampField?.errors} />
+          {value.validation.timestampField.errors.length > 0 && (
+            <ErrorMessage errors={value.validation.timestampField.errors} />
           )}
-          {isValidationFailure(value.validation.sign) && (
+          {value.validation.sign.errors.length > 0 && (
             <ErrorMessage errors={value.validation.sign.errors} />
           )}
-          {isValidationFailure(value.validation.duration) && (
+          {value.validation.duration.errors.length > 0 && (
             <ErrorMessage errors={value.validation.duration.errors} />
           )}
-          {isValidationFailure(value.validation.durationUnit) && (
+          {value.validation.durationUnit.errors.length > 0 && (
             <ErrorMessage errors={value.validation.durationUnit.errors} />
           )}
         </div>

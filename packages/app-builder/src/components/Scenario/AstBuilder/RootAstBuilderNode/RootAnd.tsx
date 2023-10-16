@@ -1,12 +1,13 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
+  type EvaluationError,
   NewUndefinedAstNode,
   separateChildrenErrors,
-  type Validation,
 } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
+  hasArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
 import { useGetOrAndNodeEvaluationErrorMessage } from '@app-builder/services/validation';
 import clsx from 'clsx';
@@ -19,7 +20,7 @@ import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
 export interface RootAndViewModel {
   nodeId: string;
-  validation: Validation;
+  validation: { errors: EvaluationError[] };
   children: EditorNodeViewModel[];
 }
 
@@ -55,7 +56,7 @@ export function RootAnd({
   viewOnly?: boolean;
 }) {
   const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
-  const [andChildrenErrors, andNonChildrenErrors] = separateChildrenErrors(
+  const [_, andNonChildrenErrors] = separateChildrenErrors(
     rootAndViewModel.validation
   );
 
@@ -80,7 +81,7 @@ export function RootAnd({
    */
   return (
     <>
-      <div className="text-s grid grid-cols-[8px_16px_max-content_1fr]">
+      <div className="text-s grid grid-cols-[8px_16px_max-content_1fr_max-content]">
         <div className="text-s bg-grey-02 col-span-4 flex h-fit min-h-[40px] w-fit min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
           {builder.triggerObjectTable.name}
         </div>
@@ -94,7 +95,7 @@ export function RootAnd({
               {/* Row 1 */}
               <div
                 className={clsx(
-                  'border-grey-10 col-span-4 w-2 border-r ',
+                  'border-grey-10 col-span-5 w-2 border-r ',
                   isFirstCondition ? 'h-4' : 'h-2'
                 )}
               />
@@ -102,43 +103,46 @@ export function RootAnd({
               {/* Row 2 */}
               <div
                 className={clsx(
-                  'border-grey-10 border-r',
+                  'border-grey-10  border-r',
                   isLastCondition && 'h-5'
                 )}
               />
-              <div className="border-grey-10 h-5 border-b" />
+              <div className="border-grey-10  h-5 border-b" />
               <LogicalOperatorLabel
-                className="bg-grey-02 mr-2 p-2"
                 operator={isFirstCondition ? 'where' : 'and'}
-                color={andChildrenErrors.length > 0 ? 'red' : 'grey'}
+                className={clsx(
+                  'bg-grey-02 border p-2',
+                  hasArgumentIndexErrorsFromParent(child)
+                    ? ' border-red-100 text-red-100'
+                    : 'border-grey-02 text-grey-25'
+                )}
               />
 
-              <div className="flex items-center gap-2">
-                <div className="flex flex-1 flex-col">
-                  <AstBuilderNode
-                    builder={builder}
-                    editorNodeViewModel={child}
-                    viewOnly={viewOnly}
-                  />
-                </div>
-                {!viewOnly && (
+              <div className="px-2">
+                <AstBuilderNode
+                  builder={builder}
+                  editorNodeViewModel={child}
+                  viewOnly={viewOnly}
+                />
+              </div>
+              {!viewOnly && (
+                <div className="flex h-10 flex-col items-center justify-center">
                   <RemoveButton
-                    className="peer"
                     onClick={() => {
                       builder.remove(child.nodeId);
                     }}
                   />
-                )}
-              </div>
+                </div>
+              )}
             </Fragment>
           );
         })}
       </div>
+
       <div className="flex flex-row flex-wrap gap-2">
         {!viewOnly && (
           <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
         )}
-
         {andNonChildrenErrors.map((error, index) => (
           <ScenarioValidationError key={index}>
             {getEvaluationErrorMessage(error)}
