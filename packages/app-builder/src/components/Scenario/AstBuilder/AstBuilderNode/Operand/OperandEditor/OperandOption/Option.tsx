@@ -98,6 +98,8 @@ export function getOperatorTypeIcon(operatorType: LabelledAst['operandType']) {
       return Field;
     case 'Function':
       return Function;
+    case 'Enum':
+      return Field;
     default:
       return undefined;
   }
@@ -113,6 +115,8 @@ export function getOperatorTypeTKey(
       return 'edit_operand.operator_type.field';
     case 'Function':
       return 'edit_operand.operator_type.function';
+    case 'Enum':
+      return 'edit_operand.operator_type.enum';
     default:
       return undefined;
   }

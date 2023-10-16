@@ -2,10 +2,10 @@ import {
   isDatabaseAccess,
   isPayload,
   type LabelledAst,
-  type TableModel,
 } from '@app-builder/models';
+import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 import { ArrowRight } from '@ui-icons';
-import type React from 'react';
+import type * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 
@@ -18,35 +18,37 @@ import {
 } from './OperandOption/Option';
 
 interface OperandEditorDiscoveryResultsProps {
+  builder: AstBuilder;
   options: LabelledAst[];
   onSelect: (option: LabelledAst) => void;
-  triggerObjectTable: TableModel;
 }
 
 export function OperandEditorDiscoveryResults({
+  builder,
   options,
   onSelect,
-  triggerObjectTable,
 }: OperandEditorDiscoveryResultsProps) {
   const { t } = useTranslation('scenarios');
-  const { customListOptions, fieldOptions, functionOptions } = R.pipe(
-    options,
-    R.groupBy((option) => option.operandType),
-    ({ Field, CustomList, Function }) => {
-      return {
-        customListOptions: CustomList,
-        fieldOptions: Field,
-        functionOptions: Function,
-      };
-    }
-  );
+  const { customListOptions, fieldOptions, functionOptions, enumOptions } =
+    R.pipe(
+      options,
+      R.groupBy((option) => option.operandType),
+      ({ Field, CustomList, Function, Constant: Enum }) => {
+        return {
+          customListOptions: CustomList,
+          fieldOptions: Field,
+          functionOptions: Function,
+          enumOptions: Enum,
+        };
+      }
+    );
 
   const fieldByPathOptions = R.pipe(
     fieldOptions,
     R.groupBy((option) => {
       const { astNode } = option;
       if (isPayload(astNode)) {
-        return triggerObjectTable.name;
+        return builder.triggerObjectTable.name;
       }
       if (isDatabaseAccess(astNode)) {
         return [
@@ -60,6 +62,20 @@ export function OperandEditorDiscoveryResults({
 
   return (
     <>
+      {enumOptions && enumOptions.length > 0 && (
+        <OperandDiscoverySubmenu options={enumOptions} onSelect={onSelect}>
+          <GroupHeader.Container>
+            <OperandDiscoveryTitle
+              operandType="Enum"
+              operandsCount={enumOptions.length}
+            />
+            <GroupHeader.Icon>
+              <ArrowRight />
+            </GroupHeader.Icon>
+          </GroupHeader.Container>
+        </OperandDiscoverySubmenu>
+      )}
+
       <Group>
         <GroupHeader.Container>
           <OperandDiscoveryTitle
