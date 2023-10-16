@@ -48,7 +48,7 @@ export function getEditorRepository() {
         .map(adaptAstNode)
         .filter((node): node is PayloadAstNode => {
           if (!isPayload(node)) {
-            throw Error("a payload_accessorsis not a 'Payload'");
+            throw Error("a payload_accessors is not a 'Payload'");
           }
           return true;
         });

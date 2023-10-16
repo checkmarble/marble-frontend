@@ -1,7 +1,11 @@
 import {
   type AstNode,
+  isDatabaseAccess,
+  isPayload,
   type LabelledAst,
   newAggregatorLabelledAst,
+  NewConstantAstNode,
+  newConstantLabelledAst,
   newCustomListLabelledAst,
   newDatabaseAccessorsLabelledAst,
   newPayloadAccessorsLabelledAst,
@@ -10,6 +14,7 @@ import {
 import { newTimeAddLabelledAst } from '@app-builder/models/LabelledAst/TimeAdd';
 import { allAggregators } from '@app-builder/services/editor';
 import {
+  adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
   type AstBuilder,
   getBorderColor,
@@ -35,6 +40,46 @@ import { OperandDropdownMenu } from './OperandDropdownMenu';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
 import { OperandEditorSearchResults } from './OperandEditorSearchResults';
 import { ClearOption, EditOption } from './OperandOption';
+
+export function getEnumOptionsFromNeighbour({
+  parent,
+  viewModel,
+  builder,
+}: {
+  parent: OperandViewModel | null;
+  viewModel: OperandViewModel;
+  builder: AstBuilder;
+}) {
+  if (!parent) {
+    return [];
+  }
+  if (parent.funcName !== '=') {
+    return [];
+  }
+  const neighbourNodeViewModel = parent.children.find(
+    (child) => child.nodeId !== viewModel.nodeId
+  );
+  if (!neighbourNodeViewModel) {
+    return [];
+  }
+  const neighbourNode = adaptAstNodeFromEditorViewModel(neighbourNodeViewModel);
+  if (isPayload(neighbourNode)) {
+    const payloadAst = newPayloadAccessorsLabelledAst({
+      node: neighbourNode,
+      triggerObjectTable: builder.triggerObjectTable,
+    });
+    return payloadAst.values ?? [];
+  }
+
+  if (isDatabaseAccess(neighbourNode)) {
+    const dbAccessAst = newDatabaseAccessorsLabelledAst({
+      node: neighbourNode,
+      dataModel: builder.dataModel,
+    });
+    return dbAccessAst.values ?? [];
+  }
+  return [];
+}
 
 export function OperandEditor({
   builder,
@@ -111,19 +156,28 @@ const OperandEditorContent = forwardRef<
       ...allAggregators.map(newAggregatorLabelledAst),
       newTimeAddLabelledAst(),
     ];
+
+    const equalEnumOptions = getEnumOptionsFromNeighbour({
+      parent: operandViewModel.parent,
+      viewModel: operandViewModel,
+      builder,
+    });
+    const enumOptions = equalEnumOptions?.map((enumValue) => {
+      return newConstantLabelledAst(
+        NewConstantAstNode({
+          constant: enumValue,
+        })
+      );
+    });
+
     return [
       ...payloadAccessors,
       ...databaseAccessors,
       ...customLists,
       ...functions,
+      ...enumOptions,
     ];
-  }, [
-    builder.customLists,
-    builder.dataModel,
-    builder.identifiers.databaseAccessors,
-    builder.identifiers.payloadAccessors,
-    builder.triggerObjectTable,
-  ]);
+  }, [builder, operandViewModel]);
 
   const [searchText, setSearchText] = useState('');
 
@@ -167,9 +221,9 @@ const OperandEditorContent = forwardRef<
       <OperandDropdownMenu.ScrollableViewport className="flex flex-col gap-2 p-2">
         {searchText === '' ? (
           <OperandEditorDiscoveryResults
+            builder={builder}
             options={options}
             onSelect={handleSelectOption}
-            triggerObjectTable={builder.triggerObjectTable}
           />
         ) : (
           <OperandEditorSearchResults
