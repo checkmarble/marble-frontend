@@ -11,11 +11,11 @@ export const isPlusOrMinus = (value: string): value is PlusOrMinus => {
 export const PlusMinusSelect = ({
   value,
   onChange,
-  validation,
+  errors,
 }: {
   value: PlusOrMinus | null;
   onChange: (value: PlusOrMinus) => void;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
 }) => {
   return (
     <Select.Default
@@ -26,7 +26,7 @@ export const PlusMinusSelect = ({
       }}
       placeholder="..."
       className="min-w-fit"
-      borderColor={validation.errors.length > 0 ? 'red-100' : 'grey-10'}
+      borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
     >
       {options.map((operator) => (
         <Select.Item key={operator} value={operator}>

@@ -35,7 +35,7 @@ function isOperatorFunctions(value: string): value is OperatorFunctions {
 export interface OperatorViewModel {
   nodeId: string;
   funcName: OperatorFunctions;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
 }
 
 export function adaptOperatorViewModel(
@@ -45,7 +45,7 @@ export function adaptOperatorViewModel(
   return {
     nodeId: vm.nodeId,
     funcName: vm.funcName,
-    validation: vm.validation,
+    errors: vm.errors,
   };
 }
 
@@ -72,7 +72,7 @@ export function Operator({
     <Select.Root value={value} onValueChange={onSave} disabled={viewOnly}>
       <OperatorViewer
         borderColor={
-          operatorViewModel.validation.errors.length > 0 ? 'red-100' : 'grey-10'
+          operatorViewModel.errors.length > 0 ? 'red-100' : 'grey-10'
         }
       />
       <Select.Content className="max-h-60">

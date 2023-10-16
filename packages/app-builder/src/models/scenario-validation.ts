@@ -100,7 +100,7 @@ export function adaptScenarioValidation(
 export const computeValidationForNamedChildren = (
   editorNodeViewModel: EditorNodeViewModel,
   namedArgumentKey: string | string[]
-): { errors: EvaluationError[] } => {
+): EvaluationError[] => {
   let namedArgumentKeys = namedArgumentKey;
   if (typeof namedArgumentKey === 'string') {
     namedArgumentKeys = [namedArgumentKey];
@@ -113,16 +113,16 @@ export const computeValidationForNamedChildren = (
     );
     const namedChild = editorNodeViewModel.namedChildren[key];
 
-    errors.push(...namedChild.validation.errors);
+    errors.push(...namedChild.errors);
     errors.push(...findArgumentNameErrorsFromParent(namedChild));
   }
-  return { errors };
+  return errors;
 };
 
-export const separateChildrenErrors = (validation: {
-  errors: EvaluationError[];
-}): [EvaluationError[], EvaluationError[]] => {
-  return R.partition(validation.errors, (error) => {
+export const separateChildrenErrors = (
+  errors: EvaluationError[]
+): [EvaluationError[], EvaluationError[]] => {
+  return R.partition(errors, (error) => {
     return error.argumentIndex != undefined;
   });
 };

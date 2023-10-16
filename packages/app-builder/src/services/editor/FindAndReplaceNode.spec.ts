@@ -42,7 +42,7 @@ function helperMakeEditorViewModel(
   return {
     nodeId,
     funcName: 'funcName',
-    validation: { errors: [] },
+    errors: [],
     children: [],
     parent: parent || null,
     namedChildren: {},

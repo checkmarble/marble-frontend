@@ -20,13 +20,13 @@ export const TimestampField = ({
   builder,
   className,
   onChange,
-  validation,
+  errors,
   value,
 }: {
   builder: AstBuilder;
   className?: string;
   onChange: (value: EditorNodeViewModel | null) => void;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
   value: EditorNodeViewModel | null;
 }) => {
   const options: LabelledAst[] = useMemo(() => {
@@ -86,7 +86,7 @@ export const TimestampField = ({
       className={className}
       value={initialValue}
       onChange={onSelect}
-      validation={validation}
+      errors={errors}
       options={options}
     />
   );
@@ -96,13 +96,13 @@ const TimestampFieldCombobox = ({
   className,
   onChange,
   options,
-  validation,
+  errors,
   value,
 }: {
   className?: string;
   onChange: (value: LabelledAst | null) => void;
   options: LabelledAst[];
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
   value: LabelledAst | null;
 }) => {
   const selectedOption =
@@ -130,7 +130,7 @@ const TimestampFieldCombobox = ({
             optionToLabel(selectedOption)
           }
           onChange={(event) => setInputValue(event.target.value)}
-          borderColor={validation.errors.length > 0 ? 'red-100' : 'grey-10'}
+          borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
         />
         <Combobox.Options className="w-fit">
           {filteredOptions.map((option, index) => (

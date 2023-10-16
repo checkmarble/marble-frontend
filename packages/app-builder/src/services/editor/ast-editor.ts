@@ -20,7 +20,7 @@ export interface EditorNodeViewModel {
   nodeId: string;
   funcName: string | null;
   constant?: ConstantType;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
   children: EditorNodeViewModel[];
   namedChildren: Record<string, EditorNodeViewModel>;
   parent: EditorNodeViewModel | null;
@@ -47,7 +47,7 @@ export function adaptEditorNodeViewModel({
     parent: parent ?? null,
     funcName: ast.name,
     constant: ast.constant,
-    validation: { errors: evaluation.errors ?? [] },
+    errors: evaluation.errors ?? [],
     children: [],
     namedChildren: {},
   };
@@ -73,7 +73,7 @@ export function adaptEditorNodeViewModel({
 
 type ValidationViewModel = {
   nodeId: string;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
   children: ValidationViewModel[];
   namedChildren: Record<string, ValidationViewModel>;
   parent: ValidationViewModel | null;
@@ -86,7 +86,7 @@ export function hasArgumentIndexErrorsFromParent<
   const childIndex = viewModel.parent.children.findIndex(
     (child) => child.nodeId == viewModel.nodeId
   );
-  return viewModel.parent.validation.errors.some(
+  return viewModel.parent.errors.some(
     (error) => error.argumentIndex == childIndex
   );
 }
@@ -98,7 +98,7 @@ export function findArgumentIndexErrorsFromParent<
   const childIndex = viewModel.parent.children.findIndex(
     (child) => child.nodeId == viewModel.nodeId
   );
-  return viewModel.parent.validation.errors.filter(
+  return viewModel.parent.errors.filter(
     (error) => error.argumentIndex == childIndex
   );
 }
@@ -112,7 +112,7 @@ export function hasArgumentNameErrorsFromParent<VM extends ValidationViewModel>(
     R.find(([_, child]) => child.nodeId == viewModel.nodeId)
   );
   if (!namedChild) return false;
-  return viewModel.parent.validation.errors.some(
+  return viewModel.parent.errors.some(
     (error) => error.argumentName == namedChild[0]
   );
 }
@@ -126,13 +126,13 @@ export function findArgumentNameErrorsFromParent<
     R.find(([_, child]) => child.nodeId == viewModel.nodeId)
   );
   if (!namedChild) return [];
-  return viewModel.parent.validation.errors.filter(
+  return viewModel.parent.errors.filter(
     (error) => error.argumentName == namedChild[0]
   );
 }
 
 export function getBorderColor<VM extends ValidationViewModel>(viewModel: VM) {
-  if (viewModel.validation.errors.length > 0) return 'red-100';
+  if (viewModel.errors.length > 0) return 'red-100';
 
   if (
     hasArgumentIndexErrorsFromParent(viewModel) ||
@@ -335,7 +335,7 @@ function updateValidation({
 
   const currentNode: EditorNodeViewModel = {
     ...editorNodeViewModel,
-    validation: { errors: validation.errors ?? [] },
+    errors: validation.errors ?? [],
     parent: parent ?? null,
     children: [],
     namedChildren: {},

@@ -21,10 +21,10 @@ import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
 export interface RootOrWithAndViewModel {
   orNodeId: string;
-  orValidation: { errors: EvaluationError[] };
+  orErrors: EvaluationError[];
   ands: {
     nodeId: string;
-    validation: { errors: EvaluationError[] };
+    errors: EvaluationError[];
     children: EditorNodeViewModel[];
   }[];
 }
@@ -42,10 +42,10 @@ export function adaptRootOrWithAndViewModel(
   }
   return {
     orNodeId: viewModel.nodeId,
-    orValidation: viewModel.validation,
+    orErrors: viewModel.errors,
     ands: viewModel.children.map((andNode) => ({
       nodeId: andNode.nodeId,
-      validation: andNode.validation,
+      errors: andNode.errors,
       children: andNode.children,
     })),
   };
@@ -79,7 +79,7 @@ export function RootOrWithAnd({
   }
 
   const [_, rootOrNonChildrenErrors] = separateChildrenErrors(
-    rootOrWithAndViewModel.orValidation
+    rootOrWithAndViewModel.orErrors
   );
 
   return (
@@ -87,7 +87,7 @@ export function RootOrWithAnd({
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
         const [_, andNonChildrenErrors] = separateChildrenErrors(
-          andChild.validation
+          andChild.errors
         );
 
         function appendAndChild() {

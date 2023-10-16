@@ -34,21 +34,21 @@ export interface AggregationViewModel {
   aggregator: string;
   aggregatedField: DataModelField | null;
   filters: FilterViewModel[];
-  validation: {
-    label: { errors: EvaluationError[] };
-    aggregator: { errors: EvaluationError[] };
-    aggregatedField: { errors: EvaluationError[] };
+  errors: {
+    label: EvaluationError[];
+    aggregator: EvaluationError[];
+    aggregatedField: EvaluationError[];
   };
 }
 export interface FilterViewModel {
   operator: string | null;
   filteredField: DataModelField | null;
   value: EditorNodeViewModel;
-  validation: {
-    filter: { errors: EvaluationError[] };
-    operator: { errors: EvaluationError[] };
-    filteredField: { errors: EvaluationError[] };
-    value: { errors: EvaluationError[] };
+  errors: {
+    filter: EvaluationError[];
+    operator: EvaluationError[];
+    filteredField: EvaluationError[];
+    value: EvaluationError[];
   };
 }
 
@@ -56,7 +56,7 @@ export type AggregationEditorNodeViewModel = {
   nodeId: string;
   funcName: string | null;
   constant: string;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
   children: AggregationEditorNodeViewModel[];
   namedChildren: Record<string, AggregationEditorNodeViewModel>;
   parent: AggregationEditorNodeViewModel;
@@ -85,7 +85,7 @@ export const adaptAggregationViewModel = (
     aggregator: vm.namedChildren['aggregator']?.constant,
     aggregatedField,
     filters,
-    validation: {
+    errors: {
       label: computeValidationForNamedChildren(vm, 'label'),
       aggregator: computeValidationForNamedChildren(vm, 'aggregator'),
       aggregatedField: computeValidationForNamedChildren(vm, [
@@ -105,8 +105,8 @@ const adaptFilterViewModel = (
     fieldName: filterVM.namedChildren['fieldName']?.constant,
   },
   value: filterVM.namedChildren['value'],
-  validation: {
-    filter: filterVM.validation,
+  errors: {
+    filter: filterVM.errors,
     operator: computeValidationForNamedChildren(filterVM, 'operator'),
     filteredField: computeValidationForNamedChildren(filterVM, [
       'tableName',
@@ -265,20 +265,18 @@ const AggregationEditModalContent = ({
                 setAggregation({
                   ...aggregation,
                   label: e.target.value,
-                  validation: {
-                    ...aggregation.validation,
-                    label: { errors: [] },
+                  errors: {
+                    ...aggregation.errors,
+                    label: [],
                   },
                 })
               }
               borderColor={
-                aggregation.validation.label.errors.length > 0
-                  ? 'red-100'
-                  : 'grey-10'
+                aggregation.errors.label.length > 0 ? 'red-100' : 'grey-10'
               }
             />
-            {aggregation.validation.label.errors.length > 0 && (
-              <ErrorMessage errors={aggregation.validation.label.errors} />
+            {aggregation.errors.label.length > 0 && (
+              <ErrorMessage errors={aggregation.errors.label} />
             )}
           </div>
           <div className="flex flex-col gap-2">
@@ -290,13 +288,13 @@ const AggregationEditModalContent = ({
                   setAggregation({
                     ...aggregation,
                     aggregator,
-                    validation: {
-                      ...aggregation.validation,
-                      aggregator: { errors: [] },
+                    errors: {
+                      ...aggregation.errors,
+                      aggregator: [],
                     },
                   })
                 }
-                validation={aggregation.validation.aggregator}
+                errors={aggregation.errors.aggregator}
               />
 
               <EditDataModelField
@@ -306,27 +304,23 @@ const AggregationEditModalContent = ({
                   setAggregation({
                     ...aggregation,
                     aggregatedField,
-                    validation: {
-                      ...aggregation.validation,
-                      aggregatedField: { errors: [] },
+                    errors: {
+                      ...aggregation.errors,
+                      aggregatedField: [],
                     },
                   })
                 }
-                validation={aggregation.validation.aggregatedField}
+                errors={aggregation.errors.aggregatedField}
               />
 
               <div>
-                {aggregation.validation.aggregator.errors.length > 0 && (
-                  <ErrorMessage
-                    errors={aggregation.validation.aggregator.errors}
-                  />
+                {aggregation.errors.aggregator.length > 0 && (
+                  <ErrorMessage errors={aggregation.errors.aggregator} />
                 )}
               </div>
               <div>
-                {aggregation.validation.aggregatedField.errors.length > 0 && (
-                  <ErrorMessage
-                    errors={aggregation.validation.aggregatedField.errors}
-                  />
+                {aggregation.errors.aggregatedField.length > 0 && (
+                  <ErrorMessage errors={aggregation.errors.aggregatedField} />
                 )}
               </div>
             </div>
