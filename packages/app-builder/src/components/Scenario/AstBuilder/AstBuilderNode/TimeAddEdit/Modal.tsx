@@ -39,7 +39,6 @@ export interface TimeAddViewModal {
     timestampField: { errors: EvaluationError[] };
     sign: { errors: EvaluationError[] };
     duration: { errors: EvaluationError[] };
-    durationUnit: { errors: EvaluationError[] };
   };
 }
 
@@ -86,7 +85,6 @@ export const adaptTimeAddViewModal = (
       timestampField: computeValidationForNamedChildren(vm, 'timestampField'),
       sign: computeValidationForNamedChildren(vm, 'sign'),
       duration: computeValidationForNamedChildren(vm, 'duration'),
-      durationUnit: computeValidationForNamedChildren(vm, 'durationUnit'),
     },
   };
 };
@@ -237,7 +235,6 @@ const TimeAddEditModalContent = ({
             <DurationUnitSelect
               value={value.durationUnit}
               onChange={(durationUnit) => setValue({ ...value, durationUnit })}
-              validation={value.validation.durationUnit}
             />
           </div>
           {value.validation.timestampField.errors.length > 0 && (
@@ -248,9 +245,6 @@ const TimeAddEditModalContent = ({
           )}
           {value.validation.duration.errors.length > 0 && (
             <ErrorMessage errors={value.validation.duration.errors} />
-          )}
-          {value.validation.durationUnit.errors.length > 0 && (
-            <ErrorMessage errors={value.validation.durationUnit.errors} />
           )}
         </div>
         <div className="flex flex-1 flex-row gap-2">
