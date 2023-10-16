@@ -12,7 +12,7 @@ import {
 } from './OperandEditor/OperandOption/Option';
 import { OperandTooltip } from './OperandTooltip';
 
-export const selectBorderColor = ['grey', 'green', 'red'] as const;
+export const selectBorderColor = ['grey-10', 'red-100', 'red-25'] as const;
 
 interface OperandViewerProps
   extends Omit<React.ComponentProps<'button'>, 'children'> {
@@ -21,7 +21,7 @@ interface OperandViewerProps
 }
 
 export const OperandViewer = forwardRef<HTMLButtonElement, OperandViewerProps>(
-  ({ borderColor = 'grey', operandLabelledAst, ...props }, ref) => {
+  ({ borderColor = 'grey-10', operandLabelledAst, ...props }, ref) => {
     const { t } = useTranslation('scenarios');
 
     const typeInfos = [
@@ -45,9 +45,9 @@ export const OperandViewer = forwardRef<HTMLButtonElement, OperandViewerProps>(
           'disabled:bg-grey-02 disabled:border-grey-02',
           'radix-state-open:border-purple-100 radix-state-open:bg-purple-05',
           // Border color variants
-          'enabled:radix-state-closed:data-[border-color=grey]:border-grey-10 enabled:radix-state-closed:data-[border-color=grey]:focus:border-purple-100',
-          'enabled:radix-state-closed:data-[border-color=red]:border-red-100 enabled:radix-state-closed:data-[border-color=red]:focus:border-purple-100',
-          'enabled:radix-state-closed:data-[border-color=green]:border-green-100 enabled:radix-state-closed:data-[border-color=green]:focus:border-purple-100'
+          'enabled:radix-state-closed:data-[border-color=grey-10]:border-grey-10 enabled:radix-state-closed:data-[border-color=grey-10]:focus:border-purple-100',
+          'enabled:radix-state-closed:data-[border-color=red-100]:border-red-100 enabled:radix-state-closed:data-[border-color=red-100]:focus:border-purple-100',
+          'enabled:radix-state-closed:data-[border-color=red-25]:border-red-25 enabled:radix-state-closed:data-[border-color=red-25]:focus:border-purple-100'
         )}
         {...props}
       >

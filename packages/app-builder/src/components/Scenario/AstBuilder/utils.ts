@@ -1,20 +1,6 @@
-import {
-  type AstNode,
-  getAstNodeLabelName,
-  type Validation,
-} from '@app-builder/models';
+import { type AstNode, getAstNodeLabelName } from '@app-builder/models';
 import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 import * as R from 'remeda';
-
-export function getBorderColor(validation: Validation) {
-  if (validation.state === 'fail') {
-    return 'red';
-  }
-  if (validation.state === 'valid') {
-    return 'green';
-  }
-  return 'grey';
-}
 
 export function stringifyAstNode(
   astNode: AstNode,

@@ -1,15 +1,12 @@
 import {
-  adaptValidation,
   type AstNode,
   type AstOperator,
   type ConstantType,
   type EditorIdentifiersByType,
   type EvaluationError,
   findDataModelTableByName,
-  isValidationFailure,
   type NodeEvaluation,
   type TableModel,
-  type Validation,
 } from '@app-builder/models';
 import { type CustomList } from '@marble-api';
 import { nanoid } from 'nanoid';
@@ -23,7 +20,7 @@ export interface EditorNodeViewModel {
   nodeId: string;
   funcName: string | null;
   constant?: ConstantType;
-  validation: Validation;
+  validation: { errors: EvaluationError[] };
   children: EditorNodeViewModel[];
   namedChildren: Record<string, EditorNodeViewModel>;
   parent: EditorNodeViewModel | null;
@@ -50,7 +47,7 @@ export function adaptEditorNodeViewModel({
     parent: parent ?? null,
     funcName: ast.name,
     constant: ast.constant,
-    validation: adaptValidation(evaluation), // TODO Zoé : adaptValidation per funcName
+    validation: { errors: evaluation.errors ?? [] },
     children: [],
     namedChildren: {},
   };
@@ -78,26 +75,48 @@ export function flattenViewModelErrors(
   viewModel: EditorNodeViewModel
 ): EvaluationError[] {
   return [
-    ...(isValidationFailure(viewModel.validation)
-      ? viewModel.validation.errors
-      : []),
+    ...viewModel.validation.errors,
     ...viewModel.children.flatMap(flattenViewModelErrors),
     ...Object.values(viewModel.namedChildren).flatMap(flattenViewModelErrors),
   ];
 }
 
-export function findIndexedErrorsFromParent(
+export function hasArgumentIndexErrorsFromParent(
+  viewModel: EditorNodeViewModel
+): boolean {
+  if (!viewModel.parent) return false;
+  const childIndex = viewModel.parent.children.findIndex(
+    (child) => child.nodeId == viewModel.nodeId
+  );
+  return viewModel.parent.validation.errors.some(
+    (error) => error.argumentIndex == childIndex
+  );
+}
+
+export function findArgumentIndexErrorsFromParent(
   viewModel: EditorNodeViewModel
 ): EvaluationError[] {
-  return viewModel.parent && isValidationFailure(viewModel.parent?.validation)
-    ? viewModel.parent?.validation.errors.filter(
-        (error) =>
-          error.argumentIndex ==
-          viewModel.parent?.children.findIndex(
-            (child) => child.nodeId == viewModel.nodeId
-          )
-      )
-    : [];
+  if (!viewModel.parent) return [];
+  const childIndex = viewModel.parent.children.findIndex(
+    (child) => child.nodeId == viewModel.nodeId
+  );
+  return viewModel.parent.validation.errors.filter(
+    (error) => error.argumentIndex == childIndex
+  );
+}
+
+export function findArgumentNameErrorsFromParent(
+  viewModel: EditorNodeViewModel
+): EvaluationError[] {
+  if (!viewModel.parent) return [];
+  const namedChild = R.pipe(
+    R.toPairs(viewModel.parent.namedChildren),
+    R.find(([_, child]) => child.nodeId == viewModel.nodeId)
+  );
+  if (!namedChild) return [];
+  return viewModel.parent.validation.errors.filter(
+    (error) => error.argumentName == namedChild[0]
+  );
 }
 
 // adapt ast node from editor view model
@@ -292,7 +311,7 @@ function updateValidation({
 
   const currentNode: EditorNodeViewModel = {
     ...editorNodeViewModel,
-    validation: adaptValidation(validation),
+    validation: { errors: validation.errors ?? [] },
     parent: parent ?? null,
     children: [],
     namedChildren: {},

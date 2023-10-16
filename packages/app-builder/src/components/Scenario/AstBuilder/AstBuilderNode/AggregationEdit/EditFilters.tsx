@@ -1,5 +1,5 @@
 import { scenarioI18n } from '@app-builder/components/Scenario';
-import { NewPendingValidation, NewUndefinedAstNode } from '@app-builder/models';
+import { NewUndefinedAstNode } from '@app-builder/models';
 import {
   adaptEditorNodeViewModel,
   type AstBuilder,
@@ -16,10 +16,10 @@ import { FilterOperatorSelect } from './FilterOperatorSelect';
 import { type FilterViewModel } from './Modal';
 
 const newFilterValidation = () => ({
-  filter: NewPendingValidation(),
-  filteredField: NewPendingValidation(),
-  operator: NewPendingValidation(),
-  value: NewPendingValidation(),
+  filter: { errors: [] },
+  filteredField: { errors: [] },
+  operator: { errors: [] },
+  value: { errors: [] },
 });
 
 export const EditFilters = ({
@@ -117,7 +117,7 @@ export const EditFilters = ({
 
                 <RemoveButton onClick={() => removeFilter(filterIndex)} />
               </div>
-              {filter.validation.filter.state === 'fail' && (
+              {filter.validation.filter.errors.length > 0 && (
                 <ErrorMessage errors={filter.validation.filter.errors} />
               )}
             </div>
