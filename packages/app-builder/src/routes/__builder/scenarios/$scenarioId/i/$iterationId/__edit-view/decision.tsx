@@ -27,7 +27,7 @@ import { Button, Input } from '@ui-design-system';
 import { type Namespace, type TFunction } from 'i18next';
 import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import * as z from 'zod';
 
 export const handle = {
@@ -140,7 +140,7 @@ export default function Decision() {
       },
     },
   });
-  const { control, trigger } = formMethods;
+  const { control, trigger, watch } = formMethods;
 
   useEffect(() => {
     void trigger();
@@ -163,7 +163,7 @@ export default function Decision() {
         className="flex flex-col gap-2"
       >
         <FormProvider {...formMethods}>
-          <div className="grid grid-cols-[repeat(2,auto)] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
+          <div className="grid grid-cols-[min-content_auto] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
             <Outcome border="square" size="big" outcome="approve" />
             <FormField
               control={control}
@@ -171,15 +171,23 @@ export default function Decision() {
               disabled={disabled}
               render={({ field }) => (
                 <FormItem className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
-                  {t('scenarios:decision.score_based.approve_condition')}
                   <FormLabel className="sr-only">
                     {t('scenarios:decision.score_based.score_review_threshold')}
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      className="relative w-fit"
-                      {...field}
+                    <Trans
+                      t={t}
+                      i18nKey="scenarios:decision.score_based.approve_condition"
+                      components={{
+                        ReviewThreshold: (
+                          <Input
+                            type="number"
+                            className="relative w-fit"
+                            {...field}
+                          />
+                        ),
+                      }}
+                      shouldUnescape
                     />
                   </FormControl>
                   <FormError className={style.errorMessage} />
@@ -188,7 +196,12 @@ export default function Decision() {
             />
 
             <Outcome border="square" size="big" outcome="review" />
-            {t('scenarios:decision.score_based.review_condition')}
+            {t('scenarios:decision.score_based.review_condition', {
+              replace: {
+                reviewThreshold: watch('thresholds.scoreReviewThreshold'),
+                rejectThreshold: watch('thresholds.scoreRejectThreshold'),
+              },
+            })}
 
             <Outcome border="square" size="big" outcome="decline" />
             <FormField
@@ -196,16 +209,23 @@ export default function Decision() {
               name="thresholds.scoreRejectThreshold"
               disabled={disabled}
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center gap-1 lg:gap-2">
-                  {t('scenarios:decision.score_based.decline_condition')}
+                <FormItem className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
                   <FormLabel className="sr-only">
                     {t('scenarios:decision.score_based.score_reject_threshold')}
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      className="relative w-fit"
-                      {...field}
+                    <Trans
+                      t={t}
+                      i18nKey="scenarios:decision.score_based.decline_condition"
+                      components={{
+                        RejectThreshold: (
+                          <Input
+                            type="number"
+                            className="relative w-fit"
+                            {...field}
+                          />
+                        ),
+                      }}
                     />
                   </FormControl>
                   <FormError className={style.errorMessage} />
