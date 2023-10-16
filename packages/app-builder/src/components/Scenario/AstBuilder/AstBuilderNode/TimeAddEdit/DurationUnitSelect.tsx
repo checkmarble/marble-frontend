@@ -1,4 +1,3 @@
-import { type EvaluationError } from '@app-builder/models';
 import { Select } from '@ui-design-system';
 import { useTranslation } from 'react-i18next';
 
@@ -8,11 +7,9 @@ export type DurationUnit = (typeof options)[number];
 export const DurationUnitSelect = ({
   value,
   onChange,
-  validation,
 }: {
   value: DurationUnit | null;
   onChange: (value: DurationUnit) => void;
-  validation: { errors: EvaluationError[] };
 }) => {
   const { t } = useTranslation(['scenarios']);
   return (
@@ -24,7 +21,6 @@ export const DurationUnitSelect = ({
       }}
       placeholder="..."
       className="min-w-fit"
-      borderColor={validation.errors.length > 0 ? 'red-100' : 'grey-10'}
     >
       {options.map((option) => (
         <Select.Item key={option} value={option}>
