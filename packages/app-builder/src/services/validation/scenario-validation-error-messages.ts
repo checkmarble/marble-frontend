@@ -67,6 +67,8 @@ const commonErrorMessages =
         );
       case 'ARGUMENT_MUST_BE_TIME':
         return t('scenarios:validation.evaluation_error.argument_must_be_time');
+      case 'FUNCTION_ERROR':
+        return t('scenarios:validation.evaluation_error.function_error');
 
       default:
         return `${evaluationError.error}:${evaluationError.message}`;

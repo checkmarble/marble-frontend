@@ -71,16 +71,6 @@ export function adaptEditorNodeViewModel({
   return currentNode;
 }
 
-export function flattenViewModelErrors(
-  viewModel: EditorNodeViewModel
-): EvaluationError[] {
-  return [
-    ...viewModel.validation.errors,
-    ...viewModel.children.flatMap(flattenViewModelErrors),
-    ...Object.values(viewModel.namedChildren).flatMap(flattenViewModelErrors),
-  ];
-}
-
 export function hasArgumentIndexErrorsFromParent(
   viewModel: EditorNodeViewModel
 ): boolean {

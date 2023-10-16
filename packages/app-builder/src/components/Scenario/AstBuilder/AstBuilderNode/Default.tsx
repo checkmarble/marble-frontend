@@ -6,6 +6,7 @@ import {
 import clsx from 'clsx';
 
 import { stringifyAstNode } from '../utils';
+import { computeOperandErrors } from './Operand';
 
 export function Default({
   builder,
@@ -26,7 +27,7 @@ export function Default({
     <div
       aria-label={ariaLabel}
       data-border-color={
-        displayErrors && editorNodeViewModel.validation.errors.length > 0
+        displayErrors && computeOperandErrors(editorNodeViewModel).length > 0
           ? 'red-100'
           : 'grey-10'
       }

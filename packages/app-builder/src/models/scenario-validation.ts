@@ -26,7 +26,7 @@ export type EvaluationErrorCode =
   | 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION'
   | 'ARGUMENT_MUST_BE_TIME'
   | 'ARGUMENT_REQUIRED'
-  | 'AGGREGATION_ERROR';
+  | 'FUNCTION_ERROR';
 
 export interface EvaluationError {
   error: EvaluationErrorCode;
