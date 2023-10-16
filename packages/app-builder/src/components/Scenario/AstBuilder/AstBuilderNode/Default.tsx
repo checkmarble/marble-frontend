@@ -2,11 +2,11 @@ import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
+  getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
 import clsx from 'clsx';
 
 import { stringifyAstNode } from '../utils';
-import { computeOperandErrors } from './Operand';
 
 export function Default({
   builder,
@@ -27,9 +27,7 @@ export function Default({
     <div
       aria-label={ariaLabel}
       data-border-color={
-        displayErrors && computeOperandErrors(editorNodeViewModel).length > 0
-          ? 'red-100'
-          : 'grey-10'
+        displayErrors ? getBorderColor(editorNodeViewModel) : 'grey-10'
       }
       className={clsx(
         'bg-grey-02 border-grey-02 flex h-fit min-h-[40px] w-fit min-w-[40px] items-center justify-between rounded border px-2 outline-none',
