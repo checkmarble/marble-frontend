@@ -221,6 +221,8 @@ export function NewTimeAddAstNode(
   };
 }
 
+export const functionNodeNames = [aggregationAstNodeName, timeAddAstNodeName];
+
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === databaseAccessAstNodeName;
 }

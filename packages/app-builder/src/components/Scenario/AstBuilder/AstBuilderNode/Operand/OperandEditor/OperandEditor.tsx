@@ -28,7 +28,7 @@ import {
   isTimeAddEditorNodeViewModel,
   useEditTimeAdd,
 } from '../../TimeAddEdit/Modal';
-import { type OperandViewModel } from '../Operand';
+import { computeOperandErrors, type OperandViewModel } from '../Operand';
 import { OperandViewer } from '../OperandViewer';
 import { OperandDropdownMenu } from './OperandDropdownMenu';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
@@ -62,7 +62,7 @@ export function OperandEditor({
         >
           <OperandViewer
             borderColor={
-              operandViewModel.validation.errors.length > 0
+              computeOperandErrors(operandViewModel).length > 0
                 ? 'red-100'
                 : 'grey-10'
             }

@@ -4,11 +4,14 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
   findArgumentIndexErrorsFromParent,
-  flattenViewModelErrors,
 } from '@app-builder/services/editor/ast-editor';
 import { useGetNodeEvaluationErrorMessage } from '@app-builder/services/validation';
 
-import { Operand, type OperandViewModel } from '../Operand';
+import {
+  computeOperandErrors,
+  Operand,
+  type OperandViewModel,
+} from '../Operand';
 import {
   adaptOperatorViewModel,
   Operator,
@@ -91,7 +94,9 @@ export function adaptTwoOperandsLineViewModel(
     operator: operatorVm,
     right,
     errors: [
-      ...flattenViewModelErrors(vm),
+      ...computeOperandErrors(left),
+      ...vm.validation.errors,
+      ...computeOperandErrors(right),
       ...findArgumentIndexErrorsFromParent(vm),
     ],
   };

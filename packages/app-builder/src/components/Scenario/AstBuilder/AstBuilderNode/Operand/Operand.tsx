@@ -1,6 +1,8 @@
 import {
   adaptLabelledAst,
   type AstNode,
+  type EvaluationError,
+  functionNodeNames,
   isAggregation,
   isConstant,
   isCustomListAccess,
@@ -19,6 +21,29 @@ import { Default } from '../Default';
 import { OperandEditor } from './OperandEditor';
 
 export type OperandViewModel = EditorNodeViewModel;
+
+export const computeOperandErrors = (
+  viewModel: EditorNodeViewModel
+): EvaluationError[] => {
+  if (viewModel.funcName && functionNodeNames.includes(viewModel.funcName)) {
+    return hasNestedErrors(viewModel)
+      ? [{ error: 'FUNCTION_ERROR', message: 'function has error' }]
+      : [];
+  } else {
+    return [
+      ...viewModel.validation.errors,
+      ...viewModel.children.flatMap(computeOperandErrors),
+      ...Object.values(viewModel.namedChildren).flatMap(computeOperandErrors),
+    ];
+  }
+};
+
+function hasNestedErrors(viewModel: EditorNodeViewModel): boolean {
+  if (viewModel.validation.errors.length > 0) return true;
+  if (viewModel.children.some(hasNestedErrors)) return true;
+  if (Object.values(viewModel.namedChildren).some(hasNestedErrors)) return true;
+  return false;
+}
 
 export function isEditableOperand(node: AstNode): boolean {
   return (
