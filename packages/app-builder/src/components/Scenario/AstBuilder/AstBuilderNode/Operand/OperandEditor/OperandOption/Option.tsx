@@ -7,6 +7,7 @@ import {
   List,
   Number,
   Schedule,
+  ShapeLine,
   String,
 } from '@ui-icons';
 import clsx from 'clsx';
@@ -99,7 +100,7 @@ export function getOperatorTypeIcon(operatorType: LabelledAst['operandType']) {
     case 'Function':
       return Function;
     case 'Enum':
-      return Field;
+      return ShapeLine;
     default:
       return undefined;
   }

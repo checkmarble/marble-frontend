@@ -46,6 +46,7 @@ export { default as Scenarios } from './Scenarios';
 export { default as Schedule } from './Schedule';
 export { default as Search } from './Search';
 export { default as Settings } from './Settings';
+export { default as ShapeLine } from './ShapeLine';
 export { default as SmallarrowDown } from './SmallarrowDown';
 export { default as SmallarrowLeft } from './SmallarrowLeft';
 export { default as SmallarrowRight } from './SmallarrowRight';
