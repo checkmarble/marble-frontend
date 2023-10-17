@@ -6,6 +6,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
+import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -114,7 +115,8 @@ export default function ListsPage() {
     </Page.Container>
   );
 }
-
 export function ErrorBoundary() {
-  return <ErrorComponent error={useRouteError()} />;
+  const error = useRouteError();
+  captureRemixErrorBoundaryError(error);
+  return <ErrorComponent error={error} />;
 }
