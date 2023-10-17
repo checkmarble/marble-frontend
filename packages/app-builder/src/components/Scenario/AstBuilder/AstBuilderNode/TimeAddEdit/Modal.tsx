@@ -1,15 +1,13 @@
 import {
   type AstNode,
   computeValidationForNamedChildren,
-  isValidationFailure,
+  type EvaluationError,
   NewConstantAstNode,
-  NewPendingValidation,
   NewTimeAddAstNode,
   NewUndefinedAstNode,
   type TimeAddAstNode,
   timeAddAstNodeName,
   type TimestampFieldAstNode,
-  type Validation,
 } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -23,7 +21,6 @@ import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 
 import { ErrorMessage } from '../../ErrorMessage';
-import { getBorderColor } from '../../utils';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
 import {
   isPlusOrMinus,
@@ -38,11 +35,10 @@ export interface TimeAddViewModal {
   sign: PlusOrMinus;
   duration: string;
   durationUnit: DurationUnit;
-  validation: {
-    timestampField: Validation;
-    sign: Validation;
-    duration: Validation;
-    durationUnit: Validation;
+  errors: {
+    timestampField: EvaluationError[];
+    sign: EvaluationError[];
+    duration: EvaluationError[];
   };
 }
 
@@ -56,9 +52,10 @@ export type TimeAddEditorNodeViewModel = {
   nodeId: string;
   funcName: string | null;
   constant: string;
-  validation: Validation;
+  errors: EvaluationError[];
   children: TimeAddEditorNodeViewModel[];
   namedChildren: Record<string, TimeAddEditorNodeViewModel>;
+  parent: TimeAddEditorNodeViewModel;
 };
 
 export const defaultISO8601Duration = 'PT0S';
@@ -84,11 +81,10 @@ export const adaptTimeAddViewModal = (
     sign,
     duration: duration.toString(),
     durationUnit,
-    validation: {
+    errors: {
       timestampField: computeValidationForNamedChildren(vm, 'timestampField'),
       sign: computeValidationForNamedChildren(vm, 'sign'),
       duration: computeValidationForNamedChildren(vm, 'duration'),
-      durationUnit: computeValidationForNamedChildren(vm, 'durationUnit'),
     },
   };
 };
@@ -191,13 +187,13 @@ const TimeAddEditModalContent = ({
                 setValue({
                   ...value,
                   timestampField,
-                  validation: {
-                    ...value.validation,
-                    timestampField: NewPendingValidation(),
+                  errors: {
+                    ...value.errors,
+                    timestampField: [],
                   },
                 })
               }
-              validation={value.validation.timestampField}
+              errors={value.errors.timestampField}
               className="grow"
             />
             <PlusMinusSelect
@@ -206,13 +202,13 @@ const TimeAddEditModalContent = ({
                 setValue({
                   ...value,
                   sign,
-                  validation: {
-                    ...value.validation,
-                    sign: NewPendingValidation(),
+                  errors: {
+                    ...value.errors,
+                    sign: [],
                   },
                 })
               }
-              validation={value.validation.sign}
+              errors={value.errors.sign}
             />
             <Input
               value={value.duration ?? undefined}
@@ -220,13 +216,15 @@ const TimeAddEditModalContent = ({
                 setValue({
                   ...value,
                   duration: e.target.value,
-                  validation: {
-                    ...value.validation,
-                    duration: NewPendingValidation(),
+                  errors: {
+                    ...value.errors,
+                    duration: [],
                   },
                 })
               }
-              borderColor={getBorderColor(value.validation.duration)}
+              borderColor={
+                value.errors.duration.length > 0 ? 'red-100' : 'grey-10'
+              }
               min="0"
               placeholder="0"
               type="number"
@@ -235,20 +233,16 @@ const TimeAddEditModalContent = ({
             <DurationUnitSelect
               value={value.durationUnit}
               onChange={(durationUnit) => setValue({ ...value, durationUnit })}
-              validation={value.validation.durationUnit}
             />
           </div>
-          {isValidationFailure(value.validation.timestampField) && (
-            <ErrorMessage errors={value.validation.timestampField?.errors} />
+          {value.errors.timestampField.length > 0 && (
+            <ErrorMessage errors={value.errors.timestampField} />
           )}
-          {isValidationFailure(value.validation.sign) && (
-            <ErrorMessage errors={value.validation.sign.errors} />
+          {value.errors.sign.length > 0 && (
+            <ErrorMessage errors={value.errors.sign} />
           )}
-          {isValidationFailure(value.validation.duration) && (
-            <ErrorMessage errors={value.validation.duration.errors} />
-          )}
-          {isValidationFailure(value.validation.durationUnit) && (
-            <ErrorMessage errors={value.validation.durationUnit.errors} />
+          {value.errors.duration.length > 0 && (
+            <ErrorMessage errors={value.errors.duration} />
           )}
         </div>
         <div className="flex flex-1 flex-row gap-2">

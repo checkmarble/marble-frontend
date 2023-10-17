@@ -12,14 +12,13 @@ import { allAggregators } from '@app-builder/services/editor';
 import {
   adaptEditorNodeViewModel,
   type AstBuilder,
+  getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
 import { Input } from '@ui-design-system';
 import { Search } from '@ui-icons';
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ErrorMessage } from '../../../ErrorMessage';
-import { getBorderColor } from '../../../utils';
 import {
   adaptAggregationViewModel,
   isAggregationEditorNodeViewModel,
@@ -63,7 +62,7 @@ export function OperandEditor({
           aria-label={ariaLabel}
         >
           <OperandViewer
-            borderColor={getBorderColor(operandViewModel.validation)}
+            borderColor={getBorderColor(operandViewModel)}
             operandLabelledAst={labelledAst}
           />
         </OperandDropdownMenu.Trigger>
@@ -79,9 +78,6 @@ export function OperandEditor({
           />
         </OperandDropdownMenu.Portal>
       </OperandDropdownMenu.Root>
-      {operandViewModel.validation.state === 'fail' && (
-        <ErrorMessage errors={operandViewModel.validation.errors} />
-      )}
     </div>
   );
 }

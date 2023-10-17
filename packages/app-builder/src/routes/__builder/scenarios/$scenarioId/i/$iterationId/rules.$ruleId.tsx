@@ -13,26 +13,32 @@ import {
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { type AstNode } from '@app-builder/models';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidatioError';
+import {
+  type AstNode,
+  NewEmptyRuleAstNode,
+  type ScenarioIterationRule,
+} from '@app-builder/models';
 import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
-import { useEditorMode } from '@app-builder/services/editor';
+import {
+  useCurrentScenarioIterationRule,
+  useEditorMode,
+} from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder as AstBuilderType,
   useAstBuilder,
 } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
-import { countNodeEvaluationErrors } from '@app-builder/services/validation';
+import {
+  useCurrentRuleValidationRule,
+  useGetScenarioErrorMessage,
+} from '@app-builder/services/validation';
 import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import {
-  type ActionArgs,
-  json,
-  type LoaderArgs,
-  type SerializeFrom,
-} from '@remix-run/node';
+import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Button, Input, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
@@ -49,17 +55,12 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderArgs) {
-  const { authService, makeScenarioService } = serverServices;
-  const { apiClient, editor, scenario } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: '/login',
-    }
-  );
+  const { authService } = serverServices;
+  const { apiClient, editor } = await authService.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
 
-  const ruleId = fromParams(params, 'ruleId');
   const scenarioId = fromParams(params, 'scenarioId');
-  const iterationId = fromParams(params, 'iterationId');
 
   const operatorsPromise = editor.listOperators({
     scenarioId,
@@ -72,16 +73,7 @@ export async function loader({ request, params }: LoaderArgs) {
   const dataModelPromise = apiClient.getDataModel();
   const { custom_lists } = await apiClient.listCustomLists();
 
-  const scenarioService = makeScenarioService(scenario);
-  const scenarioIterationRulePromise = scenarioService.getScenarioIterationRule(
-    {
-      iterationId,
-      ruleId,
-    }
-  );
-
   return json({
-    rule: await scenarioIterationRulePromise,
     identifiers: await identifiersPromise,
     operators: await operatorsPromise,
     dataModel: adaptDataModelDto((await dataModelPromise).data_model),
@@ -90,7 +82,7 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 const editRuleFormSchema = z.object({
-  name: z.string().nonempty(),
+  name: z.string().min(1),
   description: z.string(),
   scoreModifier: z.coerce.number().int().min(-1000).max(1000),
 });
@@ -163,7 +155,7 @@ export async function action({ request, params }: ActionArgs) {
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
 
-  const { identifiers, operators, rule, dataModel, customLists } =
+  const { identifiers, operators, dataModel, customLists } =
     useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
@@ -175,12 +167,15 @@ export default function RuleEdit() {
     useTriggerOrRuleValidationFetcher(scenarioId, iterationId, ruleId);
 
   const scenario = useCurrentScenario();
+  const rule = useCurrentScenarioIterationRule();
+  const ruleValidation = useCurrentRuleValidationRule();
 
   const editorMode = useEditorMode();
 
+  const initialAst = rule.formula ?? NewEmptyRuleAstNode();
   const astEditor = useAstBuilder({
-    backendAst: rule.ast,
-    backendValidation: rule.validation,
+    backendAst: initialAst,
+    backendValidation: ruleValidation.ruleEvaluation,
     localValidation,
     identifiers,
     operators,
@@ -257,7 +252,6 @@ export default function RuleEdit() {
       ) : (
         <RuleEditContent
           builder={astEditor}
-          rule={rule}
           iterationId={iterationId}
           scenarioId={scenarioId}
           ruleId={ruleId}
@@ -273,24 +267,15 @@ function RuleViewContent({
   rule,
 }: {
   builder: AstBuilderType;
-  rule: SerializeFrom<typeof loader>['rule'];
+  rule: ScenarioIterationRule;
 }) {
   const {
     t,
     i18n: { language },
   } = useTranslation(handle.i18n);
 
-  const validationErrorsCount = countNodeEvaluationErrors(rule.validation);
-
   return (
     <ScenarioPage.Content className="max-w-3xl">
-      {validationErrorsCount > 0 && (
-        <Callout variant="error">
-          {t('common:validation_error', {
-            count: validationErrorsCount,
-          })}
-        </Callout>
-      )}
       <Callout className="w-full">{rule.description}</Callout>
 
       <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
@@ -320,11 +305,9 @@ function RuleEditContent({
   iterationId,
   scenarioId,
   builder,
-  rule,
   formMethods,
 }: {
   builder: AstBuilderType;
-  rule: SerializeFrom<typeof loader>['rule'];
   ruleId: string;
   scenarioId: string;
   iterationId: string;
@@ -332,17 +315,11 @@ function RuleEditContent({
 }) {
   const { t } = useTranslation(handle.i18n);
 
-  const validationErrorsCount = countNodeEvaluationErrors(rule.validation);
+  const ruleValidation = useCurrentRuleValidationRule();
+  const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   return (
     <ScenarioPage.Content className="max-w-3xl">
-      {validationErrorsCount > 0 && (
-        <Callout variant="error">
-          {t('common:validation_error', {
-            count: validationErrorsCount,
-          })}
-        </Callout>
-      )}
       <Paper.Container scrollable={false}>
         <FormProvider {...formMethods}>
           <FormField
@@ -403,6 +380,18 @@ function RuleEditContent({
 
       <Paper.Container scrollable={false}>
         <AstBuilder builder={builder} />
+
+        {ruleValidation.errors && (
+          <div className="flex flex-row flex-wrap gap-1">
+            {ruleValidation.errors
+              .filter((error) => error != 'RULE_FORMULA_REQUIRED')
+              .map((error) => (
+                <ScenarioValidationError key={error}>
+                  {getScenarioErrorMessage(error)}
+                </ScenarioValidationError>
+              ))}
+          </div>
+        )}
       </Paper.Container>
 
       <DeleteRule

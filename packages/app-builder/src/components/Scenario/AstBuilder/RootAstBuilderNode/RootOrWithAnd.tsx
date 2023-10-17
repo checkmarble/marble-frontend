@@ -1,26 +1,30 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
+  type EvaluationError,
   NewAstNode,
   NewUndefinedAstNode,
-  type Validation,
+  separateChildrenErrors,
 } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
+  hasArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
+import { useGetOrAndNodeEvaluationErrorMessage } from '@app-builder/services/validation';
 import clsx from 'clsx';
 import React from 'react';
 
+import { ScenarioValidationError } from '../../ScenarioValidatioError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
 export interface RootOrWithAndViewModel {
   orNodeId: string;
-  orValidation: Validation;
+  orErrors: EvaluationError[];
   ands: {
     nodeId: string;
-    validation: Validation;
+    errors: EvaluationError[];
     children: EditorNodeViewModel[];
   }[];
 }
@@ -38,10 +42,10 @@ export function adaptRootOrWithAndViewModel(
   }
   return {
     orNodeId: viewModel.nodeId,
-    orValidation: viewModel.validation,
+    orErrors: viewModel.errors,
     ands: viewModel.children.map((andNode) => ({
       nodeId: andNode.nodeId,
-      validation: andNode.validation,
+      errors: andNode.errors,
       children: andNode.children,
     })),
   };
@@ -69,14 +73,22 @@ export function RootOrWithAnd({
   rootOrWithAndViewModel: RootOrWithAndViewModel;
   viewOnly?: boolean;
 }) {
+  const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
   function appendOrChild() {
     builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
   }
 
+  const [_, rootOrNonChildrenErrors] = separateChildrenErrors(
+    rootOrWithAndViewModel.orErrors
+  );
+
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
+        const [_, andNonChildrenErrors] = separateChildrenErrors(
+          andChild.errors
+        );
 
         function appendAndChild() {
           builder.appendChild(andChild.nodeId, NewAndChild());
@@ -97,7 +109,7 @@ export function RootOrWithAnd({
               <div className="flex flex-row gap-1">
                 <LogicalOperatorLabel
                   operator="or"
-                  className="bg-grey-02 uppercase"
+                  className="bg-grey-02 text-grey-25 uppercase"
                 />
                 <div className="flex flex-1 items-center">
                   <div className="bg-grey-10 h-[1px] w-full" />
@@ -106,46 +118,66 @@ export function RootOrWithAnd({
             )}
             {andChild.children.map((child, childIndex) => {
               return (
-                <div
-                  key={child.nodeId}
-                  className="flex flex-row-reverse items-center gap-2"
-                >
-                  {!viewOnly && (
-                    <RemoveButton
-                      className="peer"
-                      onClick={() => {
-                        remove(child.nodeId);
-                      }}
-                    />
-                  )}
-                  <div className="peer-hover:border-grey-25 flex flex-1 flex-col rounded border border-transparent p-1 transition-colors duration-200 ease-in-out">
+                <div key={child.nodeId} className="flex flex-row gap-2">
+                  <LogicalOperatorLabel
+                    operator={childIndex === 0 ? 'if' : 'and'}
+                    className={
+                      hasArgumentIndexErrorsFromParent(child)
+                        ? 'border border-red-100 text-red-100'
+                        : 'text-grey-25 border border-transparent'
+                    }
+                  />
+                  <div className="flex flex-1">
                     <AstBuilderNode
                       builder={builder}
                       editorNodeViewModel={child}
                       viewOnly={viewOnly}
                     />
                   </div>
-                  <LogicalOperatorLabel
-                    operator={childIndex === 0 ? 'if' : 'and'}
-                  />
+                  {!viewOnly && (
+                    <div className="flex h-10 flex-col items-center justify-center">
+                      <RemoveButton
+                        onClick={() => {
+                          remove(child.nodeId);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             })}
 
-            {!viewOnly && (
-              <div className={clsx('my-1', !isFirstAndChild && 'ml-[50px]')}>
-                <AddLogicalOperatorButton
-                  onClick={appendAndChild}
-                  operator="and"
-                />
-              </div>
-            )}
+            <div className="flex flex-row flex-wrap gap-2">
+              {!viewOnly && (
+                <div className={clsx('my-1', !isFirstAndChild && 'ml-[50px]')}>
+                  <AddLogicalOperatorButton
+                    onClick={appendAndChild}
+                    operator="and"
+                  />
+                </div>
+              )}
+
+              {andNonChildrenErrors.map((error, index) => (
+                <ScenarioValidationError key={index}>
+                  {getEvaluationErrorMessage(error)}
+                </ScenarioValidationError>
+              ))}
+            </div>
           </React.Fragment>
         );
       })}
-      {!viewOnly && (
-        <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
-      )}
+
+      <div className="flex flex-row flex-wrap gap-2">
+        {!viewOnly && (
+          <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
+        )}
+
+        {rootOrNonChildrenErrors.map((error, index) => (
+          <ScenarioValidationError key={index}>
+            {getEvaluationErrorMessage(error)}
+          </ScenarioValidationError>
+        ))}
+      </div>
     </div>
   );
 }

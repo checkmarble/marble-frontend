@@ -1,11 +1,11 @@
 import {
+  type EvaluationError,
   isDatabaseAccess,
   isPayload,
   type LabelledAst,
   newDatabaseAccessorsLabelledAst,
   newPayloadAccessorsLabelledAst,
   NewUndefinedAstNode,
-  type Validation,
 } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -16,19 +16,17 @@ import {
 import { Combobox } from '@ui-design-system';
 import { useCallback, useMemo, useState } from 'react';
 
-import { getBorderColor } from '../../utils';
-
 export const TimestampField = ({
   builder,
   className,
   onChange,
-  validation,
+  errors,
   value,
 }: {
   builder: AstBuilder;
   className?: string;
   onChange: (value: EditorNodeViewModel | null) => void;
-  validation: Validation;
+  errors: EvaluationError[];
   value: EditorNodeViewModel | null;
 }) => {
   const options: LabelledAst[] = useMemo(() => {
@@ -88,7 +86,7 @@ export const TimestampField = ({
       className={className}
       value={initialValue}
       onChange={onSelect}
-      validation={validation}
+      errors={errors}
       options={options}
     />
   );
@@ -98,13 +96,13 @@ const TimestampFieldCombobox = ({
   className,
   onChange,
   options,
-  validation,
+  errors,
   value,
 }: {
   className?: string;
   onChange: (value: LabelledAst | null) => void;
   options: LabelledAst[];
-  validation: Validation;
+  errors: EvaluationError[];
   value: LabelledAst | null;
 }) => {
   const selectedOption =
@@ -132,7 +130,7 @@ const TimestampFieldCombobox = ({
             optionToLabel(selectedOption)
           }
           onChange={(event) => setInputValue(event.target.value)}
-          borderColor={getBorderColor(validation)}
+          borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
         />
         <Combobox.Options className="w-fit">
           {filteredOptions.map((option, index) => (

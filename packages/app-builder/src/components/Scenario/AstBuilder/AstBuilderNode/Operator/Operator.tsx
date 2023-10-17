@@ -1,4 +1,7 @@
-import { undefinedAstNodeName, type Validation } from '@app-builder/models';
+import {
+  type EvaluationError,
+  undefinedAstNodeName,
+} from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
@@ -7,7 +10,6 @@ import { Select } from '@ui-design-system';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getBorderColor } from '../../utils';
 import { OperatorViewer } from './OperatorViewer';
 
 //TOOD(builder): move the whitelist of operators to the backend
@@ -33,7 +35,7 @@ function isOperatorFunctions(value: string): value is OperatorFunctions {
 export interface OperatorViewModel {
   nodeId: string;
   funcName: OperatorFunctions;
-  validation: Validation;
+  errors: EvaluationError[];
 }
 
 export function adaptOperatorViewModel(
@@ -43,7 +45,7 @@ export function adaptOperatorViewModel(
   return {
     nodeId: vm.nodeId,
     funcName: vm.funcName,
-    validation: vm.validation,
+    errors: vm.errors,
   };
 }
 
@@ -69,7 +71,9 @@ export function Operator({
   return (
     <Select.Root value={value} onValueChange={onSave} disabled={viewOnly}>
       <OperatorViewer
-        borderColor={getBorderColor(operatorViewModel.validation)}
+        borderColor={
+          operatorViewModel.errors.length > 0 ? 'red-100' : 'grey-10'
+        }
       />
       <Select.Content className="max-h-60">
         <Select.Viewport>

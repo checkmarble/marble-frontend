@@ -3,7 +3,6 @@ import {
   adaptNodeDto,
   adaptScenarioValidation,
   type AstNode,
-  type NodeEvaluation,
   type ScenarioValidation,
 } from '@app-builder/models';
 import {
@@ -30,12 +29,12 @@ export interface ScenarioRepository {
   validateScenarioIterationTrigger(args: {
     iterationId: string;
     trigger: AstNode;
-  }): Promise<NodeEvaluation>;
+  }): Promise<ScenarioValidation['trigger']>;
   validateScenarioIterationRule(args: {
     iterationId: string;
     ruleId: string;
     rule: AstNode;
-  }): Promise<NodeEvaluation>;
+  }): Promise<ScenarioValidation['rules']['ruleItems'][number]>;
 }
 
 export function getScenarioRepository() {
@@ -71,7 +70,7 @@ export function getScenarioRepository() {
           }
         );
       const scenarioValidation = adaptScenarioValidation(scenario_validation);
-      return scenarioValidation.trigger.triggerEvaluation;
+      return scenarioValidation.trigger;
     },
     validateScenarioIterationRule: async ({ iterationId, ruleId, rule }) => {
       const { scenario_validation } =

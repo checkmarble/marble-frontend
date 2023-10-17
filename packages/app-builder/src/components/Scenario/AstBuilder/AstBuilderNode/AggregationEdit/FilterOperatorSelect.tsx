@@ -1,16 +1,14 @@
-import { type Validation } from '@app-builder/models';
+import { type EvaluationError } from '@app-builder/models';
 import { Select } from '@ui-design-system';
-
-import { getBorderColor } from '../../utils';
 
 export const FilterOperatorSelect = ({
   value,
   onChange,
-  validation,
+  errors,
 }: {
   value: string | null;
   onChange: (value: string) => void;
-  validation: Validation;
+  errors: EvaluationError[];
 }) => {
   const filterOperators = ['=', '!=', '>', '<', '>=', '<='];
 
@@ -24,7 +22,7 @@ export const FilterOperatorSelect = ({
         onChange(selectedValue);
       }}
     >
-      <Select.Trigger borderColor={getBorderColor(validation)}>
+      <Select.Trigger borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}>
         <Select.Value placeholder="..." />
       </Select.Trigger>
       <Select.Content className="max-h-60">

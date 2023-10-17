@@ -1,8 +1,5 @@
-import { type Validation } from '@app-builder/models';
 import { Select } from '@ui-design-system';
 import { useTranslation } from 'react-i18next';
-
-import { getBorderColor } from '../../utils';
 
 const options = ['seconds', 'minutes', 'hours', 'days'] as const;
 export type DurationUnit = (typeof options)[number];
@@ -10,11 +7,9 @@ export type DurationUnit = (typeof options)[number];
 export const DurationUnitSelect = ({
   value,
   onChange,
-  validation,
 }: {
   value: DurationUnit | null;
   onChange: (value: DurationUnit) => void;
-  validation: Validation;
 }) => {
   const { t } = useTranslation(['scenarios']);
   return (
@@ -26,7 +21,6 @@ export const DurationUnitSelect = ({
       }}
       placeholder="..."
       className="min-w-fit"
-      borderColor={getBorderColor(validation)}
     >
       {options.map((option) => (
         <Select.Item key={option} value={option}>

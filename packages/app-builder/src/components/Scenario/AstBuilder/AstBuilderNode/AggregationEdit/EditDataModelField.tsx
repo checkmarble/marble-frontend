@@ -1,13 +1,10 @@
-import { type Validation } from '@app-builder/models';
+import { type EvaluationError } from '@app-builder/models';
 import { Combobox } from '@ui-design-system';
 import { useState } from 'react';
-
-import { getBorderColor } from '../../utils';
 
 export type DataModelField = {
   tableName: string | null;
   fieldName: string | null;
-  validation?: Validation;
 };
 
 export const EditDataModelField = ({
@@ -15,13 +12,13 @@ export const EditDataModelField = ({
   value,
   onChange,
   options,
-  validation,
+  errors,
 }: {
   className?: string;
   value: DataModelField | null;
   onChange: (dataModelField: DataModelField | null) => void;
   options: DataModelField[];
-  validation: Validation;
+  errors: EvaluationError[];
 }) => {
   const selectedOption: DataModelField | null =
     options.find(
@@ -51,7 +48,7 @@ export const EditDataModelField = ({
             optionToLabel(selectedOption)
           }
           onChange={(event) => setInputValue(event.target.value)}
-          borderColor={getBorderColor(validation)}
+          borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
         />
         <Combobox.Options className="w-fit">
           {filteredOptions.map((option) => (

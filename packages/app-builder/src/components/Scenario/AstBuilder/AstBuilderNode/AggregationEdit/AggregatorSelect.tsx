@@ -1,4 +1,4 @@
-import { type Validation } from '@app-builder/models';
+import { type EvaluationError } from '@app-builder/models';
 import {
   allAggregators,
   useGetAggregatorName,
@@ -6,16 +6,14 @@ import {
 import { Select } from '@ui-design-system';
 import { useMemo } from 'react';
 
-import { getBorderColor } from '../../utils';
-
 export const AggregatorSelect = ({
   value,
   onChange,
-  validation,
+  errors,
 }: {
   value: string;
   onChange: (value: string) => void;
-  validation: Validation;
+  errors: EvaluationError[];
 }) => {
   const getAggregatorName = useGetAggregatorName();
 
@@ -40,7 +38,7 @@ export const AggregatorSelect = ({
         onChange(selectedValue);
       }}
     >
-      <Select.Trigger borderColor={getBorderColor(validation)}>
+      <Select.Trigger borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}>
         <Select.Value placeholder="..." />
         <Select.Arrow />
       </Select.Trigger>

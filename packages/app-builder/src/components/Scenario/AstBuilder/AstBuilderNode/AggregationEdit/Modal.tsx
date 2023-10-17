@@ -4,17 +4,13 @@ import {
   type AstNode,
   computeValidationForNamedChildren,
   type EvaluationError,
-  mergeValidations,
   NewAstNode,
   NewConstantAstNode,
-  NewPendingValidation,
-  type Validation,
 } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
-  flattenViewModelErrors,
 } from '@app-builder/services/editor/ast-editor';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { Button, Input, Modal } from '@ui-design-system';
@@ -24,7 +20,6 @@ import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ErrorMessage } from '../../ErrorMessage';
-import { getBorderColor } from '../../utils';
 import { AggregatorSelect } from './AggregatorSelect';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
@@ -39,62 +34,32 @@ export interface AggregationViewModel {
   aggregator: string;
   aggregatedField: DataModelField | null;
   filters: FilterViewModel[];
-  validation: {
-    aggregation: Validation;
-    label: Validation;
-    aggregator: Validation;
-    aggregatedField: Validation;
+  errors: {
+    label: EvaluationError[];
+    aggregator: EvaluationError[];
+    aggregatedField: EvaluationError[];
   };
 }
 export interface FilterViewModel {
   operator: string | null;
   filteredField: DataModelField | null;
   value: EditorNodeViewModel;
-  validation: {
-    filter: Validation;
-    operator: Validation;
-    filteredField: Validation;
-    value: Validation;
+  errors: {
+    filter: EvaluationError[];
+    operator: EvaluationError[];
+    filteredField: EvaluationError[];
+    value: EvaluationError[];
   };
 }
-
-// Not used since AggregationEditPanel was removed
-const computeAggregationValidation = (vm: EditorNodeViewModel): Validation => {
-  if (!vm.validation) {
-    return NewPendingValidation();
-  }
-  switch (vm.validation.state) {
-    case 'pending':
-      return flattenViewModelErrors(vm).length > 0
-        ? {
-            state: 'fail',
-            errors: appendWithAggregationError([]),
-          }
-        : { state: 'pending' };
-    case 'fail':
-      return {
-        state: 'fail',
-        errors: appendWithAggregationError(vm.validation.errors),
-      };
-    case 'valid':
-      return vm.validation;
-  }
-};
-
-const appendWithAggregationError = (
-  errors: EvaluationError[]
-): EvaluationError[] => [
-  { error: 'AGGREGATION_ERROR', message: 'aggregation has errors' },
-  ...errors,
-];
 
 export type AggregationEditorNodeViewModel = {
   nodeId: string;
   funcName: string | null;
   constant: string;
-  validation: Validation;
+  errors: EvaluationError[];
   children: AggregationEditorNodeViewModel[];
   namedChildren: Record<string, AggregationEditorNodeViewModel>;
+  parent: AggregationEditorNodeViewModel;
 };
 
 export const isAggregationEditorNodeViewModel = (
@@ -120,13 +85,12 @@ export const adaptAggregationViewModel = (
     aggregator: vm.namedChildren['aggregator']?.constant,
     aggregatedField,
     filters,
-    validation: {
-      aggregation: computeAggregationValidation(vm),
+    errors: {
       label: computeValidationForNamedChildren(vm, 'label'),
       aggregator: computeValidationForNamedChildren(vm, 'aggregator'),
-      aggregatedField: mergeValidations([
-        computeValidationForNamedChildren(vm, 'tableName'),
-        computeValidationForNamedChildren(vm, 'fieldName'),
+      aggregatedField: computeValidationForNamedChildren(vm, [
+        'tableName',
+        'fieldName',
       ]),
     },
   };
@@ -141,12 +105,12 @@ const adaptFilterViewModel = (
     fieldName: filterVM.namedChildren['fieldName']?.constant,
   },
   value: filterVM.namedChildren['value'],
-  validation: {
-    filter: filterVM.validation ?? NewPendingValidation(),
+  errors: {
+    filter: filterVM.errors,
     operator: computeValidationForNamedChildren(filterVM, 'operator'),
-    filteredField: mergeValidations([
-      computeValidationForNamedChildren(filterVM, 'tableName'),
-      computeValidationForNamedChildren(filterVM, 'fieldName'),
+    filteredField: computeValidationForNamedChildren(filterVM, [
+      'tableName',
+      'fieldName',
     ]),
     value: computeValidationForNamedChildren(filterVM, 'value'),
   },
@@ -301,16 +265,18 @@ const AggregationEditModalContent = ({
                 setAggregation({
                   ...aggregation,
                   label: e.target.value,
-                  validation: {
-                    ...aggregation.validation,
-                    label: NewPendingValidation(),
+                  errors: {
+                    ...aggregation.errors,
+                    label: [],
                   },
                 })
               }
-              borderColor={getBorderColor(aggregation.validation.label)}
+              borderColor={
+                aggregation.errors.label.length > 0 ? 'red-100' : 'grey-10'
+              }
             />
-            {aggregation.validation.label.state === 'fail' && (
-              <ErrorMessage errors={aggregation.validation.label.errors} />
+            {aggregation.errors.label.length > 0 && (
+              <ErrorMessage errors={aggregation.errors.label} />
             )}
           </div>
           <div className="flex flex-col gap-2">
@@ -322,13 +288,13 @@ const AggregationEditModalContent = ({
                   setAggregation({
                     ...aggregation,
                     aggregator,
-                    validation: {
-                      ...aggregation.validation,
-                      aggregator: NewPendingValidation(),
+                    errors: {
+                      ...aggregation.errors,
+                      aggregator: [],
                     },
                   })
                 }
-                validation={aggregation.validation.aggregator}
+                errors={aggregation.errors.aggregator}
               />
 
               <EditDataModelField
@@ -338,27 +304,23 @@ const AggregationEditModalContent = ({
                   setAggregation({
                     ...aggregation,
                     aggregatedField,
-                    validation: {
-                      ...aggregation.validation,
-                      aggregatedField: NewPendingValidation(),
+                    errors: {
+                      ...aggregation.errors,
+                      aggregatedField: [],
                     },
                   })
                 }
-                validation={aggregation.validation.aggregatedField}
+                errors={aggregation.errors.aggregatedField}
               />
 
               <div>
-                {aggregation.validation.aggregator.state === 'fail' && (
-                  <ErrorMessage
-                    errors={aggregation.validation.aggregator.errors}
-                  />
+                {aggregation.errors.aggregator.length > 0 && (
+                  <ErrorMessage errors={aggregation.errors.aggregator} />
                 )}
               </div>
               <div>
-                {aggregation.validation.aggregatedField.state === 'fail' && (
-                  <ErrorMessage
-                    errors={aggregation.validation.aggregatedField.errors}
-                  />
+                {aggregation.errors.aggregatedField.length > 0 && (
+                  <ErrorMessage errors={aggregation.errors.aggregatedField} />
                 )}
               </div>
             </div>

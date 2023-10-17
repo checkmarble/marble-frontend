@@ -1,15 +1,12 @@
 import {
-  adaptValidation,
   type AstNode,
   type AstOperator,
   type ConstantType,
   type EditorIdentifiersByType,
   type EvaluationError,
   findDataModelTableByName,
-  isValidationFailure,
   type NodeEvaluation,
   type TableModel,
-  type Validation,
 } from '@app-builder/models';
 import { type CustomList } from '@marble-api';
 import { nanoid } from 'nanoid';
@@ -23,17 +20,20 @@ export interface EditorNodeViewModel {
   nodeId: string;
   funcName: string | null;
   constant?: ConstantType;
-  validation: Validation;
+  errors: EvaluationError[];
   children: EditorNodeViewModel[];
   namedChildren: Record<string, EditorNodeViewModel>;
+  parent: EditorNodeViewModel | null;
 }
 
 export function adaptEditorNodeViewModel({
   ast,
   validation,
+  parent,
 }: {
   ast: AstNode;
   validation?: NodeEvaluation;
+  parent?: EditorNodeViewModel;
 }): EditorNodeViewModel {
   const evaluation = validation ?? {
     returnValue: null,
@@ -42,36 +42,105 @@ export function adaptEditorNodeViewModel({
     namedChildren: {},
   };
 
-  return {
+  const currentNode: EditorNodeViewModel = {
     nodeId: nanoid(),
+    parent: parent ?? null,
     funcName: ast.name,
     constant: ast.constant,
-    validation: adaptValidation(evaluation),
-    children: ast.children.map((child, i) =>
-      adaptEditorNodeViewModel({
-        ast: child,
-        validation: evaluation.children[i],
-      })
-    ),
-    namedChildren: R.mapValues(ast.namedChildren, (child, namedKey) =>
+    errors: evaluation.errors ?? [],
+    children: [],
+    namedChildren: {},
+  };
+  currentNode.children = ast.children.map((child, i) =>
+    adaptEditorNodeViewModel({
+      ast: child,
+      validation: evaluation.children[i],
+      parent: currentNode,
+    })
+  );
+  currentNode.namedChildren = R.mapValues(
+    ast.namedChildren,
+    (child, namedKey) =>
       adaptEditorNodeViewModel({
         ast: child,
         validation: evaluation.namedChildren[namedKey],
+        parent: currentNode,
       })
-    ),
-  };
+  );
+
+  return currentNode;
 }
 
-export function flattenViewModelErrors(
-  viewModel: EditorNodeViewModel
-): EvaluationError[] {
-  return [
-    ...(isValidationFailure(viewModel.validation)
-      ? viewModel.validation.errors
-      : []),
-    ...viewModel.children.flatMap(flattenViewModelErrors),
-    ...Object.values(viewModel.namedChildren).flatMap(flattenViewModelErrors),
-  ];
+type ValidationViewModel = {
+  nodeId: string;
+  errors: EvaluationError[];
+  children: ValidationViewModel[];
+  namedChildren: Record<string, ValidationViewModel>;
+  parent: ValidationViewModel | null;
+};
+
+export function hasArgumentIndexErrorsFromParent<
+  VM extends ValidationViewModel
+>(viewModel: VM): boolean {
+  if (!viewModel.parent) return false;
+  const childIndex = viewModel.parent.children.findIndex(
+    (child) => child.nodeId == viewModel.nodeId
+  );
+  return viewModel.parent.errors.some(
+    (error) => error.argumentIndex == childIndex
+  );
+}
+
+export function findArgumentIndexErrorsFromParent<
+  VM extends ValidationViewModel
+>(viewModel: VM): EvaluationError[] {
+  if (!viewModel.parent) return [];
+  const childIndex = viewModel.parent.children.findIndex(
+    (child) => child.nodeId == viewModel.nodeId
+  );
+  return viewModel.parent.errors.filter(
+    (error) => error.argumentIndex == childIndex
+  );
+}
+
+export function hasArgumentNameErrorsFromParent<VM extends ValidationViewModel>(
+  viewModel: VM
+): boolean {
+  if (!viewModel.parent) return false;
+  const namedChild = R.pipe(
+    R.toPairs(viewModel.parent.namedChildren),
+    R.find(([_, child]) => child.nodeId == viewModel.nodeId)
+  );
+  if (!namedChild) return false;
+  return viewModel.parent.errors.some(
+    (error) => error.argumentName == namedChild[0]
+  );
+}
+
+export function findArgumentNameErrorsFromParent<
+  VM extends ValidationViewModel
+>(viewModel: VM): EvaluationError[] {
+  if (!viewModel.parent) return [];
+  const namedChild = R.pipe(
+    R.toPairs(viewModel.parent.namedChildren),
+    R.find(([_, child]) => child.nodeId == viewModel.nodeId)
+  );
+  if (!namedChild) return [];
+  return viewModel.parent.errors.filter(
+    (error) => error.argumentName == namedChild[0]
+  );
+}
+
+export function getBorderColor<VM extends ValidationViewModel>(viewModel: VM) {
+  if (viewModel.errors.length > 0) return 'red-100';
+
+  if (
+    hasArgumentIndexErrorsFromParent(viewModel) ||
+    hasArgumentNameErrorsFromParent(viewModel)
+  )
+    return 'red-25';
+
+  return 'grey-10';
 }
 
 // adapt ast node from editor view model
@@ -139,6 +208,11 @@ export function useAstBuilder({
     },
     [onValidate]
   );
+
+  useEffect(() => {
+    validate(editorNodeViewModel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const replaceOneNode = useCallback(
     (
@@ -248,31 +322,39 @@ export function useAstBuilder({
 function updateValidation({
   editorNodeViewModel,
   validation,
+  parent,
 }: {
   editorNodeViewModel: EditorNodeViewModel;
   validation: NodeEvaluation;
+  parent?: EditorNodeViewModel;
 }): EditorNodeViewModel {
   // Ensure validation is consistent with view model (due to children, namedChildren recursion)
   if (!validation) {
     throw new Error('validation is required');
   }
 
-  return {
+  const currentNode: EditorNodeViewModel = {
     ...editorNodeViewModel,
-    validation: adaptValidation(validation),
-    children: editorNodeViewModel.children.map((child, i) =>
+    errors: validation.errors ?? [],
+    parent: parent ?? null,
+    children: [],
+    namedChildren: {},
+  };
+  currentNode.children = editorNodeViewModel.children.map((child, i) =>
+    updateValidation({
+      editorNodeViewModel: child,
+      validation: validation.children[i],
+      parent: currentNode,
+    })
+  );
+  currentNode.namedChildren = R.mapValues(
+    editorNodeViewModel.namedChildren,
+    (child, namedKey) =>
       updateValidation({
         editorNodeViewModel: child,
-        validation: validation.children[i],
+        validation: validation.namedChildren[namedKey],
       })
-    ),
-    namedChildren: R.mapValues(
-      editorNodeViewModel.namedChildren,
-      (child, namedKey) =>
-        updateValidation({
-          editorNodeViewModel: child,
-          validation: validation.namedChildren[namedKey],
-        })
-    ),
-  };
+  );
+
+  return currentNode;
 }
