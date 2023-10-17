@@ -3,6 +3,7 @@ import {
   findArgumentNameErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
 import {
+  type EvaluationErrorCodeDto,
   type EvaluationErrorDto,
   type NodeEvaluationDto,
   type ScenarioValidationDto,
@@ -13,20 +14,7 @@ import invariant from 'tiny-invariant';
 
 import type { ConstantType } from './ast-node';
 
-export type EvaluationErrorCode =
-  | 'UNEXPECTED_ERROR'
-  | 'UNDEFINED_FUNCTION'
-  | 'WRONG_NUMBER_OF_ARGUMENTS'
-  | 'MISSING_NAMED_ARGUMENT'
-  | 'ARGUMENTS_MUST_BE_INT_OR_FLOAT'
-  | 'ARGUMENT_MUST_BE_INTEGER'
-  | 'ARGUMENT_MUST_BE_STRING'
-  | 'ARGUMENT_MUST_BE_BOOLEAN'
-  | 'ARGUMENT_MUST_BE_LIST'
-  | 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION'
-  | 'ARGUMENT_MUST_BE_TIME'
-  | 'ARGUMENT_REQUIRED'
-  | 'FUNCTION_ERROR';
+export type EvaluationErrorCode = EvaluationErrorCodeDto | 'FUNCTION_ERROR';
 
 export interface EvaluationError {
   error: EvaluationErrorCode;

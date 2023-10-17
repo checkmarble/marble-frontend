@@ -12,6 +12,7 @@ import { allAggregators } from '@app-builder/services/editor';
 import {
   adaptEditorNodeViewModel,
   type AstBuilder,
+  getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
 import { Input } from '@ui-design-system';
 import { Search } from '@ui-icons';
@@ -28,7 +29,7 @@ import {
   isTimeAddEditorNodeViewModel,
   useEditTimeAdd,
 } from '../../TimeAddEdit/Modal';
-import { computeOperandErrors, type OperandViewModel } from '../Operand';
+import { type OperandViewModel } from '../Operand';
 import { OperandViewer } from '../OperandViewer';
 import { OperandDropdownMenu } from './OperandDropdownMenu';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
@@ -61,11 +62,7 @@ export function OperandEditor({
           aria-label={ariaLabel}
         >
           <OperandViewer
-            borderColor={
-              computeOperandErrors(operandViewModel).length > 0
-                ? 'red-100'
-                : 'grey-10'
-            }
+            borderColor={getBorderColor(operandViewModel)}
             operandLabelledAst={labelledAst}
           />
         </OperandDropdownMenu.Trigger>
