@@ -135,8 +135,14 @@ export default function Decision() {
     resolver: zodResolver(getFormSchema(t)),
     defaultValues: {
       thresholds: {
-        scoreReviewThreshold,
-        scoreRejectThreshold,
+        scoreReviewThreshold: 0,
+        scoreRejectThreshold: 0,
+      },
+    },
+    values: {
+      thresholds: {
+        scoreReviewThreshold: scoreReviewThreshold ?? 0,
+        scoreRejectThreshold: scoreRejectThreshold ?? 0,
       },
     },
   });
@@ -198,8 +204,14 @@ export default function Decision() {
             <Outcome border="square" size="big" outcome="review" />
             {t('scenarios:decision.score_based.review_condition', {
               replace: {
-                reviewThreshold: watch('thresholds.scoreReviewThreshold'),
-                rejectThreshold: watch('thresholds.scoreRejectThreshold'),
+                reviewThreshold: watch(
+                  'thresholds.scoreReviewThreshold',
+                  scoreReviewThreshold
+                ),
+                rejectThreshold: watch(
+                  'thresholds.scoreRejectThreshold',
+                  scoreRejectThreshold
+                ),
               },
             })}
 
