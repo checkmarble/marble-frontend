@@ -16,10 +16,10 @@ import { FilterOperatorSelect } from './FilterOperatorSelect';
 import { type FilterViewModel } from './Modal';
 
 const newFilterValidation = () => ({
-  filter: { errors: [] },
-  filteredField: { errors: [] },
-  operator: { errors: [] },
-  value: { errors: [] },
+  filter: [],
+  filteredField: [],
+  operator: [],
+  value: [],
 });
 
 export const EditFilters = ({
@@ -67,7 +67,7 @@ export const EditFilters = ({
         operator: null,
         filteredField: null,
         value: adaptEditorNodeViewModel({ ast: NewUndefinedAstNode() }),
-        validation: newFilterValidation(),
+        errors: newFilterValidation(),
       },
     ]);
   };
@@ -93,7 +93,7 @@ export const EditFilters = ({
                   onChange={(filteredField) =>
                     onFilterChange({ filteredField }, filterIndex)
                   }
-                  validation={filter.validation.filteredField}
+                  errors={filter.errors.filteredField}
                 />
 
                 <FilterOperatorSelect
@@ -101,7 +101,7 @@ export const EditFilters = ({
                   onChange={(operator) =>
                     onFilterChange({ operator }, filterIndex)
                   }
-                  validation={filter.validation.operator}
+                  errors={filter.errors.operator}
                 />
 
                 <Operand
@@ -117,8 +117,8 @@ export const EditFilters = ({
 
                 <RemoveButton onClick={() => removeFilter(filterIndex)} />
               </div>
-              {filter.validation.filter.errors.length > 0 && (
-                <ErrorMessage errors={filter.validation.filter.errors} />
+              {filter.errors.filter.length > 0 && (
+                <ErrorMessage errors={filter.errors.filter} />
               )}
             </div>
           );

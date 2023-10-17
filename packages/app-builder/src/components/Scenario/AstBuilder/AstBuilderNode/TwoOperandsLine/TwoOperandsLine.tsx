@@ -95,7 +95,7 @@ export function adaptTwoOperandsLineViewModel(
     right,
     errors: [
       ...computeOperandErrors(left),
-      ...vm.validation.errors,
+      ...vm.errors,
       ...computeOperandErrors(right),
       ...findArgumentIndexErrorsFromParent(vm),
     ],

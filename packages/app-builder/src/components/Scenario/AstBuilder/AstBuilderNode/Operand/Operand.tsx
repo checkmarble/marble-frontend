@@ -31,7 +31,7 @@ export const computeOperandErrors = (
       : [];
   } else {
     return [
-      ...viewModel.validation.errors,
+      ...viewModel.errors,
       ...viewModel.children.flatMap(computeOperandErrors),
       ...Object.values(viewModel.namedChildren).flatMap(computeOperandErrors),
     ];
@@ -39,7 +39,7 @@ export const computeOperandErrors = (
 };
 
 function hasNestedErrors(viewModel: EditorNodeViewModel): boolean {
-  if (viewModel.validation.errors.length > 0) return true;
+  if (viewModel.errors.length > 0) return true;
   if (viewModel.children.some(hasNestedErrors)) return true;
   if (Object.values(viewModel.namedChildren).some(hasNestedErrors)) return true;
   return false;

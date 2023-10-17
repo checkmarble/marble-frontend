@@ -9,11 +9,11 @@ import { useMemo } from 'react';
 export const AggregatorSelect = ({
   value,
   onChange,
-  validation,
+  errors,
 }: {
   value: string;
   onChange: (value: string) => void;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
 }) => {
   const getAggregatorName = useGetAggregatorName();
 
@@ -38,9 +38,7 @@ export const AggregatorSelect = ({
         onChange(selectedValue);
       }}
     >
-      <Select.Trigger
-        borderColor={validation.errors.length > 0 ? 'red-100' : 'grey-10'}
-      >
+      <Select.Trigger borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}>
         <Select.Value placeholder="..." />
         <Select.Arrow />
       </Select.Trigger>

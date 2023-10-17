@@ -4,11 +4,11 @@ import { Select } from '@ui-design-system';
 export const FilterOperatorSelect = ({
   value,
   onChange,
-  validation,
+  errors,
 }: {
   value: string | null;
   onChange: (value: string) => void;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
 }) => {
   const filterOperators = ['=', '!=', '>', '<', '>=', '<='];
 
@@ -22,9 +22,7 @@ export const FilterOperatorSelect = ({
         onChange(selectedValue);
       }}
     >
-      <Select.Trigger
-        borderColor={validation.errors.length > 0 ? 'red-100' : 'grey-10'}
-      >
+      <Select.Trigger borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}>
         <Select.Value placeholder="..." />
       </Select.Trigger>
       <Select.Content className="max-h-60">

@@ -35,10 +35,10 @@ export interface TimeAddViewModal {
   sign: PlusOrMinus;
   duration: string;
   durationUnit: DurationUnit;
-  validation: {
-    timestampField: { errors: EvaluationError[] };
-    sign: { errors: EvaluationError[] };
-    duration: { errors: EvaluationError[] };
+  errors: {
+    timestampField: EvaluationError[];
+    sign: EvaluationError[];
+    duration: EvaluationError[];
   };
 }
 
@@ -52,7 +52,7 @@ export type TimeAddEditorNodeViewModel = {
   nodeId: string;
   funcName: string | null;
   constant: string;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
   children: TimeAddEditorNodeViewModel[];
   namedChildren: Record<string, TimeAddEditorNodeViewModel>;
   parent: TimeAddEditorNodeViewModel;
@@ -81,7 +81,7 @@ export const adaptTimeAddViewModal = (
     sign,
     duration: duration.toString(),
     durationUnit,
-    validation: {
+    errors: {
       timestampField: computeValidationForNamedChildren(vm, 'timestampField'),
       sign: computeValidationForNamedChildren(vm, 'sign'),
       duration: computeValidationForNamedChildren(vm, 'duration'),
@@ -187,13 +187,13 @@ const TimeAddEditModalContent = ({
                 setValue({
                   ...value,
                   timestampField,
-                  validation: {
-                    ...value.validation,
-                    timestampField: { errors: [] },
+                  errors: {
+                    ...value.errors,
+                    timestampField: [],
                   },
                 })
               }
-              validation={value.validation.timestampField}
+              errors={value.errors.timestampField}
               className="grow"
             />
             <PlusMinusSelect
@@ -202,13 +202,13 @@ const TimeAddEditModalContent = ({
                 setValue({
                   ...value,
                   sign,
-                  validation: {
-                    ...value.validation,
-                    sign: { errors: [] },
+                  errors: {
+                    ...value.errors,
+                    sign: [],
                   },
                 })
               }
-              validation={value.validation.sign}
+              errors={value.errors.sign}
             />
             <Input
               value={value.duration ?? undefined}
@@ -216,16 +216,14 @@ const TimeAddEditModalContent = ({
                 setValue({
                   ...value,
                   duration: e.target.value,
-                  validation: {
-                    ...value.validation,
-                    duration: { errors: [] },
+                  errors: {
+                    ...value.errors,
+                    duration: [],
                   },
                 })
               }
               borderColor={
-                value.validation.duration.errors.length > 0
-                  ? 'red-100'
-                  : 'grey-10'
+                value.errors.duration.length > 0 ? 'red-100' : 'grey-10'
               }
               min="0"
               placeholder="0"
@@ -237,14 +235,14 @@ const TimeAddEditModalContent = ({
               onChange={(durationUnit) => setValue({ ...value, durationUnit })}
             />
           </div>
-          {value.validation.timestampField.errors.length > 0 && (
-            <ErrorMessage errors={value.validation.timestampField.errors} />
+          {value.errors.timestampField.length > 0 && (
+            <ErrorMessage errors={value.errors.timestampField} />
           )}
-          {value.validation.sign.errors.length > 0 && (
-            <ErrorMessage errors={value.validation.sign.errors} />
+          {value.errors.sign.length > 0 && (
+            <ErrorMessage errors={value.errors.sign} />
           )}
-          {value.validation.duration.errors.length > 0 && (
-            <ErrorMessage errors={value.validation.duration.errors} />
+          {value.errors.duration.length > 0 && (
+            <ErrorMessage errors={value.errors.duration} />
           )}
         </div>
         <div className="flex flex-1 flex-row gap-2">

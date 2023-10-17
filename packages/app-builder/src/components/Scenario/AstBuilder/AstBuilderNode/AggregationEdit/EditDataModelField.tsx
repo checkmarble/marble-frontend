@@ -5,7 +5,6 @@ import { useState } from 'react';
 export type DataModelField = {
   tableName: string | null;
   fieldName: string | null;
-  validation?: { errors: EvaluationError[] };
 };
 
 export const EditDataModelField = ({
@@ -13,13 +12,13 @@ export const EditDataModelField = ({
   value,
   onChange,
   options,
-  validation,
+  errors,
 }: {
   className?: string;
   value: DataModelField | null;
   onChange: (dataModelField: DataModelField | null) => void;
   options: DataModelField[];
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
 }) => {
   const selectedOption: DataModelField | null =
     options.find(
@@ -49,7 +48,7 @@ export const EditDataModelField = ({
             optionToLabel(selectedOption)
           }
           onChange={(event) => setInputValue(event.target.value)}
-          borderColor={validation.errors.length > 0 ? 'red-100' : 'grey-10'}
+          borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
         />
         <Combobox.Options className="w-fit">
           {filteredOptions.map((option) => (

@@ -20,7 +20,7 @@ import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
 export interface RootAndViewModel {
   nodeId: string;
-  validation: { errors: EvaluationError[] };
+  errors: EvaluationError[];
   children: EditorNodeViewModel[];
 }
 
@@ -32,7 +32,7 @@ export function adaptRootAndViewModel(
   }
   return {
     nodeId: viewModel.nodeId,
-    validation: viewModel.validation,
+    errors: viewModel.errors,
     children: viewModel.children,
   };
 }
@@ -57,7 +57,7 @@ export function RootAnd({
 }) {
   const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
   const [_, andNonChildrenErrors] = separateChildrenErrors(
-    rootAndViewModel.validation
+    rootAndViewModel.errors
   );
 
   function appendAndChild() {
