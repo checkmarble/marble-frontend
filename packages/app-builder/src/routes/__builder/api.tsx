@@ -5,7 +5,6 @@ import { json, type LinksFunction, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { Button } from '@ui-design-system';
 import { Download, Harddrive } from '@ui-icons';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui-react';
