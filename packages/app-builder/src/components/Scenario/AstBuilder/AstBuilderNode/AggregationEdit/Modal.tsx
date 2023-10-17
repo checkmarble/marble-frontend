@@ -220,13 +220,13 @@ const AggregationEditModalContent = ({
 
   const dataModelFieldOptions = useMemo(
     () =>
-      builder.dataModel.flatMap((table) =>
+      builder.input.dataModel.flatMap((table) =>
         table.fields.map((field) => ({
           tableName: table.name,
           fieldName: field.name,
         }))
       ),
-    [builder.dataModel]
+    [builder.input.dataModel]
   );
 
   const [aggregation, setAggregation] = useState<AggregationViewModel>(

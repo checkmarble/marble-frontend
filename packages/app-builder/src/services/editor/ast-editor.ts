@@ -160,16 +160,18 @@ export function adaptAstNodeFromEditorViewModel(
 
 export interface AstBuilder {
   editorNodeViewModel: EditorNodeViewModel;
-  identifiers: EditorIdentifiersByType;
-  operators: AstOperator[];
-  dataModel: TableModel[];
-  customLists: CustomList[];
-  triggerObjectTable: TableModel;
   setConstant: (nodeId: string, newValue: ConstantType) => void;
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
+  input: {
+    identifiers: EditorIdentifiersByType;
+    operators: AstOperator[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectTable: TableModel;
+  };
 }
 
 export function useAstBuilder({
@@ -303,19 +305,21 @@ export function useAstBuilder({
 
   return {
     editorNodeViewModel,
-    identifiers,
-    operators,
-    dataModel,
-    customLists,
-    triggerObjectTable: findDataModelTableByName({
-      dataModel: dataModel,
-      tableName: triggerObjectType,
-    }),
     setConstant,
     setOperand,
     setOperator,
     appendChild,
     remove,
+    input: {
+      identifiers,
+      operators,
+      dataModel,
+      customLists,
+      triggerObjectTable: findDataModelTableByName({
+        dataModel: dataModel,
+        tableName: triggerObjectType,
+      }),
+    },
   };
 }
 

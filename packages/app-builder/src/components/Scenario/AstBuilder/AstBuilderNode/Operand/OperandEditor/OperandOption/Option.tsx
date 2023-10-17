@@ -99,7 +99,7 @@ export function getOperatorTypeIcon(operatorType: LabelledAst['operandType']) {
       return Field;
     case 'Function':
       return Function;
-    case 'Enum':
+    case 'Constant':
       return ShapeLine;
     default:
       return undefined;
@@ -116,8 +116,8 @@ export function getOperatorTypeTKey(
       return 'edit_operand.operator_type.field';
     case 'Function':
       return 'edit_operand.operator_type.function';
-    case 'Enum':
-      return 'edit_operand.operator_type.enum';
+    case 'Constant':
+      return 'edit_operand.operator_type.constant';
     default:
       return undefined;
   }

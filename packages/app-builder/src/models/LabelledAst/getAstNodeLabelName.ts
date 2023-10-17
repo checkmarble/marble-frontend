@@ -28,7 +28,7 @@ export function getAstNodeLabelName(
   options: AstNodeDisplayNameOptions = defaultOptions
 ): string | undefined {
   if (isCustomListAccess(astNode)) {
-    const customList = builder.customLists.find(
+    const customList = builder.input.customLists.find(
       (customList) =>
         customList.id === astNode.namedChildren.customListId.constant
     );

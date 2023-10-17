@@ -10,6 +10,7 @@ import {
   newDatabaseAccessorsLabelledAst,
   newPayloadAccessorsLabelledAst,
   newUndefinedLabelledAst,
+  type TableModel,
 } from '@app-builder/models';
 import { newTimeAddLabelledAst } from '@app-builder/models/LabelledAst/TimeAdd';
 import { allAggregators } from '@app-builder/services/editor';
@@ -44,11 +45,13 @@ import { ClearOption, EditOption } from './OperandOption';
 export function getEnumOptionsFromNeighbour({
   parent,
   viewModel,
-  builder,
+  triggerObjectTable,
+  dataModel,
 }: {
   parent: OperandViewModel | null;
   viewModel: OperandViewModel;
-  builder: AstBuilder;
+  triggerObjectTable: TableModel;
+  dataModel: TableModel[];
 }) {
   if (!parent) {
     return [];
@@ -66,7 +69,7 @@ export function getEnumOptionsFromNeighbour({
   if (isPayload(neighbourNode)) {
     const payloadAst = newPayloadAccessorsLabelledAst({
       node: neighbourNode,
-      triggerObjectTable: builder.triggerObjectTable,
+      triggerObjectTable,
     });
     return payloadAst.values ?? [];
   }
@@ -74,7 +77,7 @@ export function getEnumOptionsFromNeighbour({
   if (isDatabaseAccess(neighbourNode)) {
     const dbAccessAst = newDatabaseAccessorsLabelledAst({
       node: neighbourNode,
-      dataModel: builder.dataModel,
+      dataModel,
     });
     return dbAccessAst.values ?? [];
   }
@@ -138,20 +141,21 @@ const OperandEditorContent = forwardRef<
   }
 >(({ builder, onSave, closeModal, labelledAst, operandViewModel }, ref) => {
   const options = useMemo(() => {
-    const databaseAccessors = builder.identifiers.databaseAccessors.map(
+    const databaseAccessors = builder.input.identifiers.databaseAccessors.map(
       (node) =>
         newDatabaseAccessorsLabelledAst({
-          dataModel: builder.dataModel,
+          dataModel: builder.input.dataModel,
           node,
         })
     );
-    const payloadAccessors = builder.identifiers.payloadAccessors.map((node) =>
-      newPayloadAccessorsLabelledAst({
-        triggerObjectTable: builder.triggerObjectTable,
-        node,
-      })
+    const payloadAccessors = builder.input.identifiers.payloadAccessors.map(
+      (node) =>
+        newPayloadAccessorsLabelledAst({
+          triggerObjectTable: builder.input.triggerObjectTable,
+          node,
+        })
     );
-    const customLists = builder.customLists.map(newCustomListLabelledAst);
+    const customLists = builder.input.customLists.map(newCustomListLabelledAst);
     const functions = [
       ...allAggregators.map(newAggregatorLabelledAst),
       newTimeAddLabelledAst(),
@@ -160,7 +164,8 @@ const OperandEditorContent = forwardRef<
     const equalEnumOptions = getEnumOptionsFromNeighbour({
       parent: operandViewModel.parent,
       viewModel: operandViewModel,
-      builder,
+      dataModel: builder.input.dataModel,
+      triggerObjectTable: builder.input.triggerObjectTable,
     });
     const enumOptions = equalEnumOptions?.map((enumValue) => {
       return newConstantLabelledAst(
@@ -177,7 +182,7 @@ const OperandEditorContent = forwardRef<
       ...functions,
       ...enumOptions,
     ];
-  }, [builder, operandViewModel]);
+  }, [builder.input, operandViewModel]);
 
   const [searchText, setSearchText] = useState('');
 
