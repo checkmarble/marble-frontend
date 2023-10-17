@@ -1,9 +1,10 @@
 import { Page } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
+import { downloadBlob } from '@app-builder/utils/download-blob';
 import { json, type LinksFunction, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { Button } from '@ui-design-system';
 import { Download, Harddrive } from '@ui-icons';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui-react';
@@ -30,13 +31,6 @@ export async function loader({ request }: LoaderArgs) {
   return json({ openapi });
 }
 
-const generateJsonOpenapiLink = (openapi: string): string => {
-  const blob = new Blob([openapi], {
-    type: 'application/json;charset=utf-8,',
-  });
-  return URL.createObjectURL(blob);
-};
-
 export default function Api() {
   const { t } = useTranslation(handle.i18n);
   const { openapi } = useLoaderData<typeof loader>();
@@ -51,24 +45,28 @@ export default function Api() {
       </Page.Header>
       <Page.Content>
         <div className="flex">
-          <a
-            href={generateJsonOpenapiLink(JSON.stringify(openapi))}
-            download={'openapi.json'}
-            className={clsx(
-              'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 text-base font-semibold outline-none',
-              'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100'
-            )}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              const blob = new Blob([JSON.stringify(openapi)], {
+                type: 'application/json;charset=utf-8,',
+              });
+              void downloadBlob(blob, 'openapi.json');
+            }}
           >
             <Download className="mr-2" height="24px" width="24px" />
             {t('api:download_openapi_spec')}
-          </a>
+          </Button>
         </div>
-        <SwaggerUI
-          spec={openapi}
-          supportedSubmitMethods={[]}
-          defaultModelExpandDepth={5}
-          defaultModelsExpandDepth={4}
-        />
+        <div className="-mx-5">
+          {/* Issue with UNSAFE_componentWillReceiveProps: https://github.com/swagger-api/swagger-ui/issues/5729 */}
+          <SwaggerUI
+            spec={openapi}
+            supportedSubmitMethods={[]}
+            defaultModelExpandDepth={5}
+            defaultModelsExpandDepth={4}
+          />
+        </div>
       </Page.Content>
     </Page.Container>
   );
