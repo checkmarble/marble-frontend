@@ -1,5 +1,6 @@
 import { type EvaluationError } from '@app-builder/models';
 import { type ScenarioValidationErrorCodeDto } from '@marble-api';
+import { assertNever } from '@typescript-utils';
 import { type TFunction } from 'i18next';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -69,9 +70,15 @@ const commonErrorMessages =
         return t('scenarios:validation.evaluation_error.argument_must_be_time');
       case 'FUNCTION_ERROR':
         return t('scenarios:validation.evaluation_error.function_error');
-
-      default:
+      case 'ARGUMENT_REQUIRED':
+        return t('scenarios:validation.evaluation_error.argument_required');
+      case 'UNEXPECTED_ERROR':
         return `${evaluationError.error}:${evaluationError.message}`;
+      default:
+        assertNever(
+          '[EvaluationError] unhandled error code',
+          evaluationError.error
+        );
     }
   };
 
