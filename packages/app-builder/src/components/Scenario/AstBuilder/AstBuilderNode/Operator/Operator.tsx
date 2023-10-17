@@ -77,7 +77,7 @@ export function Operator({
       />
       <Select.Content className="max-h-60">
         <Select.Viewport>
-          {builder.operators.map((operator) => {
+          {builder.input.operators.map((operator) => {
             return (
               <Select.Item
                 className="min-w-[110px]"

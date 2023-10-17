@@ -29,16 +29,16 @@ export function OperandEditorDiscoveryResults({
   onSelect,
 }: OperandEditorDiscoveryResultsProps) {
   const { t } = useTranslation('scenarios');
-  const { customListOptions, fieldOptions, functionOptions, enumOptions } =
+  const { customListOptions, fieldOptions, functionOptions, constantOptions } =
     R.pipe(
       options,
       R.groupBy((option) => option.operandType),
-      ({ Field, CustomList, Function, Constant: Enum }) => {
+      ({ Field, CustomList, Function, Constant }) => {
         return {
           customListOptions: CustomList,
           fieldOptions: Field,
           functionOptions: Function,
-          enumOptions: Enum,
+          constantOptions: Constant,
         };
       }
     );
@@ -48,7 +48,7 @@ export function OperandEditorDiscoveryResults({
     R.groupBy((option) => {
       const { astNode } = option;
       if (isPayload(astNode)) {
-        return builder.triggerObjectTable.name;
+        return builder.input.triggerObjectTable.name;
       }
       if (isDatabaseAccess(astNode)) {
         return [
@@ -62,12 +62,12 @@ export function OperandEditorDiscoveryResults({
 
   return (
     <>
-      {enumOptions && enumOptions.length > 0 && (
-        <OperandDiscoverySubmenu options={enumOptions} onSelect={onSelect}>
+      {constantOptions && constantOptions.length > 0 && (
+        <OperandDiscoverySubmenu options={constantOptions} onSelect={onSelect}>
           <GroupHeader.Container>
             <OperandDiscoveryTitle
-              operandType="Enum"
-              operandsCount={enumOptions.length}
+              operandType="Constant"
+              operandsCount={constantOptions.length}
             />
             <GroupHeader.Icon>
               <ArrowRight />

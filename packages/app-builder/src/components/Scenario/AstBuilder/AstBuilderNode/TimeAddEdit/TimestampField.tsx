@@ -30,18 +30,19 @@ export const TimestampField = ({
   value: EditorNodeViewModel | null;
 }) => {
   const options: LabelledAst[] = useMemo(() => {
-    const databaseAccessors = builder.identifiers.databaseAccessors.map(
+    const databaseAccessors = builder.input.identifiers.databaseAccessors.map(
       (node) =>
         newDatabaseAccessorsLabelledAst({
-          dataModel: builder.dataModel,
+          dataModel: builder.input.dataModel,
           node,
         })
     );
-    const payloadAccessors = builder.identifiers.payloadAccessors.map((node) =>
-      newPayloadAccessorsLabelledAst({
-        triggerObjectTable: builder.triggerObjectTable,
-        node,
-      })
+    const payloadAccessors = builder.input.identifiers.payloadAccessors.map(
+      (node) =>
+        newPayloadAccessorsLabelledAst({
+          triggerObjectTable: builder.input.triggerObjectTable,
+          node,
+        })
     );
     const timestampFieldOptions = [
       ...payloadAccessors,
@@ -50,10 +51,10 @@ export const TimestampField = ({
 
     return timestampFieldOptions;
   }, [
-    builder.dataModel,
-    builder.identifiers.databaseAccessors,
-    builder.identifiers.payloadAccessors,
-    builder.triggerObjectTable,
+    builder.input.dataModel,
+    builder.input.identifiers.databaseAccessors,
+    builder.input.identifiers.payloadAccessors,
+    builder.input.triggerObjectTable,
   ]);
 
   const onSelect = useCallback(
@@ -70,13 +71,13 @@ export const TimestampField = ({
   let initialValue: LabelledAst | null = null;
   if (node && isPayload(node)) {
     initialValue = newPayloadAccessorsLabelledAst({
-      triggerObjectTable: builder.triggerObjectTable,
+      triggerObjectTable: builder.input.triggerObjectTable,
       node,
     });
   }
   if (node && isDatabaseAccess(node)) {
     initialValue = newDatabaseAccessorsLabelledAst({
-      dataModel: builder.dataModel,
+      dataModel: builder.input.dataModel,
       node,
     });
   }

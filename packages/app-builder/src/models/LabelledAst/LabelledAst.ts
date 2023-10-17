@@ -34,7 +34,6 @@ export interface LabelledAst {
     | 'Field'
     | 'Function'
     | 'Undefined'
-    | 'Enum'
     | 'unknown';
   dataType: DataType;
   astNode: AstNode;
