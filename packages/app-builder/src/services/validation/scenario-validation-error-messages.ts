@@ -89,7 +89,7 @@ const commonErrorMessages =
           'scenarios:validation.evaluation_error.payload_field_not_found'
         );
       case 'UNEXPECTED_ERROR':
-        return `${evaluationError.error}:${evaluationError.message}`;
+        return evaluationError.message;
       default:
         assertNever(
           '[EvaluationError] unhandled error code',
