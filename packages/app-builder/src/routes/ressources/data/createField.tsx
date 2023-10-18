@@ -8,11 +8,17 @@ import {
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
-import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { Button, HiddenInputs, Input, Modal, Select } from '@ui-design-system';
+import {
+  Button,
+  Checkbox,
+  HiddenInputs,
+  Input,
+  Modal,
+  Select,
+} from '@ui-design-system';
 import { Plus } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -27,12 +33,13 @@ export const handle = {
 const createFieldFormSchema = z.object({
   name: z
     .string()
-    .nonempty()
+    .min(1)
     .regex(/^[a-zA-Z0-9_]+$/, { message: 'Only alphanumeric and _' }),
   description: z.string(),
   required: z.string(),
   type: z.enum(['String', 'Bool', 'Timestamp', 'Float', 'Int']),
   tableId: z.string(),
+  isEnum: z.boolean(),
 });
 
 const VALUE_TYPES = [
@@ -52,17 +59,19 @@ export async function action({ request }: ActionArgs) {
     failureRedirect: '/login',
   });
 
-  const parsedForm = await parseFormSafe(request, createFieldFormSchema);
-  if (!parsedForm.success) {
-    parsedForm.error.flatten((issue) => issue);
+  const parsedData = createFieldFormSchema.safeParse(await request.json());
+
+  if (!parsedData.success) {
+    parsedData.error.flatten((issue) => issue);
 
     return json({
       success: false as const,
-      values: parsedForm.formData,
-      error: parsedForm.error.format(),
+      values: null,
+      error: parsedData.error.format(),
     });
   }
-  const { name, description, type, required, tableId } = parsedForm.data;
+  const { name, description, type, required, tableId, isEnum } =
+    parsedData.data;
 
   try {
     await apiClient.postDataModelTableField(tableId, {
@@ -70,6 +79,7 @@ export async function action({ request }: ActionArgs) {
       description: description,
       type,
       nullable: required === 'optional',
+      is_enum: isEnum,
     });
     return json({
       success: true as const,
@@ -87,7 +97,7 @@ export async function action({ request }: ActionArgs) {
       return json(
         {
           success: false as const,
-          values: parsedForm.data,
+          values: parsedData.data,
           error: error,
         },
         { headers: { 'Set-Cookie': await commitSession(session) } }
@@ -95,7 +105,7 @@ export async function action({ request }: ActionArgs) {
     } else {
       return json({
         success: false as const,
-        values: parsedForm.data,
+        values: parsedData.data,
         error: error,
       });
     }
@@ -115,6 +125,7 @@ export function CreateField({ tableId }: { tableId: string }) {
       description: '',
       type: VALUE_TYPES[0].value,
       tableId: tableId,
+      isEnum: false,
     },
   });
   const { control, register, reset } = formMethods;
@@ -137,10 +148,11 @@ export function CreateField({ tableId }: { tableId: string }) {
       <Modal.Content>
         <Form
           control={control}
-          onSubmit={({ formData }) => {
-            fetcher.submit(formData, {
+          onSubmit={({ formDataJson }) => {
+            fetcher.submit(formDataJson, {
               method: 'POST',
               action: '/ressources/data/createField',
+              encType: 'application/json',
             });
           }}
         >
@@ -242,6 +254,28 @@ export function CreateField({ tableId }: { tableId: string }) {
                     )}
                   />
                 </div>
+                <FormField
+                  name="isEnum"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center gap-4">
+                      <FormControl>
+                        <Checkbox
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel>
+                        <p>{t('data:create_field.is_enum.title')}</p>
+                        <p className="text-xs">
+                          {t('data:create_field.is_enum.subtitle')}
+                        </p>
+                      </FormLabel>
+                      <FormError />
+                    </FormItem>
+                  )}
+                />
               </div>
               <div className="flex flex-1 flex-row gap-2">
                 <Modal.Close asChild>

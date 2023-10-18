@@ -279,6 +279,7 @@ export type CreateTableFieldBody = {
     description: string;
     "type": "Bool" | "Int" | "Float" | "String" | "Timestamp";
     nullable: boolean;
+    is_enum?: boolean;
 };
 export type UpdateTableFieldBody = {
     description?: string;

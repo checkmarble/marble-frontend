@@ -1923,6 +1923,8 @@ components:
           enum: [Bool, Int, Float, String, Timestamp]
         nullable:
           type: boolean
+        is_enum:
+          type: boolean
     UpdateTableFieldBody:
       type: object
       properties:

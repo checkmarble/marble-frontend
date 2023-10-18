@@ -43,8 +43,9 @@ const mapFieldToTableRow = (field: DataModelField) => ({
   id: field.id,
   name: field.name,
   description: field.description,
-  type: field.dataType,
-  required: field.nullable ? 'optional' : 'required',
+  type: field.isEnum ? `${field.dataType} (enum)` : field.dataType,
+  nullable: field.nullable,
+  isEnum: field.isEnum,
 });
 
 const mapLinkToTableRow = (table: TableModel, link: LinksToSingle) => ({
@@ -122,7 +123,7 @@ function TableDetails({
       {
         id: 'type',
         accessorKey: 'type',
-        size: 80,
+        size: 130,
         header: t('data:field_type'),
       },
       {
@@ -130,6 +131,11 @@ function TableDetails({
         accessorKey: 'required',
         size: 80,
         header: t('data:field_required'),
+        cell: ({ cell }) => {
+          return cell.row.original.nullable
+            ? t('data:nullable')
+            : t('data:required');
+        },
       },
       {
         id: 'description',
