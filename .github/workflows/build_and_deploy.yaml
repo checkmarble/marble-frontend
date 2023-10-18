@@ -20,7 +20,7 @@ jobs:
       actions: read
     environment: ${{ inputs.environment }}
     env:
-      TAG: europe-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/marble/marble-frontend:latest
+      TAG: europe-west1-docker.pkg.dev/marble-infra/marble/marble-frontend:latest
       SERVICE_ACCOUNT: marble-frontend-cloud-run@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
     steps:
       - name: Checkout
@@ -38,7 +38,7 @@ jobs:
 
       - name: Configure Docker
         run: |
-          gcloud auth configure-docker europe-docker.pkg.dev
+          gcloud auth configure-docker europe-west1-docker.pkg.dev
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
