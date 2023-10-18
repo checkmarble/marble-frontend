@@ -89,6 +89,8 @@ export function getClientEnvVars(): ClientEnvVars {
       appId: getServerEnv('FIREBASE_APP_ID'),
     },
     MARBLE_API_DOMAIN: getServerEnv('MARBLE_API_DOMAIN'),
+    MARBLE_APP_DOMAIN: getServerEnv('MARBLE_APP_DOMAIN'),
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
+    SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
   };
 }

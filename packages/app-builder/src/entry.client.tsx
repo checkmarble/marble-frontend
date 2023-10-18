@@ -5,6 +5,7 @@ import { hydrateRoot } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 
 import { clientServices } from './services/init.client';
+import { getClientEnv } from './utils/environment.client';
 
 async function hydrate() {
   const { i18nextClientService } = clientServices;
@@ -33,9 +34,8 @@ if (window.requestIdleCallback) {
 }
 
 Sentry.init({
-  dsn: ENV['SENTRY_DSN'],
-  environment: ENV['SENTRY_ENVIRONMENT'],
-  release: 'U_NEED_TO_SET_ME',
+  dsn: getClientEnv('SENTRY_DSN'),
+  environment: getClientEnv('SENTRY_ENVIRONMENT'),
   integrations: [
     new Sentry.BrowserTracing({
       routingInstrumentation: Sentry.remixRouterInstrumentation(
@@ -54,7 +54,10 @@ Sentry.init({
   tracesSampleRate: 1.0,
 
   // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
-  tracePropagationTargets: [ENV['MARBLE_APP_DOMAIN'], ENV['MARBLE_API_DOMAIN']],
+  tracePropagationTargets: [
+    getClientEnv('MARBLE_APP_DOMAIN'),
+    getClientEnv('MARBLE_API_DOMAIN'),
+  ],
 
   // Capture Replay for 10% of all sessions,
   // plus for 100% of sessions with an error
