@@ -34,13 +34,18 @@ type ServerPublicEnvVarName =
   | 'FIREBASE_PROJECT_ID'
   | 'FIREBASE_STORAGE_BUCKET'
   | 'MARBLE_API_DOMAIN'
+  | 'MARBLE_APP_DOMAIN'
   | 'NODE_ENV'
+  | 'SENTRY_ENVIRONMENT'
   | 'SESSION_MAX_AGE';
 
 /**
  * List of all secret env vars to defined on each deployed environments
  */
-type ServerSecretEnvVarName = 'SESSION_SECRET';
+type ServerSecretEnvVarName =
+  | 'SENTRY_AUTH_TOKEN'
+  | 'SENTRY_DSN'
+  | 'SESSION_SECRET';
 
 type ServerEnvVarName =
   | DevServerEnvVarName
@@ -84,5 +89,8 @@ export function getClientEnvVars(): ClientEnvVars {
       appId: getServerEnv('FIREBASE_APP_ID'),
     },
     MARBLE_API_DOMAIN: getServerEnv('MARBLE_API_DOMAIN'),
+    MARBLE_APP_DOMAIN: getServerEnv('MARBLE_APP_DOMAIN'),
+    SENTRY_DSN: getServerEnv('SENTRY_DSN'),
+    SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
   };
 }

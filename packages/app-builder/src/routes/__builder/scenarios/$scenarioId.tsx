@@ -3,6 +3,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
 import { Outlet, useRouteError, useRouteLoaderData } from '@remix-run/react';
+import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 
 export const handle = {
@@ -30,7 +31,8 @@ export const useCurrentScenario = () =>
 export default function CurrentScenarioProvider() {
   return <Outlet />;
 }
-
 export function ErrorBoundary() {
-  return <ErrorComponent error={useRouteError()} />;
+  const error = useRouteError();
+  captureRemixErrorBoundaryError(error);
+  return <ErrorComponent error={error} />;
 }
