@@ -11,9 +11,6 @@ export type ClientEnvVars = {
   AUTH_EMULATOR_HOST?: string;
   FIREBASE_OPTIONS: FirebaseOptions;
   MARBLE_API_DOMAIN: string;
-  MARBLE_APP_DOMAIN: string;
-  SENTRY_DSN: string;
-  SENTRY_ENVIRONMENT: string;
 };
 
 export function getClientEnv<K extends keyof ClientEnvVars>(
