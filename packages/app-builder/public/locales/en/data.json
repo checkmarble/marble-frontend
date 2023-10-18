@@ -17,6 +17,8 @@
   "create_field.description_placeholder": "Field description",
   "create_field.required": "Required",
   "create_field.type": "Type",
+  "create_field.is_enum.title": "This field is an enumerated value",
+  "create_field.is_enum.subtitle": "It takes a limited number of distinct values, like a status code",
   "create_table.title": "Create a new table",
   "create_table.name_placeholder": "Table name",
   "create_table.button_accept": "Create table",
@@ -39,5 +41,7 @@
   "edit_table.button_accept": "Save changes",
   "edit_table.title": "Edit description",
   "empty_description": "No description",
-  "upload_data": "Upload data"
+  "upload_data": "Upload data",
+  "required": "Required",
+  "nullable": "Nullable"
 }
