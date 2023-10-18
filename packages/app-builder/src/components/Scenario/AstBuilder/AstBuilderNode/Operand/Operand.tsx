@@ -27,7 +27,7 @@ export const computeOperandErrors = (
 ): EvaluationError[] => {
   if (viewModel.funcName && functionNodeNames.includes(viewModel.funcName)) {
     return hasNestedErrors(viewModel)
-      ? [{ code: 'FUNCTION_ERROR', message: 'function has error' }]
+      ? [{ error: 'FUNCTION_ERROR', message: 'function has error' }]
       : [];
   } else {
     return [

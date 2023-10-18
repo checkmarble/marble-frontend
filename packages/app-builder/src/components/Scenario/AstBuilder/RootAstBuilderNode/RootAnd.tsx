@@ -9,11 +9,14 @@ import {
   type EditorNodeViewModel,
   hasArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
-import { useGetOrAndNodeEvaluationErrorMessage } from '@app-builder/services/validation';
+import {
+  adaptEvaluationErrorViewModels,
+  useGetOrAndNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
-import { ScenarioValidationError } from '../../ScenarioValidatioError';
+import { ScenarioValidationError } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
@@ -59,6 +62,10 @@ export function RootAnd({
   const [_, andNonChildrenErrors] = separateChildrenErrors(
     rootAndViewModel.errors
   );
+
+  const andErrorMessages = adaptEvaluationErrorViewModels(
+    andNonChildrenErrors
+  ).map(getEvaluationErrorMessage);
 
   function appendAndChild() {
     builder.appendChild(rootAndViewModel.nodeId, NewAndChild());
@@ -143,10 +150,8 @@ export function RootAnd({
         {!viewOnly && (
           <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
         )}
-        {andNonChildrenErrors.map((error, index) => (
-          <ScenarioValidationError key={index}>
-            {getEvaluationErrorMessage(error)}
-          </ScenarioValidationError>
+        {andErrorMessages.map((error) => (
+          <ScenarioValidationError key={error}>{error}</ScenarioValidationError>
         ))}
       </div>
     </>

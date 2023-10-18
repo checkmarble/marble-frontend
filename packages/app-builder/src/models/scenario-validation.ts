@@ -17,7 +17,7 @@ import type { ConstantType } from './ast-node';
 export type EvaluationErrorCode = EvaluationErrorCodeDto | 'FUNCTION_ERROR';
 
 export interface EvaluationError {
-  code: EvaluationErrorCode;
+  error: EvaluationErrorCode;
   message: string;
   argumentIndex?: number;
   argumentName?: string;
@@ -58,7 +58,7 @@ export interface ScenarioValidation {
 
 function adaptEvaluationError(dto: EvaluationErrorDto): EvaluationError {
   return {
-    code: dto.code,
+    error: dto.error,
     message: dto.message,
     argumentIndex: dto.argument_index,
     argumentName: dto.argument_name,
