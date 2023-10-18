@@ -14,7 +14,7 @@
     "lint": "eslint .",
     "type-check": "npx tsc --noEmit",
     "dev": "dotenv -e .env.local -- remix dev",
-    "build": "remix build --sourcemap && sentry-upload-sourcemaps --org checkmarble --project marble-frontend --release U_NEED_TO_SET_ME",
+    "build": "remix build --sourcemap && sentry-upload-sourcemaps --org checkmarble --project marble-frontend",
     "start": "remix start",
     "generate-routes": "source scripts/generateRoutes.sh"
   },

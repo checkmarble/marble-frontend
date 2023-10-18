@@ -115,7 +115,6 @@ function handleBrowserRequest(
 Sentry.init({
   dsn: getServerEnv('SENTRY_DSN'),
   environment: getServerEnv('SENTRY_ENVIRONMENT'),
-  release: 'U_NEED_TO_SET_ME',
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.
   // We recommend adjusting this value in production
