@@ -12,7 +12,6 @@ import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
-import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -152,10 +151,9 @@ export default function Lists() {
     </Page.Container>
   );
 }
+
 export function ErrorBoundary() {
-  const error = useRouteError();
-  captureRemixErrorBoundaryError(error);
-  return <ErrorComponent error={error} />;
+  return <ErrorComponent error={useRouteError()} />;
 }
 
 // Correspond to this part of the UI : https://www.figma.com/file/JW6QvnhBtdZDcKvLdg9s5T/Marble-Portal?node-id=6377%3A53150&mode=dev

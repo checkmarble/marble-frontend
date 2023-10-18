@@ -6,7 +6,6 @@ import {
 import { DecisionsPage } from '@app-builder/components/Decisions';
 import { getRoute } from '@app-builder/utils/routes';
 import { Outlet, useRouteError } from '@remix-run/react';
-import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { Decision } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -53,8 +52,5 @@ export default function DecisionsLayout() {
 }
 
 export function ErrorBoundary() {
-  const error = useRouteError();
-  captureRemixErrorBoundaryError(error);
-
-  return <ErrorComponent error={error} />;
+  return <ErrorComponent error={useRouteError()} />;
 }
