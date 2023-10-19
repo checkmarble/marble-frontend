@@ -26,4 +26,4 @@ jobs:
       - run: pnpm run -r lint
       - run: pnpm run -r type-check
       - run: pnpm run test:all
-      - run: pnpm run -r build-no-sourcemaps
+      - run: pnpm run -r build

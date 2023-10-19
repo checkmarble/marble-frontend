@@ -36,16 +36,15 @@ type ServerPublicEnvVarName =
   | 'MARBLE_API_DOMAIN'
   | 'MARBLE_APP_DOMAIN'
   | 'NODE_ENV'
+  | 'SENTRY_AUTH_TOKEN'
+  | 'SENTRY_DSN'
   | 'SENTRY_ENVIRONMENT'
   | 'SESSION_MAX_AGE';
 
 /**
  * List of all secret env vars to defined on each deployed environments
  */
-type ServerSecretEnvVarName =
-  | 'SENTRY_AUTH_TOKEN'
-  | 'SENTRY_DSN'
-  | 'SESSION_SECRET';
+type ServerSecretEnvVarName = 'SESSION_SECRET';
 
 type ServerEnvVarName =
   | DevServerEnvVarName
