@@ -12,6 +12,7 @@ import {
   Checkbox,
   HiddenInputs,
   Modal,
+  Tooltip,
 } from '@ui-design-system';
 import { Play, Pushtolive, Stop, Tick } from '@ui-icons';
 import { type Namespace, type ParseKeys } from 'i18next';
@@ -256,20 +257,19 @@ function ModalContent({
   );
 }
 
-export function DeploymentModal({
+const DeploymentModal = ({
   scenarioId,
   liveVersionId,
   currentIteration,
+  deploymentType,
 }: {
   scenarioId: string;
   liveVersionId?: string;
   currentIteration: SortedScenarioIteration;
-}) {
+  deploymentType: DeploymentType;
+}) => {
   const { t } = useTranslation(handle.i18n);
-
-  const deploymentType = getDeploymentType(currentIteration.type);
   const buttonConfig = getButtonConfig(deploymentType);
-
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
@@ -286,6 +286,56 @@ export function DeploymentModal({
         />
       </Modal.Content>
     </Modal.Root>
+  );
+};
+
+const DisabledDeploymentButton = ({
+  deploymentType,
+}: {
+  deploymentType: DeploymentType;
+}) => {
+  const { t } = useTranslation(handle.i18n);
+  const buttonConfig = getButtonConfig(deploymentType);
+  return (
+    <Tooltip.Default
+      className="text-xs"
+      content={t('common:errors.draft.invalid')}
+    >
+      <Button {...buttonConfig.props} disabled>
+        <buttonConfig.icon.trigger height="24px" width="24px" />
+        {t(buttonConfig.label)}
+      </Button>
+    </Tooltip.Default>
+  );
+};
+
+export function DeploymentActions({
+  scenarioId,
+  liveVersionId,
+  currentIteration,
+  hasScenarioErrors,
+}: {
+  scenarioId: string;
+  liveVersionId?: string;
+  currentIteration: SortedScenarioIteration;
+  hasScenarioErrors: boolean;
+}) {
+  const deploymentType = getDeploymentType(currentIteration.type);
+
+  return (
+    <>
+      {hasScenarioErrors &&
+      ['activate', 'deactivate'].includes(deploymentType) ? (
+        <DisabledDeploymentButton deploymentType={deploymentType} />
+      ) : (
+        <DeploymentModal
+          scenarioId={scenarioId}
+          liveVersionId={liveVersionId}
+          currentIteration={currentIteration}
+          deploymentType={deploymentType}
+        />
+      )}
+    </>
   );
 }
 
