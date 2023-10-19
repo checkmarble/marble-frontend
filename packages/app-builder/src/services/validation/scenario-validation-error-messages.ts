@@ -48,6 +48,10 @@ const commonErrorMessages =
         return t(
           'scenarios:validation.evaluation_error.arguments_must_be_int_or_float'
         );
+      case 'ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME':
+        return t(
+          'scenarios:validation.evaluation_error.arguments_must_be_int_float_or_time'
+        );
       case 'ARGUMENT_MUST_BE_INTEGER':
         return t(
           'scenarios:validation.evaluation_error.argument_must_be_integer'
@@ -72,6 +76,18 @@ const commonErrorMessages =
         return t('scenarios:validation.evaluation_error.function_error');
       case 'ARGUMENT_REQUIRED':
         return t('scenarios:validation.evaluation_error.argument_required');
+      case 'ARGUMENT_INVALID_TYPE':
+        return t('scenarios:validation.evaluation_error.argument_invalid_type');
+      case 'LIST_NOT_FOUND':
+        return t('scenarios:validation.evaluation_error.list_not_found');
+      case 'DATABASE_ACCESS_NOT_FOUND':
+        return t(
+          'scenarios:validation.evaluation_error.database_access_not_found'
+        );
+      case 'PAYLOAD_FIELD_NOT_FOUND':
+        return t(
+          'scenarios:validation.evaluation_error.payload_field_not_found'
+        );
       case 'UNEXPECTED_ERROR':
         return `${evaluationError.error}:${evaluationError.message}`;
       default:
