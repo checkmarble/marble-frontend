@@ -7,6 +7,10 @@ on:
         type: string
         description: 'Github environment to use'
         required: true
+      version:
+        type: string
+        description: 'version to deploy'
+        required: true
     secrets:
       GCP_SA_KEY:
         required: true
@@ -20,11 +24,30 @@ jobs:
       actions: read
     environment: ${{ inputs.environment }}
     env:
-      TAG: europe-west1-docker.pkg.dev/marble-infra/marble/marble-frontend:latest
+      IMAGE: europe-west1-docker.pkg.dev/marble-infra/marble/marble-frontend:${{ inputs.version }}
       SERVICE_ACCOUNT: marble-frontend-cloud-run@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # source: https://github.com/docker/login-action#google-artifact-registry-gar
+      - name: Login to Google Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west1-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_SA_KEY }}
+
+      # source: https://github.com/docker/build-push-action
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          target: app-builder
+          tags: ${{ env.IMAGE }}
 
       - name: Auth
         uses: 'google-github-actions/auth@v1'
@@ -36,24 +59,9 @@ jobs:
         with:
           install_components: beta
 
-      - name: Configure Docker
-        run: |
-          gcloud auth configure-docker europe-west1-docker.pkg.dev
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          target: app-builder
-          tags: ${{ env.TAG }}
-
       - name: Deploy server
         run: |
           gcloud run deploy marble-frontend \
             --quiet \
             --region="europe-west1" \
-            --image="${{ env.TAG }}"
+            --image="${{ env.IMAGE }}"
