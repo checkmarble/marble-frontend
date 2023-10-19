@@ -5,6 +5,7 @@ import {
   type EditorIdentifiersByType,
   type EvaluationError,
   findDataModelTableByName,
+  functionNodeNames,
   type NodeEvaluation,
   type TableModel,
 } from '@app-builder/models';
@@ -47,10 +48,11 @@ export function adaptEditorNodeViewModel({
     parent: parent ?? null,
     funcName: ast.name,
     constant: ast.constant,
-    errors: evaluation.errors ?? [],
+    errors: computeEvaluationErrors(ast.name, evaluation),
     children: [],
     namedChildren: {},
   };
+
   currentNode.children = ast.children.map((child, i) =>
     adaptEditorNodeViewModel({
       ast: child,
@@ -339,7 +341,7 @@ function updateValidation({
 
   const currentNode: EditorNodeViewModel = {
     ...editorNodeViewModel,
-    errors: validation.errors ?? [],
+    errors: computeEvaluationErrors(editorNodeViewModel.funcName, validation),
     parent: parent ?? null,
     children: [],
     namedChildren: {},
@@ -361,4 +363,44 @@ function updateValidation({
   );
 
   return currentNode;
+}
+
+const computeEvaluationErrors = (
+  funcName: EditorNodeViewModel['funcName'],
+  validation: NodeEvaluation
+): EvaluationError[] => {
+  const errors: EvaluationError[] = [];
+  if (validation.errors) {
+    errors.push(...validation.errors);
+  }
+  if (
+    funcName &&
+    functionNodeNames.includes(funcName) &&
+    hasNestedErrors(validation)
+  ) {
+    errors.push({ error: 'FUNCTION_ERROR', message: 'function has error' });
+  }
+
+  return errors;
+};
+
+function hasNestedErrors(validation: NodeEvaluation, root = true): boolean {
+  if (!root && validation.errors && validation.errors.length > 0) {
+    return true;
+  }
+  if (
+    validation.children.some((childValidation) =>
+      hasNestedErrors(childValidation, false)
+    )
+  ) {
+    return true;
+  }
+  if (
+    Object.values(validation.namedChildren).some((namedChildValidation) =>
+      hasNestedErrors(namedChildValidation, false)
+    )
+  ) {
+    return true;
+  }
+  return false;
 }

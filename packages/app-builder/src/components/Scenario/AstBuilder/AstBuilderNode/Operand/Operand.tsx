@@ -26,9 +26,7 @@ export const computeOperandErrors = (
   viewModel: EditorNodeViewModel
 ): EvaluationError[] => {
   if (viewModel.funcName && functionNodeNames.includes(viewModel.funcName)) {
-    return hasNestedErrors(viewModel)
-      ? [{ error: 'FUNCTION_ERROR', message: 'function has error' }]
-      : [];
+    return viewModel.errors;
   } else {
     return [
       ...viewModel.errors,
@@ -37,13 +35,6 @@ export const computeOperandErrors = (
     ];
   }
 };
-
-function hasNestedErrors(viewModel: EditorNodeViewModel): boolean {
-  if (viewModel.errors.length > 0) return true;
-  if (viewModel.children.some(hasNestedErrors)) return true;
-  if (Object.values(viewModel.namedChildren).some(hasNestedErrors)) return true;
-  return false;
-}
 
 export function isEditableOperand(node: AstNode): boolean {
   return (
