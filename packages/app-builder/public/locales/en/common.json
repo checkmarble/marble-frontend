@@ -12,7 +12,7 @@
   "errors.data.duplicate_field_name": "A field with this name already exist",
   "errors.data.duplicate_table_name": "A table with this name already exist",
   "errors.data.duplicate_link_name": "A link with this name already exist",
-  "errors.draft.invalid": "Invalid draft. Please check your draft for error messages, fix them and try again.",
+  "errors.draft.invalid": "This draft can't be published because it contains errors.",
   "cancel": "Cancel",
   "save": "Save",
   "delete": "Delete",
