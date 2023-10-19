@@ -10,11 +10,14 @@ import {
   type EditorNodeViewModel,
   hasArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
-import { useGetOrAndNodeEvaluationErrorMessage } from '@app-builder/services/validation';
+import {
+  adaptEvaluationErrorViewModels,
+  useGetOrAndNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import clsx from 'clsx';
 import React from 'react';
 
-import { ScenarioValidationError } from '../../ScenarioValidatioError';
+import { ScenarioValidationError } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
@@ -82,6 +85,10 @@ export function RootOrWithAnd({
     rootOrWithAndViewModel.orErrors
   );
 
+  const rootOrErrorMessages = adaptEvaluationErrorViewModels(
+    rootOrNonChildrenErrors
+  ).map(getEvaluationErrorMessage);
+
   return (
     <div className="flex flex-col gap-4">
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
@@ -89,6 +96,10 @@ export function RootOrWithAnd({
         const [_, andNonChildrenErrors] = separateChildrenErrors(
           andChild.errors
         );
+
+        const andErrorMessages = adaptEvaluationErrorViewModels(
+          andNonChildrenErrors
+        ).map(getEvaluationErrorMessage);
 
         function appendAndChild() {
           builder.appendChild(andChild.nodeId, NewAndChild());
@@ -157,9 +168,9 @@ export function RootOrWithAnd({
                 </div>
               )}
 
-              {andNonChildrenErrors.map((error, index) => (
-                <ScenarioValidationError key={index}>
-                  {getEvaluationErrorMessage(error)}
+              {andErrorMessages.map((error) => (
+                <ScenarioValidationError key={error}>
+                  {error}
                 </ScenarioValidationError>
               ))}
             </div>
@@ -172,10 +183,8 @@ export function RootOrWithAnd({
           <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
         )}
 
-        {rootOrNonChildrenErrors.map((error, index) => (
-          <ScenarioValidationError key={index}>
-            {getEvaluationErrorMessage(error)}
-          </ScenarioValidationError>
+        {rootOrErrorMessages.map((error) => (
+          <ScenarioValidationError key={error}>{error}</ScenarioValidationError>
         ))}
       </div>
     </div>

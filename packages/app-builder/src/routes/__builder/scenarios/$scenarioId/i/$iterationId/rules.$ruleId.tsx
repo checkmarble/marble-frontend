@@ -13,7 +13,7 @@ import {
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidatioError';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
   NewEmptyRuleAstNode,
