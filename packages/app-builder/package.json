@@ -15,7 +15,7 @@
     "type-check": "npx tsc --noEmit",
     "dev": "dotenv -e .env.local -- remix dev",
     "build": "remix build",
-    "build-with-sourcemaps": "remix build --sourcemap && sentry-upload-sourcemaps --org checkmarble --project marble-frontend",
+    "build-with-sourcemaps": "remix build --sourcemap && sentry-upload-sourcemaps --org checkmarble --project marble-frontend --log-level=debug",
     "start": "remix start",
     "generate-routes": "source scripts/generateRoutes.sh"
   },
