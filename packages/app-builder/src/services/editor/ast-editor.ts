@@ -359,6 +359,7 @@ function updateValidation({
       updateValidation({
         editorNodeViewModel: child,
         validation: validation.namedChildren[namedKey],
+        parent: currentNode,
       })
   );
 
@@ -384,20 +385,20 @@ const computeEvaluationErrors = (
   return errors;
 };
 
-function hasNestedErrors(validation: NodeEvaluation, root = true): boolean {
-  if (!root && validation.errors && validation.errors.length > 0) {
+function hasNestedErrors(validation: NodeEvaluation): boolean {
+  if (validation.errors && validation.errors.length > 0) {
     return true;
   }
   if (
     validation.children.some((childValidation) =>
-      hasNestedErrors(childValidation, false)
+      hasNestedErrors(childValidation)
     )
   ) {
     return true;
   }
   if (
     Object.values(validation.namedChildren).some((namedChildValidation) =>
-      hasNestedErrors(namedChildValidation, false)
+      hasNestedErrors(namedChildValidation)
     )
   ) {
     return true;

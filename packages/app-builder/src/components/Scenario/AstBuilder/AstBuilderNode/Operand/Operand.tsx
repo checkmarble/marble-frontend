@@ -26,7 +26,7 @@ export const computeOperandErrors = (
   viewModel: EditorNodeViewModel
 ): EvaluationError[] => {
   if (viewModel.funcName && functionNodeNames.includes(viewModel.funcName)) {
-    return viewModel.errors;
+    return viewModel.errors.filter((error) => error.argumentName === undefined);
   } else {
     return [
       ...viewModel.errors,
