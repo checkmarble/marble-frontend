@@ -230,11 +230,6 @@ export const routes = [
         ]
       },
       {
-        "id": "routes/sentry",
-        "path": "sentry",
-        "file": "routes/sentry.tsx"
-      },
-      {
         "id": "routes/index",
         "index": true,
         "file": "routes/index.tsx"

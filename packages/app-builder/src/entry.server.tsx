@@ -1,17 +1,11 @@
-import {
-  type DataFunctionArgs,
-  type EntryContext,
-  Response,
-} from '@remix-run/node';
+import { type EntryContext, Response } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
-import * as Sentry from '@sentry/remix';
 import isbot from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
 import { PassThrough } from 'stream';
 
 import { serverServices } from './services/init.server';
-import { getServerEnv } from './utils/environment.server';
 
 const ABORT_DELAY = 5000;
 
@@ -110,25 +104,4 @@ function handleBrowserRequest(
 
     setTimeout(abort, ABORT_DELAY);
   });
-}
-
-Sentry.init({
-  dsn: getServerEnv('SENTRY_DSN'),
-  environment: getServerEnv('SENTRY_ENVIRONMENT'),
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
-
-export async function handleError(
-  error: unknown,
-  { request }: DataFunctionArgs
-) {
-  if (error instanceof Error) {
-    await Sentry.captureRemixServerException(error, 'remix.server', request);
-  } else {
-    // Optionally capture non-Error objects
-    Sentry.captureException(error);
-  }
 }

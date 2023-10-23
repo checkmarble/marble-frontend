@@ -14,7 +14,6 @@ import {
   useLoaderData,
   useRouteError,
 } from '@remix-run/react';
-import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
 import { Tooltip } from '@ui-design-system';
 import { LogoStandard } from '@ui-icons';
 import { type Namespace } from 'i18next';
@@ -102,7 +101,6 @@ export const meta: V2_MetaFunction = () => [
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  captureRemixErrorBoundaryError(error);
 
   return (
     <html lang="en">
@@ -137,7 +135,7 @@ export function ErrorBoundary() {
   );
 }
 
-function App() {
+export default function App() {
   const { locale, ENV, toastMessage, csrf } = useLoaderData<typeof loader>();
 
   const { i18n } = useTranslation(handle.i18n);
@@ -171,5 +169,3 @@ function App() {
     </html>
   );
 }
-
-export default withSentry(App);

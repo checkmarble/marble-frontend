@@ -59,15 +59,6 @@ jobs:
         with:
           install_components: beta
 
-      - name: Create Sentry release
-        uses: getsentry/action-release@v1
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: 'checkmarble'
-          SENTRY_PROJECT: 'marble-frontend'
-        with:
-          environment: staging
-
       - name: Deploy server
         run: |
           gcloud run deploy marble-frontend \
