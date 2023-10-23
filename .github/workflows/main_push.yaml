@@ -16,15 +16,6 @@ jobs:
       actions: read
     uses: ./.github/workflows/check.yaml
 
-  create_sentry_release:
-    uses: getsentry/action-release@v1
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      SENTRY_ORG: checkmarble
-      SENTRY_PROJECT: marble-frontend
-    with:
-      environment: production
-
   build_and_deploy:
     needs: check
     permissions:
@@ -36,3 +27,4 @@ jobs:
       version: latest
     secrets:
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_STAGING }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
