@@ -36,7 +36,6 @@ type ServerPublicEnvVarName =
   | 'MARBLE_API_DOMAIN'
   | 'MARBLE_APP_DOMAIN'
   | 'NODE_ENV'
-  | 'SENTRY_AUTH_TOKEN'
   | 'SENTRY_DSN'
   | 'SENTRY_ENVIRONMENT'
   | 'SESSION_MAX_AGE';

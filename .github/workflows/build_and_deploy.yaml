@@ -15,6 +15,9 @@ on:
       GCP_SA_KEY:
         required: true
         description: 'GCP Service Account Key'
+      SENTRY_AUTH_TOKEN:
+        required: true
+        description: 'Sentry Auth Token'
 
 jobs:
   main:
@@ -41,13 +44,29 @@ jobs:
           username: _json_key
           password: ${{ secrets.GCP_SA_KEY }}
 
+      - name: Setup Sentry CLI
+        uses: mathieu-bour/setup-sentry-cli@v1
+        with:
+          token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          organization: 'checkmarble'
+          project: 'marble-frontend'
+
+      - name: Get release
+        run: |
+          echo "SENTRY_RELEASE=$(sentry-cli releases propose-version)" >> "$GITHUB_ENV"
+
       # source: https://github.com/docker/build-push-action
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
+          context: .
           push: true
           target: app-builder
           tags: ${{ env.IMAGE }}
+          build-args: |
+            "SENTRY_RELEASE=${{ env.SENTRY_RELEASE }}"
+          secrets: |
+            "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
 
       - name: Auth
         uses: 'google-github-actions/auth@v1'

@@ -1,18 +1,23 @@
 FROM node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ARG SENTRY_RELEASE
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
 RUN corepack enable
+RUN apt-get update
+RUN apt-get -y install ca-certificates
 COPY . /app
 WORKDIR /app
 
 FROM base AS prod-deps
-# RUN --mount=type=cache,id=pnpm,target=$PNPM_HOME/store pnpm install --prod --frozen-lockfile
 RUN pnpm install --prod --frozen-lockfile
 
 FROM base AS build
-# RUN --mount=type=cache,id=pnpm,target=$PNPM_HOME/store pnpm install --frozen-lockfile
 RUN pnpm install --frozen-lockfile
-RUN pnpm run -r build-with-sourcemaps
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+      SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) && \
+      export SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN && \
+      pnpm run -r build-with-sourcemaps --release $SENTRY_RELEASE
 
 FROM base AS app-builder
 ENV NODE_ENV=production
