@@ -9,15 +9,13 @@ import * as R from 'remeda';
 // Edit this type to handle contextual data for each error code
 export type EvaluationErrorViewModel =
   | {
-      error: 'UNEXPECTED_ERROR';
+      error: 'UNEXPECTED_ERROR' | 'ARGUMENT_INVALID_TYPE';
       message: string;
     }
   | {
       error:
         | 'UNDEFINED_FUNCTION'
         | 'MISSING_NAMED_ARGUMENT'
-        | 'ARGUMENTS_MUST_BE_INT_OR_FLOAT'
-        | 'ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME'
         | 'ARGUMENT_MUST_BE_INTEGER'
         | 'ARGUMENT_MUST_BE_STRING'
         | 'ARGUMENT_MUST_BE_BOOLEAN'
@@ -25,7 +23,6 @@ export type EvaluationErrorViewModel =
         | 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION'
         | 'ARGUMENT_MUST_BE_TIME'
         | 'FUNCTION_ERROR'
-        | 'ARGUMENT_INVALID_TYPE'
         | 'LIST_NOT_FOUND'
         | 'FIELD_NOT_FOUND'
         | 'ARGUMENT_REQUIRED';
@@ -42,6 +39,7 @@ export function adaptEvaluationErrorViewModels(
     UNEXPECTED_ERROR,
     WRONG_NUMBER_OF_ARGUMENTS,
     DATABASE_ACCESS_NOT_FOUND,
+    ARGUMENT_INVALID_TYPE,
     PAYLOAD_FIELD_NOT_FOUND,
     ...expectedErrors
   } = R.groupBy.strict(evaluationErrors, ({ error }) => error);
@@ -58,6 +56,17 @@ export function adaptEvaluationErrorViewModels(
     );
 
     evaluationErrorVMs.push(...unexpectedErrorVMs);
+  }
+  if (ARGUMENT_INVALID_TYPE) {
+    const invalidTypeErrorVMs = R.pipe(
+      ARGUMENT_INVALID_TYPE,
+      R.map((error) => ({
+        error: 'ARGUMENT_INVALID_TYPE' as const,
+        message: error.message,
+      }))
+    );
+
+    evaluationErrorVMs.push(...invalidTypeErrorVMs);
   }
 
   if (WRONG_NUMBER_OF_ARGUMENTS) {
@@ -135,18 +144,6 @@ const commonErrorMessages =
             count: evaluationError.count,
           }
         );
-      case 'ARGUMENTS_MUST_BE_INT_OR_FLOAT':
-        return t(
-          'scenarios:validation.evaluation_error.arguments_must_be_int_or_float',
-          {
-            count: evaluationError.count,
-          }
-        );
-      case 'ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME':
-        return t(
-          'scenarios:validation.evaluation_error.arguments_must_be_int_float_or_time',
-          { count: evaluationError.count }
-        );
       case 'ARGUMENT_MUST_BE_INTEGER':
         return t(
           'scenarios:validation.evaluation_error.argument_must_be_integer',
@@ -198,12 +195,7 @@ const commonErrorMessages =
           count: evaluationError.count,
         });
       case 'ARGUMENT_INVALID_TYPE':
-        return t(
-          'scenarios:validation.evaluation_error.argument_invalid_type',
-          {
-            count: evaluationError.count,
-          }
-        );
+        return evaluationError.message;
       case 'LIST_NOT_FOUND':
         return t('scenarios:validation.evaluation_error.list_not_found', {
           count: evaluationError.count,
