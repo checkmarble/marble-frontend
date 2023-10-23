@@ -12,7 +12,7 @@ RUN pnpm install --prod --frozen-lockfile
 FROM base AS build
 # RUN --mount=type=cache,id=pnpm,target=$PNPM_HOME/store pnpm install --frozen-lockfile
 RUN pnpm install --frozen-lockfile
-RUN pnpm run -r build-with-sourcemaps
+RUN pnpm run -r build
 
 FROM base AS app-builder
 ENV NODE_ENV=production
@@ -27,3 +27,4 @@ COPY --from=build /app/packages/app-builder/public /app/packages/app-builder/pub
 WORKDIR /app/packages/app-builder
 EXPOSE 8080
 CMD [ "pnpm", "exec", "remix-serve", "build"]
+
