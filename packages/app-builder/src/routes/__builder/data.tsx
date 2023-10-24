@@ -143,26 +143,22 @@ function TableDetails({
         header: t('data:description'),
         size: 500,
         cell: ({ cell }) => {
-          return canEditDataModel ? (
-            <EditableText key={cell.row.original.id} className="group">
-              <EditField
-                fieldId={cell.row.original.id}
-                description={cell.row.original.description}
-              >
-                <div className="flex flex-row gap-5">
-                  <FormatDescription
-                    description={cell.row.original.description}
-                  />
-                  <Edit
-                    className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
-                    width={'24px'}
-                    height={'24px'}
-                  />
-                </div>
-              </EditField>
-            </EditableText>
-          ) : (
-            <FormatDescription description={cell.row.original.description} />
+          return (
+            <div className="flex flex-row items-center justify-between">
+              <FormatDescription description={cell.row.original.description} />
+              {canEditDataModel && (
+                <EditField
+                  key={cell.row.original.id}
+                  fieldId={cell.row.original.id}
+                  description={cell.row.original.description}
+                  isEnum={cell.row.original.isEnum}
+                >
+                  <div className="text-grey-00 group-hover:text-grey-100 relative rounded border-2 border-solid bg-transparent p-2 transition-colors ease-in-out">
+                    <Edit width={'24px'} height={'24px'} />
+                  </div>
+                </EditField>
+              )}
+            </div>
           );
         },
       },

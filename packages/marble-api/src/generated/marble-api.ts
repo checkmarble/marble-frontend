@@ -283,6 +283,7 @@ export type CreateTableFieldBody = {
 };
 export type UpdateTableFieldBody = {
     description?: string;
+    is_enum?: boolean;
 };
 export type CreateTableLinkBody = {
     name: string;

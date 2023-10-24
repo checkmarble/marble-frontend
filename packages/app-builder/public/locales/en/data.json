@@ -37,7 +37,7 @@
   "create_field.type_bool": "Boolean",
   "create_field.type_timestamp": "Timestamp",
   "edit_field.button_accept": "Save changes",
-  "edit_field.title": "Edit description",
+  "edit_field.title": "Edit field",
   "edit_table.button_accept": "Save changes",
   "edit_table.title": "Edit description",
   "empty_description": "No description",
