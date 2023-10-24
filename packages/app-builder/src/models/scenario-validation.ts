@@ -32,7 +32,7 @@ export function isUndefinedFunctionError(evaluationError: {
 
 export interface NodeEvaluation {
   returnValue: ConstantType;
-  errors: EvaluationError[] | null;
+  errors: EvaluationError[];
   children: NodeEvaluation[];
   namedChildren: Record<string, NodeEvaluation>;
 }
@@ -68,7 +68,7 @@ function adaptEvaluationError(dto: EvaluationErrorDto): EvaluationError {
 function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
   return {
     returnValue: dto.return_value,
-    errors: dto.errors ? dto.errors.map(adaptEvaluationError) : null,
+    errors: dto.errors ? dto.errors.map(adaptEvaluationError) : [],
     children: dto.children ? dto.children.map(adaptNodeEvaluation) : [],
     namedChildren: dto.named_children
       ? R.mapValues(dto.named_children, adaptNodeEvaluation)
@@ -119,10 +119,27 @@ export const computeValidationForNamedChildren = (
   return errors;
 };
 
-export const separateChildrenErrors = (
-  errors: EvaluationError[]
-): [EvaluationError[], EvaluationError[]] => {
-  return R.partition(errors, (error) => {
+/**
+ * Separate errors into 3 categories:
+ * - childrenErrors: errors that are related to a child node
+ * - namedChildrenErrors: errors that are related to a named child node
+ * - nodeErrors: errors that are related to the node itself
+ */
+export function separateChildrenErrors(errors: EvaluationError[]) {
+  const [childrenErrors, nonChildrenErrors] = R.partition(errors, (error) => {
     return error.argumentIndex != undefined;
   });
-};
+
+  const [namedChildrenErrors, nodeErrors] = R.partition(
+    nonChildrenErrors,
+    (error) => {
+      return error.argumentName != undefined;
+    }
+  );
+
+  return {
+    childrenErrors,
+    namedChildrenErrors,
+    nodeErrors,
+  };
+}

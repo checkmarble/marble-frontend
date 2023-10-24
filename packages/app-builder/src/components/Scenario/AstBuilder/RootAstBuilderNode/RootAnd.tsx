@@ -59,13 +59,13 @@ export function RootAnd({
   viewOnly?: boolean;
 }) {
   const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
-  const [_, andNonChildrenErrors] = separateChildrenErrors(
+  const { nodeErrors: andNodeErrors } = separateChildrenErrors(
     rootAndViewModel.errors
   );
 
-  const andErrorMessages = adaptEvaluationErrorViewModels(
-    andNonChildrenErrors
-  ).map(getEvaluationErrorMessage);
+  const andErrorMessages = adaptEvaluationErrorViewModels(andNodeErrors).map(
+    getEvaluationErrorMessage
+  );
 
   function appendAndChild() {
     builder.appendChild(rootAndViewModel.nodeId, NewAndChild());

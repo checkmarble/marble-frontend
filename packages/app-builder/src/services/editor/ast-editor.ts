@@ -7,6 +7,7 @@ import {
   findDataModelTableByName,
   functionNodeNames,
   type NodeEvaluation,
+  separateChildrenErrors,
   type TableModel,
 } from '@app-builder/models';
 import { type CustomList } from '@marble-api';
@@ -38,7 +39,7 @@ export function adaptEditorNodeViewModel({
 }): EditorNodeViewModel {
   const evaluation = validation ?? {
     returnValue: null,
-    errors: null,
+    errors: [],
     children: [],
     namedChildren: {},
   };
@@ -366,10 +367,10 @@ function updateValidation({
   return currentNode;
 }
 
-const computeEvaluationErrors = (
+function computeEvaluationErrors(
   funcName: EditorNodeViewModel['funcName'],
   validation: NodeEvaluation
-): EvaluationError[] => {
+): EvaluationError[] {
   const errors: EvaluationError[] = [];
   if (validation.errors) {
     errors.push(...validation.errors);
@@ -383,25 +384,46 @@ const computeEvaluationErrors = (
   }
 
   return errors;
-};
+}
 
-function hasNestedErrors(validation: NodeEvaluation): boolean {
-  if (validation.errors && validation.errors.length > 0) {
+/**
+ * A nested error is:
+ * - a childError or a namedChildError of root NodeEvaluation["errors"]
+ * - any error on the NodeEvaluation["children"] or NodeEvaluation["namedChildren"]
+ *
+ * In other words, an error of the root NodeEvaluation["errors"] without argumentIndex or argumentName is not a nested error
+ *
+ * Exemples:
+ * - ❌ { errors: [{ error: 'FUNCTION_ERROR', message: 'function has error' }] }
+ * - ✅ { errors: [{ argumentIndex: 2, ...}] }
+ * - ✅ { errors: [{ argumentName: "label", ...}] }
+ * - ✅ { errors: [], children: { errors: [{...}]} }
+ * - ✅ { errors: [], namedChildren: { errors: [{...}] } }
+ */
+function hasNestedErrors(validation: NodeEvaluation, root = true): boolean {
+  let errors: EvaluationError[];
+  if (root) {
+    const { namedChildrenErrors, nodeErrors } = separateChildrenErrors(
+      validation.errors
+    );
+    errors = [...namedChildrenErrors, ...nodeErrors];
+  } else {
+    errors = validation.errors;
+  }
+
+  if (errors.length > 0) {
     return true;
   }
+
+  const children = [
+    ...validation.children,
+    ...Object.values(validation.namedChildren),
+  ];
   if (
-    validation.children.some((childValidation) =>
-      hasNestedErrors(childValidation)
-    )
+    children.some((childValidation) => hasNestedErrors(childValidation, false))
   ) {
     return true;
   }
-  if (
-    Object.values(validation.namedChildren).some((namedChildValidation) =>
-      hasNestedErrors(namedChildValidation)
-    )
-  ) {
-    return true;
-  }
+
   return false;
 }
