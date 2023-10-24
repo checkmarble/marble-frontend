@@ -1930,6 +1930,8 @@ components:
       properties:
         description:
           type: string
+        is_enum:
+          type: boolean
     CreateTableLinkBody:
       type: object
       required:
