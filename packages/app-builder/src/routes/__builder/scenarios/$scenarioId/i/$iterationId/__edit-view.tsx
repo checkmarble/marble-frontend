@@ -9,7 +9,7 @@ import { VersionSelect } from '@app-builder/components/Scenario/Iteration/Versio
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
 import { CreateDraftIteration } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/create_draft';
-import { DeploymentModal } from '@app-builder/routes/ressources/scenarios/deployment';
+import { DeploymentActions } from '@app-builder/routes/ressources/scenarios/deployment';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -76,7 +76,7 @@ export default function ScenarioEditLayout() {
   const withEditTag = editorMode === 'edit';
   const withCreateDraftIteration =
     canManageScenario && currentIteration.type !== 'draft';
-  const withDeploymentModal = canPublishScenario;
+  const withDeploymentActions = canPublishScenario;
 
   return (
     <ScenarioPage.Container>
@@ -104,11 +104,16 @@ export default function ScenarioEditLayout() {
               draftId={draftIteration?.id}
             />
           )}
-          {withDeploymentModal && (
-            <DeploymentModal
+          {withDeploymentActions && (
+            <DeploymentActions
               scenarioId={currentScenario.id}
               liveVersionId={currentScenario.liveVersionId}
               currentIteration={currentIteration}
+              hasScenarioErrors={
+                hasTriggerErrors(scenarioValidation) ||
+                hasRulesErrors(scenarioValidation) ||
+                hasDecisionErrors(scenarioValidation)
+              }
             />
           )}
         </div>

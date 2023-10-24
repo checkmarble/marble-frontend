@@ -1,11 +1,14 @@
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidatioError';
-import { type EvaluationError } from '@app-builder/models';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
   findArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
-import { useGetNodeEvaluationErrorMessage } from '@app-builder/services/validation';
+import {
+  adaptEvaluationErrorViewModels,
+  type EvaluationErrorViewModel,
+  useGetNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 
 import {
   computeOperandErrors,
@@ -22,7 +25,7 @@ interface TwoOperandsLineViewModel {
   left: OperandViewModel;
   operator: OperatorViewModel;
   right: OperandViewModel;
-  errors: EvaluationError[];
+  errors: EvaluationErrorViewModel[];
 }
 
 export function TwoOperandsLine({
@@ -35,6 +38,10 @@ export function TwoOperandsLine({
   viewOnly?: boolean;
 }) {
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+
+  const errorMessages = twoOperandsViewModel.errors.map((error) =>
+    getNodeEvaluationErrorMessage(error)
+  );
 
   return (
     <div className="flex flex-col gap-2">
@@ -67,11 +74,8 @@ export function TwoOperandsLine({
         />
       </div>
       <div className="flex flex-row flex-wrap gap-2">
-        {twoOperandsViewModel.errors.map((error, index) => (
-          // TODO: find a better way to compute error key (flatten errors make it hard)
-          <ScenarioValidationError key={index}>
-            {getNodeEvaluationErrorMessage(error)}
-          </ScenarioValidationError>
+        {errorMessages.map((error) => (
+          <ScenarioValidationError key={error}>{error}</ScenarioValidationError>
         ))}
       </div>
     </div>
@@ -93,11 +97,11 @@ export function adaptTwoOperandsLineViewModel(
     left,
     operator: operatorVm,
     right,
-    errors: [
+    errors: adaptEvaluationErrorViewModels([
       ...computeOperandErrors(left),
       ...vm.errors,
       ...computeOperandErrors(right),
       ...findArgumentIndexErrorsFromParent(vm),
-    ],
+    ]),
   };
 }
