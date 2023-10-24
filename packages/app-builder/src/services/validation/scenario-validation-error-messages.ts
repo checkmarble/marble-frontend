@@ -144,7 +144,8 @@ const commonErrorMessages =
         );
       case 'ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME':
         return t(
-          'scenarios:validation.evaluation_error.arguments_must_be_int_float_or_time'
+          'scenarios:validation.evaluation_error.arguments_must_be_int_float_or_time',
+          { count: evaluationError.count }
         );
       case 'ARGUMENT_MUST_BE_INTEGER':
         return t(

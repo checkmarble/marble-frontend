@@ -1,9 +1,14 @@
 import { scenarioI18n } from '@app-builder/components/Scenario';
+import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { NewUndefinedAstNode } from '@app-builder/models';
 import {
   adaptEditorNodeViewModel,
   type AstBuilder,
 } from '@app-builder/services/editor/ast-editor';
+import {
+  adaptEvaluationErrorViewModels,
+  useGetNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import { Button } from '@ui-design-system';
 import { Plus } from '@ui-icons';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +41,7 @@ export const EditFilters = ({
   value: FilterViewModel[];
 }) => {
   const { t } = useTranslation(scenarioI18n);
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
 
   const filteredDataModalFieldOptions = aggregatedField?.tableName
     ? dataModelFieldOptions.filter(
@@ -80,6 +86,9 @@ export const EditFilters = ({
     <div>
       <div className="flex flex-col gap-2">
         {value.map((filter, filterIndex) => {
+          const valueErrorMessages = adaptEvaluationErrorViewModels(
+            filter.value.errors
+          ).map((error) => getNodeEvaluationErrorMessage(error));
           return (
             <div key={filterIndex}>
               <div className="flex flex-row items-center gap-1">
@@ -120,6 +129,13 @@ export const EditFilters = ({
               {filter.errors.filter.length > 0 && (
                 <ErrorMessage errors={filter.errors.filter} />
               )}
+              <div className="mt-2 flex flex-row flex-wrap gap-2">
+                {valueErrorMessages.map((error) => (
+                  <ScenarioValidationError key={error}>
+                    {error}
+                  </ScenarioValidationError>
+                ))}
+              </div>
             </div>
           );
         })}
