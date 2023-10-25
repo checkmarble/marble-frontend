@@ -130,6 +130,7 @@ export function RootAnd({
                   builder={builder}
                   editorNodeViewModel={child}
                   viewOnly={viewOnly}
+                  root
                 />
               </div>
               {!viewOnly && (

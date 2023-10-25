@@ -59,7 +59,7 @@ export function Operand({
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
-  onSave: (astNode: AstNode) => void;
+  onSave?: (astNode: AstNode) => void;
   viewOnly?: boolean;
   ariaLabel?: string;
 }) {
@@ -74,7 +74,7 @@ export function Operand({
       dataModel: builder.input.dataModel,
     }),
   });
-  const isEditable = !!labelledAst && isEditableOperand(astNode);
+  const isEditable = !!labelledAst && isEditableOperand(astNode) && onSave;
 
   if (!isEditable) {
     return (

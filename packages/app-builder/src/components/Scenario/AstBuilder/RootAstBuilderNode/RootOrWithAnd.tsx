@@ -143,6 +143,7 @@ export function RootOrWithAnd({
                       builder={builder}
                       editorNodeViewModel={child}
                       viewOnly={viewOnly}
+                      root
                     />
                   </div>
                   {!viewOnly && (

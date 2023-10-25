@@ -7,6 +7,7 @@ export * from './Input/Input';
 export * from './Modal/Modal';
 export * from './ScrollArea/ScrollArea';
 export * from './Select/Select';
+export * from './Switch/Switch';
 export * from './Table/Table';
 export * from './Tag/Tag';
 export * from './Tooltip/Tooltip';

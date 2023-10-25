@@ -1,5 +1,6 @@
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
+  adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
   findArgumentIndexErrorsFromParent,
@@ -7,14 +8,11 @@ import {
 import {
   adaptEvaluationErrorViewModels,
   type EvaluationErrorViewModel,
-  useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
+import { Switch } from '@ui-design-system';
 
-import {
-  computeOperandErrors,
-  Operand,
-  type OperandViewModel,
-} from '../Operand';
+import { AstBuilderNode } from '../AstBuilderNode';
+import { computeOperandErrors, type OperandViewModel } from '../Operand';
 import {
   adaptOperatorViewModel,
   Operator,
@@ -28,28 +26,45 @@ interface TwoOperandsLineViewModel {
   errors: EvaluationErrorViewModel[];
 }
 
+function NewNestedChild(node: AstNode) {
+  return NewUndefinedAstNode({
+    children: [node, NewUndefinedAstNode()],
+  });
+}
+
 export function TwoOperandsLine({
   builder,
   twoOperandsViewModel,
   viewOnly,
+  root,
 }: {
   builder: AstBuilder;
   twoOperandsViewModel: TwoOperandsLineViewModel;
   viewOnly?: boolean;
+  root?: boolean;
 }) {
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+  function addNestedChild(child: EditorNodeViewModel) {
+    builder.setOperand(
+      child.nodeId,
+      NewNestedChild(adaptAstNodeFromEditorViewModel(child))
+    );
+  }
 
-  const errorMessages = twoOperandsViewModel.errors.map((error) =>
-    getNodeEvaluationErrorMessage(error)
-  );
+  function removeNestedChild(child: EditorNodeViewModel) {
+    builder.setOperand(
+      child.nodeId,
+      adaptAstNodeFromEditorViewModel(child.children[0])
+    );
+  }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-row gap-2">
-        <Operand
+    <div className="flex justify-between">
+      <div className="flex flex-row flex-wrap items-center gap-2">
+        {!root && <span className="text-grey-25">(</span>}
+        <AstBuilderNode
           ariaLabel="left-operand"
           builder={builder}
-          operandViewModel={twoOperandsViewModel.left}
+          editorNodeViewModel={twoOperandsViewModel.left}
           onSave={(astNode) => {
             builder.setOperand(twoOperandsViewModel.left.nodeId, astNode);
           }}
@@ -63,21 +78,33 @@ export function TwoOperandsLine({
           }}
           viewOnly={viewOnly}
         />
-        <Operand
+        <AstBuilderNode
           ariaLabel="right-operand"
           builder={builder}
-          operandViewModel={twoOperandsViewModel.right}
+          editorNodeViewModel={twoOperandsViewModel.right}
           onSave={(astNode) => {
             builder.setOperand(twoOperandsViewModel.right.nodeId, astNode);
           }}
           viewOnly={viewOnly}
         />
+        {!root && <span className="text-grey-25">)</span>}
       </div>
-      <div className="flex flex-row flex-wrap gap-2">
-        {errorMessages.map((error) => (
-          <ScenarioValidationError key={error}>{error}</ScenarioValidationError>
-        ))}
-      </div>
+      {root && !viewOnly && (
+        <div className="flex h-10 items-center gap-2">
+          <label className="text-s" htmlFor="nest">
+            Nest
+          </label>
+          <Switch
+            id="nest"
+            checked={twoOperandsViewModel.right.children.length === 2}
+            onCheckedChange={(checked) =>
+              checked
+                ? addNestedChild(twoOperandsViewModel.right)
+                : removeNestedChild(twoOperandsViewModel.right)
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }
