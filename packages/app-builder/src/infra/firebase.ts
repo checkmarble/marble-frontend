@@ -8,6 +8,7 @@ import {
   connectAuthEmulator,
   getAuth,
   GoogleAuthProvider,
+  signInWithEmailAndPassword,
   signInWithPopup,
 } from 'firebase/auth';
 
@@ -15,7 +16,8 @@ export type FirebaseClientWrapper = {
   app: FirebaseApp;
   clientAuth: Auth;
   googleAuthProvider: GoogleAuthProvider;
-  signIn: typeof signInWithPopup;
+  signInWithOAuth: typeof signInWithPopup;
+  signInWithEmailAndPassword: typeof signInWithEmailAndPassword;
 };
 
 export function initializeFirebaseClient({
@@ -40,6 +42,7 @@ export function initializeFirebaseClient({
     app,
     clientAuth,
     googleAuthProvider,
-    signIn: signInWithPopup,
+    signInWithOAuth: signInWithPopup,
+    signInWithEmailAndPassword: signInWithEmailAndPassword,
   };
 }
