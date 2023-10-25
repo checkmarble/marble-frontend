@@ -46,7 +46,7 @@ function ClientSignInWithGoogle() {
     clientServices.authenticationClientService
   );
 
-  const handleGoogleSingIn = async () => {
+  const handleGoogleSignIn = async () => {
     const result = await googleSignIn();
     if (!result) return;
     const { idToken, csrf } = result;
@@ -60,7 +60,7 @@ function ClientSignInWithGoogle() {
   return (
     <SignInWithGoogleButton
       onClick={() => {
-        void handleGoogleSingIn();
+        void handleGoogleSignIn();
       }}
     />
   );

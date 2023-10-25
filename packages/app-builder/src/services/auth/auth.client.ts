@@ -1,6 +1,7 @@
 import { type AuthenticationClientRepository } from '@app-builder/repositories/AuthenticationRepository';
 import { getClientEnv } from '@app-builder/utils/environment.client';
 import { marbleApi } from '@marble-api';
+import { FirebaseError } from 'firebase/app';
 import { useTranslation } from 'react-i18next';
 import { useAuthenticityToken } from 'remix-utils';
 
@@ -36,6 +37,43 @@ export function useGoogleSignIn({
     }
   };
 }
+
+export function useEmailAndPasswordSignIn({
+  authenticationClientRepository,
+}: AuthenticationClientService) {
+  const {
+    i18n: { language },
+  } = useTranslation();
+  const csrf = useAuthenticityToken();
+
+  return async (email: string, password: string) => {
+    try {
+      const idToken =
+        await authenticationClientRepository.emailAndPasswordSignIn(
+          language,
+          email,
+          password
+        );
+      return { idToken, csrf };
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case 'auth/user-not-found':
+            throw new UserNotFoundError();
+          case 'auth/wrong-password':
+            throw new WrongPasswordError();
+          case 'auth/invalid-login-credentials':
+            throw new InvalidLoginCredentials();
+        }
+      }
+      throw error;
+    }
+  };
+}
+
+export class UserNotFoundError extends Error {}
+export class WrongPasswordError extends Error {}
+export class InvalidLoginCredentials extends Error {}
 
 export function useBackendInfo({
   authenticationClientRepository,

@@ -2,13 +2,19 @@ import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
 
 export interface AuthenticationClientRepository {
   googleSignIn: (locale: string) => Promise<string>;
+  emailAndPasswordSignIn: (
+    locale: string,
+    email: string,
+    password: string
+  ) => Promise<string>;
   firebaseIdToken: () => Promise<string>;
 }
 
 export function getAuthenticationClientRepository({
   clientAuth,
   googleAuthProvider,
-  signIn,
+  signInWithOAuth,
+  signInWithEmailAndPassword,
 }: FirebaseClientWrapper): AuthenticationClientRepository {
   function getClientAuth(locale: string) {
     if (locale) {
@@ -21,7 +27,17 @@ export function getAuthenticationClientRepository({
 
   async function googleSignIn(locale: string) {
     const auth = getClientAuth(locale);
-    const credential = await signIn(auth, googleAuthProvider);
+    const credential = await signInWithOAuth(auth, googleAuthProvider);
+    return credential.user.getIdToken();
+  }
+
+  async function emailAndPasswordSignIn(
+    locale: string,
+    email: string,
+    password: string
+  ) {
+    const auth = getClientAuth(locale);
+    const credential = await signInWithEmailAndPassword(auth, email, password);
     return credential.user.getIdToken();
   }
 
@@ -33,5 +49,5 @@ export function getAuthenticationClientRepository({
     return currentUser.getIdToken();
   };
 
-  return { googleSignIn, firebaseIdToken };
+  return { googleSignIn, emailAndPasswordSignIn, firebaseIdToken };
 }
