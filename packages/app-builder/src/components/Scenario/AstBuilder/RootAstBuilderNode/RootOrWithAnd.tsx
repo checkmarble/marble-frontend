@@ -81,24 +81,24 @@ export function RootOrWithAnd({
     builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
   }
 
-  const [_, rootOrNonChildrenErrors] = separateChildrenErrors(
+  const { nodeErrors: orNodeErrors } = separateChildrenErrors(
     rootOrWithAndViewModel.orErrors
   );
 
-  const rootOrErrorMessages = adaptEvaluationErrorViewModels(
-    rootOrNonChildrenErrors
-  ).map(getEvaluationErrorMessage);
+  const rootOrErrorMessages = adaptEvaluationErrorViewModels(orNodeErrors).map(
+    getEvaluationErrorMessage
+  );
 
   return (
     <div className="flex flex-col gap-4">
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
-        const [_, andNonChildrenErrors] = separateChildrenErrors(
+        const { nodeErrors: andNodeErrors } = separateChildrenErrors(
           andChild.errors
         );
 
         const andErrorMessages = adaptEvaluationErrorViewModels(
-          andNonChildrenErrors
+          andNodeErrors
         ).map(getEvaluationErrorMessage);
 
         function appendAndChild() {

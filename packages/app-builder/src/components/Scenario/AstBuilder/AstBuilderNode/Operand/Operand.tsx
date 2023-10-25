@@ -10,6 +10,7 @@ import {
   isPayload,
   isTimeAdd,
   isUndefinedAstNode,
+  separateChildrenErrors,
 } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -26,7 +27,8 @@ export const computeOperandErrors = (
   viewModel: EditorNodeViewModel
 ): EvaluationError[] => {
   if (viewModel.funcName && functionNodeNames.includes(viewModel.funcName)) {
-    return viewModel.errors.filter((error) => error.argumentName === undefined);
+    const { nodeErrors } = separateChildrenErrors(viewModel.errors);
+    return nodeErrors;
   } else {
     return [
       ...viewModel.errors,

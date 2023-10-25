@@ -130,7 +130,7 @@
   "validation.evaluation_error.field_not_found_one": "field not found",
   "validation.evaluation_error.field_not_found_other": "{{count}} fields not found",
   "validation.evaluation_error.function_error_one": "function contains errors",
-  "validation.evaluation_error.function_error_other": "{{count}} functions contain error",
+  "validation.evaluation_error.function_error_other": "{{count}} functions contain errors",
   "edit_aggregation.title": "Create a variable",
   "edit_aggregation.subtitle": "From Marble database",
   "edit_aggregation.label_title": "Variable name",
