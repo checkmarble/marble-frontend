@@ -20,6 +20,7 @@ const operatorFunctions = [
   '<',
   '<=',
   '=',
+  '≠',
   '>',
   '>=',
   '*',
@@ -104,7 +105,8 @@ export function useGetOperatorName() {
 
   return useCallback(
     (operatorName: string) => {
-      if (['+', '-', '<', '=', '>'].includes(operatorName)) return operatorName;
+      if (['+', '-', '<', '=', '≠', '>'].includes(operatorName))
+        return operatorName;
 
       if (operatorName === '>=') return '≥';
       if (operatorName === '<=') return '≤';
