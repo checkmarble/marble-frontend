@@ -40,6 +40,7 @@
   "logical_operator.and_button": "Condition",
   "logical_operator.or_button": "Group",
   "operator.is_in": "is in",
+  "operator.is_not_in": "is not in",
   "false": "false",
   "true": "true",
   "rules.function.title": "function",
