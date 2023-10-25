@@ -275,8 +275,8 @@ function RuleViewContent({
   } = useTranslation(handle.i18n);
 
   return (
-    <ScenarioPage.Content className="max-w-3xl">
-      <Callout className="w-full">{rule.description}</Callout>
+    <ScenarioPage.Content>
+      <Callout className="max-w-3xl">{rule.description}</Callout>
 
       <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
         <Trans
@@ -293,7 +293,7 @@ function RuleViewContent({
           }}
         />
       </div>
-      <Paper.Container scrollable={false}>
+      <Paper.Container scrollable={false} className="max-w-3xl">
         <AstBuilder builder={builder} viewOnly={true} />
       </Paper.Container>
     </ScenarioPage.Content>
@@ -319,8 +319,8 @@ function RuleEditContent({
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   return (
-    <ScenarioPage.Content className="max-w-3xl">
-      <Paper.Container scrollable={false}>
+    <ScenarioPage.Content>
+      <Paper.Container scrollable={false} className="max-w-3xl">
         <FormProvider {...formMethods}>
           <FormField
             name="name"
@@ -378,7 +378,7 @@ function RuleEditContent({
         </FormProvider>
       </Paper.Container>
 
-      <Paper.Container scrollable={false}>
+      <Paper.Container scrollable={false} className="max-w-3xl">
         <AstBuilder builder={builder} />
 
         {ruleValidation.errors && (
