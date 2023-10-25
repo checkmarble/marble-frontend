@@ -2,12 +2,12 @@ import { type DataType, type LabelledAst } from '@app-builder/models';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   Boolean,
+  Enum,
   Field,
   Function,
   List,
   Number,
   Schedule,
-  ShapeLine,
   String,
 } from '@ui-icons';
 import clsx from 'clsx';
@@ -100,7 +100,7 @@ export function getOperatorTypeIcon(operatorType: LabelledAst['operandType']) {
     case 'Function':
       return Function;
     case 'Constant':
-      return ShapeLine;
+      return Enum;
     default:
       return undefined;
   }
