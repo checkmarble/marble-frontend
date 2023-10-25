@@ -50,7 +50,7 @@ export default function CurrentScenarioIterationProvider() {
     <CurrentScenarioIterationContextProvider value={scenarioIteration}>
       <CurrentScenarioValidationContextProvider value={scenarioValidation}>
         <EditorModeContextProvider value={editorMode}>
-          <Outlet />
+          <Outlet key={scenarioIteration.id} />
         </EditorModeContextProvider>
       </CurrentScenarioValidationContextProvider>
     </CurrentScenarioIterationContextProvider>
