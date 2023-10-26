@@ -21,18 +21,16 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const iterationId = fromParams(params, 'iterationId');
 
-  const scenarioIterationPromise = scenario.getScenarioIteration({
-    iterationId,
-  });
+  const [scenarioIteration, scenarioValidation] = await Promise.all([
+    scenario.getScenarioIteration({
+      iterationId,
+    }),
+    scenario.validate({
+      iterationId,
+    }),
+  ]);
 
-  const scenarioValidationPromise = scenario.validate({
-    iterationId,
-  });
-
-  return json({
-    scenarioIteration: await scenarioIterationPromise,
-    scenarioValidation: await scenarioValidationPromise,
-  });
+  return json({ scenarioIteration, scenarioValidation });
 }
 
 export default function CurrentScenarioIterationProvider() {

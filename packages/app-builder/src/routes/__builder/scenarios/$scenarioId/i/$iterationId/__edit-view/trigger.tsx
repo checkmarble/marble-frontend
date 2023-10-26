@@ -55,28 +55,35 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const operatorsPromise = editor.listOperators({
-    scenarioId,
-  });
-
-  const identifiersPromise = editor.listIdentifiers({
-    scenarioId,
-  });
-
-  const dataModelPromise = apiClient.getDataModel();
-  const { custom_lists } = await apiClient.listCustomLists();
-  const organizationPromise = organization.getCurrentOrganization();
-  const { scheduled_executions } = await apiClient.listScheduledExecutions({
-    scenarioId,
-  });
+  const [
+    operators,
+    identifiers,
+    dataModel,
+    customLists,
+    currentOrganization,
+    scheduledExecutions,
+  ] = await Promise.all([
+    editor.listOperators({
+      scenarioId,
+    }),
+    editor.listIdentifiers({
+      scenarioId,
+    }),
+    apiClient.getDataModel(),
+    apiClient.listCustomLists(),
+    organization.getCurrentOrganization(),
+    apiClient.listScheduledExecutions({
+      scenarioId,
+    }),
+  ]);
 
   return json({
-    identifiers: await identifiersPromise,
-    operators: await operatorsPromise,
-    dataModel: adaptDataModelDto((await dataModelPromise).data_model),
-    customLists: custom_lists,
-    organization: await organizationPromise,
-    scheduledExecutions: scheduled_executions,
+    identifiers,
+    operators,
+    dataModel: adaptDataModelDto(dataModel.data_model),
+    customLists: customLists.custom_lists,
+    organization: currentOrganization,
+    scheduledExecutions: scheduledExecutions.scheduled_executions,
   });
 }
 

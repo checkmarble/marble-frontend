@@ -16,7 +16,7 @@ export const servers = {
 export type Token = {
     access_token: string;
     token_type: string;
-    expires_in: string;
+    expires_at: string;
 };
 export type CredentialsDto = {
     credentials: {

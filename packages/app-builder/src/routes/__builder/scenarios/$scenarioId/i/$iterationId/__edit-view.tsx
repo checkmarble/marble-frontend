@@ -40,12 +40,12 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const scenarioIterationsPromise = scenario.listScenarioIterations({
+  const scenarioIterations = await scenario.listScenarioIterations({
     scenarioId,
   });
 
   return json({
-    scenarioIterations: await scenarioIterationsPromise,
+    scenarioIterations,
   });
 }
 
