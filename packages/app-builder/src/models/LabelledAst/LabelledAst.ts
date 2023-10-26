@@ -16,7 +16,7 @@ import {
   getIdentifiersFromAstNode,
 } from '../identifier';
 import { newAggregatorLabelledAst } from './Aggregator';
-import { newConstantLabelledAst } from './Constant';
+import { newConstantLabelledAst, newEnumConstantLabelledAst } from './Constant';
 import { newCustomListLabelledAst } from './CustomList';
 import { newDatabaseAccessorsLabelledAst } from './DatabaseAccessors';
 import { getAstNodeDisplayName } from './getAstNodeDisplayName';
@@ -31,6 +31,7 @@ export interface LabelledAst {
   operandType:
     | 'Constant'
     | 'CustomList'
+    | 'Enum'
     | 'Field'
     | 'Function'
     | 'Undefined'
@@ -46,13 +47,21 @@ export function adaptLabelledAst(
     triggerObjectTable,
     dataModel,
     customLists,
+    enumOptions,
   }: {
     triggerObjectTable: TableModel;
     dataModel: TableModel[];
     customLists: CustomList[];
+    enumOptions: string[];
   }
 ): LabelledAst | null {
   if (isConstant(node)) {
+    if (
+      typeof node.constant === 'string' &&
+      enumOptions.includes(node.constant)
+    ) {
+      return newEnumConstantLabelledAst(node);
+    }
     return newConstantLabelledAst(node);
   }
 
