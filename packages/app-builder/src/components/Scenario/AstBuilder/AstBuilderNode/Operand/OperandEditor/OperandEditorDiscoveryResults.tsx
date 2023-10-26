@@ -33,12 +33,12 @@ export function OperandEditorDiscoveryResults({
     R.pipe(
       options,
       R.groupBy((option) => option.operandType),
-      ({ Field, CustomList, Function, Constant }) => {
+      ({ Field, CustomList, Function, Enum }) => {
         return {
           customListOptions: CustomList,
           fieldOptions: Field,
           functionOptions: Function,
-          constantOptions: Constant,
+          constantOptions: Enum,
         };
       }
     );
@@ -66,7 +66,7 @@ export function OperandEditorDiscoveryResults({
         <OperandDiscoverySubmenu options={constantOptions} onSelect={onSelect}>
           <GroupHeader.Container>
             <OperandDiscoveryTitle
-              operandType="Constant"
+              operandType="Enum"
               operandsCount={constantOptions.length}
             />
             <GroupHeader.Icon>

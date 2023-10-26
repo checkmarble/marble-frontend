@@ -5,9 +5,9 @@ import {
   type LabelledAst,
   newAggregatorLabelledAst,
   NewConstantAstNode,
-  newConstantLabelledAst,
   newCustomListLabelledAst,
   newDatabaseAccessorsLabelledAst,
+  newEnumConstantLabelledAst,
   newPayloadAccessorsLabelledAst,
   newUndefinedLabelledAst,
   type TableModel,
@@ -43,23 +43,21 @@ import { OperandEditorSearchResults } from './OperandEditorSearchResults';
 import { ClearOption, EditOption } from './OperandOption';
 
 export function getEnumOptionsFromNeighbour({
-  parent,
   viewModel,
   triggerObjectTable,
   dataModel,
 }: {
-  parent: OperandViewModel | null;
   viewModel: OperandViewModel;
   triggerObjectTable: TableModel;
   dataModel: TableModel[];
 }) {
-  if (!parent) {
+  if (!viewModel.parent) {
     return [];
   }
-  if (parent.funcName !== '=') {
+  if (viewModel.parent.funcName !== '=') {
     return [];
   }
-  const neighbourNodeViewModel = parent.children.find(
+  const neighbourNodeViewModel = viewModel.parent.children.find(
     (child) => child.nodeId !== viewModel.nodeId
   );
   if (!neighbourNodeViewModel) {
@@ -162,13 +160,12 @@ const OperandEditorContent = forwardRef<
     ];
 
     const equalEnumOptions = getEnumOptionsFromNeighbour({
-      parent: operandViewModel.parent,
       viewModel: operandViewModel,
       dataModel: builder.input.dataModel,
       triggerObjectTable: builder.input.triggerObjectTable,
     });
     const enumOptions = equalEnumOptions?.map((enumValue) => {
-      return newConstantLabelledAst(
+      return newEnumConstantLabelledAst(
         NewConstantAstNode({
           constant: enumValue,
         })

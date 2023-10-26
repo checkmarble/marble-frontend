@@ -15,6 +15,15 @@ export function newConstantLabelledAst(node: ConstantAstNode): LabelledAst {
   };
 }
 
+export function newEnumConstantLabelledAst(node: ConstantAstNode): LabelledAst {
+  return {
+    name: getConstantDisplayName(node.constant),
+    dataType: getConstantDataType(node.constant),
+    operandType: 'Enum',
+    astNode: node,
+  };
+}
+
 export function getConstantDisplayName(constant: ConstantType): string {
   if (isNil(constant)) return '';
 

@@ -19,7 +19,7 @@ import {
 } from '@app-builder/services/editor/ast-editor';
 
 import { Default } from '../Default';
-import { OperandEditor } from './OperandEditor';
+import { getEnumOptionsFromNeighbour, OperandEditor } from './OperandEditor';
 
 export type OperandViewModel = EditorNodeViewModel;
 
@@ -68,6 +68,11 @@ export function Operand({
     dataModel: builder.input.dataModel,
     triggerObjectTable: builder.input.triggerObjectTable,
     customLists: builder.input.customLists,
+    enumOptions: getEnumOptionsFromNeighbour({
+      viewModel: operandViewModel,
+      triggerObjectTable: builder.input.triggerObjectTable,
+      dataModel: builder.input.dataModel,
+    }),
   });
   const isEditable = !!labelledAst && isEditableOperand(astNode);
 
