@@ -159,12 +159,12 @@ const OperandEditorContent = forwardRef<
       newTimeAddLabelledAst(),
     ];
 
-    const equalEnumOptions = getEnumOptionsFromNeighbour({
+    const enumOptionValues = getEnumOptionsFromNeighbour({
       viewModel: operandViewModel,
       dataModel: builder.input.dataModel,
       triggerObjectTable: builder.input.triggerObjectTable,
     });
-    const enumOptions = equalEnumOptions?.map((enumValue) => {
+    const enumOptions = enumOptionValues?.map((enumValue) => {
       return newEnumConstantLabelledAst(
         NewConstantAstNode({
           constant: enumValue,

@@ -29,7 +29,7 @@ export function OperandEditorDiscoveryResults({
   onSelect,
 }: OperandEditorDiscoveryResultsProps) {
   const { t } = useTranslation('scenarios');
-  const { customListOptions, fieldOptions, functionOptions, constantOptions } =
+  const { customListOptions, fieldOptions, functionOptions, enumOptions } =
     R.pipe(
       options,
       R.groupBy((option) => option.operandType),
@@ -38,7 +38,7 @@ export function OperandEditorDiscoveryResults({
           customListOptions: CustomList,
           fieldOptions: Field,
           functionOptions: Function,
-          constantOptions: Enum,
+          enumOptions: Enum,
         };
       }
     );
@@ -62,12 +62,12 @@ export function OperandEditorDiscoveryResults({
 
   return (
     <>
-      {constantOptions && constantOptions.length > 0 && (
-        <OperandDiscoverySubmenu options={constantOptions} onSelect={onSelect}>
+      {enumOptions && enumOptions.length > 0 && (
+        <OperandDiscoverySubmenu options={enumOptions} onSelect={onSelect}>
           <GroupHeader.Container>
             <OperandDiscoveryTitle
               operandType="Enum"
-              operandsCount={constantOptions.length}
+              operandsCount={enumOptions.length}
             />
             <GroupHeader.Icon>
               <ArrowRight />
