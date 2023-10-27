@@ -1,12 +1,12 @@
 import { formatDateTime } from '@app-builder/utils/format';
-import { type ScheduledExecution } from '@marble-api';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
-import { Table, useVirtualTable } from '@ui-design-system';
-import { Cross, RestartAlt, Tick } from '@ui-icons';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
+import { type ScheduledExecution } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Table, useVirtualTable } from 'ui-design-system';
+import { Cross, RestartAlt, Tick } from 'ui-icons';
 
 import { decisionsI18n } from './decisions-i18n';
 import { ScheduledExecutionDetails } from './ScheduledExecutionDetails';

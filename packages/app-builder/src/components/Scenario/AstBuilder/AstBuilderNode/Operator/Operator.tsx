@@ -6,9 +6,9 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import { Select } from '@ui-design-system';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Select } from 'ui-design-system';
 
 import { OperatorViewer } from './OperatorViewer';
 

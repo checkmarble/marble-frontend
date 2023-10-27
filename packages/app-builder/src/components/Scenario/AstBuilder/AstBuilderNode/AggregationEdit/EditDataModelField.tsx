@@ -1,6 +1,6 @@
 import { type EvaluationError } from '@app-builder/models';
-import { Combobox } from '@ui-design-system';
 import { useState } from 'react';
+import { Combobox } from 'ui-design-system';
 
 export type DataModelField = {
   tableName: string | null;

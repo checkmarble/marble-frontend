@@ -1,7 +1,7 @@
 import { type AuthenticationClientRepository } from '@app-builder/repositories/AuthenticationRepository';
 import { getClientEnv } from '@app-builder/utils/environment.client';
-import { marbleApi } from '@marble-api';
 import { FirebaseError } from 'firebase/app';
+import { marbleApi } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { useAuthenticityToken } from 'remix-utils';
 

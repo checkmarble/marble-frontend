@@ -3,9 +3,9 @@ import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
 import { type ActionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { GoogleLogo } from '@ui-icons';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
+import { GoogleLogo } from 'ui-icons';
 
 export function loader() {
   return redirect('/login');

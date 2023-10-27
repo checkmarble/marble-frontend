@@ -1,8 +1,8 @@
 import { type LabelledAst } from '@app-builder/models';
-import { Tip } from '@ui-icons';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Tip } from 'ui-icons';
 
 import {
   getDataTypeIcon,

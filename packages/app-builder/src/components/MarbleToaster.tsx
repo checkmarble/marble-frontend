@@ -4,10 +4,10 @@ import {
   toastMessageScema,
 } from '@app-builder/models';
 import { getClientEnv } from '@app-builder/utils/environment.client';
-import { Cross } from '@ui-icons';
 import { useEffect } from 'react';
 import { toast, ToastBar, Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { Cross } from 'ui-icons';
 
 export function setToastMessage(
   session: MarbleSession,

@@ -10,12 +10,12 @@ import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { Button, Input, Modal } from '@ui-design-system';
-import { Plus } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { Button, Input, Modal } from 'ui-design-system';
+import { Plus } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {

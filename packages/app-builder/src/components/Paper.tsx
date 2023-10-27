@@ -1,5 +1,5 @@
-import { ScrollArea } from '@ui-design-system';
 import clsx from 'clsx';
+import { ScrollArea } from 'ui-design-system';
 
 function PaperContainer({
   children,

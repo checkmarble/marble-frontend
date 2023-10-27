@@ -1,5 +1,5 @@
-import { Edit } from '@ui-icons';
 import { useTranslation } from 'react-i18next';
+import { Edit } from 'ui-icons';
 
 import { Option } from './Option';
 

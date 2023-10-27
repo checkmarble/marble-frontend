@@ -1,5 +1,5 @@
-import { Lightbulb } from '@ui-icons';
 import clsx from 'clsx';
+import { Lightbulb } from 'ui-icons';
 
 export const variants = ['info', 'error'] as const;
 

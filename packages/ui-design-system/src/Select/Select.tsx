@@ -17,9 +17,9 @@ import {
   Value,
   Viewport,
 } from '@radix-ui/react-select';
-import { Arrow2Down, Arrow2Up, SmallarrowDown } from '@ui-icons';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+import { Arrow2Down, Arrow2Up, SmallarrowDown } from 'ui-icons';
 
 import { type selectBorder, type selectBorderColor } from './Select.constants';
 

@@ -1,7 +1,7 @@
 import { Label } from '@radix-ui/react-label';
-import { Checkbox, Select } from '@ui-design-system';
 import { type ParseKeys } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
+import { Checkbox, Select } from 'ui-design-system';
 
 import { scenarioI18n } from '../../scenario-i18n';
 import { type ScheduleOption } from './models';

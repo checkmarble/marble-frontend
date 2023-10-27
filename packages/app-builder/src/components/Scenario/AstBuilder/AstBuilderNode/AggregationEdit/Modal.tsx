@@ -13,11 +13,11 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { Button, Input, Modal } from '@ui-design-system';
-import { Logo } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button, Input, Modal } from 'ui-design-system';
+import { Logo } from 'ui-icons';
 
 import { ErrorMessage } from '../../ErrorMessage';
 import { AggregatorSelect } from './AggregatorSelect';

@@ -1,5 +1,5 @@
 import { type Meta, type StoryFn } from '@storybook/react';
-import { Pushtolive } from '@ui-icons';
+import { Pushtolive } from 'ui-icons';
 
 import { Button } from '../Button/Button';
 import { Modal } from './Modal';

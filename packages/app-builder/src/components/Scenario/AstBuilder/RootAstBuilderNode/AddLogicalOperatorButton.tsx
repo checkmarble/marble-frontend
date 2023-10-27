@@ -1,7 +1,7 @@
-import { Plus } from '@ui-icons';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Plus } from 'ui-icons';
 
 type AddLogicalOperatorButtonProps = React.ComponentProps<'button'> & {
   operator: 'and' | 'or';

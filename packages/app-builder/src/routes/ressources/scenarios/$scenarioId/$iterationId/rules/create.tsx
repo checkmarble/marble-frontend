@@ -3,10 +3,10 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { Button } from '@ui-design-system';
-import { Plus } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
+import { Plus } from 'ui-icons';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,

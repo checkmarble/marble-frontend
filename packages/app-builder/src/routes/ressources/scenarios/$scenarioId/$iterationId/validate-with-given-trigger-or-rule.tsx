@@ -6,9 +6,9 @@ import {
 import { serverServices } from '@app-builder/services/init.server';
 import { findRuleValidation } from '@app-builder/services/validation';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { type NodeDto } from '@marble-api';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { type NodeDto } from 'marble-api';
 import { useCallback } from 'react';
 
 export async function action({ request, params }: ActionArgs) {

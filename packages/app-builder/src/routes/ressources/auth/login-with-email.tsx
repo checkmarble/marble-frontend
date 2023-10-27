@@ -16,11 +16,11 @@ import { serverServices } from '@app-builder/services/init.server';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { Button, Input } from '@ui-design-system';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
+import { Button, Input } from 'ui-design-system';
 import * as z from 'zod';
 
 export function loader() {

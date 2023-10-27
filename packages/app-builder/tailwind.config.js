@@ -6,6 +6,6 @@ module.exports = {
   presets: [sharedTailwindConfig],
   content: [
     join(__dirname, './src/**/*.{ts,tsx,jsx,js}'),
-    join(__dirname, '../ui-design-system/**/*.{ts,tsx,jsx,js}'),
+    join(__dirname, '../ui-design-system/src/**/*.{ts,tsx,jsx,js}'),
   ],
 };

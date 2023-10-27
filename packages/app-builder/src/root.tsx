@@ -15,8 +15,6 @@ import {
   useRouteError,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
-import { Tooltip } from '@ui-design-system';
-import { LogoStandard } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +22,8 @@ import {
   AuthenticityTokenProvider,
   createAuthenticityToken,
 } from 'remix-utils';
+import { Tooltip } from 'ui-design-system';
+import { LogoStandard } from 'ui-icons';
 
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';

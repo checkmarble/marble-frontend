@@ -1,6 +1,6 @@
-import { ScrollArea } from '@ui-design-system';
-import { ArrowLeft } from '@ui-icons';
 import clsx from 'clsx';
+import { ScrollArea } from 'ui-design-system';
+import { ArrowLeft } from 'ui-icons';
 
 function PageContainer({
   className,

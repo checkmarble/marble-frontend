@@ -2,9 +2,9 @@ import { type AuthErrors } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { LogoStandard } from '@ui-icons';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { LogoStandard } from 'ui-icons';
 
 import { SignInWithEmail } from './ressources/auth/login-with-email';
 import { LanguagePicker } from './ressources/user/language';

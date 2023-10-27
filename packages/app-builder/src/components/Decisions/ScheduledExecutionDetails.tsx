@@ -2,10 +2,10 @@ import {
   AlreadyDownloadingError,
   useDownloadDecisions,
 } from '@app-builder/services/DownloadDecisionsService';
-import { Button } from '@ui-design-system';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
+import { Button } from 'ui-design-system';
 
 import { decisionsI18n } from './decisions-i18n';
 

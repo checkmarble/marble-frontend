@@ -12,11 +12,11 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { Table, useVirtualTable } from '@ui-design-system';
-import { Lists } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Table, useVirtualTable } from 'ui-design-system';
+import { Lists } from 'ui-icons';
 
 type List = {
   id: string;

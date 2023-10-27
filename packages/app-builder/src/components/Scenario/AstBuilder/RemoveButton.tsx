@@ -1,7 +1,7 @@
-import { type ButtonProps } from '@ui-design-system';
-import { Delete } from '@ui-icons';
 import clsx from 'clsx';
 import * as React from 'react';
+import { type ButtonProps } from 'ui-design-system';
+import { Delete } from 'ui-icons';
 
 export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, ...props }, ref) => {

@@ -10,7 +10,7 @@ import {
   separateChildrenErrors,
   type TableModel,
 } from '@app-builder/models';
-import { type CustomList } from '@marble-api';
+import { type CustomList } from 'marble-api';
 import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useState } from 'react';
 import * as R from 'remeda';

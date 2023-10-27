@@ -1,5 +1,7 @@
 import { type DataType, type LabelledAst } from '@app-builder/models';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import clsx from 'clsx';
+import { type ParseKeys } from 'i18next';
 import {
   Boolean,
   Enum,
@@ -9,9 +11,7 @@ import {
   Number,
   Schedule,
   String,
-} from '@ui-icons';
-import clsx from 'clsx';
-import { type ParseKeys } from 'i18next';
+} from 'ui-icons';
 
 function OptionContainer({
   className,

@@ -26,14 +26,14 @@ import {
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ScenarioValidationErrorCodeDto } from '@marble-api';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useSubmit } from '@remix-run/react';
-import { Button, Input } from '@ui-design-system';
 import { type Namespace, type TFunction } from 'i18next';
+import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
+import { Button, Input } from 'ui-design-system';
 import * as z from 'zod';
 
 export const handle = {

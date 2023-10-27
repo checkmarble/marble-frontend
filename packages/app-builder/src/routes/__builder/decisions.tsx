@@ -7,9 +7,9 @@ import { DecisionsPage } from '@app-builder/components/Decisions';
 import { getRoute } from '@app-builder/utils/routes';
 import { Outlet, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { Decision } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { Decision } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation'] satisfies Namespace,

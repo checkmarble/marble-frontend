@@ -1,7 +1,7 @@
-import { type Decision } from '@marble-api';
-import { Tag, type TagProps } from '@ui-design-system';
 import { type ParseKeys } from 'i18next';
+import { type Decision } from 'marble-api';
 import { useTranslation } from 'react-i18next';
+import { Tag, type TagProps } from 'ui-design-system';
 
 import { decisionsI18n } from './decisions-i18n';
 

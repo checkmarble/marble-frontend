@@ -2,7 +2,7 @@ import {
   type ScenarioIterationDto,
   type ScenarioIterationRuleDto,
   type ScenarioIterationWithBodyDto,
-} from '@marble-api';
+} from 'marble-api';
 
 import { adaptAstNode, type AstNode } from './ast-node';
 

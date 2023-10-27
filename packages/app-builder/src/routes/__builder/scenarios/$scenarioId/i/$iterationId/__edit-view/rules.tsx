@@ -11,7 +11,6 @@ import {
 } from '@app-builder/services/validation';
 import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { type ScenarioIterationRuleDto } from '@marble-api';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import {
@@ -19,10 +18,11 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { Table, useVirtualTable } from '@ui-design-system';
 import { type Namespace } from 'i18next';
+import { type ScenarioIterationRuleDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Table, useVirtualTable } from 'ui-design-system';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,

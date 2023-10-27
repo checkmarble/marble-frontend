@@ -9,12 +9,12 @@ import { parseParams } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderArgs, type SerializeFrom } from '@remix-run/node';
 import { useFetcher, useSearchParams } from '@remix-run/react';
-import { Decision as DecisionIcon } from '@ui-icons';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { JsonView } from 'react-json-view-lite';
+import { Decision as DecisionIcon } from 'ui-icons';
 import * as z from 'zod';
 
 export const handle = {

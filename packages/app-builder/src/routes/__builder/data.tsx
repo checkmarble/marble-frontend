@@ -18,12 +18,12 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { Table, useTable } from '@ui-design-system';
-import { Edit, Harddrive, Plus } from '@ui-icons';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { Table, useTable } from 'ui-design-system';
+import { Edit, Harddrive, Plus } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'data'] satisfies Namespace,

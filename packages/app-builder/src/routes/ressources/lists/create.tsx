@@ -14,11 +14,11 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { Button, Input, Modal } from '@ui-design-system';
-import { Plus } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { Button, Input, Modal } from 'ui-design-system';
+import { Plus } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {

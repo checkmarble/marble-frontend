@@ -21,10 +21,10 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@marble-api": ["packages/marble-api/src/index.ts"],
-      "@typescript-utils": ["packages/typescript-utils/src/index.ts"],
-      "@ui-icons": ["packages/ui-icons/src/index.ts"],
-      "@ui-design-system": ["packages/ui-design-system/src/index.ts"],
+      "marble-api": ["packages/marble-api/src/index.ts"],
+      "typescript-utils": ["packages/typescript-utils/src/index.ts"],
+      "ui-icons": ["packages/ui-icons/src/index.ts"],
+      "ui-design-system": ["packages/ui-design-system/src/index.ts"],
       "@app-builder/*": ["packages/app-builder/src/*"]
     },
     "pretty": true

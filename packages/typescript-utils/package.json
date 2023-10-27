@@ -2,7 +2,9 @@
   "name": "typescript-utils",
   "version": "1.0.0",
   "description": "",
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "20.3.3"
+  },
   "scripts": {
     "lint": "eslint .",
     "type-check": "npx tsc --noEmit"

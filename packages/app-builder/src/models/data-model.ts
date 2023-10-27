@@ -2,7 +2,7 @@ import {
   type DataModelDto,
   type DataModelFieldDto,
   type LinkToSingleDto,
-} from '@marble-api';
+} from 'marble-api';
 import * as R from 'remeda';
 
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
