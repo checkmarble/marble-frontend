@@ -152,7 +152,7 @@ export function makeAuthenticationServerService(
     const user = session.get('user');
     if (
       !marbleToken ||
-      marbleToken.expires_in > new Date().toISOString() ||
+      marbleToken.expires_at < new Date().toISOString() ||
       !user
     ) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
