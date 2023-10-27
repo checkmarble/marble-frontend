@@ -52,6 +52,7 @@ export function RootAstBuilderNode({
       editorNodeViewModel={editorNodeViewModel}
       builder={builder}
       viewOnly={viewOnly}
+      root
     />
   );
 }

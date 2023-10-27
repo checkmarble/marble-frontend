@@ -117,37 +117,39 @@ export default function Lists() {
           )}
         </div>
       </Page.Header>
-      <Page.Content scrollable={false} className="max-w-3xl">
-        <Callout className="w-full">{customList.description}</Callout>
-        {/* <ScenariosList scenarios={scenarios} /> */}
-        <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
-          <div className="flex flex-row gap-2 lg:gap-4">
-            <form className="flex grow items-center">
-              <Input
-                className="w-full"
-                disabled={listValues.length === 0}
-                type="search"
-                aria-label={t('common:search')}
-                placeholder={t('common:search')}
-                startAdornment={<Search />}
-                onChange={(event) => {
-                  virtualTable.table.setGlobalFilter(event.target.value);
-                }}
-              />
-            </form>
-            {canManageListItem && <NewListValue listId={customList.id} />}
-          </div>
-          {virtualTable.rows.length > 0 ? (
-            <Table.Default {...virtualTable}></Table.Default>
-          ) : (
-            <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-              <p className="text-s font-medium">
-                {t('lists:empty_custom_list_values_list')}
-              </p>
+      <Page.Content scrollable={false}>
+        <div className="max-w-3xl">
+          <Callout className="w-full">{customList.description}</Callout>
+          {/* <ScenariosList scenarios={scenarios} /> */}
+          <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
+            <div className="flex flex-row gap-2 lg:gap-4">
+              <form className="flex grow items-center">
+                <Input
+                  className="w-full"
+                  disabled={listValues.length === 0}
+                  type="search"
+                  aria-label={t('common:search')}
+                  placeholder={t('common:search')}
+                  startAdornment={<Search />}
+                  onChange={(event) => {
+                    virtualTable.table.setGlobalFilter(event.target.value);
+                  }}
+                />
+              </form>
+              {canManageListItem && <NewListValue listId={customList.id} />}
             </div>
-          )}
+            {virtualTable.rows.length > 0 ? (
+              <Table.Default {...virtualTable}></Table.Default>
+            ) : (
+              <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+                <p className="text-s font-medium">
+                  {t('lists:empty_custom_list_values_list')}
+                </p>
+              </div>
+            )}
+          </div>
+          {canManageList && <DeleteList listId={customList.id} />}
         </div>
-        {canManageList && <DeleteList listId={customList.id} />}
       </Page.Content>
     </Page.Container>
   );

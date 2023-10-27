@@ -1,9 +1,10 @@
+import { type AstNode } from '@app-builder/models';
 import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
-import { Default } from './Default';
+import { Operand } from './Operand';
 import {
   adaptTwoOperandsLineViewModel,
   TwoOperandsLine,
@@ -13,30 +14,42 @@ interface AstBuilderNodeProps {
   builder: AstBuilder;
   editorNodeViewModel: EditorNodeViewModel;
   viewOnly?: boolean;
+  onSave?: (astNode: AstNode) => void;
+  ariaLabel?: string;
+  root?: boolean;
 }
 
 export function AstBuilderNode({
   editorNodeViewModel,
   builder,
   viewOnly,
+  onSave,
+  ariaLabel,
+  root = false,
 }: AstBuilderNodeProps) {
   const twoOperandsViewModel =
     adaptTwoOperandsLineViewModel(editorNodeViewModel);
+
   if (twoOperandsViewModel) {
     return (
-      <TwoOperandsLine
-        builder={builder}
-        twoOperandsViewModel={twoOperandsViewModel}
-        viewOnly={viewOnly}
-      />
+      <div className="flex w-full flex-col gap-2">
+        <TwoOperandsLine
+          builder={builder}
+          twoOperandsViewModel={twoOperandsViewModel}
+          viewOnly={viewOnly}
+          root={root}
+        />
+      </div>
     );
   }
 
   return (
-    <Default
-      editorNodeViewModel={editorNodeViewModel}
+    <Operand
       builder={builder}
-      displayErrors={viewOnly}
+      operandViewModel={editorNodeViewModel}
+      viewOnly={viewOnly}
+      onSave={onSave}
+      ariaLabel={ariaLabel}
     />
   );
 }

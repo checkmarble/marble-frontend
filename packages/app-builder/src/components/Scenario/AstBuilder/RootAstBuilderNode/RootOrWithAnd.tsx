@@ -8,10 +8,12 @@ import {
 import {
   type AstBuilder,
   type EditorNodeViewModel,
+  findArgumentIndexErrorsFromParent,
   hasArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
 import {
   adaptEvaluationErrorViewModels,
+  useGetNodeEvaluationErrorMessage,
   useGetOrAndNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import clsx from 'clsx';
@@ -19,6 +21,7 @@ import React from 'react';
 
 import { ScenarioValidationError } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
+import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine/TwoOperandsLine';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
@@ -77,6 +80,7 @@ export function RootOrWithAnd({
   viewOnly?: boolean;
 }) {
   const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   function appendOrChild() {
     builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
   }
@@ -128,8 +132,15 @@ export function RootOrWithAnd({
               </div>
             )}
             {andChild.children.map((child, childIndex) => {
+              const errorMessages = adaptEvaluationErrorViewModels([
+                ...computeLineErrors(child),
+                ...findArgumentIndexErrorsFromParent(child),
+              ]).map((error) => getNodeEvaluationErrorMessage(error));
               return (
-                <div key={child.nodeId} className="flex flex-row gap-2">
+                <div
+                  key={child.nodeId}
+                  className="grid grid-cols-[40px_1fr_30px] gap-2"
+                >
                   <LogicalOperatorLabel
                     operator={childIndex === 0 ? 'if' : 'and'}
                     className={
@@ -143,6 +154,7 @@ export function RootOrWithAnd({
                       builder={builder}
                       editorNodeViewModel={child}
                       viewOnly={viewOnly}
+                      root
                     />
                   </div>
                   {!viewOnly && (
@@ -154,6 +166,13 @@ export function RootOrWithAnd({
                       />
                     </div>
                   )}
+                  <div className="col-start-2 flex flex-row flex-wrap gap-2">
+                    {errorMessages.map((error) => (
+                      <ScenarioValidationError key={error}>
+                        {error}
+                      </ScenarioValidationError>
+                    ))}
+                  </div>
                 </div>
               );
             })}

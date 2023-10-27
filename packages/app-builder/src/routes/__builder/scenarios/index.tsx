@@ -45,12 +45,12 @@ export default function ScenariosPage() {
         <Scenarios className="mr-2" height="24px" width="24px" />
         {t('navigation:scenarios')}
       </Page.Header>
-      <Page.Content className="max-w-3xl">
+      <Page.Content>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row justify-end">
             <CreateScenario dataModel={dataModel} />
           </div>
-          <div className="flex flex-col gap-2 lg:gap-4">
+          <div className="flex max-w-3xl flex-col gap-2 lg:gap-4">
             {scenarios.length ? (
               scenarios.map((scenario) => {
                 return (
