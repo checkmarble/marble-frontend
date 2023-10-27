@@ -3,9 +3,7 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import { useGetNodeEvaluationErrorMessage } from '@app-builder/services/validation';
 
-import { ScenarioValidationError } from '../../ScenarioValidationError';
 import { Operand } from './Operand';
 import {
   adaptTwoOperandsLineViewModel,
@@ -29,16 +27,10 @@ export function AstBuilderNode({
   ariaLabel,
   root = false,
 }: AstBuilderNodeProps) {
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
-
   const twoOperandsViewModel =
     adaptTwoOperandsLineViewModel(editorNodeViewModel);
 
   if (twoOperandsViewModel) {
-    const errorMessages = twoOperandsViewModel.errors.map((error) =>
-      getNodeEvaluationErrorMessage(error)
-    );
-
     return (
       <div className="flex w-full flex-col gap-2">
         <TwoOperandsLine
@@ -47,15 +39,6 @@ export function AstBuilderNode({
           viewOnly={viewOnly}
           root={root}
         />
-        {root && (
-          <div className="flex flex-row flex-wrap gap-2">
-            {errorMessages.map((error) => (
-              <ScenarioValidationError key={error}>
-                {error}
-              </ScenarioValidationError>
-            ))}
-          </div>
-        )}
       </div>
     );
   }

@@ -1,8 +1,6 @@
 import {
   adaptLabelledAst,
   type AstNode,
-  type EvaluationError,
-  functionNodeNames,
   isAggregation,
   isConstant,
   isCustomListAccess,
@@ -10,7 +8,6 @@ import {
   isPayload,
   isTimeAdd,
   isUndefinedAstNode,
-  separateChildrenErrors,
 } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -22,21 +19,6 @@ import { Default } from '../Default';
 import { getEnumOptionsFromNeighbour, OperandEditor } from './OperandEditor';
 
 export type OperandViewModel = EditorNodeViewModel;
-
-export const computeOperandErrors = (
-  viewModel: EditorNodeViewModel
-): EvaluationError[] => {
-  if (viewModel.funcName && functionNodeNames.includes(viewModel.funcName)) {
-    const { nodeErrors } = separateChildrenErrors(viewModel.errors);
-    return nodeErrors;
-  } else {
-    return [
-      ...viewModel.errors,
-      ...viewModel.children.flatMap(computeOperandErrors),
-      ...Object.values(viewModel.namedChildren).flatMap(computeOperandErrors),
-    ];
-  }
-};
 
 export function isEditableOperand(node: AstNode): boolean {
   return (

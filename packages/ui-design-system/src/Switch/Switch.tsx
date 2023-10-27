@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 
 export const Switch = forwardRef<
   HTMLButtonElement,
-  Omit<SwitchProps, 'classValue'> & { className?: string }
+  SwitchProps & { className?: string }
 >(({ className, ...props }, ref) => {
   return (
     <Root

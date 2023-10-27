@@ -1,18 +1,20 @@
-import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import {
+  type AstNode,
+  type EvaluationError,
+  functionNodeNames,
+  NewUndefinedAstNode,
+  separateChildrenErrors,
+} from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
-  findArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
-import {
-  adaptEvaluationErrorViewModels,
-  type EvaluationErrorViewModel,
-} from '@app-builder/services/validation';
 import { Switch } from '@ui-design-system';
+import { useTranslation } from 'react-i18next';
 
 import { AstBuilderNode } from '../AstBuilderNode';
-import { computeOperandErrors, type OperandViewModel } from '../Operand';
+import { type OperandViewModel } from '../Operand';
 import {
   adaptOperatorViewModel,
   Operator,
@@ -23,7 +25,6 @@ interface TwoOperandsLineViewModel {
   left: OperandViewModel;
   operator: OperatorViewModel;
   right: OperandViewModel;
-  errors: EvaluationErrorViewModel[];
 }
 
 function NewNestedChild(node: AstNode) {
@@ -43,6 +44,7 @@ export function TwoOperandsLine({
   viewOnly?: boolean;
   root?: boolean;
 }) {
+  const { t } = useTranslation(['scenarios']);
   function addNestedChild(child: EditorNodeViewModel) {
     builder.setOperand(
       child.nodeId,
@@ -92,7 +94,7 @@ export function TwoOperandsLine({
       {root && !viewOnly && (
         <div className="flex h-10 items-center gap-2">
           <label className="text-s" htmlFor="nest">
-            Nest
+            {t('scenarios:nest')}
           </label>
           <Switch
             id="nest"
@@ -124,11 +126,20 @@ export function adaptTwoOperandsLineViewModel(
     left,
     operator: operatorVm,
     right,
-    errors: adaptEvaluationErrorViewModels([
-      ...computeOperandErrors(left),
-      ...vm.errors,
-      ...computeOperandErrors(right),
-      ...findArgumentIndexErrorsFromParent(vm),
-    ]),
   };
 }
+
+export const computeLineErrors = (
+  viewModel: EditorNodeViewModel
+): EvaluationError[] => {
+  if (viewModel.funcName && functionNodeNames.includes(viewModel.funcName)) {
+    const { nodeErrors } = separateChildrenErrors(viewModel.errors);
+    return nodeErrors;
+  } else {
+    return [
+      ...viewModel.errors,
+      ...viewModel.children.flatMap(computeLineErrors),
+      ...Object.values(viewModel.namedChildren).flatMap(computeLineErrors),
+    ];
+  }
+};
