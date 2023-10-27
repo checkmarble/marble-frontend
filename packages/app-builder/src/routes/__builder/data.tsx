@@ -284,7 +284,11 @@ function TableDetails({
             <Table.Header headerGroups={tableFields.getHeaderGroups()} />
             <Table.Body {...getBodyPropsFields()}>
               {rowsFields.map((row) => (
-                <Table.Row key={row.id} className="mb-4 break-all" row={row} />
+                <Table.Row
+                  key={row.id}
+                  className="mb-4 break-words"
+                  row={row}
+                />
               ))}
             </Table.Body>
           </Table.Container>
@@ -310,7 +314,7 @@ function TableDetails({
                   {rowsLinks.map((row) => (
                     <Table.Row
                       key={row.id}
-                      className="mb-4 break-all"
+                      className="mb-4 break-words"
                       row={row}
                     />
                   ))}
