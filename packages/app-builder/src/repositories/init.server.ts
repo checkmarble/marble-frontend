@@ -6,9 +6,11 @@ import { getMarbleAPIRepository } from './MarbleAPIRepository';
 import { getOrganizationRepository } from './OrganizationRepository';
 import { getScenarioRepository } from './ScenarioRepository';
 import {
-  getSessionStorageRepository,
+  getAuthStorageRepository,
+  getCsrfStorageRepository,
+  getToastStorageRepository,
   type SessionStorageRepositoryOptions,
-} from './SessionStorageRepository';
+} from './SessionStorageRepositories';
 import { getUserRepository } from './UserRepository';
 
 export function makeServerRepositories({
@@ -19,7 +21,13 @@ export function makeServerRepositories({
   getMarbleAPIClient: GetMarbleAPIClient;
 }) {
   return {
-    sessionStorageRepository: getSessionStorageRepository(
+    authStorageRepository: getAuthStorageRepository(
+      sessionStorageRepositoryOptions
+    ),
+    csrfStorageRepository: getCsrfStorageRepository(
+      sessionStorageRepositoryOptions
+    ),
+    toastStorageRepository: getToastStorageRepository(
       sessionStorageRepositoryOptions
     ),
     marbleAPIClient: getMarbleAPIRepository(getMarbleAPIClient),

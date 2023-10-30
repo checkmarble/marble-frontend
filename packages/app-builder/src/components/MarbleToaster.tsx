@@ -1,8 +1,8 @@
 import {
-  type MarbleSession,
   type ToastMessage,
   toastMessageScema,
-} from '@app-builder/models';
+  type ToastSession,
+} from '@app-builder/models/toast-session';
 import { getClientEnv } from '@app-builder/utils/environment.client';
 import { useEffect } from 'react';
 import { toast, ToastBar, Toaster } from 'react-hot-toast';
@@ -10,13 +10,13 @@ import { useTranslation } from 'react-i18next';
 import { Cross } from 'ui-icons';
 
 export function setToastMessage(
-  session: MarbleSession,
+  session: ToastSession,
   toastMessage: ToastMessage
 ) {
   session.flash('toastMessage', toastMessage);
 }
 
-export function getToastMessage(session: MarbleSession) {
+export function getToastMessage(session: ToastSession) {
   try {
     return toastMessageScema.parse(session.get('toastMessage'));
   } catch (err) {}

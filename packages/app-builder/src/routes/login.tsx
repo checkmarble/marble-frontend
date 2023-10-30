@@ -12,7 +12,7 @@ import { LanguagePicker } from './ressources/user/language';
 export async function loader({ request }: LoaderArgs) {
   const {
     authService,
-    sessionService: { getSession },
+    authSessionService: { getSession },
   } = serverServices;
   await authService.isAuthenticated(request, {
     successRedirect: '/home',

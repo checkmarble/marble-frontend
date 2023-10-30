@@ -1,5 +1,10 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { adaptAuthErrors, type User } from '@app-builder/models';
+import {
+  adaptAuthErrors,
+  type AuthData,
+  type AuthFlashData,
+  type User,
+} from '@app-builder/models';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
@@ -71,7 +76,8 @@ export function makeAuthenticationServerService(
   ) => OrganizationRepository,
   scenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository,
   dataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository,
-  sessionService: SessionService
+  authSessionService: SessionService<AuthData, AuthFlashData>,
+  csrfSessionService: SessionService
 ) {
   function getMarbleAPIClient(marbleAccessToken: string) {
     const tokenService = {
@@ -91,7 +97,8 @@ export function makeAuthenticationServerService(
       failureRedirect: string;
     }
   ) {
-    const session = await sessionService.getSession(request);
+    const authSession = await authSessionService.getSession(request);
+    const csrfSession = await csrfSessionService.getSession(request);
 
     let redirectUrl = options.failureRedirect;
 
@@ -102,7 +109,7 @@ export function makeAuthenticationServerService(
           idToken: z.string(),
         })
       );
-      await verifyAuthenticityToken(request, session);
+      await verifyAuthenticityToken(request, csrfSession);
 
       const marbleToken = await marbleApi.postToken(
         {
@@ -114,19 +121,21 @@ export function makeAuthenticationServerService(
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
       const user = await userRepository(apiClient).getCurrentUser();
 
-      session.set('authToken', marbleToken);
-      session.set('user', user);
+      authSession.set('authToken', marbleToken);
+      authSession.set('user', user);
       redirectUrl = options.successRedirect;
     } catch (error) {
       logger.error(error);
 
-      session.flash('authError', { message: adaptAuthErrors(error) });
+      authSession.flash('authError', { message: adaptAuthErrors(error) });
 
       redirectUrl = options.failureRedirect;
     }
 
     throw redirect(redirectUrl, {
-      headers: { 'Set-Cookie': await sessionService.commitSession(session) },
+      headers: {
+        'Set-Cookie': await authSessionService.commitSession(authSession),
+      },
     });
   }
 
@@ -137,7 +146,8 @@ export function makeAuthenticationServerService(
       failureRedirect: string;
     }
   ) {
-    const session = await sessionService.getSession(request);
+    const authSession = await authSessionService.getSession(request);
+    const csrfSession = await csrfSessionService.getSession(request);
 
     try {
       const { idToken } = await parseForm(
@@ -146,7 +156,7 @@ export function makeAuthenticationServerService(
           idToken: z.string(),
         })
       );
-      await verifyAuthenticityToken(request, session);
+      await verifyAuthenticityToken(request, csrfSession);
 
       const marbleToken = await marbleApi.postToken(
         {
@@ -158,13 +168,13 @@ export function makeAuthenticationServerService(
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
       const user = await userRepository(apiClient).getCurrentUser();
 
-      session.set('authToken', marbleToken);
-      session.set('user', user);
+      authSession.set('authToken', marbleToken);
+      authSession.set('user', user);
 
       if (options?.successRedirect) {
         throw redirect(options.successRedirect, {
           headers: {
-            'Set-Cookie': await sessionService.commitSession(session),
+            'Set-Cookie': await authSessionService.commitSession(authSession),
           },
         });
       }
@@ -172,14 +182,12 @@ export function makeAuthenticationServerService(
         {},
         {
           headers: {
-            'Set-Cookie': await sessionService.commitSession(session),
+            'Set-Cookie': await authSessionService.commitSession(authSession),
           },
         }
       );
     } catch (error) {
       logger.error(error);
-
-      session.flash('authError', { message: adaptAuthErrors(error) });
 
       throw redirect(options.failureRedirect);
     }
@@ -209,10 +217,10 @@ export function makeAuthenticationServerService(
       | { successRedirect?: never; failureRedirect: string }
       | { successRedirect: string; failureRedirect: string } = {}
   ): Promise<AuthenticatedInfo | null> {
-    const session = await sessionService.getSession(request);
+    const authSession = await authSessionService.getSession(request);
 
-    const marbleToken = session.get('authToken');
-    const user = session.get('user');
+    const marbleToken = authSession.get('authToken');
+    const user = authSession.get('user');
     if (
       !marbleToken ||
       marbleToken.expires_at < new Date().toISOString() ||
@@ -240,11 +248,11 @@ export function makeAuthenticationServerService(
     request: Request,
     options: { redirectTo: string }
   ): Promise<never> {
-    const session = await sessionService.getSession(request);
+    const authSession = await authSessionService.getSession(request);
 
     throw redirect(options.redirectTo, {
       headers: {
-        'Set-Cookie': await sessionService.destroySession(session),
+        'Set-Cookie': await authSessionService.destroySession(authSession),
       },
     });
   }

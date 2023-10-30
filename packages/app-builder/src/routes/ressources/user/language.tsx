@@ -15,14 +15,12 @@ const formSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  const {
-    i18nextService,
-    sessionService: { getSession, commitSession },
-  } = serverServices;
+  const { i18nextService, authSessionService, toastSessionService } =
+    serverServices;
 
-  const session = await getSession(request);
   try {
     const { preferredLanguage } = await parseForm(request, formSchema);
+    const authSession = await authSessionService.getSession(request);
 
     // const user = await authenticator.isAuthenticated(request);
     // if (user)
@@ -33,14 +31,17 @@ export async function action({ request }: ActionArgs) {
     //     },
     //   });
 
-    i18nextService.setLanguage(session, preferredLanguage);
+    i18nextService.setLanguage(authSession, preferredLanguage);
 
     return redirectBack(request, {
       fallback: '/home',
-      headers: { 'Set-Cookie': await commitSession(session) },
+      headers: {
+        'Set-Cookie': await authSessionService.commitSession(authSession),
+      },
     });
   } catch (error) {
-    setToastMessage(session, {
+    const toastSession = await toastSessionService.getSession(request);
+    setToastMessage(toastSession, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
@@ -49,7 +50,11 @@ export async function action({ request }: ActionArgs) {
       {
         success: false as const,
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } }
+      {
+        headers: {
+          'Set-Cookie': await toastSessionService.commitSession(toastSession),
+        },
+      }
     );
   }
 }

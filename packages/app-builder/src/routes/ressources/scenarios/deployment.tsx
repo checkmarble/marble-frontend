@@ -106,7 +106,7 @@ export async function action({ request }: ActionArgs) {
       values: parsedForm.data,
     });
   } catch (error) {
-    const { getSession, commitSession } = serverServices.sessionService;
+    const { getSession, commitSession } = serverServices.toastSessionService;
     const session = await getSession(request);
 
     if (isStatusBadRequestHttpError(error)) {

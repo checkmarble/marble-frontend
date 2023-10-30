@@ -98,7 +98,7 @@ export async function action({ request, params }: ActionArgs) {
       error: parsedForm.error.format(),
     });
   }
-  const { getSession, commitSession } = serverServices.sessionService;
+  const { getSession, commitSession } = serverServices.toastSessionService;
   const session = await getSession(request);
 
   try {
