@@ -27,6 +27,7 @@ const operatorFunctions = [
   '/',
   'IsInList',
   'IsNotInList',
+  'StringContains',
 ] as const;
 type OperatorFunctions = (typeof operatorFunctions)[number];
 
@@ -116,7 +117,8 @@ export function useGetOperatorName() {
       if (operatorName === 'IsInList') return t('scenarios:operator.is_in');
       if (operatorName === 'IsNotInList')
         return t('scenarios:operator.is_not_in');
-
+      if (operatorName === 'StringContains')
+        return t('scenarios:operator.contains');
       // eslint-disable-next-line no-restricted-properties
       if (process.env.NODE_ENV === 'development') {
         console.warn('Unhandled operator', operatorName);

@@ -41,6 +41,7 @@
   "logical_operator.or_button": "Group",
   "operator.is_in": "is in",
   "operator.is_not_in": "is not in",
+  "operator.contains": "contains",
   "false": "false",
   "true": "true",
   "rules.function.title": "function",
