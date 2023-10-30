@@ -57,6 +57,7 @@ export function OperandEditorDiscoveryResults({
         ].join('.');
       }
     }),
+    R.mapValues((value) => R.sortBy(value, (o) => o.name)),
     R.toPairs
   );
 
