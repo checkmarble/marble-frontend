@@ -5,11 +5,11 @@ import { useVisibilityChange } from '@app-builder/utils/hooks';
 import { Label } from '@radix-ui/react-label';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData, useRevalidator } from '@remix-run/react';
-import { Checkbox, Input } from '@ui-design-system';
-import { Search } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Checkbox, Input } from 'ui-design-system';
+import { Search } from 'ui-icons';
 
 export const handle = {
   i18n: [...decisionsI18n] satisfies Namespace,

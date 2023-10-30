@@ -2,9 +2,9 @@ import { navigationI18n } from '@app-builder/components/Navigation';
 import { type SortedScenarioIteration } from '@app-builder/models/scenario-iteration';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { useLocation, useNavigate } from '@remix-run/react';
-import { Select } from '@ui-design-system';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { Select } from 'ui-design-system';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,

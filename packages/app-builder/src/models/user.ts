@@ -1,4 +1,4 @@
-import { type CredentialsDto } from '@marble-api';
+import { type CredentialsDto } from 'marble-api';
 import * as R from 'remeda';
 
 export interface User {

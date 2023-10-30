@@ -15,10 +15,10 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { Button, Input, Modal } from '@ui-design-system';
 import { type PropsWithChildren, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
+import { Button, Input, Modal } from 'ui-design-system';
 
 import { ErrorMessage } from '../../ErrorMessage';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';

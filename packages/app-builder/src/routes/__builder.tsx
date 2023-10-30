@@ -8,7 +8,10 @@ import { serverServices } from '@app-builder/services/init.server';
 import * as Popover from '@radix-ui/react-popover';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Form, Outlet, useLoaderData } from '@remix-run/react';
-import { Button, ScrollArea } from '@ui-design-system';
+import clsx from 'clsx';
+import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { Button, ScrollArea } from 'ui-design-system';
 import {
   Arrow2Down,
   Decision,
@@ -18,10 +21,7 @@ import {
   Logout,
   Scenarios,
   World,
-} from '@ui-icons';
-import clsx from 'clsx';
-import { type Namespace } from 'i18next';
-import { useTranslation } from 'react-i18next';
+} from 'ui-icons';
 
 import { getRoute } from '../utils/routes';
 import { LanguagePicker } from './ressources/user/language';

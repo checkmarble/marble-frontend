@@ -40,12 +40,12 @@ import { formatNumber } from '@app-builder/utils/format';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
-import { Button, Input, Tag } from '@ui-design-system';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { Button, Input, Tag } from 'ui-design-system';
 import { z } from 'zod';
 
 import { useCurrentScenario } from '../../../$scenarioId';

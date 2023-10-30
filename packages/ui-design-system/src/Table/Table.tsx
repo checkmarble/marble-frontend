@@ -8,9 +8,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Arrow2Down, Arrow2Up } from '@ui-icons';
 import clsx from 'clsx';
 import { useRef } from 'react';
+import { Arrow2Down, Arrow2Up } from 'ui-icons';
 
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 

@@ -4,10 +4,10 @@ import {
   type LabelledAst,
 } from '@app-builder/models';
 import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
-import { ArrowRight } from '@ui-icons';
 import type * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { ArrowRight } from 'ui-icons';
 
 import { Count, Group, GroupHeader, Label } from './Group';
 import { OperandDropdownMenu } from './OperandDropdownMenu';

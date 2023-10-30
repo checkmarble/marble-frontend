@@ -3,8 +3,8 @@ import {
   allAggregators,
   useGetAggregatorName,
 } from '@app-builder/services/editor';
-import { Select } from '@ui-design-system';
 import { useMemo } from 'react';
+import { Select } from 'ui-design-system';
 
 export const AggregatorSelect = ({
   value,

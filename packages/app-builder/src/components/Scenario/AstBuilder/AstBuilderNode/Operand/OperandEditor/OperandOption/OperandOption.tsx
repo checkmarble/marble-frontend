@@ -1,7 +1,7 @@
 import { type LabelledAst } from '@app-builder/models';
 import { adaptHighlightedParts } from '@app-builder/utils/search';
-import { Tip } from '@ui-icons';
 import { Fragment } from 'react';
+import { Tip } from 'ui-icons';
 
 import { OperandTooltip } from '../../OperandTooltip';
 import { getDataTypeIcon, Option } from './Option';

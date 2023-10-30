@@ -8,7 +8,7 @@ import {
   type NodeEvaluationDto,
   type ScenarioValidationDto,
   type ScenarioValidationErrorCodeDto,
-} from '@marble-api';
+} from 'marble-api';
 import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 

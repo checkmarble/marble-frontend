@@ -10,8 +10,8 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import { Switch } from '@ui-design-system';
 import { useTranslation } from 'react-i18next';
+import { Switch } from 'ui-design-system';
 
 import { AstBuilderNode } from '../AstBuilderNode';
 import { type OperandViewModel } from '../Operand';

@@ -20,10 +20,10 @@ import {
   type AstBuilder,
   getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
-import { Input } from '@ui-design-system';
-import { Search } from '@ui-icons';
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Input } from 'ui-design-system';
+import { Search } from 'ui-icons';
 
 import {
   adaptAggregationViewModel,

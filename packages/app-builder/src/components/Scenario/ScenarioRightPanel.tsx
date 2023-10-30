@@ -1,10 +1,10 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type DialogTriggerProps } from '@radix-ui/react-dialog';
-import { assertNever } from '@typescript-utils';
-import { Function } from '@ui-icons';
 import { type ParseKeys } from 'i18next';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
+import { assertNever } from 'typescript-utils';
+import { Function } from 'ui-icons';
 
 import { createRightPanel, type RightPanelRootProps } from '../RightPanel';
 import { scenarioI18n } from './scenario-i18n';

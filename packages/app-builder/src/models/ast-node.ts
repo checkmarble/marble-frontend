@@ -1,4 +1,4 @@
-import { type NodeDto } from '@marble-api';
+import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 
 export type AstNode = {

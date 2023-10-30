@@ -3,9 +3,9 @@ import { serverServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { Select } from '@ui-design-system';
 import { useTranslation } from 'react-i18next';
 import { redirectBack } from 'remix-utils';
+import { Select } from 'ui-design-system';
 import * as z from 'zod';
 
 import { setToastMessage } from '../../../components/MarbleToaster';

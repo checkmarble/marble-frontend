@@ -1,4 +1,4 @@
-import { type FuncAttributes } from '@marble-api';
+import { type FuncAttributes } from 'marble-api';
 
 export interface AstOperator {
   name: string;

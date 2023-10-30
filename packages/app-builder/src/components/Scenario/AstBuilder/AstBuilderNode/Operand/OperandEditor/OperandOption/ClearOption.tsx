@@ -1,5 +1,5 @@
-import { RestartAlt } from '@ui-icons';
 import { useTranslation } from 'react-i18next';
+import { RestartAlt } from 'ui-icons';
 
 import { Option } from './Option';
 

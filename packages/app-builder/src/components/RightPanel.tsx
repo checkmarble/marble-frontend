@@ -1,9 +1,9 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import * as Dialog from '@radix-ui/react-dialog';
-import { noop } from '@typescript-utils';
-import { Cross } from '@ui-icons';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+import { noop } from 'typescript-utils';
+import { Cross } from 'ui-icons';
 
 export type RightPanelContext = {
   open: boolean;

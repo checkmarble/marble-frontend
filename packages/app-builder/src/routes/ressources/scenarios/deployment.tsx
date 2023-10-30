@@ -6,6 +6,8 @@ import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { Label } from '@radix-ui/react-label';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { type Namespace, type ParseKeys } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   type ButtonProps,
@@ -13,10 +15,8 @@ import {
   HiddenInputs,
   Modal,
   Tooltip,
-} from '@ui-design-system';
-import { Play, Pushtolive, Stop, Tick } from '@ui-icons';
-import { type Namespace, type ParseKeys } from 'i18next';
-import { useTranslation } from 'react-i18next';
+} from 'ui-design-system';
+import { Play, Pushtolive, Stop, Tick } from 'ui-icons';
 import * as z from 'zod';
 
 import { setToastMessage } from '../../../components/MarbleToaster';

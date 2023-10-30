@@ -1,5 +1,5 @@
 import { type EvaluationError } from '@app-builder/models';
-import { Select } from '@ui-design-system';
+import { Select } from 'ui-design-system';
 
 export const FilterOperatorSelect = ({
   value,

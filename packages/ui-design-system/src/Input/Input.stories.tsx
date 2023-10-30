@@ -1,5 +1,5 @@
 import { type Meta, type StoryFn } from '@storybook/react';
-import { Calendar, Help, Scenarios, Search } from '@ui-icons';
+import { Calendar, Help, Scenarios, Search } from 'ui-icons';
 
 import { Input } from './Input';
 import { inputBorderColor } from './Input.constants';

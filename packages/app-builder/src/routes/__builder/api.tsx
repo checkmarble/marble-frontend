@@ -3,12 +3,12 @@ import { serverServices } from '@app-builder/services/init.server';
 import { downloadBlob } from '@app-builder/utils/download-blob';
 import { json, type LinksFunction, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { Button } from '@ui-design-system';
-import { Download, Harddrive } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui-react';
 import swaggercss from 'swagger-ui-react/swagger-ui.css';
+import { Button } from 'ui-design-system';
+import { Download, Harddrive } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'api'] satisfies Namespace,

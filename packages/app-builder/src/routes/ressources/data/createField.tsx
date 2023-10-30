@@ -11,6 +11,10 @@ import { serverServices } from '@app-builder/services/init.server';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { type Namespace } from 'i18next';
+import { useEffect, useState } from 'react';
+import { Form, FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Checkbox,
@@ -18,12 +22,8 @@ import {
   Input,
   Modal,
   Select,
-} from '@ui-design-system';
-import { Plus } from '@ui-icons';
-import { type Namespace } from 'i18next';
-import { useEffect, useState } from 'react';
-import { Form, FormProvider, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+} from 'ui-design-system';
+import { Plus } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {

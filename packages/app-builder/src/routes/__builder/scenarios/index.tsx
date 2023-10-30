@@ -6,11 +6,11 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
-import { Tag } from '@ui-design-system';
-import { Scenarios } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { Tag } from 'ui-design-system';
+import { Scenarios } from 'ui-icons';
 
 export const handle = {
   i18n: ['scenarios', 'navigation'] satisfies Namespace,

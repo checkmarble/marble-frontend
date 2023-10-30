@@ -8,8 +8,8 @@ import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepos
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { getServerEnv } from '@app-builder/utils/environment.server';
 import { parseForm } from '@app-builder/utils/input-validation';
-import { marbleApi } from '@marble-api';
 import { redirect } from '@remix-run/node';
+import { marbleApi } from 'marble-api';
 import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
 

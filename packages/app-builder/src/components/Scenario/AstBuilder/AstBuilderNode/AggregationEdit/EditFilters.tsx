@@ -9,9 +9,9 @@ import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { Button } from '@ui-design-system';
-import { Plus } from '@ui-icons';
 import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
+import { Plus } from 'ui-icons';
 
 import { ErrorMessage } from '../../ErrorMessage';
 import { RemoveButton } from '../../RemoveButton';

@@ -13,8 +13,8 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import { Combobox } from '@ui-design-system';
 import { useCallback, useMemo, useState } from 'react';
+import { Combobox } from 'ui-design-system';
 
 export const TimestampField = ({
   builder,

@@ -1,5 +1,5 @@
-import { Select } from '@ui-design-system';
 import { useTranslation } from 'react-i18next';
+import { Select } from 'ui-design-system';
 
 const options = ['seconds', 'minutes', 'hours', 'days'] as const;
 export type DurationUnit = (typeof options)[number];

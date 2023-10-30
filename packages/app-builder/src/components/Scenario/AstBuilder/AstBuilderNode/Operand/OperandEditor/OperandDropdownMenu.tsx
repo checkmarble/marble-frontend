@@ -1,7 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { ScrollArea } from '@ui-design-system';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+import { ScrollArea } from 'ui-design-system';
 
 const style = {
   content:

@@ -1,5 +1,5 @@
 import { type EvaluationError } from '@app-builder/models';
-import { Select } from '@ui-design-system';
+import { Select } from 'ui-design-system';
 
 const options = ['+', '-'] as const;
 export type PlusOrMinus = (typeof options)[number];

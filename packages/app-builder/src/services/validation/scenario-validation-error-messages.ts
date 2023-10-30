@@ -1,10 +1,10 @@
 import { type EvaluationError } from '@app-builder/models';
-import { type ScenarioValidationErrorCodeDto } from '@marble-api';
-import { assertNever } from '@typescript-utils';
 import { type TFunction } from 'i18next';
+import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { assertNever } from 'typescript-utils';
 
 // Edit this type to handle contextual data for each error code
 export type EvaluationErrorViewModel =

@@ -2,11 +2,11 @@ import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { Button, HiddenInputs, Modal } from '@ui-design-system';
-import { Delete } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button, HiddenInputs, Modal } from 'ui-design-system';
+import { Delete } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {

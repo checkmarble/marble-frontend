@@ -1,4 +1,4 @@
-import { type CustomList } from '@marble-api';
+import { type CustomList } from 'marble-api';
 
 import {
   type AstNode,

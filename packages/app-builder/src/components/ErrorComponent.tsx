@@ -1,7 +1,7 @@
 import { isRouteErrorResponse, useNavigate } from '@remix-run/react';
-import { Button } from '@ui-design-system';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
 
 export const handle = {
   i18n: ['common'] satisfies Namespace,

@@ -4,12 +4,12 @@ import {
   type OutcomeProps,
 } from '@app-builder/components';
 import { formatDateTime } from '@app-builder/utils/format';
-import { type Decision } from '@marble-api';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
-import { Table, useVirtualTable } from '@ui-design-system';
 import clsx from 'clsx';
+import { type Decision } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Table, useVirtualTable } from 'ui-design-system';
 
 export function DecisionsList({
   decisions,

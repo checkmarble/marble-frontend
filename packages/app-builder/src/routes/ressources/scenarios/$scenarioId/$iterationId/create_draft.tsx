@@ -4,10 +4,10 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigate } from '@remix-run/react';
-import { Button, HiddenInputs, Modal } from '@ui-design-system';
-import { Plus } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { Button, HiddenInputs, Modal } from 'ui-design-system';
+import { Plus } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {

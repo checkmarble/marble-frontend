@@ -19,11 +19,11 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { Input, Table, useVirtualTable } from '@ui-design-system';
-import { Delete, Search } from '@ui-icons';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Input, Table, useVirtualTable } from 'ui-design-system';
+import { Delete, Search } from 'ui-icons';
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;

@@ -2,7 +2,7 @@ import {
   fetchWithAuthMiddleware,
   marbleApi,
   type TokenService,
-} from '@marble-api';
+} from 'marble-api';
 import * as R from 'remeda';
 
 type FunctionKeys<T> = {
