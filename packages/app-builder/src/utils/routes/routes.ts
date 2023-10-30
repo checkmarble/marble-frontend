@@ -30,6 +30,11 @@ export const routes = [
         "file": "routes/ressources/decisions/decision-detail.$decisionId.tsx"
       },
       {
+        "id": "routes/ressources/auth/login-with-email",
+        "path": "ressources/auth/login-with-email",
+        "file": "routes/ressources/auth/login-with-email.tsx"
+      },
+      {
         "id": "routes/ressources/scenarios/deployment",
         "path": "ressources/scenarios/deployment",
         "file": "routes/ressources/scenarios/deployment.tsx"
@@ -80,6 +85,11 @@ export const routes = [
         "file": "routes/ressources/user/language.tsx"
       },
       {
+        "id": "routes/ressources/auth/refresh",
+        "path": "ressources/auth/refresh",
+        "file": "routes/ressources/auth/refresh.tsx"
+      },
+      {
         "id": "routes/ressources/lists/create",
         "path": "ressources/lists/create",
         "file": "routes/ressources/lists/create.tsx"
@@ -105,6 +115,11 @@ export const routes = [
         "file": "routes/ressources/lists/edit.tsx"
       },
       {
+        "id": "routes/login-with-email",
+        "path": "login-with-email",
+        "file": "routes/login-with-email.tsx"
+      },
+      {
         "id": "routes/healthcheck",
         "path": "healthcheck",
         "file": "routes/healthcheck.ts"
@@ -123,11 +138,6 @@ export const routes = [
                 "path": "i/:iterationId",
                 "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId.tsx",
                 "children": [
-                  {
-                    "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit-view.rules.$ruleId",
-                    "path": "edit-view/rules/:ruleId",
-                    "file": "routes/__builder/scenarios/$scenarioId/i/$iterationId/edit-view.rules.$ruleId.tsx"
-                  },
                   {
                     "id": "routes/__builder/scenarios/$scenarioId/i/$iterationId/rules.$ruleId",
                     "path": "rules/:ruleId",
@@ -228,11 +238,6 @@ export const routes = [
             "file": "routes/__builder/$.tsx"
           }
         ]
-      },
-      {
-        "id": "routes/sentry",
-        "path": "sentry",
-        "file": "routes/sentry.tsx"
       },
       {
         "id": "routes/index",

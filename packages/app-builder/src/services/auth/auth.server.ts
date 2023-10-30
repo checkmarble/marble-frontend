@@ -8,7 +8,7 @@ import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepos
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { getServerEnv } from '@app-builder/utils/environment.server';
 import { parseForm } from '@app-builder/utils/input-validation';
-import { redirect } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { marbleApi } from 'marble-api';
 import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
@@ -28,6 +28,14 @@ interface AuthenticatedInfo {
 
 export interface AuthenticationServerService {
   authenticate(
+    request: Request,
+    options: {
+      successRedirect: string;
+      failureRedirect: string;
+    }
+  ): Promise<void>;
+
+  refresh(
     request: Request,
     options: {
       successRedirect: string;
@@ -122,6 +130,61 @@ export function makeAuthenticationServerService(
     });
   }
 
+  async function refresh(
+    request: Request,
+    options: {
+      successRedirect?: string;
+      failureRedirect: string;
+    }
+  ) {
+    const session = await sessionService.getSession(request);
+
+    try {
+      const { idToken } = await parseForm(
+        request,
+        z.object({
+          idToken: z.string(),
+        })
+      );
+      await verifyAuthenticityToken(request, session);
+
+      const marbleToken = await marbleApi.postToken(
+        {
+          authorization: `Bearer ${idToken}`,
+        },
+        { baseUrl: getServerEnv('MARBLE_API_DOMAIN') }
+      );
+
+      const apiClient = getMarbleAPIClient(marbleToken.access_token);
+      const user = await userRepository(apiClient).getCurrentUser();
+
+      session.set('authToken', marbleToken);
+      session.set('user', user);
+
+      if (options?.successRedirect) {
+        throw redirect(options.successRedirect, {
+          headers: {
+            'Set-Cookie': await sessionService.commitSession(session),
+          },
+        });
+      }
+      return json(
+        {},
+        {
+          headers: {
+            'Set-Cookie': await sessionService.commitSession(session),
+          },
+        }
+      );
+    } catch (error) {
+      logger.error(error);
+
+      session.flash('authError', { message: adaptAuthErrors(error) });
+
+      throw redirect(options.failureRedirect);
+    }
+  }
+
   async function isAuthenticated(
     request: Request,
     options?: { successRedirect?: never; failureRedirect?: never }
@@ -188,6 +251,7 @@ export function makeAuthenticationServerService(
 
   return {
     authenticate,
+    refresh,
     isAuthenticated,
     logout,
   };
