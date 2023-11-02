@@ -203,7 +203,7 @@ export default function Trigger() {
     );
   };
 
-  const isLive = scenarioIteration.version !== null;
+  const isLive = scenarioIteration.id == scenario.liveVersionId;
   const pendingExecutions = scheduledExecutions.filter((execution) =>
     ['pending', 'processing'].includes(execution.status)
   );
