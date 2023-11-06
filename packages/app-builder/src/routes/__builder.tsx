@@ -21,6 +21,7 @@ import {
   LogoStandard,
   Logout,
   Scenarios,
+  ScheduledExecution,
   World,
 } from 'ui-icons';
 
@@ -40,6 +41,11 @@ const LINKS: SidebarLinkProps[] = [
     labelTKey: 'navigation:decisions',
     to: getRoute('/decisions'),
     Icon: Decision,
+  },
+  {
+    labelTKey: 'navigation:scheduledExecutions',
+    to: getRoute('/scheduled-executions'),
+    Icon: ScheduledExecution,
   },
 ];
 

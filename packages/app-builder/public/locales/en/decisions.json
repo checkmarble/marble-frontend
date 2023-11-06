@@ -6,7 +6,7 @@
   "trigger_object.type": "Trigger object",
   "score": "Score",
   "outcome": "Outcome",
-  "created_at": "Created at",
+  "created_at": "Date",
   "outcome.approve": "Approve",
   "outcome.review": "Review",
   "outcome.decline": "Decline",
