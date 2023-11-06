@@ -56,15 +56,15 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const {
-    i18nextService,
-    sessionService: { getSession, commitSession },
-  } = serverServices;
+  const { i18nextService, toastSessionService, csrfSessionService } =
+    serverServices;
   const locale = await i18nextService.getLocale(request);
 
-  const session = await getSession(request);
-  const toastMessage = getToastMessage(session);
-  const csrf = createAuthenticityToken(session);
+  const toastSession = await toastSessionService.getSession(request);
+  const csrfSession = await csrfSessionService.getSession(request);
+
+  const toastMessage = getToastMessage(toastSession);
+  const csrf = createAuthenticityToken(csrfSession);
 
   const ENV = getClientEnvVars();
 
@@ -76,9 +76,10 @@ export const loader = async ({ request }: LoaderArgs) => {
       toastMessage,
     },
     {
-      headers: {
-        'Set-Cookie': await commitSession(session),
-      },
+      headers: [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+        ['Set-Cookie', await csrfSessionService.commitSession(csrfSession)],
+      ],
     }
   );
 };

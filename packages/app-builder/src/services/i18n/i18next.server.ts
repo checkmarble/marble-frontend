@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 
-import { type MarbleSession } from '@app-builder/models';
-import { type SessionStorageRepository } from '@app-builder/repositories/SessionStorageRepository';
+import { type AuthSession } from '@app-builder/models';
+import { type AuthStorageRepository } from '@app-builder/repositories/SessionStorageRepositories/AuthStorageRepository';
 import { type EntryContext } from '@remix-run/node';
 import { createInstance, type InitOptions, type Namespace } from 'i18next';
 import Backend from 'i18next-fs-backend';
@@ -11,13 +11,13 @@ import { RemixI18Next } from 'remix-i18next';
 import { i18nConfig } from './i18n-config';
 
 export function makeI18nextServerService({
-  sessionStorage,
-}: SessionStorageRepository) {
+  authStorage,
+}: AuthStorageRepository) {
   const remixI18next = new RemixI18Next({
     detection: {
       supportedLanguages: i18nConfig.supportedLngs,
       fallbackLanguage: i18nConfig.fallbackLng,
-      sessionStorage,
+      sessionStorage: authStorage,
     },
     // This is the configuration for i18next used
     // when translating messages server-side only
@@ -61,7 +61,7 @@ export function makeI18nextServerService({
     return instance;
   }
 
-  function setLanguage(session: MarbleSession, language: string) {
+  function setLanguage(session: AuthSession, language: string) {
     session.set('lng', language);
   }
 

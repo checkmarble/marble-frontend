@@ -13,7 +13,7 @@ export const handle = {
 export async function loader({ request, params }: LoaderArgs) {
   const {
     authService,
-    sessionService: { getSession, commitSession },
+    toastSessionService: { getSession, commitSession },
   } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',

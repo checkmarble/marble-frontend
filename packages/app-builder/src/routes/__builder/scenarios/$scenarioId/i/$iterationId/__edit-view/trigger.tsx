@@ -90,7 +90,7 @@ export async function loader({ request, params }: LoaderArgs) {
 export async function action({ request, params }: ActionArgs) {
   const {
     authService,
-    sessionService: { getSession, commitSession },
+    toastSessionService: { getSession, commitSession },
   } = serverServices;
   const session = await getSession(request);
   const { apiClient } = await authService.isAuthenticated(request, {

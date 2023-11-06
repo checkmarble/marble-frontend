@@ -1,5 +1,10 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { adaptAuthErrors, type User } from '@app-builder/models';
+import {
+  adaptAuthErrors,
+  type AuthData,
+  type AuthFlashData,
+  type User,
+} from '@app-builder/models';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
@@ -8,7 +13,7 @@ import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepos
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { getServerEnv } from '@app-builder/utils/environment.server';
 import { parseForm } from '@app-builder/utils/input-validation';
-import { redirect } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { marbleApi } from 'marble-api';
 import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
@@ -28,6 +33,14 @@ interface AuthenticatedInfo {
 
 export interface AuthenticationServerService {
   authenticate(
+    request: Request,
+    options: {
+      successRedirect: string;
+      failureRedirect: string;
+    }
+  ): Promise<void>;
+
+  refresh(
     request: Request,
     options: {
       successRedirect: string;
@@ -63,7 +76,8 @@ export function makeAuthenticationServerService(
   ) => OrganizationRepository,
   scenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository,
   dataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository,
-  sessionService: SessionService
+  authSessionService: SessionService<AuthData, AuthFlashData>,
+  csrfSessionService: SessionService
 ) {
   function getMarbleAPIClient(marbleAccessToken: string) {
     const tokenService = {
@@ -83,7 +97,8 @@ export function makeAuthenticationServerService(
       failureRedirect: string;
     }
   ) {
-    const session = await sessionService.getSession(request);
+    const authSession = await authSessionService.getSession(request);
+    const csrfSession = await csrfSessionService.getSession(request);
 
     let redirectUrl = options.failureRedirect;
 
@@ -94,7 +109,7 @@ export function makeAuthenticationServerService(
           idToken: z.string(),
         })
       );
-      await verifyAuthenticityToken(request, session);
+      await verifyAuthenticityToken(request, csrfSession);
 
       const marbleToken = await marbleApi.postToken(
         {
@@ -106,20 +121,76 @@ export function makeAuthenticationServerService(
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
       const user = await userRepository(apiClient).getCurrentUser();
 
-      session.set('authToken', marbleToken);
-      session.set('user', user);
+      authSession.set('authToken', marbleToken);
+      authSession.set('user', user);
       redirectUrl = options.successRedirect;
     } catch (error) {
       logger.error(error);
 
-      session.flash('authError', { message: adaptAuthErrors(error) });
+      authSession.flash('authError', { message: adaptAuthErrors(error) });
 
       redirectUrl = options.failureRedirect;
     }
 
     throw redirect(redirectUrl, {
-      headers: { 'Set-Cookie': await sessionService.commitSession(session) },
+      headers: {
+        'Set-Cookie': await authSessionService.commitSession(authSession),
+      },
     });
+  }
+
+  async function refresh(
+    request: Request,
+    options: {
+      successRedirect?: string;
+      failureRedirect: string;
+    }
+  ) {
+    const authSession = await authSessionService.getSession(request);
+    const csrfSession = await csrfSessionService.getSession(request);
+
+    try {
+      const { idToken } = await parseForm(
+        request,
+        z.object({
+          idToken: z.string(),
+        })
+      );
+      await verifyAuthenticityToken(request, csrfSession);
+
+      const marbleToken = await marbleApi.postToken(
+        {
+          authorization: `Bearer ${idToken}`,
+        },
+        { baseUrl: getServerEnv('MARBLE_API_DOMAIN') }
+      );
+
+      const apiClient = getMarbleAPIClient(marbleToken.access_token);
+      const user = await userRepository(apiClient).getCurrentUser();
+
+      authSession.set('authToken', marbleToken);
+      authSession.set('user', user);
+
+      if (options?.successRedirect) {
+        throw redirect(options.successRedirect, {
+          headers: {
+            'Set-Cookie': await authSessionService.commitSession(authSession),
+          },
+        });
+      }
+      return json(
+        {},
+        {
+          headers: {
+            'Set-Cookie': await authSessionService.commitSession(authSession),
+          },
+        }
+      );
+    } catch (error) {
+      logger.error(error);
+
+      throw redirect(options.failureRedirect);
+    }
   }
 
   async function isAuthenticated(
@@ -146,10 +217,10 @@ export function makeAuthenticationServerService(
       | { successRedirect?: never; failureRedirect: string }
       | { successRedirect: string; failureRedirect: string } = {}
   ): Promise<AuthenticatedInfo | null> {
-    const session = await sessionService.getSession(request);
+    const authSession = await authSessionService.getSession(request);
 
-    const marbleToken = session.get('authToken');
-    const user = session.get('user');
+    const marbleToken = authSession.get('authToken');
+    const user = authSession.get('user');
     if (
       !marbleToken ||
       marbleToken.expires_at < new Date().toISOString() ||
@@ -177,17 +248,18 @@ export function makeAuthenticationServerService(
     request: Request,
     options: { redirectTo: string }
   ): Promise<never> {
-    const session = await sessionService.getSession(request);
+    const authSession = await authSessionService.getSession(request);
 
     throw redirect(options.redirectTo, {
       headers: {
-        'Set-Cookie': await sessionService.destroySession(session),
+        'Set-Cookie': await authSessionService.destroySession(authSession),
       },
     });
   }
 
   return {
     authenticate,
+    refresh,
     isAuthenticated,
     logout,
   };

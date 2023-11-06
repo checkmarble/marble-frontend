@@ -62,7 +62,7 @@ export async function action({ request }: ActionArgs) {
     });
   } catch (error) {
     if (isStatusConflictHttpError(error)) {
-      const { getSession, commitSession } = serverServices.sessionService;
+      const { getSession, commitSession } = serverServices.toastSessionService;
       const session = await getSession(request);
       setToastMessage(session, {
         type: 'error',

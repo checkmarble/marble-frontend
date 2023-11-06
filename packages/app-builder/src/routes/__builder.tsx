@@ -24,6 +24,7 @@ import {
 } from 'ui-icons';
 
 import { getRoute } from '../utils/routes';
+import { useRefreshToken } from './ressources/auth/refresh';
 import { LanguagePicker } from './ressources/user/language';
 
 const LINKS: SidebarLinkProps[] = [
@@ -62,6 +63,10 @@ export const handle = {
 export default function Builder() {
   const { t } = useTranslation(handle.i18n);
   const { user } = useLoaderData<typeof loader>();
+
+  // Refresh is done in the client because it needs to be done in the browser
+  // This is only added here to prevent "auto login" on /login pages... (/logout do not trigger logout from Firebase)
+  useRefreshToken();
 
   return (
     <PermissionsProvider userPermissions={user.permissions}>

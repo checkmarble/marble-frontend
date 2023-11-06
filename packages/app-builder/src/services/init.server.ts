@@ -10,11 +10,19 @@ import { makeSessionService } from './auth/session.server';
 import { makeI18nextServerService } from './i18n/i18next.server';
 
 function makeServerServices(repositories: ServerRepositories) {
-  const sessionService = makeSessionService(
-    repositories.sessionStorageRepository
+  const csrfSessionService = makeSessionService(
+    repositories.csrfStorageRepository.csrfStorage
+  );
+  const authSessionService = makeSessionService(
+    repositories.authStorageRepository.authStorage
+  );
+  const toastSessionService = makeSessionService(
+    repositories.toastStorageRepository.toastStorage
   );
   return {
-    sessionService,
+    authSessionService,
+    csrfSessionService,
+    toastSessionService,
     authService: makeAuthenticationServerService(
       repositories.marbleAPIClient,
       repositories.userRepository,
@@ -22,10 +30,11 @@ function makeServerServices(repositories: ServerRepositories) {
       repositories.organizationRepository,
       repositories.scenarioRepository,
       repositories.dataModelRepository,
-      sessionService
+      authSessionService,
+      csrfSessionService
     ),
     i18nextService: makeI18nextServerService(
-      repositories.sessionStorageRepository
+      repositories.authStorageRepository
     ),
   };
 }

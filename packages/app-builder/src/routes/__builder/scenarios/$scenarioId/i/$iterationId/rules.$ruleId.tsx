@@ -91,7 +91,7 @@ type EditRuleFormValues = z.infer<typeof editRuleFormSchema>;
 export async function action({ request, params }: ActionArgs) {
   const {
     authService,
-    sessionService: { getSession, commitSession },
+    toastSessionService: { getSession, commitSession },
   } = serverServices;
   const { formValues: formValuesRaw, astNode } = (await request.json()) as {
     formValues: z.infer<typeof editRuleFormSchema>;
