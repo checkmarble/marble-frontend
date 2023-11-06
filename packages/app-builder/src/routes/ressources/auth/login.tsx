@@ -51,6 +51,7 @@ function ClientSignInWithGoogle() {
     if (!result) return;
     const { idToken, csrf } = result;
     if (!idToken) return;
+    window.analytics.track('Logged In', { method: 'Google SSO' });
     fetcher.submit(
       { idToken, csrf },
       { method: 'POST', action: '/ressources/auth/login' }

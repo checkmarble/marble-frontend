@@ -38,7 +38,8 @@ type ServerPublicEnvVarName =
   | 'NODE_ENV'
   | 'SENTRY_DSN'
   | 'SENTRY_ENVIRONMENT'
-  | 'SESSION_MAX_AGE';
+  | 'SESSION_MAX_AGE'
+  | 'SEGMENT_WRITE_KEY';
 
 /**
  * List of all secret env vars to defined on each deployed environments
@@ -90,5 +91,6 @@ export function getClientEnvVars(): ClientEnvVars {
     MARBLE_APP_DOMAIN: getServerEnv('MARBLE_APP_DOMAIN'),
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
+    SEGMENT_WRITE_KEY: getServerEnv('SEGMENT_WRITE_KEY'),
   };
 }

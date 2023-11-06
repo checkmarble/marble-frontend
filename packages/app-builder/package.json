@@ -22,6 +22,7 @@
     "@types/qs": "^6.9.8",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
+    "@types/segment-analytics": "^0.0.36",
     "@types/swagger-ui-react": "^4.18.1",
     "dotenv-cli": "^7.3.0",
     "eslint-plugin-tailwindcss": "^3.13.0",
