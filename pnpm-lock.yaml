@@ -243,6 +243,9 @@ importers:
       '@types/react-dom':
         specifier: 18.2.6
         version: 18.2.6
+      '@types/segment-analytics':
+        specifier: ^0.0.36
+        version: 0.0.36
       '@types/swagger-ui-react':
         specifier: ^4.18.1
         version: 4.18.1
@@ -6852,6 +6855,10 @@ packages:
 
   /@types/scheduler@0.16.4:
     resolution: {integrity: sha512-2L9ifAGl7wmXwP4v3pN4p2FLhD0O1qsJpvKmNin5VA8+UvNVb447UDaAEV6UdrkA+m/Xs58U1RFps44x6TFsVQ==}
+
+  /@types/segment-analytics@0.0.36:
+    resolution: {integrity: sha512-bgFwos+wRzH44Oja4NhaSg3FzTfVY5+I20fSWQFLT+YB5+ksB+GfI4SNZf5ElJJA+lNt323t64cABPMIa7wJ5w==}
+    dev: true
 
   /@types/semver@7.5.3:
     resolution: {integrity: sha512-OxepLK9EuNEIPxWNME+C6WwbRAOOI2o2BaQEGzz5Lu2e4Z5eDnEo+/aVEDMIXywoJitJ7xWd641wrGLZdtwRyw==}
