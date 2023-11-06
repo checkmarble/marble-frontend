@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 import { Cross, RestartAlt, Tick } from 'ui-icons';
 
-import { decisionsI18n } from './decisions-i18n';
+import { scheduledExecutionI18n } from './scheduledExecution-i18n';
 import { ScheduledExecutionDetails } from './ScheduledExecutionDetails';
 
 export function ScheduledExecutionsList({
@@ -19,7 +19,7 @@ export function ScheduledExecutionsList({
   const {
     t,
     i18n: { language },
-  } = useTranslation(decisionsI18n);
+  } = useTranslation(scheduledExecutionI18n);
 
   const columns = useMemo<ColumnDef<ScheduledExecution, string>[]>(
     () => [

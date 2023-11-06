@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
 import { Button } from 'ui-design-system';
 
-import { decisionsI18n } from './decisions-i18n';
+import { scheduledExecutionI18n } from './scheduledExecution-i18n';
 
 export function ScheduledExecutionDetails({
   scheduleExecutionId,
@@ -42,8 +42,7 @@ function ScheduledExecutionDetailsInternal({
       },
     }
   );
-
-  const { t } = useTranslation(decisionsI18n);
+  const { t } = useTranslation(scheduledExecutionI18n);
 
   return (
     <Button

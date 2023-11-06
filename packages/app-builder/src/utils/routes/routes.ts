@@ -179,6 +179,11 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/__builder/scheduled-executions",
+            "path": "scheduled-executions",
+            "file": "routes/__builder/scheduled-executions.tsx"
+          },
+          {
             "id": "routes/__builder/upload/$objectType",
             "path": "upload/:objectType",
             "file": "routes/__builder/upload/$objectType.tsx"
@@ -203,24 +208,7 @@ export const routes = [
           {
             "id": "routes/__builder/decisions",
             "path": "decisions",
-            "file": "routes/__builder/decisions.tsx",
-            "children": [
-              {
-                "id": "routes/__builder/decisions/scheduled-executions",
-                "path": "scheduled-executions",
-                "file": "routes/__builder/decisions/scheduled-executions.tsx"
-              },
-              {
-                "id": "routes/__builder/decisions/last-decisions",
-                "path": "last-decisions",
-                "file": "routes/__builder/decisions/last-decisions.tsx"
-              },
-              {
-                "id": "routes/__builder/decisions/index",
-                "index": true,
-                "file": "routes/__builder/decisions/index.tsx"
-              }
-            ]
+            "file": "routes/__builder/decisions.tsx"
           },
           {
             "id": "routes/__builder/data",
