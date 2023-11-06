@@ -45,6 +45,7 @@ export { default as RestartAlt } from './RestartAlt';
 export { default as Rules } from './Rules';
 export { default as Scenarios } from './Scenarios';
 export { default as Schedule } from './Schedule';
+export { default as ScheduledExecution } from './ScheduledExecution';
 export { default as Search } from './Search';
 export { default as Settings } from './Settings';
 export { default as SmallarrowDown } from './SmallarrowDown';

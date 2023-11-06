@@ -292,7 +292,7 @@ function ManualTriggerButton({
               Link: (
                 // eslint-disable-next-line jsx-a11y/anchor-has-content
                 <Link
-                  to={getRoute('/decisions/scheduled-executions')}
+                  to={getRoute('/scheduled-executions')}
                   className="text-purple-100"
                 />
               ),
