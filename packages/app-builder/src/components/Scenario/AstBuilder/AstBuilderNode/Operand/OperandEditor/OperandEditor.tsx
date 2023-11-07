@@ -36,11 +36,11 @@ import {
   useEditTimeAdd,
 } from '../../TimeAddEdit/Modal';
 import { type OperandViewModel } from '../Operand';
-import { OperandViewer } from '../OperandViewer';
 import { OperandDropdownMenu } from './OperandDropdownMenu';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
 import { OperandEditorSearchResults } from './OperandEditorSearchResults';
 import { ClearOption, EditOption } from './OperandOption';
+import { OperandTrigger } from './OperandTrigger';
 
 export function getEnumOptionsFromNeighbour({
   viewModel,
@@ -87,14 +87,12 @@ export function OperandEditor({
   operandViewModel,
   labelledAst,
   onSave,
-  viewOnly,
   ariaLabel,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
   labelledAst: LabelledAst;
   onSave: (astNode: AstNode) => void;
-  viewOnly?: boolean;
   ariaLabel?: string;
 }) {
   const [open, onOpenChange] = useState<boolean>(false);
@@ -102,12 +100,8 @@ export function OperandEditor({
   return (
     <div className="flex flex-col gap-1">
       <OperandDropdownMenu.Root modal open={open} onOpenChange={onOpenChange}>
-        <OperandDropdownMenu.Trigger
-          disabled={viewOnly}
-          asChild
-          aria-label={ariaLabel}
-        >
-          <OperandViewer
+        <OperandDropdownMenu.Trigger asChild aria-label={ariaLabel}>
+          <OperandTrigger
             borderColor={getBorderColor(operandViewModel)}
             operandLabelledAst={labelledAst}
           />

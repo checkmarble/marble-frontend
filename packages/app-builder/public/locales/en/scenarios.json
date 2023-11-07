@@ -146,6 +146,7 @@
   "aggregator.max": "Max",
   "aggregator.min": "Min",
   "aggregator.sum": "Sum",
+  "view_aggregation.tooltip": "Click to view details",
   "edit_operand.search.placeholder": "Select or create an operand",
   "edit_operand.clear_operand": "Clear operand",
   "edit_operand.result_one": "Result",

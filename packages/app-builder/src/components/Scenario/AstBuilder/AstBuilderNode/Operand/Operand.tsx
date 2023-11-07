@@ -8,6 +8,7 @@ import {
   isPayload,
   isTimeAdd,
   isUndefinedAstNode,
+  type LabelledAst,
 } from '@app-builder/models';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -15,8 +16,11 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 
+import { isAggregationEditorNodeViewModel } from '../AggregationEdit';
 import { Default } from '../Default';
+import { AggregationLabel } from './AggregationLabel';
 import { getEnumOptionsFromNeighbour, OperandEditor } from './OperandEditor';
+import { OperandLabel } from './OperandLabel';
 
 export type OperandViewModel = EditorNodeViewModel;
 
@@ -68,6 +72,17 @@ export function Operand({
     );
   }
 
+  if (viewOnly) {
+    return (
+      <OperandViewer
+        ariaLabel={ariaLabel}
+        labelledAst={labelledAst}
+        operandViewModel={operandViewModel}
+        builder={builder}
+      />
+    );
+  }
+
   return (
     <OperandEditor
       ariaLabel={ariaLabel}
@@ -75,7 +90,37 @@ export function Operand({
       operandViewModel={operandViewModel}
       labelledAst={labelledAst}
       onSave={onSave}
-      viewOnly={viewOnly}
     />
   );
 }
+
+const OperandViewer = ({
+  builder,
+  labelledAst,
+  operandViewModel,
+  ariaLabel,
+}: {
+  builder: AstBuilder;
+  labelledAst: LabelledAst;
+  operandViewModel: OperandViewModel;
+  ariaLabel?: string;
+}) => {
+  if (isAggregationEditorNodeViewModel(operandViewModel)) {
+    return (
+      <AggregationLabel
+        labelledAst={labelledAst}
+        ariaLabel={ariaLabel}
+        viewModel={operandViewModel}
+        builder={builder}
+      />
+    );
+  }
+
+  return (
+    <OperandLabel
+      operandLabelledAst={labelledAst}
+      ariaLabel={ariaLabel}
+      disabled
+    />
+  );
+};
