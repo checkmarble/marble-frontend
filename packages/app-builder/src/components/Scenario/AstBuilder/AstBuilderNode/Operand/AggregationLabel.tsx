@@ -3,11 +3,9 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import clsx from 'clsx';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Tooltip } from 'ui-design-system';
-import { Tip } from 'ui-icons';
+import { Button, Modal } from 'ui-design-system';
 
 import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
 import {
@@ -15,7 +13,7 @@ import {
   type AggregationEditorNodeViewModel,
 } from '../AggregationEdit';
 import { Operand } from './Operand';
-import { TypeInfos } from './OperandLabel';
+import { OperandLabel } from './OperandLabel';
 
 export type OperandViewModel = EditorNodeViewModel;
 
@@ -39,22 +37,17 @@ export const AggregationLabel = ({
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Modal.Trigger asChild>
-        <button
-          aria-label={ariaLabel}
-          className={clsx(
-            'text-s text-grey-100 group flex flex-row items-center justify-between gap-2 font-normal transition-colors',
-            'bg-grey-02 h-fit min-h-[40px] w-fit min-w-[40px] rounded px-2'
-          )}
-        >
-          <TypeInfos operandType="Function" dataType="unknown" disabled />
-          {labelledAst.name}
-          <Tooltip.Default
-            content={<span>{t('scenarios:view_aggregation.tooltip')}</span>}
-          >
-            <Tip className="shrink-0 text-[21px] text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100" />
-          </Tooltip.Default>
-        </button>
+      <Modal.Trigger>
+        <OperandLabel
+          operandLabelledAst={labelledAst}
+          variant="view"
+          ariaLabel={ariaLabel}
+          tooltipContent={
+            <span className="text-xs">
+              {t('scenarios:view_aggregation.tooltip')}
+            </span>
+          }
+        />
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{aggregation.label}</Modal.Title>
@@ -80,7 +73,6 @@ export const AggregationLabel = ({
                     operandViewModel={filter.value}
                     builder={builder}
                     viewOnly
-                    onSave={() => console.log('oh no')}
                   />
                 </div>
               </Fragment>

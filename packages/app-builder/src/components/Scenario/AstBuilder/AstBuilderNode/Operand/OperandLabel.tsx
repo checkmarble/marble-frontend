@@ -9,18 +9,18 @@ import {
   getOperatorTypeIcon,
   getOperatorTypeTKey,
 } from './OperandEditor/OperandOption/Option';
-import { OperandTooltip } from './OperandTooltip';
+import { OperandDescription, OperandTooltip } from './OperandTooltip';
 
 export const selectBorderColor = ['grey-10', 'red-100', 'red-25'] as const;
 
 export function TypeInfos({
   operandType,
   dataType,
-  disabled,
+  className,
 }: {
   operandType: LabelledAst['operandType'];
   dataType: LabelledAst['dataType'];
-  disabled?: boolean;
+  className?: string;
 }) {
   const { t } = useTranslation('scenarios');
   const typeInfos = [
@@ -45,8 +45,7 @@ export function TypeInfos({
             key={tKey}
             className={clsx(
               'bg-grey-02 flex items-center justify-center rounded-sm p-1',
-              !!disabled && 'group-radix-state-open:bg-purple-10',
-              disabled && 'bg-grey-10'
+              className
             )}
           >
             <Icon width="16px" height="16px" aria-label={tKey && t(tKey)} />
@@ -60,35 +59,50 @@ export function TypeInfos({
 export const OperandLabel = ({
   operandLabelledAst,
   ariaLabel,
-  disabled,
+  variant,
+  tooltipContent,
 }: {
   operandLabelledAst: LabelledAst;
   ariaLabel?: string;
-  disabled?: boolean;
+  variant: 'edit' | 'view';
+  tooltipContent?: React.ReactNode;
 }) => {
   return (
     <div
       aria-label={ariaLabel}
       className={clsx(
         'text-s text-grey-100 group flex flex-row items-center justify-between gap-2 font-normal transition-colors',
-        'bg-grey-00 h-fit min-h-[40px] w-fit min-w-[40px] rounded px-2',
-        disabled && 'bg-grey-02'
+        'h-fit min-h-[40px] w-fit min-w-[40px] rounded px-2',
+        variant === 'edit' && 'bg-grey-00 group-radix-state-open:bg-purple-05',
+        variant === 'view' && 'bg-grey-02'
       )}
     >
       <TypeInfos
         operandType={operandLabelledAst.operandType}
         dataType={operandLabelledAst.dataType}
-        disabled={disabled}
+        className={clsx(
+          variant === 'edit' &&
+            'bg-grey-02  group-radix-state-open:bg-purple-10',
+          variant === 'view' && 'bg-grey-10'
+        )}
       />
       {operandLabelledAst.name}
       <OperandTooltip
-        operand={{
-          name: operandLabelledAst.name,
-          operandType: operandLabelledAst.operandType,
-          dataType: operandLabelledAst.dataType,
-          description: operandLabelledAst.description,
-          values: operandLabelledAst.values,
-        }}
+        content={
+          tooltipContent ? (
+            tooltipContent
+          ) : (
+            <OperandDescription
+              operand={{
+                name: operandLabelledAst.name,
+                operandType: operandLabelledAst.operandType,
+                dataType: operandLabelledAst.dataType,
+                description: operandLabelledAst.description,
+                values: operandLabelledAst.values,
+              }}
+            />
+          )
+        }
         sideOffset={16}
         alignOffset={-16}
       >
