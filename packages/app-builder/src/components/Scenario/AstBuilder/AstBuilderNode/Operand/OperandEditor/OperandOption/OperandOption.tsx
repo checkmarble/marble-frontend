@@ -3,7 +3,7 @@ import { adaptHighlightedParts } from '@app-builder/utils/search';
 import { Fragment } from 'react';
 import { Tip } from 'ui-icons';
 
-import { OperandTooltip } from '../../OperandTooltip';
+import { OperandDescription, OperandTooltip } from '../../OperandTooltip';
 import { getDataTypeIcon, Option } from './Option';
 
 export function OperandOption({
@@ -39,13 +39,17 @@ export function OperandOption({
         )}
       </Option.Value>
       <OperandTooltip
-        operand={{
-          name: option.name,
-          operandType: option.operandType,
-          dataType: option.dataType,
-          description: option.description,
-          values: option.values,
-        }}
+        content={
+          <OperandDescription
+            operand={{
+              name: option.name,
+              operandType: option.operandType,
+              dataType: option.dataType,
+              description: option.description,
+              values: option.values,
+            }}
+          />
+        }
         sideOffset={24}
         alignOffset={-8}
       >

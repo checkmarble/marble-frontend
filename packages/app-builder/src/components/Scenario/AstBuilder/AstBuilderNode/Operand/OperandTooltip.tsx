@@ -1,6 +1,6 @@
 import { type LabelledAst } from '@app-builder/models';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -13,14 +13,8 @@ import {
 const MAX_ENUM_VALUES = 50;
 
 interface OperandTooltipProps {
-  operand: {
-    name: string;
-    operandType: LabelledAst['operandType'];
-    dataType: LabelledAst['dataType'];
-    description?: string;
-    values?: string[];
-  };
   children: React.ReactNode;
+  content: React.ReactNode;
   side?: Tooltip.TooltipContentProps['side'];
   align?: Tooltip.TooltipContentProps['align'];
   sideOffset?: Tooltip.TooltipContentProps['sideOffset'];
@@ -28,35 +22,13 @@ interface OperandTooltipProps {
 }
 
 export function OperandTooltip({
-  operand,
   children,
+  content,
   side = 'right',
   align = 'start',
   sideOffset,
   alignOffset,
 }: OperandTooltipProps) {
-  const { t } = useTranslation(['scenarios']);
-  const typeInfos = [
-    {
-      Icon: getOperatorTypeIcon(operand.operandType),
-      tKey: getOperatorTypeTKey(operand.operandType),
-    },
-    {
-      Icon: getDataTypeIcon(operand.dataType),
-      tKey: getDataTypeTKey(operand.dataType),
-    },
-  ];
-  const values = useMemo(() => {
-    if (!operand.values) return null;
-    const sorted = [...operand.values].sort();
-    if (sorted.length > MAX_ENUM_VALUES) {
-      const sliced = sorted.slice(0, MAX_ENUM_VALUES);
-      sliced.push('...');
-      return sliced;
-    }
-    return sorted;
-  }, [operand.values]);
-
   return (
     <Tooltip.Root delayDuration={0}>
       <Tooltip.Trigger tabIndex={-1} asChild>
@@ -70,54 +42,89 @@ export function OperandTooltip({
           alignOffset={alignOffset}
           className="bg-grey-00 border-grey-10 flex max-h-[400px] max-w-[300px] overflow-y-auto overflow-x-hidden rounded border shadow-md"
         >
-          <div className="flex flex-col gap-2 p-4">
-            <div className="flex flex-col gap-1">
-              <TypeInfos typeInfos={typeInfos} />
-              <p className="text-grey-100 text-s text-ellipsis font-normal">
-                {operand.name}
-              </p>
-            </div>
-            {operand.description && (
-              <p className="text-grey-50 text-xs font-normal first-letter:capitalize">
-                {operand.description}
-              </p>
-            )}
-            {values && values.length > 0 && (
-              <div>
-                <p className="text-grey-50 text-s">
-                  {t('scenarios:enum_options')}
-                </p>
-                <div className="px-1">
-                  {values.map((value) => {
-                    return (
-                      <p
-                        key={value}
-                        className="text-grey-50 text-xs font-normal"
-                      >
-                        {value}
-                      </p>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
+          <div className="flex flex-col gap-2 p-4">{content}</div>
         </Tooltip.Content>
       </Tooltip.Portal>
     </Tooltip.Root>
   );
 }
 
-function TypeInfos({
-  typeInfos,
+export const OperandDescription = ({
+  operand,
 }: {
-  typeInfos: {
-    Icon: ReturnType<typeof getDataTypeIcon>;
-    tKey: ReturnType<typeof getDataTypeTKey>;
-  }[];
-}) {
+  operand: {
+    name: string;
+    operandType: LabelledAst['operandType'];
+    dataType: LabelledAst['dataType'];
+    description?: string;
+    values?: string[];
+  };
+}) => {
   const { t } = useTranslation(['scenarios']);
 
+  const values = useMemo(() => {
+    if (!operand.values) return null;
+    const sorted = [...operand.values].sort();
+    if (sorted.length > MAX_ENUM_VALUES) {
+      const sliced = sorted.slice(0, MAX_ENUM_VALUES);
+      sliced.push('...');
+      return sliced;
+    }
+    return sorted;
+  }, [operand.values]);
+
+  return (
+    <Fragment>
+      <div className="flex flex-col gap-1">
+        <TypeInfos
+          operandType={operand.operandType}
+          dataType={operand.dataType}
+        />
+        <p className="text-grey-100 text-s text-ellipsis font-normal">
+          {operand.name}
+        </p>
+      </div>
+      {operand.description && (
+        <p className="text-grey-50 text-xs font-normal first-letter:capitalize">
+          {operand.description}
+        </p>
+      )}
+      {values && values.length > 0 && (
+        <div>
+          <p className="text-grey-50 text-s">{t('scenarios:enum_options')}</p>
+          <div className="px-1">
+            {values.map((value) => {
+              return (
+                <p key={value} className="text-grey-50 text-xs font-normal">
+                  {value}
+                </p>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </Fragment>
+  );
+};
+
+function TypeInfos({
+  operandType,
+  dataType,
+}: {
+  operandType: LabelledAst['operandType'];
+  dataType: LabelledAst['dataType'];
+}) {
+  const { t } = useTranslation(['scenarios']);
+  const typeInfos = [
+    {
+      Icon: getOperatorTypeIcon(operandType),
+      tKey: getOperatorTypeTKey(operandType),
+    },
+    {
+      Icon: getDataTypeIcon(dataType),
+      tKey: getDataTypeTKey(dataType),
+    },
+  ];
   if (typeInfos.filter(({ tKey }) => !!tKey).length === 0) return null;
 
   return (

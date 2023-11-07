@@ -281,7 +281,7 @@ const AggregationEditModalContent = ({
           </div>
           <div className="flex flex-col gap-2">
             {t('scenarios:edit_aggregation.function_title')}
-            <div className="grid grid-cols-[100px_1fr] gap-2">
+            <div className="grid grid-cols-[150px_1fr] gap-2">
               <AggregatorSelect
                 value={aggregation.aggregator}
                 onChange={(aggregator) =>

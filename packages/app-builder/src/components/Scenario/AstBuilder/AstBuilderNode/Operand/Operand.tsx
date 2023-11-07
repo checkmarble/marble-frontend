@@ -17,6 +17,7 @@ import {
 
 import { Default } from '../Default';
 import { getEnumOptionsFromNeighbour, OperandEditor } from './OperandEditor';
+import { OperandViewer } from './OperandViewer';
 
 export type OperandViewModel = EditorNodeViewModel;
 
@@ -56,13 +57,24 @@ export function Operand({
       dataModel: builder.input.dataModel,
     }),
   });
-  const isEditable = !!labelledAst && isEditableOperand(astNode) && onSave;
+  const isEditable = !!labelledAst && isEditableOperand(astNode);
 
   if (!isEditable) {
     return (
       <Default
         ariaLabel={ariaLabel}
         editorNodeViewModel={operandViewModel}
+        builder={builder}
+      />
+    );
+  }
+
+  if (viewOnly || !onSave) {
+    return (
+      <OperandViewer
+        ariaLabel={ariaLabel}
+        labelledAst={labelledAst}
+        operandViewModel={operandViewModel}
         builder={builder}
       />
     );
@@ -75,7 +87,6 @@ export function Operand({
       operandViewModel={operandViewModel}
       labelledAst={labelledAst}
       onSave={onSave}
-      viewOnly={viewOnly}
     />
   );
 }
