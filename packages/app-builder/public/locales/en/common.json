@@ -7,6 +7,7 @@
   "validation_error_one": "{{count}} validation error",
   "validation_error_other": "{{count}} validation errors",
   "errors.unknown": "An unknown error as occured",
+  "errors.not_found": "This page could not be found.",
   "errors.edit.forbidden_not_draft": "You can only edit a draft version of a scenario.",
   "errors.list.duplicate_list_name": "A list with this name already exist",
   "errors.data.duplicate_field_name": "A field with this name already exist",

@@ -4,6 +4,9 @@ import {
   type OutcomeProps,
 } from '@app-builder/components';
 import { formatDateTime, formatNumber } from '@app-builder/utils/format';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUID } from '@app-builder/utils/short-uuid';
+import { useNavigate } from '@remix-run/react';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Decision } from 'marble-api';
@@ -16,6 +19,7 @@ export function DecisionsList({ decisions }: { decisions: Decision[] }) {
     t,
     i18n: { language },
   } = useTranslation(decisionsI18n);
+  const navigate = useNavigate();
 
   const columns = useMemo<ColumnDef<Decision, string>[]>(
     () => [
@@ -81,6 +85,13 @@ export function DecisionsList({ decisions }: { decisions: Decision[] }) {
               key={row.id}
               className={clsx('hover:bg-grey-02 cursor-pointer')}
               row={row}
+              onClick={() => {
+                navigate(
+                  getRoute('/decisions/:decisionId', {
+                    decisionId: fromUUID(row.original.id),
+                  })
+                );
+              }}
             />
           );
         })}
