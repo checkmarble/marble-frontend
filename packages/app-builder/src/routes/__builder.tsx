@@ -5,14 +5,13 @@ import {
   type SidebarLinkProps,
 } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
+import { useSegmentIdentification } from '@app-builder/services/segment';
 import * as Popover from '@radix-ui/react-popover';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Form, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHydrated } from 'remix-utils';
 import { Button, ScrollArea } from 'ui-design-system';
 import {
   Arrow2Down,
@@ -65,13 +64,7 @@ export const handle = {
 export default function Builder() {
   const { t } = useTranslation(handle.i18n);
   const { user } = useLoaderData<typeof loader>();
-  const isHydrated = useHydrated();
-  useEffect(() => {
-    if (isHydrated) {
-      window.analytics.identify(user.actorIdentity.userId);
-      window.analytics.group(user.organizationId);
-    }
-  }, [user.actorIdentity.userId, user.organizationId, isHydrated]);
+  useSegmentIdentification(user);
 
   // Refresh is done in the client because it needs to be done in the browser
   // This is only added here to prevent "auto login" on /login pages... (/logout do not trigger logout from Firebase)
