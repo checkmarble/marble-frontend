@@ -2,21 +2,32 @@ import { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { decisionsI18n } from '../decisions-i18n';
-import { type DecisionFilter, getFilterIcon, getFilterTKey } from './filters';
+import { useDecisionFiltersContext } from './DecisionFiltersContext';
+import { FilterDetail } from './FilterDetail';
+import {
+  type DecisionFilterName,
+  getFilterIcon,
+  getFilterTKey,
+} from './filters';
 import { FiltersDropdownMenu } from './FiltersDropdownMenu';
-import { OutcomeFilter } from './OutcomeFilter';
 
 export function DecisionFiltersMenu({
   children,
-  filters,
+  filterNames,
 }: {
   children: React.ReactNode;
-  filters: readonly DecisionFilter[];
+  filterNames: readonly DecisionFilterName[];
 }) {
-  const [selectedFilter, setSelectedFilter] = useState<DecisionFilter>();
-  const onOpenChange = useCallback((open: boolean) => {
-    if (!open) setSelectedFilter(undefined);
-  }, []);
+  const { onDecisionFilterClose } = useDecisionFiltersContext();
+
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        onDecisionFilterClose();
+      }
+    },
+    [onDecisionFilterClose]
+  );
 
   return (
     <FiltersDropdownMenu.Root onOpenChange={onOpenChange}>
@@ -24,11 +35,7 @@ export function DecisionFiltersMenu({
         {children}
       </FiltersDropdownMenu.Trigger>
       <FiltersDropdownMenu.Content>
-        <FilterContent
-          selectedFilter={selectedFilter}
-          filters={filters}
-          setSelectedFilter={setSelectedFilter}
-        />
+        <FilterContent filterNames={filterNames} />
       </FiltersDropdownMenu.Content>
     </FiltersDropdownMenu.Root>
   );
@@ -37,12 +44,12 @@ export function DecisionFiltersMenu({
 const FiltersMenuItem = forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof FiltersDropdownMenu.Item> & {
-    filter: DecisionFilter;
+    filterName: DecisionFilterName;
   }
->(({ filter, ...props }, ref) => {
+>(({ filterName, ...props }, ref) => {
   const { t } = useTranslation(decisionsI18n);
-  const Icon = getFilterIcon(filter);
-  const tKey = getFilterTKey(filter);
+  const Icon = getFilterIcon(filterName);
+  const tKey = getFilterTKey(filterName);
 
   return (
     <FiltersDropdownMenu.Item {...props} ref={ref}>
@@ -56,33 +63,24 @@ const FiltersMenuItem = forwardRef<
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
 function FilterContent({
-  selectedFilter,
-  filters,
-  setSelectedFilter,
+  filterNames,
 }: {
-  selectedFilter?: DecisionFilter;
-  filters: readonly DecisionFilter[];
-  setSelectedFilter: (filter: DecisionFilter) => void;
+  filterNames: readonly DecisionFilterName[];
 }) {
-  switch (selectedFilter) {
-    case 'dateRange':
-      return 'dateRange';
-    case 'scenarioId':
-      return 'scenarioId';
-    case 'outcome':
-      return <OutcomeFilter />;
-    case 'triggerObject':
-      return 'triggerObject';
-    default:
-      return filters.map((filter) => (
-        <FiltersMenuItem
-          key={filter}
-          filter={filter}
-          onClick={(e) => {
-            e.preventDefault();
-            setSelectedFilter(filter);
-          }}
-        />
-      ));
+  const [selectedFilter, setSelectedFilter] = useState<DecisionFilterName>();
+
+  if (selectedFilter) {
+    return <FilterDetail filterName={selectedFilter} />;
   }
+
+  return filterNames.map((filterName) => (
+    <FiltersMenuItem
+      key={filterName}
+      filterName={filterName}
+      onClick={(e) => {
+        e.preventDefault();
+        setSelectedFilter(filterName);
+      }}
+    />
+  ));
 }

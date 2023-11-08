@@ -1,9 +1,9 @@
 import * as Label from '@radix-ui/react-label';
 import { type Decision } from 'marble-api';
-import { useState } from 'react';
 import { Checkbox } from 'ui-design-system';
 
-import { Outcome } from '../Outcome';
+import { Outcome } from '../../Outcome';
+import { useOutcomeFilter } from '../DecisionFiltersContext';
 
 const outcomes = [
   'approve',
@@ -12,7 +12,7 @@ const outcomes = [
 ] satisfies Decision['outcome'][];
 
 export function OutcomeFilter() {
-  const [selectedOutcomes, setSelectedOutcomes] = useState([]);
+  const [selectedOutcomes, setSelectedOutcomes] = useOutcomeFilter();
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -24,10 +24,12 @@ export function OutcomeFilter() {
               checked={selectedOutcomes.includes(outcome)}
               onCheckedChange={(checked) => {
                 if (checked) {
-                  setSelectedOutcomes((prev) => [...prev, outcome]);
+                  setSelectedOutcomes([...selectedOutcomes, outcome]);
                 } else {
-                  setSelectedOutcomes((prev) =>
-                    prev.filter((prevOutcome) => prevOutcome !== outcome)
+                  setSelectedOutcomes(
+                    selectedOutcomes.filter(
+                      (prevOutcome) => prevOutcome !== outcome
+                    )
                   );
                 }
               }}

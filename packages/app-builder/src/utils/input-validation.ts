@@ -16,7 +16,10 @@ export function inputFromSearch(queryString: string, options?: IParseOptions) {
 }
 
 export function inputFromUrl(request: Request, options?: IParseOptions) {
-  return inputFromSearch(new URL(request.url).search, options);
+  return inputFromSearch(
+    decodeURIComponent(new URL(request.url).search),
+    options
+  );
 }
 
 /**

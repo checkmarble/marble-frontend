@@ -1,17 +1,17 @@
 import { assertNever } from 'typescript-utils';
 import { AltRoute, CalendarMonth, Category, Scenarios } from 'ui-icons';
 
-export const decisionFilters = [
+export const decisionFilterNames = [
   'dateRange',
   'scenarioId',
   'outcome',
   'triggerObject',
 ] as const;
 
-export type DecisionFilter = (typeof decisionFilters)[number];
+export type DecisionFilterName = (typeof decisionFilterNames)[number];
 
-export function getFilterIcon(filter: DecisionFilter) {
-  switch (filter) {
+export function getFilterIcon(filterName: DecisionFilterName) {
+  switch (filterName) {
     case 'dateRange':
       return CalendarMonth;
     case 'scenarioId':
@@ -21,12 +21,12 @@ export function getFilterIcon(filter: DecisionFilter) {
     case 'triggerObject':
       return AltRoute;
     default:
-      assertNever('[DecisionFilter] unknwon filter:', filter);
+      assertNever('[DecisionFilter] unknwon filter:', filterName);
   }
 }
 
-export function getFilterTKey(filter: DecisionFilter) {
-  switch (filter) {
+export function getFilterTKey(filterName: DecisionFilterName) {
+  switch (filterName) {
     case 'dateRange':
       return 'decisions:created_at';
     case 'scenarioId':
@@ -36,6 +36,6 @@ export function getFilterTKey(filter: DecisionFilter) {
     case 'triggerObject':
       return 'decisions:trigger_object.type';
     default:
-      assertNever('[DecisionFilter] unknwon filter:', filter);
+      assertNever('[DecisionFilter] unknwon filter:', filterName);
   }
 }

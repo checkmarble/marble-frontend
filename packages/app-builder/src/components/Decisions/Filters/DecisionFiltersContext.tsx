@@ -1,25 +1,77 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { inputFromSearch } from '@app-builder/utils/input-validation';
-import { useSearchParams } from '@remix-run/react';
+import { useCallbackRef } from '@app-builder/utils/hooks';
+import { useMemo } from 'react';
+import { FormProvider, useController, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-const decisionFiltersSchema = z.object({
-  outcome: z.enum(['approve', 'review', 'decline']).optional(),
+export const decisionFiltersSchema = z.object({
+  outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
+  triggerObject: z.array(z.string()).optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  scenarioId: z.array(z.string()).optional(),
 });
 
-type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
+export type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
 
 interface DecisionFiltersContextValue {
-  filters: DecisionFilters;
-  setFilters: (filters: DecisionFilters) => void;
+  onDecisionFilterClose: () => void;
 }
 
 const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
   'DecisionFiltersContext'
 );
 
-export function DecisionFiltersProvider() {
-  const [searchParams, setSearchParams] = useSearchParams();
+const emptyDecisionFilters: DecisionFilters = {
+  outcome: [],
+  triggerObject: [],
+  startDate: '',
+  endDate: '',
+  scenarioId: [],
+};
 
-  console.log(decisionFiltersSchema.safeParse(inputFromSearch(searchParams)));
+export function DecisionFiltersProvider({
+  filterValues,
+  submitDecisionFilters,
+  children,
+}: {
+  filterValues: DecisionFilters;
+  submitDecisionFilters: (filterValues: DecisionFilters) => void;
+  children: React.ReactNode;
+}) {
+  const formMethods = useForm({
+    defaultValues: emptyDecisionFilters,
+    values: { ...emptyDecisionFilters, ...filterValues },
+  });
+  const { isDirty } = formMethods.formState;
+  const onDecisionFilterClose = useCallbackRef(() => {
+    if (isDirty) {
+      submitDecisionFilters(formMethods.getValues());
+    }
+  });
+
+  const value = useMemo(
+    () => ({
+      onDecisionFilterClose,
+    }),
+    [onDecisionFilterClose]
+  );
+  return (
+    <FormProvider {...formMethods}>
+      <DecisionFiltersContext.Provider value={value}>
+        {children}
+      </DecisionFiltersContext.Provider>
+    </FormProvider>
+  );
+}
+
+export const useDecisionFiltersContext = DecisionFiltersContext.useValue;
+
+export function useOutcomeFilter() {
+  const { field } = useController<DecisionFilters, 'outcome'>({
+    name: 'outcome',
+  });
+  const selectedOutcomes = field.value ?? [];
+  const setSelectedOutcomes = field.onChange;
+  return [selectedOutcomes, setSelectedOutcomes] as const;
 }
