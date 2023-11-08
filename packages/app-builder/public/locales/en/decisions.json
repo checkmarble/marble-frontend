@@ -5,6 +5,8 @@
   "detail.error": "An error as occured. Make sure the provided decision id is valid.",
   "trigger_object.type": "Trigger object",
   "filters": "filters",
+  "filters.new": "new filter",
+  "filters.clear": "clear filters",
   "score": "Score",
   "outcome": "Outcome",
   "created_at": "Date",

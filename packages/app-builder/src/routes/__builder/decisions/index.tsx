@@ -8,6 +8,7 @@ import {
   ErrorComponent,
   Page,
 } from '@app-builder/components';
+import { DecisionFiltersBar } from '@app-builder/components/Decisions/Filters/DecisionFiltersBar';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
@@ -27,7 +28,6 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
 import { Decision, Filters, Search } from 'ui-icons';
-import * as z from 'zod';
 
 export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
@@ -75,8 +75,12 @@ export default function Decisions() {
             {
               outcome: decisionFilters.outcome ?? [],
               triggerObject: decisionFilters.triggerObject ?? [],
-              startDate: decisionFilters.startDate || null,
-              endDate: decisionFilters.endDate || null,
+              dateRange: decisionFilters.dateRange
+                ? {
+                    endDate: decisionFilters.dateRange.endDate || null,
+                    startDate: decisionFilters.dateRange.startDate || null,
+                  }
+                : {},
               scenarioId: decisionFilters.scenarioId ?? [],
             },
             {
@@ -137,6 +141,7 @@ export default function Decisions() {
                 {/* <Button>Add to case</Button> */}
               </div>
             </div>
+            <DecisionFiltersBar />
             <DecisionsList decisions={decisions} />
           </DecisionFiltersProvider>
         </div>

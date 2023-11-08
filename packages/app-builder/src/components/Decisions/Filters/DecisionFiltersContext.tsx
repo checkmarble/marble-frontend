@@ -1,20 +1,34 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { useMemo } from 'react';
-import { FormProvider, useController, useForm } from 'react-hook-form';
+import { useCallback, useMemo } from 'react';
+import {
+  FormProvider,
+  useController,
+  useForm,
+  useFormContext,
+} from 'react-hook-form';
+import * as R from 'remeda';
 import * as z from 'zod';
+
+import { type DecisionFilterName, decisionFilterNames } from './filters';
 
 export const decisionFiltersSchema = z.object({
   outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
   triggerObject: z.array(z.string()).optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
+  dateRange: z
+    .object({
+      startDate: z.string().optional(),
+      endDate: z.string().optional(),
+    })
+    .optional(),
   scenarioId: z.array(z.string()).optional(),
 });
 
 export type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
 
 interface DecisionFiltersContextValue {
+  filterValues: DecisionFilters;
+  submitDecisionFilters: () => void;
   onDecisionFilterClose: () => void;
 }
 
@@ -25,14 +39,16 @@ const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
 const emptyDecisionFilters: DecisionFilters = {
   outcome: [],
   triggerObject: [],
-  startDate: '',
-  endDate: '',
+  dateRange: {
+    startDate: '',
+    endDate: '',
+  },
   scenarioId: [],
 };
 
 export function DecisionFiltersProvider({
   filterValues,
-  submitDecisionFilters,
+  submitDecisionFilters: _submitDecisionFilters,
   children,
 }: {
   filterValues: DecisionFilters;
@@ -44,17 +60,18 @@ export function DecisionFiltersProvider({
     values: { ...emptyDecisionFilters, ...filterValues },
   });
   const { isDirty } = formMethods.formState;
+  const submitDecisionFilters = useCallbackRef(() => {
+    _submitDecisionFilters(formMethods.getValues());
+  });
   const onDecisionFilterClose = useCallbackRef(() => {
     if (isDirty) {
-      submitDecisionFilters(formMethods.getValues());
+      submitDecisionFilters();
     }
   });
 
   const value = useMemo(
-    () => ({
-      onDecisionFilterClose,
-    }),
-    [onDecisionFilterClose]
+    () => ({ submitDecisionFilters, onDecisionFilterClose, filterValues }),
+    [filterValues, onDecisionFilterClose, submitDecisionFilters]
   );
   return (
     <FormProvider {...formMethods}>
@@ -74,4 +91,35 @@ export function useOutcomeFilter() {
   const selectedOutcomes = field.value ?? [];
   const setSelectedOutcomes = field.onChange;
   return [selectedOutcomes, setSelectedOutcomes] as const;
+}
+
+export function useDecisionFiltersPartition() {
+  const { filterValues } = useDecisionFiltersContext();
+
+  const [undefinedDecisionFilterNames, definedDecisionFilterNames] = R.pipe(
+    decisionFilterNames,
+    R.partition((filterName) => {
+      const value = filterValues[filterName];
+      if (R.isArray(value)) return value.length === 0;
+      if (R.isObject(value)) return R.isEmpty(value);
+      return R.isNil(value);
+    })
+  );
+  return {
+    undefinedDecisionFilterNames,
+    definedDecisionFilterNames,
+  };
+}
+
+export function useClearFilter() {
+  const { submitDecisionFilters } = useDecisionFiltersContext();
+  const { setValue } = useFormContext<DecisionFilters>();
+
+  return useCallback(
+    (filterName: DecisionFilterName) => {
+      setValue(filterName, emptyDecisionFilters[filterName]);
+      submitDecisionFilters();
+    },
+    [setValue, submitDecisionFilters]
+  );
 }
