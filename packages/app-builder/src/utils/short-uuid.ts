@@ -11,11 +11,8 @@ import invariant from 'tiny-invariant';
 
 const translator = shortUUID();
 
-const toUUID = (val: string) => translator.toUUID(val);
+export const toUUID = (val: string) => translator.toUUID(val);
 export const fromUUID = (val: string) => translator.fromUUID(val);
-
-// const toUUID = (val: string) => val;
-// export const fromUUID = (val: string) => val;
 
 export const fromParams = (params: LoaderArgs['params'], name: string) => {
   const value = params[name];
