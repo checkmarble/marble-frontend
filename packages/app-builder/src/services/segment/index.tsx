@@ -10,7 +10,9 @@ export function useSegmentIdentification(user: User) {
   useEffect(() => {
     if (isHydrated) {
       window.analytics.identify(user.actorIdentity.userId);
-      window.analytics.track('Logged In');
+      if (user.actorIdentity.userId) {
+        window.analytics.track('Logged In');
+      }
     }
   }, [user.actorIdentity.userId, user.organizationId, isHydrated]);
 }
