@@ -1,10 +1,11 @@
+import { toUUID } from '@app-builder/utils/short-uuid';
 import { type RouteMatch } from '@remix-run/react';
 
-export default function getPageviewNameAndProps(thisPage: RouteMatch) {
-  if (thisPage.id === 'routes/login') {
-    return { name: 'Login', properties: undefined };
-  }
+function toUUIDifDefined(val: string | undefined) {
+  return val !== undefined ? toUUID(val) : undefined;
+}
 
+export default function getPageviewNameAndProps(thisPage: RouteMatch) {
   if (thisPage.id === 'routes/__builder/scenarios/index') {
     return { name: 'Scenarios', properties: undefined };
   }
@@ -12,8 +13,8 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
     thisPage.id ===
     'routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/trigger'
   ) {
-    const iterationId = thisPage.params['iterationId'];
-    const scenarioId = thisPage.params['scenarioId'];
+    const iterationId = toUUIDifDefined(thisPage.params['iterationId']);
+    const scenarioId = toUUIDifDefined(thisPage.params['scenarioId']);
     return {
       name: 'Scenario iteration trigger',
       properties: { iterationId, scenarioId },
@@ -23,8 +24,8 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
     thisPage.id ===
     'routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/rules'
   ) {
-    const iterationId = thisPage.params['iterationId'];
-    const scenarioId = thisPage.params['scenarioId'];
+    const iterationId = toUUIDifDefined(thisPage.params['iterationId']);
+    const scenarioId = toUUIDifDefined(thisPage.params['scenarioId']);
     return {
       name: 'Scenario iteration rules',
       properties: { iterationId, scenarioId },
@@ -34,8 +35,8 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
     thisPage.id ===
     'routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/decision'
   ) {
-    const iterationId = thisPage.params['iterationId'];
-    const scenarioId = thisPage.params['scenarioId'];
+    const iterationId = toUUIDifDefined(thisPage.params['iterationId']);
+    const scenarioId = toUUIDifDefined(thisPage.params['scenarioId']);
     return {
       name: 'Scenario iteration outcome',
       properties: { iterationId, scenarioId },
@@ -50,7 +51,7 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
     return { name: 'Lists', properties: undefined };
   }
   if (thisPage.id === 'routes/__builder/lists/$listId') {
-    const listId = thisPage.params['listId'];
+    const listId = toUUIDifDefined(thisPage.params['listId']);
     return { name: 'List', properties: { listId } };
   }
 
