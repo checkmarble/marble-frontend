@@ -10,6 +10,7 @@ export function useSegmentIdentification(user: User) {
   useEffect(() => {
     if (isHydrated) {
       window.analytics.identify(user.actorIdentity.userId);
+      window.analytics.track('Logged In');
     }
   }, [user.actorIdentity.userId, user.organizationId, isHydrated]);
 }
@@ -21,7 +22,9 @@ export function SegmentScript({ writeKey }: { writeKey: string }) {
   const thisPage = matches[matches.length - 1];
   useEffect(() => {
     if (isHydrated) {
-      const { name, properties } = getPageViewNameAndProps(thisPage);
+      const tracking = getPageViewNameAndProps(thisPage);
+      if (!tracking) return;
+      const { name, properties } = tracking;
       window.analytics.page(name, properties);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

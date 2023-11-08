@@ -54,5 +54,5 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
     return { name: 'List', properties: { listId } };
   }
 
-  return { name: undefined, properties: undefined };
+  return null;
 }
