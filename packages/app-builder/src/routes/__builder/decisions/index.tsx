@@ -5,15 +5,19 @@ import {
   Page,
 } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
-import { useLoaderData, useRouteError } from '@remix-run/react';
+import { Form, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Decision } from 'ui-icons';
+import { Button, Input } from 'ui-design-system';
+import { Decision, Search } from 'ui-icons';
 
 export const handle = {
-  i18n: ['navigation', ...decisionsI18n] satisfies Namespace,
+  i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
 };
 
 export async function loader({ request }: LoaderArgs) {
@@ -32,6 +36,15 @@ export async function loader({ request }: LoaderArgs) {
 export default function Decisions() {
   const { t } = useTranslation(handle.i18n);
   const { decisions } = useLoaderData<typeof loader>();
+  const [decisionId, setDecisionId] = useState<string | null>(null);
+
+  const decisionIdToParams = (decisionId: string | null) => {
+    try {
+      return fromUUID(decisionId ?? '');
+    } catch {
+      return decisionId;
+    }
+  };
 
   return (
     <Page.Container>
@@ -41,6 +54,26 @@ export default function Decisions() {
       </Page.Header>
 
       <Page.Content>
+        <Form
+          className="flex gap-1"
+          method="GET"
+          action={getRoute('/decisions/:decisionId', {
+            decisionId: decisionIdToParams(decisionId) ?? '',
+          })}
+        >
+          <Input
+            type="search"
+            aria-label={t('decisions:search.placeholder')}
+            placeholder={t('decisions:search.placeholder')}
+            value={decisionId ?? ''}
+            onChange={(e) => setDecisionId(e.target.value)}
+          />
+          <Button type="submit">
+            <Search />
+            {t('common:search')}
+          </Button>
+        </Form>
+
         <DecisionsList decisions={decisions} />
       </Page.Content>
     </Page.Container>
@@ -86,6 +119,5 @@ export default function Decisions() {
 export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
-
   return <ErrorComponent error={error} />;
 }

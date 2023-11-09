@@ -25,11 +25,6 @@ export const routes = [
         "file": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete.tsx"
       },
       {
-        "id": "routes/ressources/decisions/decision-detail.$decisionId",
-        "path": "ressources/decisions/decision-detail/:decisionId",
-        "file": "routes/ressources/decisions/decision-detail.$decisionId.tsx"
-      },
-      {
         "id": "routes/ressources/auth/login-with-email",
         "path": "ressources/auth/login-with-email",
         "file": "routes/ressources/auth/login-with-email.tsx"
@@ -129,6 +124,11 @@ export const routes = [
         "file": "routes/__builder.tsx",
         "children": [
           {
+            "id": "routes/__builder/decisions/$decisionId",
+            "path": "decisions/:decisionId",
+            "file": "routes/__builder/decisions/$decisionId.tsx"
+          },
+          {
             "id": "routes/__builder/scenarios/$scenarioId",
             "path": "scenarios/:scenarioId",
             "file": "routes/__builder/scenarios/$scenarioId.tsx",
@@ -189,6 +189,12 @@ export const routes = [
             "file": "routes/__builder/upload/$objectType.tsx"
           },
           {
+            "id": "routes/__builder/decisions/index",
+            "index": true,
+            "path": "decisions",
+            "file": "routes/__builder/decisions/index.tsx"
+          },
+          {
             "id": "routes/__builder/scenarios/index",
             "index": true,
             "path": "scenarios",
@@ -204,11 +210,6 @@ export const routes = [
             "index": true,
             "path": "lists",
             "file": "routes/__builder/lists/index.tsx"
-          },
-          {
-            "id": "routes/__builder/decisions",
-            "path": "decisions",
-            "file": "routes/__builder/decisions.tsx"
           },
           {
             "id": "routes/__builder/data",
