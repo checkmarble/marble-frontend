@@ -1,3 +1,4 @@
+export { default as AltRoute } from './AltRoute';
 export { default as Analytics } from './Analytics';
 export { default as Arrow2Down } from './Arrow2Down';
 export { default as Arrow2Up } from './Arrow2Up';
@@ -7,6 +8,7 @@ export { default as Backtest } from './Backtest';
 export { default as Boolean } from './Boolean';
 export { default as Calendar } from './Calendar';
 export { default as CalendarMonth } from './CalendarMonth';
+export { default as Category } from './Category';
 export { default as Collapse } from './Collapse';
 export { default as CompanyExcel } from './CompanyExcel';
 export { default as CompanySlack } from './CompanySlack';

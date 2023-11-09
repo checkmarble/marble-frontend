@@ -30,6 +30,7 @@ export type CredentialsDto = {
         permissions: string[];
     };
 };
+export type Outcome = "approve" | "review" | "decline" | "null" | "unknown";
 export type Error = {
     code: number;
     message: string;
@@ -39,7 +40,7 @@ export type Decision = {
     created_at: string;
     trigger_object: object;
     trigger_object_type: string;
-    outcome: "approve" | "review" | "decline" | "null" | "unknown";
+    outcome: Outcome;
     scenario: {
         id: string;
         name: string;
@@ -381,7 +382,13 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
 /**
  * List decisions
  */
-export function listDecisions(opts?: Oazapfts.RequestOpts) {
+export function listDecisions({ outcome, scenarioId, triggerObject, startDate, endDate }: {
+    outcome?: Outcome[];
+    scenarioId?: string[];
+    triggerObject?: string[];
+    startDate?: string;
+    endDate?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Decision[];
@@ -391,7 +398,13 @@ export function listDecisions(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 403;
         data: string;
-    }>("/decisions", {
+    }>(`/decisions${QS.query(QS.explode({
+        "outcome[]": outcome,
+        "scenarioId[]": scenarioId,
+        "triggerObject[]": triggerObject,
+        startDate,
+        endDate
+    }))}`, {
         ...opts
     }));
 }

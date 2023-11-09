@@ -90,6 +90,46 @@ paths:
       operationId: listDecisions
       security:
         - bearerAuth: []
+      parameters:
+        - name: outcome[]
+          description: decision outcomes used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Outcome'
+        - name: scenarioId[]
+          description: scenario IDs used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - name: triggerObject[]
+          description: trigger objects used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: startDate
+          description: start date used to filter the list
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          description: end date used to filter the list
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
       responses:
         '200':
           description: List of corresponding decisions
@@ -2030,6 +2070,9 @@ components:
           type: integer
         message:
           type: string
+    Outcome:
+      type: string
+      enum: ['approve', 'review', 'decline', 'null', 'unknown']
     Decision:
       type: object
       required:
@@ -2053,8 +2096,7 @@ components:
         trigger_object_type:
           type: string
         outcome:
-          type: string
-          enum: ['approve', 'review', 'decline', 'null', 'unknown']
+          $ref: '#/components/schemas/Outcome'
         scenario:
           type: object
           required:

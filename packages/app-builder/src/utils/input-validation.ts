@@ -5,20 +5,21 @@ import { type ZodType, type ZodTypeDef } from 'zod';
 const defaultQsConfig: IParseOptions = {
   allowDots: true,
   arrayLimit: 200,
+  ignoreQueryPrefix: true,
 };
 
-export function inputFromSearch(
-  queryString: URLSearchParams,
-  options?: IParseOptions
-) {
-  return qs.parse(Object.fromEntries(queryString), {
+export function inputFromSearch(queryString: string, options?: IParseOptions) {
+  return qs.parse(queryString, {
     ...defaultQsConfig,
     ...options,
   });
 }
 
 export function inputFromUrl(request: Request, options?: IParseOptions) {
-  return inputFromSearch(new URL(request.url).searchParams, options);
+  return inputFromSearch(
+    decodeURIComponent(new URL(request.url).search),
+    options
+  );
 }
 
 /**
