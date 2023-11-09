@@ -1,20 +1,33 @@
 import {
+  type DecisionFilters,
+  DecisionFiltersMenu,
+  DecisionFiltersProvider,
+  decisionFiltersSchema,
   decisionsI18n,
   DecisionsList,
   ErrorComponent,
   Page,
 } from '@app-builder/components';
+import { DecisionFiltersBar } from '@app-builder/components/Decisions/Filters/DecisionFiltersBar';
+import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { serverServices } from '@app-builder/services/init.server';
+import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderArgs } from '@remix-run/node';
-import { Form, useLoaderData, useRouteError } from '@remix-run/react';
+import { json, type LoaderArgs, redirect } from '@remix-run/node';
+import {
+  Form,
+  useLoaderData,
+  useNavigate,
+  useRouteError,
+} from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { useState } from 'react';
+import qs from 'qs';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
-import { Decision, Search } from 'ui-icons';
+import { Decision, Filters, Search } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
@@ -26,16 +39,22 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const decisions = await apiClient.listDecisions();
+  const parsedQuery = await parseQuerySafe(request, decisionFiltersSchema);
+  if (!parsedQuery.success) {
+    return redirect(getRoute('/decisions'));
+  }
+
+  const decisions = await apiClient.listDecisions(parsedQuery.data);
 
   return json({
     decisions,
+    filters: parsedQuery.data,
   });
 }
 
 export default function Decisions() {
   const { t } = useTranslation(handle.i18n);
-  const { decisions } = useLoaderData<typeof loader>();
+  const { decisions, filters } = useLoaderData<typeof loader>();
   const [decisionId, setDecisionId] = useState<string | null>(null);
 
   const decisionIdToParams = (decisionId: string | null) => {
@@ -46,6 +65,36 @@ export default function Decisions() {
     }
   };
 
+  const navigate = useNavigate();
+  const submitDecisionFilters = useCallback(
+    (decisionFilters: DecisionFilters) => {
+      navigate(
+        {
+          pathname: getRoute('/decisions'),
+          search: qs.stringify(
+            {
+              outcome: decisionFilters.outcome ?? [],
+              triggerObject: decisionFilters.triggerObject ?? [],
+              dateRange: decisionFilters.dateRange
+                ? {
+                    endDate: decisionFilters.dateRange.endDate || null,
+                    startDate: decisionFilters.dateRange.startDate || null,
+                  }
+                : {},
+              scenarioId: decisionFilters.scenarioId ?? [],
+            },
+            {
+              addQueryPrefix: true,
+              skipNulls: true,
+            }
+          ),
+        },
+        { replace: true }
+      );
+    },
+    [navigate]
+  );
+
   return (
     <Page.Container>
       <Page.Header>
@@ -54,27 +103,48 @@ export default function Decisions() {
       </Page.Header>
 
       <Page.Content>
-        <Form
-          className="flex gap-1"
-          method="GET"
-          action={getRoute('/decisions/:decisionId', {
-            decisionId: decisionIdToParams(decisionId) ?? '',
-          })}
-        >
-          <Input
-            type="search"
-            aria-label={t('decisions:search.placeholder')}
-            placeholder={t('decisions:search.placeholder')}
-            value={decisionId ?? ''}
-            onChange={(e) => setDecisionId(e.target.value)}
-          />
-          <Button type="submit">
-            <Search />
-            {t('common:search')}
-          </Button>
-        </Form>
-
         <DecisionsList decisions={decisions} />
+        <div className="flex flex-col gap-4">
+          <DecisionFiltersProvider
+            submitDecisionFilters={submitDecisionFilters}
+            filterValues={filters}
+          >
+            <div className="flex justify-between gap-4">
+              <Form
+                className="flex gap-1"
+                method="GET"
+                action={getRoute('/decisions/:decisionId', {
+                  decisionId: decisionIdToParams(decisionId) ?? '',
+                })}
+              >
+                <Input
+                  type="search"
+                  aria-label={t('decisions:search.placeholder')}
+                  placeholder={t('decisions:search.placeholder')}
+                  value={decisionId ?? ''}
+                  onChange={(e) => setDecisionId(e.target.value)}
+                />
+                <Button type="submit">
+                  <Search />
+                  {t('common:search')}
+                </Button>
+              </Form>
+              <div className="flex gap-4">
+                <DecisionFiltersMenu filterNames={decisionFilterNames}>
+                  <Button className="flex flex-row gap-2" variant="secondary">
+                    <Filters className="text-l" />
+                    <span className="text-s font-semibold first-letter:capitalize">
+                      {t('decisions:filters')}
+                    </span>
+                  </Button>
+                </DecisionFiltersMenu>
+                {/* <Button>Add to case</Button> */}
+              </div>
+            </div>
+            <DecisionFiltersBar />
+            <DecisionsList decisions={decisions} />
+          </DecisionFiltersProvider>
+        </div>
       </Page.Content>
     </Page.Container>
   );
