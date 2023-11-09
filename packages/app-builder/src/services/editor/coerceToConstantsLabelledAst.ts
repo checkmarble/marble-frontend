@@ -52,7 +52,7 @@ export function coerceToConstantsLabelledAst(
 const isNumberArray = /^\[(\s*(\d+(.\d+)?)\s*,?)*(\s*|\])$/;
 const isStringArray = /^\[(\s*"?(\w+)"?\s*,?)*(\s*|\])$/;
 
-const captureNumbers = /(?:\s*(?<numbers>\d+(.\d+)?)\s*,?)/g;
+const captureNumbers = /(?:\s*(?<numbers>\d+(\.\d+)?)\s*,?)/g;
 const captureStrings = /(?:\s*"?(?<strings>\w(\w|\s)*\w)"?\s*,?)/g;
 
 function coerceToConstantArray(search: string): LabelledAst[] {
