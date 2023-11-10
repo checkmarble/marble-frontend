@@ -73,14 +73,18 @@ function FilterContent({
     return <FilterDetail filterName={selectedFilter} />;
   }
 
-  return filterNames.map((filterName) => (
-    <FiltersMenuItem
-      key={filterName}
-      filterName={filterName}
-      onClick={(e) => {
-        e.preventDefault();
-        setSelectedFilter(filterName);
-      }}
-    />
-  ));
+  return (
+    <div className="flex flex-col gap-1 p-2">
+      {filterNames.map((filterName) => (
+        <FiltersMenuItem
+          key={filterName}
+          filterName={filterName}
+          onClick={(e) => {
+            e.preventDefault();
+            setSelectedFilter(filterName);
+          }}
+        />
+      ))}
+    </div>
+  );
 }
