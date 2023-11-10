@@ -1,5 +1,6 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
+import { type Scenario } from 'marble-api';
 import { useCallback, useMemo } from 'react';
 import {
   FormProvider,
@@ -28,6 +29,7 @@ export type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
 
 interface DecisionFiltersContextValue {
   filterValues: DecisionFilters;
+  scenarios: Scenario[];
   submitDecisionFilters: () => void;
   onDecisionFilterClose: () => void;
 }
@@ -48,10 +50,12 @@ const emptyDecisionFilters: DecisionFilters = {
 
 export function DecisionFiltersProvider({
   filterValues,
+  scenarios,
   submitDecisionFilters: _submitDecisionFilters,
   children,
 }: {
   filterValues: DecisionFilters;
+  scenarios: Scenario[];
   submitDecisionFilters: (filterValues: DecisionFilters) => void;
   children: React.ReactNode;
 }) {
@@ -70,8 +74,13 @@ export function DecisionFiltersProvider({
   });
 
   const value = useMemo(
-    () => ({ submitDecisionFilters, onDecisionFilterClose, filterValues }),
-    [filterValues, onDecisionFilterClose, submitDecisionFilters]
+    () => ({
+      submitDecisionFilters,
+      onDecisionFilterClose,
+      filterValues,
+      scenarios,
+    }),
+    [filterValues, onDecisionFilterClose, scenarios, submitDecisionFilters]
   );
   return (
     <FormProvider {...formMethods}>
@@ -90,7 +99,17 @@ export function useOutcomeFilter() {
   });
   const selectedOutcomes = field.value ?? [];
   const setSelectedOutcomes = field.onChange;
-  return [selectedOutcomes, setSelectedOutcomes] as const;
+  return { selectedOutcomes, setSelectedOutcomes };
+}
+
+export function useScenarioFilter() {
+  const { scenarios } = useDecisionFiltersContext();
+  const { field } = useController<DecisionFilters, 'scenarioId'>({
+    name: 'scenarioId',
+  });
+  const selectedScenarioIds = field.value ?? [];
+  const setSelectedScenarioIds = field.onChange;
+  return { scenarios, selectedScenarioIds, setSelectedScenarioIds };
 }
 
 export function useDecisionFiltersPartition() {

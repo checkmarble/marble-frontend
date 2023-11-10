@@ -44,17 +44,21 @@ export async function loader({ request }: LoaderArgs) {
     return redirect(getRoute('/decisions'));
   }
 
-  const decisions = await apiClient.listDecisions(parsedQuery.data);
+  const [decisions, scenarios] = await Promise.all([
+    apiClient.listDecisions(parsedQuery.data),
+    apiClient.listScenarios(),
+  ]);
 
   return json({
     decisions,
+    scenarios,
     filters: parsedQuery.data,
   });
 }
 
 export default function Decisions() {
   const { t } = useTranslation(handle.i18n);
-  const { decisions, filters } = useLoaderData<typeof loader>();
+  const { decisions, filters, scenarios } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
   const submitDecisionFilters = useCallback(
@@ -96,6 +100,7 @@ export default function Decisions() {
       <Page.Content>
         <div className="flex flex-col gap-4">
           <DecisionFiltersProvider
+            scenarios={scenarios}
             submitDecisionFilters={submitDecisionFilters}
             filterValues={filters}
           >
