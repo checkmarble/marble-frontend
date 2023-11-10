@@ -3,7 +3,7 @@ import { forwardRef, Fragment } from 'react';
 
 export const Highlight = forwardRef<
   HTMLDivElement,
-  { text: string; query: string }
+  { text: string; query: string } & React.ComponentPropsWithoutRef<'div'>
 >(function Highlight({ text, query, ...divProps }, ref) {
   const parts = adaptHighlightedParts(text, query);
 

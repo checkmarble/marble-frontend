@@ -112,6 +112,25 @@ export function useScenarioFilter() {
   return { scenarios, selectedScenarioIds, setSelectedScenarioIds };
 }
 
+export function useTriggerObjectFilter() {
+  const { scenarios } = useDecisionFiltersContext();
+  const { field } = useController<DecisionFilters, 'triggerObject'>({
+    name: 'triggerObject',
+  });
+  const triggerObjects = useMemo(
+    () =>
+      R.pipe(
+        scenarios,
+        R.map((scenario) => scenario.triggerObjectType),
+        R.uniq()
+      ),
+    [scenarios]
+  );
+  const selectedTriggerObjects = field.value ?? [];
+  const setSelectedTriggerObjects = field.onChange;
+  return { triggerObjects, selectedTriggerObjects, setSelectedTriggerObjects };
+}
+
 export function useDecisionFiltersPartition() {
   const { filterValues } = useDecisionFiltersContext();
 
