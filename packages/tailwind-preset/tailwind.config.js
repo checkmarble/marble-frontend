@@ -67,6 +67,14 @@ module.exports = {
             transform: 'translateY(0)',
           },
         },
+        slideDown: {
+          from: { height: 0 },
+          to: { height: 'var(--radix-accordion-content-height)' },
+        },
+        slideUp: {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: 0 },
+        },
       },
       animation: {
         'ping-slow': 'ping-slow 5s ease infinite',
@@ -76,6 +84,8 @@ module.exports = {
           'slideRightAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1)',
         slideRightAndFadeOut:
           'slideRightAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+        slideDown: 'slideDown 200ms ease-out',
+        slideUp: 'slideUp 200ms ease-in',
       },
     },
   },
