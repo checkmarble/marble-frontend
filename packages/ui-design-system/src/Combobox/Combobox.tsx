@@ -62,6 +62,9 @@ const ComboboxOption = React.forwardRef<
 ));
 ComboboxOption.displayName = 'Combobox.Option';
 
+/**
+ * @deprecated use SelectWithCombobox instead, or create a new component. @headlessui/react is planned to be removed.
+ */
 export const Combobox = {
   Root: ComboboxRoot,
   Input: ComboboxInput,
