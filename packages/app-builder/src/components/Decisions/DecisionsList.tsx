@@ -3,7 +3,7 @@ import {
   Outcome,
   type OutcomeProps,
 } from '@app-builder/components';
-import { formatDateTime, formatNumber } from '@app-builder/utils/format';
+import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { useNavigate } from '@remix-run/react';
@@ -12,7 +12,9 @@ import clsx from 'clsx';
 import { type Decision } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Tag, useVirtualTable } from 'ui-design-system';
+import { Table, useVirtualTable } from 'ui-design-system';
+
+import { Score } from './Score';
 
 export function DecisionsList({ decisions }: { decisions: Decision[] }) {
   const {
@@ -99,14 +101,3 @@ export function DecisionsList({ decisions }: { decisions: Decision[] }) {
     </Table.Container>
   );
 }
-
-const Score = ({ score }: { score: number }) => {
-  const {
-    i18n: { language },
-  } = useTranslation(decisionsI18n);
-  return (
-    <Tag color="purple" border="square" size="big" className="w-16">
-      {formatNumber(score, { language, signDisplay: 'exceptZero' })}
-    </Tag>
-  );
-};
