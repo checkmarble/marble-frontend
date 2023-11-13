@@ -58,8 +58,8 @@ const RuleWithDescription = ({
       <Accordion.Title>
         <RuleDetail rule={rule} status={status} />
       </Accordion.Title>
-      <Accordion.Content>
-        <div className="bg-purple-10 mt-4 flex gap-2 rounded p-4 text-purple-100">
+      <Accordion.Content className="bg-purple-10 mt-4 flex gap-2 rounded p-4 text-purple-100">
+        <>
           <Tip height="20px" width="20px" />
           <div className="flex flex-col gap-2">
             <div className="font-semibold">
@@ -67,7 +67,7 @@ const RuleWithDescription = ({
             </div>
             <div>{rule.description}</div>
           </div>
-        </div>
+        </>
       </Accordion.Content>
     </Accordion.Item>
   );

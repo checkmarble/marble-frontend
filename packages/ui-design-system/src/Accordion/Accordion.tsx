@@ -59,14 +59,15 @@ const AccordionContent = ({
   className?: string;
 }) => {
   return (
-    <Content
-      asChild
-      className={clsx(
-        'radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden',
-        className
-      )}
-    >
-      {children}
+    <Content asChild>
+      <div
+        className={clsx(
+          'radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden',
+          className
+        )}
+      >
+        {children}
+      </div>
     </Content>
   );
 };
