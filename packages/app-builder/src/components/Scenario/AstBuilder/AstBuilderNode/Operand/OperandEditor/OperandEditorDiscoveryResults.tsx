@@ -32,20 +32,24 @@ export function OperandEditorDiscoveryResults({
   const { customListOptions, fieldOptions, functionOptions, enumOptions } =
     R.pipe(
       options,
-      R.groupBy((option) => option.operandType),
+      R.groupBy.strict((option) => option.operandType),
       ({ Field, CustomList, Function, Enum }) => {
+        const customListOptions: LabelledAst[] = CustomList ?? [];
+        const fieldOptions: LabelledAst[] = Field ?? [];
+        const functionOptions: LabelledAst[] = Function ?? [];
+        const enumOptions: LabelledAst[] = Enum ?? [];
         return {
-          customListOptions: CustomList,
-          fieldOptions: Field,
-          functionOptions: Function,
-          enumOptions: Enum,
+          customListOptions,
+          fieldOptions,
+          functionOptions,
+          enumOptions,
         };
       }
     );
 
   const fieldByPathOptions = R.pipe(
     fieldOptions,
-    R.groupBy((option) => {
+    R.groupBy.strict((option) => {
       const { astNode } = option;
       if (isPayload(astNode)) {
         return builder.input.triggerObjectTable.name;
