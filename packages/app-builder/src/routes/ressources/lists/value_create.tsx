@@ -71,8 +71,9 @@ export function NewListValue({ listId }: { listId: string }) {
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
       setIsOpen(false);
+      formMethods.reset();
     }
-  }, [fetcher.data?.success, fetcher.state]);
+  }, [fetcher.data?.success, fetcher.state, formMethods]);
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
