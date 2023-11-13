@@ -14,3 +14,13 @@ export const Score = ({ score }: { score: number }) => {
     </Tag>
   );
 };
+
+export const ScorePanel = ({ score }: { score: number }) => {
+  const { t } = useTranslation(decisionsI18n);
+  return (
+    <div className="text-grey-00 flex w-full flex-col items-center justify-center gap-4 rounded bg-purple-100 p-8">
+      <div>{t('decisions:score')}</div>
+      <div className="text-l font-semibold">{score}</div>
+    </div>
+  );
+};

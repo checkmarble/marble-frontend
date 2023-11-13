@@ -6,6 +6,7 @@ import {
   Page,
   RulesDetail,
 } from '@app-builder/components';
+import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { TriggerObjectDetail } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
@@ -21,7 +22,6 @@ import {
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils';
 import { Button } from 'ui-design-system';
 import { Duplicate } from 'ui-icons';
 
@@ -48,8 +48,6 @@ export async function loader({ request, params }: LoaderArgs) {
 export default function DecisionPage() {
   const { decision } = useLoaderData<typeof loader>();
   const { t } = useTranslation(decisionsI18n);
-  const getCopyToClipboardProps = useGetCopyToClipboard();
-
   return (
     <Page.Container>
       <Page.Header className="justify-between">
@@ -58,16 +56,7 @@ export default function DecisionPage() {
             <Page.BackButton />
           </Link>
           {t('decisions:decision')}
-          <ClientOnly
-            fallback={<CopyToClipboardButton decisionId={decision.id} />}
-          >
-            {() => (
-              <CopyToClipboardButton
-                decisionId={decision.id}
-                {...getCopyToClipboardProps(decision.id)}
-              />
-            )}
-          </ClientOnly>
+          <CopyToClipboardButton decisionId={decision.id} />
         </div>
         {/* <Button>
           <Plus />
@@ -78,10 +67,7 @@ export default function DecisionPage() {
         <div className="grid grid-cols-[2fr_1fr] gap-8">
           <div className="flex flex-col gap-8">
             <div className="flex gap-8">
-              <div className="text-grey-00 flex w-full flex-col items-center justify-center gap-4 rounded bg-purple-100 p-8">
-                <div>{t('decisions:score')}</div>
-                <div className="text-l font-semibold">{decision.score}</div>
-              </div>
+              <ScorePanel score={decision.score} />
               <OutcomePanel outcome={decision.outcome} />
             </div>
             <DecisionDetail decision={decision} />
@@ -99,15 +85,19 @@ const CopyToClipboardButton = ({
   ...props
 }: {
   decisionId: string;
-}) => (
-  <div
-    className="border-grey-10 text-s flex cursor-pointer select-none items-center gap-1 rounded border p-2 font-normal"
-    {...props}
-  >
-    ID {decisionId}
-    <Duplicate />
-  </div>
-);
+}) => {
+  const getCopyToClipboardProps = useGetCopyToClipboard();
+  return (
+    <div
+      className="border-grey-10 text-s flex cursor-pointer select-none items-center gap-1 rounded border p-2 font-normal"
+      {...getCopyToClipboardProps(decisionId)}
+      {...props}
+    >
+      ID {decisionId}
+      <Duplicate />
+    </div>
+  );
+};
 
 const DecisionNotFound = () => {
   const navigate = useNavigate();
