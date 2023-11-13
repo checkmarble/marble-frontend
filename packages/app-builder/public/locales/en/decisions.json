@@ -15,5 +15,15 @@
   "outcome.decline": "Decline",
   "outcome.null": "Null",
   "outcome.unknown": "Unknown",
-  "live_update": "Live update"
+  "live_update": "Live update",
+  "decision": "Decision",
+  "add_to_case": "Add to Case",
+  "decision_detail.title": "Decision Detail",
+  "object_type": "Object Type",
+  "case": "Case",
+  "rules.title": "Rules",
+  "rules.status.triggered": "triggered",
+  "rules.status.error": "error",
+  "rules.status.unknown": "unknown",
+  "rules.description": "Description"
 }

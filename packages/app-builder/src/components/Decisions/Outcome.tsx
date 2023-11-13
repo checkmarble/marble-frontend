@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type Decision } from 'marble-api';
 import { useTranslation } from 'react-i18next';
@@ -31,3 +32,40 @@ export function Outcome({ outcome, ...tagProps }: OutcomeProps) {
     </Tag>
   );
 }
+
+export const OutcomePanel = ({ outcome }: { outcome: Decision['outcome'] }) => {
+  const { t } = useTranslation(decisionsI18n);
+  const { color, tKey } = outcomeMapping[outcome] ?? outcomeMapping.unknown;
+
+  return (
+    <div
+      className={clsx(
+        'flex w-full flex-col items-center justify-center gap-4 rounded p-8',
+        {
+          'bg-green-10': color === 'green',
+          'bg-yellow-10': color === 'yellow',
+          'bg-red-10': color === 'red',
+        }
+      )}
+    >
+      <div
+        className={clsx('text-s', {
+          'text-green-50': color === 'green',
+          'text-yellow-50': color === 'yellow',
+          'text-red-50': color === 'red',
+        })}
+      >
+        {t('decisions:outcome')}
+      </div>
+      <div
+        className={clsx('text-l font-semibold capitalize', {
+          'text-green-100': color === 'green',
+          'text-yellow-100': color === 'yellow',
+          'text-red-100': color === 'red',
+        })}
+      >
+        {t(tKey)}
+      </div>
+    </div>
+  );
+};
