@@ -14,8 +14,11 @@ import {
   type ScenarioIterationSummary,
 } from '@app-builder/models/scenario';
 import { findRuleValidation } from '@app-builder/services/validation';
+import { type Scenario } from 'marble-api';
+import * as R from 'remeda';
 
 export interface ScenarioRepository {
+  listScenarios(): Promise<Scenario[]>;
   getScenarioIterationRule(args: {
     ruleId: string;
   }): Promise<ScenarioIterationRule>;
@@ -39,6 +42,11 @@ export interface ScenarioRepository {
 
 export function getScenarioRepository() {
   return (marbleApiClient: MarbleApi): ScenarioRepository => ({
+    listScenarios: async () => {
+      const scenarios = await marbleApiClient.listScenarios();
+
+      return R.sortBy(scenarios, [({ createdAt }) => createdAt, 'desc']);
+    },
     getScenarioIterationRule: async ({ ruleId }) => {
       const { rule } = await marbleApiClient.getScenarioIterationRule(ruleId);
 

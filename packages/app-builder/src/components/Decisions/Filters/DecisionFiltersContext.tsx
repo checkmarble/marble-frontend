@@ -3,6 +3,7 @@ import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type Scenario } from 'marble-api';
 import { useCallback, useMemo } from 'react';
 import {
+  type DeepRequired,
   FormProvider,
   useController,
   useForm,
@@ -38,7 +39,8 @@ const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
   'DecisionFiltersContext'
 );
 
-const emptyDecisionFilters: DecisionFilters = {
+type DecisionFiltersForm = DeepRequired<DecisionFilters>;
+const emptyDecisionFilters: DecisionFiltersForm = {
   outcome: [],
   triggerObject: [],
   dateRange: {
@@ -59,9 +61,17 @@ export function DecisionFiltersProvider({
   submitDecisionFilters: (filterValues: DecisionFilters) => void;
   children: React.ReactNode;
 }) {
-  const formMethods = useForm({
+  const formMethods = useForm<DecisionFiltersForm>({
     defaultValues: emptyDecisionFilters,
-    values: { ...emptyDecisionFilters, ...filterValues },
+    values: {
+      outcome: filterValues.outcome ?? [],
+      triggerObject: filterValues.triggerObject ?? [],
+      scenarioId: filterValues.scenarioId ?? [],
+      dateRange: {
+        startDate: filterValues.dateRange?.startDate ?? '',
+        endDate: filterValues.dateRange?.endDate ?? '',
+      },
+    },
   });
   const { isDirty } = formMethods.formState;
   const submitDecisionFilters = useCallbackRef(() => {
@@ -94,27 +104,36 @@ export function DecisionFiltersProvider({
 export const useDecisionFiltersContext = DecisionFiltersContext.useValue;
 
 export function useOutcomeFilter() {
-  const { field } = useController<DecisionFilters, 'outcome'>({
+  const { field } = useController<DecisionFiltersForm, 'outcome'>({
     name: 'outcome',
   });
-  const selectedOutcomes = field.value ?? [];
+  const selectedOutcomes = field.value;
   const setSelectedOutcomes = field.onChange;
   return { selectedOutcomes, setSelectedOutcomes };
 }
 
+export function useDateRangeFilter() {
+  const { field } = useController<DecisionFiltersForm, 'dateRange'>({
+    name: 'dateRange',
+  });
+  const dateRange = field.value;
+  const setDateRange = field.onChange;
+  return { dateRange, setDateRange };
+}
+
 export function useScenarioFilter() {
   const { scenarios } = useDecisionFiltersContext();
-  const { field } = useController<DecisionFilters, 'scenarioId'>({
+  const { field } = useController<DecisionFiltersForm, 'scenarioId'>({
     name: 'scenarioId',
   });
-  const selectedScenarioIds = field.value ?? [];
+  const selectedScenarioIds = field.value;
   const setSelectedScenarioIds = field.onChange;
   return { scenarios, selectedScenarioIds, setSelectedScenarioIds };
 }
 
 export function useTriggerObjectFilter() {
   const { scenarios } = useDecisionFiltersContext();
-  const { field } = useController<DecisionFilters, 'triggerObject'>({
+  const { field } = useController<DecisionFiltersForm, 'triggerObject'>({
     name: 'triggerObject',
   });
   const triggerObjects = useMemo(
@@ -126,7 +145,7 @@ export function useTriggerObjectFilter() {
       ),
     [scenarios]
   );
-  const selectedTriggerObjects = field.value ?? [];
+  const selectedTriggerObjects = field.value;
   const setSelectedTriggerObjects = field.onChange;
   return { triggerObjects, selectedTriggerObjects, setSelectedTriggerObjects };
 }
@@ -151,7 +170,7 @@ export function useDecisionFiltersPartition() {
 
 export function useClearFilter() {
   const { submitDecisionFilters } = useDecisionFiltersContext();
-  const { setValue } = useFormContext<DecisionFilters>();
+  const { setValue } = useFormContext<DecisionFiltersForm>();
 
   return useCallback(
     (filterName: DecisionFilterName) => {

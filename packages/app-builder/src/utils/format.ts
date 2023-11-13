@@ -2,14 +2,14 @@ import cronstrue from 'cronstrue';
 import { type Options as ConstrueOptions } from 'cronstrue/dist/options';
 
 export function formatDateTime(
-  createdAt: string,
+  createdAt: string | Date,
   { language, ...options }: { language: string } & Intl.DateTimeFormatOptions
 ) {
   return Intl.DateTimeFormat(language, {
     dateStyle: 'short',
     timeStyle: 'short',
     ...options,
-  }).format(new Date(createdAt));
+  }).format(typeof createdAt === 'string' ? new Date(createdAt) : createdAt);
 }
 
 export function formatNumber(
