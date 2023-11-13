@@ -11,7 +11,7 @@ const FilterPopoverContent = forwardRef<
       <Popover.Content
         ref={ref}
         className={clsx(
-          'animate-slideUpAndFade bg-grey-00 border-grey-10 flex flex-col gap-2 rounded border p-1 shadow-md will-change-[transform,opacity]',
+          'animate-slideUpAndFade bg-grey-00 border-grey-10 rounded border shadow-md will-change-[transform,opacity]',
           className
         )}
         side="bottom"
