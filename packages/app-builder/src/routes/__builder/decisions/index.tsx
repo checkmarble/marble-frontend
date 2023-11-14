@@ -70,10 +70,16 @@ export default function Decisions() {
               outcome: decisionFilters.outcome ?? [],
               triggerObject: decisionFilters.triggerObject ?? [],
               dateRange: decisionFilters.dateRange
-                ? {
-                    endDate: decisionFilters.dateRange.endDate || null,
-                    startDate: decisionFilters.dateRange.startDate || null,
-                  }
+                ? decisionFilters.dateRange.type === 'static'
+                  ? {
+                      type: 'static',
+                      endDate: decisionFilters.dateRange.endDate || null,
+                      startDate: decisionFilters.dateRange.startDate || null,
+                    }
+                  : {
+                      type: 'dynamic',
+                      fromNow: decisionFilters.dateRange.fromNow,
+                    }
                 : {},
               scenarioId: decisionFilters.scenarioId ?? [],
             },

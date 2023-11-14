@@ -10,18 +10,42 @@ import {
   useFormContext,
 } from 'react-hook-form';
 import * as R from 'remeda';
+import { Temporal } from 'temporal-polyfill';
 import * as z from 'zod';
 
 import { type DecisionFilterName, decisionFilterNames } from './filters';
+
+export const fromNowDurations = [
+  Temporal.Duration.from({ days: -7 }).toString(),
+  Temporal.Duration.from({ days: -14 }).toString(),
+  Temporal.Duration.from({ days: -30 }).toString(),
+  Temporal.Duration.from({ months: -3 }).toString(),
+  Temporal.Duration.from({ months: -6 }).toString(),
+  Temporal.Duration.from({ months: -12 }).toString(),
+] as const;
 
 export const decisionFiltersSchema = z.object({
   outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
   triggerObject: z.array(z.string()).optional(),
   dateRange: z
-    .object({
-      startDate: z.string().optional(),
-      endDate: z.string().optional(),
-    })
+    .discriminatedUnion('type', [
+      z.object({
+        type: z.literal('static'),
+        startDate: z.string().datetime().optional(),
+        endDate: z.string().datetime().optional(),
+      }),
+      z.object({
+        type: z.literal('dynamic'),
+        fromNow: z.string().refine((value) => {
+          try {
+            Temporal.Duration.from(value);
+            return true;
+          } catch {
+            return false;
+          }
+        }),
+      }),
+    ])
     .optional(),
   scenarioId: z.array(z.string()).optional(),
 });
@@ -39,16 +63,47 @@ const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
   'DecisionFiltersContext'
 );
 
-type DecisionFiltersForm = DeepRequired<DecisionFilters>;
+export type DecisionFiltersForm = DeepRequired<DecisionFilters>;
 const emptyDecisionFilters: DecisionFiltersForm = {
   outcome: [],
   triggerObject: [],
   dateRange: {
+    type: 'static',
     startDate: '',
     endDate: '',
   },
   scenarioId: [],
 };
+
+function adaptFilterValues(filterValues: DecisionFilters): DecisionFiltersForm {
+  const adaptedFilterValues: DecisionFiltersForm = {
+    outcome: filterValues.outcome ?? [],
+    triggerObject: filterValues.triggerObject ?? [],
+    scenarioId: filterValues.scenarioId ?? [],
+    dateRange: {
+      type: 'static',
+      startDate: '',
+      endDate: '',
+    },
+  };
+  if (filterValues.dateRange?.type === 'static') {
+    adaptedFilterValues.dateRange = {
+      type: 'static',
+      startDate: filterValues.dateRange.startDate ?? '',
+      endDate: filterValues.dateRange.endDate ?? '',
+    };
+  }
+  if (
+    filterValues.dateRange?.type === 'dynamic' &&
+    filterValues.dateRange.fromNow
+  ) {
+    adaptedFilterValues.dateRange = {
+      type: 'dynamic',
+      fromNow: filterValues.dateRange.fromNow,
+    };
+  }
+  return adaptedFilterValues;
+}
 
 export function DecisionFiltersProvider({
   filterValues,
@@ -63,15 +118,7 @@ export function DecisionFiltersProvider({
 }) {
   const formMethods = useForm<DecisionFiltersForm>({
     defaultValues: emptyDecisionFilters,
-    values: {
-      outcome: filterValues.outcome ?? [],
-      triggerObject: filterValues.triggerObject ?? [],
-      scenarioId: filterValues.scenarioId ?? [],
-      dateRange: {
-        startDate: filterValues.dateRange?.startDate ?? '',
-        endDate: filterValues.dateRange?.endDate ?? '',
-      },
-    },
+    values: adaptFilterValues(filterValues),
   });
   const { isDirty } = formMethods.formState;
   const submitDecisionFilters = useCallbackRef(() => {
