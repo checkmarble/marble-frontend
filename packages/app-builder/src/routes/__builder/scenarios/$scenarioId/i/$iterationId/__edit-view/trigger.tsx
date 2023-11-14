@@ -34,6 +34,7 @@ import { fromParams } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { type ActionArgs, json, type LoaderArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
@@ -137,6 +138,7 @@ export async function action({ request, params }: ActionArgs) {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
+    Sentry.captureException(error);
 
     return json(
       {
