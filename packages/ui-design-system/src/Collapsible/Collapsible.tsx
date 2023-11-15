@@ -1,4 +1,5 @@
 import {
+  type CollapsibleContentProps,
   type CollapsibleProps,
   Content,
   Root,
@@ -15,7 +16,7 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
         defaultOpen={true}
         ref={ref}
         className={clsx(
-          'border-grey-10 flex w-full flex-col rounded-lg border',
+          'border-grey-10 flex w-full flex-col overflow-hidden rounded-lg border',
           className
         )}
         {...props}
@@ -41,32 +42,31 @@ const CollapsibleTitle = ({
     >
       {children}
       <SmallarrowUp
+        aria-hidden
         height="24px"
         width="24px"
-        className="border-grey-10 group-radix-state-open:rotate-180 rounded border transition-transform"
+        className="border-grey-10 group-radix-state-open:rotate-180 rounded border transition-transform duration-200"
       />
     </div>
   </Trigger>
 );
 
-const CollapsibleContent = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => (
-  <Content asChild>
-    <div
-      className={clsx(
-        'text-s border-grey-10 border-t p-4 lg:p-8',
-        'radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden',
-        className
-      )}
-    >
-      {children}
-    </div>
-  </Content>
+const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
+  function CollapsibleContent({ children, className, ...props }, ref) {
+    return (
+      <Content
+        className={clsx(
+          'border-grey-10 border-t',
+          'radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden',
+          className
+        )}
+        {...props}
+        ref={ref}
+      >
+        <div className="text-s p-4 lg:p-8">{children}</div>
+      </Content>
+    );
+  }
 );
 
 export const Collapsible = {

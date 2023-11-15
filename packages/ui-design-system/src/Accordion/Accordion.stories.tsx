@@ -26,9 +26,15 @@ const items = [
 export const Default: StoryFn<typeof Accordion> = () => (
   <Accordion.Container>
     {items.map((item) => (
-      <Accordion.Item key={item.title} value={item.title}>
+      <Accordion.Item
+        key={item.title}
+        value={item.title}
+        className="overflow-hidden focus-within:relative"
+      >
         <Accordion.Title>{item.title}</Accordion.Title>
-        <Accordion.Content>{item.description}</Accordion.Content>
+        <Accordion.Content>
+          <div className="p-2">{item.description}</div>
+        </Accordion.Content>
       </Accordion.Item>
     ))}
   </Accordion.Container>
