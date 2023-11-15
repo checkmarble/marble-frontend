@@ -9,7 +9,7 @@ import { ArrowLeft, ArrowRight } from 'ui-icons';
 
 import { CtaClassName } from '../Button/Button';
 
-type CalendarProps = DayPickerSingleProps | DayPickerRangeProps;
+export type CalendarProps = DayPickerSingleProps | DayPickerRangeProps;
 
 export type { DateRange };
 

@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { type DateRange } from 'react-day-picker';
 
-import { Calendar } from './Calendar';
+import { Calendar, type CalendarProps } from './Calendar';
 
-const Demo = ({ mode, ...args }: Parameters<typeof Calendar>[0]) => {
+const Demo = ({ mode, ...args }: CalendarProps) => {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     undefined
@@ -13,10 +13,9 @@ const Demo = ({ mode, ...args }: Parameters<typeof Calendar>[0]) => {
   return (
     <div className="flex flex-col gap-y-4">
       <Calendar
-        {...(args as any)}
-        mode={mode}
-        selected={mode === 'single' ? date : dateRange}
-        onSelect={mode === 'single' ? setDate : setDateRange}
+        {...(mode === 'single'
+          ? { ...args, mode, selected: date, onSelect: setDate }
+          : { ...args, mode, selected: dateRange, onSelect: setDateRange })}
       />
 
       {mode === 'single' && (
