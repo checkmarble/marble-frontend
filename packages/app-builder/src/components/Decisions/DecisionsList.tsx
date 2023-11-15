@@ -4,6 +4,9 @@ import {
   type OutcomeProps,
 } from '@app-builder/components';
 import { formatDateTime } from '@app-builder/utils/format';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUID } from '@app-builder/utils/short-uuid';
+import { useNavigate } from '@remix-run/react';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Decision } from 'marble-api';
@@ -11,22 +14,23 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 
-export function DecisionsList({
-  decisions,
-  selectedDecisionId,
-  onSelectDecision,
-}: {
-  decisions: Decision[];
-  selectedDecisionId: string | null;
-  onSelectDecision: (decisionId: string) => void;
-}) {
+import { Score } from './Score';
+
+export function DecisionsList({ decisions }: { decisions: Decision[] }) {
   const {
     t,
     i18n: { language },
   } = useTranslation(decisionsI18n);
+  const navigate = useNavigate();
 
   const columns = useMemo<ColumnDef<Decision, string>[]>(
     () => [
+      {
+        id: 'created_at',
+        accessorFn: (row) => formatDateTime(row.created_at, { language }),
+        header: t('decisions:created_at'),
+        size: 100,
+      },
       {
         id: 'scenario.name',
         accessorFn: (row) => row.scenario.name,
@@ -38,18 +42,22 @@ export function DecisionsList({
         accessorFn: (row) => row.trigger_object_type,
         header: t('decisions:trigger_object.type'),
         size: 100,
+        cell: ({ getValue }) => (
+          <span className="capitalize">{getValue<string>()}</span>
+        ),
       },
       {
         id: 'score',
         accessorFn: (row) => row.score,
         header: t('decisions:score'),
-        size: 100,
+        size: 50,
+        cell: ({ getValue }) => <Score score={getValue<number>()} />,
       },
       {
         id: 'outcome',
         accessorFn: (row) => row.outcome,
         header: t('decisions:outcome'),
-        size: 100,
+        size: 50,
         cell: ({ getValue }) => (
           <Outcome
             border="square"
@@ -57,12 +65,6 @@ export function DecisionsList({
             outcome={getValue<OutcomeProps['outcome']>()}
           />
         ),
-      },
-      {
-        id: 'created_at',
-        accessorFn: (row) => formatDateTime(row.created_at, { language }),
-        header: t('decisions:created_at'),
-        size: 200,
       },
     ],
     [language, t]
@@ -83,14 +85,14 @@ export function DecisionsList({
           return (
             <Table.Row
               key={row.id}
-              className={clsx(
-                'hover:bg-grey-02 cursor-pointer',
-                row.original.id === selectedDecisionId && 'bg-grey-02'
-              )}
+              className={clsx('hover:bg-grey-02 cursor-pointer')}
               row={row}
-              onClick={(e) => {
-                onSelectDecision(row.original.id);
-                e.stopPropagation(); // To prevent DecisionsRightPanel from closing
+              onClick={() => {
+                navigate(
+                  getRoute('/decisions/:decisionId', {
+                    decisionId: fromUUID(row.original.id),
+                  })
+                );
               }}
             />
           );

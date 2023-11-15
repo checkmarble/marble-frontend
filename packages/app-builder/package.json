@@ -30,6 +30,7 @@
     "tailwindcss": "3.3.2"
   },
   "dependencies": {
+    "@ariakit/react": "^0.3.5",
     "@google-cloud/logging-winston": "^5.3.0",
     "@hookform/devtools": "^4.3.1",
     "@hookform/resolvers": "^3.3.1",
@@ -38,6 +39,7 @@
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-select": "^1.2.2",
+    "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@remix-run/node": "^1.19.3",
@@ -48,6 +50,7 @@
     "autosuggest-highlight": "^3.3.4",
     "clsx": "^1.2.1",
     "cronstrue": "^2.32.0",
+    "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
     "firebase": "^9.23.0",
     "i18next": "^23.5.1",

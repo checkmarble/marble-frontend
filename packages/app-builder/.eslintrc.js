@@ -44,6 +44,12 @@ module.exports = {
             allowBoolean: true,
           },
         ],
+        'jsx-a11y/no-autofocus': [
+          2,
+          {
+            ignoreNonDOM: true,
+          },
+        ],
       },
     },
     {

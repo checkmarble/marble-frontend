@@ -6,6 +6,7 @@ import {
   type User,
 } from '@app-builder/models';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
+import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
@@ -25,6 +26,7 @@ import { type SessionService } from './session.server';
 interface AuthenticatedInfo {
   apiClient: MarbleApi;
   editor: EditorRepository;
+  decision: DecisionRepository;
   dataModelRepository: DataModelRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
@@ -70,6 +72,7 @@ export function makeAuthenticationServerService(
   marbleAPIClient: MarbleAPIRepository,
   userRepository: (marbleApiClient: MarbleApi) => UserRepository,
   editorRepository: (marbleApiClient: MarbleApi) => EditorRepository,
+  decisionRepository: (marbleApiClient: MarbleApi) => DecisionRepository,
   organizationRepository: (
     marbleApiClient: MarbleApi,
     organizationId: string
@@ -237,6 +240,7 @@ export function makeAuthenticationServerService(
     return {
       apiClient,
       editor: editorRepository(apiClient),
+      decision: decisionRepository(apiClient),
       scenario: scenarioRepository(apiClient),
       organization: organizationRepository(apiClient, user.organizationId),
       dataModelRepository: dataModelRepository(apiClient),
