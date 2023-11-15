@@ -28,7 +28,7 @@ import { LogoStandard } from 'ui-icons';
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { serverServices } from './services/init.server';
-import { SegmentScript } from './services/segment';
+import { useSegmentPageTracking } from './services/segment';
 import tailwindStyles from './tailwind.css';
 import { getClientEnvVars } from './utils/environment.server';
 
@@ -148,12 +148,13 @@ function App() {
     void i18n.changeLanguage(locale);
   }, [locale, i18n]);
 
+  useSegmentPageTracking();
+
   return (
     <html lang={locale} dir={i18n.dir()}>
       <head>
         <Meta />
         <Links />
-        <SegmentScript writeKey={ENV.SEGMENT_WRITE_KEY} />
       </head>
       <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
         <AuthenticityTokenProvider token={csrf}>

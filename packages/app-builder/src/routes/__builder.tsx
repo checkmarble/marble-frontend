@@ -5,7 +5,10 @@ import {
   type SidebarLinkProps,
 } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
-import { useSegmentIdentification } from '@app-builder/services/segment';
+import {
+  segment,
+  useSegmentIdentification,
+} from '@app-builder/services/segment';
 import * as Popover from '@radix-ui/react-popover';
 import { json, type LoaderArgs } from '@remix-run/node';
 import { Form, Outlet, useLoaderData } from '@remix-run/react';
@@ -131,7 +134,7 @@ export default function Builder() {
                         variant="secondary"
                         type="submit"
                         onClick={() => {
-                          window.analytics.reset();
+                          void segment.reset();
                         }}
                       >
                         <Logout height="24px" width="24px" />
