@@ -1,6 +1,7 @@
 import { assertNever } from 'typescript-utils';
 
 import { type DecisionFilterName } from '../filters';
+import { DateRangeFilter } from './DateRangeFilter';
 import { OutcomeFilter } from './OutcomeFilter';
 import { ScenarioFilter } from './ScenarioFilter';
 import { TriggerObjectFilter } from './TriggerObjectFilter';
@@ -12,7 +13,7 @@ export function FilterDetail({
 }) {
   switch (filterName) {
     case 'dateRange':
-      return 'dateRange';
+      return <DateRangeFilter />;
     case 'scenarioId':
       return <ScenarioFilter />;
     case 'outcome':

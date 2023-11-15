@@ -50,6 +50,7 @@
     "autosuggest-highlight": "^3.3.4",
     "clsx": "^1.2.1",
     "cronstrue": "^2.32.0",
+    "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
     "firebase": "^9.23.0",
     "i18next": "^23.5.1",

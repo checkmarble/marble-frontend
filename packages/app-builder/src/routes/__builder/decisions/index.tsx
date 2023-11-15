@@ -35,7 +35,7 @@ export const handle = {
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { decision, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
@@ -43,10 +43,9 @@ export async function loader({ request }: LoaderArgs) {
   if (!parsedQuery.success) {
     return redirect(getRoute('/decisions'));
   }
-
   const [decisions, scenarios] = await Promise.all([
-    apiClient.listDecisions(parsedQuery.data),
-    apiClient.listScenarios(),
+    decision.listDecisions(parsedQuery.data),
+    scenario.listScenarios(),
   ]);
 
   return json({
