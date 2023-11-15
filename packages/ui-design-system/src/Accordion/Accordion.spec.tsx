@@ -1,24 +1,22 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Accordion } from './Accordion';
 
 describe('Accordion', () => {
   it('should render successfully', async () => {
-    const { baseElement, getByText } = render(
+    render(
       <Accordion.Container>
-        <Accordion.Title>Hello</Accordion.Title>
-        <Accordion.Content>World</Accordion.Content>
+        <Accordion.Item value="item-1">
+          <Accordion.Title>Hello</Accordion.Title>
+          <Accordion.Content>World</Accordion.Content>
+        </Accordion.Item>
       </Accordion.Container>
     );
-    expect(baseElement).toBeTruthy();
-    // it should be open by default
-    const content = getByText('World');
-    expect(content).toBeInTheDocument();
+    // it should be close by default
+    expect(screen.queryByText('World')).not.toBeInTheDocument();
 
-    const title = getByText('Hello');
-    await userEvent.click(title);
-
-    expect(baseElement).toHaveAttribute('data-state', 'closed');
+    await userEvent.click(screen.getByText('Hello'));
+    expect(screen.queryByText('World')).toBeInTheDocument();
   });
 });
