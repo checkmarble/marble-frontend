@@ -14,14 +14,16 @@ export const TriggerObjectDetail = ({
       <Collapsible.Title>
         {t('decisions:trigger_object.type')}
       </Collapsible.Title>
-      <Collapsible.Content className="flex flex-col gap-2">
-        {Object.entries(triggerObject).map(([property, value]) => (
-          <div key={property}>
-            <span className="font-semibold capitalize">{property}:</span>
-            &nbsp;
-            {value ?? '-'}
-          </div>
-        ))}
+      <Collapsible.Content>
+        <div className="flex flex-col gap-2">
+          {Object.entries(triggerObject).map(([property, value]) => (
+            <div key={property}>
+              <span className="font-semibold capitalize">{property}:</span>
+              &nbsp;
+              {value ?? '-'}
+            </div>
+          ))}
+        </div>
       </Collapsible.Content>
     </Collapsible.Container>
   );

@@ -19,25 +19,27 @@ export const DecisionDetail = ({ decision }: { decision: Decision }) => {
       <Collapsible.Title>
         {t('decisions:decision_detail.title')}
       </Collapsible.Title>
-      <Collapsible.Content className="grid grid-cols-[minmax(min-content,_1fr)_4fr] items-center gap-8">
-        <DetailLabel>{t('decisions:created_at')}</DetailLabel>
-        <div>{formatDateTime(decision.created_at, { language })}</div>
-        <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
-        <Link
-          to={getRoute('/scenarios/:scenarioId', {
-            scenarioId: fromUUID(decision.scenario.id),
-          })}
-        >
-          <div className="font-semibold capitalize text-purple-100">
-            {decision.scenario.name}
-          </div>
-        </Link>
-        <DetailLabel>{t('decisions:object_type')}</DetailLabel>
-        <div className="capitalize">{decision.trigger_object_type}</div>
-        {/* <DetailLabel>{t('decisions:case')}</DetailLabel>
+      <Collapsible.Content>
+        <div className="grid grid-cols-[minmax(min-content,_1fr)_4fr] grid-rows-4 items-center gap-x-8 gap-y-4">
+          <DetailLabel>{t('decisions:created_at')}</DetailLabel>
+          <div>{formatDateTime(decision.created_at, { language })}</div>
+          <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
+          <Link
+            to={getRoute('/scenarios/:scenarioId', {
+              scenarioId: fromUUID(decision.scenario.id),
+            })}
+          >
+            <div className="font-semibold capitalize text-purple-100">
+              {decision.scenario.name}
+            </div>
+          </Link>
+          <DetailLabel>{t('decisions:object_type')}</DetailLabel>
+          <div className="capitalize">{decision.trigger_object_type}</div>
+          {/* <DetailLabel>{t('decisions:case')}</DetailLabel>
         <div>-</div> */}
-        <DetailLabel>{t('decisions:score')}</DetailLabel>
-        <Score score={decision.score} />
+          <DetailLabel>{t('decisions:score')}</DetailLabel>
+          <Score score={decision.score} />
+        </div>
       </Collapsible.Content>
     </Collapsible.Container>
   );

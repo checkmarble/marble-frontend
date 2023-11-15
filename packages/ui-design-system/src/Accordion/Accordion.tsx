@@ -1,4 +1,6 @@
 import {
+  type AccordionContentProps,
+  type AccordionTriggerProps,
   Content,
   Header,
   Item,
@@ -6,6 +8,7 @@ import {
   Trigger,
 } from '@radix-ui/react-accordion';
 import clsx from 'clsx';
+import { forwardRef } from 'react';
 import { Arrow2Down } from 'ui-icons';
 
 const AccordionContainer = ({
@@ -18,59 +21,54 @@ const AccordionContainer = ({
   return (
     <Root
       type="multiple"
-      className={clsx('flex flex-col gap-4 lg:gap-8', className)}
+      className={clsx('flex flex-col gap-4 lg:gap-8 ', className)}
     >
       {children}
     </Root>
   );
 };
 
-const AccordionTitle = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <Trigger asChild>
-      <Header
-        className={clsx(
-          'group flex cursor-pointer items-center justify-between gap-4',
-          className
-        )}
-      >
-        {children}
-        <Arrow2Down
-          height="24px"
-          width="24px"
-          className="group-radix-state-closed:rotate-180 rounded transition-transform"
-        />
+const AccordionTitle = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
+  function AccordionTitle({ children, className, ...props }, ref) {
+    return (
+      <Header className="flex">
+        <Trigger
+          className={clsx(
+            'group flex flex-1 cursor-pointer items-center justify-between gap-4',
+            className
+          )}
+          {...props}
+          ref={ref}
+        >
+          {children}
+          <Arrow2Down
+            aria-hidden
+            height="24px"
+            width="24px"
+            className="group-radix-state-closed:rotate-180 rounded transition-transform"
+          />
+        </Trigger>
       </Header>
-    </Trigger>
-  );
-};
+    );
+  }
+);
 
-const AccordionContent = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <Content asChild>
-      <div
+const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
+  function AccordionContent({ children, className, ...props }, ref) {
+    return (
+      <Content
         className={clsx(
           'radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden',
           className
         )}
+        {...props}
+        ref={ref}
       >
         {children}
-      </div>
-    </Content>
-  );
-};
+      </Content>
+    );
+  }
+);
 
 export const Accordion = {
   Container: AccordionContainer,
