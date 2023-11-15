@@ -7,6 +7,7 @@
   "filters": "filters",
   "filters.new": "new filter",
   "filters.clear": "clear filters",
+  "filters.date_range.title": "creation date is:",
   "score": "Score",
   "outcome": "Outcome",
   "created_at": "Date",
