@@ -8,7 +8,6 @@ import { json, type LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
 import { Tag } from 'ui-design-system';
 import { Scenarios } from 'ui-icons';
 
@@ -24,13 +23,8 @@ export async function loader({ request }: LoaderArgs) {
   const scenarios = await apiClient.listScenarios();
   const { data_model } = await apiClient.getDataModel();
 
-  const sortedScenarios = R.sortBy(scenarios, [
-    ({ createdAt }) => createdAt,
-    'desc',
-  ]);
-
   return json({
-    scenarios: sortedScenarios,
+    scenarios,
     dataModel: adaptDataModelDto(data_model),
   });
 }
