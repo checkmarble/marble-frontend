@@ -1,5 +1,4 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { CreateScenario } from '@app-builder/routes/ressources/scenarios/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -17,21 +16,19 @@ export const handle = {
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  const scenarios = await apiClient.listScenarios();
-  const { data_model } = await apiClient.getDataModel();
+  const scenarios = await scenario.listScenarios();
 
   return json({
     scenarios,
-    dataModel: adaptDataModelDto(data_model),
   });
 }
 
 export default function ScenariosPage() {
   const { t } = useTranslation(handle.i18n);
-  const { scenarios, dataModel } = useLoaderData<typeof loader>();
+  const { scenarios } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -42,7 +39,7 @@ export default function ScenariosPage() {
       <Page.Content>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row justify-end">
-            <CreateScenario dataModel={dataModel} />
+            <CreateScenario />
           </div>
           <div className="flex max-w-3xl flex-col gap-2 lg:gap-4">
             {scenarios.length ? (

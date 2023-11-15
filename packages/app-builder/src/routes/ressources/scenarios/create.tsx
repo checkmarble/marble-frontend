@@ -1,12 +1,16 @@
-import { type TableModel } from '@app-builder/models/data-model';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { type ActionArgs, json, redirect } from '@remix-run/node';
+import {
+  type ActionArgs,
+  json,
+  type LoaderArgs,
+  redirect,
+} from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Input, Modal, Select } from 'ui-design-system';
 import { Plus } from 'ui-icons';
@@ -16,10 +20,22 @@ export const handle = {
   i18n: ['scenarios', 'navigation', 'common'] satisfies Namespace,
 };
 
+export async function loader({ request }: LoaderArgs) {
+  const { authService } = serverServices;
+  const { dataModelRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
+  const dataModel = await dataModelRepository.getDataModel();
+
+  return json({
+    dataModel,
+  });
+}
+
 const createScenarioFormSchema = z.object({
-  name: z.string().nonempty(),
+  name: z.string().min(1),
   description: z.string(),
-  triggerObjectType: z.string().nonempty(),
+  triggerObjectType: z.string().min(1),
 });
 
 export async function action({ request }: ActionArgs) {
@@ -63,10 +79,8 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export function CreateScenario({ dataModel }: { dataModel: TableModel[] }) {
+export function CreateScenario() {
   const { t } = useTranslation(handle.i18n);
-  const fetcher = useFetcher<typeof action>();
-  const [triggerObjectType, setSelectedTriggerObjectType] = useState('');
 
   return (
     <Modal.Root>
@@ -77,72 +91,90 @@ export function CreateScenario({ dataModel }: { dataModel: TableModel[] }) {
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <fetcher.Form method="POST" action="/ressources/scenarios/create">
-          <Modal.Title>{t('scenarios:create_scenario.title')}</Modal.Title>
-          <div className="bg-grey-00 flex flex-col gap-8 p-8">
-            <div className="flex flex-1 flex-col gap-4">
-              <label htmlFor="name">
-                {t('scenarios:create_scenario.name')}
-              </label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                placeholder={t('scenarios:create_scenario.name_placeholder')}
-              />
-              <label htmlFor="description">
-                {t('scenarios:create_scenario.description')}
-              </label>
-              <Input
-                id="description"
-                name="description"
-                type="text"
-                placeholder={t(
-                  'scenarios:create_scenario.description_placeholder'
-                )}
-              />
-              <label>
-                {t('scenarios:create_scenario.trigger_object_title')}
-              </label>
-              <Select.Default
-                placeholder={t(
-                  'scenarios:create_scenario.trigger_object_placeholder'
-                )}
-                onValueChange={(dataModelName) => {
-                  setSelectedTriggerObjectType(dataModelName);
-                }}
-              >
-                {dataModel.map((dataModel) => {
-                  return (
-                    <Select.DefaultItem
-                      key={dataModel.name}
-                      value={dataModel.name}
-                    >
-                      {dataModel.name}
-                    </Select.DefaultItem>
-                  );
-                })}
-              </Select.Default>
-              <HiddenInputs triggerObjectType={triggerObjectType} />
-            </div>
-            <div className="flex flex-1 flex-row gap-2">
-              <Modal.Close asChild>
-                <Button className="flex-1" variant="secondary">
-                  {t('common:cancel')}
-                </Button>
-              </Modal.Close>
-              <Button
-                className="flex-1"
-                variant="primary"
-                type="submit"
-                name="create"
-              >
-                {t('common:save')}
-              </Button>
-            </div>
-          </div>
-        </fetcher.Form>
+        <CreateScenarioContent />
       </Modal.Content>
     </Modal.Root>
+  );
+}
+
+function CreateScenarioContent() {
+  const { t } = useTranslation(handle.i18n);
+  const dataModelFetcher = useFetcher<typeof loader>();
+  const createScenarioFetcher = useFetcher<typeof action>();
+  const [triggerObjectType, setSelectedTriggerObjectType] = useState('');
+
+  const { load: loadDataModel } = dataModelFetcher;
+  useEffect(() => {
+    loadDataModel('/ressources/scenarios/create');
+  }, [loadDataModel]);
+
+  const dataModel = dataModelFetcher.data?.dataModel ?? [];
+
+  return (
+    <createScenarioFetcher.Form
+      method="POST"
+      action="/ressources/scenarios/create"
+    >
+      <Modal.Title>{t('scenarios:create_scenario.title')}</Modal.Title>
+      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+        <div className="flex flex-1 flex-col gap-4">
+          <label htmlFor="name">{t('scenarios:create_scenario.name')}</label>
+          <Input
+            id="name"
+            name="name"
+            type="text"
+            placeholder={t('scenarios:create_scenario.name_placeholder')}
+          />
+          <label htmlFor="description">
+            {t('scenarios:create_scenario.description')}
+          </label>
+          <Input
+            id="description"
+            name="description"
+            type="text"
+            placeholder={t('scenarios:create_scenario.description_placeholder')}
+          />
+          <label>{t('scenarios:create_scenario.trigger_object_title')}</label>
+          <Select.Default
+            placeholder={t(
+              'scenarios:create_scenario.trigger_object_placeholder'
+            )}
+            onValueChange={(dataModelName) => {
+              setSelectedTriggerObjectType(dataModelName);
+            }}
+          >
+            {dataModelFetcher.state === 'loading' && (
+              <p>{t('common:loading')}</p>
+            )}
+            {dataModel.map((dataModel) => {
+              return (
+                <Select.DefaultItem key={dataModel.name} value={dataModel.name}>
+                  {dataModel.name}
+                </Select.DefaultItem>
+              );
+            })}
+            {dataModelFetcher.state === 'idle' && dataModel.length === 0 && (
+              <p>{t('scenarios:create_scenario.no_trigger_object')}</p>
+            )}
+          </Select.Default>
+          <HiddenInputs triggerObjectType={triggerObjectType} />
+        </div>
+        <div className="flex flex-1 flex-row gap-2">
+          <Modal.Close asChild>
+            <Button className="flex-1" variant="secondary">
+              {t('common:cancel')}
+            </Button>
+          </Modal.Close>
+          <Button
+            className="flex-1"
+            variant="primary"
+            type="submit"
+            name="create"
+          >
+            {t('common:save')}
+          </Button>
+        </div>
+      </div>
+    </createScenarioFetcher.Form>
   );
 }

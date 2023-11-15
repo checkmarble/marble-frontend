@@ -76,6 +76,7 @@
   "create_scenario.description_placeholder": "Add a description",
   "create_scenario.name_placeholder": "Add a name",
   "create_scenario.trigger_object_placeholder": "Select a trigger object",
+  "create_scenario.no_trigger_object": "No trigger object. Edit your data model to add one.",
   "create_scenario.trigger_object_title": "Trigger Object",
   "scenario.create_rule.title": "New Rule",
   "create_rule.title": "New Rule",
