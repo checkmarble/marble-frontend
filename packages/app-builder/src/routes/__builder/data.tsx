@@ -43,7 +43,7 @@ const mapFieldToTableRow = (field: DataModelField) => ({
   id: field.id,
   name: field.name,
   description: field.description,
-  type: field.dataType,
+  dataType: field.dataType,
   displayType: field.isEnum ? `${field.dataType} (enum)` : field.dataType,
   nullable: field.nullable,
   isEnum: field.isEnum,
@@ -148,13 +148,7 @@ function TableDetails({
             <div className="flex flex-row items-center justify-between">
               <FormatDescription description={cell.row.original.description} />
               {canEditDataModel && (
-                <EditField
-                  key={cell.row.original.id}
-                  fieldId={cell.row.original.id}
-                  description={cell.row.original.description}
-                  isEnum={cell.row.original.isEnum}
-                  type={cell.row.original.type}
-                >
+                <EditField key={cell.row.original.id} field={cell.row.original}>
                   <div className="text-grey-00 group-hover:text-grey-100 relative rounded border-2 border-solid bg-transparent p-2 transition-colors ease-in-out">
                     <Edit width={'24px'} height={'24px'} />
                   </div>

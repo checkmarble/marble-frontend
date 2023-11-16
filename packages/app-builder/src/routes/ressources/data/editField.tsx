@@ -5,7 +5,7 @@ import {
   FormItem,
   FormLabel,
 } from '@app-builder/components/Form';
-import { type DataType, EnumDataTypes } from '@app-builder/models';
+import { type DataModelField, EnumDataTypes } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -66,16 +66,10 @@ export async function action({ request }: ActionArgs) {
 }
 
 export function EditField({
-  fieldId,
-  description,
-  isEnum,
-  type,
+  field: inputField,
   children,
 }: {
-  fieldId: string;
-  description: string;
-  isEnum: boolean;
-  type: DataType;
+  field: DataModelField;
   children: React.ReactNode;
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -85,9 +79,9 @@ export function EditField({
     progressive: true,
     resolver: zodResolver(editFieldFormSchema),
     defaultValues: {
-      description,
-      fieldId,
-      isEnum,
+      description: inputField.description,
+      fieldId: inputField.id,
+      isEnum: inputField.isEnum,
     },
   });
   const { control, register, setValue } = formMethods;
@@ -139,7 +133,7 @@ export function EditField({
                   )}
                 />
               </div>
-              {EnumDataTypes.includes(type) && (
+              {EnumDataTypes.includes(inputField.dataType) && (
                 <FormField
                   name="isEnum"
                   control={control}
@@ -147,7 +141,7 @@ export function EditField({
                     <FormItem className="flex flex-row items-center gap-4">
                       <FormControl>
                         <Checkbox
-                          defaultChecked={isEnum}
+                          defaultChecked={inputField.isEnum}
                           onCheckedChange={(checked) => {
                             field.onChange(checked);
                           }}
