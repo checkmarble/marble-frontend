@@ -43,6 +43,25 @@ type GetRoutesPaths<
 
 export type Paths = GetRoutesPaths<typeof routes>;
 
+type GetRoutesIds<T extends readonly Route[]> = T extends readonly [
+  infer Head,
+  ...infer Tail
+]
+  ? [
+      ...(Head extends Route
+        ? [
+            Head['id'],
+            ...(Head['children'] extends readonly Route[]
+              ? GetRoutesIds<Head['children']>
+              : [])
+          ]
+        : []),
+      ...(Tail extends readonly Route[] ? GetRoutesIds<Tail> : [])
+    ]
+  : [];
+
+export type RouteIDs = GetRoutesIds<typeof routes>[number];
+
 type NonEmptySplit<
   Value extends string,
   Separator extends string
