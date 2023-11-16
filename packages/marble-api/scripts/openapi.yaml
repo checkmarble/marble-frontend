@@ -16,6 +16,8 @@ tags:
     description: Operations about organizations.
   - name: Decisions
     description: Operations about decisions.
+  - name: Cases
+    description: Operations about cases.
   - name: Ingestions
     description: Operations about data ingestion.
   - name: Scenarios
@@ -168,6 +170,81 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /cases:
+    get:
+      tags:
+        - Cases
+      summary: List cases
+      operationId: listCases
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of corresponding cases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Case'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      tags:
+        - Cases
+      summary: Create a case
+      operationId: createCase
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Payload object used to create a case'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCaseBody'
+        required: true
+      responses:
+        '200':
+          description: The case corresponding to the provided payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /cases/{caseId}:
+    get:
+      tags:
+        - Cases
+      summary: Get a case by id
+      operationId: getCase
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: caseId
+          description: ID of the case that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The case corresponding to the provided `caseId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scheduled-executions:
     get:
       tags:
@@ -2138,6 +2215,46 @@ components:
           type: integer
         error:
           $ref: '#/components/schemas/Error'
+    CaseStatus:
+      type: string
+      enum: ['open', 'investigating', 'discarded', 'resolved']
+    Case:
+      type: object
+      required:
+        - id
+        - created_at
+        - description
+        - name
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        description:
+          type: string
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/CaseStatus'
+    CreateCaseBody:
+      type: object
+      required:
+        - name
+        - description
+        - decision_ids
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        decision_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
     ScheduledExecution:
       type: object
       required:

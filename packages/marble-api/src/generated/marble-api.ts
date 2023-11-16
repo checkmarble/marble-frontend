@@ -62,6 +62,19 @@ export type CreateDecisionBody = {
     trigger_object: object;
     object_type: string;
 };
+export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
+export type Case = {
+    id: string;
+    created_at: string;
+    description: string;
+    name: string;
+    status: CaseStatus;
+};
+export type CreateCaseBody = {
+    name: string;
+    description: string;
+    decision_ids: string[];
+};
 export type ScheduledExecution = {
     id: string;
     scenario_iteration_id: string;
@@ -426,6 +439,62 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
         method: "POST",
         body: createDecisionBody
     })));
+}
+/**
+ * List cases
+ */
+export function listCases(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Case[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/cases", {
+        ...opts
+    }));
+}
+/**
+ * Create a case
+ */
+export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Case;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/cases", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createCaseBody
+    })));
+}
+/**
+ * Get a case by id
+ */
+export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Case;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}`, {
+        ...opts
+    }));
 }
 /**
  * List Scheduled Executions
