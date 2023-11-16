@@ -43,7 +43,8 @@ const mapFieldToTableRow = (field: DataModelField) => ({
   id: field.id,
   name: field.name,
   description: field.description,
-  type: field.isEnum ? `${field.dataType} (enum)` : field.dataType,
+  type: field.dataType,
+  displayType: field.isEnum ? `${field.dataType} (enum)` : field.dataType,
   nullable: field.nullable,
   isEnum: field.isEnum,
 });
@@ -122,7 +123,7 @@ function TableDetails({
       },
       {
         id: 'type',
-        accessorKey: 'type',
+        accessorKey: 'displayType',
         size: 130,
         header: t('data:field_type'),
       },
@@ -152,6 +153,7 @@ function TableDetails({
                   fieldId={cell.row.original.id}
                   description={cell.row.original.description}
                   isEnum={cell.row.original.isEnum}
+                  type={cell.row.original.type}
                 >
                   <div className="text-grey-00 group-hover:text-grey-100 relative rounded border-2 border-solid bg-transparent p-2 transition-colors ease-in-out">
                     <Edit width={'24px'} height={'24px'} />

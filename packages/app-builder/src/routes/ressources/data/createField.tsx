@@ -6,7 +6,7 @@ import {
   FormLabel,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { isStatusConflictHttpError } from '@app-builder/models';
+import { EnumDataTypes, isStatusConflictHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -103,11 +103,7 @@ export async function action({ request }: ActionArgs) {
         { headers: { 'Set-Cookie': await commitSession(session) } }
       );
     } else {
-      return json({
-        success: false as const,
-        values: parsedData.data,
-        error: error,
-      });
+      throw error;
     }
   }
 }
@@ -115,6 +111,7 @@ export async function action({ request }: ActionArgs) {
 export function CreateField({ tableId }: { tableId: string }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
+  const [selectedType, setSelectedType] = useState('String');
 
   const formMethods = useForm<z.infer<typeof createFieldFormSchema>>({
     progressive: true,
@@ -237,6 +234,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                             className="w-full"
                             onValueChange={(type) => {
                               field.onChange(type);
+                              setSelectedType(type);
                             }}
                             value={field.value}
                           >
@@ -254,28 +252,30 @@ export function CreateField({ tableId }: { tableId: string }) {
                     )}
                   />
                 </div>
-                <FormField
-                  name="isEnum"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center gap-4">
-                      <FormControl>
-                        <Checkbox
-                          onCheckedChange={(checked) => {
-                            field.onChange(checked);
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel>
-                        <p>{t('data:create_field.is_enum.title')}</p>
-                        <p className="text-xs">
-                          {t('data:create_field.is_enum.subtitle')}
-                        </p>
-                      </FormLabel>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
+                {EnumDataTypes.includes(selectedType) && (
+                  <FormField
+                    name="isEnum"
+                    control={control}
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center gap-4">
+                        <FormControl>
+                          <Checkbox
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked);
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel>
+                          <p>{t('data:create_field.is_enum.title')}</p>
+                          <p className="text-xs">
+                            {t('data:create_field.is_enum.subtitle')}
+                          </p>
+                        </FormLabel>
+                        <FormError />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
               <div className="flex flex-1 flex-row gap-2">
                 <Modal.Close asChild>

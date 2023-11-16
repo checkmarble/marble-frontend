@@ -1977,7 +1977,9 @@ components:
         values:
           type: array
           items:
-            type: string
+            oneOf:
+              - type: string
+              - type: number
     DataModelDto:
       type: object
       required:

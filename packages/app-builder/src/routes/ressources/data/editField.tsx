@@ -5,6 +5,7 @@ import {
   FormItem,
   FormLabel,
 } from '@app-builder/components/Form';
+import { type DataType, EnumDataTypes } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
@@ -68,11 +69,13 @@ export function EditField({
   fieldId,
   description,
   isEnum,
+  type,
   children,
 }: {
   fieldId: string;
   description: string;
   isEnum: boolean;
+  type: DataType;
   children: React.ReactNode;
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -136,29 +139,31 @@ export function EditField({
                   )}
                 />
               </div>
-              <FormField
-                name="isEnum"
-                control={control}
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-4">
-                    <FormControl>
-                      <Checkbox
-                        defaultChecked={isEnum}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked);
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel>
-                      <p>{t('data:create_field.is_enum.title')}</p>
-                      <p className="text-xs">
-                        {t('data:create_field.is_enum.subtitle')}
-                      </p>
-                    </FormLabel>
-                    <FormError />
-                  </FormItem>
-                )}
-              />
+              {EnumDataTypes.includes(type) && (
+                <FormField
+                  name="isEnum"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center gap-4">
+                      <FormControl>
+                        <Checkbox
+                          defaultChecked={isEnum}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel>
+                        <p>{t('data:create_field.is_enum.title')}</p>
+                        <p className="text-xs">
+                          {t('data:create_field.is_enum.subtitle')}
+                        </p>
+                      </FormLabel>
+                      <FormError />
+                    </FormItem>
+                  )}
+                />
+              )}
               <div className="flex flex-1 flex-row gap-2">
                 <Modal.Close asChild>
                   <Button className="flex-1" variant="secondary">
