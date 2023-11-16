@@ -37,6 +37,7 @@ export type Error = {
 };
 export type Decision = {
     id: string;
+    case_id?: string;
     created_at: string;
     trigger_object: object;
     trigger_object_type: string;
@@ -72,8 +73,7 @@ export type Case = {
 };
 export type CreateCaseBody = {
     name: string;
-    description: string;
-    decision_ids: string[];
+    decision_ids?: string[];
 };
 export type ScheduledExecution = {
     id: string;
@@ -463,7 +463,9 @@ export function listCases(opts?: Oazapfts.RequestOpts) {
 export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Case;
+        data: {
+            "case": Case;
+        };
     } | {
         status: 401;
         data: string;
