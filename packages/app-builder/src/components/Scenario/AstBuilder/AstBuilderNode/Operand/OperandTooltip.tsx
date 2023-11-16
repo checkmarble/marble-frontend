@@ -1,4 +1,4 @@
-import { type LabelledAst } from '@app-builder/models';
+import { type EnumValue, type LabelledAst } from '@app-builder/models';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -57,7 +57,7 @@ export const OperandDescription = ({
     operandType: LabelledAst['operandType'];
     dataType: LabelledAst['dataType'];
     description?: string;
-    values?: string[];
+    values?: EnumValue[];
   };
 }) => {
   const { t } = useTranslation(['scenarios']);

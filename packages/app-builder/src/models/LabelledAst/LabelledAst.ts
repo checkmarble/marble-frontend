@@ -10,7 +10,7 @@ import {
   isTimeAdd,
   isUndefinedAstNode,
 } from '../ast-node';
-import { type DataType, type TableModel } from '../data-model';
+import { type DataType, type EnumValue, type TableModel } from '../data-model';
 import {
   type EditorIdentifiersByType,
   getIdentifiersFromAstNode,
@@ -38,7 +38,7 @@ export interface LabelledAst {
     | 'unknown';
   dataType: DataType;
   astNode: AstNode;
-  values?: string[];
+  values?: EnumValue[];
 }
 
 export function adaptLabelledAst(
@@ -52,7 +52,7 @@ export function adaptLabelledAst(
     triggerObjectTable: TableModel;
     dataModel: TableModel[];
     customLists: CustomList[];
-    enumOptions: string[];
+    enumOptions: EnumValue[];
   }
 ): LabelledAst | null {
   if (isConstant(node)) {

@@ -7,7 +7,9 @@ import * as R from 'remeda';
 
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
+export const EnumDataTypes = ['Float', 'Int', 'String'];
 
+export type EnumValue = string | number;
 export interface DataModelField {
   id: string;
   name: string;
@@ -15,7 +17,7 @@ export interface DataModelField {
   description: string;
   nullable: boolean;
   isEnum: boolean;
-  values?: string[];
+  values?: EnumValue[];
 }
 
 export interface LinksToSingle {

@@ -259,7 +259,7 @@ export type DataModelFieldDto = {
     nullable: boolean;
     description: string;
     is_enum: boolean;
-    values?: string[];
+    values?: (string | number)[];
 };
 export type LinkToSingleDto = {
     linked_table_name: string;
