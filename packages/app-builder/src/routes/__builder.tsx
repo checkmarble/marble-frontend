@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, ScrollArea } from 'ui-design-system';
 import {
   Arrow2Down,
+  CaseManager,
   Decision,
   Harddrive,
   Lists,
@@ -49,6 +50,11 @@ const LINKS: SidebarLinkProps[] = [
     labelTKey: 'navigation:scheduledExecutions',
     to: getRoute('/scheduled-executions'),
     Icon: ScheduledExecution,
+  },
+  {
+    labelTKey: 'navigation:caseManager',
+    to: getRoute('/cases'),
+    Icon: CaseManager,
   },
 ];
 

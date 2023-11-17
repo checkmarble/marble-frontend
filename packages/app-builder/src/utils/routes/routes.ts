@@ -222,6 +222,11 @@ export const routes = [
             "file": "routes/__builder/lists/index.tsx"
           },
           {
+            "id": "routes/__builder/cases",
+            "path": "cases",
+            "file": "routes/__builder/cases.tsx"
+          },
+          {
             "id": "routes/__builder/data",
             "path": "data",
             "file": "routes/__builder/data.tsx"

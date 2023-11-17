@@ -481,7 +481,11 @@ export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.Reque
 /**
  * Get a case by id
  */
-export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+export function getCase(caseId: string, { status, startDate, endDate }: {
+    status?: CaseStatus[];
+    startDate?: string;
+    endDate?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Case;
@@ -494,7 +498,11 @@ export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     } | {
         status: 404;
         data: string;
-    }>(`/cases/${encodeURIComponent(caseId)}`, {
+    }>(`/cases/${encodeURIComponent(caseId)}${QS.query(QS.explode({
+        "status[]": status,
+        startDate,
+        endDate
+    }))}`, {
         ...opts
     }));
 }
