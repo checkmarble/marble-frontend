@@ -10,5 +10,6 @@
   "scenario.decision": "Decision",
   "data": "Your Data",
   "api": "Marble API",
-  "scheduledExecutions": "Scheduled Executions"
+  "scheduledExecutions": "Scheduled Executions",
+  "caseManager": "Case Manager"
 }
