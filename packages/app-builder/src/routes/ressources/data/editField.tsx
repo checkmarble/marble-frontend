@@ -5,11 +5,13 @@ import {
   FormItem,
   FormLabel,
 } from '@app-builder/components/Form';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type DataModelField, EnumDataTypes } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
@@ -57,11 +59,22 @@ export async function action({ request }: ActionArgs) {
       error: null,
     });
   } catch (error) {
-    return json({
-      success: false as const,
-      values: parsedData.data,
-      error,
+    const { getSession, commitSession } = serverServices.toastSessionService;
+    const session = await getSession(request);
+    console.log('error log');
+    setToastMessage(session, {
+      type: 'error',
+      messageKey: 'common:errors.unknown',
     });
+    Sentry.captureException(error);
+    return json(
+      {
+        success: false as const,
+        values: parsedData.data,
+        error,
+      },
+      { headers: { 'Set-Cookie': await commitSession(session) } }
+    );
   }
 }
 
@@ -141,7 +154,7 @@ export function EditField({
                     <FormItem className="flex flex-row items-center gap-4">
                       <FormControl>
                         <Checkbox
-                          defaultChecked={inputField.isEnum}
+                          checked={field.value}
                           onCheckedChange={(checked) => {
                             field.onChange(checked);
                           }}

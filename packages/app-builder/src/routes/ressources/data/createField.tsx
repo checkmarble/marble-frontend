@@ -11,9 +11,10 @@ import { serverServices } from '@app-builder/services/init.server';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
-import { Form, FormProvider, useForm } from 'react-hook-form';
+import { Form, FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -103,7 +104,22 @@ export async function action({ request }: ActionArgs) {
         { headers: { 'Set-Cookie': await commitSession(session) } }
       );
     } else {
-      throw error;
+      const { getSession, commitSession } = serverServices.toastSessionService;
+      const session = await getSession(request);
+      console.log('error log');
+      setToastMessage(session, {
+        type: 'error',
+        messageKey: 'common:errors.unknown',
+      });
+      Sentry.captureException(error);
+      return json(
+        {
+          success: false as const,
+          values: parsedData.data,
+          error,
+        },
+        { headers: { 'Set-Cookie': await commitSession(session) } }
+      );
     }
   }
 }
@@ -111,7 +127,6 @@ export async function action({ request }: ActionArgs) {
 export function CreateField({ tableId }: { tableId: string }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
-  const [selectedType, setSelectedType] = useState('String');
 
   const formMethods = useForm<z.infer<typeof createFieldFormSchema>>({
     progressive: true,
@@ -126,6 +141,7 @@ export function CreateField({ tableId }: { tableId: string }) {
     },
   });
   const { control, register, reset } = formMethods;
+  const selectedType = useWatch({ control, name: 'type' });
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
@@ -234,7 +250,6 @@ export function CreateField({ tableId }: { tableId: string }) {
                             className="w-full"
                             onValueChange={(type) => {
                               field.onChange(type);
-                              setSelectedType(type);
                             }}
                             value={field.value}
                           >
@@ -260,6 +275,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                       <FormItem className="flex flex-row items-center gap-4">
                         <FormControl>
                           <Checkbox
+                            checked={field.value}
                             onCheckedChange={(checked) => {
                               field.onChange(checked);
                             }}
