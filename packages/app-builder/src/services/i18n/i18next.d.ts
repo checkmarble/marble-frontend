@@ -1,4 +1,5 @@
 import type api from '../../../public/locales/en/api.json';
+import type cases from '../../../public/locales/en/cases.json';
 import type common from '../../../public/locales/en/common.json';
 import type data from '../../../public/locales/en/data.json';
 import type decisions from '../../../public/locales/en/decisions.json';
@@ -15,6 +16,7 @@ declare module 'i18next' {
     defaultNS: typeof defaultNS;
     resources: {
       api: typeof api;
+      cases: typeof cases;
       common: typeof common;
       data: typeof data;
       decisions: typeof decisions;

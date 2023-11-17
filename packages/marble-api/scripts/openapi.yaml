@@ -178,6 +178,29 @@ paths:
       operationId: listCases
       security:
         - bearerAuth: []
+      parameters:
+        - name: status[]
+          description: case status used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/CaseStatus'
+        - name: startDate
+          description: start date used to filter the list
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          description: end date used to filter the list
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
       responses:
         '200':
           description: List of corresponding cases
