@@ -16,7 +16,7 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
       const scenarioId = toUUIDifDefined(thisPage.params['scenarioId']);
       return {
         name: 'Scenario iteration trigger',
-        properties: { iterationId, scenarioId },
+        properties: { iteration_id: iterationId, scenario_id: scenarioId },
       };
     }
     case 'routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/rules': {
@@ -24,7 +24,7 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
       const scenarioId = toUUIDifDefined(thisPage.params['scenarioId']);
       return {
         name: 'Scenario iteration rules',
-        properties: { iterationId, scenarioId },
+        properties: { iteration_id: iterationId, scenario_id: scenarioId },
       };
     }
     case 'routes/__builder/scenarios/$scenarioId/i/$iterationId/__edit-view/decision': {
@@ -32,7 +32,7 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
       const scenarioId = toUUIDifDefined(thisPage.params['scenarioId']);
       return {
         name: 'Scenario iteration outcome',
-        properties: { iterationId, scenarioId },
+        properties: { iteration_id: iterationId, scenario_id: scenarioId },
       };
     }
     case 'routes/__builder/decisions/index': {
@@ -40,7 +40,7 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
     }
     case 'routes/__builder/decisions/$decisionId': {
       const decisionId = toUUIDifDefined(thisPage.params['decisionId']);
-      return { name: 'Decision', properties: { decisionId } };
+      return { name: 'Decision', properties: { decision_id: decisionId } };
     }
     case 'routes/__builder/scheduled-executions': {
       return { name: 'Scheduled executions', properties: undefined };
@@ -50,7 +50,7 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
     }
     case 'routes/__builder/lists/$listId': {
       const listId = toUUIDifDefined(thisPage.params['listId']);
-      return { name: 'List', properties: { listId } };
+      return { name: 'List', properties: { list_id: listId } };
     }
     case 'routes/__builder/data': {
       return { name: 'Your data', properties: undefined };
