@@ -3,7 +3,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { useInterval, useVisibilityChange } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionArgs, redirect } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
+import { useFetcher, useNavigate } from '@remix-run/react';
 import { useAuthenticityToken } from 'remix-utils';
 
 export function loader() {
@@ -25,6 +25,7 @@ export function useRefreshToken() {
   const { submit } = useFetcher();
   const csrf = useAuthenticityToken();
   const visibilityState = useVisibilityChange();
+  const navigate = useNavigate();
 
   useInterval(
     () => {
@@ -40,7 +41,7 @@ export function useRefreshToken() {
           );
         },
         () => {
-          //handle error
+          navigate('/ressources/auth/logout');
         }
       );
     },

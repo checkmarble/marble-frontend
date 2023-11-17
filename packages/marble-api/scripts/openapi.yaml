@@ -224,7 +224,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Case'
+                type: object
+                required:
+                  - case
+                properties:
+                  case:
+                    $ref: '#/components/schemas/Case'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -239,7 +244,7 @@ paths:
         - bearerAuth: []
       parameters:
         - name: caseId
-          description: ID of the case that need to be fetched
+          description: ID of the case that needs to be fetched
           in: path
           required: true
           schema:
@@ -2231,6 +2236,9 @@ components:
         id:
           type: string
           format: uuid
+        case_id:
+          type: string
+          format: uuid
         created_at:
           type: string
           format: date-time
@@ -2309,12 +2317,8 @@ components:
       type: object
       required:
         - name
-        - description
-        - decision_ids
       properties:
         name:
-          type: string
-        description:
           type: string
         decision_ids:
           type: array
