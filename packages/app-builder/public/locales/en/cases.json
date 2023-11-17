@@ -1,0 +1,10 @@
+{
+  "case.name": "Name",
+  "case.date": "Date",
+  "case.status": "Status",
+  "case.status.open": "open",
+  "case.status.investigating": "investigating",
+  "case.status.discarded": "discarded",
+  "case.status.resolved": "resolved",
+  "case.new_case": "New case"
+}
