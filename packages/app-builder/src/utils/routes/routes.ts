@@ -45,6 +45,11 @@ export const routes = [
         "file": "routes/ressources/lists/value_delete.tsx"
       },
       {
+        "id": "routes/ressources/cases/add-to-case",
+        "path": "ressources/cases/add-to-case",
+        "file": "routes/ressources/cases/add-to-case.tsx"
+      },
+      {
         "id": "routes/ressources/data/createField",
         "path": "ressources/data/createField",
         "file": "routes/ressources/data/createField.tsx"
@@ -199,6 +204,11 @@ export const routes = [
             "index": true,
             "path": "scenarios",
             "file": "routes/__builder/scenarios/index.tsx"
+          },
+          {
+            "id": "routes/__builder/cases/$caseId",
+            "path": "cases/:caseId",
+            "file": "routes/__builder/cases/$caseId.tsx"
           },
           {
             "id": "routes/__builder/lists/$listId",

@@ -1,4 +1,5 @@
 export * from './Callout';
+export * from './CopyToClipboardButton';
 export * from './Decisions';
 export * from './ErrorComponent';
 export * from './Navigation';
