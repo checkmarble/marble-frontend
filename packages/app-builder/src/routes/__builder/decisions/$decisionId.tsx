@@ -22,9 +22,14 @@ import {
   useRouteError,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
+import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Plus } from 'ui-icons';
+
+export const handle = {
+  i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
+};
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
@@ -77,9 +82,9 @@ export default function DecisionPage() {
           )}
         </Page.Header>
         <Page.Content>
-          <div className="grid grid-cols-[2fr_1fr] gap-8">
-            <div className="flex flex-col gap-8">
-              <div className="flex gap-8">
+          <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
+            <div className="flex flex-col gap-4 lg:gap-8">
+              <div className="flex gap-4 lg:gap-8">
                 <ScorePanel score={decision.score} />
                 <OutcomePanel outcome={decision.outcome} />
               </div>

@@ -1,4 +1,5 @@
 import { Page } from '@app-builder/components';
+import { casesI18n } from '@app-builder/components/Cases';
 import { serverServices } from '@app-builder/services/init.server';
 import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -15,7 +16,7 @@ import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
 import { CaseManager } from 'ui-icons';
 
 export const handle = {
-  i18n: ['navigation', 'cases'] satisfies Namespace,
+  i18n: ['navigation', ...casesI18n] satisfies Namespace,
 };
 
 export async function loader({ request }: LoaderArgs) {
