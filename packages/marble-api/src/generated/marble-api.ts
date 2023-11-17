@@ -462,7 +462,11 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases(opts?: Oazapfts.RequestOpts) {
+export function listCases({ status, startDate, endDate }: {
+    status?: CaseStatus[];
+    startDate?: string;
+    endDate?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Case[];
@@ -472,7 +476,11 @@ export function listCases(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 403;
         data: string;
-    }>("/cases", {
+    }>(`/cases${QS.query(QS.explode({
+        "status[]": status,
+        startDate,
+        endDate
+    }))}`, {
         ...opts
     }));
 }

@@ -8,6 +8,7 @@ export { default as Backtest } from './Backtest';
 export { default as Boolean } from './Boolean';
 export { default as Calendar } from './Calendar';
 export { default as CalendarMonth } from './CalendarMonth';
+export { default as CaseManager } from './CaseManager';
 export { default as Category } from './Category';
 export { default as Collapse } from './Collapse';
 export { default as CompanyExcel } from './CompanyExcel';
