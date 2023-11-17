@@ -1,5 +1,7 @@
 import {
+  CopyToClipboardButton,
   DecisionDetail,
+  DecisionRightPanel,
   decisionsI18n,
   ErrorComponent,
   OutcomePanel,
@@ -11,7 +13,6 @@ import { TriggerObjectDetail } from '@app-builder/components/Decisions/TriggerOb
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { json, type LoaderArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
@@ -23,7 +24,7 @@ import {
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
-import { Duplicate } from 'ui-icons';
+import { Plus } from 'ui-icons';
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
@@ -49,55 +50,49 @@ export default function DecisionPage() {
   const { decision } = useLoaderData<typeof loader>();
   const { t } = useTranslation(decisionsI18n);
   return (
-    <Page.Container>
-      <Page.Header className="justify-between">
-        <div className="flex flex-row items-center gap-2">
-          <Link to="./..">
-            <Page.BackButton />
-          </Link>
-          {t('decisions:decision')}
-          <CopyToClipboardButton decisionId={decision.id} />
-        </div>
-        {/* <Button>
-          <Plus />
-          {t('decisions:add_to_case')}
-        </Button> */}
-      </Page.Header>
-      <Page.Content>
-        <div className="grid grid-cols-[2fr_1fr] gap-8">
-          <div className="flex flex-col gap-8">
-            <div className="flex gap-8">
-              <ScorePanel score={decision.score} />
-              <OutcomePanel outcome={decision.outcome} />
-            </div>
-            <DecisionDetail decision={decision} />
-            <RulesDetail rules={decision.rules} />
+    <DecisionRightPanel.Root>
+      <Page.Container>
+        <Page.Header className="justify-between">
+          <div className="flex flex-row items-center gap-4">
+            <Link to="./..">
+              <Page.BackButton />
+            </Link>
+            {t('decisions:decision')}
+            <CopyToClipboardButton toCopy={decision.id}>
+              <span className="text-s font-normal">
+                <span className="font-medium">ID</span> {decision.id}
+              </span>
+            </CopyToClipboardButton>
           </div>
-          <TriggerObjectDetail triggerObject={decision.trigger_object} />
-        </div>
-      </Page.Content>
-    </Page.Container>
+          {!decision.case_id && (
+            <DecisionRightPanel.Trigger
+              asChild
+              data={{ decisionId: decision.id }}
+            >
+              <Button>
+                <Plus />
+                {t('decisions:add_to_case')}
+              </Button>
+            </DecisionRightPanel.Trigger>
+          )}
+        </Page.Header>
+        <Page.Content>
+          <div className="grid grid-cols-[2fr_1fr] gap-8">
+            <div className="flex flex-col gap-8">
+              <div className="flex gap-8">
+                <ScorePanel score={decision.score} />
+                <OutcomePanel outcome={decision.outcome} />
+              </div>
+              <DecisionDetail decision={decision} />
+              <RulesDetail rules={decision.rules} />
+            </div>
+            <TriggerObjectDetail triggerObject={decision.trigger_object} />
+          </div>
+        </Page.Content>
+      </Page.Container>
+    </DecisionRightPanel.Root>
   );
 }
-
-const CopyToClipboardButton = ({
-  decisionId,
-  ...props
-}: {
-  decisionId: string;
-}) => {
-  const getCopyToClipboardProps = useGetCopyToClipboard();
-  return (
-    <div
-      className="border-grey-10 text-s flex cursor-pointer select-none items-center gap-1 rounded border p-2 font-normal"
-      {...getCopyToClipboardProps(decisionId)}
-      {...props}
-    >
-      ID {decisionId}
-      <Duplicate />
-    </div>
-  );
-};
 
 const DecisionNotFound = () => {
   const navigate = useNavigate();
