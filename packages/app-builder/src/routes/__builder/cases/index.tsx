@@ -24,7 +24,7 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const cases = await apiClient.listCases();
+  const cases = await apiClient.listCases({});
 
   return json({ cases });
 }

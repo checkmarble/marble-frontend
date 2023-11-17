@@ -443,7 +443,11 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases(opts?: Oazapfts.RequestOpts) {
+export function listCases({ status, startDate, endDate }: {
+    status?: CaseStatus[];
+    startDate?: string;
+    endDate?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Case[];
@@ -453,7 +457,11 @@ export function listCases(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 403;
         data: string;
-    }>("/cases", {
+    }>(`/cases${QS.query(QS.explode({
+        "status[]": status,
+        startDate,
+        endDate
+    }))}`, {
         ...opts
     }));
 }
@@ -481,11 +489,7 @@ export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.Reque
 /**
  * Get a case by id
  */
-export function getCase(caseId: string, { status, startDate, endDate }: {
-    status?: CaseStatus[];
-    startDate?: string;
-    endDate?: string;
-} = {}, opts?: Oazapfts.RequestOpts) {
+export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Case;
@@ -498,11 +502,7 @@ export function getCase(caseId: string, { status, startDate, endDate }: {
     } | {
         status: 404;
         data: string;
-    }>(`/cases/${encodeURIComponent(caseId)}${QS.query(QS.explode({
-        "status[]": status,
-        startDate,
-        endDate
-    }))}`, {
+    }>(`/cases/${encodeURIComponent(caseId)}`, {
         ...opts
     }));
 }
