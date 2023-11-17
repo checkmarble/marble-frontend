@@ -13,6 +13,8 @@ export const DecisionDetail = ({ decision }: { decision: Decision }) => {
     t,
     i18n: { language },
   } = useTranslation(decisionsI18n);
+  const { case_id, created_at, scenario, trigger_object_type, score } =
+    decision;
 
   return (
     <Collapsible.Container>
@@ -20,25 +22,35 @@ export const DecisionDetail = ({ decision }: { decision: Decision }) => {
         {t('decisions:decision_detail.title')}
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-[minmax(min-content,_1fr)_4fr] grid-rows-4 items-center gap-x-8 gap-y-4">
+        <div className="grid grid-cols-[max-content_1fr] grid-rows-5 items-center gap-x-10 gap-y-2">
           <DetailLabel>{t('decisions:created_at')}</DetailLabel>
-          <div>{formatDateTime(decision.created_at, { language })}</div>
+          <div>{formatDateTime(created_at, { language })}</div>
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
           <Link
             to={getRoute('/scenarios/:scenarioId', {
-              scenarioId: fromUUID(decision.scenario.id),
+              scenarioId: fromUUID(scenario.id),
             })}
+            className="font-semibold capitalize text-purple-100"
           >
-            <div className="font-semibold capitalize text-purple-100">
-              {decision.scenario.name}
-            </div>
+            {scenario.name}
           </Link>
           <DetailLabel>{t('decisions:object_type')}</DetailLabel>
-          <div className="capitalize">{decision.trigger_object_type}</div>
-          {/* <DetailLabel>{t('decisions:case')}</DetailLabel>
-        <div>-</div> */}
+          <div className="capitalize">{trigger_object_type}</div>
+          <DetailLabel>{t('decisions:case')}</DetailLabel>
+          {case_id ? (
+            <Link
+              to={getRoute('/cases/:caseId', {
+                caseId: fromUUID(case_id),
+              })}
+              className="font-semibold capitalize text-purple-100"
+            >
+              {case_id}
+            </Link>
+          ) : (
+            <div>-</div>
+          )}
           <DetailLabel>{t('decisions:score')}</DetailLabel>
-          <Score score={decision.score} />
+          <Score score={score} />
         </div>
       </Collapsible.Content>
     </Collapsible.Container>
