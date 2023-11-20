@@ -3,8 +3,11 @@ import {
   ErrorComponent,
   Page,
 } from '@app-builder/components';
-import { CaseDecisions, casesI18n } from '@app-builder/components/Cases';
-import { CaseInformations } from '@app-builder/components/Cases/CaseInformations';
+import {
+  CaseDecisions,
+  CaseInformation,
+  casesI18n,
+} from '@app-builder/components/Cases';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -66,7 +69,7 @@ export default function CasePage() {
       <Page.Content>
         <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
           <div className="flex flex-col gap-4 lg:gap-8">
-            <CaseInformations caseDetail={caseDetail} />
+            <CaseInformation caseDetail={caseDetail} />
             <CaseDecisions decisions={[]} />
           </div>
           <div className="flex flex-col gap-4 lg:gap-8"></div>

@@ -5,7 +5,7 @@ import { Collapsible } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
 
-export function CaseInformations({
+export function CaseInformation({
   caseDetail: { created_at },
 }: {
   caseDetail: Case;
