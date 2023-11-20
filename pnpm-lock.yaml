@@ -125,9 +125,6 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.10.6
         version: 8.10.6(react-dom@18.2.0)(react@18.2.0)
-      '@types/segment-analytics':
-        specifier: ^0.0.37
-        version: 0.0.37
       autosuggest-highlight:
         specifier: ^3.3.4
         version: 3.3.4
@@ -8073,10 +8070,6 @@ packages:
 
   /@types/scheduler@0.16.4:
     resolution: {integrity: sha512-2L9ifAGl7wmXwP4v3pN4p2FLhD0O1qsJpvKmNin5VA8+UvNVb447UDaAEV6UdrkA+m/Xs58U1RFps44x6TFsVQ==}
-
-  /@types/segment-analytics@0.0.37:
-    resolution: {integrity: sha512-Q39GL4/QLcWrZK68sZ8MstUa5QI9KQ7kk8UtvKpNWFAE/GeUWs0WTUlYTNpolSotA4OpSWD2p0E3LB/drHPGOw==}
-    dev: false
 
   /@types/semver@7.5.3:
     resolution: {integrity: sha512-OxepLK9EuNEIPxWNME+C6WwbRAOOI2o2BaQEGzz5Lu2e4Z5eDnEo+/aVEDMIXywoJitJ7xWd641wrGLZdtwRyw==}
