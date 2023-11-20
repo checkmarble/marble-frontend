@@ -45,6 +45,13 @@ export default function getPageviewNameAndProps(thisPage: RouteMatch) {
     case 'routes/__builder/scheduled-executions': {
       return { name: 'Scheduled executions', properties: undefined };
     }
+    case 'routes/__builder/cases/index': {
+      return { name: 'Cases', properties: undefined };
+    }
+    case 'routes/__builder/cases/$caseId': {
+      const case_id = toUUIDifDefined(thisPage.params['caseId']);
+      return { name: 'Case', properties: { case_id } };
+    }
     case 'routes/__builder/lists/index': {
       return { name: 'Lists', properties: undefined };
     }

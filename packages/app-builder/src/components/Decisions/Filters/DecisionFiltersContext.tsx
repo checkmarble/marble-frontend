@@ -1,52 +1,26 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { type Scenario } from 'marble-api';
+import {
+  type DateRangeFilterForm,
+  dateRangeSchema,
+} from '@app-builder/utils/schema/filterSchema';
+import { type Outcome, type Scenario } from 'marble-api';
 import { useCallback, useMemo } from 'react';
 import {
-  type DeepRequired,
   FormProvider,
   useController,
   useForm,
   useFormContext,
 } from 'react-hook-form';
 import * as R from 'remeda';
-import { Temporal } from 'temporal-polyfill';
 import * as z from 'zod';
 
 import { type DecisionFilterName, decisionFilterNames } from './filters';
 
-export const fromNowDurations = [
-  Temporal.Duration.from({ days: -7 }).toString(),
-  Temporal.Duration.from({ days: -14 }).toString(),
-  Temporal.Duration.from({ days: -30 }).toString(),
-  Temporal.Duration.from({ months: -3 }).toString(),
-  Temporal.Duration.from({ months: -6 }).toString(),
-  Temporal.Duration.from({ months: -12 }).toString(),
-] as const;
-
 export const decisionFiltersSchema = z.object({
   outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
   triggerObject: z.array(z.string()).optional(),
-  dateRange: z
-    .discriminatedUnion('type', [
-      z.object({
-        type: z.literal('static'),
-        startDate: z.string().datetime().optional(),
-        endDate: z.string().datetime().optional(),
-      }),
-      z.object({
-        type: z.literal('dynamic'),
-        fromNow: z.string().refine((value) => {
-          try {
-            Temporal.Duration.from(value);
-            return true;
-          } catch {
-            return false;
-          }
-        }),
-      }),
-    ])
-    .optional(),
+  dateRange: dateRangeSchema.optional(),
   scenarioId: z.array(z.string()).optional(),
 });
 
@@ -63,43 +37,38 @@ const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
   'DecisionFiltersContext'
 );
 
-export type DecisionFiltersForm = DeepRequired<DecisionFilters>;
+export type DecisionFiltersForm = {
+  outcome: Exclude<Outcome, 'null' | 'unknown'>[];
+  triggerObject: string[];
+  dateRange: DateRangeFilterForm;
+  scenarioId: string[];
+};
 const emptyDecisionFilters: DecisionFiltersForm = {
   outcome: [],
   triggerObject: [],
-  dateRange: {
-    type: 'static',
-    startDate: '',
-    endDate: '',
-  },
+  dateRange: null,
   scenarioId: [],
 };
 
-function adaptFilterValues(filterValues: DecisionFilters): DecisionFiltersForm {
+function adaptFilterValues({
+  dateRange,
+  ...otherFilters
+}: DecisionFilters): DecisionFiltersForm {
   const adaptedFilterValues: DecisionFiltersForm = {
-    outcome: filterValues.outcome ?? [],
-    triggerObject: filterValues.triggerObject ?? [],
-    scenarioId: filterValues.scenarioId ?? [],
-    dateRange: {
-      type: 'static',
-      startDate: '',
-      endDate: '',
-    },
+    ...emptyDecisionFilters,
+    ...otherFilters,
   };
-  if (filterValues.dateRange?.type === 'static') {
+  if (dateRange?.type === 'static') {
     adaptedFilterValues.dateRange = {
       type: 'static',
-      startDate: filterValues.dateRange.startDate ?? '',
-      endDate: filterValues.dateRange.endDate ?? '',
+      startDate: dateRange.startDate ?? '',
+      endDate: dateRange.endDate ?? '',
     };
   }
-  if (
-    filterValues.dateRange?.type === 'dynamic' &&
-    filterValues.dateRange.fromNow
-  ) {
+  if (dateRange?.type === 'dynamic' && dateRange.fromNow) {
     adaptedFilterValues.dateRange = {
       type: 'dynamic',
-      fromNow: filterValues.dateRange.fromNow,
+      fromNow: dateRange.fromNow,
     };
   }
   return adaptedFilterValues;
@@ -122,7 +91,11 @@ export function DecisionFiltersProvider({
   });
   const { isDirty } = formMethods.formState;
   const submitDecisionFilters = useCallbackRef(() => {
-    _submitDecisionFilters(formMethods.getValues());
+    const formValues = formMethods.getValues();
+    _submitDecisionFilters({
+      ...formValues,
+      dateRange: formValues.dateRange ?? undefined,
+    });
   });
   const onDecisionFilterClose = useCallbackRef(() => {
     if (isDirty) {

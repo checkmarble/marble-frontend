@@ -127,7 +127,7 @@ export function RootOrWithAnd({
                   className="bg-grey-02 text-grey-25 uppercase"
                 />
                 <div className="flex flex-1 items-center">
-                  <div className="bg-grey-10 h-[1px] w-full" />
+                  <div className="bg-grey-10 h-px w-full" />
                 </div>
               </div>
             )}

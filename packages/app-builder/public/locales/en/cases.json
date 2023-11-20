@@ -8,5 +8,6 @@
   "case.status.resolved": "resolved",
   "case.new_case": "New case",
   "case_detail.informations": "Informations",
-  "case_detail.decisions": "Decisions"
+  "case_detail.decisions": "Decisions",
+  "filters.date_range.title": "creation date is:"
 }

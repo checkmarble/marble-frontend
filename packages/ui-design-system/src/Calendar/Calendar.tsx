@@ -47,7 +47,7 @@ export function Calendar({
         tbody: 'border-none',
         row: 'flex w-full',
         cell: 'flex p-0 text-grey-100',
-        day: 'h-12 w-12 text-s font-medium outline-none relative',
+        day: 'h-12 w-12 text-s font-medium relative outline-1 outline-purple-100',
         day_selected: clsx(
           'transition-colors',
           props.mode === 'single' && 'rounded bg-purple-100 text-grey-00 '
