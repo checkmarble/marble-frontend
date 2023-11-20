@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "types": ["vitest/globals", "segment-analytics"],
+    "types": ["vitest/globals"],
     "jsx": "react-jsx"
   }
 }
