@@ -30,13 +30,13 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { cases } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const caseId = fromParams(params, 'caseId');
   try {
-    const caseDetail = await apiClient.getCase(caseId);
+    const caseDetail = await cases.getCase({ caseId });
 
     return json({ caseDetail });
   } catch (error) {

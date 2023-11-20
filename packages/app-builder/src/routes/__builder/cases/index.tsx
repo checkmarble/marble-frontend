@@ -21,13 +21,13 @@ export const handle = {
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { cases } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
-  const cases = await apiClient.listCases({});
+  const caseList = await cases.listCases();
 
-  return json({ cases });
+  return json({ cases: caseList });
 }
 
 export default function Cases() {
@@ -45,7 +45,7 @@ export default function Cases() {
         accessorFn: (c) => c.status,
         header: t('cases:case.status'),
         size: 50,
-        cell: ({ getValue }) => <Status status={getValue<string>()} />,
+        cell: ({ getValue }) => <Status status={getValue<Case['status']>()} />,
       },
       {
         id: 'name',
