@@ -28,6 +28,7 @@ function makeServerServices(repositories: ServerRepositories) {
       repositories.userRepository,
       repositories.editorRepository,
       repositories.decisionRepository,
+      repositories.caseRepository,
       repositories.organizationRepository,
       repositories.scenarioRepository,
       repositories.dataModelRepository,

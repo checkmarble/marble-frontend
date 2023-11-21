@@ -6,5 +6,7 @@
   "case.status.investigating": "investigating",
   "case.status.discarded": "discarded",
   "case.status.resolved": "resolved",
-  "case.new_case": "New case"
+  "case.new_case": "New case",
+  "case_detail.informations": "Informations",
+  "case_detail.decisions": "Decisions"
 }
