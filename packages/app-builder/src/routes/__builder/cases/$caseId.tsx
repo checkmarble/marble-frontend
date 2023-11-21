@@ -3,6 +3,11 @@ import {
   ErrorComponent,
   Page,
 } from '@app-builder/components';
+import {
+  CaseDecisions,
+  CaseInformation,
+  casesI18n,
+} from '@app-builder/components/Cases';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -15,18 +20,23 @@ import {
   useRouteError,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
+import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 
+export const handle = {
+  i18n: ['common', 'navigation', ...casesI18n] satisfies Namespace,
+};
+
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { cases } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const caseId = fromParams(params, 'caseId');
   try {
-    const caseDetail = await apiClient.getCase(caseId);
+    const caseDetail = await cases.getCase({ caseId });
 
     return json({ caseDetail });
   } catch (error) {
@@ -40,6 +50,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function CasePage() {
   const { caseDetail } = useLoaderData<typeof loader>();
+
   return (
     <Page.Container>
       <Page.Header className="justify-between">
@@ -55,7 +66,15 @@ export default function CasePage() {
           </CopyToClipboardButton>
         </div>
       </Page.Header>
-      <Page.Content>TODO</Page.Content>
+      <Page.Content>
+        <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
+          <div className="flex flex-col gap-4 lg:gap-8">
+            <CaseInformation caseDetail={caseDetail} />
+            <CaseDecisions decisions={[]} />
+          </div>
+          <div className="flex flex-col gap-4 lg:gap-8"></div>
+        </div>
+      </Page.Content>
     </Page.Container>
   );
 }
