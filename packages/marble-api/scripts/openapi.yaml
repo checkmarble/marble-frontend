@@ -2259,9 +2259,8 @@ components:
         id:
           type: string
           format: uuid
-        case_id:
-          type: string
-          format: uuid
+        case:
+          $ref: '#/components/schemas/Case'
         created_at:
           type: string
           format: date-time
