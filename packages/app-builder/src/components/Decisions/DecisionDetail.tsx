@@ -13,8 +13,13 @@ export const DecisionDetail = ({ decision }: { decision: Decision }) => {
     t,
     i18n: { language },
   } = useTranslation(decisionsI18n);
-  const { case_id, created_at, scenario, trigger_object_type, score } =
-    decision;
+  const {
+    case: caseDetail,
+    created_at,
+    scenario,
+    trigger_object_type,
+    score,
+  } = decision;
 
   return (
     <Collapsible.Container>
@@ -37,14 +42,14 @@ export const DecisionDetail = ({ decision }: { decision: Decision }) => {
           <DetailLabel>{t('decisions:object_type')}</DetailLabel>
           <div className="capitalize">{trigger_object_type}</div>
           <DetailLabel>{t('decisions:case')}</DetailLabel>
-          {case_id ? (
+          {caseDetail ? (
             <Link
               to={getRoute('/cases/:caseId', {
-                caseId: fromUUID(case_id),
+                caseId: fromUUID(caseDetail.id),
               })}
               className="font-semibold capitalize text-purple-100"
             >
-              {case_id}
+              {caseDetail.name}
             </Link>
           ) : (
             <div>-</div>

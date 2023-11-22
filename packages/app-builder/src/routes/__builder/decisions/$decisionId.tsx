@@ -69,7 +69,7 @@ export default function DecisionPage() {
               </span>
             </CopyToClipboardButton>
           </div>
-          {!decision.case_id && (
+          {!decision.case && (
             <DecisionRightPanel.Trigger
               asChild
               data={{ decisionId: decision.id }}

@@ -27,15 +27,16 @@ export function DecisionsList({ decisions }: { decisions: Decision[] }) {
     () => [
       {
         id: 'created_at',
-        accessorFn: (row) => formatDateTime(row.created_at, { language }),
+        accessorFn: (row) =>
+          formatDateTime(row.created_at, { language, timeStyle: undefined }),
         header: t('decisions:created_at'),
-        size: 100,
+        size: 50,
       },
       {
         id: 'scenario.name',
         accessorFn: (row) => row.scenario.name,
         header: t('decisions:scenario.name'),
-        size: 200,
+        size: 100,
       },
       {
         id: 'trigger_object_type',
@@ -44,6 +45,17 @@ export function DecisionsList({ decisions }: { decisions: Decision[] }) {
         size: 100,
         cell: ({ getValue }) => (
           <span className="capitalize">{getValue<string>()}</span>
+        ),
+      },
+      {
+        id: 'case',
+        accessorFn: (row) => row.case?.name ?? '-',
+        header: t('decisions:case'),
+        size: 100,
+        cell: ({ getValue }) => (
+          <span className="bg-grey-02 text-grey-100 text-s flex h-8 w-fit items-center justify-center rounded px-2 font-normal">
+            {getValue<string>()}
+          </span>
         ),
       },
       {
