@@ -70,7 +70,7 @@ export default function CasePage() {
         <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
           <div className="flex flex-col gap-4 lg:gap-8">
             <CaseInformation caseDetail={caseDetail} />
-            <CaseDecisions decisions={[]} />
+            <CaseDecisions decisions={caseDetail.decisions} />
           </div>
           <div className="flex flex-col gap-4 lg:gap-8"></div>
         </div>

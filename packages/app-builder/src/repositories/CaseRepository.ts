@@ -1,6 +1,6 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { add } from 'date-fns';
-import { type Case, type CaseStatus } from 'marble-api';
+import { type Case, type CaseDetail, type CaseStatus } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
 
 export interface CaseRepository {
@@ -17,7 +17,7 @@ export interface CaseRepository {
           fromNow: string;
         };
   }): Promise<Case[]>;
-  getCase(args: { caseId: string }): Promise<Case>;
+  getCase(args: { caseId: string }): Promise<CaseDetail>;
 }
 
 export function getCaseRepository() {

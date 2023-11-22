@@ -4,11 +4,11 @@ import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
-import { type Decision } from 'marble-api';
+import { type DecisionDetail } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 
-export const DecisionDetail = ({ decision }: { decision: Decision }) => {
+export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
   const {
     t,
     i18n: { language },
@@ -60,7 +60,7 @@ export const DecisionDetail = ({ decision }: { decision: Decision }) => {
       </Collapsible.Content>
     </Collapsible.Container>
   );
-};
+}
 
 const DetailLabel = ({ children }: { children: React.ReactNode }) => (
   <div className="font-semibold capitalize">{children}</div>
