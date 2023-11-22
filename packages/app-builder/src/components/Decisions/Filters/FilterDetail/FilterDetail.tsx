@@ -21,6 +21,6 @@ export function FilterDetail({
     case 'triggerObject':
       return <TriggerObjectFilter />;
     default:
-      assertNever('[DecisionFilter] unknwon filter:', filterName);
+      assertNever('[DecisionFilter] unknown filter:', filterName);
   }
 }

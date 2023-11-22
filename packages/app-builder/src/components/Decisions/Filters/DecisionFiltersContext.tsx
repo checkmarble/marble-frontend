@@ -170,6 +170,11 @@ export function useTriggerObjectFilter() {
   return { triggerObjects, selectedTriggerObjects, setSelectedTriggerObjects };
 }
 
+/**
+ * Split decisions filters in two partitions:
+ * - undefinedCasesFilterNames: filter values are undefined
+ * - definedCasesFilterNames: filter values are defined
+ */
 export function useDecisionFiltersPartition() {
   const { filterValues } = useDecisionFiltersContext();
 

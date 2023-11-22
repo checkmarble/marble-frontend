@@ -11,6 +11,6 @@ export function FilterDetail({ filterName }: { filterName: CasesFilterName }) {
     case 'statuses':
       return <StatusesFilter />;
     default:
-      assertNever('[CasesFilter] unknwon filter:', filterName);
+      assertNever('[CasesFilter] unknown filter:', filterName);
   }
 }

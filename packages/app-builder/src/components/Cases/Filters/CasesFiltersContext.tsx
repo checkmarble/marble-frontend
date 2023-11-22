@@ -133,7 +133,12 @@ export function useDateRangeFilter() {
   return { dateRange, setDateRange };
 }
 
-export function useDecisionFiltersPartition() {
+/**
+ * Split cases filters in two partitions:
+ * - undefinedCasesFilterNames: filter values are undefined
+ * - definedCasesFilterNames: filter values are defined
+ */
+export function useCasesFiltersPartition() {
   const { filterValues } = useCasesFiltersContext();
 
   const [undefinedCasesFilterNames, definedCasesFilterNames] = R.pipe(

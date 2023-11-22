@@ -12,7 +12,7 @@ export function getFilterIcon(filterName: CasesFilterName) {
     case 'statuses':
       return Category;
     default:
-      assertNever('[CasesFilterName] unknwon filter:', filterName);
+      assertNever('[CasesFilterName] unknown filter:', filterName);
   }
 }
 
@@ -23,6 +23,6 @@ export function getFilterTKey(filterName: CasesFilterName) {
     case 'statuses':
       return 'cases:case.status';
     default:
-      assertNever('[CasesFilterName] unknwon filter:', filterName);
+      assertNever('[CasesFilterName] unknown filter:', filterName);
   }
 }

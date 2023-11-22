@@ -12,8 +12,8 @@ import { Separator } from 'ui-design-system';
 import { casesI18n } from '../cases-i18n';
 import {
   useCasesFiltersContext,
+  useCasesFiltersPartition,
   useClearFilter,
-  useDecisionFiltersPartition,
 } from './CasesFiltersContext';
 import { CasesFiltersMenu } from './CasesFiltersMenu';
 import { FilterDetail } from './FilterDetail';
@@ -33,7 +33,7 @@ export function CasesFiltersBar() {
   );
 
   const { undefinedCasesFilterNames, definedCasesFilterNames } =
-    useDecisionFiltersPartition();
+    useCasesFiltersPartition();
   const clearFilter = useClearFilter();
 
   if (definedCasesFilterNames.length === 0) {

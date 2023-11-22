@@ -21,7 +21,7 @@ export function getFilterIcon(filterName: DecisionFilterName) {
     case 'triggerObject':
       return AltRoute;
     default:
-      assertNever('[DecisionFilter] unknwon filter:', filterName);
+      assertNever('[DecisionFilter] unknown filter:', filterName);
   }
 }
 
@@ -36,6 +36,6 @@ export function getFilterTKey(filterName: DecisionFilterName) {
     case 'triggerObject':
       return 'decisions:trigger_object.type';
     default:
-      assertNever('[DecisionFilter] unknwon filter:', filterName);
+      assertNever('[DecisionFilter] unknown filter:', filterName);
   }
 }
