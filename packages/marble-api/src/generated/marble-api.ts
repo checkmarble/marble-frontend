@@ -31,13 +31,21 @@ export type CredentialsDto = {
     };
 };
 export type Outcome = "approve" | "review" | "decline" | "null" | "unknown";
+export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
+export type Case = {
+    id: string;
+    created_at: string;
+    description: string;
+    name: string;
+    status: CaseStatus;
+};
 export type Error = {
     code: number;
     message: string;
 };
 export type Decision = {
     id: string;
-    case_id?: string;
+    "case"?: Case;
     created_at: string;
     trigger_object: object;
     trigger_object_type: string;
@@ -62,14 +70,6 @@ export type CreateDecisionBody = {
     scenario_id: string;
     trigger_object: object;
     object_type: string;
-};
-export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
-export type Case = {
-    id: string;
-    created_at: string;
-    description: string;
-    name: string;
-    status: CaseStatus;
 };
 export type CreateCaseBody = {
     name: string;
