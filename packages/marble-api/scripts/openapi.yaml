@@ -273,6 +273,46 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+    patch:
+      tags:
+        - Cases
+      summary: Update a case
+      operationId: updateCase
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: caseId
+          description: ID of the case that needs to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Updated case object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCaseBody'
+        required: true
+      responses:
+        '200':
+          description: The updated case corresponding to the provided `caseId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - case
+                properties:
+                  case:
+                    $ref: '#/components/schemas/CaseDetail'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scheduled-executions:
     get:
       tags:
@@ -307,6 +347,7 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+
   /decisions/{decisionId}:
     get:
       tags:
@@ -2287,6 +2328,19 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/Decision'
+    UpdateCaseBody:
+      type: object
+      properties:
+        name:
+          type: string
+        decision_ids:
+          type: array
+          description: List of decision IDs to add to the case
+          items:
+            type: string
+            format: uuid
+        status:
+          $ref: '#/components/schemas/CaseStatus'
     CreateCaseBody:
       type: object
       required:
