@@ -2,31 +2,27 @@ import { FiltersDropdownMenu } from '@app-builder/components/Filters';
 import { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { decisionsI18n } from '../decisions-i18n';
-import { useDecisionFiltersContext } from './DecisionFiltersContext';
+import { casesI18n } from '..';
+import { useCasesFiltersContext } from './CasesFiltersContext';
 import { FilterDetail } from './FilterDetail';
-import {
-  type DecisionFilterName,
-  getFilterIcon,
-  getFilterTKey,
-} from './filters';
+import { type CasesFilterName, getFilterIcon, getFilterTKey } from './filters';
 
-export function DecisionFiltersMenu({
+export function CasesFiltersMenu({
   children,
   filterNames,
 }: {
   children: React.ReactNode;
-  filterNames: readonly DecisionFilterName[];
+  filterNames: readonly CasesFilterName[];
 }) {
-  const { onDecisionFilterClose } = useDecisionFiltersContext();
+  const { onCasesFilterClose } = useCasesFiltersContext();
 
   const onOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        onDecisionFilterClose();
+        onCasesFilterClose();
       }
     },
-    [onDecisionFilterClose]
+    [onCasesFilterClose]
   );
 
   return (
@@ -44,10 +40,10 @@ export function DecisionFiltersMenu({
 const FiltersMenuItem = forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof FiltersDropdownMenu.Item> & {
-    filterName: DecisionFilterName;
+    filterName: CasesFilterName;
   }
 >(({ filterName, ...props }, ref) => {
-  const { t } = useTranslation(decisionsI18n);
+  const { t } = useTranslation(casesI18n);
   const Icon = getFilterIcon(filterName);
   const tKey = getFilterTKey(filterName);
 
@@ -65,9 +61,9 @@ FiltersMenuItem.displayName = 'FiltersMenuItem';
 function FilterContent({
   filterNames,
 }: {
-  filterNames: readonly DecisionFilterName[];
+  filterNames: readonly CasesFilterName[];
 }) {
-  const [selectedFilter, setSelectedFilter] = useState<DecisionFilterName>();
+  const [selectedFilter, setSelectedFilter] = useState<CasesFilterName>();
 
   if (selectedFilter) {
     return <FilterDetail filterName={selectedFilter} />;

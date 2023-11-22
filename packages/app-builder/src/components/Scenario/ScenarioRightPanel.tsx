@@ -114,7 +114,7 @@ function ScenarioRightPanelDetail({
     case 'formulaAggregation':
       return null;
     default:
-      assertNever('[ScenarioRightPanel] unknwon data case:', data.type);
+      assertNever('[ScenarioRightPanel] unknown data case:', data.type);
   }
 }
 
