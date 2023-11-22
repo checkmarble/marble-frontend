@@ -1,17 +1,18 @@
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
-import { type Decision } from 'marble-api';
+import { type Outcome } from 'marble-api';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag, type TagProps } from 'ui-design-system';
 
 import { decisionsI18n } from './decisions-i18n';
 
 export interface OutcomeProps extends Omit<TagProps, 'color'> {
-  outcome: Decision['outcome'];
+  outcome: Outcome;
 }
 
 const outcomeMapping: Record<
-  OutcomeProps['outcome'],
+  Outcome,
   { color: TagProps['color']; tKey: ParseKeys<['decisions']> }
 > = {
   approve: { color: 'green', tKey: 'decisions:outcome.approve' },
@@ -20,6 +21,20 @@ const outcomeMapping: Record<
   null: { color: 'grey', tKey: 'decisions:outcome.null' },
   unknown: { color: 'grey', tKey: 'decisions:outcome.unknown' },
 };
+
+const outcomes = ['approve', 'review', 'decline'] satisfies Outcome[];
+export function useOutcomes() {
+  const { t } = useTranslation(decisionsI18n);
+
+  return useMemo(
+    () =>
+      outcomes.map((outcome) => ({
+        value: outcome,
+        label: t(outcomeMapping[outcome].tKey),
+      })),
+    [t]
+  );
+}
 
 export function Outcome({ outcome, ...tagProps }: OutcomeProps) {
   const { t } = useTranslation(decisionsI18n);
@@ -33,7 +48,7 @@ export function Outcome({ outcome, ...tagProps }: OutcomeProps) {
   );
 }
 
-export const OutcomePanel = ({ outcome }: { outcome: Decision['outcome'] }) => {
+export const OutcomePanel = ({ outcome }: { outcome: Outcome }) => {
   const { t } = useTranslation(decisionsI18n);
   const { color, tKey } = outcomeMapping[outcome] ?? outcomeMapping.unknown;
 

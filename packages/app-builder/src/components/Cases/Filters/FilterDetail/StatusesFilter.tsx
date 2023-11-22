@@ -2,18 +2,18 @@ import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { Outcome, useOutcomes } from '../../Outcome';
-import { useOutcomeFilter } from '../DecisionFiltersContext';
+import { Status, useStatuses } from '../../Status';
+import { useStatusesFilter } from '../CasesFiltersContext';
 
-export function OutcomeFilter() {
+export function StatusesFilter() {
   const [value, setSearchValue] = useState('');
-  const { selectedOutcomes, setSelectedOutcomes } = useOutcomeFilter();
+  const { selectedStatuses, setSelectedStatuses } = useStatusesFilter();
   const deferredValue = useDeferredValue(value);
-  const outcomes = useOutcomes();
+  const statuses = useStatuses();
 
   const matches = useMemo(
-    () => matchSorter(outcomes, deferredValue, { keys: ['label'] }),
-    [deferredValue, outcomes]
+    () => matchSorter(statuses, deferredValue, { keys: ['label'] }),
+    [deferredValue, statuses]
   );
 
   return (
@@ -21,23 +21,21 @@ export function OutcomeFilter() {
       <SelectWithCombobox.Provider
         open
         setSearchValue={setSearchValue}
-        selectedValues={selectedOutcomes}
-        onSelectedValuesChange={setSelectedOutcomes}
+        selectedValues={selectedStatuses}
+        onSelectedValuesChange={setSelectedStatuses}
       >
         <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
         <SelectWithCombobox.ComboboxList>
-          {matches.map((outcome) => {
+          {matches.map((status) => {
             return (
               <SelectWithCombobox.ComboboxItem
-                key={outcome.value}
-                value={outcome.value}
+                key={status.value}
+                value={status.value}
               >
-                <Outcome
-                  outcome={outcome.value}
-                  border="square"
-                  size="big"
-                  className="w-full"
-                />
+                <Status status={status.value} />
+                <span className="text-grey-100 text-s font-normal first-letter:capitalize">
+                  {status.label}
+                </span>
               </SelectWithCombobox.ComboboxItem>
             );
           })}
