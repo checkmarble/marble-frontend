@@ -1,7 +1,7 @@
 import { assertNever } from 'typescript-utils';
 
 import { type DecisionFilterName } from '../filters';
-import { DateRangeFilter } from './DateRangeFilter';
+import { DecisionsDateRangeFilter } from './DecisionsDateRangeFilter';
 import { OutcomeFilter } from './OutcomeFilter';
 import { ScenarioFilter } from './ScenarioFilter';
 import { TriggerObjectFilter } from './TriggerObjectFilter';
@@ -13,7 +13,7 @@ export function FilterDetail({
 }) {
   switch (filterName) {
     case 'dateRange':
-      return <DateRangeFilter />;
+      return <DecisionsDateRangeFilter />;
     case 'scenarioId':
       return <ScenarioFilter />;
     case 'outcome':
@@ -21,6 +21,6 @@ export function FilterDetail({
     case 'triggerObject':
       return <TriggerObjectFilter />;
     default:
-      assertNever('[DecisionFilter] unknwon filter:', filterName);
+      assertNever('[DecisionFilter] unknown filter:', filterName);
   }
 }

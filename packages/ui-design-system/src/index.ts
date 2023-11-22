@@ -11,6 +11,7 @@ export * from './Modal/Modal';
 export * from './ScrollArea/ScrollArea';
 export * from './Select/Select';
 export * from './SelectWithCombobox/SelectWithCombobox';
+export * from './Separator/Separator';
 export * from './Switch/Switch';
 export * from './Table/Table';
 export * from './Tag/Tag';

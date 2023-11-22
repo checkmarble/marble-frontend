@@ -192,8 +192,8 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: status[]
-          description: case status used to filter the list
+        - name: statuses[]
+          description: case statuses used to filter the list
           in: query
           required: false
           schema:

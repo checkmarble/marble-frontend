@@ -1,5 +1,6 @@
 import {
   type DecisionFilters,
+  DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
   decisionFiltersSchema,
@@ -11,8 +12,8 @@ import {
   type PaginationParams,
   paginationSchema,
 } from '@app-builder/components';
-import { DecisionFiltersBar } from '@app-builder/components/Decisions/Filters/DecisionFiltersBar';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
+import { FiltersButton } from '@app-builder/components/Filters';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -30,7 +31,7 @@ import qs from 'qs';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
-import { Decision, Filters, Search } from 'ui-icons';
+import { Decision, Search } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
@@ -132,12 +133,7 @@ export default function Decisions() {
               <SearchById />
               <div className="flex gap-4">
                 <DecisionFiltersMenu filterNames={decisionFilterNames}>
-                  <Button className="flex flex-row gap-2" variant="secondary">
-                    <Filters className="text-l" />
-                    <span className="text-s font-semibold first-letter:capitalize">
-                      {t('decisions:filters')}
-                    </span>
-                  </Button>
+                  <FiltersButton />
                 </DecisionFiltersMenu>
                 {/* <Button>Add to case</Button> */}
               </div>

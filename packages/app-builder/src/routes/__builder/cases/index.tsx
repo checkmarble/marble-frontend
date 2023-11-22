@@ -1,18 +1,23 @@
 import { Page } from '@app-builder/components';
-import { casesI18n } from '@app-builder/components/Cases';
+import { casesI18n, CasesList } from '@app-builder/components/Cases';
+import {
+  type CasesFilters,
+  CasesFiltersBar,
+  CasesFiltersMenu,
+  CasesFiltersProvider,
+  casesFiltersSchema,
+} from '@app-builder/components/Cases/Filters';
+import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
+import { FiltersButton } from '@app-builder/components/Filters';
 import { serverServices } from '@app-builder/services/init.server';
-import { formatDateTime } from '@app-builder/utils/format';
+import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderArgs } from '@remix-run/node';
+import { json, type LoaderArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
-import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
-import clsx from 'clsx';
-import { type Namespace, type ParseKeys } from 'i18next';
-import { type Case } from 'marble-api';
-import { useMemo } from 'react';
+import { type Namespace } from 'i18next';
+import qs from 'qs';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
 import { CaseManager } from 'ui-icons';
 
 export const handle = {
@@ -25,50 +30,53 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const caseList = await cases.listCases();
+  const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
+  if (!parsedQuery.success) {
+    return redirect(getRoute('/cases'));
+  }
+  const filters = parsedQuery.data;
+  const caseList = await cases.listCases(filters);
 
-  return json({ cases: caseList });
+  return json({ cases: caseList, filters });
 }
 
 export default function Cases() {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(handle.i18n);
-  const navigate = useNavigate();
-  const { cases } = useLoaderData<typeof loader>();
+  const { t } = useTranslation(handle.i18n);
+  const { cases, filters } = useLoaderData<typeof loader>();
 
-  const columns = useMemo<ColumnDef<Case, string>[]>(
-    () => [
-      {
-        id: 'status',
-        accessorFn: (c) => c.status,
-        header: t('cases:case.status'),
-        size: 50,
-        cell: ({ getValue }) => <Status status={getValue<Case['status']>()} />,
-      },
-      {
-        id: 'name',
-        accessorFn: (c) => c.name,
-        header: t('cases:case.name'),
-        size: 200,
-      },
-      {
-        id: 'created_at',
-        accessorFn: (row) => formatDateTime(row.created_at, { language }),
-        header: t('cases:case.date'),
-        size: 200,
-      },
-    ],
-    [language, t]
+  const navigate = useNavigate();
+  const submitCasesFilters = useCallback(
+    (casesFilters: CasesFilters) => {
+      navigate(
+        {
+          pathname: getRoute('/cases'),
+          search: qs.stringify(
+            {
+              statuses: casesFilters.statuses ?? [],
+              dateRange: casesFilters.dateRange
+                ? casesFilters.dateRange.type === 'static'
+                  ? {
+                      type: 'static',
+                      endDate: casesFilters.dateRange.endDate || null,
+                      startDate: casesFilters.dateRange.startDate || null,
+                    }
+                  : {
+                      type: 'dynamic',
+                      fromNow: casesFilters.dateRange.fromNow,
+                    }
+                : {},
+            },
+            {
+              addQueryPrefix: true,
+              skipNulls: true,
+            }
+          ),
+        },
+        { replace: true }
+      );
+    },
+    [navigate]
   );
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
-    data: cases,
-    columns,
-    columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    enableSorting: false,
-  });
 
   return (
     <Page.Container>
@@ -77,61 +85,21 @@ export default function Cases() {
         {t('navigation:caseManager')}
       </Page.Header>
       <Page.Content>
-        <Table.Container {...getContainerProps()}>
-          <Table.Header headerGroups={table.getHeaderGroups()} />
-          <Table.Body {...getBodyProps()}>
-            {rows.map((row) => {
-              return (
-                <Table.Row
-                  key={row.id}
-                  className={clsx('hover:bg-grey-02 cursor-pointer')}
-                  row={row}
-                  onClick={() => {
-                    navigate(
-                      getRoute('/cases/:caseId', {
-                        caseId: fromUUID(row.original.id),
-                      })
-                    );
-                  }}
-                />
-              );
-            })}
-          </Table.Body>
-        </Table.Container>
+        <div className="flex flex-col gap-4">
+          <CasesFiltersProvider
+            submitCasesFilters={submitCasesFilters}
+            filterValues={filters}
+          >
+            <div className="flex justify-end gap-4">
+              <CasesFiltersMenu filterNames={casesFilterNames}>
+                <FiltersButton />
+              </CasesFiltersMenu>
+            </div>
+            <CasesFiltersBar />
+            <CasesList cases={cases} />
+          </CasesFiltersProvider>
+        </div>
       </Page.Content>
     </Page.Container>
   );
 }
-
-const Status = ({ status }: { status: Case['status'] }) => {
-  const { t } = useTranslation(handle.i18n);
-  const { color, tKey } = caseStatusMapping[status];
-
-  return (
-    <Tooltip.Default content={t(tKey)}>
-      <div
-        className={clsx(
-          {
-            'bg-red-10 text-red-100': color === 'red',
-            'bg-blue-10 text-blue-100': color === 'blue',
-            'bg-grey-10 text-grey-100': color === 'grey',
-            'bg-green-10 text-green-100': color === 'green',
-          },
-          'flex h-6 w-6 items-center justify-center rounded font-semibold capitalize'
-        )}
-      >
-        {t(tKey)[0]}
-      </div>
-    </Tooltip.Default>
-  );
-};
-
-const caseStatusMapping: Record<
-  Case['status'],
-  { color: string; tKey: ParseKeys<['cases']> }
-> = {
-  open: { color: 'red', tKey: 'cases:case.status.open' },
-  investigating: { color: 'blue', tKey: 'cases:case.status.investigating' },
-  discarded: { color: 'grey', tKey: 'cases:case.status.discarded' },
-  resolved: { color: 'green', tKey: 'cases:case.status.resolved' },
-};

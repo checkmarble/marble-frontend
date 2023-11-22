@@ -9,34 +9,34 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
 
-import { decisionsI18n } from '../decisions-i18n';
+import { casesI18n } from '../cases-i18n';
 import {
+  useCasesFiltersContext,
+  useCasesFiltersPartition,
   useClearFilter,
-  useDecisionFiltersContext,
-  useDecisionFiltersPartition,
-} from './DecisionFiltersContext';
-import { DecisionFiltersMenu } from './DecisionFiltersMenu';
+} from './CasesFiltersContext';
+import { CasesFiltersMenu } from './CasesFiltersMenu';
 import { FilterDetail } from './FilterDetail';
 import { getFilterIcon, getFilterTKey } from './filters';
 
-export function DecisionFiltersBar() {
-  const { t } = useTranslation(decisionsI18n);
-  const { onDecisionFilterClose } = useDecisionFiltersContext();
+export function CasesFiltersBar() {
+  const { t } = useTranslation(casesI18n);
+  const { onCasesFilterClose } = useCasesFiltersContext();
 
   const onOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        onDecisionFilterClose();
+        onCasesFilterClose();
       }
     },
-    [onDecisionFilterClose]
+    [onCasesFilterClose]
   );
 
-  const { undefinedDecisionFilterNames, definedDecisionFilterNames } =
-    useDecisionFiltersPartition();
+  const { undefinedCasesFilterNames, definedCasesFilterNames } =
+    useCasesFiltersPartition();
   const clearFilter = useClearFilter();
 
-  if (definedDecisionFilterNames.length === 0) {
+  if (definedCasesFilterNames.length === 0) {
     return null;
   }
 
@@ -45,7 +45,7 @@ export function DecisionFiltersBar() {
       <Separator className="bg-grey-10" decorative />
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row flex-wrap gap-2">
-          {definedDecisionFilterNames.map((filterName) => {
+          {definedCasesFilterNames.map((filterName) => {
             const Icon = getFilterIcon(filterName);
             const tKey = getFilterTKey(filterName);
 
@@ -70,11 +70,11 @@ export function DecisionFiltersBar() {
               </FilterPopover.Root>
             );
           })}
-          <DecisionFiltersMenu filterNames={undefinedDecisionFilterNames}>
+          <CasesFiltersMenu filterNames={undefinedCasesFilterNames}>
             <AddNewFilterButton />
-          </DecisionFiltersMenu>
+          </CasesFiltersMenu>
         </div>
-        <ClearAllFiltersLink to={getRoute('/decisions')} replace />
+        <ClearAllFiltersLink to={getRoute('/cases')} replace />
       </div>
     </>
   );

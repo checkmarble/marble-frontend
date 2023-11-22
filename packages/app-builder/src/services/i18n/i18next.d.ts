@@ -3,6 +3,7 @@ import type cases from '../../../public/locales/en/cases.json';
 import type common from '../../../public/locales/en/common.json';
 import type data from '../../../public/locales/en/data.json';
 import type decisions from '../../../public/locales/en/decisions.json';
+import type filters from '../../../public/locales/en/filters.json';
 import type lists from '../../../public/locales/en/lists.json';
 import type login from '../../../public/locales/en/login.json';
 import type navigation from '../../../public/locales/en/navigation.json';
@@ -20,6 +21,7 @@ declare module 'i18next' {
       common: typeof common;
       data: typeof data;
       decisions: typeof decisions;
+      filters: typeof filters;
       navigation: typeof navigation;
       lists: typeof lists;
       login: typeof login;
