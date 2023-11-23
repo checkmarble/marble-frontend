@@ -36,7 +36,7 @@ const CollapsibleTitle = ({
   <Trigger asChild>
     <div
       className={clsx(
-        'group flex cursor-pointer justify-between p-4 font-semibold lg:p-8',
+        'group flex cursor-pointer justify-between gap-4 p-4 font-semibold lg:p-8',
         className
       )}
     >
