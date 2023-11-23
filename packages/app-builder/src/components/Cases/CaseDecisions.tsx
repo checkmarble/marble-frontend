@@ -10,7 +10,18 @@ export function CaseDecisions({ decisions }: { decisions: Decision[] }) {
 
   return (
     <Collapsible.Container>
-      <Collapsible.Title>{t('cases:case_detail.decisions')}</Collapsible.Title>
+      <Collapsible.Title>
+        <div className="flex flex-1 items-center justify-between">
+          <span className="text-grey-100 text-m font-bold capitalize">
+            {t('cases:case.decisions')}
+          </span>
+          <span className="text-grey-25 text-xs font-normal capitalize">
+            {t('cases:case_detail.decisions_count', {
+              count: decisions.length,
+            })}
+          </span>
+        </div>
+      </Collapsible.Title>
       <Collapsible.Content>
         <DecisionsList
           decisions={decisions}
