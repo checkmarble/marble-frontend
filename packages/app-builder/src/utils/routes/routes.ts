@@ -65,6 +65,11 @@ export const routes = [
         "file": "routes/ressources/scenarios/create.tsx"
       },
       {
+        "id": "routes/ressources/cases/edit-name",
+        "path": "ressources/cases/edit-name",
+        "file": "routes/ressources/cases/edit-name.tsx"
+      },
+      {
         "id": "routes/ressources/data/createLink",
         "path": "ressources/data/createLink",
         "file": "routes/ressources/data/createLink.tsx"

@@ -54,7 +54,7 @@ export default function CasePage() {
   return (
     <Page.Container>
       <Page.Header className="justify-between">
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center gap-4">
           <Link to="./..">
             <Page.BackButton />
           </Link>
