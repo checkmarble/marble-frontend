@@ -31,21 +31,12 @@ export type CredentialsDto = {
     };
 };
 export type Outcome = "approve" | "review" | "decline" | "null" | "unknown";
-export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
-export type Case = {
-    id: string;
-    created_at: string;
-    description: string;
-    name: string;
-    status: CaseStatus;
-};
 export type Error = {
     code: number;
     message: string;
 };
 export type Decision = {
     id: string;
-    "case"?: Case;
     created_at: string;
     trigger_object: object;
     trigger_object_type: string;
@@ -66,6 +57,17 @@ export type Decision = {
     score: number;
     error?: Error;
 };
+export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
+export type Case = {
+    id: string;
+    created_at: string;
+    decisions_count: number;
+    name: string;
+    status: CaseStatus;
+};
+export type DecisionDetail = Decision & {
+    "case"?: Case;
+};
 export type CreateDecisionBody = {
     scenario_id: string;
     trigger_object: object;
@@ -74,6 +76,9 @@ export type CreateDecisionBody = {
 export type CreateCaseBody = {
     name: string;
     decision_ids?: string[];
+};
+export type CaseDetail = Case & {
+    decisions: Decision[];
 };
 export type ScheduledExecution = {
     id: string;
@@ -404,7 +409,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Decision[];
+        data: DecisionDetail[];
     } | {
         status: 401;
         data: string;
@@ -492,7 +497,7 @@ export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.Reque
 export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Case;
+        data: CaseDetail;
     } | {
         status: 401;
         data: string;
@@ -535,7 +540,7 @@ export function listScheduledExecutions({ scenarioId }: {
 export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Decision;
+        data: DecisionDetail;
     } | {
         status: 401;
         data: string;

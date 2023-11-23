@@ -12,7 +12,10 @@ export function CaseDecisions({ decisions }: { decisions: Decision[] }) {
     <Collapsible.Container>
       <Collapsible.Title>{t('cases:case_detail.decisions')}</Collapsible.Title>
       <Collapsible.Content>
-        <DecisionsList decisions={decisions} />
+        <DecisionsList
+          decisions={decisions}
+          columnVisibility={{ case: false }}
+        />
       </Collapsible.Content>
     </Collapsible.Container>
   );
