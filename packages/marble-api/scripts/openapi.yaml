@@ -153,7 +153,7 @@ paths:
                       items:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Decision'
+                          $ref: '#/components/schemas/DecisionDetail'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -279,7 +279,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Case'
+                $ref: '#/components/schemas/CaseDetail'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -342,7 +342,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Decision'
+                $ref: '#/components/schemas/DecisionDetail'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -2259,8 +2259,6 @@ components:
         id:
           type: string
           format: uuid
-        case:
-          $ref: '#/components/schemas/Case'
         created_at:
           type: string
           format: date-time
@@ -2311,6 +2309,13 @@ components:
           type: integer
         error:
           $ref: '#/components/schemas/Error'
+    DecisionDetail:
+      allOf:
+        - $ref: '#/components/schemas/Decision'
+        - type: object
+          properties:
+            case:
+              $ref: '#/components/schemas/Case'
     CaseStatus:
       type: string
       enum: ['open', 'investigating', 'discarded', 'resolved']
@@ -2319,7 +2324,7 @@ components:
       required:
         - id
         - created_at
-        - description
+        - decisions_count
         - name
         - status
       properties:
@@ -2329,12 +2334,23 @@ components:
         created_at:
           type: string
           format: date-time
-        description:
-          type: string
+        decisions_count:
+          type: number
         name:
           type: string
         status:
           $ref: '#/components/schemas/CaseStatus'
+    CaseDetail:
+      allOf:
+        - $ref: '#/components/schemas/Case'
+        - type: object
+          required:
+            - decisions
+          properties:
+            decisions:
+              type: array
+              items:
+                $ref: '#/components/schemas/Decision'
     CreateCaseBody:
       type: object
       required:

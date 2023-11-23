@@ -9,21 +9,35 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { useNavigate } from '@remix-run/react';
 import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type Decision } from 'marble-api';
+import { type DecisionDetail } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 
 import { Score } from './Score';
 
-export function DecisionsList({ decisions }: { decisions: Decision[] }) {
+type Column =
+  | 'created_at'
+  | 'scenario_name'
+  | 'trigger_object_type'
+  | 'case'
+  | 'score'
+  | 'outcome';
+
+export function DecisionsList({
+  decisions,
+  columnVisibility,
+}: {
+  decisions: DecisionDetail[];
+  columnVisibility?: Partial<Record<Column, boolean>>;
+}) {
   const {
     t,
     i18n: { language },
   } = useTranslation(decisionsI18n);
   const navigate = useNavigate();
 
-  const columns = useMemo<ColumnDef<Decision, string>[]>(
+  const columns = useMemo<ColumnDef<DecisionDetail, string>[]>(
     () => [
       {
         id: 'created_at',
@@ -33,7 +47,7 @@ export function DecisionsList({ decisions }: { decisions: Decision[] }) {
         size: 50,
       },
       {
-        id: 'scenario.name',
+        id: 'scenario_name',
         accessorFn: (row) => row.scenario.name,
         header: t('decisions:scenario.name'),
         size: 100,
@@ -81,9 +95,13 @@ export function DecisionsList({ decisions }: { decisions: Decision[] }) {
     ],
     [language, t]
   );
+
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: decisions,
     columns,
+    state: {
+      columnVisibility,
+    },
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     enableSorting: false,
