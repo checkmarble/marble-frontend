@@ -2,12 +2,14 @@
   "case.name": "Name",
   "case.date": "Date",
   "case.status": "Status",
+  "case.decisions": "Decisions",
   "case.status.open": "open",
   "case.status.investigating": "investigating",
   "case.status.discarded": "discarded",
   "case.status.resolved": "resolved",
   "case.new_case": "New case",
   "case_detail.informations": "Informations",
-  "case_detail.decisions": "Decisions",
+  "case_detail.decisions_count_one": "{{count}} decision",
+  "case_detail.decisions_count_other": "{{count}} decisions",
   "filters.date_range.title": "creation date is:"
 }

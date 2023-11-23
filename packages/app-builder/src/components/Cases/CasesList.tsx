@@ -36,9 +36,16 @@ export function CasesList({ cases }: { cases: Case[] }) {
       },
       {
         id: 'created_at',
-        accessorFn: (row) => formatDateTime(row.created_at, { language }),
+        accessorFn: (row) =>
+          formatDateTime(row.created_at, { language, timeStyle: undefined }),
         header: t('cases:case.date'),
-        size: 200,
+        size: 100,
+      },
+      {
+        id: 'decisions',
+        accessorFn: (c) => c.decisions_count,
+        header: t('cases:case.decisions'),
+        size: 100,
       },
     ],
     [language, t]
