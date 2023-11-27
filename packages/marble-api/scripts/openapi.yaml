@@ -1924,6 +1924,202 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /inboxes:
+    get:
+      tags:
+        - Inboxes
+      summary: List all inboxes
+      operationId: listInboxes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The list of inboxes
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - inboxes
+                properties:
+                  inboxes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InboxDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      tags:
+        - Inboxes
+      summary: Create an inbox
+      operationId: createInbox
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Describe the inbox to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInboxBodyDto'
+        required: true
+      responses:
+        '200':
+          description: The created inbox
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - inbox
+                properties:
+                  inbox:
+                    $ref: '#/components/schemas/InboxDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /inboxes/{inboxId}:
+    get:
+      tags:
+        - Inboxes
+      summary: Get an inbox by id
+      operationId: getInbox
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inboxId
+          description: ID of the inbox that needs to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The inbox corresponding to the provided `inboxId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - inbox
+                properties:
+                  inbox:
+                    $ref: '#/components/schemas/InboxDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /inboxes/{inboxId}/users:
+    get:
+      tags:
+        - Inboxes
+      summary: List all users of an inbox
+      operationId: listInboxUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inboxId
+          description: ID of the inbox
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The list of users of the inbox
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - users
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InboxUserDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      tags:
+        - Inboxes
+      summary: Add a user to an inbox
+      operationId: addInboxUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inboxId
+          description: ID of the inbox
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Describe the user to add to the inbox
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddInboxUserBodyDto'
+        required: true
+      responses:
+        '200':
+          description: The list of users of the inbox
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - users
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InboxUserDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /inbox_users/{inboxUserId}:
+    get:
+      tags:
+        - Inboxes
+      summary: Get an inbox user by id
+      operationId: getInboxUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inboxUserId
+          description: ID of the inbox user that needs to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The inbox user corresponding to the provided `inboxUserId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user
+                properties:
+                  user:
+                    $ref: '#/components/schemas/InboxUserDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
 components:
   schemas:
     OrganizationDto:
@@ -2906,6 +3102,72 @@ components:
           type: string
         lines_processed:
           type: integer
+    InboxDto:
+      type: object
+      required:
+        - id
+        - name
+        - created_at
+        - updated_at
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [active, archived]
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/InboxUserDto'
+    CreateInboxBodyDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    InboxUserDto:
+      type: object
+      required:
+        - id
+        - inbox_id
+        - user_id
+        - role
+      properties:
+        id:
+          type: string
+          format: uuid
+        inbox_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [member, admin]
+    AddInboxUserBodyDto:
+      type: object
+      required:
+        - user_id
+        - role
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [member, admin]
   securitySchemes:
     bearerAuth:
       type: http
