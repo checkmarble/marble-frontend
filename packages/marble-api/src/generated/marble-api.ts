@@ -367,6 +367,27 @@ export type FuncAttributes = {
     number_of_arguments: number;
     named_arguments?: string[];
 };
+export type InboxUserDto = {
+    id: string;
+    inbox_id: string;
+    user_id: string;
+    role: "member" | "admin";
+};
+export type InboxDto = {
+    id: string;
+    name: string;
+    created_at: string;
+    updated_at: string;
+    status: "active" | "archived";
+    users?: InboxUserDto[];
+};
+export type CreateInboxBodyDto = {
+    name: string;
+};
+export type AddInboxUserBodyDto = {
+    user_id: string;
+    role: "member" | "admin";
+};
 /**
  * Get an access token
  */
@@ -1665,6 +1686,127 @@ export function listOperators(scenarioId: string, opts?: Oazapfts.RequestOpts) {
         status: 403;
         data: string;
     }>(`/editor/${encodeURIComponent(scenarioId)}/operators`, {
+        ...opts
+    }));
+}
+/**
+ * List all inboxes
+ */
+export function listInboxes(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inboxes: InboxDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/inboxes", {
+        ...opts
+    }));
+}
+/**
+ * Create an inbox
+ */
+export function createInbox(createInboxBodyDto: CreateInboxBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox: InboxDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/inboxes", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createInboxBodyDto
+    })));
+}
+/**
+ * Get an inbox by id
+ */
+export function getInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox: InboxDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/inboxes/${encodeURIComponent(inboxId)}`, {
+        ...opts
+    }));
+}
+/**
+ * List all users of an inbox
+ */
+export function listInboxUsers(inboxId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            users: InboxUserDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inboxes/${encodeURIComponent(inboxId)}/users`, {
+        ...opts
+    }));
+}
+/**
+ * Add a user to an inbox
+ */
+export function addInboxUser(inboxId: string, addInboxUserBodyDto: AddInboxUserBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            users: InboxUserDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inboxes/${encodeURIComponent(inboxId)}/users`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: addInboxUserBodyDto
+    })));
+}
+/**
+ * Get an inbox user by id
+ */
+export function getInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            user: InboxUserDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inbox_users/${encodeURIComponent(inboxUserId)}`, {
         ...opts
     }));
 }
