@@ -49,6 +49,7 @@
     "@sentry/remix": "^7.74.0",
     "@tanstack/react-table": "^8.10.6",
     "autosuggest-highlight": "^3.3.4",
+    "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
     "cronstrue": "^2.32.0",
     "date-fns": "^2.30.0",

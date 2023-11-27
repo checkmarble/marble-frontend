@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
-import { Status } from './Status';
+import { CaseStatus } from './CaseStatus';
 
 export function CasesList({ cases }: { cases: Case[] }) {
   const {
@@ -26,7 +26,9 @@ export function CasesList({ cases }: { cases: Case[] }) {
         accessorFn: (c) => c.status,
         header: t('cases:case.status'),
         size: 50,
-        cell: ({ getValue }) => <Status status={getValue<Case['status']>()} />,
+        cell: ({ getValue }) => (
+          <CaseStatus status={getValue<Case['status']>()} />
+        ),
       },
       {
         id: 'name',

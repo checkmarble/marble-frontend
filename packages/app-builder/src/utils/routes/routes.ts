@@ -50,6 +50,11 @@ export const routes = [
         "file": "routes/ressources/cases/add-to-case.tsx"
       },
       {
+        "id": "routes/ressources/cases/edit-status",
+        "path": "ressources/cases/edit-status",
+        "file": "routes/ressources/cases/edit-status.tsx"
+      },
+      {
         "id": "routes/ressources/data/createField",
         "path": "ressources/data/createField",
         "file": "routes/ressources/data/createField.tsx"

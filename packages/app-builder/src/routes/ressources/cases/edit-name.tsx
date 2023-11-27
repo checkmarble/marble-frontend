@@ -4,14 +4,9 @@ import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { type Namespace } from 'i18next';
 import { useId } from 'react';
 import { Input } from 'ui-design-system';
 import { z } from 'zod';
-
-export const handle = {
-  i18n: ['decisions', 'navigation', 'common'] satisfies Namespace,
-};
 
 const schema = z.object({
   caseId: z.string(),
@@ -60,13 +55,16 @@ export function EditCaseName(defaultValue: z.infer<typeof schema>) {
       method="post"
       action={getRoute('/ressources/cases/edit-name')}
       {...form.props}
-      onBlur={(event) => {
-        // Trigger submit on child blur
-        event.currentTarget.requestSubmit();
-      }}
     >
       <input {...conform.input(caseId, { type: 'hidden' })} />
-      <Input {...conform.input(name, { type: 'text' })} />
+      <Input
+        {...conform.input(name, { type: 'text' })}
+        onBlur={(e) => {
+          if (e.currentTarget.value !== e.currentTarget.defaultValue) {
+            e.currentTarget.form?.requestSubmit();
+          }
+        }}
+      />
     </fetcher.Form>
   );
 }

@@ -9,6 +9,7 @@ import {
   casesI18n,
 } from '@app-builder/components/Cases';
 import { isNotFoundHttpError } from '@app-builder/models';
+import { EditCaseStatus } from '@app-builder/routes/ressources/cases/edit-status';
 import { serverServices } from '@app-builder/services/init.server';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
@@ -65,6 +66,7 @@ export default function CasePage() {
             </span>
           </CopyToClipboardButton>
         </div>
+        <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
       </Page.Header>
       <Page.Content>
         <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
