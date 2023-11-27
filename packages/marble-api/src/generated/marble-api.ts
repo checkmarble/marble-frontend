@@ -69,6 +69,7 @@ export type Case = {
     decisions_count: number;
     name: string;
     status: CaseStatus;
+    inbox_id: string;
 };
 export type DecisionDetail = Decision & {
     "case"?: Case;
@@ -80,6 +81,7 @@ export type CreateDecisionBody = {
 };
 export type CreateCaseBody = {
     name: string;
+    inbox_id: string;
     decision_ids?: string[];
 };
 export type CaseDetail = Case & {
@@ -1758,7 +1760,7 @@ export function listInboxUsers(inboxId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            users: InboxUserDto[];
+            inbox_users: InboxUserDto[];
         };
     } | {
         status: 401;
@@ -1777,7 +1779,7 @@ export function addInboxUser(inboxId: string, addInboxUserBodyDto: AddInboxUserB
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            users: InboxUserDto[];
+            inbox_user: InboxUserDto;
         };
     } | {
         status: 401;
