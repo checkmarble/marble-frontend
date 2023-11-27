@@ -77,8 +77,38 @@ export type CreateCaseBody = {
     name: string;
     decision_ids?: string[];
 };
+export type CaseEventBase = {
+    id: string;
+    case_id: string;
+    user_id: string;
+    created_at: string;
+    event_type: string;
+};
+export type CaseCreatedEvent = {
+    event_type: "case_created";
+} & CaseEventBase;
+export type CaseStatusUpdatedEvent = {
+    event_type: "status_updated";
+} & CaseEventBase & {
+    new_value: CaseStatus;
+};
+export type DecisionAddedEvent = {
+    event_type: "decision_added";
+} & CaseEventBase;
+export type CommentAddedEvent = {
+    event_type: "comment_added";
+} & CaseEventBase & {
+    additional_note: string;
+};
+export type NameUpdatedEvent = {
+    event_type: "name_updated";
+} & CaseEventBase & {
+    new_value: string;
+};
+export type CaseEvent = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent;
 export type CaseDetail = Case & {
     decisions: Decision[];
+    events: CaseEvent[];
 };
 export type UpdateCaseBody = {
     name?: string;
