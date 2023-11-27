@@ -2051,9 +2051,9 @@ paths:
               schema:
                 type: object
                 required:
-                  - users
+                  - inbox_users
                 properties:
-                  users:
+                  inbox_users:
                     type: array
                     items:
                       $ref: '#/components/schemas/InboxUserDto'
@@ -2091,12 +2091,10 @@ paths:
               schema:
                 type: object
                 required:
-                  - users
+                  - inbox_user
                 properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/InboxUserDto'
+                  inbox_user:
+                    $ref: '#/components/schemas/InboxUserDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -2125,9 +2123,9 @@ paths:
               schema:
                 type: object
                 required:
-                  - user
+                  - inbox_user
                 properties:
-                  user:
+                  inbox_user:
                     $ref: '#/components/schemas/InboxUserDto'
         '401':
           $ref: '#/components/responses/401'
@@ -2564,6 +2562,7 @@ components:
         - decisions_count
         - name
         - status
+        - inbox_id
       properties:
         id:
           type: string
@@ -2577,6 +2576,9 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/CaseStatus'
+        inbox_id:
+          type: string
+          format: uuid
     CaseDetail:
       allOf:
         - $ref: '#/components/schemas/Case'
@@ -2605,9 +2607,13 @@ components:
       type: object
       required:
         - name
+        - inbox_id
       properties:
         name:
           type: string
+        inbox_id:
+          type: string
+          format: uuid
         decision_ids:
           type: array
           items:
