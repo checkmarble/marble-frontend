@@ -11,5 +11,9 @@
   "case_detail.informations": "Informations",
   "case_detail.decisions_count_one": "{{count}} decision",
   "case_detail.decisions_count_other": "{{count}} decisions",
-  "filters.date_range.title": "creation date is:"
+  "filters.date_range.title": "creation date is:",
+  "change_status_modal.title": "Change Case’s status",
+  "change_status_modal.description.from": "from <Status>{{status}}</Status>",
+  "change_status_modal.description.to": "to <Status>{{status}}</Status>",
+  "change_status_modal.change_status": "Change status"
 }
