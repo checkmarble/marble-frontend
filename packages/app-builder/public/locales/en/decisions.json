@@ -19,6 +19,8 @@
   "add_to_case.create_new_case": "Create a new Case",
   "add_to_case.new_case.informations": "Informations",
   "add_to_case.new_case.new_case_name": "New Case Name",
+  "add_to_case.new_case.select_inbox": "Select an Inbox",
+  "add_to_case.new_case.no_inbox": "You do not currently have access to any inbox. Please contact your admin to get access to an inbox, or create a first inbox.",
   "decision_detail.title": "Decision Detail",
   "object_type": "Object Type",
   "case": "Case",
