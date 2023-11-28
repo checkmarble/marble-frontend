@@ -132,15 +132,76 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: offsetId
+          description: the item from which to paginate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: next
+          description: to fetch the next page of the pagination
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: previous
+          description: to fetch the previous page of the pagination
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: limit
+          description: the number of items to fetch
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: order
+          description: the order of the items to fetch
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: sorting
+          description: the field used to sort the items
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - created_at
       responses:
         '200':
           description: List of corresponding decisions
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Decision'
+                type: object
+                required:
+                  - total
+                  - startIndex
+                  - endIndex
+                  - decisions
+                properties:
+                  total:
+                    type: integer
+                    description: The total number of records
+                  startIndex:
+                    type: integer
+                    description: Index of the first item on the paginated set
+                  endIndex:
+                    type: integer
+                    description: Index of the last item on the paginated set
+                  decisions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Decision'
         '401':
           $ref: '#/components/responses/401'
         '403':

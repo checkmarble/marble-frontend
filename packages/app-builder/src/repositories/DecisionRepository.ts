@@ -3,6 +3,13 @@ import { add } from 'date-fns';
 import { type Decision, type Outcome } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
 
+export type DecisionsWithPagination = {
+  decisions: Decision[];
+  total: number;
+  startIndex: number;
+  endIndex: number;
+};
+
 export interface DecisionRepository {
   listDecisions(args: {
     outcome?: Outcome[];
@@ -18,7 +25,13 @@ export interface DecisionRepository {
           fromNow: string;
         };
     scenarioId?: string[];
-  }): Promise<Decision[]>;
+    offsetId?: string;
+    next?: boolean;
+    previous?: boolean;
+    limit?: number;
+    order?: 'ASC' | 'DESC';
+    sorting?: 'created_at';
+  }): Promise<DecisionsWithPagination>;
 }
 
 export function getDecisionRepository() {

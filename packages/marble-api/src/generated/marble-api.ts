@@ -395,16 +395,27 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
 /**
  * List decisions
  */
-export function listDecisions({ outcome, scenarioId, triggerObject, startDate, endDate }: {
+export function listDecisions({ outcome, scenarioId, triggerObject, startDate, endDate, offsetId, next, previous, limit, order, sorting }: {
     outcome?: Outcome[];
     scenarioId?: string[];
     triggerObject?: string[];
     startDate?: string;
     endDate?: string;
+    offsetId?: string;
+    next?: boolean;
+    previous?: boolean;
+    limit?: number;
+    order?: "ASC" | "DESC";
+    sorting?: "created_at";
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Decision[];
+        data: {
+            total: number;
+            startIndex: number;
+            endIndex: number;
+            decisions: Decision[];
+        };
     } | {
         status: 401;
         data: string;
@@ -416,7 +427,13 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
         "scenarioId[]": scenarioId,
         "triggerObject[]": triggerObject,
         startDate,
-        endDate
+        endDate,
+        offsetId,
+        next,
+        previous,
+        limit,
+        order,
+        sorting
     }))}`, {
         ...opts
     }));
