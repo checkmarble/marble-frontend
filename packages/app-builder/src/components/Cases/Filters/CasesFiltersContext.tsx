@@ -1,6 +1,7 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import {
+  caseStatusSchema,
   type DateRangeFilterForm,
   dateRangeSchema,
 } from '@app-builder/utils/schema/filterSchema';
@@ -18,9 +19,7 @@ import * as z from 'zod';
 import { type CasesFilterName, casesFilterNames } from './filters';
 
 export const casesFiltersSchema = z.object({
-  statuses: z
-    .array(z.enum(['open', 'investigating', 'discarded', 'resolved']))
-    .optional(),
+  statuses: z.array(caseStatusSchema).optional(),
   dateRange: dateRangeSchema.optional(),
 });
 

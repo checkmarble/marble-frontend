@@ -10,21 +10,20 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
   ({ className, size = 'small', ...props }, ref) => {
     return (
       <Dialog.Portal>
-        <Dialog.Overlay className="animate-overlayShow bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Content
-            ref={ref}
-            {...props}
-            className={clsx(
-              'border-grey-10 flex h-fit w-full flex-col overflow-hidden rounded-lg border drop-shadow-xl',
-              {
-                'max-w-lg': size === 'small',
-                'max-w-2xl': size === 'medium',
-                'max-w-5xl': size === 'large',
-              },
-              className
-            )}
-          />
-        </Dialog.Overlay>
+        <Dialog.Overlay className="animate-overlayShow bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4" />
+        <Dialog.Content
+          ref={ref}
+          {...props}
+          className={clsx(
+            'border-grey-10 fixed left-[50%] top-[50%] flex h-fit w-full translate-x-[-50%] translate-y-[-50%]  flex-col overflow-hidden rounded-lg border drop-shadow-xl',
+            {
+              'max-w-lg': size === 'small',
+              'max-w-2xl': size === 'medium',
+              'max-w-5xl': size === 'large',
+            },
+            className
+          )}
+        />
       </Dialog.Portal>
     );
   }
