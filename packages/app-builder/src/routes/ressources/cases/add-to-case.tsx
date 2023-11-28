@@ -11,12 +11,17 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ActionArgs, json, redirect } from '@remix-run/node';
+import {
+  type ActionArgs,
+  json,
+  type LoaderArgs,
+  redirect,
+} from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Input } from 'ui-design-system';
+import { Button, Input, Select } from 'ui-design-system';
 import { Plus } from 'ui-icons';
 import { z } from 'zod';
 
@@ -29,6 +34,7 @@ const addToCaseFormSchema = z.discriminatedUnion('newCase', [
     newCase: z.literal(true),
     name: z.string().min(1),
     decisionIds: z.array(z.string()),
+    inboxId: z.string().min(1),
   }),
   z.object({
     newCase: z.literal(false),
@@ -36,6 +42,16 @@ const addToCaseFormSchema = z.discriminatedUnion('newCase', [
     decisionIds: z.array(z.string()),
   }),
 ]);
+
+export async function loader({ request }: LoaderArgs) {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
+  const inboxes = await apiClient.listInboxes();
+
+  return json(inboxes);
+}
 
 type AddToCaseForm = z.infer<typeof addToCaseFormSchema>;
 
@@ -63,8 +79,8 @@ export async function action({ request }: ActionArgs) {
       const result = await apiClient.createCase({
         name: parsedForm.data.name,
         decision_ids: parsedForm.data.decisionIds,
+        inbox_id: parsedForm.data.inboxId,
       });
-
       return redirect(
         getRoute('/cases/:caseId', { caseId: fromUUID(result.case.id) })
       );
@@ -96,6 +112,12 @@ export async function action({ request }: ActionArgs) {
 
 export function AddToCase() {
   const { t } = useTranslation(handle.i18n);
+  const loadFetcher = useFetcher<typeof loader>();
+  if (loadFetcher.state === 'idle' && !loadFetcher.data) {
+    loadFetcher.load(getRoute('/ressources/cases/add-to-case'));
+  }
+  const inboxes = loadFetcher.data?.inboxes || [];
+
   const fetcher = useFetcher<typeof action>();
   const { data } = useDecisionRightPanelContext();
 
@@ -106,9 +128,14 @@ export function AddToCase() {
       newCase: true,
       name: '',
       decisionIds: data?.decisionId ? [data?.decisionId] : [],
+      inboxId: '',
     },
   });
   const { control, register } = formMethods;
+
+  if (inboxes.length === 0) {
+    return <p>{t('decisions:add_to_case.new_case.no_inbox')}</p>;
+  }
 
   return (
     <FormProvider {...formMethods}>
@@ -136,6 +163,34 @@ export function AddToCase() {
                 </FormLabel>
                 <FormControl>
                   <Input type="text" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="inboxId"
+            control={control}
+            render={({ field }) => (
+              <FormItem className="flex flex-1 flex-col gap-2">
+                <FormLabel className="text-xs capitalize">
+                  {t('decisions:add_to_case.new_case.select_inbox')}
+                </FormLabel>
+                <FormControl>
+                  <Select.Default
+                    className="w-full overflow-hidden"
+                    onValueChange={(type) => {
+                      field.onChange(type);
+                    }}
+                    value={field.value}
+                  >
+                    {inboxes.map(({ name, id }) => {
+                      return (
+                        <Select.DefaultItem key={id} value={id}>
+                          {name}
+                        </Select.DefaultItem>
+                      );
+                    })}
+                  </Select.Default>
                 </FormControl>
               </FormItem>
             )}
