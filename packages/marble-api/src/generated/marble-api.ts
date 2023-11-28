@@ -85,6 +85,11 @@ export type CreateCaseBody = {
 export type CaseDetail = Case & {
     decisions: Decision[];
 };
+export type UpdateCaseBody = {
+    name?: string;
+    decision_ids?: string[];
+    status?: CaseStatus;
+};
 export type ScheduledExecution = {
     id: string;
     scenario_iteration_id: string;
@@ -529,6 +534,30 @@ export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     }>(`/cases/${encodeURIComponent(caseId)}`, {
         ...opts
     }));
+}
+/**
+ * Update a case
+ */
+export function updateCase(caseId: string, updateCaseBody: UpdateCaseBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetail;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateCaseBody
+    })));
 }
 /**
  * List Scheduled Executions

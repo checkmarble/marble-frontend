@@ -31,3 +31,10 @@ export type DateRangeFilterForm =
       fromNow: string;
     }
   | null;
+
+export const caseStatusSchema = z.enum([
+  'open',
+  'investigating',
+  'discarded',
+  'resolved',
+]);

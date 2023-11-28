@@ -85,8 +85,8 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
         data-border={border}
         data-border-color={borderColor}
         className={clsx(
-          'group/trigger',
-          'bg-grey-00 text-s text-grey-100 group flex h-10 min-w-[40px] items-center justify-between border font-medium outline-none',
+          'group',
+          'bg-grey-00 text-s text-grey-100 flex h-10 min-w-[40px] items-center justify-between border font-medium outline-none',
           'radix-state-open:border-purple-100 radix-state-open:text-purple-100',
           'radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
           // Border variants

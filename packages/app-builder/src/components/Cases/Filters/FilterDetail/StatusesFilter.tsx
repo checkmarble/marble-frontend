@@ -2,14 +2,14 @@ import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { Status, useStatuses } from '../../Status';
+import { CaseStatus, useCaseStatuses } from '../../CaseStatus';
 import { useStatusesFilter } from '../CasesFiltersContext';
 
 export function StatusesFilter() {
   const [value, setSearchValue] = useState('');
   const { selectedStatuses, setSelectedStatuses } = useStatusesFilter();
   const deferredValue = useDeferredValue(value);
-  const statuses = useStatuses();
+  const statuses = useCaseStatuses();
 
   const matches = useMemo(
     () => matchSorter(statuses, deferredValue, { keys: ['label'] }),
@@ -32,7 +32,7 @@ export function StatusesFilter() {
                 key={status.value}
                 value={status.value}
               >
-                <Status status={status.value} />
+                <CaseStatus status={status.value} />
                 <span className="text-grey-100 text-s font-normal first-letter:capitalize">
                   {status.label}
                 </span>

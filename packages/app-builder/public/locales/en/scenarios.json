@@ -5,7 +5,7 @@
   "empty_scenario_list": "You don’t have any scenario. Click on new scenario to make a new one",
   "trigger.run_scenario.title": "How to run this scenario ?",
   "trigger.run_scenario.description.docs": "You can run this scenario by calling our API: see our docs <DocLink>here</DocLink>.",
-  "trigger.run_scenario.description.scenario_id": "You’ll need the <ScenarioIdLabel/>scenario_id</ScenarioIdLabe>: <ScenarioIdValue>{{scenarioId}}</ScenarioIdValue>",
+  "trigger.run_scenario.description.scenario_id": "You’ll need the <ScenarioIdLabel>scenario_id</ScenarioIdLabel>: <ScenarioIdValue>{{scenarioId}}</ScenarioIdValue>",
   "trigger.schedule_scenario.option": "Run this scenario on a schedule",
   "trigger.schedule_scenario.frequency_label": "Run",
   "trigger.schedule_scenario.schedule_detail_daily_label": "at",
