@@ -1,30 +1,30 @@
 import type { SVGProps } from 'react';
 const String = (props: SVGProps<SVGSVGElement>) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
     width="1em"
     height="1em"
-    fill="none"
     viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
     <mask
-      id="prefix__a"
-      width={24}
-      height={24}
-      x={0}
-      y={0}
-      maskUnits="userSpaceOnUse"
+      id="prefix__mask0_7278_5226"
       style={{
         maskType: 'alpha',
       }}
+      maskUnits="userSpaceOnUse"
+      x={0}
+      y={0}
+      width={24}
+      height={24}
     >
-      <path fill="currentColor" d="M0 0h24v24H0z" />
+      <rect width={24} height={24} fill="currentColor" />
     </mask>
-    <g mask="url(#prefix__a)">
+    <g mask="url(#prefix__mask0_7278_5226)">
       <path
+        d="M7 20V7H2V4H15V7H10V20H7ZM16 20V12H13V9H22V12H19V20H16Z"
         fill="currentColor"
-        d="M7 20V7H2V4h13v3h-5v13H7Zm9 0v-8h-3V9h9v3h-3v8h-3Z"
       />
     </g>
   </svg>
