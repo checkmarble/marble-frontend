@@ -38,6 +38,9 @@ async function buildIcon(svgFileName: string) {
         '#1C1B1F': 'currentColor',
         '#D9D9D9': 'currentColor',
       },
+      svgoConfig: {
+        plugins: ['prefixIds'],
+      },
     },
     { componentName }
   );

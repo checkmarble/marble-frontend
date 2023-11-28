@@ -4,27 +4,27 @@ const Delete = (props: SVGProps<SVGSVGElement>) => (
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
     height="1em"
-    fill="none"
     viewBox="0 0 24 24"
+    fill="none"
     {...props}
   >
     <mask
-      id="prefix__a"
-      width={24}
-      height={24}
-      x={0}
-      y={0}
-      maskUnits="userSpaceOnUse"
+      id="prefix__mask0_6130_61179"
       style={{
         maskType: 'alpha',
       }}
+      maskUnits="userSpaceOnUse"
+      x={0}
+      y={0}
+      width={24}
+      height={24}
     >
-      <path fill="currentColor" d="M0 0h24v24H0z" />
+      <rect width={24} height={24} fill="currentColor" />
     </mask>
-    <g mask="url(#prefix__a)">
+    <g mask="url(#prefix__mask0_6130_61179)">
       <path
+        d="M7 21C6.45 21 5.97917 20.8042 5.5875 20.4125C5.19583 20.0208 5 19.55 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8042 20.0208 18.4125 20.4125C18.0208 20.8042 17.55 21 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z"
         fill="currentColor"
-        d="M7 21c-.55 0-1.02-.196-1.412-.587A1.926 1.926 0 0 1 5 19V6H4V4h5V3h6v1h5v2h-1v13c0 .55-.196 1.02-.587 1.413A1.926 1.926 0 0 1 17 21H7ZM17 6H7v13h10V6ZM9 17h2V8H9v9Zm4 0h2V8h-2v9Z"
       />
     </g>
   </svg>
