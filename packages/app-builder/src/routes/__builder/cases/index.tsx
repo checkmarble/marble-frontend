@@ -9,6 +9,7 @@ import {
 } from '@app-builder/components/Cases/Filters';
 import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { CreateFirstInbox } from '@app-builder/routes/ressources/cases/create-first-inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -26,9 +27,11 @@ export const handle = {
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
-  const { cases } = await authService.isAuthenticated(request, {
+  const { cases, apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
+
+  const inboxes = await apiClient.listInboxes();
 
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
   if (!parsedQuery.success) {
@@ -37,12 +40,12 @@ export async function loader({ request }: LoaderArgs) {
   const filters = parsedQuery.data;
   const caseList = await cases.listCases(filters);
 
-  return json({ cases: caseList, filters });
+  return json({ cases: caseList, filters, inboxes: inboxes.inboxes });
 }
 
 export default function Cases() {
   const { t } = useTranslation(handle.i18n);
-  const { cases, filters } = useLoaderData<typeof loader>();
+  const { cases, filters, inboxes } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
   const submitCasesFilters = useCallback(
@@ -86,18 +89,22 @@ export default function Cases() {
       </Page.Header>
       <Page.Content>
         <div className="flex flex-col gap-4">
-          <CasesFiltersProvider
-            submitCasesFilters={submitCasesFilters}
-            filterValues={filters}
-          >
-            <div className="flex justify-end gap-4">
-              <CasesFiltersMenu filterNames={casesFilterNames}>
-                <FiltersButton />
-              </CasesFiltersMenu>
-            </div>
-            <CasesFiltersBar />
-            <CasesList cases={cases} />
-          </CasesFiltersProvider>
+          {inboxes.length === 0 ? (
+            <CreateFirstInbox />
+          ) : (
+            <CasesFiltersProvider
+              submitCasesFilters={submitCasesFilters}
+              filterValues={filters}
+            >
+              <div className="flex justify-end gap-4">
+                <CasesFiltersMenu filterNames={casesFilterNames}>
+                  <FiltersButton />
+                </CasesFiltersMenu>
+              </div>
+              <CasesFiltersBar />
+              <CasesList cases={cases} />
+            </CasesFiltersProvider>
+          )}
         </div>
       </Page.Content>
     </Page.Container>
