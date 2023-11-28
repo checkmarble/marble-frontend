@@ -55,8 +55,9 @@ const RuleWithDescription = ({
 
   return (
     <Accordion.Item value={value}>
-      <Accordion.Title>
+      <Accordion.Title className="flex flex-1 items-center justify-between gap-4">
         <RuleDetail rule={rule} status={status} />
+        <Accordion.Arrow />
       </Accordion.Title>
       <Accordion.Content>
         <div className="bg-purple-10 mt-4 flex gap-2 rounded p-4 text-purple-100">

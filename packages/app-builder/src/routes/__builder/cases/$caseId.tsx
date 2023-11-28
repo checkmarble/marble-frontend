@@ -5,6 +5,7 @@ import {
 } from '@app-builder/components';
 import {
   CaseDecisions,
+  CaseEvents,
   CaseInformation,
   casesI18n,
 } from '@app-builder/components/Cases';
@@ -73,6 +74,7 @@ export default function CasePage() {
           <div className="flex flex-col gap-4 lg:gap-8">
             <CaseInformation caseDetail={caseDetail} />
             <CaseDecisions decisions={caseDetail.decisions} />
+            <CaseEvents events={caseDetail.events} />
           </div>
           <div className="flex flex-col gap-4 lg:gap-8"></div>
         </div>
