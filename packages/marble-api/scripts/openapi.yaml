@@ -201,6 +201,14 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: inbox_id
+          description: Ids of the inboxes used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         '200':
           description: List of corresponding cases
