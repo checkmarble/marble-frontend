@@ -198,6 +198,7 @@ export interface TimeAddAstNode {
 export type TimestampFieldAstNode =
   | DatabaseAccessAstNode
   | PayloadAstNode
+  | TimeNowAstNode
   | UndefinedAstNode;
 
 export function NewTimeAddAstNode(
@@ -221,7 +222,28 @@ export function NewTimeAddAstNode(
   };
 }
 
-export const functionNodeNames = [aggregationAstNodeName, timeAddAstNodeName];
+const timeNowAstNodeName = 'TimeNow';
+export interface TimeNowAstNode {
+  name: typeof timeNowAstNodeName;
+  constant?: undefined;
+  children: [];
+  namedChildren: Record<string, never>;
+}
+
+export function NewTimeNowAstNode(): TimeNowAstNode {
+  return {
+    name: timeNowAstNodeName,
+    constant: undefined,
+    children: [],
+    namedChildren: {},
+  };
+}
+
+export const functionNodeNames = [
+  aggregationAstNodeName,
+  timeAddAstNodeName,
+  timeNowAstNodeName,
+];
 
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === databaseAccessAstNodeName;
@@ -243,6 +265,10 @@ export function isCustomListAccess(
 
 export function isTimeAdd(node: AstNode): node is TimeAddAstNode {
   return node.name === timeAddAstNodeName;
+}
+
+export function isTimeNow(node: AstNode): node is TimeNowAstNode {
+  return node.name === timeNowAstNodeName;
 }
 
 export interface OrAndGroupAstNode {

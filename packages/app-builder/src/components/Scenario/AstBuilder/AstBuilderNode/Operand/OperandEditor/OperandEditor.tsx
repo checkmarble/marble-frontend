@@ -13,6 +13,7 @@ import {
   type TableModel,
 } from '@app-builder/models';
 import { newTimeAddLabelledAst } from '@app-builder/models/LabelledAst/TimeAdd';
+import { newTimeNowLabelledAst } from '@app-builder/models/LabelledAst/TimeNow';
 import { allAggregators } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -151,6 +152,7 @@ const OperandEditorContent = forwardRef<
     const functions = [
       ...allAggregators.map(newAggregatorLabelledAst),
       newTimeAddLabelledAst(),
+      newTimeNowLabelledAst(),
     ];
 
     const enumOptionValues = getEnumOptionsFromNeighbour({
