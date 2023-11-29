@@ -37,8 +37,15 @@ const fakeDecisions: Decision[] = Array.from({
   score: Number(faker.number.int(100)),
 }));
 
+const fakeDecisionsWithPagination = {
+  items: fakeDecisions,
+  total: fakeDecisions.length,
+  startIndex: 0,
+  endIndex: fakeDecisions.length,
+};
+
 export const listDecisionsFake: typeof listDecisions = () =>
-  Promise.resolve(fakeDecisions);
+  Promise.resolve(fakeDecisionsWithPagination);
 
 export const getDecisionFake: typeof getDecision = (decisionId) => {
   const decision = fakeDecisions.find(({ id }) => decisionId === id);

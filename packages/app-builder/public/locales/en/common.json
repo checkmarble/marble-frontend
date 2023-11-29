@@ -31,5 +31,6 @@
   "or": "or",
   "loading": "Loading...",
   "understand": "I understand",
-  "global_error": "Something went wrong."
+  "global_error": "Something went wrong.",
+  "items_displayed_out_of_total": "<StartToEnd>{{start}} to {{end}}</StartToEnd> out of {{total}}"
 }

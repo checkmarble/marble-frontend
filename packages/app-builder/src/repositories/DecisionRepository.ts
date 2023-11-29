@@ -1,3 +1,4 @@
+import { type PaginatedResponse } from '@app-builder/components';
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { add } from 'date-fns';
 import { type Decision, type Outcome } from 'marble-api';
@@ -18,7 +19,13 @@ export interface DecisionRepository {
           fromNow: string;
         };
     scenarioId?: string[];
-  }): Promise<Decision[]>;
+    offsetId?: string;
+    next?: boolean;
+    previous?: boolean;
+    limit?: number;
+    order?: 'ASC' | 'DESC';
+    sorting?: 'created_at';
+  }): Promise<PaginatedResponse<Decision>>;
 }
 
 export function getDecisionRepository() {

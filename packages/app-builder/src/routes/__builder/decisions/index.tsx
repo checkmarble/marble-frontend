@@ -7,6 +7,9 @@ import {
   DecisionsList,
   ErrorComponent,
   Page,
+  PaginationButtons,
+  type PaginationParams,
+  paginationSchema,
 } from '@app-builder/components';
 import { DecisionFiltersBar } from '@app-builder/components/Decisions/Filters/DecisionFiltersBar';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
@@ -39,29 +42,42 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const parsedQuery = await parseQuerySafe(request, decisionFiltersSchema);
-  if (!parsedQuery.success) {
+  const parsedFilterQuery = await parseQuerySafe(
+    request,
+    decisionFiltersSchema
+  );
+  const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
+
+  if (!parsedFilterQuery.success || !parsedPaginationQuery.success) {
     return redirect(getRoute('/decisions'));
   }
-  const [decisions, scenarios] = await Promise.all([
-    decision.listDecisions(parsedQuery.data),
+
+  const [decisionsData, scenarios] = await Promise.all([
+    decision.listDecisions({
+      ...parsedFilterQuery.data,
+      ...parsedPaginationQuery.data,
+    }),
     scenario.listScenarios(),
   ]);
 
   return json({
-    decisions,
+    decisionsData,
     scenarios,
-    filters: parsedQuery.data,
+    filters: parsedFilterQuery.data,
   });
 }
 
 export default function Decisions() {
   const { t } = useTranslation(handle.i18n);
-  const { decisions, filters, scenarios } = useLoaderData<typeof loader>();
+  const {
+    decisionsData: { items: decisions, ...pagination },
+    filters,
+    scenarios,
+  } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
-  const submitDecisionFilters = useCallback(
-    (decisionFilters: DecisionFilters) => {
+  const navigateDecisionList = useCallback(
+    (decisionFilters: DecisionFilters, pagination?: PaginationParams) => {
       navigate(
         {
           pathname: getRoute('/decisions'),
@@ -82,6 +98,9 @@ export default function Decisions() {
                     }
                 : {},
               scenarioId: decisionFilters.scenarioId ?? [],
+              offsetId: pagination?.offsetId || null,
+              next: pagination?.next || null,
+              previous: pagination?.previous || null,
             },
             {
               addQueryPrefix: true,
@@ -106,7 +125,7 @@ export default function Decisions() {
         <div className="flex flex-col gap-4">
           <DecisionFiltersProvider
             scenarios={scenarios}
-            submitDecisionFilters={submitDecisionFilters}
+            submitDecisionFilters={navigateDecisionList}
             filterValues={filters}
           >
             <div className="flex justify-between gap-4">
@@ -125,6 +144,13 @@ export default function Decisions() {
             </div>
             <DecisionFiltersBar />
             <DecisionsList decisions={decisions} />
+            <PaginationButtons
+              items={decisions}
+              onPaginationChange={(paginationParams: PaginationParams) =>
+                navigateDecisionList(filters, paginationParams)
+              }
+              {...pagination}
+            />
           </DecisionFiltersProvider>
         </div>
       </Page.Content>

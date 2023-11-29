@@ -132,15 +132,28 @@ paths:
           schema:
             type: string
             format: date-time
+        - $ref: '#/components/parameters/offsetId'
+        - $ref: '#/components/parameters/previous'
+        - $ref: '#/components/parameters/next'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/sorting'
       responses:
         '200':
           description: List of corresponding decisions
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Decision'
+                allOf:
+                  - $ref: '#/components/schemas/Pagination'
+                  - type: object
+                    required:
+                      - items
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Decision'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1856,6 +1869,57 @@ paths:
         '403':
           $ref: '#/components/responses/403'
 components:
+  parameters:
+    offsetId:
+      in: query
+      name: offsetId
+      description: the item from which to paginate
+      required: false
+      schema:
+        type: string
+        format: uuid
+    next:
+      in: query
+      name: next
+      description: Next page
+      required: false
+      schema:
+        type: boolean
+    previous:
+      in: query
+      name: previous
+      description: Previous page
+      required: false
+      schema:
+        type: boolean
+    limit:
+      in: query
+      name: limit
+      description: the number of items to fetch
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+    order:
+      in: query
+      name: order
+      description: the order of the items to fetch
+      required: false
+      schema:
+        type: string
+        enum:
+          - ASC
+          - DESC
+    sorting:
+      in: query
+      name: sorting
+      description: the field used to sort the items
+      required: false
+      schema:
+        type: string
+        enum:
+          - created_at
   schemas:
     OrganizationDto:
       type: object
@@ -2809,6 +2873,19 @@ components:
         status:
           type: string
         lines_processed:
+          type: integer
+    Pagination:
+      type: object
+      required:
+        - startIndex
+        - endIndex
+        - total
+      properties:
+        startIndex:
+          type: integer
+        endIndex:
+          type: integer
+        total:
           type: integer
   securitySchemes:
     bearerAuth:

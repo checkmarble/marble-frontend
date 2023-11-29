@@ -3,6 +3,7 @@ export * from './Decisions';
 export * from './ErrorComponent';
 export * from './Navigation';
 export * from './Page';
+export * from './PaginationButtons';
 export * from './Paper';
 export * from './PermissionsContext';
 export * from './RightPanel';
