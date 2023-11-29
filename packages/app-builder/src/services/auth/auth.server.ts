@@ -3,7 +3,7 @@ import {
   adaptAuthErrors,
   type AuthData,
   type AuthFlashData,
-  type User,
+  type CurrentUser,
 } from '@app-builder/models';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
@@ -32,7 +32,7 @@ interface AuthenticatedInfo {
   dataModelRepository: DataModelRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
-  user: User;
+  user: CurrentUser;
 }
 
 export interface AuthenticationServerService {
