@@ -1,0 +1,263 @@
+import { formatDateRelative } from '@app-builder/utils/format';
+import { cx } from 'class-variance-authority';
+import { type TFunction } from 'i18next';
+import { type CaseEvent } from 'marble-api';
+import { Trans, useTranslation } from 'react-i18next';
+import { assertNever } from 'typescript-utils';
+import { Accordion, Avatar, Collapsible } from 'ui-design-system';
+import {
+  CaseManager,
+  CreateNewFolder,
+  Decision,
+  Edit,
+  ManageSearch,
+} from 'ui-icons';
+
+import { casesI18n } from './cases-i18n';
+import { caseStatusMapping, caseStatusVariants } from './CaseStatus';
+
+export function CaseEvents({ events }: { events: CaseEvent[] }) {
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(casesI18n);
+
+  return (
+    <Collapsible.Container>
+      <Collapsible.Title>
+        <span className="text-grey-100 text-m font-bold capitalize">
+          {t('cases:case_detail.history')}
+        </span>
+      </Collapsible.Title>
+      <Collapsible.Content>
+        <Accordion.Container className="relative">
+          <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
+          {events.map((event) => {
+            const Icon = getEventIcon(event);
+            const Title = getEventTitle(event, t);
+            const Detail = getEventDetail(event);
+            return (
+              <Accordion.Item key={event.id} value={event.id}>
+                <Accordion.Title className="flex w-full flex-row items-center">
+                  <span className="mr-2">{Icon}</span>
+                  <span className="flex-1 text-start">{Title}</span>
+                  <span className="text-s text-grey-25 mx-4 font-normal">
+                    {formatDateRelative(event.created_at, {
+                      language,
+                    })}
+                  </span>
+                  <Accordion.Arrow />
+                </Accordion.Title>
+                <Accordion.Content className="ml-8 mt-2">
+                  {Detail}
+                </Accordion.Content>
+              </Accordion.Item>
+            );
+          })}
+        </Accordion.Container>
+      </Collapsible.Content>
+    </Collapsible.Container>
+  );
+}
+
+function IconContainer({
+  className,
+  children,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cx(
+        'text-m flex h-6 w-6 items-center justify-center rounded-full',
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+export function getEventIcon(event: CaseEvent) {
+  const { event_type } = event;
+  switch (event_type) {
+    case 'case_created':
+      return (
+        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
+          <CaseManager />
+        </IconContainer>
+      );
+    case 'comment_added':
+      return (
+        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
+          <CreateNewFolder />
+        </IconContainer>
+      );
+    case 'decision_added':
+      return (
+        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
+          <Decision />
+        </IconContainer>
+      );
+    case 'name_updated':
+      return (
+        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
+          <Edit />
+        </IconContainer>
+      );
+    case 'status_updated': {
+      const newStatus = event.new_value;
+      return (
+        <IconContainer
+          className={caseStatusVariants({
+            color: caseStatusMapping[newStatus].color,
+            variant: 'contained',
+          })}
+        >
+          <ManageSearch />
+        </IconContainer>
+      );
+    }
+    default:
+      assertNever('[CaseEvents] unknown event:', event_type);
+  }
+}
+
+export function getEventTitle(
+  event: CaseEvent,
+  t: TFunction<typeof casesI18n>
+) {
+  const { event_type } = event;
+  switch (event_type) {
+    case 'case_created': {
+      return (
+        <span className="text-s text-grey-100 font-semibold">
+          {t('cases:case_detail.history.event_title.case_created')}
+        </span>
+      );
+    }
+    case 'comment_added': {
+      return (
+        <span className="text-s text-grey-100 font-semibold">
+          {t('cases:case_detail.history.event_title.comment_added')}
+        </span>
+      );
+    }
+    case 'decision_added': {
+      //TODO(events): aggregate decision_added events to show the count
+      const decisionCount = 1;
+      return (
+        <span className="text-s text-grey-100 font-semibold">
+          {t('cases:case_detail.history.event_title.decision_added', {
+            count: decisionCount,
+          })}
+        </span>
+      );
+    }
+    case 'name_updated': {
+      return (
+        <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
+          <Trans
+            t={t}
+            i18nKey="cases:case_detail.history.event_title.name_updated"
+            components={{
+              Name: <span className="text-s text-grey-100 font-normal" />,
+            }}
+            values={{
+              name: event.new_value,
+            }}
+          />
+        </span>
+      );
+    }
+    case 'status_updated': {
+      const newStatus = event.new_value;
+      return (
+        <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
+          <Trans
+            t={t}
+            i18nKey="cases:case_detail.history.event_title.status_updated"
+            components={{
+              Status: (
+                <span
+                  className={caseStatusVariants({
+                    color: caseStatusMapping[newStatus].color,
+                    variant: 'text',
+                    className: 'capitalize',
+                  })}
+                />
+              ),
+            }}
+            values={{
+              status: t(caseStatusMapping[newStatus].tKey),
+            }}
+          />
+        </span>
+      );
+    }
+    default:
+      assertNever('[CaseEvents] unknown event:', event_type);
+  }
+}
+
+//TODO(case event): get user detail using org users context
+function Author({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  userId,
+  type,
+}: {
+  userId: string;
+  type: 'added_by' | 'edited_by';
+}) {
+  const { t } = useTranslation(casesI18n);
+
+  return (
+    <div className="text-grey-100 text-s font-semibold">
+      <Trans
+        t={t}
+        i18nKey={`cases:case_detail.history.event_detail.${type}`}
+        components={{
+          Avatar: <Avatar size="xs" />,
+          User: (
+            <span className="text-s text-grey-100 font-normal capitalize" />
+          ),
+        }}
+        values={{
+          user: t('cases:case_detail.unknown_user'),
+        }}
+      />
+    </div>
+  );
+}
+
+export function getEventDetail(event: CaseEvent) {
+  const { event_type } = event;
+  switch (event_type) {
+    case 'case_created': {
+      return <Author userId={event.user_id} type="added_by" />;
+    }
+    case 'comment_added': {
+      return (
+        <div className="flex flex-col gap-2">
+          <Author userId={event.user_id} type="added_by" />
+          {event.additional_note && (
+            <div className="text-s text-grey-100 font-normal">
+              {event.additional_note}
+            </div>
+          )}
+        </div>
+      );
+    }
+    case 'decision_added': {
+      return <Author userId={event.user_id} type="added_by" />;
+    }
+    case 'name_updated': {
+      return <Author userId={event.user_id} type="edited_by" />;
+    }
+    case 'status_updated': {
+      return <Author userId={event.user_id} type="edited_by" />;
+    }
+    default:
+      assertNever('[CaseEvents] unknown event:', event_type);
+  }
+}

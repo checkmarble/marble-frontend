@@ -2,6 +2,7 @@ import {
   casesI18n,
   CaseStatus,
   caseStatusMapping,
+  caseStatusVariants,
   useCaseStatuses,
 } from '@app-builder/components/Cases';
 import { serverServices } from '@app-builder/services/init.server';
@@ -12,7 +13,6 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { type ActionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { cx } from 'class-variance-authority';
 import { type Namespace } from 'i18next';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -88,11 +88,12 @@ export function EditCaseStatus({
         </span>
         <DropdownMenu.Trigger
           ref={dropdownTriggerRef}
-          className={cx(
-            'group',
-            caseStatus.caseStatusVariant,
-            'flex h-10 flex-row items-center gap-1 rounded px-2'
-          )}
+          className={caseStatusVariants({
+            color: caseStatusMapping[status].color,
+            variant: 'contained',
+            className:
+              'group flex h-10 flex-row items-center gap-1 rounded px-2',
+          })}
         >
           <span className="text-s ml-2 font-semibold capitalize">
             {t(caseStatus.tKey)}
@@ -203,10 +204,11 @@ function ModalContent({
               components={{
                 Status: (
                   <span
-                    className={cx(
-                      caseStatusMapping[status].caseStatusVariant,
-                      'flex h-10 w-fit items-center rounded px-2'
-                    )}
+                    className={caseStatusVariants({
+                      color: caseStatusMapping[status].color,
+                      variant: 'contained',
+                      className: 'flex h-10 w-fit items-center rounded px-2',
+                    })}
                   />
                 ),
               }}
@@ -222,10 +224,11 @@ function ModalContent({
               components={{
                 Status: (
                   <span
-                    className={cx(
-                      caseStatusMapping[nextStatus].caseStatusVariant,
-                      'flex h-10 w-fit items-center rounded px-2'
-                    )}
+                    className={caseStatusVariants({
+                      color: caseStatusMapping[status].color,
+                      variant: 'contained',
+                      className: 'flex h-10 w-fit items-center rounded px-2',
+                    })}
                   />
                 ),
               }}

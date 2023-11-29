@@ -1,7 +1,7 @@
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import cronstrue from 'cronstrue';
 import { type Options as ConstrueOptions } from 'cronstrue/dist/options';
-import { add, formatDistanceStrict } from 'date-fns';
+import { add, formatDistanceStrict, formatRelative } from 'date-fns';
 import { Temporal } from 'temporal-polyfill';
 
 export function formatDateTime(
@@ -47,6 +47,19 @@ export function formatDuration(duration: string, language: string) {
     {
       addSuffix: true,
       locale: getDateFnsLocale(language),
+    }
+  );
+}
+
+export function formatDateRelative(
+  date: string | Date,
+  options: { language: string }
+) {
+  return formatRelative(
+    typeof date === 'string' ? new Date(date) : date,
+    new Date(),
+    {
+      locale: getDateFnsLocale(options.language),
     }
   );
 }

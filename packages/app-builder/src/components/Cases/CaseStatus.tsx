@@ -1,4 +1,4 @@
-import { cva, cx } from 'class-variance-authority';
+import { cva, cx, type VariantProps } from 'class-variance-authority';
 import { type ParseKeys } from 'i18next';
 import { type CaseStatus } from 'marble-api';
 import { useMemo } from 'react';
@@ -7,26 +7,52 @@ import { Tooltip } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
 
-const caseStatusVariants = cva('', {
+export const caseStatusVariants = cva(undefined, {
   variants: {
     color: {
-      red: 'bg-red-10 text-red-100',
-      blue: 'bg-blue-10 text-blue-100',
-      grey: 'bg-grey-10 text-grey-50',
-      green: 'bg-green-10 text-green-100',
+      red: 'text-red-100',
+      blue: 'text-blue-100',
+      grey: 'text-grey-50',
+      green: 'text-green-100',
+    },
+    variant: {
+      text: undefined,
+      contained: undefined,
     },
   },
+  compoundVariants: [
+    {
+      variant: 'contained',
+      color: 'red',
+      className: 'bg-red-10',
+    },
+    {
+      variant: 'contained',
+      color: 'blue',
+      className: 'bg-blue-10',
+    },
+    {
+      variant: 'contained',
+      color: 'grey',
+      className: 'bg-grey-10',
+    },
+    {
+      variant: 'contained',
+      color: 'green',
+      className: 'bg-green-10',
+    },
+  ],
 });
 
 export function CaseStatus({ status }: { status: CaseStatus }) {
   const { t } = useTranslation(casesI18n);
-  const { caseStatusVariant, tKey } = caseStatusMapping[status];
+  const { color, tKey } = caseStatusMapping[status];
 
   return (
     <Tooltip.Default content={t(tKey)}>
       <div
         className={cx(
-          caseStatusVariant,
+          caseStatusVariants({ color, variant: 'contained' }),
           'text-s flex h-6 w-6 items-center justify-center rounded font-semibold capitalize'
         )}
       >
@@ -38,24 +64,27 @@ export function CaseStatus({ status }: { status: CaseStatus }) {
 
 export const caseStatusMapping = {
   open: {
-    caseStatusVariant: caseStatusVariants({ color: 'red' }),
+    color: 'red',
     tKey: 'cases:case.status.open',
   },
   investigating: {
-    caseStatusVariant: caseStatusVariants({ color: 'blue' }),
+    color: 'blue',
     tKey: 'cases:case.status.investigating',
   },
   discarded: {
-    caseStatusVariant: caseStatusVariants({ color: 'grey' }),
+    color: 'grey',
     tKey: 'cases:case.status.discarded',
   },
   resolved: {
-    caseStatusVariant: caseStatusVariants({ color: 'green' }),
+    color: 'green',
     tKey: 'cases:case.status.resolved',
   },
 } satisfies Record<
   CaseStatus,
-  { caseStatusVariant: string; tKey: ParseKeys<['cases']> }
+  {
+    color: VariantProps<typeof caseStatusVariants>['color'];
+    tKey: ParseKeys<['cases']>;
+  }
 >;
 
 const statuses = [
