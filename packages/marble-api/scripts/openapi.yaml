@@ -2585,11 +2585,80 @@ components:
         - type: object
           required:
             - decisions
+            - events
           properties:
             decisions:
               type: array
               items:
                 $ref: '#/components/schemas/Decision'
+            events:
+              type: array
+              items:
+                $ref: '#/components/schemas/CaseEvent'
+    CaseEvent:
+      type: object
+      discriminator:
+        propertyName: event_type
+        mapping:
+          case_created: '#/components/schemas/CaseCreatedEvent'
+          status_updated: '#/components/schemas/CaseStatusUpdatedEvent'
+          decision_added: '#/components/schemas/DecisionAddedEvent'
+          comment_added: '#/components/schemas/CommentAddedEvent'
+          name_updated: '#/components/schemas/NameUpdatedEvent'
+      required:
+        - id
+        - case_id
+        - user_id
+        - created_at
+        - event_type
+      properties:
+        id:
+          type: string
+          format: uuid
+        case_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        event_type:
+          type: string
+    CaseCreatedEvent:
+      allOf:
+        - $ref: '#/components/schemas/CaseEvent'
+    CaseStatusUpdatedEvent:
+      allOf:
+        - $ref: '#/components/schemas/CaseEvent'
+        - type: object
+          required:
+            - new_value
+          properties:
+            new_value:
+              $ref: '#/components/schemas/CaseStatus'
+    DecisionAddedEvent:
+      allOf:
+        - $ref: '#/components/schemas/CaseEvent'
+    CommentAddedEvent:
+      allOf:
+        - $ref: '#/components/schemas/CaseEvent'
+        - type: object
+          required:
+            - additional_note
+          properties:
+            additional_note:
+              type: string
+    NameUpdatedEvent:
+      allOf:
+        - $ref: '#/components/schemas/CaseEvent'
+        - type: object
+          required:
+            - new_value
+          properties:
+            new_value:
+              type: string
     UpdateCaseBody:
       type: object
       properties:
