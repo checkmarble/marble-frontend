@@ -31,6 +31,11 @@ export type CredentialsDto = {
     };
 };
 export type Outcome = "approve" | "review" | "decline" | "null" | "unknown";
+export type Pagination = {
+    startIndex: number;
+    endIndex: number;
+    total: number;
+};
 export type Error = {
     code: number;
     message: string;
@@ -395,26 +400,23 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
 /**
  * List decisions
  */
-export function listDecisions({ outcome, scenarioId, triggerObject, startDate, endDate, offsetId, next, previous, limit, order, sorting }: {
+export function listDecisions({ outcome, scenarioId, triggerObject, startDate, endDate, offsetId, previous, next, limit, order, sorting }: {
     outcome?: Outcome[];
     scenarioId?: string[];
     triggerObject?: string[];
     startDate?: string;
     endDate?: string;
     offsetId?: string;
-    next?: boolean;
     previous?: boolean;
+    next?: boolean;
     limit?: number;
     order?: "ASC" | "DESC";
     sorting?: "created_at";
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: {
-            total: number;
-            startIndex: number;
-            endIndex: number;
-            decisions: Decision[];
+        data: Pagination & {
+            items: Decision[];
         };
     } | {
         status: 401;
@@ -429,8 +431,8 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
         startDate,
         endDate,
         offsetId,
-        next,
         previous,
+        next,
         limit,
         order,
         sorting

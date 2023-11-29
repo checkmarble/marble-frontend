@@ -38,7 +38,7 @@ const fakeDecisions: Decision[] = Array.from({
 }));
 
 const fakeDecisionsWithPagination = {
-  decisions: fakeDecisions,
+  items: fakeDecisions,
   total: fakeDecisions.length,
   startIndex: 0,
   endIndex: fakeDecisions.length,

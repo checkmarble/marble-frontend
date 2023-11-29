@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { ArrowLeft, ArrowRight } from 'ui-icons';
 import { z } from 'zod';
@@ -21,23 +21,28 @@ export type PaginationParams = {
   limit?: number;
 };
 
-type ItemListWithId = {
+export type PaginatedResponse<T> = {
+  items: T[];
+  total: number;
+  startIndex: number;
+  endIndex: number;
+};
+
+type ItemWithId = {
   id: string;
-}[];
+};
+
+type PaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
+  onPaginationChange: (paginationParams: PaginationParams) => void;
+};
 
 export const PaginationButtons = ({
   items,
   total,
   startIndex,
   endIndex,
-  navigate,
-}: {
-  items: ItemListWithId;
-  total: number;
-  startIndex: number;
-  endIndex: number;
-  navigate: (paginationParams: PaginationParams) => void;
-}) => {
+  onPaginationChange,
+}: PaginationsButtonsProps) => {
   const { t } = useTranslation(['common']);
   const start = Math.min(startIndex, endIndex);
   const end = Math.max(startIndex, endIndex);
@@ -47,7 +52,7 @@ export const PaginationButtons = ({
       previous: true,
       offsetId: items[0].id,
     };
-    navigate(pagination);
+    onPaginationChange(pagination);
   };
 
   const fetchNext = () => {
@@ -55,18 +60,17 @@ export const PaginationButtons = ({
       next: true,
       offsetId: items[items.length - 1].id,
     };
-    navigate(pagination);
+    onPaginationChange(pagination);
   };
 
   return (
     <div className="flex items-center justify-end gap-2">
-      <span className="font-semibold">
-        {t('common:items_displayed', {
-          start,
-          end,
-        })}
-      </span>
-      {t('common:items_total', { total })}
+      <Trans
+        t={t}
+        i18nKey="common:items_displayed_out_of_total"
+        components={{ StartToEnd: <span style={{ fontWeight: 'bold' }} /> }}
+        values={{ start, end, total }}
+      />
       <Button
         onClick={fetchPrevious}
         variant="secondary"

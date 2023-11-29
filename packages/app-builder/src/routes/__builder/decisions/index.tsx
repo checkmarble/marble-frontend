@@ -46,12 +46,9 @@ export async function loader({ request }: LoaderArgs) {
     request,
     decisionFiltersSchema
   );
-  if (!parsedFilterQuery.success) {
-    return redirect(getRoute('/decisions'));
-  }
-
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
-  if (!parsedPaginationQuery.success) {
+
+  if (!parsedFilterQuery.success || !parsedPaginationQuery.success) {
     return redirect(getRoute('/decisions'));
   }
 
@@ -73,7 +70,7 @@ export async function loader({ request }: LoaderArgs) {
 export default function Decisions() {
   const { t } = useTranslation(handle.i18n);
   const {
-    decisionsData: { decisions, ...pagination },
+    decisionsData: { items: decisions, ...pagination },
     filters,
     scenarios,
   } = useLoaderData<typeof loader>();
@@ -149,7 +146,7 @@ export default function Decisions() {
             <DecisionsList decisions={decisions} />
             <PaginationButtons
               items={decisions}
-              navigate={(paginationParams: PaginationParams) =>
+              onPaginationChange={(paginationParams: PaginationParams) =>
                 navigateDecisionList(filters, paginationParams)
               }
               {...pagination}

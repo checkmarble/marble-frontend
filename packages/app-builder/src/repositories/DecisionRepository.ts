@@ -1,14 +1,8 @@
+import { type PaginatedResponse } from '@app-builder/components';
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { add } from 'date-fns';
 import { type Decision, type Outcome } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
-
-export type DecisionsWithPagination = {
-  decisions: Decision[];
-  total: number;
-  startIndex: number;
-  endIndex: number;
-};
 
 export interface DecisionRepository {
   listDecisions(args: {
@@ -31,7 +25,7 @@ export interface DecisionRepository {
     limit?: number;
     order?: 'ASC' | 'DESC';
     sorting?: 'created_at';
-  }): Promise<DecisionsWithPagination>;
+  }): Promise<PaginatedResponse<Decision>>;
 }
 
 export function getDecisionRepository() {
