@@ -3,11 +3,14 @@ import {
   getPayloadAccessorsDisplayName,
   isDatabaseAccess,
   isPayload,
+  isTimeNow,
   type LabelledAst,
   NewTimeAddAstNode,
   type TimeAddAstNode,
 } from '@app-builder/models';
 import { Temporal } from 'temporal-polyfill';
+
+import { TimeNowName } from './TimeNow';
 
 export function newTimeAddLabelledAst(
   node: TimeAddAstNode = NewTimeAddAstNode()
@@ -35,6 +38,10 @@ const getTimeAddName = (node: TimeAddAstNode): string => {
     timestamp = getPayloadAccessorsDisplayName(
       node.namedChildren['timestampField']
     );
+  }
+
+  if (isTimeNow(node.namedChildren['timestampField'])) {
+    timestamp = TimeNowName;
   }
 
   if (sign === '' || isoDuration === '' || timestamp === '') {

@@ -8,6 +8,7 @@ import {
   isDatabaseAccess,
   isPayload,
   isTimeAdd,
+  isTimeNow,
   isUndefinedAstNode,
 } from '../ast-node';
 import { type DataType, type EnumValue, type TableModel } from '../data-model';
@@ -22,6 +23,7 @@ import { newDatabaseAccessorsLabelledAst } from './DatabaseAccessors';
 import { getAstNodeDisplayName } from './getAstNodeDisplayName';
 import { newPayloadAccessorsLabelledAst } from './PayloadAccessor';
 import { newTimeAddLabelledAst } from './TimeAdd';
+import { newTimeNowLabelledAst } from './TimeNow';
 import { newUndefinedLabelledAst } from './Undefined';
 
 //TODO(combobox): find a better naming
@@ -92,6 +94,10 @@ export function adaptLabelledAst(
 
   if (isTimeAdd(node)) {
     return newTimeAddLabelledAst(node);
+  }
+
+  if (isTimeNow(node)) {
+    return newTimeNowLabelledAst(node);
   }
 
   if (isUndefinedAstNode(node)) {

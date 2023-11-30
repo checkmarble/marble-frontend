@@ -2,11 +2,13 @@ import {
   type EvaluationError,
   isDatabaseAccess,
   isPayload,
+  isTimeNow,
   type LabelledAst,
   newDatabaseAccessorsLabelledAst,
   newPayloadAccessorsLabelledAst,
   NewUndefinedAstNode,
 } from '@app-builder/models';
+import { newTimeNowLabelledAst } from '@app-builder/models/LabelledAst/TimeNow';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
@@ -49,7 +51,7 @@ export const TimestampField = ({
       ...databaseAccessors,
     ].filter((labelledAst) => labelledAst.dataType == 'Timestamp');
 
-    return timestampFieldOptions;
+    return [newTimeNowLabelledAst(), ...timestampFieldOptions];
   }, [
     builder.input.dataModel,
     builder.input.identifiers.databaseAccessors,
@@ -81,6 +83,8 @@ export const TimestampField = ({
       node,
     });
   }
+
+  if (node && isTimeNow(node)) initialValue = newTimeNowLabelledAst();
 
   return (
     <TimestampFieldCombobox
