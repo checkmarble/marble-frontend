@@ -2575,6 +2575,7 @@ components:
         - name
         - status
         - inbox_id
+        - contributors
       properties:
         id:
           type: string
@@ -2591,6 +2592,10 @@ components:
         inbox_id:
           type: string
           format: uuid
+        contributors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseContributor'
     CaseDetail:
       allOf:
         - $ref: '#/components/schemas/Case'
@@ -2638,6 +2643,26 @@ components:
           format: date-time
         event_type:
           type: string
+    CaseContributor:
+      type: object
+      required:
+        - id
+        - case_id
+        - user_id
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        case_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
     CaseCreatedEvent:
       allOf:
         - $ref: '#/components/schemas/CaseEvent'

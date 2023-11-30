@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 
+import { CaseContributors } from './CaseContributors';
 import { casesI18n } from './cases-i18n';
 import { CaseStatus } from './CaseStatus';
 
@@ -48,6 +49,15 @@ export function CasesList({ cases }: { cases: Case[] }) {
         accessorFn: (c) => c.decisions_count,
         header: t('cases:case.decisions'),
         size: 100,
+      },
+      {
+        id: 'contributors',
+        accessorFn: (c) => c.contributors,
+        header: t('cases:case.contributors'),
+        size: 100,
+        cell: ({ getValue }) => (
+          <CaseContributors contributors={getValue<Case['contributors']>()} />
+        ),
       },
     ],
     [language, t]
