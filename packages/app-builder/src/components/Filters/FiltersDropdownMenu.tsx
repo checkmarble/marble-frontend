@@ -5,7 +5,7 @@ import { forwardRef } from 'react';
 const FiltersDropdownMenuContent = forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof DropdownMenu.Content>
->(({ className, children, ...props }, ref) => {
+>(function FiltersDropdownMenuContent({ className, children, ...props }, ref) {
   return (
     <DropdownMenu.Portal>
       <DropdownMenu.Content
@@ -24,24 +24,22 @@ const FiltersDropdownMenuContent = forwardRef<
     </DropdownMenu.Portal>
   );
 });
-FiltersDropdownMenuContent.displayName = 'FiltersDropdownMenuContent';
 
 const FiltersDropdownMenuItem = forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof DropdownMenu.Item>
->(({ className, ...props }, ref) => {
+>(function FiltersDropdownMenuItem({ className, ...props }, ref) {
   return (
     <DropdownMenu.Item
       ref={ref}
       className={clsx(
-        'radix-highlighted:bg-purple-05 flex flex-row gap-2 rounded p-2 outline-none',
+        'radix-highlighted:bg-purple-05 flex flex-row gap-2 rounded p-2 outline-none transition-colors',
         className
       )}
       {...props}
     />
   );
 });
-FiltersDropdownMenuItem.displayName = 'FiltersDropdownMenuItem';
 
 export const FiltersDropdownMenu = {
   Root: DropdownMenu.Root,

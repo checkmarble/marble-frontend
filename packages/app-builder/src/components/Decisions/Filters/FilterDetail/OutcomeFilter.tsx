@@ -1,25 +1,19 @@
 import { matchSorter } from '@app-builder/utils/search';
-import { type Decision } from 'marble-api';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { Outcome } from '../../Outcome';
+import { Outcome, useOutcomes } from '../../Outcome';
 import { useOutcomeFilter } from '../DecisionFiltersContext';
-
-const outcomes = [
-  'approve',
-  'review',
-  'decline',
-] satisfies Decision['outcome'][];
 
 export function OutcomeFilter() {
   const [value, setSearchValue] = useState('');
   const { selectedOutcomes, setSelectedOutcomes } = useOutcomeFilter();
   const deferredValue = useDeferredValue(value);
+  const outcomes = useOutcomes();
 
   const matches = useMemo(
-    () => matchSorter(outcomes, deferredValue),
-    [deferredValue]
+    () => matchSorter(outcomes, deferredValue, { keys: ['label'] }),
+    [deferredValue, outcomes]
   );
 
   return (
@@ -34,9 +28,12 @@ export function OutcomeFilter() {
         <SelectWithCombobox.ComboboxList>
           {matches.map((outcome) => {
             return (
-              <SelectWithCombobox.ComboboxItem key={outcome} value={outcome}>
+              <SelectWithCombobox.ComboboxItem
+                key={outcome.value}
+                value={outcome.value}
+              >
                 <Outcome
-                  outcome={outcome}
+                  outcome={outcome.value}
                   border="square"
                   size="big"
                   className="w-full"

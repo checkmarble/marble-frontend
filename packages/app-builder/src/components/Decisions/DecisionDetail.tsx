@@ -4,15 +4,22 @@ import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
-import { type Decision } from 'marble-api';
+import { type DecisionDetail } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 
-export const DecisionDetail = ({ decision }: { decision: Decision }) => {
+export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
   const {
     t,
     i18n: { language },
   } = useTranslation(decisionsI18n);
+  const {
+    case: caseDetail,
+    created_at,
+    scenario,
+    trigger_object_type,
+    score,
+  } = decision;
 
   return (
     <Collapsible.Container>
@@ -20,30 +27,40 @@ export const DecisionDetail = ({ decision }: { decision: Decision }) => {
         {t('decisions:decision_detail.title')}
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-[minmax(min-content,_1fr)_4fr] grid-rows-4 items-center gap-x-8 gap-y-4">
+        <div className="grid grid-cols-[max-content_1fr] grid-rows-5 items-center gap-x-10 gap-y-2">
           <DetailLabel>{t('decisions:created_at')}</DetailLabel>
-          <div>{formatDateTime(decision.created_at, { language })}</div>
+          <div>{formatDateTime(created_at, { language })}</div>
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
           <Link
             to={getRoute('/scenarios/:scenarioId', {
-              scenarioId: fromUUID(decision.scenario.id),
+              scenarioId: fromUUID(scenario.id),
             })}
+            className="font-semibold capitalize text-purple-100"
           >
-            <div className="font-semibold capitalize text-purple-100">
-              {decision.scenario.name}
-            </div>
+            {scenario.name}
           </Link>
           <DetailLabel>{t('decisions:object_type')}</DetailLabel>
-          <div className="capitalize">{decision.trigger_object_type}</div>
-          {/* <DetailLabel>{t('decisions:case')}</DetailLabel>
-        <div>-</div> */}
+          <div className="capitalize">{trigger_object_type}</div>
+          <DetailLabel>{t('decisions:case')}</DetailLabel>
+          {caseDetail ? (
+            <Link
+              to={getRoute('/cases/:caseId', {
+                caseId: fromUUID(caseDetail.id),
+              })}
+              className="font-semibold capitalize text-purple-100"
+            >
+              {caseDetail.name}
+            </Link>
+          ) : (
+            <div>-</div>
+          )}
           <DetailLabel>{t('decisions:score')}</DetailLabel>
-          <Score score={decision.score} />
+          <Score score={score} />
         </div>
       </Collapsible.Content>
     </Collapsible.Container>
   );
-};
+}
 
 const DetailLabel = ({ children }: { children: React.ReactNode }) => (
   <div className="font-semibold capitalize">{children}</div>

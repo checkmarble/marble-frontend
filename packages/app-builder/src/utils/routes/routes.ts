@@ -45,6 +45,16 @@ export const routes = [
         "file": "routes/ressources/lists/value_delete.tsx"
       },
       {
+        "id": "routes/ressources/cases/add-to-case",
+        "path": "ressources/cases/add-to-case",
+        "file": "routes/ressources/cases/add-to-case.tsx"
+      },
+      {
+        "id": "routes/ressources/cases/edit-status",
+        "path": "ressources/cases/edit-status",
+        "file": "routes/ressources/cases/edit-status.tsx"
+      },
+      {
         "id": "routes/ressources/data/createField",
         "path": "ressources/data/createField",
         "file": "routes/ressources/data/createField.tsx"
@@ -58,6 +68,11 @@ export const routes = [
         "id": "routes/ressources/scenarios/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources/scenarios/create.tsx"
+      },
+      {
+        "id": "routes/ressources/cases/edit-name",
+        "path": "ressources/cases/edit-name",
+        "file": "routes/ressources/cases/edit-name.tsx"
       },
       {
         "id": "routes/ressources/data/createLink",
@@ -201,9 +216,20 @@ export const routes = [
             "file": "routes/__builder/scenarios/index.tsx"
           },
           {
+            "id": "routes/__builder/cases/$caseId",
+            "path": "cases/:caseId",
+            "file": "routes/__builder/cases/$caseId.tsx"
+          },
+          {
             "id": "routes/__builder/lists/$listId",
             "path": "lists/:listId",
             "file": "routes/__builder/lists/$listId.tsx"
+          },
+          {
+            "id": "routes/__builder/cases/index",
+            "index": true,
+            "path": "cases",
+            "file": "routes/__builder/cases/index.tsx"
           },
           {
             "id": "routes/__builder/lists/index",

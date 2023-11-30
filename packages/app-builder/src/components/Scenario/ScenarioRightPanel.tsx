@@ -85,7 +85,7 @@ function ScenarioRightPanelContent({ data }: { data: State['data'] }) {
   if (!data) return null;
 
   return (
-    <RightPanel.Content className="max-w-xs lg:max-w-sm">
+    <RightPanel.Content className="flex max-w-xs flex-col gap-4 p-4 lg:max-w-sm lg:gap-8 lg:p-8">
       <RightPanel.Title>
         <Function height="24px" width="24px" />
         <span className="w-full capitalize">
@@ -114,7 +114,7 @@ function ScenarioRightPanelDetail({
     case 'formulaAggregation':
       return null;
     default:
-      assertNever('[ScenarioRightPanel] unknwon data case:', data.type);
+      assertNever('[ScenarioRightPanel] unknown data case:', data.type);
   }
 }
 

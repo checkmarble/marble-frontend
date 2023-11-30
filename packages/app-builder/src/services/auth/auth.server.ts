@@ -3,8 +3,9 @@ import {
   adaptAuthErrors,
   type AuthData,
   type AuthFlashData,
-  type User,
+  type CurrentUser,
 } from '@app-builder/models';
+import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
 import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
@@ -27,10 +28,11 @@ interface AuthenticatedInfo {
   apiClient: MarbleApi;
   editor: EditorRepository;
   decision: DecisionRepository;
+  cases: CaseRepository;
   dataModelRepository: DataModelRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
-  user: User;
+  user: CurrentUser;
 }
 
 export interface AuthenticationServerService {
@@ -73,6 +75,7 @@ export function makeAuthenticationServerService(
   userRepository: (marbleApiClient: MarbleApi) => UserRepository,
   editorRepository: (marbleApiClient: MarbleApi) => EditorRepository,
   decisionRepository: (marbleApiClient: MarbleApi) => DecisionRepository,
+  caseRepository: (marbleApiClient: MarbleApi) => CaseRepository,
   organizationRepository: (
     marbleApiClient: MarbleApi,
     organizationId: string
@@ -241,6 +244,7 @@ export function makeAuthenticationServerService(
       apiClient,
       editor: editorRepository(apiClient),
       decision: decisionRepository(apiClient),
+      cases: caseRepository(apiClient),
       scenario: scenarioRepository(apiClient),
       organization: organizationRepository(apiClient, user.organizationId),
       dataModelRepository: dataModelRepository(apiClient),

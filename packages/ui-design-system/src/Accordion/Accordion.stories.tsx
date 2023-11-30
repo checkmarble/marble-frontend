@@ -31,7 +31,10 @@ export const Default: StoryFn<typeof Accordion> = () => (
         value={item.title}
         className="overflow-hidden focus-within:relative"
       >
-        <Accordion.Title>{item.title}</Accordion.Title>
+        <Accordion.Title className="flex flex-1 items-center justify-between gap-4">
+          {item.title}
+          <Accordion.Arrow />
+        </Accordion.Title>
         <Accordion.Content>
           <div className="p-2">{item.description}</div>
         </Accordion.Content>

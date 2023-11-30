@@ -1,3 +1,4 @@
+import { FiltersDropdownMenu } from '@app-builder/components/Filters';
 import { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +10,6 @@ import {
   getFilterIcon,
   getFilterTKey,
 } from './filters';
-import { FiltersDropdownMenu } from './FiltersDropdownMenu';
 
 export function DecisionFiltersMenu({
   children,

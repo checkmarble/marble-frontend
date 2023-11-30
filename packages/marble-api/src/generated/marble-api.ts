@@ -25,6 +25,8 @@ export type CredentialsDto = {
         actor_identity: {
             user_id?: string;
             email?: string;
+            first_name?: string;
+            last_name?: string;
             api_key_name?: string;
         };
         permissions: string[];
@@ -62,23 +64,65 @@ export type Decision = {
     score: number;
     error?: Error;
 };
+export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
+export type Case = {
+    id: string;
+    created_at: string;
+    decisions_count: number;
+    name: string;
+    status: CaseStatus;
+    inbox_id: string;
+};
+export type DecisionDetail = Decision & {
+    "case"?: Case;
+};
 export type CreateDecisionBody = {
     scenario_id: string;
     trigger_object: object;
     object_type: string;
 };
-export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
-export type Case = {
-    id: string;
-    created_at: string;
-    description: string;
-    name: string;
-    status: CaseStatus;
-};
 export type CreateCaseBody = {
     name: string;
-    description: string;
-    decision_ids: string[];
+    inbox_id: string;
+    decision_ids?: string[];
+};
+export type CaseEventBase = {
+    id: string;
+    case_id: string;
+    user_id: string;
+    created_at: string;
+    event_type: string;
+};
+export type CaseCreatedEvent = {
+    event_type: "case_created";
+} & CaseEventBase;
+export type CaseStatusUpdatedEvent = {
+    event_type: "status_updated";
+} & CaseEventBase & {
+    new_value: CaseStatus;
+};
+export type DecisionAddedEvent = {
+    event_type: "decision_added";
+} & CaseEventBase;
+export type CommentAddedEvent = {
+    event_type: "comment_added";
+} & CaseEventBase & {
+    additional_note: string;
+};
+export type NameUpdatedEvent = {
+    event_type: "name_updated";
+} & CaseEventBase & {
+    new_value: string;
+};
+export type CaseEvent = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent;
+export type CaseDetail = Case & {
+    decisions: Decision[];
+    events: CaseEvent[];
+};
+export type UpdateCaseBody = {
+    name?: string;
+    decision_ids?: string[];
+    status?: CaseStatus;
 };
 export type ScheduledExecution = {
     id: string;
@@ -330,6 +374,8 @@ export type ApiKey = {
 export type UserDto = {
     user_id: string;
     email: string;
+    first_name: string;
+    last_name: string;
     role: string;
     organization_id: string;
 };
@@ -356,6 +402,27 @@ export type FuncAttributes = {
     name: string;
     number_of_arguments: number;
     named_arguments?: string[];
+};
+export type InboxUserDto = {
+    id: string;
+    inbox_id: string;
+    user_id: string;
+    role: "member" | "admin";
+};
+export type InboxDto = {
+    id: string;
+    name: string;
+    created_at: string;
+    updated_at: string;
+    status: "active" | "archived";
+    users?: InboxUserDto[];
+};
+export type CreateInboxBodyDto = {
+    name: string;
+};
+export type AddInboxUserBodyDto = {
+    user_id: string;
+    role: "member" | "admin";
 };
 /**
  * Get an access token
@@ -416,7 +483,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Pagination & {
-            items: Decision[];
+            items: DecisionDetail[];
         };
     } | {
         status: 401;
@@ -462,7 +529,11 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases(opts?: Oazapfts.RequestOpts) {
+export function listCases({ statuses, startDate, endDate }: {
+    statuses?: CaseStatus[];
+    startDate?: string;
+    endDate?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Case[];
@@ -472,7 +543,11 @@ export function listCases(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 403;
         data: string;
-    }>("/cases", {
+    }>(`/cases${QS.query(QS.explode({
+        "statuses[]": statuses,
+        startDate,
+        endDate
+    }))}`, {
         ...opts
     }));
 }
@@ -482,7 +557,9 @@ export function listCases(opts?: Oazapfts.RequestOpts) {
 export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Case;
+        data: {
+            "case": Case;
+        };
     } | {
         status: 401;
         data: string;
@@ -501,7 +578,7 @@ export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.Reque
 export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Case;
+        data: CaseDetail;
     } | {
         status: 401;
         data: string;
@@ -514,6 +591,30 @@ export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     }>(`/cases/${encodeURIComponent(caseId)}`, {
         ...opts
     }));
+}
+/**
+ * Update a case
+ */
+export function updateCase(caseId: string, updateCaseBody: UpdateCaseBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetail;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateCaseBody
+    })));
 }
 /**
  * List Scheduled Executions
@@ -544,7 +645,7 @@ export function listScheduledExecutions({ scenarioId }: {
 export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Decision;
+        data: DecisionDetail;
     } | {
         status: 401;
         data: string;
@@ -1570,7 +1671,7 @@ export function listOrganizationUsers(organizationId: string, opts?: Oazapfts.Re
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            users: UserDto;
+            users: UserDto[];
         };
     } | {
         status: 401;
@@ -1621,6 +1722,127 @@ export function listOperators(scenarioId: string, opts?: Oazapfts.RequestOpts) {
         status: 403;
         data: string;
     }>(`/editor/${encodeURIComponent(scenarioId)}/operators`, {
+        ...opts
+    }));
+}
+/**
+ * List all inboxes
+ */
+export function listInboxes(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inboxes: InboxDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/inboxes", {
+        ...opts
+    }));
+}
+/**
+ * Create an inbox
+ */
+export function createInbox(createInboxBodyDto: CreateInboxBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox: InboxDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/inboxes", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createInboxBodyDto
+    })));
+}
+/**
+ * Get an inbox by id
+ */
+export function getInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox: InboxDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/inboxes/${encodeURIComponent(inboxId)}`, {
+        ...opts
+    }));
+}
+/**
+ * List all users of an inbox
+ */
+export function listInboxUsers(inboxId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox_users: InboxUserDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inboxes/${encodeURIComponent(inboxId)}/users`, {
+        ...opts
+    }));
+}
+/**
+ * Add a user to an inbox
+ */
+export function addInboxUser(inboxId: string, addInboxUserBodyDto: AddInboxUserBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox_user: InboxUserDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inboxes/${encodeURIComponent(inboxId)}/users`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: addInboxUserBodyDto
+    })));
+}
+/**
+ * Get an inbox user by id
+ */
+export function getInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox_user: InboxUserDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inbox_users/${encodeURIComponent(inboxUserId)}`, {
         ...opts
     }));
 }
