@@ -1,6 +1,7 @@
 import {
   ErrorComponent,
   Page,
+  scheduledExecutionI18n,
   ScheduledExecutionsList,
 } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
@@ -12,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { ScheduledExecution } from 'ui-icons';
 
 export const handle = {
-  i18n: ['navigation'] satisfies Namespace,
+  i18n: ['navigation', ...scheduledExecutionI18n] satisfies Namespace,
 };
 
 export async function loader({ request }: LoaderArgs) {
