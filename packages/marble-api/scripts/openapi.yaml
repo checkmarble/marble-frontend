@@ -1857,7 +1857,9 @@ paths:
                   - users
                 properties:
                   users:
-                    $ref: '#/components/schemas/UserDto'
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -2222,6 +2224,8 @@ components:
       required:
         - user_id
         - email
+        - first_name
+        - last_name
         - role
         - organization_id
       properties:
@@ -2229,6 +2233,10 @@ components:
           type: string
           format: uuid
         email:
+          type: string
+        first_name:
+          type: string
+        last_name:
           type: string
         role:
           type: string
@@ -2459,6 +2467,10 @@ components:
                 user_id:
                   type: string
                 email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
                   type: string
                 api_key_name:
                   type: string

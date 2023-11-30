@@ -25,6 +25,8 @@ export type CredentialsDto = {
         actor_identity: {
             user_id?: string;
             email?: string;
+            first_name?: string;
+            last_name?: string;
             api_key_name?: string;
         };
         permissions: string[];
@@ -372,6 +374,8 @@ export type ApiKey = {
 export type UserDto = {
     user_id: string;
     email: string;
+    first_name: string;
+    last_name: string;
     role: string;
     organization_id: string;
 };
@@ -1667,7 +1671,7 @@ export function listOrganizationUsers(organizationId: string, opts?: Oazapfts.Re
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            users: UserDto;
+            users: UserDto[];
         };
     } | {
         status: 401;
@@ -1830,7 +1834,7 @@ export function getInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            user: InboxUserDto;
+            inbox_user: InboxUserDto;
         };
     } | {
         status: 401;

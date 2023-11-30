@@ -1,3 +1,5 @@
+import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
+import { getFullName } from '@app-builder/services/user';
 import { formatDateRelative } from '@app-builder/utils/format';
 import { cx } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
@@ -200,9 +202,7 @@ export function getEventTitle(
   }
 }
 
-//TODO(case event): get user detail using org users context
 function Author({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   userId,
   type,
 }: {
@@ -210,6 +210,8 @@ function Author({
   type: 'added_by' | 'edited_by';
 }) {
   const { t } = useTranslation(casesI18n);
+  const { getOrgUserById } = useOrganizationUsers();
+  const user = getOrgUserById(userId);
 
   return (
     <div className="text-grey-100 text-s font-semibold">
@@ -217,13 +219,19 @@ function Author({
         t={t}
         i18nKey={`cases:case_detail.history.event_detail.${type}`}
         components={{
-          Avatar: <Avatar size="xs" />,
+          Avatar: (
+            <Avatar
+              size="xs"
+              firstName={user?.firstName}
+              lastName={user?.lastName}
+            />
+          ),
           User: (
             <span className="text-s text-grey-100 font-normal capitalize" />
           ),
         }}
         values={{
-          user: t('cases:case_detail.unknown_user'),
+          user: getFullName(user) || t('cases:case_detail.unknown_user'),
         }}
       />
     </div>

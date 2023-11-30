@@ -1,4 +1,4 @@
-import { type User } from '@app-builder/models';
+import { type CurrentUser } from '@app-builder/models';
 import { useLocation, useMatches } from '@remix-run/react';
 import { useEffect } from 'react';
 import { useHydrated } from 'remix-utils';
@@ -6,7 +6,7 @@ import { useHydrated } from 'remix-utils';
 import getPageViewNameAndProps from './getPageviewNameAndProps';
 import { analytics } from './segment.client';
 
-export function useSegmentIdentification(user: User) {
+export function useSegmentIdentification(user: CurrentUser) {
   const isHydrated = useHydrated();
   useEffect(() => {
     if (isHydrated) {
