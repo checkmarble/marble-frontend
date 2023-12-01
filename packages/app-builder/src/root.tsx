@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import {
   AuthenticityTokenProvider,
   createAuthenticityToken,
+  ExternalScripts,
 } from 'remix-utils';
 import { Tooltip } from 'ui-design-system';
 import { LogoStandard } from 'ui-icons';
@@ -29,6 +30,8 @@ import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { serverServices } from './services/init.server';
 import { useSegmentPageTracking } from './services/segment';
+import { getSegmentScript } from './services/segment/segment.server';
+import { SegmentScript } from './services/segment/SegmentScript';
 import tailwindStyles from './tailwind.css';
 import { getClientEnvVars } from './utils/environment.server';
 
@@ -75,6 +78,7 @@ export const loader = async ({ request }: LoaderArgs) => {
       locale,
       csrf,
       toastMessage,
+      segmentScript: getSegmentScript(),
     },
     {
       headers: [
@@ -140,7 +144,8 @@ export function ErrorBoundary() {
 }
 
 function App() {
-  const { locale, ENV, toastMessage, csrf } = useLoaderData<typeof loader>();
+  const { locale, ENV, toastMessage, csrf, segmentScript } =
+    useLoaderData<typeof loader>();
 
   const { i18n } = useTranslation(handle.i18n);
 
@@ -155,6 +160,8 @@ function App() {
       <head>
         <Meta />
         <Links />
+        <SegmentScript script={segmentScript} />
+        <ExternalScripts />
       </head>
       <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
         <AuthenticityTokenProvider token={csrf}>

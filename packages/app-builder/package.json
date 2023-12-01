@@ -17,6 +17,7 @@
   "devDependencies": {
     "@remix-run/dev": "^1.19.3",
     "@remix-run/eslint-config": "^1.19.3",
+    "@segment/analytics-next": "^1.60.0",
     "@sentry/cli": "^2.21.2",
     "@types/autosuggest-highlight": "^3.2.0",
     "@types/qs": "^6.9.8",
@@ -45,7 +46,7 @@
     "@remix-run/node": "^1.19.3",
     "@remix-run/react": "^1.19.3",
     "@remix-run/serve": "^1.19.3",
-    "@segment/analytics-next": "^1.60.0",
+    "@segment/snippet": "^5.0.1",
     "@sentry/remix": "^7.74.0",
     "@tanstack/react-table": "^8.10.6",
     "autosuggest-highlight": "^3.3.4",
