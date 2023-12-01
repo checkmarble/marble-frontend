@@ -21,6 +21,7 @@ export interface CaseRepository {
           type: 'dynamic';
           fromNow: string;
         };
+    inboxId?: string[];
   }): Promise<Case[]>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;
   updateCase(args: {
@@ -31,7 +32,7 @@ export interface CaseRepository {
 
 export function getCaseRepository() {
   return (marbleApiClient: MarbleApi): CaseRepository => ({
-    listCases: async ({ dateRange, ...rest }) => {
+    listCases: async ({ dateRange, inboxId, ...rest }) => {
       let startDate, endDate: string | undefined;
       if (dateRange?.type === 'static') {
         startDate = dateRange?.startDate;
@@ -45,6 +46,7 @@ export function getCaseRepository() {
 
       return marbleApiClient.listCases({
         ...rest,
+        inboxId,
         startDate,
         endDate,
       });

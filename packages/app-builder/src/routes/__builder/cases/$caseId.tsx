@@ -8,10 +8,11 @@ import {
   CaseInformation,
   casesI18n,
 } from '@app-builder/components/Cases';
-import { isNotFoundHttpError } from '@app-builder/models';
+import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { EditCaseStatus } from '@app-builder/routes/ressources/cases/edit-status';
 import { serverServices } from '@app-builder/services/init.server';
-import { fromParams } from '@app-builder/utils/short-uuid';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
@@ -31,18 +32,21 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { cases } = await authService.isAuthenticated(request, {
+  const { cases, apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
 
   const caseId = fromParams(params, 'caseId');
   try {
     const caseDetail = await cases.getCase({ caseId });
+    const { inbox } = await apiClient.getInbox(caseDetail.inbox_id);
 
-    return json({ caseDetail });
+    return json({ caseDetail, inbox });
   } catch (error) {
     if (isNotFoundHttpError(error)) {
       throw new Response(null, { status: 404, statusText: 'Not Found' });
+    } else if (isForbiddenHttpError(error)) {
+      throw new Response(null, { status: 403, statusText: 'Forbidden' });
     } else {
       throw error;
     }
@@ -50,13 +54,17 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export default function CasePage() {
-  const { caseDetail } = useLoaderData<typeof loader>();
+  const { caseDetail, inbox } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
-          <Link to="./..">
+          <Link
+            to={getRoute('/cases/inbox/:inboxId', {
+              inboxId: fromUUID(caseDetail.inbox_id),
+            })}
+          >
             <Page.BackButton />
           </Link>
           {caseDetail.name}
@@ -71,7 +79,7 @@ export default function CasePage() {
       <Page.Content>
         <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
           <div className="flex flex-col gap-4 lg:gap-8">
-            <CaseInformation caseDetail={caseDetail} />
+            <CaseInformation caseDetail={caseDetail} inbox={inbox} />
             <CaseDecisions decisions={caseDetail.decisions} />
           </div>
           <div className="flex flex-col gap-4 lg:gap-8"></div>
@@ -98,7 +106,10 @@ export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
 
-  if (isRouteErrorResponse(error) && error.status === 404) {
+  if (
+    isRouteErrorResponse(error) &&
+    (error.status === 404 || error.status === 403)
+  ) {
     return <CaseNotFound />;
   }
 

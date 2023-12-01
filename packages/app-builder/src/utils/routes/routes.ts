@@ -25,6 +25,11 @@ export const routes = [
         "file": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete.tsx"
       },
       {
+        "id": "routes/ressources/cases/create-first-inbox",
+        "path": "ressources/cases/create-first-inbox",
+        "file": "routes/ressources/cases/create-first-inbox.tsx"
+      },
+      {
         "id": "routes/ressources/auth/login-with-email",
         "path": "ressources/auth/login-with-email",
         "file": "routes/ressources/auth/login-with-email.tsx"
@@ -33,6 +38,11 @@ export const routes = [
         "id": "routes/ressources/scenarios/deployment",
         "path": "ressources/scenarios/deployment",
         "file": "routes/ressources/scenarios/deployment.tsx"
+      },
+      {
+        "id": "routes/ressources/cases/create-inbox",
+        "path": "ressources/cases/create-inbox",
+        "file": "routes/ressources/cases/create-inbox.tsx"
       },
       {
         "id": "routes/ressources/lists/value_create",
@@ -224,6 +234,18 @@ export const routes = [
             "id": "routes/__builder/lists/$listId",
             "path": "lists/:listId",
             "file": "routes/__builder/lists/$listId.tsx"
+          },
+          {
+            "id": "routes/__builder/cases/inbox",
+            "path": "cases/inbox",
+            "file": "routes/__builder/cases/inbox.tsx",
+            "children": [
+              {
+                "id": "routes/__builder/cases/inbox/$inboxId",
+                "path": ":inboxId",
+                "file": "routes/__builder/cases/inbox/$inboxId.tsx"
+              }
+            ]
           },
           {
             "id": "routes/__builder/cases/index",
