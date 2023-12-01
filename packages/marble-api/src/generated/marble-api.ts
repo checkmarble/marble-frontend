@@ -536,8 +536,9 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases({ statuses, startDate, endDate }: {
+export function listCases({ statuses, inboxId, startDate, endDate }: {
     statuses?: CaseStatus[];
+    inboxId?: string[];
     startDate?: string;
     endDate?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
@@ -552,6 +553,7 @@ export function listCases({ statuses, startDate, endDate }: {
         data: string;
     }>(`/cases${QS.query(QS.explode({
         "statuses[]": statuses,
+        inbox_id: inboxId,
         startDate,
         endDate
     }))}`, {

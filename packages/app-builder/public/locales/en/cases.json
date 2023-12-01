@@ -4,6 +4,8 @@
   "case.status": "Status",
   "case.contributors": "Contributors",
   "case.decisions": "Decisions",
+  "case.inbox": "Inbox",
+  "case.inboxes": "Inboxes",
   "case.status.open": "open",
   "case.status.investigating": "investigating",
   "case.status.discarded": "discarded",
@@ -29,6 +31,7 @@
   "change_status_modal.change_status": "Change status",
   "inbox.new_inbox.name": "New inbox name",
   "inbox.new_inbox.create": "Create new inbox",
-  "inbox.new_inbox.explain": "Create a first inbox to start using the case manager",
-  "inbox.no_inbox_available": "Please contact your admin to give you access to an inbox before you can start using the case manager"
+  "inbox.new_inbox.explain": "Create an inbox to use in the case manager",
+  "inbox.need_first_inbox": "Create a first inbox to start using the case manager",
+  "inbox.need_inbox_contact_admin": "Please contact your admin to get access to an inbox"
 }
