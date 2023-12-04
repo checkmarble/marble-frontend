@@ -9,6 +9,7 @@ import {
 } from '@app-builder/components/Cases/Filters';
 import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -36,7 +37,7 @@ export async function loader({ request, params }: LoaderArgs) {
     return redirect(getRoute('/cases'));
   }
   const filters = parsedQuery.data;
-  const filtersForBackend = { ...filters, inboxId: [inboxId] };
+  const filtersForBackend: CaseFilters = { ...filters, inboxIds: [inboxId] };
   const caseList = await cases.listCases(filtersForBackend);
 
   return json({ cases: caseList, filters });
