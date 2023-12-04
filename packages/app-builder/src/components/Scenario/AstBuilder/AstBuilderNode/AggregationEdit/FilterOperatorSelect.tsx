@@ -1,6 +1,8 @@
 import { type EvaluationError } from '@app-builder/models';
 import { Select } from 'ui-design-system';
 
+import { useGetOperatorName } from '../Operator';
+
 export const FilterOperatorSelect = ({
   value,
   onChange,
@@ -10,7 +12,17 @@ export const FilterOperatorSelect = ({
   onChange: (value: string) => void;
   errors: EvaluationError[];
 }) => {
-  const filterOperators = ['=', '!=', '>', '<', '>=', '<='];
+  const filterOperators = [
+    '=',
+    '!=',
+    '>',
+    '<',
+    '>=',
+    '<=',
+    'IsInList',
+    'IsNotInList',
+  ];
+  const getOperatorName = useGetOperatorName();
 
   return (
     <Select.Root
@@ -34,7 +46,9 @@ export const FilterOperatorSelect = ({
               value={operator}
             >
               <Select.ItemText>
-                <span className="text-s text-grey-100">{operator}</span>
+                <span className="text-s text-grey-100">
+                  {getOperatorName(operator)}
+                </span>
               </Select.ItemText>
             </Select.Item>
           ))}

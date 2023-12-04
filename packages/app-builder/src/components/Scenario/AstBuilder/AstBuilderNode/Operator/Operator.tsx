@@ -114,6 +114,7 @@ export function useGetOperatorName() {
 
       if (operatorName === '>=') return '≥';
       if (operatorName === '<=') return '≤';
+      if (operatorName === '!=') return '≠';
       if (operatorName === '*') return '×';
       if (operatorName === '/') return '÷';
 
