@@ -4,6 +4,8 @@ import {
   Sidebar,
   type SidebarLinkProps,
 } from '@app-builder/components';
+import { ChatlioWidget } from '@app-builder/services/chatlio/ChatlioWidget';
+import { chatlioScript } from '@app-builder/services/chatlio/script';
 import { serverServices } from '@app-builder/services/init.server';
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
 import {
@@ -77,6 +79,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export const handle = {
   i18n: ['common', ...navigationI18n] satisfies Namespace,
+  scripts: () => [chatlioScript],
 };
 
 export default function Builder() {
@@ -90,6 +93,8 @@ export default function Builder() {
 
   return (
     <PermissionsProvider userPermissions={user.permissions}>
+      <ChatlioWidget />
+
       <OrganizationUsersContextProvider orgUsers={orgUsers}>
         <div className="flex h-full flex-1 flex-row overflow-hidden">
           <header

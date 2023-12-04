@@ -14,7 +14,6 @@ export type ClientEnvVars = {
   MARBLE_APP_DOMAIN: string;
   SENTRY_DSN: string;
   SENTRY_ENVIRONMENT: string;
-  SEGMENT_WRITE_KEY: string;
 };
 
 export function getClientEnv<K extends keyof ClientEnvVars>(
