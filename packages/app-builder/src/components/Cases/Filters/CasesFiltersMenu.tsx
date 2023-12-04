@@ -22,7 +22,7 @@ export function CasesFiltersMenu({
         onCasesFilterClose();
       }
     },
-    [onCasesFilterClose]
+    [onCasesFilterClose],
   );
 
   return (

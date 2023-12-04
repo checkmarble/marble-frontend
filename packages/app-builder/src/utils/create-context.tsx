@@ -8,7 +8,7 @@ import React from 'react';
 export function createSimpleContext<ContextType>(name: string) {
   const defaultValue = Symbol(`Default ${name} context value`);
   const Context = React.createContext<ContextType | null | typeof defaultValue>(
-    defaultValue
+    defaultValue,
   );
   Context.displayName = name;
 
@@ -19,7 +19,7 @@ export function createSimpleContext<ContextType>(name: string) {
     }
     if (!value) {
       throw new Error(
-        `No value in ${name}Provider context. If the value is optional in this situation, try useOptional${name} instead of use${name}`
+        `No value in ${name}Provider context. If the value is optional in this situation, try useOptional${name} instead of use${name}`,
       );
     }
     return value;

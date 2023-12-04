@@ -17,12 +17,12 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
         ref={ref}
         className={clsx(
           'border-grey-10 flex w-full flex-col overflow-hidden rounded-lg border',
-          className
+          className,
         )}
         {...props}
       />
     );
-  }
+  },
 );
 CollapsibleContainer.displayName = 'CollapsibleContainer';
 
@@ -37,7 +37,7 @@ const CollapsibleTitle = ({
     <div
       className={clsx(
         'group flex cursor-pointer justify-between gap-4 p-4 font-semibold lg:p-8',
-        className
+        className,
       )}
     >
       {children}
@@ -58,7 +58,7 @@ const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
         className={clsx(
           'border-grey-10 border-t',
           'radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden',
-          className
+          className,
         )}
         {...props}
         ref={ref}
@@ -66,7 +66,7 @@ const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
         <div className="text-s p-4 lg:p-8">{children}</div>
       </Content>
     );
-  }
+  },
 );
 
 export const Collapsible = {

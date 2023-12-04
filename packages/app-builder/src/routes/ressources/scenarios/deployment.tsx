@@ -127,7 +127,7 @@ export async function action({ request }: ActionArgs) {
         errors: null,
         values: parsedForm.data,
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } }
+      { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
 }
@@ -164,12 +164,12 @@ function ModalContent({
       />
       <Modal.Title className="text-l text-grey-100 mb-2 font-semibold">
         {t(
-          `scenarios:deployment_modal_success.${data.values.deploymentType}.title`
+          `scenarios:deployment_modal_success.${data.values.deploymentType}.title`,
         )}
       </Modal.Title>
       <p className="text-s text-grey-100 mb-8 font-normal">
         {t(
-          `scenarios:deployment_modal_success.${data.values.deploymentType}.description`
+          `scenarios:deployment_modal_success.${data.values.deploymentType}.description`,
         )}
       </p>
       <Modal.Close asChild>
@@ -201,7 +201,7 @@ function ModalContent({
             className="hidden"
             defaultChecked={hasLiveVersion}
           />
-          {hasLiveVersion && (
+          {hasLiveVersion ? (
             <div className="flex flex-row items-center gap-2">
               <Checkbox
                 id="replaceCurrentLiveVersion"
@@ -211,11 +211,11 @@ function ModalContent({
 
               <Label htmlFor="replaceCurrentLiveVersion">
                 {t(
-                  `scenarios:deployment_modal.${deploymentType}.replace_current_live_version`
+                  `scenarios:deployment_modal.${deploymentType}.replace_current_live_version`,
                 )}
               </Label>
             </div>
-          )}
+          ) : null}
           <div className="flex flex-row gap-2">
             <Checkbox
               id="changeIsImmediate"
@@ -224,17 +224,17 @@ function ModalContent({
             />
             <Label htmlFor="changeIsImmediate">
               {t(
-                `scenarios:deployment_modal.${deploymentType}.change_is_immediate`
+                `scenarios:deployment_modal.${deploymentType}.change_is_immediate`,
               )}
             </Label>
           </div>
         </div>
 
-        {deploymentType === 'deactivate' && (
+        {deploymentType === 'deactivate' ? (
           <p className="text-grey-25 mb-4 text-xs font-medium">
             {t(`scenarios:deployment_modal.${deploymentType}.helper`)}
           </p>
-        )}
+        ) : null}
 
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
@@ -340,7 +340,7 @@ export function DeploymentActions({
 }
 
 function getDeploymentType(
-  type: SortedScenarioIteration['type']
+  type: SortedScenarioIteration['type'],
 ): DeploymentType {
   switch (type) {
     case 'draft':

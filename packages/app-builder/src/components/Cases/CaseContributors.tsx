@@ -52,7 +52,7 @@ export function CaseContributors({
                   'border-grey-00 border-2',
                   index === 0 && 'z-30',
                   index === 1 && 'z-20',
-                  index === 2 && 'z-10'
+                  index === 2 && 'z-10',
                 )}
                 size="s"
                 firstName={user?.firstName}
@@ -61,11 +61,11 @@ export function CaseContributors({
             );
           })}
         </div>
-        {contributors.length > 3 && (
+        {contributors.length > 3 ? (
           <div className="text-s text-grey-100 font-normal">
             +{contributors.length - 3}
           </div>
-        )}
+        ) : null}
       </div>
     </Tooltip.Default>
   );

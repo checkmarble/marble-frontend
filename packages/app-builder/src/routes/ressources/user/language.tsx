@@ -54,7 +54,7 @@ export async function action({ request }: ActionArgs) {
         headers: {
           'Set-Cookie': await toastSessionService.commitSession(toastSession),
         },
-      }
+      },
     );
   }
 }
@@ -76,7 +76,7 @@ export function LanguagePicker() {
       onValueChange={(newPreferredLanguage) => {
         fetcher.submit(
           { preferredLanguage: newPreferredLanguage },
-          { method: 'POST', action: '/ressources/user/language' }
+          { method: 'POST', action: '/ressources/user/language' },
         );
       }}
     >

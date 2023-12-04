@@ -15,7 +15,7 @@ Sentry.init({
       routingInstrumentation: Sentry.remixRouterInstrumentation(
         useEffect,
         useLocation,
-        useMatches
+        useMatches,
       ),
     }),
     // Replay is only available in the client
@@ -50,7 +50,7 @@ async function hydrate() {
         <I18nextProvider i18n={i18next}>
           <RemixBrowser />
         </I18nextProvider>
-      </StrictMode>
+      </StrictMode>,
     );
   });
 }

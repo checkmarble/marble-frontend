@@ -77,7 +77,7 @@ function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
 }
 
 export function adaptScenarioValidation(
-  dto: ScenarioValidationDto
+  dto: ScenarioValidationDto,
 ): ScenarioValidation {
   return {
     trigger: {
@@ -99,7 +99,7 @@ export function adaptScenarioValidation(
 
 export const computeValidationForNamedChildren = (
   editorNodeViewModel: EditorNodeViewModel,
-  namedArgumentKey: string | string[]
+  namedArgumentKey: string | string[],
 ): EvaluationError[] => {
   let namedArgumentKeys = namedArgumentKey;
   if (typeof namedArgumentKey === 'string') {
@@ -109,7 +109,7 @@ export const computeValidationForNamedChildren = (
   for (const key of namedArgumentKeys) {
     invariant(
       key in editorNodeViewModel.namedChildren,
-      `${key} is not a valid named argument key`
+      `${key} is not a valid named argument key`,
     );
     const namedChild = editorNodeViewModel.namedChildren[key];
 
@@ -134,7 +134,7 @@ export function separateChildrenErrors(errors: EvaluationError[]) {
     nonChildrenErrors,
     (error) => {
       return error.argumentName != undefined;
-    }
+    },
   );
 
   return {

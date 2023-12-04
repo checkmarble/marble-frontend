@@ -86,9 +86,9 @@ const RuleDetail = ({
     <div className="flex grow items-center justify-between">
       <div className="text-s flex items-center gap-2 font-semibold">
         {rule.name}
-        {rule.result && <Score score={rule.score_modifier} />}
+        {rule.result ? <Score score={rule.score_modifier} /> : null}
       </div>
-      {status && (
+      {status ? (
         <Tag
           border="square"
           size="big"
@@ -97,7 +97,7 @@ const RuleDetail = ({
         >
           {t(ruleStatusMapping[status].tKey)}
         </Tag>
-      )}
+      ) : null}
     </div>
   );
 };

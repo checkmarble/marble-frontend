@@ -5,7 +5,7 @@ import { type ScenarioIterationSummary } from './scenario';
 //TODO(merge view/edit): create an adapter + extract the sort logic. Move to a repository/service
 export function sortScenarioIterations<T extends ScenarioIterationSummary>(
   scenarioIterations: T[],
-  liveVersionId?: string
+  liveVersionId?: string,
 ) {
   return R.pipe(
     scenarioIterations,
@@ -14,7 +14,7 @@ export function sortScenarioIterations<T extends ScenarioIterationSummary>(
       const sortedDrafts = R.pipe(
         drafts,
         R.map((draft) => ({ ...draft, type: 'draft' as const })),
-        R.sortBy([({ createdAt }) => createdAt, 'desc'])
+        R.sortBy([({ createdAt }) => createdAt, 'desc']),
       );
 
       const sortedVersions = R.pipe(
@@ -26,11 +26,11 @@ export function sortScenarioIterations<T extends ScenarioIterationSummary>(
               ? ('live version' as const)
               : ('past version' as const),
         })),
-        R.sortBy([({ createdAt }) => createdAt, 'desc'])
+        R.sortBy([({ createdAt }) => createdAt, 'desc']),
       );
 
       return [...sortedDrafts, ...sortedVersions];
-    }
+    },
   );
 }
 

@@ -21,7 +21,7 @@ export function Default({
 }) {
   const stringifiedAstNode = stringifyAstNode(
     adaptAstNodeFromEditorViewModel(editorNodeViewModel),
-    builder
+    builder,
   );
   return (
     <div
@@ -34,7 +34,7 @@ export function Default({
         // Border color variants
         'data-[border-color=grey-10]:border-grey-10',
         'data-[border-color=red-100]:border-red-100',
-        'data-[border-color=red-25]:border-red-25'
+        'data-[border-color=red-25]:border-red-25',
       )}
     >
       {stringifiedAstNode}

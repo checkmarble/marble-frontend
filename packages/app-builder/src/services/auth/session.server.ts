@@ -9,20 +9,20 @@ import {
 export type SessionService<Data = SessionData, FlashData = Data> = {
   getSession: (
     request: Request,
-    options?: CookieParseOptions
+    options?: CookieParseOptions,
   ) => Promise<Session<Data, FlashData>>;
   commitSession: (
     session: Session<Data, FlashData>,
-    options?: CookieSerializeOptions
+    options?: CookieSerializeOptions,
   ) => Promise<string>;
   destroySession: (
     session: Session<Data, FlashData>,
-    options?: CookieSerializeOptions
+    options?: CookieSerializeOptions,
   ) => Promise<string>;
 };
 
 export function makeSessionService<Data = SessionData, FlashData = Data>(
-  sessionStorage: SessionStorage<Data, FlashData>
+  sessionStorage: SessionStorage<Data, FlashData>,
 ): SessionService<Data, FlashData> {
   return {
     getSession: (request, options) =>

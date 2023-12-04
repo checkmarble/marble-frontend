@@ -100,7 +100,7 @@ export default function Builder() {
           <header
             className={clsx(
               'bg-grey-02 border-r-grey-10 flex max-h-screen w-full shrink-0 flex-col border-r',
-              'max-w-min md:max-w-[235px]'
+              'max-w-min md:max-w-[235px]',
             )}
           >
             <div className="px-2 pb-9 pt-3">
@@ -137,11 +137,11 @@ export default function Builder() {
                         lastName={user.actorIdentity.lastName}
                         // src={user.profilePictureUrl}
                       />
-                      {getFullName(user.actorIdentity) && (
+                      {getFullName(user.actorIdentity) ? (
                         <p className="text-m mb-1 font-semibold capitalize">
                           {getFullName(user.actorIdentity)}
                         </p>
-                      )}
+                      ) : null}
                       <p className="text-s mb-2 font-normal">
                         {user.actorIdentity.email}
                       </p>

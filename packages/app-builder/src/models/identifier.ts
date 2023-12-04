@@ -12,7 +12,7 @@ export interface EditorIdentifiersByType {
 // This implementation might be problematic in the future, we might need to standartise each node with something like a hash function
 export function getIdentifiersFromAstNode(
   node: AstNode,
-  identifiers: EditorIdentifiersByType
+  identifiers: EditorIdentifiersByType,
 ) {
   const astString = JSON.stringify(node);
   for (const identifier of identifiers.databaseAccessors) {

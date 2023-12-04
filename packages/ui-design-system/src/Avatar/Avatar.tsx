@@ -21,7 +21,7 @@ const avatar = cva(
     defaultVariants: {
       size: 'm',
     },
-  }
+  },
 );
 
 export type AvatarProps = Omit<RootAvatarProps, 'asChild'> &

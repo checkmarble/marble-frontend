@@ -84,7 +84,7 @@ export async function action({ request }: ActionArgs) {
           values: parsedForm.data,
           error: error,
         },
-        { headers: { 'Set-Cookie': await commitSession(session) } }
+        { headers: { 'Set-Cookie': await commitSession(session) } },
       );
     } else {
       return json({
@@ -106,7 +106,7 @@ export function CreateLink({
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
   const [selectedParentTable, setSelectedParentTable] = useState(
-    otherTables[0]
+    otherTables[0],
   );
   const selectedParentTableFields = useMemo(() => {
     return selectedParentTable.fields;
@@ -250,7 +250,7 @@ export function CreateLink({
                               field.onChange(id);
                               const newTable =
                                 otherTables.find(
-                                  ({ id: tableId }) => tableId === id
+                                  ({ id: tableId }) => tableId === id,
                                 ) ?? otherTables[0];
                               setSelectedParentTable(newTable);
                             }}

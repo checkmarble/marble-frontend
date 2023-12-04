@@ -51,8 +51,8 @@ export default function Cases() {
                   clsx(
                     'text-s cursor-pointer rounded p-2 font-medium first-letter:capitalize',
                     isActive
-                      ? 'bg-purple-05 text-purple-100'
-                      : 'bg-grey-00 text-grey-100 hover:bg-purple-05 hover:text-purple-100'
+                      ? 'bg-purple-10 text-purple-100'
+                      : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
                   )
                 }
                 to={getRoute('/cases/inboxes/:inboxId', {
@@ -63,7 +63,7 @@ export default function Cases() {
               </NavLink>
             ))}
           </div>
-          {canEditInboxes && <CreateInbox />}
+          {canEditInboxes ? <CreateInbox /> : null}
         </div>
         <Outlet />
       </div>

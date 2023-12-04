@@ -10,7 +10,7 @@ const editableCron = [
   {
     frequency: 'daily',
     regex: new RegExp(
-      /^0 (?<scheduleDetail>([0-9]|1[0-9]|[2][0-3])) \* \* \*$/
+      /^0 (?<scheduleDetail>([0-9]|1[0-9]|[2][0-3])) \* \* \*$/,
     ),
   },
   {

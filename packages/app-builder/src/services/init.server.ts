@@ -11,13 +11,13 @@ import { makeI18nextServerService } from './i18n/i18next.server';
 
 function makeServerServices(repositories: ServerRepositories) {
   const csrfSessionService = makeSessionService(
-    repositories.csrfStorageRepository.csrfStorage
+    repositories.csrfStorageRepository.csrfStorage,
   );
   const authSessionService = makeSessionService(
-    repositories.authStorageRepository.authStorage
+    repositories.authStorageRepository.authStorage,
   );
   const toastSessionService = makeSessionService(
-    repositories.toastStorageRepository.toastStorage
+    repositories.toastStorageRepository.toastStorage,
   );
   return {
     authSessionService,
@@ -33,10 +33,10 @@ function makeServerServices(repositories: ServerRepositories) {
       repositories.scenarioRepository,
       repositories.dataModelRepository,
       authSessionService,
-      csrfSessionService
+      csrfSessionService,
     ),
     i18nextService: makeI18nextServerService(
-      repositories.authStorageRepository
+      repositories.authStorageRepository,
     ),
   };
 }

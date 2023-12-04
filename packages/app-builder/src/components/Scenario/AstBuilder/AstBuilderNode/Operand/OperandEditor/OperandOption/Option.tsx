@@ -22,7 +22,7 @@ function OptionContainer({
       className={clsx(
         'radix-highlighted:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr_20px] gap-1 rounded-sm p-2 outline-none transition-colors',
 
-        className
+        className,
       )}
       {...props}
     />
@@ -44,7 +44,7 @@ function OptionValue({ className, ...props }: React.ComponentProps<'div'>) {
       className={clsx(
         'text-grey-100 text-s overflow-hidden text-ellipsis text-start font-normal transition-colors',
 
-        className
+        className,
       )}
       {...props}
     />
@@ -74,7 +74,7 @@ export function getDataTypeIcon(dataType?: DataType) {
 }
 
 export function getDataTypeTKey(
-  dataType?: DataType
+  dataType?: DataType,
 ): ParseKeys<'scenarios'> | undefined {
   switch (dataType) {
     case 'String':
@@ -107,7 +107,7 @@ export function getOperatorTypeIcon(operatorType: LabelledAst['operandType']) {
 }
 
 export function getOperatorTypeTKey(
-  operatorType: LabelledAst['operandType']
+  operatorType: LabelledAst['operandType'],
 ): ParseKeys<'scenarios'> | undefined {
   switch (operatorType) {
     case 'CustomList':

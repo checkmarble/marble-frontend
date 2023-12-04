@@ -32,7 +32,7 @@ export function useOutcomes() {
         value: outcome,
         label: t(outcomeMapping[outcome].tKey),
       })),
-    [t]
+    [t],
   );
 }
 
@@ -60,7 +60,7 @@ export const OutcomePanel = ({ outcome }: { outcome: Outcome }) => {
           'bg-green-10': color === 'green',
           'bg-yellow-10': color === 'yellow',
           'bg-red-10': color === 'red',
-        }
+        },
       )}
     >
       <div

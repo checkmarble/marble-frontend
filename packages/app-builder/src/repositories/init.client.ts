@@ -10,7 +10,7 @@ export interface ClientRepositories {
 }
 
 export function makeClientRepositories(
-  firebaseClient: FirebaseClientWrapper
+  firebaseClient: FirebaseClientWrapper,
 ): ClientRepositories {
   return {
     authenticationClientRepository:

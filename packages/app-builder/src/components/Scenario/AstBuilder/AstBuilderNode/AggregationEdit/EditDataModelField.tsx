@@ -24,13 +24,13 @@ export const EditDataModelField = ({
     options.find(
       (option) =>
         option.tableName == value?.tableName &&
-        option.fieldName == value?.fieldName
+        option.fieldName == value?.fieldName,
     ) ?? null;
 
   const [inputValue, setInputValue] = useState(optionToLabel(selectedOption));
 
   const filteredOptions = options.filter((option) =>
-    optionToLabel(option).toLowerCase().includes(inputValue.toLowerCase())
+    optionToLabel(option).toLowerCase().includes(inputValue.toLowerCase()),
   );
 
   return (

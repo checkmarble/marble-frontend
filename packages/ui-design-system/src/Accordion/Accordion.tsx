@@ -41,7 +41,7 @@ const AccordionTitle = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
         </Trigger>
       </Header>
     );
-  }
+  },
 );
 
 function AccordionArrow({
@@ -55,7 +55,7 @@ function AccordionArrow({
       width="24px"
       className={clsx(
         'group-radix-state-closed:rotate-180 rounded transition-transform',
-        className
+        className,
       )}
       {...props}
     />
@@ -68,7 +68,7 @@ const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
       <Content
         className={clsx(
           'radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden',
-          className
+          className,
         )}
         {...props}
         ref={ref}
@@ -76,7 +76,7 @@ const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
         {children}
       </Content>
     );
-  }
+  },
 );
 
 export const Accordion = {

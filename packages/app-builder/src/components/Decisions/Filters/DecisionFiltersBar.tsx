@@ -29,7 +29,7 @@ export function DecisionFiltersBar() {
         onDecisionFilterClose();
       }
     },
-    [onDecisionFilterClose]
+    [onDecisionFilterClose],
   );
 
   const { undefinedDecisionFilterNames, definedDecisionFilterNames } =

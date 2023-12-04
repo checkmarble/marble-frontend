@@ -47,6 +47,6 @@ export async function loader({ request, params }: LoaderArgs) {
     getRoute('/scenarios/:scenarioId/i/:iterationId', {
       scenarioId: fromUUID(lastScenarioIteration.scenarioId),
       iterationId: fromUUID(lastScenarioIteration.id),
-    })
+    }),
   );
 }

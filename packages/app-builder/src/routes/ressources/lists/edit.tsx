@@ -138,7 +138,7 @@ export function EditList({
                         <Input
                           type="text"
                           placeholder={t(
-                            'lists:create_list.description_placeholder'
+                            'lists:create_list.description_placeholder',
                           )}
                           {...field}
                         />

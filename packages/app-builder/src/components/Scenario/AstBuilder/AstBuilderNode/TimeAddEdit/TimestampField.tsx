@@ -37,14 +37,14 @@ export const TimestampField = ({
         newDatabaseAccessorsLabelledAst({
           dataModel: builder.input.dataModel,
           node,
-        })
+        }),
     );
     const payloadAccessors = builder.input.identifiers.payloadAccessors.map(
       (node) =>
         newPayloadAccessorsLabelledAst({
           triggerObjectTable: builder.input.triggerObjectTable,
           node,
-        })
+        }),
     );
     const timestampFieldOptions = [
       ...payloadAccessors,
@@ -66,7 +66,7 @@ export const TimestampField = ({
         : NewUndefinedAstNode();
       onChange(adaptEditorNodeViewModel({ ast: newNode }));
     },
-    [onChange]
+    [onChange],
   );
 
   const node = value && adaptAstNodeFromEditorViewModel(value);
@@ -113,11 +113,11 @@ const TimestampFieldCombobox = ({
   const selectedOption =
     options.find((option) => option.name == value?.name) ?? null;
   const [inputValue, setInputValue] = useState(() =>
-    optionToLabel(selectedOption)
+    optionToLabel(selectedOption),
   );
 
   const filteredOptions = options.filter((option) =>
-    optionToLabel(option).toLowerCase().includes(inputValue.toLowerCase())
+    optionToLabel(option).toLowerCase().includes(inputValue.toLowerCase()),
   );
 
   return (

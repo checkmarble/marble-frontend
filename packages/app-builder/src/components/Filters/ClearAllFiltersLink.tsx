@@ -17,7 +17,7 @@ export const ClearAllFiltersLink = forwardRef<
     <Link
       className={clsx(
         CtaClassName({ variant: 'tertiary', color: 'grey' }),
-        'shrink-0'
+        'shrink-0',
       )}
       ref={ref}
       {...props}

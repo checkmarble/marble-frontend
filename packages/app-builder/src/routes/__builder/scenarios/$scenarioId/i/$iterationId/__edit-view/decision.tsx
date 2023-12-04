@@ -56,14 +56,14 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
         scoreReviewThreshold: z.coerce
           .number({
             required_error: t(
-              'scenarios:validation.decision.score_review_threshold_required'
+              'scenarios:validation.decision.score_review_threshold_required',
             ),
           })
           .int(),
         scoreRejectThreshold: z.coerce
           .number({
             required_error: t(
-              'scenarios:validation.decision.score_reject_threshold_required'
+              'scenarios:validation.decision.score_reject_threshold_required',
             ),
           })
           .int(),
@@ -75,10 +75,10 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
       },
       {
         message: t(
-          'scenarios:validation.decision.score_reject_review_thresholds_missmatch'
+          'scenarios:validation.decision.score_reject_review_thresholds_missmatch',
         ),
         path: ['thresholds'],
-      }
+      },
     );
 }
 
@@ -119,7 +119,7 @@ export async function action({ request, params }: ActionArgs) {
         error: null,
         values: parsedForm.data,
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } }
+      { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   } catch (error) {
     setToastMessage(session, {
@@ -133,7 +133,7 @@ export async function action({ request, params }: ActionArgs) {
         error: null,
         values: parsedForm.data,
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } }
+      { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
 }
@@ -224,11 +224,11 @@ export default function Decision() {
               replace: {
                 reviewThreshold: watch(
                   'thresholds.scoreReviewThreshold',
-                  scoreReviewThreshold
+                  scoreReviewThreshold,
                 ),
                 rejectThreshold: watch(
                   'thresholds.scoreRejectThreshold',
-                  scoreRejectThreshold
+                  scoreRejectThreshold,
                 ),
               },
             })}
@@ -274,7 +274,7 @@ export default function Decision() {
               {scenarioValidation.decision.errors
                 .filter(
                   (error) =>
-                    !conflictingWithSchemaValidationErrors.includes(error)
+                    !conflictingWithSchemaValidationErrors.includes(error),
                 )
                 .map((error) => (
                   <ScenarioValidationError key={error}>
@@ -283,9 +283,9 @@ export default function Decision() {
                 ))}
             </div>
             <span>
-              {editorMode === 'edit' && (
+              {editorMode === 'edit' ? (
                 <Button type="submit">{t('common:save')}</Button>
-              )}
+              ) : null}
             </span>
           </div>
         </FormProvider>

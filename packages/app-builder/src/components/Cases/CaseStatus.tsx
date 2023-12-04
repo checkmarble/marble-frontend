@@ -53,7 +53,7 @@ export function CaseStatus({ status }: { status: CaseStatus }) {
       <div
         className={cx(
           caseStatusVariants({ color, variant: 'contained' }),
-          'text-s flex h-6 w-6 items-center justify-center rounded font-semibold capitalize'
+          'text-s flex h-6 w-6 items-center justify-center rounded font-semibold capitalize',
         )}
       >
         {t(tKey)[0]}
@@ -102,6 +102,6 @@ export function useCaseStatuses() {
         value: status,
         label: t(caseStatusMapping[status].tKey),
       })),
-    [t]
+    [t],
   );
 }

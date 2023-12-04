@@ -25,7 +25,7 @@ export const AggregatorSelect = ({
           displayName: getAggregatorName(aggregator),
         };
       }),
-    [getAggregatorName]
+    [getAggregatorName],
   );
 
   return (

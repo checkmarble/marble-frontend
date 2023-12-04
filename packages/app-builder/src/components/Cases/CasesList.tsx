@@ -60,7 +60,7 @@ export function CasesList({ cases }: { cases: Case[] }) {
         ),
       },
     ],
-    [language, t]
+    [language, t],
   );
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: cases,
@@ -84,7 +84,7 @@ export function CasesList({ cases }: { cases: Case[] }) {
                 navigate(
                   getRoute('/cases/:caseId', {
                     caseId: fromUUID(row.original.id),
-                  })
+                  }),
                 );
               }}
             />

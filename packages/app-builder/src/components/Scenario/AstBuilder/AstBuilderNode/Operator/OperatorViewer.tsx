@@ -28,7 +28,7 @@ export const OperatorViewer = forwardRef<
       'data-[border-color=grey-10]:border-grey-10 data-[border-color=grey-10]:focus:border-purple-100',
       'data-[border-color=red-100]:border-red-100 data-[border-color=red-100]:focus:border-purple-100',
       'data-[border-color=red-25]:border-red-25 data-[border-color=red-25]:focus:border-purple-100',
-      className
+      className,
     )}
     {...props}
   >

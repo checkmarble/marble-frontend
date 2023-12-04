@@ -11,10 +11,10 @@ export interface CoerceToConstantsLabelledAstOptions {
 
 export function coerceToConstantsLabelledAst(
   search: string,
-  options: CoerceToConstantsLabelledAstOptions
+  options: CoerceToConstantsLabelledAstOptions,
 ): LabelledAst[] {
   const { isCoerceableToBoolean, coerceToBoolean } = getBooleanCoercionLogic(
-    options.booleans
+    options.booleans,
   );
   const results: LabelledAst[] = [];
 
@@ -67,7 +67,7 @@ function coerceToConstantArray(search: string): LabelledAst[] {
       (constant) =>
         NewConstantAstNode({
           constant,
-        })
+        }),
     );
     return [newConstantLabelledAst(astNode)];
   }
@@ -80,7 +80,7 @@ function coerceToConstantArray(search: string): LabelledAst[] {
       (constant) =>
         NewConstantAstNode({
           constant,
-        })
+        }),
     );
     return [newConstantLabelledAst(astNode)];
   }
@@ -89,7 +89,7 @@ function coerceToConstantArray(search: string): LabelledAst[] {
 }
 
 function getBooleanCoercionLogic(
-  options: CoerceToConstantsLabelledAstOptions['booleans']
+  options: CoerceToConstantsLabelledAstOptions['booleans'],
 ) {
   return {
     isCoerceableToBoolean: (search: string) => {

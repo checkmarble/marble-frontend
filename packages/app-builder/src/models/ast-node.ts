@@ -134,7 +134,7 @@ export interface AggregationAstNode {
 }
 
 export function NewAggregatorAstNode(
-  aggregatorName: string
+  aggregatorName: string,
 ): AggregationAstNode {
   return {
     name: aggregationAstNodeName,
@@ -172,7 +172,7 @@ interface CustomListAccessAstNode {
 }
 
 export function NewCustomListAstNode(
-  customListId: string
+  customListId: string,
 ): CustomListAccessAstNode {
   return {
     name: customListAccessAstNodeName,
@@ -208,7 +208,7 @@ export function NewTimeAddAstNode(
   }),
   durationAstNode: ConstantAstNode<string> = NewConstantAstNode({
     constant: '',
-  })
+  }),
 ): TimeAddAstNode {
   return {
     name: timeAddAstNodeName,
@@ -258,7 +258,7 @@ export function isPayload(node: AstNode): node is PayloadAstNode {
 }
 
 export function isCustomListAccess(
-  node: AstNode
+  node: AstNode,
 ): node is CustomListAccessAstNode {
   return node.name === customListAccessAstNodeName;
 }

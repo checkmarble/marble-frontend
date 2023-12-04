@@ -17,27 +17,27 @@ export function ConstantOption({
 
   return (
     <Option.Container onSelect={onSelect}>
-      {DataTypeIcon && (
+      {DataTypeIcon ? (
         <Option.Icon className="col-start-1">
           <DataTypeIcon />
         </Option.Icon>
-      )}
+      ) : null}
       <div className="col-span-2 col-start-2 flex justify-between gap-1">
         <Option.Value className="line-clamp-1 text-ellipsis">
           {constant.name}
         </Option.Value>
-        {constantDataTypeTKey && (
+        {constantDataTypeTKey ? (
           <span className="text-s shrink-0 font-semibold text-purple-100">
             {t(constantDataTypeTKey)}
           </span>
-        )}
+        ) : null}
       </div>
     </Option.Container>
   );
 }
 
 export function getConstantDataTypeTKey(
-  dataType?: DataType
+  dataType?: DataType,
 ): ParseKeys<'scenarios'> | undefined {
   switch (dataType) {
     case 'String':

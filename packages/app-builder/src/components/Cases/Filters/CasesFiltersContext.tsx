@@ -32,7 +32,7 @@ interface CasesFiltersContextValue {
 }
 
 const CasesFiltersContext = createSimpleContext<CasesFiltersContextValue>(
-  'CasesFiltersContext'
+  'CasesFiltersContext',
 );
 
 export type CasesFiltersForm = {
@@ -101,7 +101,7 @@ export function CasesFiltersProvider({
       onCasesFilterClose,
       filterValues,
     }),
-    [filterValues, onCasesFilterClose, submitCasesFilters]
+    [filterValues, onCasesFilterClose, submitCasesFilters],
   );
   return (
     <FormProvider {...formMethods}>
@@ -147,7 +147,7 @@ export function useCasesFiltersPartition() {
       if (R.isArray(value)) return value.length === 0;
       if (R.isObject(value)) return R.isEmpty(value);
       return R.isNil(value);
-    })
+    }),
   );
   return {
     undefinedCasesFilterNames,
@@ -164,6 +164,6 @@ export function useClearFilter() {
       setValue(filterName, emptyCasesFilters[filterName]);
       submitCasesFilters();
     },
-    [setValue, submitCasesFilters]
+    [setValue, submitCasesFilters],
   );
 }

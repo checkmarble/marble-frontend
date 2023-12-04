@@ -26,7 +26,7 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
       <div className="mb-1">
         <Button onClick={() => navigate(-1)}>{t('common:go_back')}</Button>
       </div>
-      {isDevMode && <ErrorDetail error={error} />}
+      {isDevMode ? <ErrorDetail error={error} /> : null}
     </div>
   );
 };

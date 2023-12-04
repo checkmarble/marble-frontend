@@ -35,7 +35,7 @@ export function Calendar({
             variant: 'secondary',
             color: 'grey',
           }),
-          'w-10 h-10'
+          'w-10 h-10',
         ),
         nav_button_previous: 'absolute left-0',
         nav_button_next: 'absolute right-0',
@@ -50,7 +50,7 @@ export function Calendar({
         day: 'h-12 w-12 text-s font-medium relative outline-1 outline-purple-100',
         day_selected: clsx(
           'transition-colors',
-          props.mode === 'single' && 'rounded bg-purple-100 text-grey-00 '
+          props.mode === 'single' && 'rounded bg-purple-100 text-grey-00 ',
         ),
         day_range_start: 'text-grey-00 bg-purple-100 rounded-s',
         day_range_end: 'text-grey-00 bg-purple-100 rounded-e',

@@ -73,7 +73,7 @@ export async function action({ request }: ActionArgs) {
         values: parsedData.data,
         error,
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } }
+      { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
 }
@@ -136,7 +136,7 @@ export function EditField({
                         <Input
                           type="text"
                           placeholder={t(
-                            'data:create_field.description_placeholder'
+                            'data:create_field.description_placeholder',
                           )}
                           {...field}
                         />
@@ -146,7 +146,7 @@ export function EditField({
                   )}
                 />
               </div>
-              {EnumDataTypes.includes(inputField.dataType) && (
+              {EnumDataTypes.includes(inputField.dataType) ? (
                 <FormField
                   name="isEnum"
                   control={control}
@@ -170,7 +170,7 @@ export function EditField({
                     </FormItem>
                   )}
                 />
-              )}
+              ) : null}
               <div className="flex flex-1 flex-row gap-2">
                 <Modal.Close asChild>
                   <Button className="flex-1" variant="secondary">

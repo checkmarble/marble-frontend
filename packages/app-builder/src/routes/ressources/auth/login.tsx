@@ -43,7 +43,7 @@ function ClientSignInWithGoogle() {
   const fetcher = useFetcher();
 
   const googleSignIn = useGoogleSignIn(
-    clientServices.authenticationClientService
+    clientServices.authenticationClientService,
   );
 
   const handleGoogleSignIn = async () => {
@@ -53,7 +53,7 @@ function ClientSignInWithGoogle() {
     if (!idToken) return;
     fetcher.submit(
       { idToken, csrf },
-      { method: 'POST', action: '/ressources/auth/login' }
+      { method: 'POST', action: '/ressources/auth/login' },
     );
   };
 

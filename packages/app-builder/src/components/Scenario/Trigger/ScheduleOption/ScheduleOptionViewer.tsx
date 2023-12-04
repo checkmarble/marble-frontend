@@ -16,7 +16,9 @@ export const ScheduleOptionViewer = ({ schedule }: { schedule: string }) => {
         language,
         throwExceptionOnParseError: true,
       });
-    } catch (e) {}
+    } catch (e) {
+      return undefined;
+    }
   }, [language, schedule]);
 
   if (!formattedSchedule) return null;

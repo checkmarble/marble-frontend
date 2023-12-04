@@ -29,7 +29,7 @@ function PaperContainer({
       className={clsx(
         'border-grey-10 w-full rounded-lg border',
         'flex flex-col gap-4 p-4 lg:gap-8 lg:p-8',
-        className
+        className,
       )}
     >
       {children}

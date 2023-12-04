@@ -54,20 +54,20 @@ export function CtaClassName({
 
       'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 text-grey-25 border-grey-00 focus:border-purple-100':
         variant === 'tertiary' && color === 'grey',
-    }
+    },
   );
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
+  function Button(
     {
       variant = 'primary',
       color = variant === 'primary' ? 'purple' : 'grey',
       className,
       ...props
     },
-    ref
-  ) => {
+    ref,
+  ) {
     return (
       <button
         ref={ref}
@@ -76,5 +76,5 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       />
     );
-  }
+  },
 );

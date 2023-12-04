@@ -37,7 +37,7 @@ describe('findAndReplaceNode', () => {
 
 function helperMakeEditorViewModel(
   nodeId: string,
-  parent?: EditorNodeViewModel
+  parent?: EditorNodeViewModel,
 ): EditorNodeViewModel {
   return {
     nodeId,

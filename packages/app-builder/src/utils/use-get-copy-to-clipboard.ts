@@ -18,7 +18,7 @@ export function useGetCopyToClipboard() {
             replace: {
               value,
             },
-          })
+          }),
         );
       } catch (err) {
         toast.error(t('errors.unknown'));

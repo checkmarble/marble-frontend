@@ -45,7 +45,7 @@ export interface OperatorViewModel {
 }
 
 export function adaptOperatorViewModel(
-  vm: EditorNodeViewModel
+  vm: EditorNodeViewModel,
 ): OperatorViewModel | null {
   if (vm.funcName == null || !isOperatorFunctions(vm.funcName)) return null;
   return {
@@ -135,6 +135,6 @@ export function useGetOperatorName() {
       }
       return operatorName;
     },
-    [t]
+    [t],
   );
 }

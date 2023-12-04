@@ -12,6 +12,7 @@ import {
   PaginationButtons,
   type PaginationParams,
   paginationSchema,
+  useSelectedDecisionIds,
 } from '@app-builder/components';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
@@ -46,7 +47,7 @@ export async function loader({ request }: LoaderArgs) {
 
   const parsedFilterQuery = await parseQuerySafe(
     request,
-    decisionFiltersSchema
+    decisionFiltersSchema,
   );
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
 
@@ -76,7 +77,6 @@ export default function Decisions() {
     filters,
     scenarios,
   } = useLoaderData<typeof loader>();
-  const [selectedDecisionIds, setSelectedDecisionIds] = useState<string[]>([]);
 
   const navigate = useNavigate();
   const navigateDecisionList = useCallback(
@@ -108,14 +108,17 @@ export default function Decisions() {
             {
               addQueryPrefix: true,
               skipNulls: true,
-            }
+            },
           ),
         },
-        { replace: true }
+        { replace: true },
       );
     },
-    [navigate]
+    [navigate],
   );
+
+  const { hasSelection, getSelectedDecisionIds, selectionProps } =
+    useSelectedDecisionIds();
 
   return (
     <DecisionRightPanel.Root>
@@ -140,9 +143,9 @@ export default function Decisions() {
                   </DecisionFiltersMenu>
                   <DecisionRightPanel.Trigger
                     asChild
-                    data={{ decisionIds: selectedDecisionIds }}
+                    decisionIds={getSelectedDecisionIds}
                   >
-                    <Button disabled={selectedDecisionIds.length === 0}>
+                    <Button disabled={!hasSelection}>
                       <Plus />
                       {t('decisions:add_to_case')}
                     </Button>
@@ -153,8 +156,7 @@ export default function Decisions() {
               <DecisionsList
                 decisions={decisions}
                 selectable
-                selectedDecisionIds={selectedDecisionIds}
-                setSelectedDecisionIds={setSelectedDecisionIds}
+                selectionProps={selectionProps}
               />
               <PaginationButtons
                 items={decisions}

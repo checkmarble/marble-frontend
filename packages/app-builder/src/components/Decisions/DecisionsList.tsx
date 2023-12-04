@@ -1,15 +1,12 @@
-import {
-  decisionsI18n,
-  Outcome,
-  type OutcomeProps,
-} from '@app-builder/components';
+import { decisionsI18n, Outcome } from '@app-builder/components';
 import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link, useNavigate } from '@remix-run/react';
-import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type DecisionDetail } from 'marble-api';
+import { useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, Table, useVirtualTable } from 'ui-design-system';
 
@@ -30,22 +27,36 @@ type DecisionsListProps = {
 
 type WithSelectable = {
   selectable: true;
-  selectedDecisionIds: string[];
-  setSelectedDecisionIds: (ids: string[]) => void;
+  selectionProps: ReturnType<typeof useSelectedDecisionIds>['selectionProps'];
 };
 
 type WithoutSelectable = {
   selectable?: false;
-  selectedDecisionIds?: never;
-  setSelectedDecisionIds?: never;
+  selectionProps?: ReturnType<typeof useSelectedDecisionIds>['selectionProps'];
 };
+
+export function useSelectedDecisionIds() {
+  const [rowSelection, setRowSelection] = useState({});
+  const getSelectedDecisionIdsRef = useRef<() => string[]>(() => []);
+
+  return {
+    hasSelection: Object.keys(rowSelection).length > 0,
+    getSelectedDecisionIds: getSelectedDecisionIdsRef.current,
+    selectionProps: {
+      rowSelection,
+      setRowSelection,
+      getSelectedDecisionIdsRef,
+    },
+  };
+}
+
+const columnHelper = createColumnHelper<DecisionDetail>();
 
 export function DecisionsList({
   decisions,
   columnVisibility,
   selectable,
-  selectedDecisionIds,
-  setSelectedDecisionIds,
+  selectionProps,
 }: DecisionsListProps) {
   const {
     t,
@@ -53,120 +64,114 @@ export function DecisionsList({
   } = useTranslation(decisionsI18n);
   const navigate = useNavigate();
 
-  const columns: ColumnDef<DecisionDetail, string>[] = [
-    {
-      id: 'created_at',
-      accessorFn: (row) =>
-        formatDateTime(row.created_at, { language, timeStyle: undefined }),
-      header: t('decisions:created_at'),
-      size: 50,
-    },
-    {
-      id: 'scenario_name',
-      accessorFn: (row) => row.scenario.name,
-      header: t('decisions:scenario.name'),
-      size: 100,
-    },
-    {
-      id: 'trigger_object_type',
-      accessorFn: (row) => row.trigger_object_type,
-      header: t('decisions:trigger_object.type'),
-      size: 100,
-      cell: ({ getValue }) => (
-        <span className="capitalize">{getValue<string>()}</span>
+  const columns = useMemo(() => {
+    const columns = [
+      columnHelper.accessor(
+        (row) =>
+          formatDateTime(row.created_at, { language, timeStyle: undefined }),
+        {
+          id: 'created_at',
+          header: t('decisions:created_at'),
+          size: 50,
+        },
       ),
-    },
-    {
-      id: 'case',
-      accessorFn: (row) => row.case?.name ?? '-',
-      header: t('decisions:case'),
-      size: 100,
-      cell: ({ getValue, row }) => (
-        <span className="bg-grey-02 text-grey-100 text-s flex h-8 w-fit items-center justify-center rounded px-2 font-normal">
-          {row.original.case ? (
-            <Link
-              to={getRoute('/cases/:caseId', {
-                caseId: fromUUID(row.original.case.id),
-              })}
-              onClick={(e) => e.stopPropagation()}
-              className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100"
-            >
-              {getValue<string>()}
-            </Link>
-          ) : (
-            getValue<string>()
-          )}
-        </span>
-      ),
-    },
-    {
-      id: 'score',
-      accessorFn: (row) => row.score.toString(),
-      header: t('decisions:score'),
-      size: 50,
-      cell: ({ getValue }) => <Score score={getValue<number>()} />,
-    },
-    {
-      id: 'outcome',
-      accessorFn: (row) => row.outcome,
-      header: t('decisions:outcome'),
-      size: 50,
-      cell: ({ getValue }) => (
-        <Outcome
-          border="square"
-          size="big"
-          outcome={getValue<OutcomeProps['outcome']>()}
-        />
-      ),
-    },
-  ];
+      columnHelper.accessor((row) => row.scenario.name, {
+        id: 'scenario_name',
+        header: t('decisions:scenario.name'),
+        size: 100,
+      }),
+      columnHelper.accessor((row) => row.trigger_object_type, {
+        id: 'trigger_object_type',
+        header: t('decisions:trigger_object.type'),
+        size: 100,
+        cell: ({ getValue }) => (
+          <span className="capitalize">{getValue()}</span>
+        ),
+      }),
+      columnHelper.accessor((row) => row.case?.name ?? '-', {
+        id: 'case',
+        header: t('decisions:case'),
+        size: 100,
+        cell: ({ getValue, row }) => (
+          <span className="bg-grey-02 text-grey-100 text-s flex h-8 w-fit items-center justify-center rounded px-2 font-normal">
+            {row.original.case ? (
+              <Link
+                to={getRoute('/cases/:caseId', {
+                  caseId: fromUUID(row.original.case.id),
+                })}
+                onClick={(e) => e.stopPropagation()}
+                className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100"
+              >
+                {getValue()}
+              </Link>
+            ) : (
+              getValue()
+            )}
+          </span>
+        ),
+      }),
+      columnHelper.accessor((row) => row.score, {
+        id: 'score',
+        header: t('decisions:score'),
+        size: 50,
+        cell: ({ getValue }) => <Score score={getValue()} />,
+      }),
+      columnHelper.accessor((row) => row.outcome, {
+        id: 'outcome',
+        header: t('decisions:outcome'),
+        size: 50,
+        cell: ({ getValue }) => (
+          <Outcome border="square" size="big" outcome={getValue()} />
+        ),
+      }),
+    ];
 
-  if (selectable) {
-    columns.unshift({
-      id: 'select',
-      header: () => (
-        <Checkbox
-          defaultChecked={selectedDecisionIds.length === decisions.length}
-          onCheckedChange={(checked) => {
-            if (checked) {
-              setSelectedDecisionIds(decisions.map((d) => d.id));
-            } else {
-              setSelectedDecisionIds([]);
-            }
-          }}
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          defaultChecked={selectedDecisionIds.includes(row.original.id)}
-          onCheckedChange={(checked) => {
-            if (checked) {
-              setSelectedDecisionIds([...selectedDecisionIds, row.original.id]);
-            } else {
-              setSelectedDecisionIds(
-                selectedDecisionIds.filter((id) => id !== row.original.id)
-              );
-            }
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        />
-      ),
-      size: 30,
-    });
-  }
+    if (selectable) {
+      columns.unshift(
+        columnHelper.display({
+          id: 'select',
+          header: ({ table }) => (
+            <Checkbox
+              checked={table.getIsAllRowsSelected()}
+              onClick={table.getToggleAllRowsSelectedHandler()}
+            />
+          ),
+          cell: ({ row }) => (
+            <Checkbox
+              checked={row.getIsSelected()}
+              onClick={(e) => {
+                e.stopPropagation();
+                row.getToggleSelectedHandler()(e);
+              }}
+            />
+          ),
+          size: 30,
+        }),
+      );
+    }
+
+    return columns;
+  }, [t, selectable, language]);
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: decisions,
     columns,
     state: {
       columnVisibility,
+      rowSelection: selectionProps?.rowSelection,
     },
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
+    enableRowSelection: selectable,
     enableSorting: false,
+    onRowSelectionChange: selectionProps?.setRowSelection,
   });
+
+  useImperativeHandle(
+    selectionProps?.getSelectedDecisionIdsRef,
+    () => () =>
+      table.getSelectedRowModel().flatRows.map((row) => row.original.id),
+  );
 
   return (
     <Table.Container {...getContainerProps()}>
@@ -183,7 +188,7 @@ export function DecisionsList({
                 navigate(
                   getRoute('/decisions/:decisionId', {
                     decisionId: fromUUID(row.original.id),
-                  })
+                  }),
                 );
               }}
             />

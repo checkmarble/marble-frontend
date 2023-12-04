@@ -3,7 +3,7 @@ export class UnknownError extends Error {
     super(
       `Internal error:  ${
         error instanceof Error ? error.message : 'unknown error'
-      }`
+      }`,
     );
   }
 }

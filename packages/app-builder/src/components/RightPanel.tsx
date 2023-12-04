@@ -78,7 +78,7 @@ export function createRightPanel(name: string) {
         className={clsx(
           'bg-grey-00 absolute inset-y-0 right-0 w-full shadow',
           'radix-state-open:animate-slideRightAndFadeIn radix-state-closed:animate-slideRightAndFadeOut',
-          className
+          className,
         )}
       />
     );
@@ -91,7 +91,7 @@ export function createRightPanel(name: string) {
         {...props}
         className={clsx(
           'text-grey-100 text-l flex flex-row items-center gap-2 font-bold',
-          props.className
+          props.className,
         )}
       />
     );

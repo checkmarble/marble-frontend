@@ -36,7 +36,7 @@ export async function action({ request, params }: ActionArgs) {
         scenarioId: fromUUID(scenarioId),
         iterationId: fromUUID(iterationId),
         ruleId: fromUUID(rule.id),
-      })
+      }),
     );
   } catch (error) {
     return json({
@@ -60,7 +60,7 @@ export function CreateRule({
     <fetcher.Form
       method="POST"
       action={`/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
-        iterationId
+        iterationId,
       )}/rules/create`}
     >
       <Button type="submit" disabled={fetcher.state === 'submitting'}>

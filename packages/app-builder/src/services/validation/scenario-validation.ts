@@ -7,26 +7,26 @@ import invariant from 'tiny-invariant';
 
 // return just an array of error from a recursive evaluation
 function flattenNodeEvaluationErrors(
-  evaluation: NodeEvaluation
+  evaluation: NodeEvaluation,
 ): EvaluationError[] {
   return [
     ...(evaluation.errors ?? []),
     ...evaluation.children.flatMap(flattenNodeEvaluationErrors),
     ...Object.values(evaluation.namedChildren).flatMap(
-      flattenNodeEvaluationErrors
+      flattenNodeEvaluationErrors,
     ),
   ];
 }
 
 export function findRuleValidation(
   validation: ScenarioValidation,
-  ruleId: string
+  ruleId: string,
 ) {
   const ruleValidation = validation.rules.ruleItems[ruleId];
 
   invariant(
     ruleValidation !== undefined,
-    `Rule ${ruleId} not found in validation`
+    `Rule ${ruleId} not found in validation`,
   );
 
   return ruleValidation;
@@ -62,7 +62,7 @@ export function hasDecisionErrors(validation: ScenarioValidation): boolean {
 }
 
 export function hasRuleErrors(
-  ruleValidation: ScenarioValidation['rules']['ruleItems'][number]
+  ruleValidation: ScenarioValidation['rules']['ruleItems'][number],
 ): boolean {
   return (
     ruleValidation.errors.length > 1 ||

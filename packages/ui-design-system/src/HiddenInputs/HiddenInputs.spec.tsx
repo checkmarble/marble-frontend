@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import HiddenInputs from './HiddenInputs';
+import { HiddenInputs } from './HiddenInputs';
 
 describe('HiddenInputs', () => {
   it('should render hidden input successfully', () => {

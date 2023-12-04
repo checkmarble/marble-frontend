@@ -13,7 +13,7 @@ export function OutcomeFilter() {
 
   const matches = useMemo(
     () => matchSorter(outcomes, deferredValue, { keys: ['label'] }),
-    [deferredValue, outcomes]
+    [deferredValue, outcomes],
   );
 
   return (

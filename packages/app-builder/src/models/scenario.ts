@@ -39,7 +39,7 @@ export interface ScenarioIteration {
 }
 
 export function adaptScenarioIterationRule(
-  scenarioIterationRuleDto: ScenarioIterationRuleDto
+  scenarioIterationRuleDto: ScenarioIterationRuleDto,
 ): ScenarioIterationRule {
   return {
     id: scenarioIterationRuleDto.id,
@@ -57,7 +57,7 @@ export function adaptScenarioIterationRule(
 }
 
 export function adaptScenarioIteration(
-  scenarioIterationWithBody: ScenarioIterationWithBodyDto
+  scenarioIterationWithBody: ScenarioIterationWithBodyDto,
 ): ScenarioIteration {
   const triggerDto =
     scenarioIterationWithBody.body.trigger_condition_ast_expression;
@@ -77,7 +77,7 @@ export function adaptScenarioIteration(
 }
 
 export function adaptScenarioIterationSummary(
-  dto: ScenarioIterationDto
+  dto: ScenarioIterationDto,
 ): ScenarioIterationSummary {
   return {
     id: dto.id,

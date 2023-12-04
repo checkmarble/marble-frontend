@@ -19,7 +19,7 @@ export const Highlight = forwardRef<
           </mark>
         ) : (
           <Fragment key={index}>{part.text}</Fragment>
-        )
+        ),
       )}
     </div>
   );

@@ -51,9 +51,8 @@ export function getScenarioRepository() {
       return adaptScenarioIterationRule(rule);
     },
     getScenarioIteration: async ({ iterationId }) => {
-      const scenarioIteration = await marbleApiClient.getScenarioIteration(
-        iterationId
-      );
+      const scenarioIteration =
+        await marbleApiClient.getScenarioIteration(iterationId);
       return adaptScenarioIteration(scenarioIteration);
     },
     listScenarioIterations: async ({ scenarioId }) => {
@@ -61,9 +60,8 @@ export function getScenarioRepository() {
       return dtos.map(adaptScenarioIterationSummary);
     },
     validate: async ({ iterationId }) => {
-      const result = await marbleApiClient.validateScenarioIteration(
-        iterationId
-      );
+      const result =
+        await marbleApiClient.validateScenarioIteration(iterationId);
       return adaptScenarioValidation(result.scenario_validation);
     },
     validateScenarioIterationTrigger: async ({ iterationId, trigger }) => {
@@ -73,7 +71,7 @@ export function getScenarioRepository() {
           {
             trigger_or_rule: adaptNodeDto(trigger),
             rule_id: null,
-          }
+          },
         );
       const scenarioValidation = adaptScenarioValidation(scenario_validation);
       return scenarioValidation.trigger;
@@ -85,7 +83,7 @@ export function getScenarioRepository() {
           {
             trigger_or_rule: adaptNodeDto(rule),
             rule_id: ruleId,
-          }
+          },
         );
       const scenarioValidation = adaptScenarioValidation(scenario_validation);
       return findRuleValidation(scenarioValidation, ruleId);

@@ -77,7 +77,7 @@ export function EditCaseStatus({
   const statuses = useCaseStatuses();
   const nextStatuses = useMemo(
     () => statuses.filter((nextStatus) => nextStatus.value !== status),
-    [statuses, status]
+    [statuses, status],
   );
 
   return (

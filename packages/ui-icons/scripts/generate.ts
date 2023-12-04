@@ -8,9 +8,17 @@ import prettier from 'prettier';
 const OUT_DIR = join(process.cwd(), '/src');
 const IN_DIR = join(process.cwd(), '/svgs');
 
+async function getPrettierOptions() {
+  const options = await prettier.resolveConfig(OUT_DIR);
+  return {
+    parser: 'typescript',
+    ...(options ?? {}),
+  };
+}
+
 function getComponentName(svgFileName: string) {
   return parse(svgFileName).name.replace(/(?:^|-|_)(.)/g, ($1) =>
-    $1.toUpperCase().replace(/-|_/, '')
+    $1.toUpperCase().replace(/-|_/, ''),
   );
 }
 
@@ -27,12 +35,7 @@ async function buildIcon(svgFileName: string) {
       jsxRuntime: 'automatic',
       icon: true,
       typescript: true,
-      plugins: [
-        '@svgr/plugin-svgo',
-        '@svgr/plugin-jsx',
-        '@svgr/plugin-prettier',
-      ],
-      prettier: true,
+      plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
       replaceAttrValues: {
         '#080525': 'currentColor',
         '#1C1B1F': 'currentColor',
@@ -43,10 +46,13 @@ async function buildIcon(svgFileName: string) {
         plugins: ['prefixIds'],
       },
     },
-    { componentName }
+    { componentName },
   );
 
-  await writeFile(join(OUT_DIR, `${componentName}.tsx`), component);
+  await writeFile(
+    join(OUT_DIR, `${componentName}.tsx`),
+    await prettier.format(component, await getPrettierOptions()),
+  );
 }
 
 async function buildIndex(svgFileNames: string[]) {
@@ -55,17 +61,13 @@ async function buildIndex(svgFileNames: string[]) {
     .sort()
     .map(
       (componentName) =>
-        `export { default as ${componentName} } from './${componentName}';`
+        `export { default as ${componentName} } from './${componentName}';`,
     )
     .join('\n');
 
-  const options = await prettier.resolveConfig(OUT_DIR);
   await writeFile(
     join(OUT_DIR, 'index.ts'),
-    prettier.format(indexFileContent, {
-      parser: 'typescript',
-      ...(options ?? {}),
-    })
+    await prettier.format(indexFileContent, await getPrettierOptions()),
   );
 }
 
@@ -74,7 +76,7 @@ async function generateIcons() {
 
   try {
     const svgFileNames = (await readdir(IN_DIR)).filter((fileName) =>
-      fileName.endsWith('.svg')
+      fileName.endsWith('.svg'),
     );
 
     await pMap(svgFileNames, async (svgFileName) => buildIcon(svgFileName), {

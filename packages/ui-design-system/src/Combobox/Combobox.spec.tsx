@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { useState } from 'react';
 
 import { Combobox } from './Combobox';
@@ -37,7 +37,7 @@ describe('Combobox', () => {
     fruits.forEach((fruit) =>
       fruit.includes('a')
         ? expect(screen.queryByText(fruit)).toBeInTheDocument()
-        : expect(screen.queryByText(fruit)).not.toBeInTheDocument()
+        : expect(screen.queryByText(fruit)).not.toBeInTheDocument(),
     );
 
     await userEvent.click(screen.getByText('apple'));

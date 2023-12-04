@@ -13,7 +13,7 @@ export function TriggerObjectFilter() {
 
   const matches = useMemo(
     () => matchSorter(triggerObjects, searchValue),
-    [searchValue, triggerObjects]
+    [searchValue, triggerObjects],
   );
 
   return (

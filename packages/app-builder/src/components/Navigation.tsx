@@ -21,7 +21,7 @@ function SidebarLink({ Icon, labelTKey, to }: SidebarLinkProps) {
           'text-s flex flex-row items-center gap-2 rounded-sm p-2 font-medium',
           isActive
             ? 'bg-purple-10 text-purple-100'
-            : 'text-grey-100 hover:bg-purple-10 hover:text-purple-100'
+            : 'text-grey-100 hover:bg-purple-10 hover:text-purple-100',
         )
       }
       to={to}
@@ -64,7 +64,7 @@ function ScenariosLink({ Icon, labelTKey, to }: SidebarLinkProps) {
           'text-s flex flex-row items-center gap-2 rounded px-4 py-2 font-medium ',
           isActive
             ? 'bg-purple-10 text-purple-100'
-            : 'text-grey-100 hover:bg-purple-10 hover:text-purple-100'
+            : 'text-grey-100 hover:bg-purple-10 hover:text-purple-100',
         )
       }
       to={to}

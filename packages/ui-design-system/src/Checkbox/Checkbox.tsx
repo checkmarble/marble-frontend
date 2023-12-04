@@ -8,7 +8,7 @@ export const Checkbox = forwardRef<
   Omit<CheckboxProps, 'asChild'> & {
     color?: 'purple' | 'red';
   }
->(({ className, color = 'purple', ...props }, ref) => {
+>(function Checkbox({ className, color = 'purple', ...props }, ref) {
   return (
     <Root
       ref={ref}
@@ -18,7 +18,7 @@ export const Checkbox = forwardRef<
           'border-purple-50 focus:border-purple-100': color === 'purple',
           'focus:border-red-120 border-red-100': color === 'red',
         },
-        className
+        className,
       )}
       {...props}
     >
@@ -28,5 +28,3 @@ export const Checkbox = forwardRef<
     </Root>
   );
 });
-
-export default Checkbox;

@@ -61,6 +61,6 @@ export function useGetAggregatorName() {
       }
       return aggregatorName;
     },
-    [t]
+    [t],
   );
 }

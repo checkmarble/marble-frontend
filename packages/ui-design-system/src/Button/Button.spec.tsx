@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
 import { Button } from './Button';
 
@@ -16,7 +16,7 @@ describe('Button', () => {
     render(
       <Button name="test" onClick={onClick}>
         Test
-      </Button>
+      </Button>,
     );
 
     const button = screen.getByRole('button', { name: /test/i });

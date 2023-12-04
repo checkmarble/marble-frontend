@@ -52,7 +52,7 @@ function DateRangeFilterRoot({
         endDate,
       });
     },
-    [setDateRangeFilter]
+    [setDateRangeFilter],
   );
 
   const fromNow =
@@ -64,7 +64,7 @@ function DateRangeFilterRoot({
         fromNow,
       });
     },
-    [setDateRangeFilter]
+    [setDateRangeFilter],
   );
 
   const value = {
@@ -170,7 +170,7 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
       <div
         className={clsx(
           'm-4 flex h-10 w-full items-center justify-center',
-          className
+          className,
         )}
       >
         <span className="text-grey-100">
@@ -184,7 +184,7 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
     <div
       className={clsx(
         'grid grid-cols-[1fr_max-content_1fr] gap-1 p-4',
-        className
+        className,
       )}
     >
       <FormatStaticDate
@@ -212,7 +212,7 @@ function FormatStaticDate({
       className={clsx(
         'border-grey-10 h-10 w-fit rounded border p-2',
         date ? 'text-grey-100' : 'text-grey-50',
-        className
+        className,
       )}
     >
       {date

@@ -10,7 +10,7 @@ type AddLogicalOperatorButtonProps = React.ComponentProps<'button'> & {
 export const AddLogicalOperatorButton = React.forwardRef<
   HTMLButtonElement,
   AddLogicalOperatorButtonProps
->(({ className, operator, ...props }, ref) => {
+>(function AddLogicalOperatorButton({ className, operator, ...props }, ref) {
   const { t } = useTranslation(['scenarios']);
   return (
     <button
@@ -18,7 +18,7 @@ export const AddLogicalOperatorButton = React.forwardRef<
         ' flex h-fit w-fit flex-row items-center justify-center gap-1 rounded border-none px-4 py-2 outline-none',
         'text-grey-25 disabled:text-grey-50 text-xs font-semibold hover:text-purple-100',
         'hover:bg-purple-10 active:bg-grey-10 bg-grey-00 disabled:bg-grey-00  focus:border-purple-100',
-        className
+        className,
       )}
       {...props}
       ref={ref}
@@ -28,4 +28,3 @@ export const AddLogicalOperatorButton = React.forwardRef<
     </button>
   );
 });
-AddLogicalOperatorButton.displayName = 'AddLogicalOperatorButton';

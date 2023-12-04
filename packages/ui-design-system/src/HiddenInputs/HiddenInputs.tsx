@@ -2,7 +2,7 @@ export function HiddenInputs<
   Props extends Record<
     string,
     React.InputHTMLAttributes<HTMLInputElement>['value']
-  >
+  >,
 >(props: Props) {
   return (
     <>
@@ -25,5 +25,3 @@ export function HiddenInputs<
     </>
   );
 }
-
-export default HiddenInputs;

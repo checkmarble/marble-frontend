@@ -29,7 +29,7 @@ export function CasesFiltersBar() {
         onCasesFilterClose();
       }
     },
-    [onCasesFilterClose]
+    [onCasesFilterClose],
   );
 
   const { undefinedCasesFilterNames, definedCasesFilterNames } =

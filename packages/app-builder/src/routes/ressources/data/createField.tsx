@@ -101,7 +101,7 @@ export async function action({ request }: ActionArgs) {
           values: parsedData.data,
           error: error,
         },
-        { headers: { 'Set-Cookie': await commitSession(session) } }
+        { headers: { 'Set-Cookie': await commitSession(session) } },
       );
     } else {
       const { getSession, commitSession } = serverServices.toastSessionService;
@@ -118,7 +118,7 @@ export async function action({ request }: ActionArgs) {
           values: parsedData.data,
           error,
         },
-        { headers: { 'Set-Cookie': await commitSession(session) } }
+        { headers: { 'Set-Cookie': await commitSession(session) } },
       );
     }
   }
@@ -202,7 +202,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                         <Input
                           type="text"
                           placeholder={t(
-                            'data:create_field.description_placeholder'
+                            'data:create_field.description_placeholder',
                           )}
                           {...field}
                         />
@@ -267,7 +267,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                     )}
                   />
                 </div>
-                {EnumDataTypes.includes(selectedType) && (
+                {EnumDataTypes.includes(selectedType) ? (
                   <FormField
                     name="isEnum"
                     control={control}
@@ -291,7 +291,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                       </FormItem>
                     )}
                   />
-                )}
+                ) : null}
               </div>
               <div className="flex flex-1 flex-row gap-2">
                 <Modal.Close asChild>

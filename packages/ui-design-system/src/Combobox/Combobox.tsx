@@ -2,7 +2,7 @@ import { Combobox as ComboboxPrimitive } from '@headlessui/react';
 import clsx, { type ClassValue } from 'clsx';
 import * as React from 'react';
 
-import Input, { type InputProps } from '../Input/Input';
+import { Input, type InputProps } from '../Input/Input';
 
 type WithoutRefAndCompatibleClassname<P extends React.ElementType> = Omit<
   React.ComponentPropsWithoutRef<P>,
@@ -23,7 +23,7 @@ const ComboboxInput = React.forwardRef<
     as={Input}
     className={clsx(
       'ui-disabled:cursor-not-allowed ui-disabled:opacity-50',
-      className
+      className,
     )}
     {...props}
   />
@@ -39,7 +39,7 @@ const ComboboxOptions = React.forwardRef<
     ref={ref}
     className={clsx(
       'bg-grey-00 border-grey-10 absolute z-10 mt-1 flex max-h-[300px] flex-col gap-2 overflow-y-auto overflow-x-hidden rounded border p-2 shadow-md',
-      className
+      className,
     )}
     {...props}
   />
@@ -55,7 +55,7 @@ const ComboboxOption = React.forwardRef<
     className={clsx(
       'ui-active:bg-purple-05 text-s cursor-default select-none rounded-sm p-2 outline-none',
       'ui-disabled:pointer-events-none ui-disabled:opacity-50',
-      className
+      className,
     )}
     {...props}
   />

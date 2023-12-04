@@ -54,11 +54,11 @@ export default function ScenariosPage() {
                     <div className="bg-grey-00 border-grey-10 flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
                       <div className="text-m flex flex-row gap-2 font-bold">
                         {scenario.name}
-                        {scenario.liveVersionId && (
+                        {scenario.liveVersionId ? (
                           <Tag color="purple" className="capitalize">
                             {t('scenarios:live')}
                           </Tag>
-                        )}
+                        ) : null}
                       </div>
                       <p className="text-s line-clamp-2 font-medium">
                         {scenario.description}

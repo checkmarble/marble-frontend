@@ -48,6 +48,6 @@ export function useGetOperatorName() {
       }
       return operatorName;
     },
-    [t]
+    [t],
   );
 }

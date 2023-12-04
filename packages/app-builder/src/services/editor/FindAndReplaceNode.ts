@@ -9,7 +9,7 @@ export function findAndReplaceNode(
   nodeIdToReplace: string,
   fn: (node: EditorNodeViewModel) => EditorNodeViewModel | null,
   node: EditorNodeViewModel,
-  parent: EditorNodeViewModel | null = null
+  parent: EditorNodeViewModel | null = null,
 ): EditorNodeViewModel | null {
   if (node.nodeId === nodeIdToReplace) {
     return fn(node);
@@ -18,7 +18,7 @@ export function findAndReplaceNode(
   const children = R.pipe(
     node.children,
     R.map((child) => findAndReplaceNode(nodeIdToReplace, fn, child, node)),
-    R.compact
+    R.compact,
   );
 
   const namedChildren = R.pipe(
@@ -28,7 +28,7 @@ export function findAndReplaceNode(
       return newChild === null ? null : ([key, newChild] as const);
     }),
     R.compact,
-    (pairs) => R.fromPairs(pairs)
+    (pairs) => R.fromPairs(pairs),
   );
 
   return {

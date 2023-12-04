@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 function subscribe(
-  listener: (this: Document, ev: DocumentEventMap['visibilitychange']) => void
+  listener: (this: Document, ev: DocumentEventMap['visibilitychange']) => void,
 ) {
   document.addEventListener('visibilitychange', listener);
   return () => {
@@ -13,6 +13,6 @@ export function useVisibilityChange() {
   return useSyncExternalStore<DocumentVisibilityState>(
     subscribe,
     () => document.visibilityState,
-    () => 'visible'
+    () => 'visible',
   );
 }

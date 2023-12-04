@@ -1,27 +1,12 @@
 const { join } = require('path');
 
+/** @type {import("eslint").Linter.Config} */
 module.exports = {
-  extends: ['../../.eslintrc.json', 'plugin:tailwindcss/recommended'],
+  root: true,
+  extends: ['@marble/eslint-config/react'],
   settings: {
     tailwindcss: {
       config: join(__dirname, 'tailwind.config.js'),
     },
   },
-  ignorePatterns: ['!**/*', '/node_modules/'],
-  overrides: [
-    {
-      files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
-      rules: {
-        'tailwindcss/classnames-order': 'off',
-      },
-    },
-    {
-      files: ['*.ts', '*.tsx'],
-      rules: {},
-    },
-    {
-      files: ['*.js', '*.jsx'],
-      rules: {},
-    },
-  ],
 };

@@ -119,7 +119,7 @@ export function EditTable({
                         <Input
                           type="text"
                           placeholder={t(
-                            'data:create_table.description_placeholder'
+                            'data:create_table.description_placeholder',
                           )}
                           {...field}
                         />

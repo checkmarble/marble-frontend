@@ -22,7 +22,7 @@ describe('ScrollArea', () => {
           <ScrollArea.Thumb />
         </ScrollArea.Scrollbar>
         <ScrollArea.Corner />
-      </ScrollArea.Root>
+      </ScrollArea.Root>,
     );
     expect(screen.getAllByRole('listitem').length).toBe(15);
   });

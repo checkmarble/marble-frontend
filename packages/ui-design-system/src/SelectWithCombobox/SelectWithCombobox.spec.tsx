@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 import { useDeferredValue, useMemo, useState } from 'react';
 
-import Input from '../Input/Input';
+import { Input } from '../Input/Input';
 import { SelectWithCombobox } from './SelectWithCombobox';
 
 mockResizeObserver();
@@ -17,7 +17,7 @@ function SelectFruitWithCombobox() {
 
   const matches = useMemo(
     () => fruits.filter((fruit) => fruit.includes(deferredValue)),
-    [deferredValue]
+    [deferredValue],
   );
 
   return (
@@ -42,7 +42,7 @@ describe('SelectWithCombobox', () => {
     render(<SelectFruitWithCombobox />);
 
     fruits.forEach((fruit) =>
-      expect(screen.getByText(fruit)).toBeInTheDocument()
+      expect(screen.getByText(fruit)).toBeInTheDocument(),
     );
     const apple = screen.getByRole('option', {
       name: 'apple',

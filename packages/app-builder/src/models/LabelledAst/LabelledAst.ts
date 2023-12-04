@@ -55,7 +55,7 @@ export function adaptLabelledAst(
     dataModel: TableModel[];
     customLists: CustomList[];
     enumOptions: EnumValue[];
-  }
+  },
 ): LabelledAst | null {
   if (isConstant(node)) {
     if (
@@ -69,7 +69,8 @@ export function adaptLabelledAst(
 
   if (isCustomListAccess(node)) {
     const customList = customLists.find(
-      (customList) => customList.id === node.namedChildren.customListId.constant
+      (customList) =>
+        customList.id === node.namedChildren.customListId.constant,
     );
     if (customList) return newCustomListLabelledAst(customList);
   }
@@ -112,7 +113,7 @@ export function adaptLabelledAst(
  */
 export function adaptLabelledAstFromAllIdentifiers(
   astNode: AstNode,
-  identifiers: EditorIdentifiersByType
+  identifiers: EditorIdentifiersByType,
 ): LabelledAst {
   const identifier = getIdentifiersFromAstNode(astNode, identifiers);
   if (identifier) {

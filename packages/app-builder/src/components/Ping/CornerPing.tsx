@@ -25,7 +25,7 @@ export function CornerPing({
         aria-hidden="true"
         className={clsx(
           'border-grey-00 absolute box-content h-[6px] w-[6px] border-2 text-red-100',
-          style[variant]
+          style[variant],
         )}
       />
     </span>

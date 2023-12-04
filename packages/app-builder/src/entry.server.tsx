@@ -19,15 +19,16 @@ export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
-  remixContext: EntryContext
+  remixContext: EntryContext,
 ) {
   const { i18nextService } = serverServices;
   const i18n = await i18nextService.getI18nextServerInstance(
     request,
-    remixContext
+    remixContext,
   );
 
   const App = (
+    // @ts-expect-error: weird TS bug
     <I18nextProvider i18n={i18n}>
       <RemixServer context={remixContext} url={request.url} />
     </I18nextProvider>
@@ -41,7 +42,7 @@ export default async function handleRequest(
 function handleBotRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
-  App: JSX.Element
+  App: JSX.Element,
 ) {
   return new Promise((resolve, reject) => {
     let didError = false;
@@ -56,7 +57,7 @@ function handleBotRequest(
           new Response(body, {
             headers: responseHeaders,
             status: didError ? 500 : responseStatusCode,
-          })
+          }),
         );
 
         pipe(body);
@@ -78,7 +79,7 @@ function handleBotRequest(
 function handleBrowserRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
-  App: JSX.Element
+  App: JSX.Element,
 ) {
   return new Promise((resolve, reject) => {
     let didError = false;
@@ -93,7 +94,7 @@ function handleBrowserRequest(
           new Response(body, {
             headers: responseHeaders,
             status: didError ? 500 : responseStatusCode,
-          })
+          }),
         );
 
         pipe(body);
@@ -123,7 +124,7 @@ Sentry.init({
 
 export async function handleError(
   error: unknown,
-  { request }: DataFunctionArgs
+  { request }: DataFunctionArgs,
 ) {
   if (error instanceof Error) {
     await Sentry.captureRemixServerException(error, 'remix.server', request);

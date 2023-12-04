@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 
 import { Tooltip } from './Tooltip';
@@ -13,7 +13,7 @@ describe('Tooltip', () => {
         <Tooltip.Default content="tooltip">
           <p>label</p>
         </Tooltip.Default>
-      </Tooltip.Provider>
+      </Tooltip.Provider>,
     );
 
     const label = screen.getByText('label');

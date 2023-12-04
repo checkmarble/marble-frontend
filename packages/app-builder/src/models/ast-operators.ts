@@ -20,7 +20,7 @@ export function NewAstOperator({
 }
 
 export function adaptAstOperatorDto(
-  funcAttributes: FuncAttributes
+  funcAttributes: FuncAttributes,
 ): AstOperator {
   return NewAstOperator({
     name: funcAttributes.name,

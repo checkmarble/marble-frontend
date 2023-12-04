@@ -43,12 +43,12 @@ export async function action({ request }: ActionArgs) {
 
   try {
     const { inbox: createdInbox } = await apiClient.createInbox(
-      submission.value
+      submission.value,
     );
     return redirect(
       getRoute('/cases/inboxes/:inboxId', {
         inboxId: fromUUID(createdInbox.id),
-      })
+      }),
     );
   } catch (error) {
     const session = await getSession(request);

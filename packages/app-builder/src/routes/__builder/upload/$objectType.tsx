@@ -72,7 +72,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
   const revalidator = useRevalidator();
 
   const { accessToken, backendUrl } = useBackendInfo(
-    clientServices.authenticationClientService
+    clientServices.authenticationClientService,
   );
 
   const computeModalMessage = useCallback(
@@ -100,7 +100,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         });
       }
     },
-    [objectType, t]
+    [objectType, t],
   );
 
   const onDrop = async (acceptedFiles: File[]) => {
@@ -121,7 +121,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
           headers: {
             Authorization: `Bearer ${await accessToken()}`,
           },
-        }
+        },
       );
       if (!response.ok) {
         const errorMessage = await response.text();
@@ -172,12 +172,12 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
           'text-s flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
           isDragActive
             ? 'bg-purple-10 border-purple-50 opacity-90'
-            : 'border-grey-50'
+            : 'border-grey-50',
         )}
       >
         <input {...getInputProps()} />
-        {loading && <Loading className="border-none" />}
-        {!loading && (
+        {loading ? <Loading className="border-none" /> : null}
+        {!loading ? (
           <>
             <p>{t('upload:drop_file_cta')}</p>
             <p className="text-grey-25 uppercase">{t('common:or')}</p>
@@ -186,7 +186,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
               {t('upload:pick_file_cta')}
             </Button>
           </>
-        )}
+        ) : null}
       </div>
       <ResultModal
         isOpen={isModalOpen}
@@ -223,13 +223,13 @@ const ResultModal = ({
               'rounded-full border-8',
               modalContent.success
                 ? 'bg-purple-10 border-purple-10 text-purple-100'
-                : 'bg-red-10 border-red-10 text-red-100'
+                : 'bg-red-10 border-red-10 text-red-100',
             )}
           />
           <div className="flex flex-col items-center gap-2">
             <p className="text-l font-semibold">{t('upload:results')}</p>
             <p>{modalContent.message}</p>
-            {!modalContent.success && (
+            {!modalContent.success ? (
               <>
                 <p>{modalContent.error}</p>
                 <p className="mt-6">
@@ -238,7 +238,7 @@ const ResultModal = ({
                   })}
                 </p>
               </>
-            )}
+            ) : null}
           </div>
           <Modal.Close asChild>
             <div className="flex justify-center">
@@ -294,7 +294,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
         size: 200,
       },
     ],
-    [language, t]
+    [language, t],
   );
 
   const { getBodyProps, getContainerProps, table, rows } = useVirtualTable({
@@ -359,7 +359,7 @@ export default function Upload() {
                 download={`${objectType}_template.csv`}
                 className={clsx(
                   'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
-                  'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100'
+                  'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100',
                 )}
               >
                 <HelpIcon className="mr-2" height="24px" width="24px" />
@@ -371,7 +371,7 @@ export default function Upload() {
         <ClientOnly fallback={<Loading />}>
           {() => <UploadForm objectType={objectType} />}
         </ClientOnly>
-        {uploadLogs.length > 0 && <PastUploads uploadLogs={uploadLogs} />}
+        {uploadLogs.length > 0 ? <PastUploads uploadLogs={uploadLogs} /> : null}
       </Page.Content>
     </Page.Container>
   );
@@ -383,7 +383,7 @@ const Loading = ({ className }: { className?: string }) => {
     <div
       className={clsx(
         className,
-        'border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed'
+        'border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
       )}
     >
       {t('common:loading')}

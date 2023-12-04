@@ -17,11 +17,11 @@ export function OperandOption({
   const DataTypeIcon = getDataTypeIcon(option.dataType);
   return (
     <Option.Container onSelect={onSelect} className="group">
-      {DataTypeIcon && (
+      {DataTypeIcon ? (
         <Option.Icon className="col-start-1">
           <DataTypeIcon />
         </Option.Icon>
-      )}
+      ) : null}
       <Option.Value className="col-start-2">
         <Highlight text={option.name} query={searchText} />
       </Option.Value>

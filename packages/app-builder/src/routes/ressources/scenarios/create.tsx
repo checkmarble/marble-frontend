@@ -68,7 +68,7 @@ export async function action({ request }: ActionArgs) {
       getRoute('/scenarios/:scenarioId/i/:iterationId', {
         scenarioId: fromUUID(scenario.id),
         iterationId: fromUUID(scenarioIteration.id),
-      })
+      }),
     );
   } catch (error) {
     return json({
@@ -137,15 +137,15 @@ function CreateScenarioContent() {
           <label>{t('scenarios:create_scenario.trigger_object_title')}</label>
           <Select.Default
             placeholder={t(
-              'scenarios:create_scenario.trigger_object_placeholder'
+              'scenarios:create_scenario.trigger_object_placeholder',
             )}
             onValueChange={(dataModelName) => {
               setSelectedTriggerObjectType(dataModelName);
             }}
           >
-            {dataModelFetcher.state === 'loading' && (
+            {dataModelFetcher.state === 'loading' ? (
               <p>{t('common:loading')}</p>
-            )}
+            ) : null}
             {dataModel.map((dataModel) => {
               return (
                 <Select.DefaultItem key={dataModel.name} value={dataModel.name}>
@@ -153,9 +153,9 @@ function CreateScenarioContent() {
                 </Select.DefaultItem>
               );
             })}
-            {dataModelFetcher.state === 'idle' && dataModel.length === 0 && (
+            {dataModelFetcher.state === 'idle' && dataModel.length === 0 ? (
               <p>{t('scenarios:create_scenario.no_trigger_object')}</p>
-            )}
+            ) : null}
           </Select.Default>
           <HiddenInputs triggerObjectType={triggerObjectType} />
         </div>

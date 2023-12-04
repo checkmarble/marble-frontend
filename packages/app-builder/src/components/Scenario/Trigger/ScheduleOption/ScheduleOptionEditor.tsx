@@ -42,7 +42,7 @@ export function ScheduleOptionEditor({
           {t('scenarios:trigger.schedule_scenario.option')}
         </Label>
       </div>
-      {scheduleOption.isScenarioScheduled && (
+      {scheduleOption.isScenarioScheduled ? (
         <>
           <div className="text-s flex items-center gap-2">
             {t('scenarios:trigger.schedule_scenario.frequency_label')}
@@ -53,7 +53,7 @@ export function ScheduleOptionEditor({
                   frequency,
                   scheduleDetail: getScheduleDetailOptions(
                     frequency,
-                    language
+                    language,
                   )[0],
                 });
               }}
@@ -69,17 +69,17 @@ export function ScheduleOptionEditor({
             />
           </div>
           {scheduleOption.frequency === 'monthly' &&
-            ['29', '30', '31'].includes(scheduleOption.scheduleDetail) && (
-              <p className="text-s text-purple-100">
-                <Trans
-                  t={t}
-                  i18nKey="scenarios:trigger.schedule_scenario.monthly_warning"
-                  values={{ scheduleDetail: scheduleOption.scheduleDetail }}
-                />
-              </p>
-            )}
+          ['29', '30', '31'].includes(scheduleOption.scheduleDetail) ? (
+            <p className="text-s text-purple-100">
+              <Trans
+                t={t}
+                i18nKey="scenarios:trigger.schedule_scenario.monthly_warning"
+                values={{ scheduleDetail: scheduleOption.scheduleDetail }}
+              />
+            </p>
+          ) : null}
         </>
-      )}
+      ) : null}
     </>
   );
 }
@@ -166,7 +166,7 @@ const ScheduleDetailSelect = ({
 
 const getScheduleDetailOptions = (
   frequency: ScheduleOption['frequency'],
-  locale: string
+  locale: string,
 ) => {
   switch (frequency) {
     case 'daily':
@@ -183,7 +183,7 @@ const dailyScheduleOptions = Array.from({ length: 24 }, (_, i) => `${i}`);
 const weekDays = Array.from({ length: 7 }, (_, i) => `${i}`);
 
 const getWeekInfo = (
-  locale: string
+  locale: string,
 ): { firstDay: number; weekend: number[]; minimalDays: number } => {
   const intl = new Intl.Locale(locale);
   // Default to France weekInfo if not present
@@ -209,7 +209,7 @@ const monthlyScheduleOptions = Array.from({ length: 31 }, (_, i) => `${i + 1}`);
 const getWeekDayName = (
   option: string,
   locale: string,
-  format?: 'long' | 'short' | 'narrow'
+  format?: 'long' | 'short' | 'narrow',
 ) => {
   const formatter = new Intl.DateTimeFormat(locale, {
     weekday: format ?? 'long',

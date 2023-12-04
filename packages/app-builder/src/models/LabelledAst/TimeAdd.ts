@@ -13,7 +13,7 @@ import { Temporal } from 'temporal-polyfill';
 import { TimeNowName } from './TimeNow';
 
 export function newTimeAddLabelledAst(
-  node: TimeAddAstNode = NewTimeAddAstNode()
+  node: TimeAddAstNode = NewTimeAddAstNode(),
 ): LabelledAst {
   return {
     name: getTimeAddName(node),
@@ -31,12 +31,12 @@ const getTimeAddName = (node: TimeAddAstNode): string => {
   let timestamp = '';
   if (isDatabaseAccess(node.namedChildren['timestampField'])) {
     timestamp = getDatabaseAccessorDisplayName(
-      node.namedChildren['timestampField']
+      node.namedChildren['timestampField'],
     );
   }
   if (isPayload(node.namedChildren['timestampField'])) {
     timestamp = getPayloadAccessorsDisplayName(
-      node.namedChildren['timestampField']
+      node.namedChildren['timestampField'],
     );
   }
 
@@ -54,7 +54,7 @@ const getTimeAddName = (node: TimeAddAstNode): string => {
 
 // TODO (i18n): translate & pluralize
 const temporalDurationToString = (
-  temporalDuration: Temporal.Duration
+  temporalDuration: Temporal.Duration,
 ): string => {
   let durationString = '';
   if (temporalDuration.days !== 0) {

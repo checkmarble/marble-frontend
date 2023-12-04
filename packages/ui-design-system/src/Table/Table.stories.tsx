@@ -13,7 +13,7 @@ type StoryProps = {
   count: number;
 };
 
-const Template: StoryFn<StoryProps> = ({ count }) => {
+const Template: StoryFn<StoryProps> = ({ count }: StoryProps) => {
   const data = useMemo(
     () =>
       Array.from({ length: count }).map(() => ({
@@ -21,7 +21,7 @@ const Template: StoryFn<StoryProps> = ({ count }) => {
         lastName: faker.person.lastName(),
         description: faker.lorem.sentences(),
       })),
-    [count]
+    [count],
   );
 
   const columns = useMemo<
@@ -48,7 +48,7 @@ const Template: StoryFn<StoryProps> = ({ count }) => {
         size: 400,
       },
     ],
-    []
+    [],
   );
 
   const virtualTable = useVirtualTable({

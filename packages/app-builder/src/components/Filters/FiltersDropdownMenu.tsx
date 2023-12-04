@@ -12,7 +12,7 @@ const FiltersDropdownMenuContent = forwardRef<
         ref={ref}
         className={clsx(
           'animate-slideUpAndFade bg-grey-00 border-grey-10 rounded border shadow-md will-change-[transform,opacity]',
-          className
+          className,
         )}
         side="bottom"
         align="end"
@@ -34,7 +34,7 @@ const FiltersDropdownMenuItem = forwardRef<
       ref={ref}
       className={clsx(
         'radix-highlighted:bg-purple-05 flex flex-row gap-2 rounded p-2 outline-none transition-colors',
-        className
+        className,
       )}
       {...props}
     />

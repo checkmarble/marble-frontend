@@ -44,7 +44,7 @@ export function OperandEditorDiscoveryResults({
           functionOptions,
           enumOptions,
         };
-      }
+      },
     );
 
   const fieldByPathOptions = R.pipe(
@@ -62,12 +62,12 @@ export function OperandEditorDiscoveryResults({
       }
     }),
     R.mapValues((value) => R.sortBy(value, (o) => o.name)),
-    R.toPairs
+    R.toPairs,
   );
 
   return (
     <>
-      {enumOptions && enumOptions.length > 0 && (
+      {enumOptions && enumOptions.length > 0 ? (
         <OperandDiscoverySubmenu options={enumOptions} onSelect={onSelect}>
           <GroupHeader.Container>
             <OperandDiscoveryTitle
@@ -79,7 +79,7 @@ export function OperandEditorDiscoveryResults({
             </GroupHeader.Icon>
           </GroupHeader.Container>
         </OperandDiscoverySubmenu>
-      )}
+      ) : null}
 
       <Group>
         <GroupHeader.Container>
@@ -159,12 +159,12 @@ function OperandDiscoveryTitle({
 
   return (
     <>
-      {Icon && (
+      {Icon ? (
         <GroupHeader.Icon className="text-purple-100">
           <Icon />
         </GroupHeader.Icon>
-      )}
-      {tKey && (
+      ) : null}
+      {tKey ? (
         <GroupHeader.Title>
           <Label className="text-grey-100 text-m font-semibold">
             {t(tKey, {
@@ -173,7 +173,7 @@ function OperandDiscoveryTitle({
           </Label>
           <Count>{operandsCount}</Count>
         </GroupHeader.Title>
-      )}
+      ) : null}
     </>
   );
 }

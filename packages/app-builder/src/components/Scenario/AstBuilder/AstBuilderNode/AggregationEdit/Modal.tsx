@@ -63,13 +63,13 @@ export type AggregationEditorNodeViewModel = {
 };
 
 export const isAggregationEditorNodeViewModel = (
-  vm: EditorNodeViewModel
+  vm: EditorNodeViewModel,
 ): vm is AggregationEditorNodeViewModel => {
   return vm.funcName === aggregationAstNodeName;
 };
 
 export const adaptAggregationViewModel = (
-  vm: AggregationEditorNodeViewModel
+  vm: AggregationEditorNodeViewModel,
 ): AggregationViewModel => {
   const aggregatedField: DataModelField = {
     tableName: vm.namedChildren['tableName']?.constant,
@@ -97,7 +97,7 @@ export const adaptAggregationViewModel = (
 };
 
 const adaptFilterViewModel = (
-  filterVM: AggregationEditorNodeViewModel
+  filterVM: AggregationEditorNodeViewModel,
 ): FilterViewModel => ({
   operator: filterVM.namedChildren['operator']?.constant,
   filteredField: {
@@ -117,7 +117,7 @@ const adaptFilterViewModel = (
 });
 
 export const adaptAggregationAstNode = (
-  aggregationViewModel: AggregationViewModel
+  aggregationViewModel: AggregationViewModel,
 ): AggregationAstNode => {
   const filters: AstNode[] = aggregationViewModel.filters.map(
     (filter: FilterViewModel) =>
@@ -133,7 +133,7 @@ export const adaptAggregationAstNode = (
           }),
           value: adaptAstNodeFromEditorViewModel(filter.value),
         },
-      })
+      }),
   );
   return {
     name: aggregationAstNodeName,
@@ -183,7 +183,7 @@ export const AggregationEditModal = ({
       setAggregationEditModalProps(aggregationProps);
       onOpenChange(true);
     },
-    []
+    [],
   );
 
   return (
@@ -191,7 +191,7 @@ export const AggregationEditModal = ({
       <AggregationEditModalContext.Provider value={editAgregation}>
         {children}
         <Modal.Content size="medium">
-          {aggregationEditModalProps && (
+          {aggregationEditModalProps ? (
             <AggregationEditModalContent
               builder={builder}
               initialAggregation={aggregationEditModalProps.initialAggregation}
@@ -200,7 +200,7 @@ export const AggregationEditModal = ({
                 onOpenChange(false);
               }}
             />
-          )}
+          ) : null}
         </Modal.Content>
       </AggregationEditModalContext.Provider>
     </Modal.Root>
@@ -224,13 +224,13 @@ const AggregationEditModalContent = ({
         table.fields.map((field) => ({
           tableName: table.name,
           fieldName: field.name,
-        }))
+        })),
       ),
-    [builder.input.dataModel]
+    [builder.input.dataModel],
   );
 
   const [aggregation, setAggregation] = useState<AggregationViewModel>(
-    () => initialAggregation
+    () => initialAggregation,
   );
 
   const handleSave = () => {
@@ -275,9 +275,9 @@ const AggregationEditModalContent = ({
                 aggregation.errors.label.length > 0 ? 'red-100' : 'grey-10'
               }
             />
-            {aggregation.errors.label.length > 0 && (
+            {aggregation.errors.label.length > 0 ? (
               <ErrorMessage errors={aggregation.errors.label} />
-            )}
+            ) : null}
           </div>
           <div className="flex flex-col gap-2">
             {t('scenarios:edit_aggregation.function_title')}
@@ -314,14 +314,14 @@ const AggregationEditModalContent = ({
               />
 
               <div>
-                {aggregation.errors.aggregator.length > 0 && (
+                {aggregation.errors.aggregator.length > 0 ? (
                   <ErrorMessage errors={aggregation.errors.aggregator} />
-                )}
+                ) : null}
               </div>
               <div>
-                {aggregation.errors.aggregatedField.length > 0 && (
+                {aggregation.errors.aggregatedField.length > 0 ? (
                   <ErrorMessage errors={aggregation.errors.aggregatedField} />
-                )}
+                ) : null}
               </div>
             </div>
             <EditFilters

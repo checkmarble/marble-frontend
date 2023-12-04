@@ -58,16 +58,16 @@ export default function ScenarioEditLayout() {
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
-    currentScenario.liveVersionId
+    currentScenario.liveVersionId,
   );
 
   const iterationId = useParam('iterationId');
 
   const currentIteration = sortedScenarioIterations.find(
-    ({ id }) => id === iterationId
+    ({ id }) => id === iterationId,
   );
   const draftIteration = sortedScenarioIterations.find(
-    ({ version }) => version === null
+    ({ version }) => version === null,
   );
   invariant(currentIteration, 'currentIteration is required');
 
@@ -90,21 +90,21 @@ export default function ScenarioEditLayout() {
             scenarioIterations={sortedScenarioIterations}
             currentIteration={currentIteration}
           />
-          {withEditTag && (
+          {withEditTag ? (
             <Tag size="big" border="square">
               {t('common:edit')}
             </Tag>
-          )}
+          ) : null}
         </div>
         <div className="flex flex-row items-center gap-4">
-          {withCreateDraftIteration && (
+          {withCreateDraftIteration ? (
             <CreateDraftIteration
               iterationId={currentIteration.id}
               scenarioId={currentScenario.id}
               draftId={draftIteration?.id}
             />
-          )}
-          {withDeploymentActions && (
+          ) : null}
+          {withDeploymentActions ? (
             <DeploymentActions
               scenarioId={currentScenario.id}
               liveVersionId={currentScenario.liveVersionId}
@@ -115,7 +115,7 @@ export default function ScenarioEditLayout() {
                 hasDecisionErrors(scenarioValidation)
               }
             />
-          )}
+          ) : null}
         </div>
       </ScenarioPage.Header>
       <ScenarioPage.Content>

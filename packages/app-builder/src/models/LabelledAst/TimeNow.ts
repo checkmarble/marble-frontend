@@ -2,7 +2,7 @@ import { NewTimeNowAstNode, type TimeNowAstNode } from '../ast-node';
 import { type LabelledAst } from './LabelledAst';
 
 export function newTimeNowLabelledAst(
-  node: TimeNowAstNode = NewTimeNowAstNode()
+  node: TimeNowAstNode = NewTimeNowAstNode(),
 ): LabelledAst {
   return {
     name: TimeNowName,

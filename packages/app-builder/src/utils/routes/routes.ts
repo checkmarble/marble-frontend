@@ -25,6 +25,11 @@ export const routes = [
         "file": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete.tsx"
       },
       {
+        "id": "routes/ressources/cases/create-first-inbox",
+        "path": "ressources/cases/create-first-inbox",
+        "file": "routes/ressources/cases/create-first-inbox.tsx"
+      },
+      {
         "id": "routes/ressources/auth/login-with-email",
         "path": "ressources/auth/login-with-email",
         "file": "routes/ressources/auth/login-with-email.tsx"

@@ -79,7 +79,7 @@ function TableTH<TData extends RowData, TValue>({
         {
           'cursor-pointer select-none': header.column.getCanSort(),
         },
-        className
+        className,
       )}
       onClick={header.column.getToggleSortingHandler()}
       {...props}
@@ -106,7 +106,7 @@ function Header<TData extends RowData>({
                     <p className="flex flex-1">
                       {flexRender(
                         header.column.columnDef.header,
-                        header.getContext()
+                        header.getContext(),
                       )}
                     </p>
                     {{
@@ -117,7 +117,7 @@ function Header<TData extends RowData>({
                       className={clsx(
                         'hover:bg-grey-10 active:bg-grey-50 absolute right-0 h-full w-1 cursor-col-resize touch-none select-none',
                         // Hack to take scroll bar into account
-                        index === headerGroup.headers.length - 1 && 'right-2'
+                        index === headerGroup.headers.length - 1 && 'right-2',
                       )}
                       onMouseDown={header.getResizeHandler()}
                       onTouchStart={header.getResizeHandler()}
@@ -141,7 +141,7 @@ function Header<TData extends RowData>({
 }
 
 export function useVirtualTable<TData extends RowData>(
-  options: TableOptions<TData>
+  options: TableOptions<TData>,
 ) {
   const table = useReactTable(options);
 
@@ -207,17 +207,17 @@ function Body({
 }) {
   return (
     <tbody>
-      {paddingTop > 0 && (
+      {paddingTop > 0 ? (
         <tr>
           <td style={{ height: `${paddingTop}px` }} />
         </tr>
-      )}
+      ) : null}
       {children}
-      {paddingBottom > 0 && (
+      {paddingBottom > 0 ? (
         <tr>
           <td style={{ height: `${paddingBottom}px` }} />
         </tr>
-      )}
+      ) : null}
     </tbody>
   );
 }

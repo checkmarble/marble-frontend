@@ -29,7 +29,7 @@ const ScrollAreaScrollbar = forwardRef<
     ref={ref}
     className={clsx(
       'bg-grey-02 radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-05 radix-orientation-horizontal:flex-col flex touch-none select-none p-0.5 transition',
-      className
+      className,
     )}
     orientation={orientation}
     {...props}

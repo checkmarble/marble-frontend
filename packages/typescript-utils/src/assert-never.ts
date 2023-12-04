@@ -1,6 +1,6 @@
 export function assertNever(
   prefix: string,
-  x: never
+  x: never,
 ): // @ts-expect-error assertNever
 never {
   if (process.env['NODE_ENV'] !== 'production') {

@@ -30,7 +30,7 @@ export const OperandTrigger = forwardRef<
         // Border color variants
         'enabled:radix-state-closed:data-[border-color=grey-10]:border-grey-10 enabled:radix-state-closed:data-[border-color=grey-10]:focus:border-purple-100',
         'enabled:radix-state-closed:data-[border-color=red-100]:border-red-100 enabled:radix-state-closed:data-[border-color=red-100]:focus:border-purple-100',
-        'enabled:radix-state-closed:data-[border-color=red-25]:border-red-25 enabled:radix-state-closed:data-[border-color=red-25]:focus:border-purple-100'
+        'enabled:radix-state-closed:data-[border-color=red-25]:border-red-25 enabled:radix-state-closed:data-[border-color=red-25]:focus:border-purple-100',
       )}
       {...props}
     >

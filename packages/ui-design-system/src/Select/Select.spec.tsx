@@ -1,5 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 
 import { Select } from './Select';
@@ -23,7 +23,7 @@ describe('Select', () => {
             </Select.DefaultItem>
           );
         })}
-      </Select.Default>
+      </Select.Default>,
     );
 
     const combobox = screen.getByRole('combobox');
@@ -33,7 +33,7 @@ describe('Select', () => {
     await userEvent.click(combobox);
 
     fruits.forEach((fruit) =>
-      expect(screen.getByText(fruit)).toBeInTheDocument()
+      expect(screen.getByText(fruit)).toBeInTheDocument(),
     );
     await userEvent.click(screen.getByText('apple'));
 

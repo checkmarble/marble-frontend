@@ -196,9 +196,9 @@ export type ScenarioIterationDto = {
     createdAt: string;
     updatedAt: string;
 };
-export type ConstantDto = (string | number | boolean | ConstantDto[] | {
+export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
     [key: string]: ConstantDto;
-}) | null;
+} | null)) | null;
 export type NodeDto = {
     name?: string;
     constant?: ConstantDto;

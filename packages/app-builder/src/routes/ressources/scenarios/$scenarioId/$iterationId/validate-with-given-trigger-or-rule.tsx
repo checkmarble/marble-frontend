@@ -27,7 +27,7 @@ export async function action({ request, params }: ActionArgs) {
   const validationDto = (
     await apiClient.validateScenarioIterationWithGivenTriggerOrRule(
       iterationId,
-      body
+      body,
     )
   ).scenario_validation;
 
@@ -38,7 +38,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export function useScenarioValidationFetcher(
   scenarioId: string,
-  iterationId: string
+  iterationId: string,
 ) {
   const fetcher = useFetcher<typeof action>();
 
@@ -53,14 +53,14 @@ export function useScenarioValidationFetcher(
           method: 'POST',
           encType: 'application/json',
           action: `/ressources/scenarios/${encodeURIComponent(
-            scenarioId
+            scenarioId,
           )}/${encodeURIComponent(
-            fromUUID(iterationId)
+            fromUUID(iterationId),
           )}/validate-with-given-trigger-or-rule`,
-        }
+        },
       );
     },
-    [fetcher, iterationId, scenarioId]
+    [fetcher, iterationId, scenarioId],
   );
 
   return {
@@ -72,7 +72,7 @@ export function useScenarioValidationFetcher(
 export function useTriggerOrRuleValidationFetcher(
   scenarioId: string,
   iterationId: string,
-  ruleId: string | null = null
+  ruleId: string | null = null,
 ) {
   const { validate, validation: scenarioValidation } =
     useScenarioValidationFetcher(scenarioId, iterationId);
@@ -81,15 +81,15 @@ export function useTriggerOrRuleValidationFetcher(
     (ast: AstNode) => {
       validate(ast, ruleId);
     },
-    [ruleId, validate]
+    [ruleId, validate],
   );
 
   const triggerOrRuleValidation =
     scenarioValidation === null
       ? null
       : ruleId === null
-      ? scenarioValidation.trigger.triggerEvaluation
-      : findRuleValidation(scenarioValidation, ruleId).ruleEvaluation;
+        ? scenarioValidation.trigger.triggerEvaluation
+        : findRuleValidation(scenarioValidation, ruleId).ruleEvaluation;
 
   return {
     validate: validateTriggerOrRule,

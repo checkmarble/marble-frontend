@@ -85,7 +85,7 @@ export const loader = async ({ request }: LoaderArgs) => {
         ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
         ['Set-Cookie', await csrfSessionService.commitSession(csrfSession)],
       ],
-    }
+    },
   );
 };
 

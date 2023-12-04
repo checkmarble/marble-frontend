@@ -6,7 +6,7 @@ const execAsync = promisify(exec);
 async function main() {
   try {
     const { stdout } = await execAsync(
-      `awk '/\\"type\\"/ {print $2}' src/generated/marble-api.ts`
+      `awk '/\\"type\\"/ {print $2}' src/generated/marble-api.ts`,
     );
     const result = stdout.matchAll(/"(.*)"/g);
     const blackList = Array.from(result)
