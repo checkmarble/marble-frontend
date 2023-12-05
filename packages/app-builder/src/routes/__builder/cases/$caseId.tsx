@@ -44,10 +44,9 @@ export async function loader({ request, params }: LoaderArgs) {
 
     return json({ caseDetail, inbox });
   } catch (error) {
-    if (isNotFoundHttpError(error)) {
+    // On purpusely catch 403 errors to display a 404 page
+    if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
       throw new Response(null, { status: 404, statusText: 'Not Found' });
-    } else if (isForbiddenHttpError(error)) {
-      throw new Response(null, { status: 403, statusText: 'Forbidden' });
     } else {
       throw error;
     }
@@ -62,7 +61,7 @@ export default function CasePage() {
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Link
-            to={getRoute('/cases/inbox/:inboxId', {
+            to={getRoute('/cases/inboxes/:inboxId', {
               inboxId: fromUUID(caseDetail.inbox_id),
             })}
           >
@@ -108,10 +107,7 @@ export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
 
-  if (
-    isRouteErrorResponse(error) &&
-    (error.status === 404 || error.status === 403)
-  ) {
+  if (isRouteErrorResponse(error) && error.status === 404) {
     return <CaseNotFound />;
   }
 

@@ -25,7 +25,7 @@ export function CaseInformation({
         {t('cases:case_detail.informations')}
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-[max-content_1fr] grid-rows-3 items-center gap-x-10 gap-y-2">
+        <div className="grid grid-cols-[max-content_1fr] grid-rows-4 items-center gap-x-10 gap-y-2">
           <CaseLabel>{t('cases:case.name')}</CaseLabel>
           <EditCaseName caseId={id} name={name} />
           <CaseLabel>{t('cases:case.date')}</CaseLabel>

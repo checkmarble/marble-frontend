@@ -9,6 +9,7 @@ import {
 } from '@app-builder/components/Cases/Filters';
 import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
@@ -34,13 +35,22 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
   if (!parsedQuery.success) {
-    return redirect(getRoute('/cases'));
+    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId }));
   }
   const filters = parsedQuery.data;
   const filtersForBackend: CaseFilters = { ...filters, inboxIds: [inboxId] };
-  const caseList = await cases.listCases(filtersForBackend);
+  try {
+    const caseList = await cases.listCases(filtersForBackend);
 
-  return json({ cases: caseList, filters });
+    return json({ cases: caseList, filters });
+  } catch (error) {
+    // if inbox is deleted or user no longer have access, the user is redirected
+    if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
+      return redirect(getRoute('/cases'));
+    } else {
+      throw error;
+    }
+  }
 }
 
 export default function Cases() {
@@ -52,7 +62,7 @@ export default function Cases() {
     (casesFilters: CasesFilters) => {
       navigate(
         {
-          pathname: getRoute('/cases/inbox/:inboxId', {
+          pathname: getRoute('/cases/inboxes/:inboxId', {
             inboxId: fromUUID(inboxId),
           }),
           search: qs.stringify(
@@ -87,20 +97,18 @@ export default function Cases() {
     <div className="flex h-full flex-row">
       <Page.Content>
         <div className="flex flex-col gap-4">
-          {
-            <CasesFiltersProvider
-              submitCasesFilters={submitCasesFilters}
-              filterValues={filters}
-            >
-              <div className="flex justify-end gap-4">
-                <CasesFiltersMenu filterNames={casesFilterNames}>
-                  <FiltersButton />
-                </CasesFiltersMenu>
-              </div>
-              <CasesFiltersBar />
-              <CasesList cases={cases} />
-            </CasesFiltersProvider>
-          }
+          <CasesFiltersProvider
+            submitCasesFilters={submitCasesFilters}
+            filterValues={filters}
+          >
+            <div className="flex justify-end gap-4">
+              <CasesFiltersMenu filterNames={casesFilterNames}>
+                <FiltersButton />
+              </CasesFiltersMenu>
+            </div>
+            <CasesFiltersBar />
+            <CasesList cases={cases} />
+          </CasesFiltersProvider>
         </div>
       </Page.Content>
     </div>

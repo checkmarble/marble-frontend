@@ -17,7 +17,7 @@ export async function loader({ request }: LoaderArgs) {
 
   if (inboxes.length > 0) {
     return redirect(
-      getRoute('/cases/inbox/:inboxId', { inboxId: fromUUID(inboxes[0].id) })
+      getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxes[0].id) })
     );
   }
   return null;
