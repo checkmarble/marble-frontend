@@ -35,6 +35,11 @@ export const routes = [
         "file": "routes/ressources/scenarios/deployment.tsx"
       },
       {
+        "id": "routes/ressources/cases/create-inbox",
+        "path": "ressources/cases/create-inbox",
+        "file": "routes/ressources/cases/create-inbox.tsx"
+      },
+      {
         "id": "routes/ressources/lists/value_create",
         "path": "ressources/lists/value_create",
         "file": "routes/ressources/lists/value_create.tsx"
@@ -219,6 +224,18 @@ export const routes = [
             "id": "routes/__builder/cases/$caseId",
             "path": "cases/:caseId",
             "file": "routes/__builder/cases/$caseId.tsx"
+          },
+          {
+            "id": "routes/__builder/cases/inboxes",
+            "path": "cases/inboxes",
+            "file": "routes/__builder/cases/inboxes.tsx",
+            "children": [
+              {
+                "id": "routes/__builder/cases/inboxes/$inboxId",
+                "path": ":inboxId",
+                "file": "routes/__builder/cases/inboxes/$inboxId.tsx"
+              }
+            ]
           },
           {
             "id": "routes/__builder/lists/$listId",

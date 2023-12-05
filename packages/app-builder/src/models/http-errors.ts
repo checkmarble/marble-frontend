@@ -17,3 +17,7 @@ export function isStatusBadRequestHttpError(
 export function isNotFoundHttpError(error: unknown): error is HttpError {
   return isHttpError(error) && error.status === 404;
 }
+
+export function isForbiddenHttpError(error: unknown): error is HttpError {
+  return isHttpError(error) && error.status === 403;
+}

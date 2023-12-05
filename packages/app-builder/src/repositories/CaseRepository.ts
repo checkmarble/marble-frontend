@@ -8,20 +8,22 @@ import {
 } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
 
+export type CaseFilters = {
+  statuses?: CaseStatus[];
+  dateRange?:
+    | {
+        type: 'static';
+        startDate?: string;
+        endDate?: string;
+      }
+    | {
+        type: 'dynamic';
+        fromNow: string;
+      };
+  inboxIds?: string[];
+};
 export interface CaseRepository {
-  listCases(args: {
-    statuses?: CaseStatus[];
-    dateRange?:
-      | {
-          type: 'static';
-          startDate?: string;
-          endDate?: string;
-        }
-      | {
-          type: 'dynamic';
-          fromNow: string;
-        };
-  }): Promise<Case[]>;
+  listCases(args: CaseFilters): Promise<Case[]>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;
   updateCase(args: {
     caseId: string;
@@ -31,7 +33,7 @@ export interface CaseRepository {
 
 export function getCaseRepository() {
   return (marbleApiClient: MarbleApi): CaseRepository => ({
-    listCases: async ({ dateRange, ...rest }) => {
+    listCases: async ({ dateRange, ...rest }: CaseFilters) => {
       let startDate, endDate: string | undefined;
       if (dateRange?.type === 'static') {
         startDate = dateRange?.startDate;

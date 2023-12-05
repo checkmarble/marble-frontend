@@ -1,6 +1,6 @@
 import { EditCaseName } from '@app-builder/routes/ressources/cases/edit-name';
 import { formatDateTime } from '@app-builder/utils/format';
-import { type CaseDetail } from 'marble-api';
+import { type Case, type InboxDto } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 
@@ -9,8 +9,10 @@ import { casesI18n } from './cases-i18n';
 
 export function CaseInformation({
   caseDetail: { created_at, name, id, contributors },
+  inbox: { name: inboxName },
 }: {
-  caseDetail: CaseDetail;
+  caseDetail: Case;
+  inbox: InboxDto;
 }) {
   const {
     t,
@@ -23,7 +25,7 @@ export function CaseInformation({
         {t('cases:case_detail.informations')}
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-[max-content_1fr] grid-rows-3 items-center gap-x-10 gap-y-2">
+        <div className="grid grid-cols-[max-content_1fr] grid-rows-4 items-center gap-x-10 gap-y-2">
           <CaseLabel>{t('cases:case.name')}</CaseLabel>
           <EditCaseName caseId={id} name={name} />
           <CaseLabel>{t('cases:case.date')}</CaseLabel>
@@ -32,6 +34,8 @@ export function CaseInformation({
           </div>
           <CaseLabel>{t('cases:case.contributors')}</CaseLabel>
           <CaseContributors contributors={contributors} />
+          <CaseLabel>{t('cases:case.inbox')}</CaseLabel>
+          <div className="first-letter:capitalize">{inboxName}</div>
         </div>
       </Collapsible.Content>
     </Collapsible.Container>
