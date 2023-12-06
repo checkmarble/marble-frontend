@@ -4,7 +4,7 @@ import * as R from 'remeda';
 
 export function stringifyAstNode(
   astNode: AstNode,
-  builder: AstBuilder
+  builder: AstBuilder,
 ): string {
   // Return any specific AstNode toString() implementation
   const labelName = getAstNodeLabelName(astNode, builder, {
@@ -21,13 +21,13 @@ export function stringifyAstNode(
   const childrenArgs = R.pipe(
     astNode.children,
     R.map((child) => stringifyAstNode(child, builder)),
-    R.join(', ')
+    R.join(', '),
   );
 
   const namedChildrenArgs = R.pipe(
     R.toPairs(astNode.namedChildren),
     R.map(([name, child]) => `${name}: ${stringifyAstNode(child, builder)}`),
-    R.join(', ')
+    R.join(', '),
   );
 
   const args = [childrenArgs, namedChildrenArgs]

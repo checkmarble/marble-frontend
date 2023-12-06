@@ -18,11 +18,12 @@ export function ErrorMessage({ errors }: ErrorMessageProps) {
 
   return (
     <p className="text-s font-medium text-red-100 transition-opacity duration-200 ease-in-out">
-      {firstError &&
-        getNodeEvaluationErrorMessage(
-          // glitch for ISO compatibility with former code
-          adaptEvaluationErrorViewModels([firstError])[0]
-        )}
+      {firstError
+        ? getNodeEvaluationErrorMessage(
+            // glitch for ISO compatibility with former code
+            adaptEvaluationErrorViewModels([firstError])[0],
+          )
+        : null}
     </p>
   );
 }

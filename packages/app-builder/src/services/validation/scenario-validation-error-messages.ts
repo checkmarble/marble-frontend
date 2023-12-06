@@ -36,7 +36,7 @@ export type EvaluationErrorViewModel =
     };
 
 export function adaptEvaluationErrorViewModels(
-  evaluationErrors: EvaluationError[]
+  evaluationErrors: EvaluationError[],
 ): EvaluationErrorViewModel[] {
   const {
     UNEXPECTED_ERROR,
@@ -54,7 +54,7 @@ export function adaptEvaluationErrorViewModels(
       R.map((error) => ({
         error: 'UNEXPECTED_ERROR' as const,
         message: error.message,
-      }))
+      })),
     );
 
     evaluationErrorVMs.push(...unexpectedErrorVMs);
@@ -83,7 +83,7 @@ export function adaptEvaluationErrorViewModels(
     R.map(([error, evaluationErrors]) => ({
       error,
       count: evaluationErrors.length,
-    }))
+    })),
   );
   evaluationErrorVMs.push(...expectedErrorVMs);
 
@@ -96,7 +96,7 @@ export function useGetNodeEvaluationErrorMessage() {
   return useCallback(
     (evaluationError: EvaluationErrorViewModel) =>
       commonErrorMessages(t)(evaluationError),
-    [t]
+    [t],
   );
 }
 
@@ -112,7 +112,7 @@ export function useGetOrAndNodeEvaluationErrorMessage() {
           return commonErrorMessages(t)(evaluationError);
       }
     },
-    [t]
+    [t],
   );
 }
 
@@ -126,68 +126,68 @@ const commonErrorMessages =
         });
       case 'WRONG_NUMBER_OF_ARGUMENTS':
         return t(
-          'scenarios:validation.evaluation_error.wrong_number_of_arguments'
+          'scenarios:validation.evaluation_error.wrong_number_of_arguments',
         );
       case 'MISSING_NAMED_ARGUMENT':
         return t(
           'scenarios:validation.evaluation_error.missing_named_argument',
           {
             count: evaluationError.count,
-          }
+          },
         );
       case 'ARGUMENTS_MUST_BE_INT_OR_FLOAT':
         return t(
           'scenarios:validation.evaluation_error.arguments_must_be_int_or_float',
           {
             count: evaluationError.count,
-          }
+          },
         );
       case 'ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME':
         return t(
           'scenarios:validation.evaluation_error.arguments_must_be_int_float_or_time',
-          { count: evaluationError.count }
+          { count: evaluationError.count },
         );
       case 'ARGUMENT_MUST_BE_INTEGER':
         return t(
           'scenarios:validation.evaluation_error.argument_must_be_integer',
           {
             count: evaluationError.count,
-          }
+          },
         );
       case 'ARGUMENT_MUST_BE_STRING':
         return t(
           'scenarios:validation.evaluation_error.argument_must_be_string',
           {
             count: evaluationError.count,
-          }
+          },
         );
       case 'ARGUMENT_MUST_BE_BOOLEAN':
         return t(
           'scenarios:validation.evaluation_error.argument_must_be_boolean',
           {
             count: evaluationError.count,
-          }
+          },
         );
       case 'ARGUMENT_MUST_BE_LIST':
         return t(
           'scenarios:validation.evaluation_error.argument_must_be_list',
           {
             count: evaluationError.count,
-          }
+          },
         );
       case 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION':
         return t(
           'scenarios:validation.evaluation_error.argument_must_be_convertible_to_duration',
           {
             count: evaluationError.count,
-          }
+          },
         );
       case 'ARGUMENT_MUST_BE_TIME':
         return t(
           'scenarios:validation.evaluation_error.argument_must_be_time',
           {
             count: evaluationError.count,
-          }
+          },
         );
       case 'FUNCTION_ERROR':
         return t('scenarios:validation.evaluation_error.function_error', {
@@ -202,7 +202,7 @@ const commonErrorMessages =
           'scenarios:validation.evaluation_error.argument_invalid_type',
           {
             count: evaluationError.count,
-          }
+          },
         );
       case 'LIST_NOT_FOUND':
         return t('scenarios:validation.evaluation_error.list_not_found', {
@@ -217,7 +217,7 @@ const commonErrorMessages =
       default:
         assertNever(
           '[EvaluationError] unhandled error code',
-          evaluationError['code']
+          evaluationError['code'],
         );
     }
   };
@@ -234,20 +234,20 @@ export function useGetScenarioErrorMessage() {
           return t('scenarios:validation.decision.rule_formula_required');
         case 'SCORE_REVIEW_THRESHOLD_REQUIRED':
           return t(
-            'scenarios:validation.decision.score_review_threshold_required'
+            'scenarios:validation.decision.score_review_threshold_required',
           );
         case 'SCORE_REJECT_THRESHOLD_REQUIRED':
           return t(
-            'scenarios:validation.decision.score_reject_threshold_required'
+            'scenarios:validation.decision.score_reject_threshold_required',
           );
         case 'SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH':
           return t(
-            'scenarios:validation.decision.score_reject_review_thresholds_missmatch'
+            'scenarios:validation.decision.score_reject_review_thresholds_missmatch',
           );
         default:
           return evaluationErrorCode;
       }
     },
-    [t]
+    [t],
   );
 }

@@ -91,7 +91,7 @@ export async function action({ request }: ActionArgs) {
         inbox_id: parsedForm.data.inboxId,
       });
       return redirect(
-        getRoute('/cases/:caseId', { caseId: fromUUID(result.case.id) })
+        getRoute('/cases/:caseId', { caseId: fromUUID(result.case.id) }),
       );
     } else {
       await apiClient.addDecisionsToCase(parsedForm.data.caseId, {
@@ -107,7 +107,7 @@ export async function action({ request }: ActionArgs) {
         },
         {
           headers: { 'Set-Cookie': await commitSession(session) },
-        }
+        },
       );
     }
   } catch (error) {
@@ -129,7 +129,7 @@ export async function action({ request }: ActionArgs) {
       },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
-      }
+      },
     );
   }
 }
@@ -291,7 +291,7 @@ const AddToCaseFields = ({ control }: { control: Control<AddToCaseForm> }) => {
                 type="text"
                 {...field}
                 placeholder={t(
-                  'decisions:add_to_case.new_case.case_id.placeholder'
+                  'decisions:add_to_case.new_case.case_id.placeholder',
                 )}
               />
             </FormControl>

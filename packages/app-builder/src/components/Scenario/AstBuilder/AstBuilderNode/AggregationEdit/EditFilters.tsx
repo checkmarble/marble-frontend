@@ -45,13 +45,13 @@ export const EditFilters = ({
 
   const filteredDataModalFieldOptions = aggregatedField?.tableName
     ? dataModelFieldOptions.filter(
-        ({ tableName }) => tableName == aggregatedField?.tableName
+        ({ tableName }) => tableName == aggregatedField?.tableName,
       )
     : dataModelFieldOptions;
 
   const onFilterChange = (
     newFieldValue: Partial<FilterViewModel>,
-    filterIndex: number
+    filterIndex: number,
   ): void => {
     onChange(
       value.map((filter, index) =>
@@ -61,8 +61,8 @@ export const EditFilters = ({
               ...newFieldValue,
               validation: newFilterValidation(),
             }
-          : filter
-      )
+          : filter,
+      ),
     );
   };
 
@@ -87,7 +87,7 @@ export const EditFilters = ({
       <div className="flex flex-col gap-2">
         {value.map((filter, filterIndex) => {
           const valueErrorMessages = adaptEvaluationErrorViewModels(
-            filter.value.errors
+            filter.value.errors,
           ).map((error) => getNodeEvaluationErrorMessage(error));
           return (
             <div key={filterIndex}>
@@ -119,16 +119,16 @@ export const EditFilters = ({
                   onSave={(astNode) =>
                     onFilterChange(
                       { value: adaptEditorNodeViewModel({ ast: astNode }) },
-                      filterIndex
+                      filterIndex,
                     )
                   }
                 />
 
                 <RemoveButton onClick={() => removeFilter(filterIndex)} />
               </div>
-              {filter.errors.filter.length > 0 && (
+              {filter.errors.filter.length > 0 ? (
                 <ErrorMessage errors={filter.errors.filter} />
-              )}
+              ) : null}
               <div className="mt-2 flex flex-row flex-wrap gap-2">
                 {valueErrorMessages.map((error) => (
                   <ScenarioValidationError key={error}>

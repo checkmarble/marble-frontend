@@ -30,7 +30,10 @@ const Template: StoryFn<StoryProps> = (args) => {
   return <Button {...args} />;
 };
 
-const TemplateWithIcon: StoryFn<StoryProps> = ({ children, ...args }) => {
+const TemplateWithIcon: StoryFn<StoryProps> = ({
+  children,
+  ...args
+}: StoryProps) => {
   return (
     <Button {...args}>
       <Plus width={24} height={24} />

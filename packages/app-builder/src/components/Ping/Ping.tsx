@@ -11,7 +11,7 @@ export function Ping({ className }: { className?: string }) {
     <span
       className={clsx(
         'flex items-center justify-center rounded-full',
-        className
+        className,
       )}
     >
       <span className="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>

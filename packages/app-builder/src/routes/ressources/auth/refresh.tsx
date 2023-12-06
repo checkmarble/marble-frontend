@@ -37,17 +37,17 @@ export function useRefreshToken() {
         (idToken) => {
           submit(
             { idToken, csrf },
-            { method: 'POST', action: getRoute('/ressources/auth/refresh') }
+            { method: 'POST', action: getRoute('/ressources/auth/refresh') },
           );
         },
         () => {
           navigate('/ressources/auth/logout');
-        }
+        },
       );
     },
     {
       delay: visibilityState === 'hidden' ? null : REFRESH_TOKEN_INTERVAL,
       executeImmediately: true,
-    }
+    },
   );
 }

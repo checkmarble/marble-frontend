@@ -48,21 +48,21 @@ export function TwoOperandsLine({
   function addNestedChild(child: EditorNodeViewModel) {
     builder.setOperand(
       child.nodeId,
-      NewNestedChild(adaptAstNodeFromEditorViewModel(child))
+      NewNestedChild(adaptAstNodeFromEditorViewModel(child)),
     );
   }
 
   function removeNestedChild(child: EditorNodeViewModel) {
     builder.setOperand(
       child.nodeId,
-      adaptAstNodeFromEditorViewModel(child.children[0])
+      adaptAstNodeFromEditorViewModel(child.children[0]),
     );
   }
 
   return (
     <div className="flex justify-between">
       <div className="flex flex-row flex-wrap items-center gap-2">
-        {!root && <span className="text-grey-25">(</span>}
+        {!root ? <span className="text-grey-25">(</span> : null}
         <AstBuilderNode
           ariaLabel="left-operand"
           builder={builder}
@@ -89,9 +89,9 @@ export function TwoOperandsLine({
           }}
           viewOnly={viewOnly}
         />
-        {!root && <span className="text-grey-25">)</span>}
+        {!root ? <span className="text-grey-25">)</span> : null}
       </div>
-      {root && !viewOnly && (
+      {root && !viewOnly ? (
         <div className="flex h-10 items-center gap-2">
           <label className="text-s" htmlFor="nest">
             {t('scenarios:nest')}
@@ -106,13 +106,13 @@ export function TwoOperandsLine({
             }
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
 
 export function adaptTwoOperandsLineViewModel(
-  vm: EditorNodeViewModel
+  vm: EditorNodeViewModel,
 ): TwoOperandsLineViewModel | null {
   if (vm.children.length !== 2) return null;
   if (Object.keys(vm.namedChildren).length > 0) return null;
@@ -130,7 +130,7 @@ export function adaptTwoOperandsLineViewModel(
 }
 
 export const computeLineErrors = (
-  viewModel: EditorNodeViewModel
+  viewModel: EditorNodeViewModel,
 ): EvaluationError[] => {
   if (viewModel.funcName && functionNodeNames.includes(viewModel.funcName)) {
     const { nodeErrors } = separateChildrenErrors(viewModel.errors);

@@ -21,7 +21,6 @@ import { verifyAuthenticityToken } from 'remix-utils';
 import * as z from 'zod';
 
 import { getRoute } from '../../utils/routes';
-import { logger } from '../logger';
 import { type SessionService } from './session.server';
 
 interface AuthenticatedInfo {
@@ -41,7 +40,7 @@ export interface AuthenticationServerService {
     options: {
       successRedirect: string;
       failureRedirect: string;
-    }
+    },
   ): Promise<void>;
 
   refresh(
@@ -49,24 +48,24 @@ export interface AuthenticationServerService {
     options: {
       successRedirect: string;
       failureRedirect: string;
-    }
+    },
   ): Promise<void>;
 
   isAuthenticated(
     request: Request,
-    options?: { successRedirect?: never; failureRedirect?: never }
+    options?: { successRedirect?: never; failureRedirect?: never },
   ): Promise<AuthenticatedInfo | null>;
   isAuthenticated(
     request: Request,
-    options: { successRedirect: string; failureRedirect?: never }
+    options: { successRedirect: string; failureRedirect?: never },
   ): Promise<null>;
   isAuthenticated(
     request: Request,
-    options: { successRedirect?: never; failureRedirect: string }
+    options: { successRedirect?: never; failureRedirect: string },
   ): Promise<AuthenticatedInfo>;
   isAuthenticated(
     request: Request,
-    options: { successRedirect: string; failureRedirect: string }
+    options: { successRedirect: string; failureRedirect: string },
   ): Promise<null>;
 }
 
@@ -78,12 +77,12 @@ export function makeAuthenticationServerService(
   caseRepository: (marbleApiClient: MarbleApi) => CaseRepository,
   organizationRepository: (
     marbleApiClient: MarbleApi,
-    organizationId: string
+    organizationId: string,
   ) => OrganizationRepository,
   scenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository,
   dataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository,
   authSessionService: SessionService<AuthData, AuthFlashData>,
-  csrfSessionService: SessionService
+  csrfSessionService: SessionService,
 ) {
   function getMarbleAPIClient(marbleAccessToken: string) {
     const tokenService = {
@@ -101,7 +100,7 @@ export function makeAuthenticationServerService(
     options: {
       successRedirect: string;
       failureRedirect: string;
-    }
+    },
   ) {
     const authSession = await authSessionService.getSession(request);
     const csrfSession = await csrfSessionService.getSession(request);
@@ -113,7 +112,7 @@ export function makeAuthenticationServerService(
         request,
         z.object({
           idToken: z.string(),
-        })
+        }),
       );
       await verifyAuthenticityToken(request, csrfSession);
 
@@ -121,7 +120,7 @@ export function makeAuthenticationServerService(
         {
           authorization: `Bearer ${idToken}`,
         },
-        { baseUrl: getServerEnv('MARBLE_API_DOMAIN') }
+        { baseUrl: getServerEnv('MARBLE_API_DOMAIN') },
       );
 
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
@@ -131,8 +130,6 @@ export function makeAuthenticationServerService(
       authSession.set('user', user);
       redirectUrl = options.successRedirect;
     } catch (error) {
-      logger.error(error);
-
       authSession.flash('authError', { message: adaptAuthErrors(error) });
 
       redirectUrl = options.failureRedirect;
@@ -150,7 +147,7 @@ export function makeAuthenticationServerService(
     options: {
       successRedirect?: string;
       failureRedirect: string;
-    }
+    },
   ) {
     const authSession = await authSessionService.getSession(request);
     const csrfSession = await csrfSessionService.getSession(request);
@@ -160,7 +157,7 @@ export function makeAuthenticationServerService(
         request,
         z.object({
           idToken: z.string(),
-        })
+        }),
       );
       await verifyAuthenticityToken(request, csrfSession);
 
@@ -168,7 +165,7 @@ export function makeAuthenticationServerService(
         {
           authorization: `Bearer ${idToken}`,
         },
-        { baseUrl: getServerEnv('MARBLE_API_DOMAIN') }
+        { baseUrl: getServerEnv('MARBLE_API_DOMAIN') },
       );
 
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
@@ -190,30 +187,28 @@ export function makeAuthenticationServerService(
           headers: {
             'Set-Cookie': await authSessionService.commitSession(authSession),
           },
-        }
+        },
       );
     } catch (error) {
-      logger.error(error);
-
       throw redirect(options.failureRedirect);
     }
   }
 
   async function isAuthenticated(
     request: Request,
-    options?: { successRedirect?: never; failureRedirect?: never }
+    options?: { successRedirect?: never; failureRedirect?: never },
   ): Promise<AuthenticatedInfo | null>;
   async function isAuthenticated(
     request: Request,
-    options: { successRedirect: string; failureRedirect?: never }
+    options: { successRedirect: string; failureRedirect?: never },
   ): Promise<null>;
   async function isAuthenticated(
     request: Request,
-    options: { successRedirect?: never; failureRedirect: string }
+    options: { successRedirect?: never; failureRedirect: string },
   ): Promise<AuthenticatedInfo>;
   async function isAuthenticated(
     request: Request,
-    options: { successRedirect: string; failureRedirect: string }
+    options: { successRedirect: string; failureRedirect: string },
   ): Promise<null>;
   async function isAuthenticated(
     request: Request,
@@ -221,7 +216,7 @@ export function makeAuthenticationServerService(
       | { successRedirect?: never; failureRedirect?: never }
       | { successRedirect: string; failureRedirect?: never }
       | { successRedirect?: never; failureRedirect: string }
-      | { successRedirect: string; failureRedirect: string } = {}
+      | { successRedirect: string; failureRedirect: string } = {},
   ): Promise<AuthenticatedInfo | null> {
     const authSession = await authSessionService.getSession(request);
 
@@ -254,7 +249,7 @@ export function makeAuthenticationServerService(
 
   async function logout(
     request: Request,
-    options: { redirectTo: string }
+    options: { redirectTo: string },
   ): Promise<never> {
     const authSession = await authSessionService.getSession(request);
 

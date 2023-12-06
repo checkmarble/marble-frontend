@@ -43,7 +43,7 @@ export interface TimeAddViewModal {
 }
 
 export const isTimeAddEditorNodeViewModel = (
-  vm: EditorNodeViewModel
+  vm: EditorNodeViewModel,
 ): vm is TimeAddEditorNodeViewModel => {
   return vm.funcName === timeAddAstNodeName;
 };
@@ -60,7 +60,7 @@ export type TimeAddEditorNodeViewModel = {
 
 export const defaultISO8601Duration = 'PT0S';
 export const adaptTimeAddViewModal = (
-  vm: TimeAddEditorNodeViewModel
+  vm: TimeAddEditorNodeViewModel,
 ): TimeAddViewModal => {
   const iso8601Duration =
     vm.namedChildren['duration']?.constant !== ''
@@ -90,7 +90,7 @@ export const adaptTimeAddViewModal = (
 };
 
 const adaptTimeAddAstNode = (
-  timeAddViewModel: TimeAddViewModal
+  timeAddViewModel: TimeAddViewModal,
 ): TimeAddAstNode => {
   const timestampFieldAstNode = timeAddViewModel.timestampField
     ? adaptAstNodeFromEditorViewModel(timeAddViewModel.timestampField)
@@ -109,7 +109,7 @@ const adaptTimeAddAstNode = (
   return NewTimeAddAstNode(
     timestampFieldAstNode as TimestampFieldAstNode,
     signAstNode,
-    durationAstNode
+    durationAstNode,
   );
 };
 
@@ -120,7 +120,7 @@ export interface TimeAddEditModalProps {
 
 const TimeAddEditModalContext =
   createSimpleContext<(timeAddProps: TimeAddEditModalProps) => void>(
-    'TimeAddEditModal'
+    'TimeAddEditModal',
   );
 
 export const useEditTimeAdd = TimeAddEditModalContext.useValue;
@@ -143,7 +143,7 @@ export const TimeAddEditModal = ({
       <TimeAddEditModalContext.Provider value={editTimeAdd}>
         {children}
         <Modal.Content>
-          {timeAddEditModalProps && (
+          {timeAddEditModalProps ? (
             <TimeAddEditModalContent
               builder={builder}
               initialValue={timeAddEditModalProps.initialValue}
@@ -152,7 +152,7 @@ export const TimeAddEditModal = ({
                 onOpenChange(false);
               }}
             />
-          )}
+          ) : null}
         </Modal.Content>
       </TimeAddEditModalContext.Provider>
     </Modal.Root>
@@ -235,15 +235,15 @@ const TimeAddEditModalContent = ({
               onChange={(durationUnit) => setValue({ ...value, durationUnit })}
             />
           </div>
-          {value.errors.timestampField.length > 0 && (
+          {value.errors.timestampField.length > 0 ? (
             <ErrorMessage errors={value.errors.timestampField} />
-          )}
-          {value.errors.sign.length > 0 && (
+          ) : null}
+          {value.errors.sign.length > 0 ? (
             <ErrorMessage errors={value.errors.sign} />
-          )}
-          {value.errors.duration.length > 0 && (
+          ) : null}
+          {value.errors.duration.length > 0 ? (
             <ErrorMessage errors={value.errors.duration} />
-          )}
+          ) : null}
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
@@ -266,7 +266,7 @@ const TimeAddEditModalContent = ({
 };
 
 const adaptDurationAndUnitFromTemporalDuration = (
-  temporalDuration: Temporal.Duration
+  temporalDuration: Temporal.Duration,
 ): { duration: number; durationUnit: DurationUnit } => {
   if (temporalDuration.seconds > 0) {
     return {

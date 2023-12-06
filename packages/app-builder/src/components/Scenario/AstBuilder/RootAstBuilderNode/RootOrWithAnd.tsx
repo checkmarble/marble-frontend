@@ -36,7 +36,7 @@ export interface RootOrWithAndViewModel {
 }
 
 export function adaptRootOrWithAndViewModel(
-  viewModel: EditorNodeViewModel
+  viewModel: EditorNodeViewModel,
 ): RootOrWithAndViewModel | null {
   if (viewModel.funcName !== 'Or') {
     return null;
@@ -86,11 +86,11 @@ export function RootOrWithAnd({
   }
 
   const { nodeErrors: orNodeErrors } = separateChildrenErrors(
-    rootOrWithAndViewModel.orErrors
+    rootOrWithAndViewModel.orErrors,
   );
 
   const rootOrErrorMessages = adaptEvaluationErrorViewModels(orNodeErrors).map(
-    getEvaluationErrorMessage
+    getEvaluationErrorMessage,
   );
 
   return (
@@ -98,11 +98,11 @@ export function RootOrWithAnd({
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
         const { nodeErrors: andNodeErrors } = separateChildrenErrors(
-          andChild.errors
+          andChild.errors,
         );
 
         const andErrorMessages = adaptEvaluationErrorViewModels(
-          andNodeErrors
+          andNodeErrors,
         ).map(getEvaluationErrorMessage);
 
         function appendAndChild() {
@@ -112,7 +112,7 @@ export function RootOrWithAnd({
         // if this is the last and child, remove the and from or operands
         function remove(nodeId: string) {
           builder.remove(
-            andChild.children.length > 1 ? nodeId : andChild.nodeId
+            andChild.children.length > 1 ? nodeId : andChild.nodeId,
           );
         }
 
@@ -120,7 +120,7 @@ export function RootOrWithAnd({
 
         return (
           <React.Fragment key={andChild.nodeId}>
-            {!isFirstChild && (
+            {!isFirstChild ? (
               <div className="flex flex-row gap-1">
                 <LogicalOperatorLabel
                   operator="or"
@@ -130,7 +130,7 @@ export function RootOrWithAnd({
                   <div className="bg-grey-10 h-px w-full" />
                 </div>
               </div>
-            )}
+            ) : null}
             {andChild.children.map((child, childIndex) => {
               const errorMessages = adaptEvaluationErrorViewModels([
                 ...computeLineErrors(child),
@@ -157,7 +157,7 @@ export function RootOrWithAnd({
                       root
                     />
                   </div>
-                  {!viewOnly && (
+                  {!viewOnly ? (
                     <div className="flex h-10 flex-col items-center justify-center">
                       <RemoveButton
                         onClick={() => {
@@ -165,7 +165,7 @@ export function RootOrWithAnd({
                         }}
                       />
                     </div>
-                  )}
+                  ) : null}
                   <div className="col-start-2 flex flex-row flex-wrap gap-2">
                     {errorMessages.map((error) => (
                       <ScenarioValidationError key={error}>
@@ -178,14 +178,14 @@ export function RootOrWithAnd({
             })}
 
             <div className="flex flex-row flex-wrap gap-2">
-              {!viewOnly && (
+              {!viewOnly ? (
                 <div className={clsx('my-1', !isFirstAndChild && 'ml-[50px]')}>
                   <AddLogicalOperatorButton
                     onClick={appendAndChild}
                     operator="and"
                   />
                 </div>
-              )}
+              ) : null}
 
               {andErrorMessages.map((error) => (
                 <ScenarioValidationError key={error}>
@@ -198,9 +198,9 @@ export function RootOrWithAnd({
       })}
 
       <div className="flex flex-row flex-wrap gap-2">
-        {!viewOnly && (
+        {!viewOnly ? (
           <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
-        )}
+        ) : null}
 
         {rootOrErrorMessages.map((error) => (
           <ScenarioValidationError key={error}>{error}</ScenarioValidationError>

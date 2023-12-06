@@ -34,7 +34,7 @@ interface DecisionFiltersContextValue {
 }
 
 const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
-  'DecisionFiltersContext'
+  'DecisionFiltersContext',
 );
 
 export type DecisionFiltersForm = {
@@ -110,7 +110,7 @@ export function DecisionFiltersProvider({
       filterValues,
       scenarios,
     }),
-    [filterValues, onDecisionFilterClose, scenarios, submitDecisionFilters]
+    [filterValues, onDecisionFilterClose, scenarios, submitDecisionFilters],
   );
   return (
     <FormProvider {...formMethods}>
@@ -161,9 +161,9 @@ export function useTriggerObjectFilter() {
       R.pipe(
         scenarios,
         R.map((scenario) => scenario.triggerObjectType),
-        R.uniq()
+        R.uniq(),
       ),
-    [scenarios]
+    [scenarios],
   );
   const selectedTriggerObjects = field.value;
   const setSelectedTriggerObjects = field.onChange;
@@ -185,7 +185,7 @@ export function useDecisionFiltersPartition() {
       if (R.isArray(value)) return value.length === 0;
       if (R.isObject(value)) return R.isEmpty(value);
       return R.isNil(value);
-    })
+    }),
   );
   return {
     undefinedDecisionFilterNames,
@@ -202,6 +202,6 @@ export function useClearFilter() {
       setValue(filterName, emptyDecisionFilters[filterName]);
       submitDecisionFilters();
     },
-    [setValue, submitDecisionFilters]
+    [setValue, submitDecisionFilters],
   );
 }

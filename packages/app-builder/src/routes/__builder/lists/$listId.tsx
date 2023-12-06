@@ -67,7 +67,7 @@ export default function Lists() {
                 {cell.row.original.value}
               </p>
 
-              {canManageListItem && (
+              {canManageListItem ? (
                 <DeleteListValue
                   listId={customList.id}
                   listValueId={cell.row.original.id}
@@ -81,13 +81,13 @@ export default function Lists() {
                     <Delete width={'24px'} height={'24px'} />
                   </button>
                 </DeleteListValue>
-              )}
+              ) : null}
             </div>
           );
         },
       },
     ],
-    [customList.id, listValues.length, t, canManageListItem]
+    [customList.id, listValues.length, t, canManageListItem],
   );
 
   const virtualTable = useVirtualTable({
@@ -108,13 +108,13 @@ export default function Lists() {
             </Link>
             {customList.name}
           </div>
-          {canManageList && (
+          {canManageList ? (
             <EditList
               listId={customList.id}
               name={customList.name}
               description={customList.description}
             />
-          )}
+          ) : null}
         </div>
       </Page.Header>
       <Page.Content scrollable={false} className="max-w-3xl">
@@ -135,7 +135,7 @@ export default function Lists() {
                 }}
               />
             </form>
-            {canManageListItem && <NewListValue listId={customList.id} />}
+            {canManageListItem ? <NewListValue listId={customList.id} /> : null}
           </div>
           {virtualTable.rows.length > 0 ? (
             <Table.Default {...virtualTable}></Table.Default>
@@ -147,7 +147,7 @@ export default function Lists() {
             </div>
           )}
         </div>
-        {canManageList && <DeleteList listId={customList.id} />}
+        {canManageList ? <DeleteList listId={customList.id} /> : null}
       </Page.Content>
     </Page.Container>
   );

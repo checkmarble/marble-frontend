@@ -12,32 +12,32 @@ type Route = {
 
 type JoinPath<
   Prefix extends string | undefined,
-  Path extends string | undefined
+  Path extends string | undefined,
 > = Prefix extends string
   ? Path extends string
     ? `${Prefix}/${Path}`
     : Prefix
   : Path extends string
-  ? Path
-  : '';
+    ? Path
+    : '';
 
 type GetRoutePaths<
   T extends Route,
-  Prefix extends string | undefined = undefined
+  Prefix extends string | undefined = undefined,
 > = [
   JoinPath<Prefix, T['path']>,
   ...(T['children'] extends readonly Route[]
     ? GetRoutesPaths<T['children'], JoinPath<Prefix, T['path']>>
-    : [])
+    : []),
 ];
 
 type GetRoutesPaths<
   T extends readonly Route[],
-  Prefix extends string | undefined = undefined
+  Prefix extends string | undefined = undefined,
 > = T extends readonly [infer Head, ...infer Tail]
   ? [
       ...(Head extends Route ? GetRoutePaths<Head, Prefix> : []),
-      ...(Tail extends readonly Route[] ? GetRoutesPaths<Tail, Prefix> : [])
+      ...(Tail extends readonly Route[] ? GetRoutesPaths<Tail, Prefix> : []),
     ]
   : [];
 
@@ -45,7 +45,7 @@ export type Paths = GetRoutesPaths<typeof routes>;
 
 type GetRoutesIds<T extends readonly Route[]> = T extends readonly [
   infer Head,
-  ...infer Tail
+  ...infer Tail,
 ]
   ? [
       ...(Head extends Route
@@ -53,10 +53,10 @@ type GetRoutesIds<T extends readonly Route[]> = T extends readonly [
             Head['id'],
             ...(Head['children'] extends readonly Route[]
               ? GetRoutesIds<Head['children']>
-              : [])
+              : []),
           ]
         : []),
-      ...(Tail extends readonly Route[] ? GetRoutesIds<Tail> : [])
+      ...(Tail extends readonly Route[] ? GetRoutesIds<Tail> : []),
     ]
   : [];
 
@@ -64,18 +64,18 @@ export type RouteIDs = GetRoutesIds<typeof routes>[number];
 
 type NonEmptySplit<
   Value extends string,
-  Separator extends string
+  Separator extends string,
 > = Value extends `${infer Head}${Separator}${infer Tail}`
   ? Head extends ''
     ? NonEmptySplit<Tail, Separator>
     : [Head, ...NonEmptySplit<Tail, Separator>]
   : Value extends ''
-  ? []
-  : [Value];
+    ? []
+    : [Value];
 
 export type GetPathParams<
   Path extends string,
-  Parts = NonEmptySplit<Path, '/'>
+  Parts = NonEmptySplit<Path, '/'>,
 > = Parts extends [infer Head, ...infer Tail]
   ? Head extends `:${infer Name}`
     ? { [K in Name]: string } & GetPathParams<Path, Tail>

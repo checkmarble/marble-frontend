@@ -7,7 +7,7 @@ type ModalContentProps = Dialog.DialogContentProps & {
 };
 
 const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
-  ({ className, size = 'small', ...props }, ref) => {
+  function ModalContent({ className, size = 'small', ...props }, ref) {
     return (
       <Dialog.Portal>
         <Dialog.Overlay className="animate-overlayShow bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4" />
@@ -21,12 +21,12 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
               'max-w-2xl': size === 'medium',
               'max-w-5xl': size === 'large',
             },
-            className
+            className,
           )}
         />
       </Dialog.Portal>
     );
-  }
+  },
 );
 
 function ModalTitle(props: Dialog.DialogTitleProps) {

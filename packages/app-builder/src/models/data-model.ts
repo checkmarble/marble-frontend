@@ -48,7 +48,7 @@ function adaptFieldDto(dataModelFieldsDto: {
       nullable: field.nullable,
       isEnum: field.is_enum,
       values: field.values,
-    }))
+    })),
   );
 }
 
@@ -62,7 +62,7 @@ function adaptLinkToSingleDto(linksToSingleDto: {
       linkedTableName: linkToSingleDto.linked_table_name,
       parentFieldName: linkToSingleDto.parent_field_name,
       childFieldName: linkToSingleDto.child_field_name,
-    }))
+    })),
   );
 }
 
@@ -75,7 +75,7 @@ export function adaptDataModelDto(dataModelDto: DataModelDto): TableModel[] {
       fields: adaptFieldDto(tableDto.fields),
       linksToSingle: adaptLinkToSingleDto(tableDto.links_to_single ?? {}),
       description: tableDto.description,
-    }))
+    })),
   );
 }
 

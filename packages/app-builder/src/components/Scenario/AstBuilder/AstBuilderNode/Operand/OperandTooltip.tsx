@@ -84,12 +84,12 @@ export const OperandDescription = ({
           {operand.name}
         </p>
       </div>
-      {operand.description && (
+      {operand.description ? (
         <p className="text-grey-50 text-xs font-normal first-letter:capitalize">
           {operand.description}
         </p>
-      )}
-      {values && values.length > 0 && (
+      ) : null}
+      {values && values.length > 0 ? (
         <div>
           <p className="text-grey-50 text-s">{t('scenarios:enum_options')}</p>
           <div className="px-1">
@@ -102,7 +102,7 @@ export const OperandDescription = ({
             })}
           </div>
         </div>
-      )}
+      ) : null}
     </Fragment>
   );
 };
@@ -136,7 +136,7 @@ function TypeInfos({
             key={tKey}
             className="inline-flex items-center gap-[2px] text-xs font-normal text-purple-50"
           >
-            {Icon && <Icon className="text-[12px]" />}
+            {Icon ? <Icon className="text-[12px]" /> : null}
             {t(tKey, { count: 1 })}
           </span>
         );

@@ -1,7 +1,7 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 import { useDeferredValue, useMemo, useState } from 'react';
 
-import Input from '../Input/Input';
+import { Input } from '../Input/Input';
 import { SelectWithCombobox } from './SelectWithCombobox';
 
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple', 'pear'];
@@ -13,7 +13,7 @@ function SelectFruitWithCombobox() {
 
   const matches = useMemo(
     () => fruits.filter((fruit) => fruit.includes(deferredValue)),
-    [deferredValue]
+    [deferredValue],
   );
 
   return (

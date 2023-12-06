@@ -4,7 +4,7 @@ import { useParam } from '@app-builder/utils/short-uuid';
 import invariant from 'tiny-invariant';
 
 const CurrentScenarioIterationContext = createSimpleContext<ScenarioIteration>(
-  'CurrentScenarioIterationContext'
+  'CurrentScenarioIterationContext',
 );
 
 export const CurrentScenarioIterationContextProvider =

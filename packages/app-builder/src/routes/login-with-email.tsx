@@ -57,11 +57,11 @@ export default function LoginWithEmail() {
             <SignInWithEmail />
           </div>
 
-          {authError && (
+          {authError ? (
             <p className="text-xs font-normal text-red-100">
               {t(errorLabels[authError])}
             </p>
-          )}
+          ) : null}
 
           <p className="text-s mt-12 font-medium">
             {t('login:help.no_account')} {t('login:help.contact_us')}

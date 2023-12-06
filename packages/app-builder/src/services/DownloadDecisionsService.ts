@@ -15,24 +15,24 @@ type DownloadDecisionsError =
 
 export function useDownloadDecisions(
   scheduleExecutionId: string,
-  { onError }: { onError?: (error: DownloadDecisionsError) => void } = {}
+  { onError }: { onError?: (error: DownloadDecisionsError) => void } = {},
 ) {
   const [downloading, setDownloading] = useState(false);
   const { backendUrl, accessToken } = useBackendInfo(
-    clientServices.authenticationClientService
+    clientServices.authenticationClientService,
   );
 
   const downloadDecisions = async () => {
     try {
       if (downloading) {
         throw new AlreadyDownloadingError(
-          'Internal error: Already downloading'
+          'Internal error: Already downloading',
         );
       }
       setDownloading(true);
 
       const downloadLink = `${backendUrl}/scheduled-executions/${encodeURIComponent(
-        scheduleExecutionId
+        scheduleExecutionId,
       )}/decisions.zip`;
       const response = await fetch(downloadLink, {
         method: 'GET',
@@ -43,7 +43,8 @@ export function useDownloadDecisions(
 
       if (!response.ok) {
         throw new FetchLinkError(
-          'Internal error: Failed to download decisions: ' + response.statusText
+          'Internal error: Failed to download decisions: ' +
+            response.statusText,
         );
       }
 

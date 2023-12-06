@@ -134,7 +134,7 @@ export async function action({ request, params }: ActionArgs) {
         errors: null,
         values: formValues,
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } }
+      { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   } catch (error) {
     setToastMessage(session, {
@@ -147,7 +147,7 @@ export async function action({ request, params }: ActionArgs) {
         errors: null,
         values: formValues,
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } }
+      { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
 }
@@ -220,13 +220,13 @@ export default function RuleEdit() {
             <ScenarioPage.BackButton />
           </Link>
           {rule.name ?? fromUUID(ruleId)}
-          {editorMode === 'edit' && (
+          {editorMode === 'edit' ? (
             <Tag size="big" border="square">
               {t('common:edit')}
             </Tag>
-          )}
+          ) : null}
         </div>
-        {editorMode === 'edit' && (
+        {editorMode === 'edit' ? (
           <Button
             onClick={() => {
               const values = formMethods.getValues();
@@ -238,13 +238,13 @@ export default function RuleEdit() {
                 {
                   method: 'PATCH',
                   encType: 'application/json',
-                }
+                },
               );
             }}
           >
             {t('common:save')}
           </Button>
-        )}
+        ) : null}
       </ScenarioPage.Header>
 
       {editorMode === 'view' ? (
@@ -349,7 +349,7 @@ function RuleEditContent({
                   <Input
                     type="text"
                     placeholder={t(
-                      'scenarios:edit_rule.description_placeholder'
+                      'scenarios:edit_rule.description_placeholder',
                     )}
                     {...field}
                   />
@@ -381,7 +381,7 @@ function RuleEditContent({
       <Paper.Container scrollable={false} className="max-w-3xl">
         <AstBuilder builder={builder} />
 
-        {ruleValidation.errors && (
+        {ruleValidation.errors ? (
           <div className="flex flex-row flex-wrap gap-1">
             {ruleValidation.errors
               .filter((error) => error != 'RULE_FORMULA_REQUIRED')
@@ -391,7 +391,7 @@ function RuleEditContent({
                 </ScenarioValidationError>
               ))}
           </div>
-        )}
+        ) : null}
       </Paper.Container>
 
       <DeleteRule

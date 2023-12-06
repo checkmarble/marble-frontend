@@ -13,7 +13,7 @@ export function useInterval(
   {
     delay,
     executeImmediately = false,
-  }: { delay: number | null; executeImmediately?: boolean }
+  }: { delay: number | null; executeImmediately?: boolean },
 ) {
   const savedCallback = useRef(callback);
 

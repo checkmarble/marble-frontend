@@ -59,7 +59,7 @@ export function adaptEditorNodeViewModel({
       ast: child,
       validation: evaluation.children[i],
       parent: currentNode,
-    })
+    }),
   );
   currentNode.namedChildren = R.mapValues(
     ast.namedChildren,
@@ -68,7 +68,7 @@ export function adaptEditorNodeViewModel({
         ast: child,
         validation: evaluation.namedChildren[namedKey],
         parent: currentNode,
-      })
+      }),
   );
 
   return currentNode;
@@ -83,54 +83,54 @@ type ValidationViewModel = {
 };
 
 export function hasArgumentIndexErrorsFromParent<
-  VM extends ValidationViewModel
+  VM extends ValidationViewModel,
 >(viewModel: VM): boolean {
   if (!viewModel.parent) return false;
   const childIndex = viewModel.parent.children.findIndex(
-    (child) => child.nodeId == viewModel.nodeId
+    (child) => child.nodeId == viewModel.nodeId,
   );
   return viewModel.parent.errors.some(
-    (error) => error.argumentIndex == childIndex
+    (error) => error.argumentIndex == childIndex,
   );
 }
 
 export function findArgumentIndexErrorsFromParent<
-  VM extends ValidationViewModel
+  VM extends ValidationViewModel,
 >(viewModel: VM): EvaluationError[] {
   if (!viewModel.parent) return [];
   const childIndex = viewModel.parent.children.findIndex(
-    (child) => child.nodeId == viewModel.nodeId
+    (child) => child.nodeId == viewModel.nodeId,
   );
   return viewModel.parent.errors.filter(
-    (error) => error.argumentIndex == childIndex
+    (error) => error.argumentIndex == childIndex,
   );
 }
 
 export function hasArgumentNameErrorsFromParent<VM extends ValidationViewModel>(
-  viewModel: VM
+  viewModel: VM,
 ): boolean {
   if (!viewModel.parent) return false;
   const namedChild = R.pipe(
     R.toPairs(viewModel.parent.namedChildren),
-    R.find(([_, child]) => child.nodeId == viewModel.nodeId)
+    R.find(([_, child]) => child.nodeId == viewModel.nodeId),
   );
   if (!namedChild) return false;
   return viewModel.parent.errors.some(
-    (error) => error.argumentName == namedChild[0]
+    (error) => error.argumentName == namedChild[0],
   );
 }
 
 export function findArgumentNameErrorsFromParent<
-  VM extends ValidationViewModel
+  VM extends ValidationViewModel,
 >(viewModel: VM): EvaluationError[] {
   if (!viewModel.parent) return [];
   const namedChild = R.pipe(
     R.toPairs(viewModel.parent.namedChildren),
-    R.find(([_, child]) => child.nodeId == viewModel.nodeId)
+    R.find(([_, child]) => child.nodeId == viewModel.nodeId),
   );
   if (!namedChild) return [];
   return viewModel.parent.errors.filter(
-    (error) => error.argumentName == namedChild[0]
+    (error) => error.argumentName == namedChild[0],
   );
 }
 
@@ -148,7 +148,7 @@ export function getBorderColor<VM extends ValidationViewModel>(viewModel: VM) {
 
 // adapt ast node from editor view model
 export function adaptAstNodeFromEditorViewModel(
-  vm: EditorNodeViewModel
+  vm: EditorNodeViewModel,
 ): AstNode {
   return {
     name: vm.funcName,
@@ -156,7 +156,7 @@ export function adaptAstNodeFromEditorViewModel(
     children: vm.children.map(adaptAstNodeFromEditorViewModel),
     namedChildren: R.mapValues(
       vm.namedChildren,
-      adaptAstNodeFromEditorViewModel
+      adaptAstNodeFromEditorViewModel,
     ),
   };
 }
@@ -211,7 +211,7 @@ export function useAstBuilder({
       const editedAst = adaptAstNodeFromEditorViewModel(vm);
       onValidate(editedAst);
     },
-    [onValidate]
+    [onValidate],
   );
 
   useEffect(() => {
@@ -222,7 +222,7 @@ export function useAstBuilder({
   const replaceOneNode = useCallback(
     (
       nodeId: string,
-      fn: (node: EditorNodeViewModel) => EditorNodeViewModel | null
+      fn: (node: EditorNodeViewModel) => EditorNodeViewModel | null,
     ) => {
       const newViewModel = findAndReplaceNode(nodeId, fn, editorNodeViewModel);
       if (newViewModel === null) {
@@ -234,7 +234,7 @@ export function useAstBuilder({
       validate(newViewModel);
       setEditorNodeViewModel(newViewModel);
     },
-    [editorNodeViewModel, validate]
+    [editorNodeViewModel, validate],
   );
 
   const setConstant = useCallback(
@@ -244,7 +244,7 @@ export function useAstBuilder({
         constant: newValue,
       }));
     },
-    [replaceOneNode]
+    [replaceOneNode],
   );
 
   const setOperand = useCallback(
@@ -257,7 +257,7 @@ export function useAstBuilder({
         return newOperand;
       });
     },
-    [replaceOneNode]
+    [replaceOneNode],
   );
 
   const setOperator = useCallback(
@@ -269,7 +269,7 @@ export function useAstBuilder({
         };
       });
     },
-    [replaceOneNode]
+    [replaceOneNode],
   );
 
   const appendChild = useCallback(
@@ -285,12 +285,12 @@ export function useAstBuilder({
         };
       });
     },
-    [replaceOneNode]
+    [replaceOneNode],
   );
 
   const remove = useCallback(
     (nodeId: string) => replaceOneNode(nodeId, () => null),
-    [replaceOneNode]
+    [replaceOneNode],
   );
 
   useEffect(() => {
@@ -352,7 +352,7 @@ function updateValidation({
       editorNodeViewModel: child,
       validation: validation.children[i],
       parent: currentNode,
-    })
+    }),
   );
   currentNode.namedChildren = R.mapValues(
     editorNodeViewModel.namedChildren,
@@ -361,7 +361,7 @@ function updateValidation({
         editorNodeViewModel: child,
         validation: validation.namedChildren[namedKey],
         parent: currentNode,
-      })
+      }),
   );
 
   return currentNode;
@@ -369,7 +369,7 @@ function updateValidation({
 
 function computeEvaluationErrors(
   funcName: EditorNodeViewModel['funcName'],
-  validation: NodeEvaluation
+  validation: NodeEvaluation,
 ): EvaluationError[] {
   const errors: EvaluationError[] = [];
   if (validation.errors) {
@@ -404,7 +404,7 @@ function hasNestedErrors(validation: NodeEvaluation, root = true): boolean {
   let errors: EvaluationError[];
   if (root) {
     const { namedChildrenErrors, nodeErrors } = separateChildrenErrors(
-      validation.errors
+      validation.errors,
     );
     errors = [...namedChildrenErrors, ...nodeErrors];
   } else {

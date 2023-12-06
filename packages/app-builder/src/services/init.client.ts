@@ -11,7 +11,7 @@ import { makeI18nextClientService } from './i18n/i18next.client';
 function makeClientServices(repositories: ClientRepositories) {
   return {
     authenticationClientService: makeAuthenticationClientService(
-      repositories.authenticationClientRepository
+      repositories.authenticationClientRepository,
     ),
     i18nextClientService: makeI18nextClientService(),
   };

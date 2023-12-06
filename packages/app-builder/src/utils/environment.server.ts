@@ -53,7 +53,7 @@ type ServerEnvVarName =
 
 export function getServerEnv(
   serverEnvVarName: ServerEnvVarName,
-  defaultValue?: string
+  defaultValue?: string,
 ): string {
   // eslint-disable-next-line no-restricted-properties
   const serverEnvVar = process.env[serverEnvVarName] ?? defaultValue;

@@ -10,7 +10,7 @@ export function Separator({ className, ...props }: SeparatorProps) {
       className={clsx(
         'radix-orientation-horizontal:h-px radix-orientation-horizontal:w-full',
         'radix-orientation-vertical:w-px radix-orientation-vertical:h-full',
-        className
+        className,
       )}
       {...props}
     />

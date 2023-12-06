@@ -31,7 +31,7 @@ export interface RootAndViewModel {
 }
 
 export function adaptRootAndViewModel(
-  viewModel: EditorNodeViewModel
+  viewModel: EditorNodeViewModel,
 ): RootAndViewModel | null {
   if (viewModel.funcName !== 'And') {
     return null;
@@ -64,11 +64,11 @@ export function RootAnd({
   const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   const { nodeErrors: andNodeErrors } = separateChildrenErrors(
-    rootAndViewModel.errors
+    rootAndViewModel.errors,
   );
 
   const andErrorMessages = adaptEvaluationErrorViewModels(andNodeErrors).map(
-    getEvaluationErrorMessage
+    getEvaluationErrorMessage,
   );
 
   function appendAndChild() {
@@ -112,7 +112,7 @@ export function RootAnd({
               <div
                 className={clsx(
                   'border-grey-10 col-span-5 w-2 border-r ',
-                  isFirstCondition ? 'h-4' : 'h-2'
+                  isFirstCondition ? 'h-4' : 'h-2',
                 )}
               />
 
@@ -120,7 +120,7 @@ export function RootAnd({
               <div
                 className={clsx(
                   'border-grey-10  border-r',
-                  isLastCondition && 'h-5'
+                  isLastCondition && 'h-5',
                 )}
               />
               <div className="border-grey-10  h-5 border-b" />
@@ -130,7 +130,7 @@ export function RootAnd({
                   'bg-grey-02 border p-2',
                   hasArgumentIndexErrorsFromParent(child)
                     ? ' border-red-100 text-red-100'
-                    : 'border-grey-02 text-grey-25'
+                    : 'border-grey-02 text-grey-25',
                 )}
               />
 
@@ -141,7 +141,7 @@ export function RootAnd({
                   viewOnly={viewOnly}
                   root
                 />
-                {!viewOnly && (
+                {!viewOnly ? (
                   <div className="flex h-10 flex-col items-center justify-center">
                     <RemoveButton
                       onClick={() => {
@@ -149,7 +149,7 @@ export function RootAnd({
                       }}
                     />
                   </div>
-                )}
+                ) : null}
                 <div className="flex flex-row flex-wrap gap-2">
                   {errorMessages.map((error) => (
                     <ScenarioValidationError key={error}>
@@ -164,9 +164,9 @@ export function RootAnd({
       </div>
 
       <div className="flex flex-row flex-wrap gap-2">
-        {!viewOnly && (
+        {!viewOnly ? (
           <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
-        )}
+        ) : null}
         {andErrorMessages.map((error) => (
           <ScenarioValidationError key={error}>{error}</ScenarioValidationError>
         ))}

@@ -9,8 +9,8 @@ export function fetchWithAuthMiddleware<Token>({
 }: {
   tokenService: TokenService<Token>;
   getAuthorizationHeader: (token: Token) => { name: string; value: string };
-}): typeof fetch {
-  return async (input, init) => {
+}) {
+  return async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
 
     const token = await tokenService.getToken();

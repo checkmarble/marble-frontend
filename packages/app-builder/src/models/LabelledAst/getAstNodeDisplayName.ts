@@ -22,16 +22,16 @@ export const defaultOptions = {
 export function getAstNodeDisplayName(astNode: AstNode): string;
 export function getAstNodeDisplayName(
   astNode: AstNode,
-  options: { getDefaultDisplayName: (astNode: AstNode) => string }
+  options: { getDefaultDisplayName: (astNode: AstNode) => string },
 ): string;
 export function getAstNodeDisplayName(
   astNode: AstNode,
-  options: { getDefaultDisplayName: (astNode: AstNode) => string | undefined }
+  options: { getDefaultDisplayName: (astNode: AstNode) => string | undefined },
 ): string | undefined;
 
 export function getAstNodeDisplayName(
   astNode: AstNode,
-  options: AstNodeDisplayNameOptions = defaultOptions
+  options: AstNodeDisplayNameOptions = defaultOptions,
 ): string | undefined {
   if (isConstant(astNode)) {
     return getConstantDisplayName(astNode.constant);

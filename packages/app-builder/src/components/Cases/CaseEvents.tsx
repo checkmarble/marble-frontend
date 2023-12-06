@@ -73,7 +73,7 @@ function IconContainer({
     <div
       className={cx(
         'text-m flex h-6 w-6 items-center justify-center rounded-full',
-        className
+        className,
       )}
     >
       {children}
@@ -127,7 +127,7 @@ export function getEventIcon(event: CaseEvent) {
 
 export function getEventTitle(
   event: CaseEvent,
-  t: TFunction<typeof casesI18n>
+  t: TFunction<typeof casesI18n>,
 ) {
   const { event_type } = event;
   switch (event_type) {
@@ -248,11 +248,11 @@ export function getEventDetail(event: CaseEvent) {
       return (
         <div className="flex flex-col gap-2">
           <Author userId={event.user_id} type="added_by" />
-          {event.additional_note && (
+          {event.additional_note ? (
             <div className="text-s text-grey-100 font-normal">
               {event.additional_note}
             </div>
-          )}
+          ) : null}
         </div>
       );
     }

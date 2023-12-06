@@ -50,7 +50,7 @@ export async function loader({ request, params }: LoaderArgs) {
     request,
     {
       failureRedirect: '/login',
-    }
+    },
   );
 
   const scenarioId = fromParams(params, 'scenarioId');
@@ -129,7 +129,7 @@ export async function action({ request, params }: ActionArgs) {
           success: true as const,
           error: null,
         },
-        { headers: { 'Set-Cookie': await commitSession(session) } }
+        { headers: { 'Set-Cookie': await commitSession(session) } },
       );
     }
   } catch (error) {
@@ -143,7 +143,7 @@ export async function action({ request, params }: ActionArgs) {
         success: false as const,
         error: null,
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } }
+      { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
 }
@@ -171,7 +171,7 @@ export default function Trigger() {
   const { validate, validation: localValidation } =
     useTriggerOrRuleValidationFetcher(
       scenarioIteration.scenarioId,
-      scenarioIteration.id
+      scenarioIteration.id,
     );
 
   const scenario = useCurrentScenario();
@@ -199,19 +199,19 @@ export default function Trigger() {
       {
         method: 'PATCH',
         encType: 'application/json',
-      }
+      },
     );
   };
 
   const isLive = scenarioIteration.id == scenario.liveVersionId;
   const pendingExecutions = scheduledExecutions.filter((execution) =>
-    ['pending', 'processing'].includes(execution.status)
+    ['pending', 'processing'].includes(execution.status),
   );
   const triggerFetcher = useFetcher<typeof action>();
   const handleTriggerExecution = () => {
     triggerFetcher.submit(
       { action: 'trigger' },
-      { method: 'POST', encType: 'application/json' }
+      { method: 'POST', encType: 'application/json' },
     );
   };
 
@@ -227,12 +227,12 @@ export default function Trigger() {
           viewOnly={editorMode === 'view'}
         />
       </div>
-      {isLive && canManageDecision && (
+      {isLive && canManageDecision ? (
         <ManualTriggerButton
           handleTriggerExecution={handleTriggerExecution}
           hasPendingExecution={pendingExecutions.length > 0}
         />
-      )}
+      ) : null}
 
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
@@ -254,11 +254,11 @@ export default function Trigger() {
             ))}
         </div>
         <span>
-          {editorMode === 'edit' && (
+          {editorMode === 'edit' ? (
             <Button type="submit" onClick={handleSave}>
               {t('common:save')}
             </Button>
-          )}
+          ) : null}
         </span>
       </div>
     </Paper.Container>
@@ -283,7 +283,7 @@ function ManualTriggerButton({
       >
         {t('scenarios:trigger.trigger_manual_execution.button')}
       </Button>
-      {hasPendingExecution && (
+      {hasPendingExecution ? (
         <p className="my-2 text-xs">
           <Trans
             t={t}
@@ -299,7 +299,7 @@ function ManualTriggerButton({
             }}
           />
         </p>
-      )}
+      ) : null}
     </div>
   );
 }

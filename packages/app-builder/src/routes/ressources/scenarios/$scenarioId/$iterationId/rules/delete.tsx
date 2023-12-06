@@ -37,7 +37,7 @@ export async function action({ request }: ActionArgs) {
     getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
       scenarioId: fromUUID(scenarioId),
       iterationId: fromUUID(iterationId),
-    })
+    }),
   );
 }
 
@@ -65,7 +65,7 @@ export function DeleteRule({
         <fetcher.Form
           method="DELETE"
           action={`/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
-            iterationId
+            iterationId,
           )}/rules/delete`}
         >
           <HiddenInputs

@@ -58,7 +58,7 @@ const books = new Map(
     { author: 'Fyodor Dostoevsky', title: 'The Brothers Karamazov' },
     { author: 'Lev Tolstoy', title: 'Anna Karenina' },
     { author: 'Fyodor Dostoevsky', title: 'Crime and Punishment' },
-  ].map((book) => [`${book.author}_${book.title}`, book])
+  ].map((book) => [`${book.author}_${book.title}`, book]),
 );
 
 const bookKeys = Array.from(books.keys());
@@ -68,7 +68,7 @@ export const Complex: StoryFn<StoryProps> = ({
   border,
   borderColor,
   ...args
-}) => (
+}: StoryProps) => (
   <Select.Root {...args} aria-invalid>
     <Select.Trigger border={border} borderColor={borderColor}>
       <Select.Value placeholder={placeholder} />

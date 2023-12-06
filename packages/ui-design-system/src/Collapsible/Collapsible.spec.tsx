@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
 import { Collapsible } from './Collapsible';
 
@@ -9,7 +9,7 @@ describe('Collapsible', () => {
       <Collapsible.Container aria-label="collapsible">
         <Collapsible.Title>Hello</Collapsible.Title>
         <Collapsible.Content>World</Collapsible.Content>
-      </Collapsible.Container>
+      </Collapsible.Container>,
     );
     expect(baseElement).toBeTruthy();
     // it should be open by default

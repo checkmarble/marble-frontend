@@ -45,10 +45,14 @@ export function TypeInfos({
             key={tKey}
             className={clsx(
               'bg-grey-02 flex items-center justify-center rounded-sm p-1',
-              className
+              className,
             )}
           >
-            <Icon width="16px" height="16px" aria-label={tKey && t(tKey)} />
+            <Icon
+              width="16px"
+              height="16px"
+              aria-label={tKey ? t(tKey) : undefined}
+            />
           </div>
         );
       })}
@@ -74,7 +78,7 @@ export const OperandLabel = ({
         'text-s text-grey-100 group flex flex-row items-center justify-between gap-2 font-normal transition-colors',
         'h-fit min-h-[40px] w-fit min-w-[40px] rounded px-2',
         variant === 'edit' && 'bg-grey-00 group-radix-state-open:bg-purple-05',
-        variant === 'view' && 'bg-grey-02'
+        variant === 'view' && 'bg-grey-02',
       )}
     >
       <TypeInfos
@@ -83,7 +87,7 @@ export const OperandLabel = ({
         className={clsx(
           variant === 'edit' &&
             'bg-grey-02  group-radix-state-open:bg-purple-10',
-          variant === 'view' && 'bg-grey-10'
+          variant === 'view' && 'bg-grey-10',
         )}
       />
       {operandLabelledAst.name}

@@ -37,7 +37,7 @@ export class DownloadError extends Error {
     super(
       `Internal error: Failed to download decisions: ${
         error instanceof Error ? error.message : 'unknown error'
-      }`
+      }`,
     );
   }
 }

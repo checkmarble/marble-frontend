@@ -28,7 +28,7 @@ describe('coerceToConstantsLabelledAst', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
     expect(coerceToConstantsLabelledAst(valueToCoerce, options)).toStrictEqual(
-      expected
+      expected,
     );
   });
 
@@ -39,7 +39,7 @@ describe('coerceToConstantsLabelledAst', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
     expect(coerceToConstantsLabelledAst(valueToCoerce, options)).toStrictEqual(
-      expected
+      expected,
     );
   });
 
@@ -50,7 +50,7 @@ describe('coerceToConstantsLabelledAst', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
     expect(coerceToConstantsLabelledAst(valueToCoerce, options)).toStrictEqual(
-      expected
+      expected,
     );
   });
 
@@ -61,7 +61,7 @@ describe('coerceToConstantsLabelledAst', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
     expect(coerceToConstantsLabelledAst(valueToCoerce, options)).toStrictEqual(
-      expected
+      expected,
     );
   });
 
@@ -76,7 +76,7 @@ describe('coerceToConstantsLabelledAst', () => {
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
       expect(
-        coerceToConstantsLabelledAst(valueToCoerce, options)
+        coerceToConstantsLabelledAst(valueToCoerce, options),
       ).toStrictEqual(expected);
     });
 
@@ -90,7 +90,7 @@ describe('coerceToConstantsLabelledAst', () => {
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
       expect(
-        coerceToConstantsLabelledAst(valueToCoerce, options)
+        coerceToConstantsLabelledAst(valueToCoerce, options),
       ).toStrictEqual(expected);
     });
 
@@ -104,7 +104,7 @@ describe('coerceToConstantsLabelledAst', () => {
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
       expect(
-        coerceToConstantsLabelledAst(valueToCoerce, options)
+        coerceToConstantsLabelledAst(valueToCoerce, options),
       ).toStrictEqual(expected);
     });
   });

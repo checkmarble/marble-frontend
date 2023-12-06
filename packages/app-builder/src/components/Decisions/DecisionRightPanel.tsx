@@ -117,19 +117,21 @@ function ScenarioRightPanelContent() {
 
 function DecisionRightPanelTrigger({
   onClick,
-  data,
+  decisionIds,
   ...otherProps
 }: {
-  data: Data;
+  decisionIds: Data['decisionIds'] | (() => Data['decisionIds']);
 } & DialogTriggerProps) {
   const { onTriggerClick } = useDecisionRightPanelContext();
 
   return (
     <RightPanel.Trigger
       onClick={(e) => {
-        onTriggerClick(data);
+        onTriggerClick({
+          decisionIds:
+            typeof decisionIds === 'function' ? decisionIds() : decisionIds,
+        });
         onClick?.(e);
-        e.stopPropagation();
       }}
       {...otherProps}
     />

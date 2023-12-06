@@ -18,7 +18,7 @@ export function inputFromSearch(queryString: string, options?: IParseOptions) {
 export function inputFromUrl(request: Request, options?: IParseOptions) {
   return inputFromSearch(
     decodeURIComponent(new URL(request.url).search),
-    options
+    options,
   );
 }
 
@@ -27,7 +27,7 @@ export function inputFromUrl(request: Request, options?: IParseOptions) {
  */
 export function inputFromFormData(formData: FormData, options?: IParseOptions) {
   const formDataWithoutFileEntries = Array.from(formData).filter(
-    (entry): entry is [string, string] => typeof entry[1] === 'string'
+    (entry): entry is [string, string] => typeof entry[1] === 'string',
   );
   return qs.parse(Object.fromEntries(formDataWithoutFileEntries), {
     ...defaultQsConfig,
@@ -48,7 +48,7 @@ export async function inputFromForm(request: Request, options?: IParseOptions) {
 export async function parseParamsSafe<
   Output,
   Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output
+  Input = Output,
 >(params: Params, schema: ZodType<Output, Def, Input>) {
   const result = await schema.safeParseAsync(params);
   if (!result.success) {
@@ -66,7 +66,7 @@ export async function parseParamsSafe<
 export async function parseParams<
   Output,
   Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output
+  Input = Output,
 >(params: Params, schema: ZodType<Output, Def, Input>) {
   return schema.parseAsync(params);
 }
@@ -77,7 +77,7 @@ export async function parseParams<
 export async function parseQuerySafe<
   Output,
   Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output
+  Input = Output,
 >(request: Request, schema: ZodType<Output, Def, Input>) {
   const searchParams = inputFromUrl(request);
   const result = await schema.safeParseAsync(searchParams);
@@ -96,7 +96,7 @@ export async function parseQuerySafe<
 export async function parseQuery<
   Output,
   Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output
+  Input = Output,
 >(request: Request, schema: ZodType<Output, Def, Input>) {
   const searchParams = inputFromUrl(request);
   return schema.parseAsync(searchParams);
@@ -108,7 +108,7 @@ export async function parseQuery<
 export async function parseFormSafe<
   Output,
   Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output
+  Input = Output,
 >(request: Request, schema: ZodType<Output, Def, Input>) {
   const formData = await inputFromForm(request);
   const result = await schema.safeParseAsync(formData);
@@ -127,7 +127,7 @@ export async function parseFormSafe<
 export async function parseForm<
   Output,
   Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output
+  Input = Output,
 >(request: Request, schema: ZodType<Output, Def, Input>) {
   const formData = await inputFromForm(request);
   return schema.parseAsync(formData);

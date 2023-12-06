@@ -22,7 +22,7 @@ export function Callout({
           'border-l-2 border-l-purple-100': variant === 'info',
           'border-l-2 border-l-red-100': variant === 'error',
         },
-        className
+        className,
       )}
     >
       <Lightbulb height="24px" width="24px" className="shrink-0" />

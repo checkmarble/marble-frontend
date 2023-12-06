@@ -29,7 +29,7 @@ function GroupHeaderContainer({
       aria-hidden="true"
       className={clsx(
         'flex select-none flex-row items-center gap-1 p-2',
-        className
+        className,
       )}
       {...props}
     />
@@ -74,7 +74,7 @@ export function Label({ className, ...props }: React.ComponentProps<'span'>) {
       id={labelId}
       className={clsx(
         'text-grey-100 text-m flex items-baseline whitespace-pre',
-        className
+        className,
       )}
       {...props}
     />

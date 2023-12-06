@@ -13,7 +13,7 @@ export function ScenarioFilter() {
 
   const matches = useMemo(
     () => matchSorter(scenarios, searchValue, { keys: ['name'] }),
-    [searchValue, scenarios]
+    [searchValue, scenarios],
   );
 
   return (

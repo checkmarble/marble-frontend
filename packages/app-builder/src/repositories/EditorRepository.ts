@@ -59,9 +59,8 @@ export function getEditorRepository() {
       };
     },
     listOperators: async ({ scenarioId }) => {
-      const { operators_accessors } = await marbleApiClient.listOperators(
-        scenarioId
-      );
+      const { operators_accessors } =
+        await marbleApiClient.listOperators(scenarioId);
       const operatorsAccessors = operators_accessors.map(adaptAstOperatorDto);
 
       return operatorsAccessors;

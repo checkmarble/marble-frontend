@@ -34,11 +34,11 @@ export function ScheduleOption({
       ) : (
         <ScheduleOptionViewer schedule={schedule} />
       )}
-      {!hasExportBucket && (
+      {!hasExportBucket ? (
         <p className="text-s text-red-110">
           {t('scenarios:trigger.schedule_scenario.export_location_warning')}
         </p>
-      )}
+      ) : null}
     </>
   );
 }

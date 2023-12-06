@@ -5,11 +5,11 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 import { useMemo } from 'react';
 
-import { Table, useVirtualTable } from './Table';
+import { Table, useTable } from './Table';
 
 mockResizeObserver();
 
@@ -35,10 +35,10 @@ function TestTable({
         header: 'Description',
       },
     ],
-    []
+    [],
   );
 
-  const virtualTable = useVirtualTable({
+  const virtualTable = useTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -79,7 +79,7 @@ describe('Table', () => {
         .getAllByRole('row')
         .forEach((row, index) => {
           expect(
-            within(row).getByText(sortedData[index].name)
+            within(row).getByText(sortedData[index].name),
           ).toBeInTheDocument();
         });
     }
@@ -90,7 +90,7 @@ describe('Table', () => {
     await userEvent.click(nameHeader);
 
     const ascendingData = [...data].sort((lhs, rhs) =>
-      lhs.name.localeCompare(rhs.name)
+      lhs.name.localeCompare(rhs.name),
     );
 
     checkTableSort(ascendingData);
@@ -99,7 +99,7 @@ describe('Table', () => {
     await userEvent.click(nameHeader);
 
     const descendingData = [...data].sort((lhs, rhs) =>
-      rhs.name.localeCompare(lhs.name)
+      rhs.name.localeCompare(lhs.name),
     );
 
     checkTableSort(descendingData);

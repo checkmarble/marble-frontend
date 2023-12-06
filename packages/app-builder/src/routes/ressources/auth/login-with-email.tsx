@@ -44,7 +44,7 @@ const emailAndPasswordFormSchema = z.object({
 type EmailAndPasswordFormValues = z.infer<typeof emailAndPasswordFormSchema>;
 
 export function SignInWithEmail() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['login', 'common']);
 
   const formMethods = useForm<z.infer<typeof emailAndPasswordFormSchema>>({
     resolver: zodResolver(emailAndPasswordFormSchema),
@@ -113,11 +113,11 @@ function ClientSignInWithEmailForm({
 }: {
   children: React.ReactNode;
 }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['login', 'common']);
   const fetcher = useFetcher();
 
   const emailAndPasswordSignIn = useEmailAndPasswordSignIn(
-    clientServices.authenticationClientService
+    clientServices.authenticationClientService,
   );
 
   const { handleSubmit, setError } =
@@ -133,7 +133,7 @@ function ClientSignInWithEmailForm({
         if (!idToken) return;
         fetcher.submit(
           { idToken, csrf },
-          { method: 'POST', action: '/ressources/auth/login-with-email' }
+          { method: 'POST', action: '/ressources/auth/login-with-email' },
         );
       } catch (error) {
         if (error instanceof UserNotFoundError) {
@@ -142,22 +142,22 @@ function ClientSignInWithEmailForm({
             {
               message: t('login:sign_in_with_email.errors.user_not_found'),
             },
-            { shouldFocus: true }
+            { shouldFocus: true },
           );
         } else if (error instanceof WrongPasswordError) {
           setError(
             'credentials.password',
             {
               message: t(
-                'login:sign_in_with_email.errors.wrong_password_error'
+                'login:sign_in_with_email.errors.wrong_password_error',
               ),
             },
-            { shouldFocus: true }
+            { shouldFocus: true },
           );
         } else if (error instanceof InvalidLoginCredentials) {
           setError('credentials', {
             message: t(
-              'login:sign_in_with_email.errors.invalid_login_credentials'
+              'login:sign_in_with_email.errors.invalid_login_credentials',
             ),
           });
         } else {
@@ -165,7 +165,7 @@ function ClientSignInWithEmailForm({
           toast.error(t('common:errors.unknown'));
         }
       }
-    }
+    },
   );
 
   return (

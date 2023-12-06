@@ -5,7 +5,7 @@ export interface AuthenticationClientRepository {
   emailAndPasswordSignIn: (
     locale: string,
     email: string,
-    password: string
+    password: string,
   ) => Promise<string>;
   firebaseIdToken: () => Promise<string>;
 }
@@ -34,7 +34,7 @@ export function getAuthenticationClientRepository({
   async function emailAndPasswordSignIn(
     locale: string,
     email: string,
-    password: string
+    password: string,
   ) {
     const auth = getClientAuth(locale);
     const credential = await signInWithEmailAndPassword(auth, email, password);

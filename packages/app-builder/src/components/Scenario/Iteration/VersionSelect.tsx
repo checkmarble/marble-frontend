@@ -32,8 +32,8 @@ export function VersionSelect({
         navigate(
           location.pathname.replace(
             fromUUID(currentIteration.id),
-            fromUUID(elem?.id)
-          )
+            fromUUID(elem?.id),
+          ),
         );
       }}
     >
@@ -50,11 +50,11 @@ export function VersionSelect({
                   ? `V${iteration.version}`
                   : t('scenarios:draft')}
               </span>
-              {iteration.type === 'live version' && (
+              {iteration.type === 'live version' ? (
                 <span className="capitalize text-purple-100">
                   {t('scenarios:live')}
                 </span>
-              )}
+              ) : null}
             </p>
           </Select.DefaultItem>
         );

@@ -71,7 +71,7 @@ export function ScheduledExecutionsList({
           ) : null,
       },
     ],
-    [language, t]
+    [language, t],
   );
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: scheduledExecutions,

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthenticityToken } from 'remix-utils';
 
 export function makeAuthenticationClientService(
-  authenticationClientRepository: AuthenticationClientRepository
+  authenticationClientRepository: AuthenticationClientRepository,
 ) {
   return {
     authenticationClientRepository,
@@ -27,9 +27,8 @@ export function useGoogleSignIn({
 
   return async () => {
     try {
-      const idToken = await authenticationClientRepository.googleSignIn(
-        language
-      );
+      const idToken =
+        await authenticationClientRepository.googleSignIn(language);
       return { idToken, csrf };
     } catch (error) {
       //TODO: handle errors correctly for UI
@@ -52,7 +51,7 @@ export function useEmailAndPasswordSignIn({
         await authenticationClientRepository.emailAndPasswordSignIn(
           language,
           email,
-          password
+          password,
         );
       return { idToken, csrf };
     } catch (error) {
@@ -89,7 +88,7 @@ export function useBackendInfo({
       },
       {
         baseUrl: backendUrl,
-      }
+      },
     );
 
     return token.access_token;

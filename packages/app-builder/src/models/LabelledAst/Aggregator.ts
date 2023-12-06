@@ -5,7 +5,7 @@ import {
 } from '@app-builder/models';
 
 export function newAggregatorLabelledAst(
-  nodeOrAggregator: string | AggregationAstNode
+  nodeOrAggregator: string | AggregationAstNode,
 ): LabelledAst {
   if (typeof nodeOrAggregator === 'string') {
     return {
@@ -24,7 +24,7 @@ export function newAggregatorLabelledAst(
     //TODO(combobox): infer/get aggregator.dataType
     dataType: 'unknown',
     astNode: NewAggregatorAstNode(
-      nodeOrAggregator.namedChildren.aggregator.constant
+      nodeOrAggregator.namedChildren.aggregator.constant,
     ),
   };
 }

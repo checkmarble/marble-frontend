@@ -12,7 +12,7 @@ export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
           'bg-grey-00 text-grey-25 border-grey-10',
           'hover:text-grey-00 hover:border-red-100 hover:bg-red-100',
           'active:bg-red-110  active:border-red-110',
-          className
+          className,
         )}
         {...props}
         tabIndex={-1}
@@ -21,6 +21,6 @@ export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <Delete />
       </button>
     );
-  }
+  },
 );
 RemoveButton.displayName = 'RemoveButton';

@@ -36,7 +36,7 @@ export function NewPermissions(): UserPermissions {
 }
 
 export function adaptCurrentUser(
-  credentials: CredentialsDto['credentials']
+  credentials: CredentialsDto['credentials'],
 ): CurrentUser {
   return {
     organizationId: credentials.organization_id,
@@ -50,8 +50,8 @@ export function adaptCurrentUser(
     permissions: R.pipe(
       NewPermissionsList(),
       R.mapValues((permissionList) =>
-        credentials.permissions.includes(permissionList)
-      )
+        credentials.permissions.includes(permissionList),
+      ),
     ),
   };
 }

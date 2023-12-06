@@ -69,17 +69,14 @@ export default function DecisionPage() {
               </span>
             </CopyToClipboardButton>
           </div>
-          {!decision.case && (
-            <DecisionRightPanel.Trigger
-              asChild
-              data={{ decisionIds: [decision.id] }}
-            >
+          {!decision.case ? (
+            <DecisionRightPanel.Trigger asChild decisionIds={[decision.id]}>
               <Button>
                 <Plus />
                 {t('decisions:add_to_case')}
               </Button>
             </DecisionRightPanel.Trigger>
-          )}
+          ) : null}
         </Page.Header>
         <Page.Content>
           <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">

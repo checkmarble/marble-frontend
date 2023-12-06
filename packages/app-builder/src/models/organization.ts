@@ -7,7 +7,7 @@ export interface Organization {
 }
 
 export const adaptOrganizationDto = (
-  organizationDto: OrganizationDto
+  organizationDto: OrganizationDto,
 ): Organization => ({
   name: organizationDto.name,
   databaseName: organizationDto.database_name,

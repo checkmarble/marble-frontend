@@ -61,7 +61,7 @@ export default function ListsPage() {
         size: 500,
       },
     ],
-    [t]
+    [t],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
@@ -81,7 +81,7 @@ export default function ListsPage() {
       <Page.Content scrollable={false}>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row justify-end">
-            {canManageList && <CreateList />}
+            {canManageList ? <CreateList /> : null}
           </div>
           {rows.length > 0 ? (
             <Table.Container {...getContainerProps()}>
@@ -96,7 +96,7 @@ export default function ListsPage() {
                       navigate(
                         getRoute('/lists/:listId', {
                           listId: fromUUID(row.original.id),
-                        })
+                        }),
                       );
                     }}
                   />

@@ -9,15 +9,17 @@
     "operator-regex": "tsx scripts/operator-regexp.ts"
   },
   "devDependencies": {
-    "@types/node": "20.3.3",
-    "ora": "^6.3.1",
+    "@marble/eslint-config": "workspace:^",
+    "@types/node": "20.10.3",
+    "eslint": "~8.55.0",
+    "ora": "^7.0.1",
     "tailwind-preset": "^1.0.8",
-    "tsx": "^3.14.0",
+    "tsx": "^4.6.2",
     "ui-icons": "workspace:^"
   },
   "dependencies": {
-    "@faker-js/faker": "^8.1.0",
-    "oazapfts": "^4.10.0"
+    "@faker-js/faker": "^8.3.1",
+    "oazapfts": "^4.11.2"
   },
   "author": "",
   "license": "ISC"

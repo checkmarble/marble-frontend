@@ -29,7 +29,7 @@ function PageHeader({
       className={clsx(
         'border-b-grey-10 bg-grey-00 text-l text-grey-100 flex shrink-0 flex-row items-center border-b font-bold',
         'h-16 px-4 lg:h-20 lg:px-8',
-        className
+        className,
       )}
       {...props}
     />
@@ -53,7 +53,7 @@ function PageContent({
           className={clsx(
             'flex flex-1 flex-col',
             'gap-4 p-4 lg:gap-8 lg:p-8',
-            className
+            className,
           )}
           {...props}
         />
@@ -68,7 +68,7 @@ function PageContent({
         'flex flex-1 flex-col',
         'gap-4 p-4 lg:gap-8 lg:p-8',
         'overflow-auto',
-        className
+        className,
       )}
       {...props}
     />
@@ -86,7 +86,7 @@ function PageBackButton({
     <div
       className={clsx(
         'border-grey-10 flex items-center justify-center rounded-md border p-2',
-        className
+        className,
       )}
       {...props}
     >

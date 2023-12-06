@@ -26,7 +26,7 @@ export function DecisionFiltersMenu({
         onDecisionFilterClose();
       }
     },
-    [onDecisionFilterClose]
+    [onDecisionFilterClose],
   );
 
   return (

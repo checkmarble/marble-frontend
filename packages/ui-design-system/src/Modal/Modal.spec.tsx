@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
 import { Modal } from './Modal';
 
@@ -15,7 +15,7 @@ describe('Modal', () => {
           </Modal.Description>
           <Modal.Close>Cancel</Modal.Close>
         </Modal.Content>
-      </Modal.Root>
+      </Modal.Root>,
     );
 
     const trigger = screen.getByRole('button', { name: /trigger/i });
@@ -25,7 +25,7 @@ describe('Modal', () => {
 
     expect(screen.getByText(/modal title/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/This is the the modal description/i)
+      screen.getByText(/This is the the modal description/i),
     ).toBeInTheDocument();
 
     const close = screen.getByRole('button', { name: /cancel/i });

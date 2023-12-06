@@ -9,7 +9,7 @@ import * as React from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useCallbackRef<T extends (...args: any[]) => any>(
-  callback: T | undefined
+  callback: T | undefined,
 ): T {
   const callbackRef = React.useRef(callback);
 
@@ -21,6 +21,6 @@ export function useCallbackRef<T extends (...args: any[]) => any>(
   return React.useMemo(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     () => ((...args) => callbackRef.current?.(...args)) as T,
-    []
+    [],
   );
 }

@@ -9,28 +9,28 @@ import {
 
 export function getAstNodeLabelName(
   astNode: AstNode,
-  builder: AstBuilder
+  builder: AstBuilder,
 ): string;
 export function getAstNodeLabelName(
   astNode: AstNode,
   builder: AstBuilder,
-  options: { getDefaultDisplayName: (astNode: AstNode) => string }
+  options: { getDefaultDisplayName: (astNode: AstNode) => string },
 ): string;
 export function getAstNodeLabelName(
   astNode: AstNode,
   builder: AstBuilder,
-  options: { getDefaultDisplayName: (astNode: AstNode) => string | undefined }
+  options: { getDefaultDisplayName: (astNode: AstNode) => string | undefined },
 ): string | undefined;
 
 export function getAstNodeLabelName(
   astNode: AstNode,
   builder: AstBuilder,
-  options: AstNodeDisplayNameOptions = defaultOptions
+  options: AstNodeDisplayNameOptions = defaultOptions,
 ): string | undefined {
   if (isCustomListAccess(astNode)) {
     const customList = builder.input.customLists.find(
       (customList) =>
-        customList.id === astNode.namedChildren.customListId.constant
+        customList.id === astNode.namedChildren.customListId.constant,
     );
     return customList?.name ?? 'Unknown list';
   }

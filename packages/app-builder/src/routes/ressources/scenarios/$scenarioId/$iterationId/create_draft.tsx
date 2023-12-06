@@ -26,7 +26,7 @@ export async function action({ request, params }: ActionArgs) {
 
   const parsedForm = await parseFormSafe(
     request,
-    createDraftIterationFormSchema
+    createDraftIterationFormSchema,
   );
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
@@ -40,15 +40,14 @@ export async function action({ request, params }: ActionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
   const { iterationId } = parsedForm.data;
   try {
-    const draftIteration = await apiClient.createDraftFromScenarioIteration(
-      iterationId
-    );
+    const draftIteration =
+      await apiClient.createDraftFromScenarioIteration(iterationId);
 
     return redirect(
       getRoute('/scenarios/:scenarioId/i/:iterationId', {
         scenarioId: fromUUID(scenarioId),
         iterationId: fromUUID(draftIteration.id),
-      })
+      }),
     );
   } catch (error) {
     return json({
@@ -70,16 +69,16 @@ export function CreateDraftIteration({
 }) {
   return (
     <>
-      {draftId === undefined && (
+      {draftId === undefined ? (
         <NewDraftButton iterationId={iterationId} scenarioId={scenarioId} />
-      )}
-      {draftId && (
+      ) : null}
+      {draftId ? (
         <ExistingDraftModal
           iterationId={iterationId}
           scenarioId={scenarioId}
           draftId={draftId}
         />
-      )}
+      ) : null}
     </>
   );
 }
@@ -98,7 +97,7 @@ const NewDraftButton = ({
     <fetcher.Form
       method="POST"
       action={`/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
-        iterationId
+        iterationId,
       )}/create_draft`}
     >
       <HiddenInputs iterationId={iterationId} />
@@ -135,7 +134,7 @@ const ExistingDraftModal = ({
         <fetcher.Form
           method="POST"
           action={`/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
-            iterationId
+            iterationId,
           )}/create_draft`}
         >
           <HiddenInputs iterationId={iterationId} />
@@ -158,8 +157,8 @@ const ExistingDraftModal = ({
                     navigate(
                       location.pathname.replace(
                         fromUUID(iterationId),
-                        fromUUID(draftId)
-                      )
+                        fromUUID(draftId),
+                      ),
                     )
                   }
                 >

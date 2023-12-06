@@ -4,7 +4,7 @@ import {
   type DataType,
   type LabelledAst,
 } from '@app-builder/models';
-import { isArray, isBoolean, isNil, isNumber, isString } from 'remeda';
+import * as R from 'remeda';
 
 export function newConstantLabelledAst(node: ConstantAstNode): LabelledAst {
   return {
@@ -25,45 +25,45 @@ export function newEnumConstantLabelledAst(node: ConstantAstNode): LabelledAst {
 }
 
 export function getConstantDisplayName(constant: ConstantType): string {
-  if (isNil(constant)) return '';
+  if (R.isNil(constant)) return '';
 
-  if (isArray(constant)) {
+  if (R.isArray(constant)) {
     return `[${constant.map(getConstantDisplayName).join(', ')}]`;
   }
 
-  if (isString(constant)) {
+  if (R.isString(constant)) {
     //TODO(combobox): handle Timestamp here, if we do manipulate them as ISOstring
     return `"${constant.toString()}"`;
   }
 
-  if (isNumber(constant) || isBoolean(constant)) {
+  if (R.isNumber(constant) || R.isBoolean(constant)) {
     return constant.toString();
   }
 
   // Handle other cases when needed
-  return constant.toString();
+  return JSON.stringify(R.mapValues(constant, getConstantDisplayName));
 }
 
 function getConstantDataType(constant: ConstantType): DataType {
-  if (isString(constant)) {
+  if (R.isString(constant)) {
     //TODO(combobox): handle Timestamp here, if we do manipulate them as ISOstring
     return 'String';
   }
 
-  if (isNumber(constant)) {
+  if (R.isNumber(constant)) {
     return Number.isInteger(constant) ? 'Int' : 'Float';
   }
 
-  if (isBoolean(constant)) {
+  if (R.isBoolean(constant)) {
     return 'Bool';
   }
 
-  if (isArray(constant)) {
-    if (constant.every(isString)) return 'String[]';
-    if (constant.every(isNumber)) {
+  if (R.isArray(constant)) {
+    if (constant.every(R.isString)) return 'String[]';
+    if (constant.every(R.isNumber)) {
       return constant.every(Number.isInteger) ? 'Int[]' : 'Float[]';
     }
-    if (constant.every(isBoolean)) return 'Bool[]';
+    if (constant.every(R.isBoolean)) return 'Bool[]';
   }
 
   return 'unknown';

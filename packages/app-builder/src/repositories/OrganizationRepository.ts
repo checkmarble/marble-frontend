@@ -13,19 +13,17 @@ export interface OrganizationRepository {
 export function getOrganizationRepository() {
   return (
     marbleApiClient: MarbleApi,
-    organizationId: string
+    organizationId: string,
   ): OrganizationRepository => ({
     getCurrentOrganization: async () => {
-      const { organization } = await marbleApiClient.getOrganization(
-        organizationId
-      );
+      const { organization } =
+        await marbleApiClient.getOrganization(organizationId);
 
       return adaptOrganizationDto(organization);
     },
     listUsers: async () => {
-      const { users } = await marbleApiClient.listOrganizationUsers(
-        organizationId
-      );
+      const { users } =
+        await marbleApiClient.listOrganizationUsers(organizationId);
       return users.map(adaptUser);
     },
   });

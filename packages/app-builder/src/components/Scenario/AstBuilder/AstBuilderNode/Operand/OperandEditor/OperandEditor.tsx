@@ -59,7 +59,7 @@ export function getEnumOptionsFromNeighbour({
     return [];
   }
   const neighbourNodeViewModel = viewModel.parent.children.find(
-    (child) => child.nodeId !== viewModel.nodeId
+    (child) => child.nodeId !== viewModel.nodeId,
   );
   if (!neighbourNodeViewModel) {
     return [];
@@ -139,14 +139,14 @@ const OperandEditorContent = forwardRef<
         newDatabaseAccessorsLabelledAst({
           dataModel: builder.input.dataModel,
           node,
-        })
+        }),
     );
     const payloadAccessors = builder.input.identifiers.payloadAccessors.map(
       (node) =>
         newPayloadAccessorsLabelledAst({
           triggerObjectTable: builder.input.triggerObjectTable,
           node,
-        })
+        }),
     );
     const customLists = builder.input.customLists.map(newCustomListLabelledAst);
     const functions = [
@@ -164,7 +164,7 @@ const OperandEditorContent = forwardRef<
       return newEnumConstantLabelledAst(
         NewConstantAstNode({
           constant: enumValue,
-        })
+        }),
       );
     });
 
@@ -208,7 +208,7 @@ const OperandEditorContent = forwardRef<
       }
       closeModal();
     },
-    [closeModal, editAggregation, editTimeAdd, onSave, operandViewModel.nodeId]
+    [closeModal, editAggregation, editTimeAdd, onSave, operandViewModel.nodeId],
   );
 
   const showClearOption = labelledAst.name !== '';
@@ -232,7 +232,7 @@ const OperandEditorContent = forwardRef<
         )}
       </OperandDropdownMenu.ScrollableViewport>
       <BottomOptions>
-        {isAggregationEditorNodeViewModel(operandViewModel) && (
+        {isAggregationEditorNodeViewModel(operandViewModel) ? (
           <EditOption
             onSelect={() => {
               const initialAggregation =
@@ -245,8 +245,8 @@ const OperandEditorContent = forwardRef<
               closeModal();
             }}
           />
-        )}
-        {isTimeAddEditorNodeViewModel(operandViewModel) && (
+        ) : null}
+        {isTimeAddEditorNodeViewModel(operandViewModel) ? (
           <EditOption
             onSelect={() => {
               const initialValue = adaptTimeAddViewModal(operandViewModel);
@@ -254,14 +254,14 @@ const OperandEditorContent = forwardRef<
               closeModal();
             }}
           />
-        )}
-        {showClearOption && (
+        ) : null}
+        {showClearOption ? (
           <ClearOption
             onSelect={() => {
               handleSelectOption(newUndefinedLabelledAst());
             }}
           />
-        )}
+        ) : null}
       </BottomOptions>
     </OperandDropdownMenu.Content>
   );

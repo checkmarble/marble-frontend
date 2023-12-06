@@ -34,7 +34,7 @@ export function newDatabaseAccessorsLabelledAst({
 }
 
 export function getDatabaseAccessorDisplayName(
-  node: DatabaseAccessAstNode
+  node: DatabaseAccessAstNode,
 ): string {
   const { path, fieldName } = node.namedChildren;
   return [...path.constant, fieldName.constant].join('.');

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "devDependencies": {
-    "@types/node": "20.3.3"
+    "@marble/eslint-config": "workspace:^",
+    "@types/node": "20.10.3",
+    "eslint": "~8.55.0"
   },
   "scripts": {
     "lint": "eslint .",

@@ -40,7 +40,7 @@ export function isMathAst(node: AstNode) {
 
 export function isIdentifier(
   node: AstNode,
-  identifiers: EditorIdentifiersByType
+  identifiers: EditorIdentifiersByType,
 ) {
   if (getIdentifiersFromAstNode(node, identifiers)) return true;
   return false;

@@ -24,13 +24,13 @@ export function makeServerRepositories({
 }) {
   return {
     authStorageRepository: getAuthStorageRepository(
-      sessionStorageRepositoryOptions
+      sessionStorageRepositoryOptions,
     ),
     csrfStorageRepository: getCsrfStorageRepository(
-      sessionStorageRepositoryOptions
+      sessionStorageRepositoryOptions,
     ),
     toastStorageRepository: getToastStorageRepository(
-      sessionStorageRepositoryOptions
+      sessionStorageRepositoryOptions,
     ),
     marbleAPIClient: getMarbleAPIRepository(getMarbleAPIClient),
     userRepository: getUserRepository(),

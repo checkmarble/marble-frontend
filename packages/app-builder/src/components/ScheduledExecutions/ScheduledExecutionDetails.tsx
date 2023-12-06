@@ -40,7 +40,7 @@ function ScheduledExecutionDetailsInternal({
         }
         toast.error(t('scheduledExecution:errors.downloading_decisions_link'));
       },
-    }
+    },
   );
   const { t } = useTranslation(scheduledExecutionI18n);
 

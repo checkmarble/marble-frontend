@@ -33,7 +33,7 @@ function SelectContent({
       <Content
         className={clsx(
           'bg-grey-00 border-grey-10 mt-2 rounded border shadow-md',
-          className
+          className,
         )}
         position="popper"
         {...props}
@@ -69,7 +69,7 @@ export interface SelectTriggerProps extends PrimitiveSelectTriggerProps {
 const defaultBorder = 'square';
 
 const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
-  (
+  function SelectTrigger(
     {
       children,
       className,
@@ -77,8 +77,8 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
       borderColor = 'grey-10',
       ...props
     },
-    ref
-  ) => {
+    ref,
+  ) {
     return (
       <Trigger
         ref={ref}
@@ -96,47 +96,47 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
           'data-[border-color=grey-10]:border-grey-10 data-[border-color=grey-10]:focus:border-purple-100',
           'data-[border-color=red-100]:border-red-100 data-[border-color=red-100]:focus:border-purple-100',
           'data-[border-color=red-25]:border-red-25 data-[border-color=red-25]:focus:border-purple-100',
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </Trigger>
     );
-  }
+  },
 );
 
 const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
-  ({ children, className, ...props }, ref) => {
+  function SelectItem({ children, className, ...props }, ref) {
     return (
       <Item
         ref={ref}
         className={clsx(
           'text-s rounded-sm p-2 font-medium outline-none',
           'radix-highlighted:bg-purple-05 radix-highlighted:text-purple-100',
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </Item>
     );
-  }
+  },
 );
 
 const SelectValue = forwardRef<HTMLDivElement, SelectValueProps>(
-  ({ className, ...props }, ref) => {
+  function SelectValue({ className, ...props }, ref) {
     return (
       <span
         className={clsx(
           'w-full text-center group-data-[border=rounded]/trigger:px-2',
-          className
+          className,
         )}
       >
         <Value ref={ref} {...props} />
       </span>
     );
-  }
+  },
 );
 
 const SelectArrow = () => (
@@ -150,10 +150,10 @@ export type SelectProps = RawSelectProps &
   Pick<SelectTriggerProps, 'border' | 'borderColor' | 'className'>;
 
 const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
-  (
+  function SelectDefault(
     { children, placeholder, border, borderColor, className, ...props },
-    triggerRef
-  ) => {
+    triggerRef,
+  ) {
     return (
       <Root {...props}>
         <Select.Trigger
@@ -173,17 +173,17 @@ const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
         </Select.Content>
       </Root>
     );
-  }
+  },
 );
 
 const SelectDefaultItem = forwardRef<HTMLDivElement, SelectItemProps>(
-  ({ children, className, ...props }, ref) => {
+  function SelectDefaultItem({ children, className, ...props }, ref) {
     return (
       <SelectItem ref={ref} className={clsx('h-10', className)} {...props}>
         <Select.ItemText>{children}</Select.ItemText>
       </SelectItem>
     );
-  }
+  },
 );
 
 export const Select = {

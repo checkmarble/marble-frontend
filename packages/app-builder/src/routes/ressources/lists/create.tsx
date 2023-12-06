@@ -55,7 +55,7 @@ export async function action({ request }: ActionArgs) {
     });
 
     return redirect(
-      getRoute('/lists/:listId', { listId: fromUUID(result.custom_list.id) })
+      getRoute('/lists/:listId', { listId: fromUUID(result.custom_list.id) }),
     );
   } catch (error) {
     if (isStatusConflictHttpError(error)) {
@@ -71,7 +71,7 @@ export async function action({ request }: ActionArgs) {
           values: parsedForm.data,
           error: error,
         },
-        { headers: { 'Set-Cookie': await commitSession(session) } }
+        { headers: { 'Set-Cookie': await commitSession(session) } },
       );
     } else {
       return json({
@@ -146,7 +146,7 @@ export function CreateList() {
                         <Input
                           type="text"
                           placeholder={t(
-                            'lists:create_list.description_placeholder'
+                            'lists:create_list.description_placeholder',
                           )}
                           {...field}
                         />

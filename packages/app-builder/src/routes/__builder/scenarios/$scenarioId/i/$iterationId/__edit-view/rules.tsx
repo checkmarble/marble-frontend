@@ -67,15 +67,15 @@ export default function Rules() {
         size: 200,
         cell: ({ getValue, row }) => {
           const hasErrors = hasRuleErrors(
-            findRuleValidation(scenarioValidation, row.original.id)
+            findRuleValidation(scenarioValidation, row.original.id),
           );
 
           return (
             <span className="flex items-center gap-2">
               <span className="flex w-2 items-center justify-center">
-                {hasErrors && (
+                {hasErrors ? (
                   <Ping className="relative box-content h-[6px] w-[6px] border border-transparent text-red-100" />
-                )}
+                ) : null}
               </span>
               <span>{getValue<string>()}</span>
             </span>
@@ -109,7 +109,7 @@ export default function Rules() {
         size: 100,
       },
     ],
-    [language, scenarioValidation, t]
+    [language, scenarioValidation, t],
   );
 
   const hasRules = rules.length > 0;
@@ -134,9 +134,9 @@ export default function Rules() {
           ))}
         </div>
         <span>
-          {editorMode === 'edit' && (
+          {editorMode === 'edit' ? (
             <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
-          )}
+          ) : null}
         </span>
       </div>
       <Table.Container {...getContainerProps()}>

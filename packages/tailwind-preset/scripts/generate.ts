@@ -41,7 +41,7 @@ async function downloadDesignTokens() {
           Accept: 'application/json',
           Authorization: `Bearer ${pat}`,
         }),
-      }
+      },
     ).then((response) => response.json())) as DesignTokens;
 
     spinner.succeed('Design tokens succesfully downloaded');
@@ -55,7 +55,7 @@ async function downloadDesignTokens() {
 async function saveFile(fileName: string, data: Record<string, unknown>) {
   await writeFile(
     join(OUT_DIR, fileName),
-    prettier.format(JSON.stringify(data), { parser: 'json' })
+    await prettier.format(JSON.stringify(data), { parser: 'json' }),
   );
 }
 
@@ -76,9 +76,9 @@ async function buildColors(data: DesignTokens) {
         return R.pipe(
           values,
           R.groupBy(({ shade }) => shade),
-          R.mapValues((elem) => elem[0].value)
+          R.mapValues((elem) => elem[0].value),
         );
-      })
+      }),
     );
     await saveFile('colors.json', colors);
     spinner.succeed('colors succesfully built');
@@ -103,7 +103,7 @@ async function buildFontSize(data: DesignTokens) {
           key.match(/-(.*)-regular/)?.[1] ?? key,
           [`${font.size}px`, `${line_height}px`],
         ];
-      })
+      }),
     );
     await saveFile('fontSize.json', fontSize);
     spinner.succeed('fontSize succesfully built');

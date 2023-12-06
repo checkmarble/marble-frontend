@@ -19,7 +19,7 @@ export function OrganizationUsersContextProvider({
 }) {
   const value = useMemo(() => {
     const orgUserMap = new Map<string, User>(
-      orgUsers.map((user) => [user.userId, user])
+      orgUsers.map((user) => [user.userId, user]),
     );
 
     return {

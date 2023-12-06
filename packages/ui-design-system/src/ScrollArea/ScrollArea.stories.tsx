@@ -17,7 +17,7 @@ const Template: StoryFn<typeof ScrollArea.Root> = () => (
           <li
             className={clsx(
               'flex w-48 flex-col px-3 py-2 shadow-sm',
-              index % 2 === 0 ? 'bg-grey-10' : 'bg-grey-00'
+              index % 2 === 0 ? 'bg-grey-10' : 'bg-grey-00',
             )}
             key={index}
           >

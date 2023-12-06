@@ -84,13 +84,13 @@ export default function Cases() {
             {
               addQueryPrefix: true,
               skipNulls: true,
-            }
+            },
           ),
         },
-        { replace: true }
+        { replace: true },
       );
     },
-    [navigate, inboxId]
+    [navigate, inboxId],
   );
 
   return (

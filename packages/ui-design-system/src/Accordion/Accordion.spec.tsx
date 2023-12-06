@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
 import { Accordion } from './Accordion';
 
@@ -11,7 +11,7 @@ describe('Accordion', () => {
           <Accordion.Title>Hello</Accordion.Title>
           <Accordion.Content>World</Accordion.Content>
         </Accordion.Item>
-      </Accordion.Container>
+      </Accordion.Container>,
     );
     // it should be close by default
     expect(screen.queryByText('World')).not.toBeInTheDocument();

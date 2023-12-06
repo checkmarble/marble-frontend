@@ -11,7 +11,7 @@ import { Cross } from 'ui-icons';
 
 export function setToastMessage(
   session: ToastSession,
-  toastMessage: ToastMessage
+  toastMessage: ToastMessage,
 ) {
   session.flash('toastMessage', toastMessage);
 }
@@ -19,7 +19,9 @@ export function setToastMessage(
 export function getToastMessage(session: ToastSession) {
   try {
     return toastMessageScema.parse(session.get('toastMessage'));
-  } catch (err) {}
+  } catch (err) {
+    return undefined;
+  }
 }
 
 export function MarbleToaster({
@@ -49,14 +51,14 @@ export function MarbleToaster({
             <>
               {icon}
               {message}
-              {currentToast.type !== 'loading' && (
+              {currentToast.type !== 'loading' ? (
                 <button
                   onClick={() => toast.dismiss(currentToast.id)}
                   aria-label="Close"
                 >
                   <Cross height="24px" width="24px" />
                 </button>
-              )}
+              ) : null}
             </>
           )}
         </ToastBar>

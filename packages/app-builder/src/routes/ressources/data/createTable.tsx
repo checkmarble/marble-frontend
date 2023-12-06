@@ -74,7 +74,7 @@ export async function action({ request }: ActionArgs) {
           values: parsedForm.data,
           error: error,
         },
-        { headers: { 'Set-Cookie': await commitSession(session) } }
+        { headers: { 'Set-Cookie': await commitSession(session) } },
       );
     } else {
       return json({
@@ -156,7 +156,7 @@ export function CreateTable() {
                         <Input
                           type="text"
                           placeholder={t(
-                            'data:create_table.description_placeholder'
+                            'data:create_table.description_placeholder',
                           )}
                           {...field}
                         />

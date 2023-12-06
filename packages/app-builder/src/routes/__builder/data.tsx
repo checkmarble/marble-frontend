@@ -67,7 +67,7 @@ function EditableText({
     <div
       className={clsx(
         'before:hover:bg-grey-05 relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out hover:cursor-pointer',
-        className
+        className,
       )}
     >
       <span className="text-grey-100 relative">{children}</span>
@@ -82,7 +82,7 @@ function FormatDescription({ description }: { description: string }) {
     <span
       className={clsx(
         'relative first-letter:capitalize',
-        description ? 'text-grey-100' : 'text-grey-25'
+        description ? 'text-grey-100' : 'text-grey-25',
       )}
     >
       {description || t('data:empty_description')}
@@ -102,13 +102,13 @@ function TableDetails({
 
   const otherTables = useMemo(
     () => dataModel.filter((table) => table.id !== tableModel.id),
-    [dataModel, tableModel]
+    [dataModel, tableModel],
   );
 
   // Create table for client db table fields
   const fields = useMemo(
     () => tableModel.fields.map((field) => mapFieldToTableRow(field)),
-    [tableModel.fields]
+    [tableModel.fields],
   );
 
   const columnsFields = useMemo<
@@ -147,19 +147,19 @@ function TableDetails({
           return (
             <div className="flex flex-row items-center justify-between">
               <FormatDescription description={cell.row.original.description} />
-              {canEditDataModel && (
+              {canEditDataModel ? (
                 <EditField key={cell.row.original.id} field={cell.row.original}>
                   <div className="text-grey-00 group-hover:text-grey-100 relative rounded border-2 border-solid bg-transparent p-2 transition-colors ease-in-out">
                     <Edit width={'24px'} height={'24px'} />
                   </div>
                 </EditField>
-              )}
+              ) : null}
             </div>
           );
         },
       },
     ],
-    [canEditDataModel, t]
+    [canEditDataModel, t],
   );
 
   const {
@@ -180,9 +180,9 @@ function TableDetails({
   const links = useMemo(
     () =>
       tableModel.linksToSingle.map((link) =>
-        mapLinkToTableRow(tableModel, link)
+        mapLinkToTableRow(tableModel, link),
       ),
-    [tableModel]
+    [tableModel],
   );
 
   const columnsLinks = useMemo<
@@ -215,7 +215,7 @@ function TableDetails({
         size: 100,
       },
     ],
-    [t]
+    [t],
   );
 
   const {
@@ -240,12 +240,12 @@ function TableDetails({
       <div className="bg-grey-02 border-b-grey-10 flex flex-row items-center justify-between border-b px-8 py-4 font-bold capitalize">
         {tableModel.name}
         <div className="flex flex-row gap-3">
-          {canEditDataModel && <CreateField tableId={tableModel.id} />}
-          {canIngestData && (
+          {canEditDataModel ? <CreateField tableId={tableModel.id} /> : null}
+          {canIngestData ? (
             <NavLink
               className={clsx(
                 'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
-                'hover:bg-purple-110 active:bg-purple-120 text-grey-00 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50'
+                'hover:bg-purple-110 active:bg-purple-120 text-grey-00 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50',
               )}
               to={getRoute('/upload/:objectType', {
                 objectType: tableModel.name,
@@ -254,7 +254,7 @@ function TableDetails({
               <Plus width={'24px'} height={'24px'} />
               {t('data:upload_data')}
             </NavLink>
-          )}
+          ) : null}
         </div>
       </div>
       <div className="flex flex-col gap-6 px-6 py-8">
@@ -289,7 +289,7 @@ function TableDetails({
             </Table.Body>
           </Table.Container>
         </div>
-        {links.length > 0 && (
+        {links.length > 0 ? (
           <div>
             <p className="pb-6">
               <Trans
@@ -318,10 +318,10 @@ function TableDetails({
               </Table.Container>
             </div>
           </div>
-        )}
-        {canEditDataModel && otherTables.length > 0 && (
+        ) : null}
+        {canEditDataModel && otherTables.length > 0 ? (
           <CreateLink thisTable={tableModel} otherTables={otherTables} />
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -344,7 +344,7 @@ export default function Data() {
         <Callout className="whitespace-normal">
           {t('data:your_data_callout')}
         </Callout>
-        {canEditDataModel && <CreateTable />}
+        {canEditDataModel ? <CreateTable /> : null}
         {dataModel.map((table) => (
           <TableDetails
             key={table.name}

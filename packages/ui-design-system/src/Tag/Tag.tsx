@@ -39,7 +39,7 @@ export function Tag({
           'h-6 px-2 text-xs font-medium': size === 'small',
           'text-s h-8 px-2 font-semibold': size === 'big',
         },
-        className
+        className,
       )}
       {...props}
     />

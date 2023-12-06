@@ -6,7 +6,7 @@ import { Temporal } from 'temporal-polyfill';
 
 export function formatDateTime(
   createdAt: string | Date,
-  { language, ...options }: { language: string } & Intl.DateTimeFormatOptions
+  { language, ...options }: { language: string } & Intl.DateTimeFormatOptions,
 ) {
   return Intl.DateTimeFormat(language, {
     dateStyle: 'short',
@@ -17,14 +17,14 @@ export function formatDateTime(
 
 export function formatNumber(
   number: number,
-  { language, ...options }: { language: string } & Intl.NumberFormatOptions
+  { language, ...options }: { language: string } & Intl.NumberFormatOptions,
 ) {
   return Intl.NumberFormat(language, options).format(number);
 }
 
 export function formatSchedule(
   schedule: string,
-  { language, ...options }: { language: string } & ConstrueOptions
+  { language, ...options }: { language: string } & ConstrueOptions,
 ) {
   // Cronstrue only expose locale for lng, without country code
   const locale = language.split('-')[0];
@@ -47,19 +47,19 @@ export function formatDuration(duration: string, language: string) {
     {
       addSuffix: true,
       locale: getDateFnsLocale(language),
-    }
+    },
   );
 }
 
 export function formatDateRelative(
   date: string | Date,
-  options: { language: string }
+  options: { language: string },
 ) {
   return formatRelative(
     typeof date === 'string' ? new Date(date) : date,
     new Date(),
     {
       locale: getDateFnsLocale(options.language),
-    }
+    },
   );
 }

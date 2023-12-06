@@ -21,7 +21,7 @@ export const FormError = React.forwardRef<
       id={errorId}
       className={clsx(
         'text-s font-medium text-red-100 transition-opacity duration-200 ease-in-out',
-        className
+        className,
       )}
       {...props}
     >

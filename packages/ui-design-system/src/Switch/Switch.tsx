@@ -5,14 +5,14 @@ import { forwardRef } from 'react';
 export const Switch = forwardRef<
   HTMLButtonElement,
   SwitchProps & { className?: string }
->(({ className, ...props }, ref) => {
+>(function Switch({ className, ...props }, ref) {
   return (
     <Root
       ref={ref}
       className={clsx(
         'bg-grey-10 radix-state-checked:bg-purple-100 relative h-6 w-10 rounded-full outline-none transition-all focus:border-purple-100',
         'disabled:bg-grey-10',
-        className
+        className,
       )}
       {...props}
     >
@@ -20,5 +20,3 @@ export const Switch = forwardRef<
     </Root>
   );
 });
-
-export default Switch;

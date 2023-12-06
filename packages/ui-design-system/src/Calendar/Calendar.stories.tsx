@@ -7,7 +7,7 @@ import { Calendar, type CalendarProps } from './Calendar';
 const Demo = ({ mode, ...args }: CalendarProps) => {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
-    undefined
+    undefined,
   );
 
   return (
@@ -18,12 +18,12 @@ const Demo = ({ mode, ...args }: CalendarProps) => {
           : { ...args, mode, selected: dateRange, onSelect: setDateRange })}
       />
 
-      {mode === 'single' && (
+      {mode === 'single' ? (
         <p className="text-m">
           Selected Date: {date ? date.toDateString() : 'None'}
         </p>
-      )}
-      {mode === 'range' && (
+      ) : null}
+      {mode === 'range' ? (
         <p className="text-m">
           Selected Range:{' '}
           {dateRange
@@ -33,7 +33,7 @@ const Demo = ({ mode, ...args }: CalendarProps) => {
               ].join(' - ')
             : 'None'}
         </p>
-      )}
+      ) : null}
     </div>
   );
 };

@@ -68,7 +68,7 @@ const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
         {...props}
         className={clsx(
           'data-[active-item]:bg-purple-05 group flex flex-row items-center gap-2 rounded p-2',
-          props.className
+          props.className,
         )}
         render={<Ariakit.ComboboxItem render={props.render} />}
       >
@@ -76,7 +76,7 @@ const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
           className={clsx(
             'bg-grey-00 border-grey-10 flex h-4 w-4 shrink-0 items-center justify-center overflow-hidden rounded-sm border outline-none',
             'group-aria-disabled:bg-grey-10 group-aria-disabled:text-grey-100',
-            'group-aria-selected:text-grey-00 group-aria-selected:border-purple-100 group-aria-selected:bg-purple-100'
+            'group-aria-selected:text-grey-00 group-aria-selected:border-purple-100 group-aria-selected:bg-purple-100',
           )}
         >
           <Tick />
@@ -84,7 +84,7 @@ const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
         {props.children || props.value}
       </Ariakit.SelectItem>
     );
-  }
+  },
 );
 
 export const SelectWithCombobox = {

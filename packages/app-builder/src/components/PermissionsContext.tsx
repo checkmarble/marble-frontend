@@ -4,7 +4,7 @@ import { useNavigate } from '@remix-run/react';
 import { type PropsWithChildren, useEffect } from 'react';
 
 const PermissionsContext = createSimpleContext<UserPermissions>(
-  'PermissionsProvider'
+  'PermissionsProvider',
 );
 
 export const PermissionsProvider = ({
@@ -22,7 +22,7 @@ export const usePermissionsContext = PermissionsContext.useValue;
 
 export const usePermissionRedirect = (
   permission: keyof UserPermissions,
-  options: { redirectUrl: string }
+  options: { redirectUrl: string },
 ) => {
   const userPermissions = usePermissionsContext();
   const navigate = useNavigate();

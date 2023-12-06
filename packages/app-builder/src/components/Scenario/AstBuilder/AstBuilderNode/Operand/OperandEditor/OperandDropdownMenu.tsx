@@ -41,7 +41,7 @@ const OperandDropdownMenuSubTrigger = forwardRef<
       ref={ref}
       className={clsx(
         'radix-highlighted:bg-purple-05 radix-state-open:bg-purple-05 rounded-sm outline-none transition-colors',
-        className
+        className,
       )}
       {...props}
     />

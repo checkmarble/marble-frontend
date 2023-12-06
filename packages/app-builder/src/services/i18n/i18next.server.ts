@@ -35,7 +35,7 @@ export function makeI18nextServerService({
 
   async function getI18nextServerInstance(
     request: Request,
-    remixContext: EntryContext
+    remixContext: EntryContext,
   ) {
     // First, we create a new instance of i18next so every request will have a
     // completely unique instance and not share any state
@@ -70,7 +70,7 @@ export function makeI18nextServerService({
     getFixedT: <N extends Namespace>(
       request: Request,
       namespaces?: N,
-      options?: Omit<InitOptions, 'react'>
+      options?: Omit<InitOptions, 'react'>,
     ) => remixI18next.getFixedT(request, namespaces, options),
     getI18nextServerInstance,
     setLanguage,
