@@ -12,6 +12,7 @@ import {
   PaginationButtons,
   type PaginationParams,
   paginationSchema,
+  useDecisionRightPanelContext,
   useSelectedDecisionIds,
 } from '@app-builder/components';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
@@ -29,8 +30,10 @@ import {
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
+import { type DecisionDetail } from 'marble-api';
 import qs from 'qs';
 import { useCallback, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
 import { Decision, Plus, Search } from 'ui-icons';
@@ -117,7 +120,7 @@ export default function Decisions() {
     [navigate],
   );
 
-  const { hasSelection, getSelectedDecisionIds, selectionProps } =
+  const { hasSelection, getSelectedDecisions, selectionProps } =
     useSelectedDecisionIds();
 
   return (
@@ -141,15 +144,10 @@ export default function Decisions() {
                   <DecisionFiltersMenu filterNames={decisionFilterNames}>
                     <FiltersButton />
                   </DecisionFiltersMenu>
-                  <DecisionRightPanel.Trigger
-                    asChild
-                    decisionIds={getSelectedDecisionIds}
-                  >
-                    <Button disabled={!hasSelection}>
-                      <Plus />
-                      {t('decisions:add_to_case')}
-                    </Button>
-                  </DecisionRightPanel.Trigger>
+                  <AddToCase
+                    hasSelection={hasSelection}
+                    getSelectedDecisions={getSelectedDecisions}
+                  />
                 </div>
               </div>
               <DecisionFiltersBar />
@@ -170,6 +168,33 @@ export default function Decisions() {
         </Page.Content>
       </Page.Container>
     </DecisionRightPanel.Root>
+  );
+}
+
+function AddToCase({
+  hasSelection,
+  getSelectedDecisions,
+}: {
+  hasSelection: boolean;
+  getSelectedDecisions: () => DecisionDetail[];
+}) {
+  const { t } = useTranslation(handle.i18n);
+  const { onTriggerClick } = useDecisionRightPanelContext();
+  const getDecisionIds = () => {
+    const selectedDecisions = getSelectedDecisions();
+    if (selectedDecisions.some((decision) => decision.case)) {
+      toast.error(t('common:errors.add_to_case.invalid'));
+    } else {
+      onTriggerClick({ decisionIds: selectedDecisions.map(({ id }) => id) });
+    }
+  };
+  return (
+    <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
+      <Button disabled={!hasSelection}>
+        <Plus />
+        {t('decisions:add_to_case')}
+      </Button>
+    </DecisionRightPanel.Trigger>
   );
 }
 

@@ -6,7 +6,13 @@ import { Link, useNavigate } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type DecisionDetail } from 'marble-api';
-import { useImperativeHandle, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, Table, useVirtualTable } from 'ui-design-system';
 
@@ -37,15 +43,19 @@ type WithoutSelectable = {
 
 export function useSelectedDecisionIds() {
   const [rowSelection, setRowSelection] = useState({});
-  const getSelectedDecisionIdsRef = useRef<() => string[]>(() => []);
+  const getSelectedDecisionsRef = useRef<() => DecisionDetail[]>(() => []);
+  const getSelectedDecisions = useCallback(
+    () => getSelectedDecisionsRef.current(),
+    [],
+  );
 
   return {
     hasSelection: Object.keys(rowSelection).length > 0,
-    getSelectedDecisionIds: getSelectedDecisionIdsRef.current,
+    getSelectedDecisions,
     selectionProps: {
       rowSelection,
       setRowSelection,
-      getSelectedDecisionIdsRef,
+      getSelectedDecisionsRef,
     },
   };
 }
@@ -168,9 +178,8 @@ export function DecisionsList({
   });
 
   useImperativeHandle(
-    selectionProps?.getSelectedDecisionIdsRef,
-    () => () =>
-      table.getSelectedRowModel().flatRows.map((row) => row.original.id),
+    selectionProps?.getSelectedDecisionsRef,
+    () => () => table.getSelectedRowModel().flatRows.map((row) => row.original),
   );
 
   return (

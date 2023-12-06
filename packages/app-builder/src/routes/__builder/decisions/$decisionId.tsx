@@ -7,6 +7,7 @@ import {
   OutcomePanel,
   Page,
   RulesDetail,
+  useDecisionRightPanelContext,
 } from '@app-builder/components';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { TriggerObjectDetail } from '@app-builder/components/Decisions/TriggerObjectDetail';
@@ -69,14 +70,7 @@ export default function DecisionPage() {
               </span>
             </CopyToClipboardButton>
           </div>
-          {!decision.case ? (
-            <DecisionRightPanel.Trigger asChild decisionIds={[decision.id]}>
-              <Button>
-                <Plus />
-                {t('decisions:add_to_case')}
-              </Button>
-            </DecisionRightPanel.Trigger>
-          ) : null}
+          {!decision.case ? <AddToCase decisionIds={[decision.id]} /> : null}
         </Page.Header>
         <Page.Content>
           <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
@@ -93,6 +87,24 @@ export default function DecisionPage() {
         </Page.Content>
       </Page.Container>
     </DecisionRightPanel.Root>
+  );
+}
+
+function AddToCase({ decisionIds }: { decisionIds: string[] }) {
+  const { t } = useTranslation(decisionsI18n);
+  const { onTriggerClick } = useDecisionRightPanelContext();
+  return (
+    <DecisionRightPanel.Trigger
+      asChild
+      onClick={() => {
+        onTriggerClick({ decisionIds });
+      }}
+    >
+      <Button>
+        <Plus />
+        {t('decisions:add_to_case')}
+      </Button>
+    </DecisionRightPanel.Trigger>
   );
 }
 
