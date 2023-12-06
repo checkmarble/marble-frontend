@@ -2,18 +2,19 @@ import {
   createRightPanel,
   type RightPanelRootProps,
 } from '@app-builder/components/RightPanel';
-import { AddToCase } from '@app-builder/routes/ressources/cases/add-to-case';
+import { CreateCase } from '@app-builder/routes/ressources/cases/create-case';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type DialogTriggerProps } from '@radix-ui/react-dialog';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollArea } from 'ui-design-system';
 
-import { decisionsI18n } from './decisions-i18n';
+import { casesI18n } from './cases-i18n';
 
 type Data = {
-  decisionIds: string[];
+  inboxId: string;
 };
+
 type State =
   | {
       open: false;
@@ -35,7 +36,7 @@ const initialState: State = {
   open: false,
 };
 
-function decisionRightPanelReducer(prevState: State, action: Actions): State {
+function caseRightPanelReducer(prevState: State, action: Actions): State {
   switch (action.type) {
     case 'triggerClicked': {
       return {
@@ -50,62 +51,53 @@ function decisionRightPanelReducer(prevState: State, action: Actions): State {
       };
   }
 }
+const { RightPanel } = createRightPanel('CaseRightPanel');
 
-const { RightPanel } = createRightPanel('DecisionRightPanel');
-
-const DecisionRightPanelContext = createSimpleContext<{
+const CaseRightPanelContext = createSimpleContext<{
   data?: Data;
   onTriggerClick: (data: Data) => void;
-  closePanel: () => void;
-}>('DecisionRightPanelContext');
-export const useDecisionRightPanelContext = DecisionRightPanelContext.useValue;
+}>('CaseRightPanelContext');
+export const useCaseRightPanelContext = CaseRightPanelContext.useValue;
 
-function DecisionRightPanelRoot({
+function CaseRightPanelRoot({
   children,
   ...props
 }: Omit<RightPanelRootProps, 'open' | 'onClose'>) {
-  const [state, dispatch] = useReducer(decisionRightPanelReducer, initialState);
-
-  const value = {
-    data: state.open ? state.data : undefined,
-    onTriggerClick: (data: Data) => {
-      dispatch({ type: 'triggerClicked', payload: { data } });
-    },
-    closePanel: () => {
-      dispatch({ type: 'close' });
-    },
-  };
+  const [state, dispatch] = useReducer(caseRightPanelReducer, initialState);
 
   return (
-    <DecisionRightPanelContext.Provider value={value}>
+    <CaseRightPanelContext.Provider
+      value={{
+        data: state.open ? state.data : undefined,
+        onTriggerClick: (data: Data) =>
+          dispatch({ type: 'triggerClicked', payload: { data } }),
+      }}
+    >
       <RightPanel.Root
-        {...props}
         open={state.open}
-        onClose={() => {
-          dispatch({ type: 'close' });
-        }}
+        onClose={() => dispatch({ type: 'close' })}
+        {...props}
       >
         <RightPanel.Viewport>{children}</RightPanel.Viewport>
-        <DecisionRightPanelContent />
+        <CaseRightPanelContent />
       </RightPanel.Root>
-    </DecisionRightPanelContext.Provider>
+    </CaseRightPanelContext.Provider>
   );
 }
 
-function DecisionRightPanelContent() {
-  const { t } = useTranslation(decisionsI18n);
-
+const CaseRightPanelContent = () => {
+  const { t } = useTranslation(casesI18n);
   return (
     <RightPanel.Content className="max-w-md">
       <ScrollArea.Root className="flex h-full w-full flex-col gap-4 p-4 lg:gap-8 lg:p-8">
         <RightPanel.Title>
           <span className="w-full first-letter:capitalize">
-            {t('decisions:add_to_case')}
+            {t('cases:case.new_case')}
           </span>
           <RightPanel.Close />
         </RightPanel.Title>
         <ScrollArea.Viewport className="h-full">
-          <AddToCase />
+          <CreateCase />
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation="vertical">
           <ScrollArea.Thumb />
@@ -113,32 +105,30 @@ function DecisionRightPanelContent() {
       </ScrollArea.Root>
     </RightPanel.Content>
   );
-}
+};
 
-function DecisionRightPanelTrigger({
+function CaseRightPanelTrigger({
   onClick,
-  decisionIds,
+  data,
   ...otherProps
 }: {
-  decisionIds: Data['decisionIds'] | (() => Data['decisionIds']);
+  data: Data;
 } & DialogTriggerProps) {
-  const { onTriggerClick } = useDecisionRightPanelContext();
+  const { onTriggerClick } = useCaseRightPanelContext();
 
   return (
     <RightPanel.Trigger
       onClick={(e) => {
-        onTriggerClick({
-          decisionIds:
-            typeof decisionIds === 'function' ? decisionIds() : decisionIds,
-        });
+        onTriggerClick(data);
         onClick?.(e);
+        e.stopPropagation();
       }}
       {...otherProps}
     />
   );
 }
 
-export const DecisionRightPanel = {
-  Root: DecisionRightPanelRoot,
-  Trigger: DecisionRightPanelTrigger,
+export const CaseRightPanel = {
+  Root: CaseRightPanelRoot,
+  Trigger: CaseRightPanelTrigger,
 };

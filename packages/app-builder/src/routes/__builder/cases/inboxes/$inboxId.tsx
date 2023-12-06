@@ -1,5 +1,6 @@
 import { Page } from '@app-builder/components';
 import { casesI18n, CasesList } from '@app-builder/components/Cases';
+import { CaseRightPanel } from '@app-builder/components/Cases/CaseRightPanel';
 import {
   type CasesFilters,
   CasesFiltersBar,
@@ -20,6 +21,9 @@ import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
+import { Plus } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', ...casesI18n] satisfies Namespace,
@@ -56,6 +60,7 @@ export async function loader({ request, params }: LoaderArgs) {
 export default function Cases() {
   const { cases, filters } = useLoaderData<typeof loader>();
   const inboxId = useParam('inboxId');
+  const { t } = useTranslation(casesI18n);
 
   const navigate = useNavigate();
   const submitCasesFilters = useCallback(
@@ -94,23 +99,31 @@ export default function Cases() {
   );
 
   return (
-    <div className="flex h-full flex-row">
-      <Page.Content>
-        <div className="flex flex-col gap-4">
-          <CasesFiltersProvider
-            submitCasesFilters={submitCasesFilters}
-            filterValues={filters}
-          >
-            <div className="flex justify-end gap-4">
-              <CasesFiltersMenu filterNames={casesFilterNames}>
-                <FiltersButton />
-              </CasesFiltersMenu>
-            </div>
-            <CasesFiltersBar />
-            <CasesList cases={cases} />
-          </CasesFiltersProvider>
-        </div>
-      </Page.Content>
-    </div>
+    <CaseRightPanel.Root>
+      <div className="flex h-full flex-row">
+        <Page.Content>
+          <div className="flex flex-col gap-4">
+            <CasesFiltersProvider
+              submitCasesFilters={submitCasesFilters}
+              filterValues={filters}
+            >
+              <div className="flex justify-end gap-4">
+                <CasesFiltersMenu filterNames={casesFilterNames}>
+                  <FiltersButton />
+                </CasesFiltersMenu>
+                <CaseRightPanel.Trigger asChild data={{ inboxId }}>
+                  <Button>
+                    <Plus />
+                    {t('cases:case.new_case')}
+                  </Button>
+                </CaseRightPanel.Trigger>
+              </div>
+              <CasesFiltersBar />
+              <CasesList cases={cases} />
+            </CasesFiltersProvider>
+          </div>
+        </Page.Content>
+      </div>
+    </CaseRightPanel.Root>
   );
 }
