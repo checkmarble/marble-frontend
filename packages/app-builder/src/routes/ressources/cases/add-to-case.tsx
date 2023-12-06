@@ -20,8 +20,14 @@ import {
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { type InboxDto } from 'marble-api';
-import { useEffect, useState } from 'react';
-import { type Control, Form, FormProvider, useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+import {
+  type Control,
+  Form,
+  FormProvider,
+  useForm,
+  useWatch,
+} from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select, Switch } from 'ui-design-system';
 import { Plus } from 'ui-icons';
@@ -108,7 +114,7 @@ export async function action({ request }: ActionArgs) {
     if (isStatusBadRequestHttpError(error)) {
       setToastMessage(session, {
         type: 'error',
-        messageKey: 'common:errors.create_case.invalid',
+        messageKey: 'common:errors.add_to_case.invalid',
       });
     } else {
       setToastMessage(session, {
@@ -139,19 +145,16 @@ export function AddToCase() {
   const fetcher = useFetcher<typeof action>();
   const { data, closePanel } = useDecisionRightPanelContext();
 
-  const [isNewCase, setIsNewCase] = useState<boolean>(false);
-
   const formMethods = useForm<AddToCaseForm>({
     progressive: true,
     resolver: zodResolver(addToCaseFormSchema),
     defaultValues: {
-      newCase: isNewCase,
-      name: '',
+      newCase: false,
       decisionIds: data?.decisionIds ? data?.decisionIds : [],
-      inboxId: '',
     },
   });
-  const { control, register } = formMethods;
+  const { control } = formMethods;
+  const isNewCase = useWatch({ control, name: 'newCase' });
 
   useEffect(() => {
     if (fetcher.data?.success) {
@@ -178,20 +181,17 @@ export function AddToCase() {
           <FormField
             name="newCase"
             control={control}
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...rest } }) => (
               <FormItem className="flex items-center  gap-2">
                 <FormLabel className="text-xs capitalize">
                   {t('decisions:add_to_case.create_new_case')}
                 </FormLabel>
                 <FormControl>
                   <Switch
-                    {...register('newCase')}
+                    {...rest}
                     id="newCase"
-                    checked={isNewCase}
-                    onCheckedChange={(checked) => {
-                      setIsNewCase(checked);
-                      field.onChange(checked);
-                    }}
+                    checked={value}
+                    onCheckedChange={(checked) => onChange(checked)}
                   />
                 </FormControl>
               </FormItem>

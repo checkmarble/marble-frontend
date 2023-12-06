@@ -11,7 +11,7 @@ import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type DecisionDetail } from 'marble-api';
 import { useTranslation } from 'react-i18next';
-import { Table, useVirtualTable } from 'ui-design-system';
+import { Checkbox, Table, useVirtualTable } from 'ui-design-system';
 
 import { Score } from './Score';
 
@@ -125,11 +125,10 @@ export function DecisionsList({
     columns.unshift({
       id: 'select',
       header: () => (
-        <input
-          type="checkbox"
-          checked={selectedDecisionIds.length === decisions.length}
-          onChange={(e) => {
-            if (e.target.checked) {
+        <Checkbox
+          defaultChecked={selectedDecisionIds.length === decisions.length}
+          onCheckedChange={(checked) => {
+            if (checked) {
               setSelectedDecisionIds(decisions.map((d) => d.id));
             } else {
               setSelectedDecisionIds([]);
@@ -138,11 +137,10 @@ export function DecisionsList({
         />
       ),
       cell: ({ row }) => (
-        <input
-          type="checkbox"
-          checked={selectedDecisionIds.includes(row.original.id)}
-          onChange={(e) => {
-            if (e.target.checked) {
+        <Checkbox
+          defaultChecked={selectedDecisionIds.includes(row.original.id)}
+          onCheckedChange={(checked) => {
+            if (checked) {
               setSelectedDecisionIds([...selectedDecisionIds, row.original.id]);
             } else {
               setSelectedDecisionIds(
@@ -151,7 +149,6 @@ export function DecisionsList({
             }
           }}
           onClick={(e) => {
-            e.preventDefault();
             e.stopPropagation();
           }}
         />
