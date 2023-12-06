@@ -385,6 +385,52 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /cases/{caseId}/comments:
+    post:
+      tags:
+        - Cases
+      summary: Add a comment to a case
+      operationId: addCommentToCase
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: caseId
+          description: ID of the case that needs to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Comment to add to the case'              
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - comment
+              properties:
+                comment:
+                  type: string    
+      responses:
+        '200':
+          description: The updated case corresponding to the provided `caseId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - case
+                properties:
+                  case:
+                    $ref: '#/components/schemas/CaseDetail'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scheduled-executions:
     get:
       tags:
