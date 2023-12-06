@@ -13,6 +13,7 @@ export const toastMessageScema = z.object({
     'common:errors.data.duplicate_link_name',
     'common:errors.create_case.invalid',
     'common:success.save',
+    'common:success.add_to_case',
     'common:errors.draft.invalid',
   ]),
 });

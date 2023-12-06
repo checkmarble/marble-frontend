@@ -128,7 +128,6 @@ export type CaseDetail = Case & {
 };
 export type UpdateCaseBody = {
     name?: string;
-    decision_ids?: string[];
     status?: CaseStatus;
 };
 export type ScheduledExecution = {
@@ -623,6 +622,32 @@ export function updateCase(caseId: string, updateCaseBody: UpdateCaseBody, opts?
         ...opts,
         method: "PATCH",
         body: updateCaseBody
+    })));
+}
+/**
+ * Add decisions to a case
+ */
+export function addDecisionsToCase(caseId: string, body: {
+    decision_ids: string[];
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetail;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/decisions`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
     })));
 }
 /**

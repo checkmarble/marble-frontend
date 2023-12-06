@@ -19,9 +19,11 @@ import {
 } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { Form, FormProvider, useForm } from 'react-hook-form';
+import { type InboxDto } from 'marble-api';
+import { useEffect, useState } from 'react';
+import { type Control, Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Select } from 'ui-design-system';
+import { Button, Input, Select, Switch } from 'ui-design-system';
 import { Plus } from 'ui-icons';
 import { z } from 'zod';
 
@@ -73,9 +75,10 @@ export async function action({ request }: ActionArgs) {
       error: parsedForm.error.format(),
     });
   }
+  const session = await getSession(request);
 
-  if (parsedForm.data.newCase) {
-    try {
+  try {
+    if (parsedForm.data.newCase) {
       const result = await apiClient.createCase({
         name: parsedForm.data.name,
         decision_ids: parsedForm.data.decisionIds,
@@ -84,29 +87,44 @@ export async function action({ request }: ActionArgs) {
       return redirect(
         getRoute('/cases/:caseId', { caseId: fromUUID(result.case.id) })
       );
-    } catch (error) {
-      const session = await getSession(request);
-      if (isStatusBadRequestHttpError(error)) {
-        setToastMessage(session, {
-          type: 'error',
-          messageKey: 'common:errors.create_case.invalid',
-        });
-      } else {
-        setToastMessage(session, {
-          type: 'error',
-          messageKey: 'common:errors.unknown',
-        });
-      }
+    } else {
+      await apiClient.addDecisionsToCase(parsedForm.data.caseId, {
+        decision_ids: parsedForm.data.decisionIds,
+      });
+      setToastMessage(session, {
+        type: 'success',
+        messageKey: 'common:success.add_to_case',
+      });
       return json(
         {
-          success: false as const,
-          error: error,
+          success: true as const,
         },
         {
           headers: { 'Set-Cookie': await commitSession(session) },
         }
       );
     }
+  } catch (error) {
+    if (isStatusBadRequestHttpError(error)) {
+      setToastMessage(session, {
+        type: 'error',
+        messageKey: 'common:errors.create_case.invalid',
+      });
+    } else {
+      setToastMessage(session, {
+        type: 'error',
+        messageKey: 'common:errors.unknown',
+      });
+    }
+    return json(
+      {
+        success: false as const,
+        error: error,
+      },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      }
+    );
   }
 }
 
@@ -119,19 +137,27 @@ export function AddToCase() {
   const inboxes = loadFetcher.data?.inboxes || [];
 
   const fetcher = useFetcher<typeof action>();
-  const { data } = useDecisionRightPanelContext();
+  const { data, closePanel } = useDecisionRightPanelContext();
+
+  const [isNewCase, setIsNewCase] = useState<boolean>(false);
 
   const formMethods = useForm<AddToCaseForm>({
     progressive: true,
     resolver: zodResolver(addToCaseFormSchema),
     defaultValues: {
-      newCase: true,
+      newCase: isNewCase,
       name: '',
-      decisionIds: data?.decisionId ? [data?.decisionId] : [],
+      decisionIds: data?.decisionIds ? data?.decisionIds : [],
       inboxId: '',
     },
   });
   const { control, register } = formMethods;
+
+  useEffect(() => {
+    if (fetcher.data?.success) {
+      closePanel();
+    }
+  }, [fetcher.data, closePanel]);
 
   if (inboxes.length === 0) {
     return <p>{t('decisions:add_to_case.new_case.no_inbox')}</p>;
@@ -149,58 +175,133 @@ export function AddToCase() {
         }}
       >
         <div className="flex flex-col gap-4">
-          <input hidden {...register('newCase')} />
-          <p className="text-s text-grey-100 font-semibold first-letter:capitalize">
-            {t('decisions:add_to_case.new_case.informations')}
-          </p>
           <FormField
-            name="name"
+            name="newCase"
             control={control}
             render={({ field }) => (
-              <FormItem className="flex flex-col gap-2">
+              <FormItem className="flex items-center  gap-2">
                 <FormLabel className="text-xs capitalize">
-                  {t('decisions:add_to_case.new_case.new_case_name')}
+                  {t('decisions:add_to_case.create_new_case')}
                 </FormLabel>
                 <FormControl>
-                  <Input type="text" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            name="inboxId"
-            control={control}
-            render={({ field }) => (
-              <FormItem className="flex flex-1 flex-col gap-2">
-                <FormLabel className="text-xs capitalize">
-                  {t('decisions:add_to_case.new_case.select_inbox')}
-                </FormLabel>
-                <FormControl>
-                  <Select.Default
-                    className="w-full overflow-hidden"
-                    onValueChange={(type) => {
-                      field.onChange(type);
+                  <Switch
+                    {...register('newCase')}
+                    id="newCase"
+                    checked={isNewCase}
+                    onCheckedChange={(checked) => {
+                      setIsNewCase(checked);
+                      field.onChange(checked);
                     }}
-                    value={field.value}
-                  >
-                    {inboxes.map(({ name, id }) => {
-                      return (
-                        <Select.DefaultItem key={id} value={id}>
-                          {name}
-                        </Select.DefaultItem>
-                      );
-                    })}
-                  </Select.Default>
+                  />
                 </FormControl>
               </FormItem>
             )}
           />
-          <Button type="submit">
-            <Plus />
-            {t('decisions:add_to_case.create_new_case')}
-          </Button>
+          {isNewCase ? (
+            <NewCaseFields control={control} inboxes={inboxes} />
+          ) : (
+            <AddToCaseFields control={control} />
+          )}
         </div>
       </Form>
     </FormProvider>
   );
 }
+
+const NewCaseFields = ({
+  control,
+  inboxes,
+}: {
+  control: Control<AddToCaseForm>;
+  inboxes: InboxDto[];
+}) => {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <>
+      <p className="text-s text-grey-100 font-semibold first-letter:capitalize">
+        {t('decisions:add_to_case.new_case.informations')}
+      </p>
+      <FormField
+        name="name"
+        control={control}
+        render={({ field }) => (
+          <FormItem className="flex flex-col gap-2">
+            <FormLabel className="text-xs capitalize">
+              {t('decisions:add_to_case.new_case.new_case_name')}
+            </FormLabel>
+            <FormControl>
+              <Input type="text" {...field} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        name="inboxId"
+        control={control}
+        render={({ field }) => (
+          <FormItem className="flex flex-1 flex-col gap-2">
+            <FormLabel className="text-xs capitalize">
+              {t('decisions:add_to_case.new_case.select_inbox')}
+            </FormLabel>
+            <FormControl>
+              <Select.Default
+                className="w-full overflow-hidden"
+                onValueChange={(type) => {
+                  field.onChange(type);
+                }}
+                value={field.value}
+              >
+                {inboxes.map(({ name, id }) => {
+                  return (
+                    <Select.DefaultItem key={id} value={id}>
+                      {name}
+                    </Select.DefaultItem>
+                  );
+                })}
+              </Select.Default>
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <Button type="submit">
+        <Plus />
+        {t('decisions:add_to_case.create_new_case')}
+      </Button>
+    </>
+  );
+};
+
+const AddToCaseFields = ({ control }: { control: Control<AddToCaseForm> }) => {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <>
+      <p className="text-s text-grey-100 font-semibold first-letter:capitalize">
+        {t('decisions:add_to_case.new_case.attribution')}
+      </p>
+      <FormField
+        name="caseId"
+        control={control}
+        render={({ field }) => (
+          <FormItem className="flex flex-col gap-2">
+            <FormLabel className="text-xs capitalize">
+              {t('decisions:add_to_case.new_case.case_id.label')}
+            </FormLabel>
+            <FormControl>
+              <Input
+                type="text"
+                {...field}
+                placeholder={t(
+                  'decisions:add_to_case.new_case.case_id.placeholder'
+                )}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <Button type="submit">
+        <Plus />
+        {t('decisions:add_to_case')}
+      </Button>
+    </>
+  );
+};
