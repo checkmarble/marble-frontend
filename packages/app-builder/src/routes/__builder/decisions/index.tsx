@@ -4,6 +4,7 @@ import {
   DecisionFiltersMenu,
   DecisionFiltersProvider,
   decisionFiltersSchema,
+  DecisionRightPanel,
   decisionsI18n,
   DecisionsList,
   ErrorComponent,
@@ -31,7 +32,7 @@ import qs from 'qs';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
-import { Decision, Search } from 'ui-icons';
+import { Decision, Plus, Search } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
@@ -75,6 +76,7 @@ export default function Decisions() {
     filters,
     scenarios,
   } = useLoaderData<typeof loader>();
+  const [selectedDecisionIds, setSelectedDecisionIds] = useState<string[]>([]);
 
   const navigate = useNavigate();
   const navigateDecisionList = useCallback(
@@ -116,41 +118,56 @@ export default function Decisions() {
   );
 
   return (
-    <Page.Container>
-      <Page.Header>
-        <Decision className="mr-2" height="24px" width="24px" />
-        {t('navigation:decisions')}
-      </Page.Header>
+    <DecisionRightPanel.Root>
+      <Page.Container>
+        <Page.Header>
+          <Decision className="mr-2" height="24px" width="24px" />
+          {t('navigation:decisions')}
+        </Page.Header>
 
-      <Page.Content>
-        <div className="flex flex-col gap-4">
-          <DecisionFiltersProvider
-            scenarios={scenarios}
-            submitDecisionFilters={navigateDecisionList}
-            filterValues={filters}
-          >
-            <div className="flex justify-between gap-4">
-              <SearchById />
-              <div className="flex gap-4">
-                <DecisionFiltersMenu filterNames={decisionFilterNames}>
-                  <FiltersButton />
-                </DecisionFiltersMenu>
-                {/* <Button>Add to case</Button> */}
+        <Page.Content>
+          <div className="flex flex-col gap-4">
+            <DecisionFiltersProvider
+              scenarios={scenarios}
+              submitDecisionFilters={navigateDecisionList}
+              filterValues={filters}
+            >
+              <div className="flex justify-between gap-4">
+                <SearchById />
+                <div className="flex gap-4">
+                  <DecisionFiltersMenu filterNames={decisionFilterNames}>
+                    <FiltersButton />
+                  </DecisionFiltersMenu>
+                  <DecisionRightPanel.Trigger
+                    asChild
+                    data={{ decisionIds: selectedDecisionIds }}
+                  >
+                    <Button disabled={selectedDecisionIds.length === 0}>
+                      <Plus />
+                      {t('decisions:add_to_case')}
+                    </Button>
+                  </DecisionRightPanel.Trigger>
+                </div>
               </div>
-            </div>
-            <DecisionFiltersBar />
-            <DecisionsList decisions={decisions} />
-            <PaginationButtons
-              items={decisions}
-              onPaginationChange={(paginationParams: PaginationParams) =>
-                navigateDecisionList(filters, paginationParams)
-              }
-              {...pagination}
-            />
-          </DecisionFiltersProvider>
-        </div>
-      </Page.Content>
-    </Page.Container>
+              <DecisionFiltersBar />
+              <DecisionsList
+                decisions={decisions}
+                selectable
+                selectedDecisionIds={selectedDecisionIds}
+                setSelectedDecisionIds={setSelectedDecisionIds}
+              />
+              <PaginationButtons
+                items={decisions}
+                onPaginationChange={(paginationParams: PaginationParams) =>
+                  navigateDecisionList(filters, paginationParams)
+                }
+                {...pagination}
+              />
+            </DecisionFiltersProvider>
+          </div>
+        </Page.Content>
+      </Page.Container>
+    </DecisionRightPanel.Root>
   );
 }
 
