@@ -12,7 +12,7 @@ import { ScrollArea } from 'ui-design-system';
 import { decisionsI18n } from './decisions-i18n';
 
 type Data = {
-  decisionId: string;
+  decisionIds: string[];
 };
 type State =
   | {
@@ -56,6 +56,7 @@ const { RightPanel } = createRightPanel('DecisionRightPanel');
 const DecisionRightPanelContext = createSimpleContext<{
   data?: Data;
   onTriggerClick: (data: Data) => void;
+  closePanel: () => void;
 }>('DecisionRightPanelContext');
 export const useDecisionRightPanelContext = DecisionRightPanelContext.useValue;
 
@@ -69,6 +70,9 @@ function DecisionRightPanelRoot({
     data: state.open ? state.data : undefined,
     onTriggerClick: (data: Data) => {
       dispatch({ type: 'triggerClicked', payload: { data } });
+    },
+    closePanel: () => {
+      dispatch({ type: 'close' });
     },
   };
 

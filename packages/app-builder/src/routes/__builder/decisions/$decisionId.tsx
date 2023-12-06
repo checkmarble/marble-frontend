@@ -72,7 +72,7 @@ export default function DecisionPage() {
           {!decision.case && (
             <DecisionRightPanel.Trigger
               asChild
-              data={{ decisionId: decision.id }}
+              data={{ decisionIds: [decision.id] }}
             >
               <Button>
                 <Plus />
