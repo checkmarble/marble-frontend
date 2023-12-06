@@ -1,13 +1,26 @@
+import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 
 import { type inputBorderColor } from './Input.constants';
 
-export interface InputProps
-  extends React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  > {
+export const input = cva(
+  'bg-grey-00 text-s text-grey-100 placeholder:text-grey-25 disabled:bg-grey-05 peer block h-full w-full rounded px-2 font-medium outline-none border focus:border-purple-100',
+  {
+    variants: {
+      borderColor: {
+        'grey-10': 'border-grey-10',
+        'red-25': 'border-red-25',
+        'red-100': 'border-red-100',
+      },
+    },
+    defaultVariants: {
+      borderColor: 'grey-10',
+    },
+  },
+);
+
+export interface InputProps extends React.ComponentPropsWithoutRef<'input'> {
   borderColor?: (typeof inputBorderColor)[number];
   startAdornment?: JSX.Element;
   endAdornment?: JSX.Element;
@@ -28,14 +41,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       <input
         ref={ref}
         className={clsx(
-          'bg-grey-00 text-s text-grey-100 placeholder:text-grey-50 disabled:bg-grey-05 peer block h-full w-full rounded px-2 font-medium outline-none',
-          // Border classes
-          'border focus:border-purple-100',
-          {
-            'border-grey-10': borderColor === 'grey-10',
-            'border-red-25': borderColor === 'red-25',
-            'border-red-100': borderColor === 'red-100',
-          },
+          input({ borderColor }),
           startAdornment && 'pl-10',
           endAdornment && 'pr-10',
         )}

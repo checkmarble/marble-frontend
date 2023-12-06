@@ -94,8 +94,6 @@ export default function Builder() {
 
   return (
     <PermissionsProvider userPermissions={user.permissions}>
-      <ChatlioWidget />
-
       <OrganizationUsersContextProvider orgUsers={orgUsers}>
         <div className="flex h-full flex-1 flex-row overflow-hidden">
           <header
@@ -190,6 +188,7 @@ export default function Builder() {
                   <Sidebar.Link {...linkProps} />
                 </li>
               ))}
+              <ChatlioWidget />
             </Sidebar.Nav>
           </header>
 

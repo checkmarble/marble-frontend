@@ -1,3 +1,4 @@
+import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { ScrollArea } from 'ui-design-system';
 import { ArrowLeft } from 'ui-icons';
@@ -17,6 +18,20 @@ function PageContainer({
   );
 }
 
+/**
+ * Used to set the height of the header and the margin-top of the toast
+ *
+ * They are heavilly linked together, thus the use of the same function
+ */
+export const headerHeight = cva(undefined, {
+  variants: {
+    type: {
+      height: 'h-16 lg:h-20',
+      mt: 'mt-16 lg:mt-20',
+    },
+  },
+});
+
 function PageHeader({
   className,
   ...props
@@ -27,8 +42,8 @@ function PageHeader({
   return (
     <div
       className={clsx(
-        'border-b-grey-10 bg-grey-00 text-l text-grey-100 flex shrink-0 flex-row items-center border-b font-bold',
-        'h-16 px-4 lg:h-20 lg:px-8',
+        'border-b-grey-10 bg-grey-00 text-l text-grey-100 flex shrink-0 flex-row items-center border-b px-4 font-bold lg:px-8',
+        headerHeight({ type: 'height' }),
         className,
       )}
       {...props}

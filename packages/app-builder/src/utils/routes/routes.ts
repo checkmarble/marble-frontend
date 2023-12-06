@@ -25,11 +25,6 @@ export const routes = [
         "file": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete.tsx"
       },
       {
-        "id": "routes/ressources/cases/create-first-inbox",
-        "path": "ressources/cases/create-first-inbox",
-        "file": "routes/ressources/cases/create-first-inbox.tsx"
-      },
-      {
         "id": "routes/ressources/auth/login-with-email",
         "path": "ressources/auth/login-with-email",
         "file": "routes/ressources/auth/login-with-email.tsx"
@@ -53,6 +48,11 @@ export const routes = [
         "id": "routes/ressources/lists/value_delete",
         "path": "ressources/lists/value_delete",
         "file": "routes/ressources/lists/value_delete.tsx"
+      },
+      {
+        "id": "routes/ressources/cases/add-comment",
+        "path": "ressources/cases/add-comment",
+        "file": "routes/ressources/cases/add-comment.tsx"
       },
       {
         "id": "routes/ressources/cases/add-to-case",

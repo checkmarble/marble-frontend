@@ -15,4 +15,5 @@ export * from './Separator/Separator';
 export * from './Switch/Switch';
 export * from './Table/Table';
 export * from './Tag/Tag';
+export * from './TextArea/TextArea';
 export * from './Tooltip/Tooltip';

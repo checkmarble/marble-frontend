@@ -10,6 +10,7 @@ import {
   casesI18n,
 } from '@app-builder/components/Cases';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
+import { AddComment } from '@app-builder/routes/ressources/cases/add-comment';
 import { EditCaseStatus } from '@app-builder/routes/ressources/cases/edit-status';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -86,6 +87,9 @@ export default function CasePage() {
           <div className="flex flex-col gap-4 lg:gap-8"></div>
         </div>
       </Page.Content>
+      <div className="bg-grey-00 border-t-grey-10 sticky inset-x-0 bottom-0 flex flex-row gap-4 border-t p-4">
+        <AddComment caseId={caseDetail.id} />
+      </div>
     </Page.Container>
   );
 }
