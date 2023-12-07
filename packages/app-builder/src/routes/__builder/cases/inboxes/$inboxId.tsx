@@ -1,4 +1,9 @@
-import { Page } from '@app-builder/components';
+import {
+  Page,
+  PaginationButtons,
+  type PaginationParams,
+  paginationSchema,
+} from '@app-builder/components';
 import { casesI18n, CasesList } from '@app-builder/components/Cases';
 import { CaseRightPanel } from '@app-builder/components/Cases/CaseRightPanel';
 import {
@@ -38,15 +43,22 @@ export async function loader({ request, params }: LoaderArgs) {
   const inboxId = fromParams(params, 'inboxId');
 
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
-  if (!parsedQuery.success) {
+  const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
+  if (!parsedQuery.success || !parsedPaginationQuery.success) {
     return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId }));
   }
+
   const filters = parsedQuery.data;
-  const filtersForBackend: CaseFilters = { ...filters, inboxIds: [inboxId] };
+  const filtersForBackend: CaseFilters = {
+    ...parsedQuery.data,
+    ...parsedPaginationQuery.data,
+    inboxIds: [inboxId],
+  };
   try {
     const caseList = await cases.listCases(filtersForBackend);
+    console.log({ filtersForBackend });
 
-    return json({ cases: caseList, filters });
+    return json({ casesData: caseList, filters });
   } catch (error) {
     // if inbox is deleted or user no longer have access, the user is redirected
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
@@ -58,13 +70,16 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export default function Cases() {
-  const { cases, filters } = useLoaderData<typeof loader>();
+  const {
+    casesData: { items: cases, ...pagination },
+    filters,
+  } = useLoaderData<typeof loader>();
   const inboxId = useParam('inboxId');
   const { t } = useTranslation(casesI18n);
 
   const navigate = useNavigate();
-  const submitCasesFilters = useCallback(
-    (casesFilters: CasesFilters) => {
+  const navigateCasesList = useCallback(
+    (casesFilters: CasesFilters, pagination?: PaginationParams) => {
       navigate(
         {
           pathname: getRoute('/cases/inboxes/:inboxId', {
@@ -85,6 +100,9 @@ export default function Cases() {
                       fromNow: casesFilters.dateRange.fromNow,
                     }
                 : {},
+              offsetId: pagination?.offsetId || null,
+              next: pagination?.next || null,
+              previous: pagination?.previous || null,
             },
             {
               addQueryPrefix: true,
@@ -104,7 +122,7 @@ export default function Cases() {
         <Page.Content>
           <div className="flex flex-col gap-4">
             <CasesFiltersProvider
-              submitCasesFilters={submitCasesFilters}
+              submitCasesFilters={navigateCasesList}
               filterValues={filters}
             >
               <div className="flex justify-end gap-4">
@@ -120,6 +138,13 @@ export default function Cases() {
               </div>
               <CasesFiltersBar />
               <CasesList cases={cases} />
+              <PaginationButtons
+                items={cases}
+                onPaginationChange={(paginationParams: PaginationParams) =>
+                  navigateCasesList(filters, paginationParams)
+                }
+                {...pagination}
+              />
             </CasesFiltersProvider>
           </div>
         </Page.Content>

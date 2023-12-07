@@ -223,15 +223,28 @@ paths:
           schema:
             type: string
             format: date-time
+        - $ref: '#/components/parameters/offsetId'
+        - $ref: '#/components/parameters/previous'
+        - $ref: '#/components/parameters/next'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/sorting'
       responses:
         '200':
           description: List of corresponding cases
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Case'
+                allOf:
+                  - $ref: '#/components/schemas/Pagination'
+                  - type: object
+                    required:
+                      - items
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Case'
         '401':
           $ref: '#/components/responses/401'
         '403':
