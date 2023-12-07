@@ -72,9 +72,10 @@ export async function loader({ request }: LoaderArgs) {
   const { user, organization } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
+  const org = await organization.getCurrentOrganization();
   const orgUsers = await organization.listUsers();
 
-  return json({ user, orgUsers });
+  return json({ user, orgUsers, org });
 }
 
 export const handle = {
@@ -84,7 +85,7 @@ export const handle = {
 
 export default function Builder() {
   const { t } = useTranslation(handle.i18n);
-  const { user, orgUsers } = useLoaderData<typeof loader>();
+  const { user, orgUsers, org: organization } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
 
   // Refresh is done in the client because it needs to be done in the browser
@@ -144,6 +145,9 @@ export default function Builder() {
                       ) : null}
                       <p className="text-s mb-2 font-normal">
                         {user.actorIdentity.email}
+                      </p>
+                      <p className="text-grey-50 m-2 text-xs font-normal">
+                        {organization.name}
                       </p>
                       <LanguagePicker />
                     </div>
