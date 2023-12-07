@@ -137,14 +137,14 @@ export default function Lists() {
             </form>
             {canManageListItem ? <NewListValue listId={customList.id} /> : null}
           </div>
-          {virtualTable.rows.length > 0 ? (
-            <Table.Default {...virtualTable}></Table.Default>
-          ) : (
+          {virtualTable.isEmpty ? (
             <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
               <p className="text-s font-medium">
                 {t('lists:empty_custom_list_values_list')}
               </p>
             </div>
+          ) : (
+            <Table.Default {...virtualTable}></Table.Default>
           )}
         </div>
         {canManageList ? <DeleteList listId={customList.id} /> : null}

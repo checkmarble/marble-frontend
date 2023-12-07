@@ -8,21 +8,16 @@ import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
-  type ColumnDef,
+  createColumnHelper,
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
+import { type CustomList } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 import { Lists } from 'ui-icons';
-
-type List = {
-  id: string;
-  name: string;
-  description: string;
-};
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -38,6 +33,8 @@ export const handle = {
   i18n: ['lists', 'navigation'] satisfies Namespace,
 };
 
+const columnHelper = createColumnHelper<CustomList>();
+
 export default function ListsPage() {
   const { t } = useTranslation(handle.i18n);
   const customList = useLoaderData<typeof loader>();
@@ -45,32 +42,32 @@ export default function ListsPage() {
 
   const navigate = useNavigate();
 
-  const columns = useMemo<ColumnDef<List>[]>(
+  const columns = useMemo(
     () => [
-      {
-        accessorKey: 'name',
+      columnHelper.accessor('name', {
+        id: 'name',
         header: t('lists:name'),
         size: 200,
         sortingFn: 'text',
         enableSorting: true,
-      },
-      {
+      }),
+      columnHelper.accessor('description', {
         id: 'description',
-        accessorFn: (row) => row.description,
         header: t('lists:description'),
         size: 500,
-      },
+      }),
     ],
     [t],
   );
 
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
-    data: customList,
-    columns,
-    columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-  });
+  const { table, isEmpty, getBodyProps, rows, getContainerProps } =
+    useVirtualTable({
+      data: customList,
+      columns,
+      columnResizeMode: 'onChange',
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+    });
 
   return (
     <Page.Container>
@@ -83,7 +80,13 @@ export default function ListsPage() {
           <div className="flex flex-row justify-end">
             {canManageList ? <CreateList /> : null}
           </div>
-          {rows.length > 0 ? (
+          {isEmpty ? (
+            <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <p className="text-s font-medium">
+                {t('lists:empty_custom_lists_list')}
+              </p>
+            </div>
+          ) : (
             <Table.Container {...getContainerProps()}>
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
@@ -103,12 +106,6 @@ export default function ListsPage() {
                 ))}
               </Table.Body>
             </Table.Container>
-          ) : (
-            <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-              <p className="text-s font-medium">
-                {t('lists:empty_custom_lists_list')}
-              </p>
-            </div>
           )}
         </div>
       </Page.Content>
