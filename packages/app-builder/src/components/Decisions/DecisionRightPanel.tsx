@@ -4,7 +4,6 @@ import {
 } from '@app-builder/components/RightPanel';
 import { AddToCase } from '@app-builder/routes/ressources/cases/add-to-case';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type DialogTriggerProps } from '@radix-ui/react-dialog';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollArea } from 'ui-design-system';
@@ -115,30 +114,7 @@ function DecisionRightPanelContent() {
   );
 }
 
-function DecisionRightPanelTrigger({
-  onClick,
-  decisionIds,
-  ...otherProps
-}: {
-  decisionIds: Data['decisionIds'] | (() => Data['decisionIds']);
-} & DialogTriggerProps) {
-  const { onTriggerClick } = useDecisionRightPanelContext();
-
-  return (
-    <RightPanel.Trigger
-      onClick={(e) => {
-        onTriggerClick({
-          decisionIds:
-            typeof decisionIds === 'function' ? decisionIds() : decisionIds,
-        });
-        onClick?.(e);
-      }}
-      {...otherProps}
-    />
-  );
-}
-
 export const DecisionRightPanel = {
   Root: DecisionRightPanelRoot,
-  Trigger: DecisionRightPanelTrigger,
+  Trigger: RightPanel.Trigger,
 };
