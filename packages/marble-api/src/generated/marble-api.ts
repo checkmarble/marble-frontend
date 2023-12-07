@@ -535,15 +535,23 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases({ statuses, inboxIds, startDate, endDate }: {
+export function listCases({ statuses, inboxIds, startDate, endDate, offsetId, previous, next, limit, order, sorting }: {
     statuses?: CaseStatus[];
     inboxIds?: string[];
     startDate?: string;
     endDate?: string;
+    offsetId?: string;
+    previous?: boolean;
+    next?: boolean;
+    limit?: number;
+    order?: "ASC" | "DESC";
+    sorting?: "created_at";
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Case[];
+        data: Pagination & {
+            items: Case[];
+        };
     } | {
         status: 401;
         data: string;
@@ -554,7 +562,13 @@ export function listCases({ statuses, inboxIds, startDate, endDate }: {
         "statuses[]": statuses,
         "inbox_ids[]": inboxIds,
         startDate,
-        endDate
+        endDate,
+        offsetId,
+        previous,
+        next,
+        limit,
+        order,
+        sorting
     }))}`, {
         ...opts
     }));
