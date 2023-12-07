@@ -580,7 +580,7 @@ export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.Reque
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            "case": Case;
+            "case": CaseDetail;
         };
     } | {
         status: 401;

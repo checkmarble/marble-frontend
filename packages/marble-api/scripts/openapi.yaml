@@ -274,7 +274,7 @@ paths:
                   - case
                 properties:
                   case:
-                    $ref: '#/components/schemas/Case'
+                    $ref: '#/components/schemas/CaseDetail'
         '401':
           $ref: '#/components/responses/401'
         '403':
