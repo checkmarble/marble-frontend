@@ -13,7 +13,6 @@ import {
   type ScenarioIterationRule,
   type ScenarioIterationSummary,
 } from '@app-builder/models/scenario';
-import { findRuleValidation } from '@app-builder/services/validation';
 import { type Scenario } from 'marble-api';
 
 export interface ScenarioRepository {
@@ -32,11 +31,6 @@ export interface ScenarioRepository {
     iterationId: string;
     trigger: AstNode;
   }): Promise<ScenarioValidation['trigger']>;
-  validateScenarioIterationRule(args: {
-    iterationId: string;
-    ruleId: string;
-    rule: AstNode;
-  }): Promise<ScenarioValidation['rules']['ruleItems'][number]>;
 }
 
 export function getScenarioRepository() {
@@ -75,18 +69,6 @@ export function getScenarioRepository() {
         );
       const scenarioValidation = adaptScenarioValidation(scenario_validation);
       return scenarioValidation.trigger;
-    },
-    validateScenarioIterationRule: async ({ iterationId, ruleId, rule }) => {
-      const { scenario_validation } =
-        await marbleApiClient.validateScenarioIterationWithGivenTriggerOrRule(
-          iterationId,
-          {
-            trigger_or_rule: adaptNodeDto(rule),
-            rule_id: ruleId,
-          },
-        );
-      const scenarioValidation = adaptScenarioValidation(scenario_validation);
-      return findRuleValidation(scenarioValidation, ruleId);
     },
   });
 }
