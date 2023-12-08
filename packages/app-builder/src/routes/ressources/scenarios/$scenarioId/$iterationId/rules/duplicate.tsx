@@ -1,0 +1,109 @@
+import { serverServices } from '@app-builder/services/init.server';
+import { parseFormSafe } from '@app-builder/utils/input-validation';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUID } from '@app-builder/utils/short-uuid';
+import { type ActionArgs, redirect } from '@remix-run/node';
+import { useFetcher } from '@remix-run/react';
+import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { Button, HiddenInputs, Modal } from 'ui-design-system';
+import { Copy } from 'ui-icons';
+import { z } from 'zod';
+
+export const handle = {
+  i18n: ['scenarios', 'navigation', 'common'] satisfies Namespace,
+};
+
+const duplicateRuleFormSchema = z.object({
+  ruleId: z.string().uuid(),
+  scenarioId: z.string().uuid(),
+  iterationId: z.string().uuid(),
+});
+
+export async function action({ request }: ActionArgs) {
+  const { authService } = serverServices;
+  const { apiClient } = await authService.isAuthenticated(request, {
+    failureRedirect: '/login',
+  });
+
+  const parsedForm = await parseFormSafe(request, duplicateRuleFormSchema);
+  if (!parsedForm.success) {
+    return null;
+  }
+  const { ruleId, scenarioId, iterationId } = parsedForm.data;
+  const {
+    rule: { createdAt, ...rest },
+  } = await apiClient.getScenarioIterationRule(ruleId);
+  await apiClient.createScenarioIterationRule(rest);
+  return redirect(
+    getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
+      scenarioId: fromUUID(scenarioId),
+      iterationId: fromUUID(iterationId),
+    }),
+  );
+}
+
+export function DuplicateRule({
+  ruleId,
+  scenarioId,
+  iterationId,
+}: {
+  ruleId: string;
+  scenarioId: string;
+  iterationId: string;
+}) {
+  const { t } = useTranslation(handle.i18n);
+  const fetcher = useFetcher<typeof action>();
+
+  return (
+    <Modal.Root>
+      <Modal.Trigger asChild>
+        <Button variant="secondary" className="w-fit">
+          <Copy width={'24px'} height={'24px'} />
+          <p>{t('scenarios:clone_rule.button')}</p>
+        </Button>
+      </Modal.Trigger>
+      <Modal.Content>
+        <fetcher.Form
+          method="POST"
+          action={`/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
+            iterationId,
+          )}/rules/duplicate`}
+        >
+          <HiddenInputs
+            ruleId={ruleId}
+            scenarioId={scenarioId}
+            iterationId={iterationId}
+          />
+          <div className="bg-grey-00 flex flex-col gap-8 p-8">
+            <div className="flex flex-1 flex-col items-center justify-center gap-2">
+              <div className="bg-purple-10 mb-8 box-border rounded-[90px] p-4">
+                <Copy width={'64px'} height={'64px'} />
+              </div>
+              <h1 className="text-l font-semibold">
+                {t('scenarios:clone_rule.title')}
+              </h1>
+              <p className="text-center">{t('scenarios:clone_rule.content')}</p>
+            </div>
+            <div className="flex flex-1 flex-row gap-2">
+              <Modal.Close asChild>
+                <Button className="flex-1" variant="secondary">
+                  {t('common:cancel')}
+                </Button>
+              </Modal.Close>
+              <Button
+                className="flex-1"
+                variant="primary"
+                type="submit"
+                name="confirm"
+              >
+                <Copy width={'24px'} height={'24px'} />
+                {t('scenarios:clone_rule.confirmation_button')}
+              </Button>
+            </div>
+          </div>
+        </fetcher.Form>
+      </Modal.Content>
+    </Modal.Root>
+  );
+}
