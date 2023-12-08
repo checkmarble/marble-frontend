@@ -13,6 +13,7 @@ export { default as Category } from './Category';
 export { default as Collapse } from './Collapse';
 export { default as CompanyExcel } from './CompanyExcel';
 export { default as CompanySlack } from './CompanySlack';
+export { default as Copy } from './Copy';
 export { default as CreateNewFolder } from './CreateNewFolder';
 export { default as Cross } from './Cross';
 export { default as CurrencyDollar } from './CurrencyDollar';

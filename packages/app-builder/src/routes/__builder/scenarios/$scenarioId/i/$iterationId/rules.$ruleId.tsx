@@ -21,6 +21,7 @@ import {
 } from '@app-builder/models';
 import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { DeleteRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete';
+import { DuplicateRule } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/rules/duplicate';
 import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule';
 import {
   useCurrentScenarioIterationRule,
@@ -227,23 +228,30 @@ export default function RuleEdit() {
           ) : null}
         </div>
         {editorMode === 'edit' ? (
-          <Button
-            onClick={() => {
-              const values = formMethods.getValues();
-              fetcher.submit(
-                {
-                  astNode: getCurrentAstNode(),
-                  formValues: values,
-                },
-                {
-                  method: 'PATCH',
-                  encType: 'application/json',
-                },
-              );
-            }}
-          >
-            {t('common:save')}
-          </Button>
+          <div className="flex flex-row gap-4">
+            <DuplicateRule
+              ruleId={ruleId}
+              iterationId={iterationId}
+              scenarioId={scenarioId}
+            />
+            <Button
+              onClick={() => {
+                const values = formMethods.getValues();
+                fetcher.submit(
+                  {
+                    astNode: getCurrentAstNode(),
+                    formValues: values,
+                  },
+                  {
+                    method: 'PATCH',
+                    encType: 'application/json',
+                  },
+                );
+              }}
+            >
+              {t('common:save')}
+            </Button>
+          </div>
         ) : null}
       </ScenarioPage.Header>
 
