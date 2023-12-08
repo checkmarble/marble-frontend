@@ -409,11 +409,12 @@ export type FuncAttributes = {
     number_of_arguments: number;
     named_arguments?: string[];
 };
+export type InboxUserRole = "member" | "admin";
 export type InboxUserDto = {
     id: string;
     inbox_id: string;
     user_id: string;
-    role: "member" | "admin";
+    role: InboxUserRole;
 };
 export type InboxDto = {
     id: string;
@@ -428,7 +429,7 @@ export type CreateInboxBodyDto = {
 };
 export type AddInboxUserBodyDto = {
     user_id: string;
-    role: "member" | "admin";
+    role: InboxUserRole;
 };
 /**
  * Get an access token
@@ -1900,6 +1901,25 @@ export function addInboxUser(inboxId: string, addInboxUserBodyDto: AddInboxUserB
         method: "POST",
         body: addInboxUserBodyDto
     })));
+}
+/**
+ * List all inbox users
+ */
+export function listAllInboxUsers(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox_users: InboxUserDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/inbox_users", {
+        ...opts
+    }));
 }
 /**
  * Get an inbox user by id

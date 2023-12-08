@@ -4,6 +4,7 @@ import {
   Sidebar,
   type SidebarLinkProps,
 } from '@app-builder/components';
+import { isAdmin } from '@app-builder/models';
 import { ChatlioWidget } from '@app-builder/services/chatlio/ChatlioWidget';
 import { chatlioScript } from '@app-builder/services/chatlio/script';
 import { serverServices } from '@app-builder/services/init.server';
@@ -30,6 +31,7 @@ import {
   Logout,
   Scenarios,
   ScheduledExecution,
+  Settings,
   World,
 } from 'ui-icons';
 
@@ -188,6 +190,15 @@ export default function Builder() {
                   <Sidebar.Link {...linkProps} />
                 </li>
               ))}
+              {isAdmin(user) ? (
+                <li key="navigation:settings">
+                  <Sidebar.Link
+                    labelTKey="navigation:settings"
+                    to={getRoute('/settings')}
+                    Icon={Settings}
+                  />
+                </li>
+              ) : null}
               <ChatlioWidget />
             </Sidebar.Nav>
           </header>
