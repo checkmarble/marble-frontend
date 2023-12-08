@@ -1,5 +1,6 @@
 import { type PaginatedResponse } from '@app-builder/components/PaginationButtons';
 import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type FiltersWithPagination } from '@app-builder/models/pagination';
 import { add } from 'date-fns';
 import {
   type Case,
@@ -22,13 +23,10 @@ export type CaseFilters = {
         fromNow: string;
       };
   inboxIds?: string[];
-  offsetId?: string;
-  next?: boolean;
-  previous?: boolean;
-  limit?: number;
-  order?: 'ASC' | 'DESC';
-  sorting?: 'created_at';
 };
+
+export type CaseFiltersWithPagination = FiltersWithPagination<CaseFilters>;
+
 export interface CaseRepository {
   listCases(args: CaseFilters): Promise<PaginatedResponse<Case>>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;

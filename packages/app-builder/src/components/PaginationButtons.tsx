@@ -1,3 +1,4 @@
+import { type PaginationParams } from '@app-builder/models/pagination';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { ArrowLeft, ArrowRight } from 'ui-icons';
@@ -11,15 +12,6 @@ export const paginationSchema = z.object({
   order: z.enum(['ASC', 'DESC']).optional(),
   sorting: z.enum(['created_at']).optional(),
 });
-
-export type PaginationParams = {
-  next?: true | false;
-  previous?: true | false;
-  offsetId: string;
-  order?: 'ASC' | 'DESC';
-  sorting?: 'created_at';
-  limit?: number;
-};
 
 export type PaginatedResponse<T> = {
   items: T[];

@@ -1,7 +1,6 @@
 import {
   Page,
   PaginationButtons,
-  type PaginationParams,
   paginationSchema,
 } from '@app-builder/components';
 import { casesI18n, CasesList } from '@app-builder/components/Cases';
@@ -16,6 +15,7 @@ import {
 import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
+import { type PaginationParams } from '@app-builder/models/pagination';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
@@ -56,7 +56,6 @@ export async function loader({ request, params }: LoaderArgs) {
   };
   try {
     const caseList = await cases.listCases(filtersForBackend);
-    console.log({ filtersForBackend });
 
     return json({ casesData: caseList, filters });
   } catch (error) {
