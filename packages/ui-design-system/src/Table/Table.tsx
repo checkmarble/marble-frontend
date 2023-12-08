@@ -252,7 +252,7 @@ function DefaultTable<TData extends RowData>({
   getBodyProps,
   rows,
   getContainerProps,
-}: ReturnType<typeof useVirtualTable<TData>>) {
+}: ReturnType<typeof useTable<TData>>) {
   return (
     <Table.Container {...getContainerProps()}>
       <Table.Header headerGroups={table.getHeaderGroups()} />
