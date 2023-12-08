@@ -1,0 +1,22 @@
+{
+  "users": "Users",
+  "users.new_user": "New user",
+  "users.name": "Name",
+  "users.email": "Email",
+  "users.role": "Rule Engine Role",
+  "users.role.admin": "ADMIN",
+  "users.role.publisher": "PUBLISHER",
+  "users.role.builder": "BUILDER",
+  "users.role.viewer": "VIEWER",
+  "users.role.unknown": "UNKNOWN",
+  "users.inbox_user_role": "Case manager roles",
+  "users.inbox_user_role.admin_count_one": "ADMIN in {{count}} inbox",
+  "users.inbox_user_role.admin_count_other": "ADMIN in {{count}} inboxes",
+  "users.inbox_user_role.member_count_one": "MEMBER in {{count}} inbox",
+  "users.inbox_user_role.member_count_other": "MEMBER in {{count}} inboxes",
+  "users.inbox_user_role.unknown": "unknown",
+  "api_keys": "API Keys",
+  "case_manager": "Case Manager",
+  "inboxes": "Inboxes",
+  "tags": "Tags"
+}

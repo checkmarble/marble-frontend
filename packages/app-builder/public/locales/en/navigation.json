@@ -12,5 +12,11 @@
   "api": "Marble API",
   "scheduledExecutions": "Scheduled Executions",
   "caseManager": "Case Manager",
-  "helpCenter": "Help Center"
+  "helpCenter": "Help Center",
+  "settings": "Settings",
+  "settings.users": "Users",
+  "settings.api_keys": "API Keys",
+  "settings.case_manager": "Case Manager",
+  "settings.inboxes": "Inboxes",
+  "settings.tags": "Tags"
 }
