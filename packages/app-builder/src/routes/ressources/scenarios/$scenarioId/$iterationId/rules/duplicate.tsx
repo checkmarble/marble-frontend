@@ -36,7 +36,6 @@ export async function action({ request }: ActionArgs) {
     rule: { createdAt, name, ...rest },
   } = await apiClient.getScenarioIterationRule(ruleId);
   const newName = t('clone_rule.default_name', { name });
-  console.log(newName);
   await apiClient.createScenarioIterationRule({ name: newName, ...rest });
   return redirect(
     getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
