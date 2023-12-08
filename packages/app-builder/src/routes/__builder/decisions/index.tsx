@@ -1,5 +1,4 @@
 import {
-  type DecisionFilters,
   DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
@@ -10,13 +9,14 @@ import {
   ErrorComponent,
   Page,
   PaginationButtons,
-  type PaginationParams,
   paginationSchema,
   useDecisionRightPanelContext,
   useSelectedDecisionIds,
 } from '@app-builder/components';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { type PaginationParams } from '@app-builder/models/pagination';
+import { type DecisionFiltersWithPagination } from '@app-builder/repositories/DecisionRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -83,7 +83,10 @@ export default function Decisions() {
 
   const navigate = useNavigate();
   const navigateDecisionList = useCallback(
-    (decisionFilters: DecisionFilters, pagination?: PaginationParams) => {
+    (
+      decisionFilters: DecisionFiltersWithPagination,
+      pagination?: PaginationParams,
+    ) => {
       navigate(
         {
           pathname: getRoute('/decisions'),
