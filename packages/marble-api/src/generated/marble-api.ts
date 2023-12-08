@@ -71,6 +71,12 @@ export type CaseContributor = {
     user_id: string;
     created_at: string;
 };
+export type CaseTag = {
+    id: string;
+    case_id: string;
+    tag_id: string;
+    created_at: string;
+};
 export type Case = {
     id: string;
     created_at: string;
@@ -79,6 +85,7 @@ export type Case = {
     status: CaseStatus;
     inbox_id: string;
     contributors: CaseContributor[];
+    tags: CaseTag[];
 };
 export type DecisionDetail = Decision & {
     "case"?: Case;
@@ -129,6 +136,13 @@ export type CaseDetail = Case & {
 export type UpdateCaseBody = {
     name?: string;
     status?: CaseStatus;
+};
+export type Tag = {
+    id: string;
+    name: string;
+    color: string;
+    organization_id: string;
+    created_at: string;
 };
 export type ScheduledExecution = {
     id: string;
@@ -689,6 +703,25 @@ export function addCommentToCase(caseId: string, body: {
         method: "POST",
         body
     })));
+}
+/**
+ * List tags
+ */
+export function listTags(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            tags: Tag[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/tags", {
+        ...opts
+    }));
 }
 /**
  * List Scheduled Executions
