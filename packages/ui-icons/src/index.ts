@@ -54,6 +54,7 @@ export { default as Scenarios } from './Scenarios';
 export { default as Schedule } from './Schedule';
 export { default as ScheduledExecution } from './ScheduledExecution';
 export { default as Search } from './Search';
+export { default as Send } from './Send';
 export { default as Settings } from './Settings';
 export { default as SmallarrowDown } from './SmallarrowDown';
 export { default as SmallarrowLeft } from './SmallarrowLeft';

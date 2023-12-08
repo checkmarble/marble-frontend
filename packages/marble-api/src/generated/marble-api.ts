@@ -651,6 +651,32 @@ export function addDecisionsToCase(caseId: string, body: {
     })));
 }
 /**
+ * Add a comment to a case
+ */
+export function addCommentToCase(caseId: string, body: {
+    comment: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetail;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/comments`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * List Scheduled Executions
  */
 export function listScheduledExecutions({ scenarioId }: {

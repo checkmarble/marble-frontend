@@ -11,5 +11,6 @@
   "data": "Your Data",
   "api": "Marble API",
   "scheduledExecutions": "Scheduled Executions",
-  "caseManager": "Case Manager"
+  "caseManager": "Case Manager",
+  "helpCenter": "Help Center"
 }

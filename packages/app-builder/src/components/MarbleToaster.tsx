@@ -9,6 +9,8 @@ import { toast, ToastBar, Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Cross } from 'ui-icons';
 
+import { headerHeight } from './Page';
+
 export function setToastMessage(
   session: ToastSession,
   toastMessage: ToastMessage,
@@ -44,7 +46,10 @@ export function MarbleToaster({
   }, [t, toastMessage]);
 
   return (
-    <Toaster position="bottom-center">
+    <Toaster
+      position="top-center"
+      containerClassName={headerHeight({ type: 'mt' })}
+    >
       {(currentToast) => (
         <ToastBar toast={currentToast}>
           {({ icon, message }) => (

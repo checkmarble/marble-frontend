@@ -29,6 +29,12 @@ export interface CaseRepository {
     caseId: string;
     body: UpdateCaseBody;
   }): Promise<CaseDetail>;
+  addComment(args: {
+    caseId: string;
+    body: {
+      comment: string;
+    };
+  }): Promise<CaseDetail>;
 }
 
 export function getCaseRepository() {
@@ -56,6 +62,10 @@ export function getCaseRepository() {
     },
     updateCase: async ({ caseId, body }) => {
       const result = await marbleApiClient.updateCase(caseId, body);
+      return result.case;
+    },
+    addComment: async ({ caseId, body }) => {
+      const result = await marbleApiClient.addCommentToCase(caseId, body);
       return result.case;
     },
   });

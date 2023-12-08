@@ -249,7 +249,7 @@ export function getEventDetail(event: CaseEvent) {
         <div className="flex flex-col gap-2">
           <Author userId={event.user_id} type="added_by" />
           {event.additional_note ? (
-            <div className="text-s text-grey-100 font-normal">
+            <div className="text-s text-grey-100 whitespace-break-spaces font-normal">
               {event.additional_note}
             </div>
           ) : null}
