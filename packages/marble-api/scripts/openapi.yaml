@@ -402,7 +402,7 @@ paths:
             type: string
             format: uuid
       requestBody:
-        description: 'Comment to add to the case'              
+        description: 'Comment to add to the case'
         required: true
         content:
           application/json:
@@ -412,7 +412,7 @@ paths:
                 - comment
               properties:
                 comment:
-                  type: string    
+                  type: string
       responses:
         '200':
           description: The updated case corresponding to the provided `caseId`
