@@ -64,7 +64,7 @@ export default function Users() {
         size: 100,
         cell: ({ getValue }) => t(tKeyForUserRole(getValue<User['role']>())),
       }),
-      {
+      columnHelper.display({
         id: 'inbox_user_role',
         header: t('settings:users.inbox_user_role'),
         size: 200,
@@ -90,7 +90,7 @@ export default function Users() {
             </div>
           );
         },
-      },
+      }),
     ];
     return columns;
   }, [inboxUsersByUserId, t]);

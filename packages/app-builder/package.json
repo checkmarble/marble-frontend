@@ -10,7 +10,7 @@
     "build": "remix build",
     "build-with-sourcemaps": "remix build --sourcemap && sentry-upload-sourcemaps --org checkmarble --project marble-frontend",
     "start": "remix start",
-    "generate-routes": "source scripts/generateRoutes.sh"
+    "generate-routes": "source scripts/generateRoutes.sh && tsx scripts/generateRoutes.ts"
   },
   "author": "",
   "license": "ISC",
@@ -28,7 +28,9 @@
     "eslint": "~8.55.0",
     "eslint-plugin-tailwindcss": "^3.13.0",
     "jsdom": "23.0.1",
-    "tailwindcss": "3.3.6"
+    "ora": "^7.0.1",
+    "tailwindcss": "3.3.6",
+    "tsx": "^4.6.2"
   },
   "dependencies": {
     "@ariakit/react": "^0.3.8",
