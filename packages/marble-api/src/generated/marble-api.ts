@@ -716,6 +716,55 @@ export function addCommentToCase(caseId: string, body: {
     })));
 }
 /**
+ * Add a tag to a case
+ */
+export function addTagToCase(caseId: string, body: {
+    tag_id: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetail;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/case_tags`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Delete a tag from a case
+ */
+export function deleteTagFromCase(caseTagId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetail;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/case_tags/${encodeURIComponent(caseTagId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
  * List tags
  */
 export function listTags({ withCaseCount }: {
