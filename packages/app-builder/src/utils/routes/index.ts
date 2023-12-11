@@ -1,66 +1,6 @@
-import { type routes } from './routes';
+import { type RouteID, type RoutePath } from './types';
 
-/**
- * Inspiration and some utility types are taken from https://github.com/swan-io/chicane/blob/main/src/types.ts
- */
-
-type Route = {
-  readonly id: string;
-  readonly path?: string;
-  children?: readonly Route[];
-};
-
-type JoinPath<
-  Prefix extends string | undefined,
-  Path extends string | undefined,
-> = Prefix extends string
-  ? Path extends string
-    ? `${Prefix}/${Path}`
-    : Prefix
-  : Path extends string
-    ? Path
-    : '';
-
-type GetRoutePaths<
-  T extends Route,
-  Prefix extends string | undefined = undefined,
-> = [
-  JoinPath<Prefix, T['path']>,
-  ...(T['children'] extends readonly Route[]
-    ? GetRoutesPaths<T['children'], JoinPath<Prefix, T['path']>>
-    : []),
-];
-
-type GetRoutesPaths<
-  T extends readonly Route[],
-  Prefix extends string | undefined = undefined,
-> = T extends readonly [infer Head, ...infer Tail]
-  ? [
-      ...(Head extends Route ? GetRoutePaths<Head, Prefix> : []),
-      ...(Tail extends readonly Route[] ? GetRoutesPaths<Tail, Prefix> : []),
-    ]
-  : [];
-
-export type Paths = GetRoutesPaths<typeof routes>;
-
-type GetRoutesIds<T extends readonly Route[]> = T extends readonly [
-  infer Head,
-  ...infer Tail,
-]
-  ? [
-      ...(Head extends Route
-        ? [
-            Head['id'],
-            ...(Head['children'] extends readonly Route[]
-              ? GetRoutesIds<Head['children']>
-              : []),
-          ]
-        : []),
-      ...(Tail extends readonly Route[] ? GetRoutesIds<Tail> : []),
-    ]
-  : [];
-
-export type RouteIDs = GetRoutesIds<typeof routes>[number];
+export { type RouteID };
 
 type NonEmptySplit<
   Value extends string,
@@ -82,7 +22,7 @@ export type GetPathParams<
     : GetPathParams<Path, Tail>
   : {}; // eslint-disable-line @typescript-eslint/ban-types
 
-export function getRoute<Path extends Paths[number]>(
+export function getRoute<Path extends RoutePath>(
   path: Path,
   ...args: GetPathParams<Path> extends Record<string, never>
     ? []
