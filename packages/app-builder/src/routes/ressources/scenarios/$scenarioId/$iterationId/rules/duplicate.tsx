@@ -68,9 +68,13 @@ export function DuplicateRule({
       <Modal.Content>
         <fetcher.Form
           method="POST"
-          action={`/ressources/scenarios/${fromUUID(scenarioId)}/${fromUUID(
-            iterationId,
-          )}/rules/duplicate`}
+          action={getRoute(
+            '/ressources/scenarios/:scenarioId/:iterationId/rules/duplicate',
+            {
+              scenarioId: fromUUID(scenarioId),
+              iterationId: fromUUID(iterationId),
+            },
+          )}
         >
           <HiddenInputs
             ruleId={ruleId}

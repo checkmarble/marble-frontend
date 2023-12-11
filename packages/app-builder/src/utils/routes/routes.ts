@@ -10,6 +10,11 @@ export const routes = [
         "file": "routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule.tsx"
       },
       {
+        "id": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/duplicate",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/rules/duplicate",
+        "file": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/duplicate.tsx"
+      },
+      {
         "id": "routes/ressources/scenarios/$scenarioId/$iterationId/create_draft",
         "path": "ressources/scenarios/:scenarioId/:iterationId/create_draft",
         "file": "routes/ressources/scenarios/$scenarioId/$iterationId/create_draft.tsx"
@@ -60,6 +65,11 @@ export const routes = [
         "file": "routes/ressources/cases/add-to-case.tsx"
       },
       {
+        "id": "routes/ressources/cases/create-case",
+        "path": "ressources/cases/create-case",
+        "file": "routes/ressources/cases/create-case.tsx"
+      },
+      {
         "id": "routes/ressources/cases/edit-status",
         "path": "ressources/cases/edit-status",
         "file": "routes/ressources/cases/edit-status.tsx"
@@ -83,6 +93,11 @@ export const routes = [
         "id": "routes/ressources/cases/edit-name",
         "path": "ressources/cases/edit-name",
         "file": "routes/ressources/cases/edit-name.tsx"
+      },
+      {
+        "id": "routes/ressources/cases/edit-tags",
+        "path": "ressources/cases/edit-tags",
+        "file": "routes/ressources/cases/edit-tags.tsx"
       },
       {
         "id": "routes/ressources/data/createLink",

@@ -1,4 +1,4 @@
-import { type RouteIDs } from '@app-builder/utils/routes';
+import { type RouteID } from '@app-builder/utils/routes';
 import { toUUID } from '@app-builder/utils/short-uuid';
 import { type RouteMatch } from '@remix-run/react';
 
@@ -7,7 +7,7 @@ function toUUIDifDefined(val: string | undefined) {
 }
 
 export default function getPageviewNameAndProps(thisPage: RouteMatch) {
-  switch (thisPage.id as RouteIDs) {
+  switch (thisPage.id as RouteID) {
     case 'routes/__builder/scenarios/index': {
       return { name: 'Scenarios', properties: undefined };
     }
