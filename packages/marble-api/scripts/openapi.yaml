@@ -446,6 +446,87 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /cases/{caseId}/case_tags:
+    post:
+      tags:
+        - Cases
+      summary: Add a tag to a case
+      operationId: addTagToCase
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: caseId
+          description: ID of the case that needs to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Tag to add to the case'
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tag_id
+              properties:
+                tag_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: The updated case corresponding to the provided `caseId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - case
+                properties:
+                  case:
+                    $ref: '#/components/schemas/CaseDetail'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /case_tags/{case_tag_id}:
+    delete:
+      tags:
+        - Cases
+      summary: Delete a tag from a case
+      operationId: deleteTagFromCase
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: case_tag_id
+          description: ID of the case tag that needs to be deleted
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The updated case corresponding
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - case
+                properties:
+                  case:
+                    $ref: '#/components/schemas/CaseDetail'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /tags:
     get:
       tags:
