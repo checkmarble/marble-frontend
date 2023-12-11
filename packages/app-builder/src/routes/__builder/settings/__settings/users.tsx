@@ -1,5 +1,6 @@
 import { Page } from '@app-builder/components';
 import { isAdmin, type User } from '@app-builder/models';
+import { CreateUser } from '@app-builder/routes/ressources/settings/users/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
@@ -11,8 +12,8 @@ import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Table, useVirtualTable } from 'ui-design-system';
-import { Delete, Edit, Plus } from 'ui-icons';
+import { Table, useVirtualTable } from 'ui-design-system';
+import { Delete, Edit } from 'ui-icons';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -78,7 +79,6 @@ export default function Users() {
 
           const inboxUsersSummary = Object.keys(inboxUsers)
             .map((role) => {
-              console.log(role);
               const count = inboxUsers[role].length;
               return t(tKeyForInboxUserRole(role), { count });
             })
@@ -111,12 +111,9 @@ export default function Users() {
     <Page.Container>
       <Page.Content>
         <div className="border-grey-10 w-full overflow-hidden rounded-lg border px-8 py-4 ">
-          <div className="flex flex-row items-center justify-between px-8 py-4 font-bold capitalize">
+          <div className="flex flex-row items-center justify-between py-4 font-bold capitalize">
             {t('settings:users')}
-            <Button>
-              <Plus />
-              {t('settings:users.new_user')}
-            </Button>
+            <CreateUser />
           </div>
           <Table.Container {...getContainerProps()}>
             <Table.Header headerGroups={table.getHeaderGroups()} />
