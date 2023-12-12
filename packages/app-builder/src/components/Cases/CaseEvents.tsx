@@ -5,7 +5,6 @@ import { cx } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { type CaseEvent } from 'marble-api';
 import { Trans, useTranslation } from 'react-i18next';
-import { assertNever } from 'typescript-utils';
 import { Accordion, Avatar, Collapsible } from 'ui-design-system';
 import {
   CaseManager,
@@ -34,7 +33,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
       <Collapsible.Content>
         <Accordion.Container className="relative">
           <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
-          {events.map((event) => {
+          {events.filter(displayedEventTypes).map((event) => {
             const Icon = getEventIcon(event);
             const Title = getEventTitle(event, t);
             const Detail = getEventDetail(event);
@@ -60,6 +59,16 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
       </Collapsible.Content>
     </Collapsible.Container>
   );
+}
+
+function displayedEventTypes(event: CaseEvent) {
+  return [
+    'case_created',
+    'comment_added',
+    'decision_added',
+    'name_updated',
+    'status_updated',
+  ].includes(event.event_type);
 }
 
 function IconContainer({
@@ -120,8 +129,6 @@ export function getEventIcon(event: CaseEvent) {
         </IconContainer>
       );
     }
-    default:
-      assertNever('[CaseEvents] unknown event:', event_type);
   }
 }
 
@@ -197,8 +204,6 @@ export function getEventTitle(
         </span>
       );
     }
-    default:
-      assertNever('[CaseEvents] unknown event:', event_type);
   }
 }
 
@@ -265,7 +270,5 @@ export function getEventDetail(event: CaseEvent) {
     case 'status_updated': {
       return <Author userId={event.user_id} type="edited_by" />;
     }
-    default:
-      assertNever('[CaseEvents] unknown event:', event_type);
   }
 }

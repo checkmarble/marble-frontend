@@ -1,7 +1,12 @@
 import * as Ariakit from '@ariakit/react';
+import * as Popover from '@radix-ui/react-popover';
+import { type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 import { forwardRef, useEffect } from 'react';
-import { Tick } from 'ui-icons';
+import { Arrow2Down, Tick } from 'ui-icons';
+
+import { ScrollArea } from '../ScrollArea/ScrollArea';
+import { selectTrigger } from '../Select/Select';
 
 export interface SelectWithComboboxProviderProps {
   open?: boolean;
@@ -87,9 +92,69 @@ const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
   },
 );
 
+const SelectWithComboboxPopoverTrigger = forwardRef<
+  HTMLButtonElement,
+  Popover.PopoverTriggerProps & VariantProps<typeof selectTrigger>
+>(function SelectWithComboboxPopoverTrigger(
+  { children, className, border = 'square', borderColor = 'grey-10', ...props },
+  ref,
+) {
+  return (
+    <Popover.Trigger
+      ref={ref}
+      className={clsx(
+        'group',
+        selectTrigger({ border, borderColor }),
+        className,
+      )}
+      {...props}
+    >
+      {children}
+      <Arrow2Down
+        height="24px"
+        width="24px"
+        className="group-radix-state-open:rotate-180"
+      />
+    </Popover.Trigger>
+  );
+});
+
+function SelectWithComboboxPopoverContent({
+  children,
+  className,
+  ...props
+}: Popover.PopoverContentProps) {
+  return (
+    <Popover.Portal>
+      <Popover.Content
+        className={clsx(
+          'animate-slideUpAndFade bg-grey-00 border-grey-10 rounded border shadow-md will-change-[transform,opacity]',
+          className,
+        )}
+        side="bottom"
+        align="start"
+        sideOffset={8}
+        {...props}
+      >
+        <ScrollArea.Root>
+          {children}
+          <ScrollArea.Scrollbar orientation="vertical">
+            <ScrollArea.Thumb />
+          </ScrollArea.Scrollbar>
+        </ScrollArea.Root>
+      </Popover.Content>
+    </Popover.Portal>
+  );
+}
+
 export const SelectWithCombobox = {
   Provider: SelectWithComboboxProvider,
   Combobox: Ariakit.Combobox,
   ComboboxList: Ariakit.ComboboxList,
   ComboboxItem,
+  Popover: {
+    Root: Popover.Root,
+    Trigger: SelectWithComboboxPopoverTrigger,
+    Content: SelectWithComboboxPopoverContent,
+  },
 };
