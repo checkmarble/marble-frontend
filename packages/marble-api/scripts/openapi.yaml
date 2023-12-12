@@ -32,6 +32,8 @@ tags:
     description: Operations about custom lists.
   - name: Editor
     description: Operations about editor.
+  - name: Tags
+    description: Operations about tags.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
@@ -444,6 +446,32 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /tags:
+    get:
+      tags:
+        - Tags
+      summary: List tags
+      operationId: listTags
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of corresponding tags
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - tags
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /scheduled-executions:
     get:
       tags:
@@ -2694,6 +2722,7 @@ components:
         - status
         - inbox_id
         - contributors
+        - tags
       properties:
         id:
           type: string
@@ -2714,6 +2743,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CaseContributor'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseTag'
     CaseDetail:
       allOf:
         - $ref: '#/components/schemas/Case'
@@ -2761,6 +2794,48 @@ components:
           format: date-time
         event_type:
           type: string
+    CaseTag:
+      type: object
+      required:
+        - id
+        - case_id
+        - tag_id
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        case_id:
+          type: string
+          format: uuid
+        tag_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+    Tag:
+      type: object
+      required:
+        - id
+        - name
+        - color
+        - organization_id
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+        organization_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
     CaseContributor:
       type: object
       required:

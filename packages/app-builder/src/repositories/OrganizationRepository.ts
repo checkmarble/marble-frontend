@@ -4,10 +4,12 @@ import {
   adaptOrganizationDto,
   type Organization,
 } from '@app-builder/models/organization';
+import { type Tag } from 'marble-api';
 
 export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
   listUsers(): Promise<User[]>;
+  listTags(): Promise<Tag[]>;
 }
 
 export function getOrganizationRepository() {
@@ -25,6 +27,10 @@ export function getOrganizationRepository() {
       const { users } =
         await marbleApiClient.listOrganizationUsers(organizationId);
       return users.map(adaptUser);
+    },
+    listTags: async () => {
+      const { tags } = await marbleApiClient.listTags();
+      return tags;
     },
   });
 }
