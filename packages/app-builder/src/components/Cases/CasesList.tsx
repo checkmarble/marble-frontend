@@ -56,7 +56,7 @@ export function CasesList({ cases }: { cases: Case[] }) {
         size: 100,
         cell: ({ getValue }) => (
           <div className="p-2">
-            <CaseTags caseTags={getValue()} />
+            <CaseTags caseTagIds={getValue().map(({ tag_id }) => tag_id)} />
           </div>
         ),
       }),

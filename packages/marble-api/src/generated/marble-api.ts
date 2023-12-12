@@ -716,10 +716,10 @@ export function addCommentToCase(caseId: string, body: {
     })));
 }
 /**
- * Add a tag to a case
+ * Define tags for a case
  */
-export function addTagToCase(caseId: string, body: {
-    tag_id: string;
+export function updateTagsForCase(caseId: string, body: {
+    tag_ids: string[];
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;

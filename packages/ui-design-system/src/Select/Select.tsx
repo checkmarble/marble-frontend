@@ -17,11 +17,10 @@ import {
   Value,
   Viewport,
 } from '@radix-ui/react-select';
+import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 import { Arrow2Down, Arrow2Up, SmallarrowDown } from 'ui-icons';
-
-import { type selectBorder, type selectBorderColor } from './Select.constants';
 
 function SelectContent({
   children,
@@ -62,18 +61,33 @@ function SelectViewport({
   );
 }
 
-export interface SelectTriggerProps extends PrimitiveSelectTriggerProps {
-  border?: (typeof selectBorder)[number];
-  borderColor?: (typeof selectBorderColor)[number];
-}
-const defaultBorder = 'square';
+export const selectTrigger = cva(
+  'bg-grey-00 text-s text-grey-100 flex min-h-[40px] min-w-[40px] items-center justify-between border font-medium outline-none radix-state-open:border-purple-100 radix-state-open:text-purple-100 radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
+  {
+    variants: {
+      border: {
+        square: 'gap-2 rounded p-2',
+        rounded: 'rounded-full p-2',
+      },
+      borderColor: {
+        'grey-10': 'border-grey-10 focus:border-purple-100',
+        'red-100': 'border-red-100 focus:border-purple-100',
+        'red-25': 'border-red-25 focus:border-purple-100',
+      },
+    },
+  },
+);
+
+export interface SelectTriggerProps
+  extends PrimitiveSelectTriggerProps,
+    VariantProps<typeof selectTrigger> {}
 
 const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
   function SelectTrigger(
     {
       children,
       className,
-      border = defaultBorder,
+      border = 'square',
       borderColor = 'grey-10',
       ...props
     },
@@ -86,16 +100,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
         data-border-color={borderColor}
         className={clsx(
           'group',
-          'bg-grey-00 text-s text-grey-100 flex h-10 min-w-[40px] items-center justify-between border font-medium outline-none',
-          'radix-state-open:border-purple-100 radix-state-open:text-purple-100',
-          'radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
-          // Border variants
-          'data-[border=square]:gap-2 data-[border=square]:rounded data-[border=square]:px-2',
-          'data-[border=rounded]:rounded-full data-[border=rounded]:px-2',
-          // Border color variants
-          'data-[border-color=grey-10]:border-grey-10 data-[border-color=grey-10]:focus:border-purple-100',
-          'data-[border-color=red-100]:border-red-100 data-[border-color=red-100]:focus:border-purple-100',
-          'data-[border-color=red-25]:border-red-25 data-[border-color=red-25]:focus:border-purple-100',
+          selectTrigger({ border, borderColor }),
           className,
         )}
         {...props}

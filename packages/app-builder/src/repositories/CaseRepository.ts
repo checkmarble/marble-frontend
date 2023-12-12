@@ -40,6 +40,7 @@ export interface CaseRepository {
       comment: string;
     };
   }): Promise<CaseDetail>;
+  setTags(args: { caseId: string; tagIds: string[] }): Promise<CaseDetail>;
 }
 
 export function getCaseRepository() {
@@ -71,6 +72,12 @@ export function getCaseRepository() {
     },
     addComment: async ({ caseId, body }) => {
       const result = await marbleApiClient.addCommentToCase(caseId, body);
+      return result.case;
+    },
+    setTags: async ({ caseId, tagIds }) => {
+      const result = await marbleApiClient.updateTagsForCase(caseId, {
+        tag_ids: tagIds,
+      });
       return result.case;
     },
   });
