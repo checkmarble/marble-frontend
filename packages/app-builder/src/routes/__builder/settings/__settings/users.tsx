@@ -1,6 +1,8 @@
 import { Page } from '@app-builder/components';
 import { isAdmin, type User } from '@app-builder/models';
 import { CreateUser } from '@app-builder/routes/ressources/settings/users/create';
+import { DeleteUser } from '@app-builder/routes/ressources/settings/users/delete';
+import { UpdateUser } from '@app-builder/routes/ressources/settings/users/update';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
@@ -12,7 +14,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Table, useVirtualTable } from 'ui-design-system';
-import { Delete, Edit } from 'ui-icons';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -72,28 +73,29 @@ export default function Users() {
         size: 100,
         cell: ({ getValue }) => t(tKeyForUserRole(getValue<User['role']>())),
       }),
-      columnHelper.display({
+      columnHelper.accessor((row) => row.userId, {
         id: 'inbox_user_role',
         header: t('settings:users.inbox_user_role'),
         size: 200,
-        cell: ({ cell }) => {
-          const inboxUsers = inboxUsersByUserId[cell.row.original.userId];
+        cell: ({ getValue }) => {
+          const inboxUsers = inboxUsersByUserId[getValue<User['userId']>()];
           if (!inboxUsers) return null;
-
-          const inboxUsersSummary = Object.keys(inboxUsers)
+          return Object.keys(inboxUsers)
             .map((role) => {
               const count = inboxUsers[role].length;
               return t(tKeyForInboxUserRole(role), { count });
             })
             .join(', ');
-
+        },
+      }),
+      columnHelper.display({
+        id: 'actions',
+        size: 50,
+        cell: ({ cell }) => {
           return (
-            <div className="flex items-center justify-between">
-              {inboxUsersSummary}
-              <div className="text-grey-00 group-hover:text-grey-100 relative flex gap-2 rounded p-2 transition-colors ease-in-out">
-                <Edit width={'24px'} height={'24px'} />
-                <Delete width={'24px'} height={'24px'} />
-              </div>
+            <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
+              <UpdateUser user={cell.row.original} />
+              <DeleteUser userId={cell.row.original.userId} />
             </div>
           );
         },
