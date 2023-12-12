@@ -195,7 +195,7 @@ export default function Builder() {
                     <Sidebar.Link {...linkProps} />
                   </li>
                 ))}
-                <ChatlioWidget />
+                <ChatlioWidget user={user} organization={organization} />
               </Sidebar.Nav>
             </header>
 
