@@ -276,7 +276,7 @@ paths:
                   - case
                 properties:
                   case:
-                    $ref: '#/components/schemas/CaseDetail'
+                    $ref: '#/components/schemas/CaseDetailDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -303,7 +303,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CaseDetail'
+                $ref: '#/components/schemas/CaseDetailDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -343,7 +343,7 @@ paths:
                   - case
                 properties:
                   case:
-                    $ref: '#/components/schemas/CaseDetail'
+                    $ref: '#/components/schemas/CaseDetailDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -393,7 +393,7 @@ paths:
                   - case
                 properties:
                   case:
-                    $ref: '#/components/schemas/CaseDetail'
+                    $ref: '#/components/schemas/CaseDetailDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -439,7 +439,7 @@ paths:
                   - case
                 properties:
                   case:
-                    $ref: '#/components/schemas/CaseDetail'
+                    $ref: '#/components/schemas/CaseDetailDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -488,41 +488,7 @@ paths:
                   - case
                 properties:
                   case:
-                    $ref: '#/components/schemas/CaseDetail'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  /case_tags/{case_tag_id}:
-    delete:
-      tags:
-        - Cases
-      summary: Delete a tag from a case
-      operationId: deleteTagFromCase
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: case_tag_id
-          description: ID of the case tag that needs to be deleted
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: The updated case corresponding
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - case
-                properties:
-                  case:
-                    $ref: '#/components/schemas/CaseDetail'
+                    $ref: '#/components/schemas/CaseDetailDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -2830,7 +2796,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CaseTag'
-    CaseDetail:
+    CaseDetailDto:
       allOf:
         - $ref: '#/components/schemas/Case'
         - type: object
@@ -2845,8 +2811,8 @@ components:
             events:
               type: array
               items:
-                $ref: '#/components/schemas/CaseEvent'
-    CaseEvent:
+                $ref: '#/components/schemas/CaseEventDto'
+    CaseEventDto:
       type: object
       discriminator:
         propertyName: event_type
@@ -2856,6 +2822,7 @@ components:
           decision_added: '#/components/schemas/DecisionAddedEvent'
           comment_added: '#/components/schemas/CommentAddedEvent'
           name_updated: '#/components/schemas/NameUpdatedEvent'
+          tags_updated: '#/components/schemas/CaseTagsUpdatedEventDto'
       required:
         - id
         - case_id
@@ -2941,22 +2908,32 @@ components:
           format: date-time
     CaseCreatedEvent:
       allOf:
-        - $ref: '#/components/schemas/CaseEvent'
+        - $ref: '#/components/schemas/CaseEventDto'
     CaseStatusUpdatedEvent:
       allOf:
-        - $ref: '#/components/schemas/CaseEvent'
+        - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
             - new_value
           properties:
             new_value:
               $ref: '#/components/schemas/CaseStatus'
+    CaseTagsUpdatedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - new_value
+          properties:
+            new_value:
+              type: string
+              description: comma separated list of tag ids
     DecisionAddedEvent:
       allOf:
-        - $ref: '#/components/schemas/CaseEvent'
+        - $ref: '#/components/schemas/CaseEventDto'
     CommentAddedEvent:
       allOf:
-        - $ref: '#/components/schemas/CaseEvent'
+        - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
             - additional_note
@@ -2965,7 +2942,7 @@ components:
               type: string
     NameUpdatedEvent:
       allOf:
-        - $ref: '#/components/schemas/CaseEvent'
+        - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
             - new_value

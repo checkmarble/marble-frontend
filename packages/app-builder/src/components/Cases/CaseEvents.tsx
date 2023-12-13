@@ -1,9 +1,9 @@
+import { type CaseEvent } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { formatDateRelative } from '@app-builder/utils/format';
 import { cx } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
-import { type CaseEvent } from 'marble-api';
 import { Trans, useTranslation } from 'react-i18next';
 import { Accordion, Avatar, Collapsible } from 'ui-design-system';
 import {
@@ -16,6 +16,7 @@ import {
 
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping, caseStatusVariants } from './CaseStatus';
+import { CaseTags } from './CaseTags';
 
 export function CaseEvents({ events }: { events: CaseEvent[] }) {
   const {
@@ -68,6 +69,7 @@ function displayedEventTypes(event: CaseEvent) {
     'decision_added',
     'name_updated',
     'status_updated',
+    'tags_updated',
   ].includes(event.event_type);
 }
 
@@ -110,6 +112,7 @@ export function getEventIcon(event: CaseEvent) {
           <Decision />
         </IconContainer>
       );
+    case 'tags_updated':
     case 'name_updated':
       return (
         <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
@@ -176,6 +179,13 @@ export function getEventTitle(
               name: event.new_value,
             }}
           />
+        </span>
+      );
+    }
+    case 'tags_updated': {
+      return (
+        <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
+          {t('cases:case_detail.history.event_title.tags_updated')}
         </span>
       );
     }
@@ -258,6 +268,14 @@ export function getEventDetail(event: CaseEvent) {
               {event.additional_note}
             </div>
           ) : null}
+        </div>
+      );
+    }
+    case 'tags_updated': {
+      return (
+        <div className="flex flex-col gap-2">
+          <Author userId={event.user_id} type="added_by" />
+          <CaseTags caseTagIds={event.tagIds} />
         </div>
       );
     }
