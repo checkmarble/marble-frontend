@@ -100,7 +100,7 @@ export type CreateCaseBody = {
     inbox_id: string;
     decision_ids?: string[];
 };
-export type CaseEventBase = {
+export type CaseEventDtoBase = {
     id: string;
     case_id: string;
     user_id: string;
@@ -109,29 +109,34 @@ export type CaseEventBase = {
 };
 export type CaseCreatedEvent = {
     event_type: "case_created";
-} & CaseEventBase;
+} & CaseEventDtoBase;
 export type CaseStatusUpdatedEvent = {
     event_type: "status_updated";
-} & CaseEventBase & {
+} & CaseEventDtoBase & {
     new_value: CaseStatus;
 };
 export type DecisionAddedEvent = {
     event_type: "decision_added";
-} & CaseEventBase;
+} & CaseEventDtoBase;
 export type CommentAddedEvent = {
     event_type: "comment_added";
-} & CaseEventBase & {
+} & CaseEventDtoBase & {
     additional_note: string;
 };
 export type NameUpdatedEvent = {
     event_type: "name_updated";
-} & CaseEventBase & {
+} & CaseEventDtoBase & {
     new_value: string;
 };
-export type CaseEvent = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent;
-export type CaseDetail = Case & {
+export type CaseTagsUpdatedEventDto = {
+    event_type: "tags_updated";
+} & CaseEventDtoBase & {
+    new_value: string;
+};
+export type CaseEventDto = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto;
+export type CaseDetailDto = Case & {
     decisions: Decision[];
-    events: CaseEvent[];
+    events: CaseEventDto[];
 };
 export type UpdateCaseBody = {
     name?: string;
@@ -605,7 +610,7 @@ export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.Reque
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            "case": CaseDetail;
+            "case": CaseDetailDto;
         };
     } | {
         status: 401;
@@ -625,7 +630,7 @@ export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.Reque
 export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CaseDetail;
+        data: CaseDetailDto;
     } | {
         status: 401;
         data: string;
@@ -646,7 +651,7 @@ export function updateCase(caseId: string, updateCaseBody: UpdateCaseBody, opts?
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            "case": CaseDetail;
+            "case": CaseDetailDto;
         };
     } | {
         status: 401;
@@ -672,7 +677,7 @@ export function addDecisionsToCase(caseId: string, body: {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            "case": CaseDetail;
+            "case": CaseDetailDto;
         };
     } | {
         status: 401;
@@ -698,7 +703,7 @@ export function addCommentToCase(caseId: string, body: {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            "case": CaseDetail;
+            "case": CaseDetailDto;
         };
     } | {
         status: 401;
@@ -724,7 +729,7 @@ export function updateTagsForCase(caseId: string, body: {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            "case": CaseDetail;
+            "case": CaseDetailDto;
         };
     } | {
         status: 401;
@@ -740,29 +745,6 @@ export function updateTagsForCase(caseId: string, body: {
         method: "POST",
         body
     })));
-}
-/**
- * Delete a tag from a case
- */
-export function deleteTagFromCase(caseTagId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            "case": CaseDetail;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/case_tags/${encodeURIComponent(caseTagId)}`, {
-        ...opts,
-        method: "DELETE"
-    }));
 }
 /**
  * List tags

@@ -18,12 +18,14 @@ function FormSelectWithComboboxRoot<Schema extends string[]>({
   config,
   children,
   onSelectedValuesChange,
+  onOpenChange,
   ...rest
 }: Omit<
   React.ComponentProps<typeof SelectWithCombobox.Provider>,
   'selectedValues'
 > & {
   config: FieldConfig<Schema>;
+  onOpenChange?: (open: boolean) => void;
 }) {
   const [selectedValues, setSelectedValues] = useState<string[]>(
     config.defaultValue ?? [],
@@ -41,7 +43,7 @@ function FormSelectWithComboboxRoot<Schema extends string[]>({
     config,
   };
   return (
-    <SelectWithCombobox.Popover.Root>
+    <SelectWithCombobox.Popover.Root onOpenChange={onOpenChange}>
       <FormSelectWithComboboxContext.Provider value={contextValue}>
         <input
           ref={shadowInputRef}
@@ -54,6 +56,7 @@ function FormSelectWithComboboxRoot<Schema extends string[]>({
         />
         <SelectWithCombobox.Provider
           {...rest}
+          open
           selectedValues={selectedValues}
           onSelectedValuesChange={(value) => {
             control.change(JSON.stringify(value));

@@ -80,12 +80,13 @@ export function EditCaseTags({
       <input {...conform.input(fields.caseId, { type: 'hidden' })} />
       <FormSelectWithCombobox.Root
         config={fields.caseTagIds}
-        open
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         onSelectedValuesChange={(selectedValues) => {
-          form.ref.current?.requestSubmit();
           setCaseTagIds(selectedValues);
+        }}
+        onOpenChange={(open) => {
+          if (!open) form.ref.current?.requestSubmit();
         }}
       >
         <FormSelectWithCombobox.Trigger className="w-full">
