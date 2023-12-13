@@ -143,6 +143,7 @@ export type Tag = {
     color: string;
     organization_id: string;
     created_at: string;
+    cases_count?: number;
 };
 export type ScheduledExecution = {
     id: string;
@@ -717,7 +718,9 @@ export function addCommentToCase(caseId: string, body: {
 /**
  * List tags
  */
-export function listTags(opts?: Oazapfts.RequestOpts) {
+export function listTags({ withCaseCount }: {
+    withCaseCount?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -729,8 +732,76 @@ export function listTags(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 403;
         data: string;
-    }>("/tags", {
+    }>(`/tags${QS.query(QS.explode({
+        withCaseCount
+    }))}`, {
         ...opts
+    }));
+}
+/**
+ * Create a tag
+ */
+export function createTag(body: {
+    name: string;
+    color: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            tag: Tag;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/tags", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Update a tag
+ */
+export function updateTag(tagId: string, body: {
+    name: string;
+    color: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            tag: Tag;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/tags/${encodeURIComponent(tagId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body
+    })));
+}
+/**
+ * Delete a tag
+ */
+export function deleteTag(tagId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Tag;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/tags/${encodeURIComponent(tagId)}`, {
+        ...opts,
+        method: "DELETE"
     }));
 }
 /**

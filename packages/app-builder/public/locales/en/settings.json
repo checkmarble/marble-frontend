@@ -25,5 +25,14 @@
   "api_keys": "API Keys",
   "case_manager": "Case Manager",
   "inboxes": "Inboxes",
-  "tags": "Tags"
+  "tags": "Tags",
+  "tags.new_tag": "New tag",
+  "tags.new_tag.create": "Create new tag",
+  "tags.update_tag": "Update tag",
+  "tags.delete_tag": "Delete tag",
+  "tags.delete_tag.title": "Delete this tag",
+  "tags.delete_tag.content": "You are about to delete this tag. This action is irreversible, do you want to proceed ?",
+  "tags.name": "Name",
+  "tags.color": "Color",
+  "tags.cases": "Cases"
 }

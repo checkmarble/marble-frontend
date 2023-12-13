@@ -9,7 +9,7 @@ import { type Tag } from 'marble-api';
 export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
   listUsers(): Promise<User[]>;
-  listTags(): Promise<Tag[]>;
+  listTags(args?: { withCaseCount: boolean }): Promise<Tag[]>;
 }
 
 export function getOrganizationRepository() {
@@ -28,8 +28,9 @@ export function getOrganizationRepository() {
         await marbleApiClient.listOrganizationUsers(organizationId);
       return users.map(adaptUser);
     },
-    listTags: async () => {
-      const { tags } = await marbleApiClient.listTags();
+    listTags: async (args) => {
+      const withCaseCount = args?.withCaseCount ?? false;
+      const { tags } = await marbleApiClient.listTags({ withCaseCount });
       return tags;
     },
   });
