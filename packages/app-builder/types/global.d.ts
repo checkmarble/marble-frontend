@@ -13,6 +13,10 @@ declare global {
     _chatlio?: {
       showOrHide?: () => void;
       configure?: (config: { [key: string]: unknown }) => void;
+      identify?: (
+        id: string,
+        customData: Record<string, string | undefined>,
+      ) => void;
     };
   }
 }

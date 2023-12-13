@@ -3,7 +3,7 @@ import { type OrganizationDto } from 'marble-api';
 export interface Organization {
   name: string;
   databaseName: string;
-  exportScheduledExecutionS3: string | undefined;
+  exportScheduledExecutionS3?: string;
 }
 
 export const adaptOrganizationDto = (
