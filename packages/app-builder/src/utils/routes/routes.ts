@@ -271,7 +271,14 @@ export const routes = [
               {
                 "id": "routes/__builder/settings/__settings/inboxes",
                 "path": "inboxes",
-                "file": "routes/__builder/settings/__settings/inboxes.tsx"
+                "file": "routes/__builder/settings/__settings/inboxes.tsx",
+                "children": [
+                  {
+                    "id": "routes/__builder/settings/__settings/inboxes/$inboxId",
+                    "path": ":inboxId",
+                    "file": "routes/__builder/settings/__settings/inboxes/$inboxId.tsx"
+                  }
+                ]
               },
               {
                 "id": "routes/__builder/settings/__settings/users",

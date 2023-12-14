@@ -465,6 +465,7 @@ export type InboxDto = {
     updated_at: string;
     status: "active" | "archived";
     users?: InboxUserDto[];
+    cases_count?: number;
 };
 export type CreateInboxBodyDto = {
     name: string;
@@ -2000,7 +2001,9 @@ export function listOperators(scenarioId: string, opts?: Oazapfts.RequestOpts) {
 /**
  * List all inboxes
  */
-export function listInboxes(opts?: Oazapfts.RequestOpts) {
+export function listInboxes({ withCaseCount }: {
+    withCaseCount?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -2012,7 +2015,9 @@ export function listInboxes(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 403;
         data: string;
-    }>("/inboxes", {
+    }>(`/inboxes${QS.query(QS.explode({
+        withCaseCount
+    }))}`, {
         ...opts
     }));
 }

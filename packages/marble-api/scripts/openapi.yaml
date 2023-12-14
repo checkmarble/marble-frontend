@@ -2333,6 +2333,13 @@ paths:
       operationId: listInboxes
       security:
         - bearerAuth: []
+      parameters:
+        - name: withCaseCount
+          description: whether the result should include the cases count
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: The list of inboxes
@@ -3847,6 +3854,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InboxUserDto'
+        cases_count:
+          type: number
     CreateInboxBodyDto:
       type: object
       required:
