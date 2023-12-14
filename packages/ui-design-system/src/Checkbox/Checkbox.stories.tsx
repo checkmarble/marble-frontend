@@ -1,4 +1,3 @@
-import { type CheckedState } from '@radix-ui/react-checkbox';
 import * as Label from '@radix-ui/react-label';
 import { type Meta, type StoryFn } from '@storybook/react';
 import { useState } from 'react';

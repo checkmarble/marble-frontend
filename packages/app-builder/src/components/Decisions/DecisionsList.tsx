@@ -142,7 +142,13 @@ export function DecisionsList({
           id: 'select',
           header: ({ table }) => (
             <Checkbox
-              checked={table.getIsAllRowsSelected()}
+              checked={
+                table.getIsAllPageRowsSelected()
+                  ? true
+                  : table.getIsSomeRowsSelected()
+                    ? 'indeterminate'
+                    : false
+              }
               onClick={table.getToggleAllRowsSelectedHandler()}
             />
           ),
