@@ -2,19 +2,22 @@ import { FormError } from '@app-builder/components/Form/FormError';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
+import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { type User } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { conform, useForm, useInputEvent } from '@conform-to/react';
+import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
-import { type Namespace, type ParseKeys } from 'i18next';
-import { useEffect, useId, useRef, useState } from 'react';
+import { type Namespace } from 'i18next';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Edit } from 'ui-icons';
 import { z } from 'zod';
+
+import { roleOptions } from './create';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
@@ -100,11 +103,6 @@ const UpdateUserContent = ({ user }: { user: User }) => {
       },
     });
 
-  const shadowInputRef = useRef<HTMLInputElement>(null);
-  const control = useInputEvent({
-    ref: shadowInputRef,
-  });
-
   return (
     <fetcher.Form
       action="/ressources/settings/users/update"
@@ -141,22 +139,13 @@ const UpdateUserContent = ({ user }: { user: User }) => {
           </FormField>
           <FormField config={role} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:users.role')}</FormLabel>
-            <input
-              ref={shadowInputRef}
-              {...conform.input(role, {
-                hidden: true,
-              })}
-            />
-            <Select.Default
-              defaultValue={role.defaultValue ?? ''}
-              onValueChange={control.change}
-            >
+            <FormSelect.Default config={role}>
               {roleOptions.map(({ value, labelTKey }) => (
                 <Select.DefaultItem key={value} value={value}>
                   {t(labelTKey)}
                 </Select.DefaultItem>
               ))}
-            </Select.Default>
+            </FormSelect.Default>
             <FormError />
           </FormField>
         </div>
@@ -179,10 +168,3 @@ const UpdateUserContent = ({ user }: { user: User }) => {
     </fetcher.Form>
   );
 };
-
-const roleOptions: { value: string; labelTKey: ParseKeys<['settings']> }[] = [
-  { value: 'VIEWER', labelTKey: 'settings:users.role.viewer' },
-  { value: 'BUILDER', labelTKey: 'settings:users.role.builder' },
-  { value: 'PUBLISHER', labelTKey: 'settings:users.role.publisher' },
-  { value: 'ADMIN', labelTKey: 'settings:users.role.admin' },
-];

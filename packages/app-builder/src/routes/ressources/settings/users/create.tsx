@@ -171,7 +171,10 @@ const CreateUserContent = ({ orgId }: { orgId: string }) => {
   );
 };
 
-const roleOptions: { value: string; labelTKey: ParseKeys<['settings']> }[] = [
+export const roleOptions: {
+  value: string;
+  labelTKey: ParseKeys<['settings']>;
+}[] = [
   { value: 'VIEWER', labelTKey: 'settings:users.role.viewer' },
   { value: 'BUILDER', labelTKey: 'settings:users.role.builder' },
   { value: 'PUBLISHER', labelTKey: 'settings:users.role.publisher' },
