@@ -32,7 +32,7 @@ const columnHelper = createColumnHelper<Tag>();
 
 export default function Tags() {
   const { t } = useTranslation(['settings']);
-  const { tags } = useLoaderData<{ tags: Tag[] }>();
+  const { tags } = useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
     return [

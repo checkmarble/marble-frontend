@@ -2,15 +2,17 @@ import { FormError } from '@app-builder/components/Form/FormError';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
+import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { conform, useForm, useInputEvent } from '@conform-to/react';
+import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { type Tag } from 'marble-api';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Edit } from 'ui-icons';
@@ -29,7 +31,10 @@ const updateTagFormSchema = z.object({
 });
 
 export async function action({ request }: ActionArgs) {
-  const { authService } = serverServices;
+  const {
+    authService,
+    toastSessionService: { getSession, commitSession },
+  } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
@@ -40,11 +45,19 @@ export async function action({ request }: ActionArgs) {
     return json(submission);
   }
 
+  const session = await getSession(request);
+
   try {
     await apiClient.updateTag(submission.value.id, submission.value);
     return redirect(getRoute('/settings/tags'));
   } catch (error) {
-    return json(submission);
+    setToastMessage(session, {
+      type: 'error',
+      messageKey: 'common:errors.unknown',
+    });
+    return json(submission, {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
   }
 }
 
@@ -92,11 +105,6 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
     },
   });
 
-  const shadowInputRef = useRef<HTMLInputElement>(null);
-  const control = useInputEvent({
-    ref: shadowInputRef,
-  });
-
   return (
     <fetcher.Form
       action="/ressources/settings/tags/update"
@@ -114,16 +122,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
           </FormField>
           <FormField config={color} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:tags.color')}</FormLabel>
-            <input
-              ref={shadowInputRef}
-              {...conform.input(color, {
-                hidden: true,
-              })}
-            />
-            <Select.Default
-              defaultValue={color.defaultValue}
-              onValueChange={control.change}
-            >
+            <FormSelect.Default config={color}>
               {tagColors.map((color) => (
                 <Select.DefaultItem key={color} value={color}>
                   <div
@@ -132,7 +131,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
                   ></div>
                 </Select.DefaultItem>
               ))}
-            </Select.Default>
+            </FormSelect.Default>
             <FormError />
           </FormField>
         </div>
