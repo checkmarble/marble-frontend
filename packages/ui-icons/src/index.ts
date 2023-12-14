@@ -10,6 +10,7 @@ export { default as Calendar } from './Calendar';
 export { default as CalendarMonth } from './CalendarMonth';
 export { default as CaseManager } from './CaseManager';
 export { default as Category } from './Category';
+export { default as CheckIndeterminateSmall } from './CheckIndeterminateSmall';
 export { default as Collapse } from './Collapse';
 export { default as CompanyExcel } from './CompanyExcel';
 export { default as CompanySlack } from './CompanySlack';
