@@ -2954,6 +2954,9 @@ components:
       properties:
         name:
           type: string
+        inbox_id:
+          type: string
+          format: uuid
         status:
           $ref: '#/components/schemas/CaseStatus'
     CreateCaseBody:

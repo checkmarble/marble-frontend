@@ -1,3 +1,4 @@
+import { EditCaseInbox } from '@app-builder/routes/ressources/cases/edit-inbox';
 import { EditCaseName } from '@app-builder/routes/ressources/cases/edit-name';
 import { EditCaseTags } from '@app-builder/routes/ressources/cases/edit-tags';
 import { formatDateTime } from '@app-builder/utils/format';
@@ -10,7 +11,7 @@ import { casesI18n } from './cases-i18n';
 
 export function CaseInformation({
   caseDetail: { created_at, name, id, contributors, tags },
-  inbox: { name: inboxName },
+  inbox,
 }: {
   caseDetail: Case;
   inbox: InboxDto;
@@ -34,7 +35,7 @@ export function CaseInformation({
             {formatDateTime(created_at, { language, timeStyle: undefined })}
           </div>
           <CaseLabel>{t('cases:case.inbox')}</CaseLabel>
-          <div className="first-letter:capitalize">{inboxName}</div>
+          <EditCaseInbox defaultInbox={inbox} caseId={id} />
           <CaseLabel>{t('cases:case.tags')}</CaseLabel>
           <EditCaseTags
             defaultCaseTagIds={tags.map(({ tag_id }) => tag_id)}

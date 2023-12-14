@@ -75,6 +75,11 @@ export const routes = [
         "file": "routes/ressources/cases/edit-status.tsx"
       },
       {
+        "id": "routes/ressources/cases/edit-inbox",
+        "path": "ressources/cases/edit-inbox",
+        "file": "routes/ressources/cases/edit-inbox.tsx"
+      },
+      {
         "id": "routes/ressources/data/createField",
         "path": "ressources/data/createField",
         "file": "routes/ressources/data/createField.tsx"

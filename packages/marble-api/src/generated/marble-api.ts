@@ -140,6 +140,7 @@ export type CaseDetailDto = Case & {
 };
 export type UpdateCaseBody = {
     name?: string;
+    inbox_id?: string;
     status?: CaseStatus;
 };
 export type Tag = {
