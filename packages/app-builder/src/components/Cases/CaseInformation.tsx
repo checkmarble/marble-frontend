@@ -22,7 +22,7 @@ export function CaseInformation({
   } = useTranslation(casesI18n);
 
   return (
-    <Collapsible.Container>
+    <Collapsible.Container className="bg-grey-00">
       <Collapsible.Title>
         {t('cases:case_detail.informations')}
       </Collapsible.Title>

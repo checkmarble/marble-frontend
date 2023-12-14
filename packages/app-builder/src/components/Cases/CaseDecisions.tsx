@@ -9,7 +9,7 @@ export function CaseDecisions({ decisions }: { decisions: Decision[] }) {
   const { t } = useTranslation(casesI18n);
 
   return (
-    <Collapsible.Container>
+    <Collapsible.Container className="bg-grey-00">
       <Collapsible.Title>
         <div className="flex flex-1 items-center justify-between">
           <span className="text-grey-100 text-m font-bold capitalize">

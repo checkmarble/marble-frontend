@@ -124,12 +124,12 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
             <FormLabel>{t('settings:tags.color')}</FormLabel>
             <FormSelect.Default config={color}>
               {tagColors.map((color) => (
-                <Select.DefaultItem key={color} value={color}>
+                <FormSelect.DefaultItem key={color} value={color}>
                   <div
                     className="h-4 w-4 rounded-full"
                     style={{ backgroundColor: color }}
                   ></div>
-                </Select.DefaultItem>
+                </FormSelect.DefaultItem>
               ))}
             </FormSelect.Default>
             <FormError />

@@ -115,8 +115,8 @@ export default function Users() {
   return (
     <Page.Container>
       <Page.Content>
-        <div className="border-grey-10 w-full overflow-hidden rounded-lg border px-8 py-4 ">
-          <div className="flex flex-row items-center justify-between py-4 font-bold capitalize">
+        <div className="border-grey-10 bg-grey-00 flex w-full flex-col gap-4 overflow-hidden rounded-lg border px-8 py-6">
+          <div className="flex flex-row items-center justify-between font-bold capitalize">
             {t('settings:users')}
             <CreateUser orgId={org.id} />
           </div>

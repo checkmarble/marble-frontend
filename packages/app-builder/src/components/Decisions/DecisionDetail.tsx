@@ -22,7 +22,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
   } = decision;
 
   return (
-    <Collapsible.Container>
+    <Collapsible.Container className="bg-grey-00">
       <Collapsible.Title>
         {t('decisions:decision_detail.title')}
       </Collapsible.Title>

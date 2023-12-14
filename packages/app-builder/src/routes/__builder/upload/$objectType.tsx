@@ -306,7 +306,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
   });
 
   return (
-    <Paper.Container className="mb-10 w-full">
+    <Paper.Container className="bg-grey-00 mb-10 w-full">
       <Paper.Title> {t('upload:past_uploads')} </Paper.Title>
       <Table.Container {...getContainerProps()}>
         <Table.Header headerGroups={table.getHeaderGroups()} />
@@ -345,7 +345,7 @@ export default function Upload() {
         {t('upload:upload_cta', { replace: { objectType } })}
       </Page.Header>
       <Page.Content>
-        <Callout className="whitespace-normal">
+        <Callout className="whitespace-normal" variant="outlined">
           <div className="leading-8">
             <p>{t('upload:upload_callout_1', { replace: { objectType } })}</p>
             <p>{t('upload:upload_callout_2')}</p>

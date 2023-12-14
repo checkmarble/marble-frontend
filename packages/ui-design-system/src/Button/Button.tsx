@@ -52,7 +52,7 @@ export function CtaClassName({
       'hover:bg-grey-05 active:bg-grey-10  bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100':
         variant === 'secondary' && color === 'grey',
 
-      'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 text-grey-25 border-grey-00 focus:border-purple-100':
+      'hover:bg-grey-05 active:bg-grey-10 text-grey-25 border-transparent focus:border-purple-100':
         variant === 'tertiary' && color === 'grey',
     },
   );

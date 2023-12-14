@@ -145,11 +145,11 @@ function TableDetails({
         size: 500,
         cell: ({ cell }) => {
           return (
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-between gap-1">
               <FormatDescription description={cell.row.original.description} />
               {canEditDataModel ? (
                 <EditField key={cell.row.original.id} field={cell.row.original}>
-                  <div className="text-grey-00 group-hover:text-grey-100 relative rounded border-2 border-solid bg-transparent p-2 transition-colors ease-in-out">
+                  <div className="text-grey-00 group-hover:text-grey-100 group-hover:bg-grey-02 group-hover:border-grey-50 group-hover:hover:bg-grey-05 group-hover:active:bg-grey-10 relative cursor-pointer rounded border bg-transparent p-2 transition-colors ease-in-out">
                     <Edit width={'24px'} height={'24px'} />
                   </div>
                 </EditField>
@@ -235,7 +235,7 @@ function TableDetails({
   return (
     <div
       key={tableModel.name}
-      className="border-grey-10 w-full overflow-hidden rounded-lg border"
+      className="border-grey-10 bg-grey-00 w-full overflow-hidden rounded-lg border"
     >
       <div className="bg-grey-02 border-b-grey-10 flex flex-row items-center justify-between border-b px-8 py-4 font-bold capitalize">
         {tableModel.name}
@@ -341,7 +341,7 @@ export default function Data() {
         </div>
       </Page.Header>
       <Page.Content>
-        <Callout className="whitespace-normal">
+        <Callout className="whitespace-normal" variant="outlined">
           {t('data:your_data_callout')}
         </Callout>
         {canEditDataModel ? <CreateTable /> : null}
