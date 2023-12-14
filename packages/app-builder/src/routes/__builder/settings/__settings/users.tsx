@@ -35,15 +35,19 @@ export default function Users() {
   const { inboxUsers } = useLoaderData<{ inboxUsers: InboxUserDto[] }>();
   const { orgUsers } = useOrganizationUsers();
 
-  const inboxUsersByUserId = R.pipe(
-    inboxUsers,
-    R.groupBy((user) => user.user_id),
-    R.mapValues((value) =>
+  const inboxUsersByUserId = useMemo(
+    () =>
       R.pipe(
-        value,
-        R.groupBy((v) => v.role),
+        inboxUsers,
+        R.groupBy((user) => user.user_id),
+        R.mapValues((value) =>
+          R.pipe(
+            value,
+            R.groupBy((v) => v.role),
+          ),
+        ),
       ),
-    ),
+    [inboxUsers],
   );
 
   const columns = useMemo(() => {
