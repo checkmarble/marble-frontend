@@ -10,6 +10,11 @@ export const routes = [
         "file": "routes/ressources/scenarios/$scenarioId/$iterationId/validate-with-given-trigger-or-rule.tsx"
       },
       {
+        "id": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/duplicate",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/rules/duplicate",
+        "file": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/duplicate.tsx"
+      },
+      {
         "id": "routes/ressources/scenarios/$scenarioId/$iterationId/create_draft",
         "path": "ressources/scenarios/:scenarioId/:iterationId/create_draft",
         "file": "routes/ressources/scenarios/$scenarioId/$iterationId/create_draft.tsx"
@@ -30,9 +35,39 @@ export const routes = [
         "file": "routes/ressources/auth/login-with-email.tsx"
       },
       {
+        "id": "routes/ressources/settings/users/create",
+        "path": "ressources/settings/users/create",
+        "file": "routes/ressources/settings/users/create.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/users/delete",
+        "path": "ressources/settings/users/delete",
+        "file": "routes/ressources/settings/users/delete.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/users/update",
+        "path": "ressources/settings/users/update",
+        "file": "routes/ressources/settings/users/update.tsx"
+      },
+      {
         "id": "routes/ressources/scenarios/deployment",
         "path": "ressources/scenarios/deployment",
         "file": "routes/ressources/scenarios/deployment.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/tags/create",
+        "path": "ressources/settings/tags/create",
+        "file": "routes/ressources/settings/tags/create.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/tags/delete",
+        "path": "ressources/settings/tags/delete",
+        "file": "routes/ressources/settings/tags/delete.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/tags/update",
+        "path": "ressources/settings/tags/update",
+        "file": "routes/ressources/settings/tags/update.tsx"
       },
       {
         "id": "routes/ressources/cases/create-inbox",
@@ -70,6 +105,11 @@ export const routes = [
         "file": "routes/ressources/cases/edit-status.tsx"
       },
       {
+        "id": "routes/ressources/cases/edit-inbox",
+        "path": "ressources/cases/edit-inbox",
+        "file": "routes/ressources/cases/edit-inbox.tsx"
+      },
+      {
         "id": "routes/ressources/data/createField",
         "path": "ressources/data/createField",
         "file": "routes/ressources/data/createField.tsx"
@@ -88,6 +128,11 @@ export const routes = [
         "id": "routes/ressources/cases/edit-name",
         "path": "ressources/cases/edit-name",
         "file": "routes/ressources/cases/edit-name.tsx"
+      },
+      {
+        "id": "routes/ressources/cases/edit-tags",
+        "path": "ressources/cases/edit-tags",
+        "file": "routes/ressources/cases/edit-tags.tsx"
       },
       {
         "id": "routes/ressources/data/createLink",

@@ -106,6 +106,7 @@ const FormSelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
 
 export const FormSelect = {
   Default: FormSelectDefault,
+  DefaultItem: Select.DefaultItem,
   Root: FormSelectRoot,
   Trigger: FormSelectTrigger,
   Value: Select.Value,

@@ -5,26 +5,26 @@ import { Tooltip } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
 
-export function CaseTags({ caseTags }: { caseTags: CaseTag[] }) {
+export function CaseTags({ caseTagIds }: { caseTagIds: string[] }) {
   const { t } = useTranslation(casesI18n);
   return (
     <Tooltip.Default
       content={
         <div className="flex max-w-sm flex-wrap gap-1">
-          {caseTags.map((caseTag) => (
-            <CaseTag key={caseTag.id} caseTag={caseTag} />
+          {caseTagIds.map((caseTagId) => (
+            <CaseTag key={caseTagId} tagId={caseTagId} />
           ))}
         </div>
       }
     >
       <div className="flex w-fit flex-wrap items-center gap-1">
-        {caseTags.slice(0, 3).map((caseTag) => (
-          <CaseTag key={caseTag.id} caseTag={caseTag} />
+        {caseTagIds.slice(0, 3).map((caseTagId) => (
+          <CaseTag key={caseTagId} tagId={caseTagId} />
         ))}
-        {caseTags.length > 3 ? (
+        {caseTagIds.length > 3 ? (
           <div className="text-grey-100 bg-grey-05 flex h-6 items-center rounded-s px-2 text-xs font-normal">
             {t('cases:case_detail.other_tags_count', {
-              count: caseTags.length - 3,
+              count: caseTagIds.length - 3,
             })}
           </div>
         ) : null}
@@ -33,11 +33,11 @@ export function CaseTags({ caseTags }: { caseTags: CaseTag[] }) {
   );
 }
 
-function CaseTag({ caseTag }: { caseTag: CaseTag }) {
+export function CaseTag({ tagId }: { tagId: string }) {
   const { getTagById } = useOrganizationTags();
   const { t } = useTranslation(casesI18n);
 
-  const tag = getTagById(caseTag.tag_id);
+  const tag = getTagById(tagId);
 
   return (
     <div
