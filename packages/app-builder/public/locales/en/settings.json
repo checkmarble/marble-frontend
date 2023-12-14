@@ -1,7 +1,10 @@
 {
   "users": "Users",
   "users.new_user": "New user",
+  "users.new_user.create": "Create new user",
   "users.name": "Name",
+  "users.first_name": "First name",
+  "users.last_name": "Last name",
   "users.email": "Email",
   "users.role": "Rule Engine Role",
   "users.role.admin": "ADMIN",

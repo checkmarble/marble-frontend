@@ -1,6 +1,7 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useComposedRefs } from '@app-builder/utils/hooks/use-compose-refs';
 import { conform, type FieldConfig, useInputEvent } from '@conform-to/react';
+import { type SelectValueProps } from '@radix-ui/react-select';
 import { forwardRef, type RefObject, useRef, useState } from 'react';
 import { Select } from 'ui-design-system';
 
@@ -73,7 +74,38 @@ const FormSelectTrigger = forwardRef<
   );
 });
 
+export type SelectProps = React.ComponentProps<typeof FormSelectRoot> &
+  Pick<SelectValueProps, 'placeholder'> &
+  Pick<React.ComponentProps<typeof FormSelectTrigger>, 'border' | 'className'>;
+
+const FormSelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
+  function SelectDefault(
+    { children, placeholder, border, className, ...props },
+    triggerRef,
+  ) {
+    return (
+      <FormSelectRoot {...props}>
+        <FormSelectTrigger
+          ref={triggerRef}
+          border={border}
+          className={className}
+        >
+          <Select.Value placeholder={placeholder} />
+          <Select.Arrow />
+        </FormSelectTrigger>
+        <Select.Content
+          className="max-h-60 min-w-[var(--radix-select-trigger-width)]"
+          align={border === 'rounded' ? 'center' : 'start'}
+        >
+          <Select.Viewport>{children}</Select.Viewport>
+        </Select.Content>
+      </FormSelectRoot>
+    );
+  },
+);
+
 export const FormSelect = {
+  Default: FormSelectDefault,
   Root: FormSelectRoot,
   Trigger: FormSelectTrigger,
   Value: Select.Value,

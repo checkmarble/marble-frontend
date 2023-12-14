@@ -1,5 +1,6 @@
 import { Page } from '@app-builder/components';
 import { isAdmin, type User } from '@app-builder/models';
+import { CreateUser } from '@app-builder/routes/ressources/settings/users/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
@@ -7,32 +8,35 @@ import { json, type LoaderArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Table, useVirtualTable } from 'ui-design-system';
-import { Delete, Edit, Plus } from 'ui-icons';
+import { Table, useVirtualTable } from 'ui-design-system';
+import { Delete, Edit } from 'ui-icons';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient, user } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
+  const { apiClient, organization, user } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: '/login',
+    },
+  );
   if (!isAdmin(user)) {
     return redirect(getRoute('/'));
   }
 
   const { inbox_users } = await apiClient.listAllInboxUsers();
+  const org = await organization.getCurrentOrganization();
 
-  return json({ inboxUsers: inbox_users });
+  return json({ inboxUsers: inbox_users, org });
 }
 
 const columnHelper = createColumnHelper<User>();
 
 export default function Users() {
   const { t } = useTranslation(['settings', 'cases']);
-  const { inboxUsers } = useLoaderData<{ inboxUsers: InboxUserDto[] }>();
+  const { inboxUsers, org } = useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
 
   const inboxUsersByUserId = useMemo(
@@ -78,7 +82,6 @@ export default function Users() {
 
           const inboxUsersSummary = Object.keys(inboxUsers)
             .map((role) => {
-              console.log(role);
               const count = inboxUsers[role].length;
               return t(tKeyForInboxUserRole(role), { count });
             })
@@ -111,12 +114,9 @@ export default function Users() {
     <Page.Container>
       <Page.Content>
         <div className="border-grey-10 w-full overflow-hidden rounded-lg border px-8 py-4 ">
-          <div className="flex flex-row items-center justify-between px-8 py-4 font-bold capitalize">
+          <div className="flex flex-row items-center justify-between py-4 font-bold capitalize">
             {t('settings:users')}
-            <Button>
-              <Plus />
-              {t('settings:users.new_user')}
-            </Button>
+            <CreateUser orgId={org.id} />
           </div>
           <Table.Container {...getContainerProps()}>
             <Table.Header headerGroups={table.getHeaderGroups()} />

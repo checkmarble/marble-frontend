@@ -403,6 +403,8 @@ export type CreateUser = {
     email: string;
     role: string;
     organization_id: string;
+    first_name: string;
+    last_name: string;
 };
 export type OrganizationDto = {
     id: string;
