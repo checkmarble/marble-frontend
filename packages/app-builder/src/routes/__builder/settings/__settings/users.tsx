@@ -8,7 +8,6 @@ import { json, type LoaderArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -17,23 +16,27 @@ import { Delete, Edit } from 'ui-icons';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
-  const { apiClient, user } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
+  const { apiClient, organization, user } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: '/login',
+    },
+  );
   if (!isAdmin(user)) {
     return redirect(getRoute('/'));
   }
 
   const { inbox_users } = await apiClient.listAllInboxUsers();
+  const org = await organization.getCurrentOrganization();
 
-  return json({ inboxUsers: inbox_users });
+  return json({ inboxUsers: inbox_users, org });
 }
 
 const columnHelper = createColumnHelper<User>();
 
 export default function Users() {
   const { t } = useTranslation(['settings', 'cases']);
-  const { inboxUsers } = useLoaderData<{ inboxUsers: InboxUserDto[] }>();
+  const { inboxUsers, org } = useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
 
   const inboxUsersByUserId = useMemo(
@@ -113,7 +116,7 @@ export default function Users() {
         <div className="border-grey-10 w-full overflow-hidden rounded-lg border px-8 py-4 ">
           <div className="flex flex-row items-center justify-between py-4 font-bold capitalize">
             {t('settings:users')}
-            <CreateUser />
+            <CreateUser orgId={org.id} />
           </div>
           <Table.Container {...getContainerProps()}>
             <Table.Header headerGroups={table.getHeaderGroups()} />

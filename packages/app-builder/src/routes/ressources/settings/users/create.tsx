@@ -2,19 +2,15 @@ import { FormError } from '@app-builder/components/Form/FormError';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
+import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { conform, useForm, useInputEvent } from '@conform-to/react';
+import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
-import {
-  type ActionArgs,
-  json,
-  type LoaderArgs,
-  redirect,
-} from '@remix-run/node';
+import { type ActionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace, type ParseKeys } from 'i18next';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Plus } from 'ui-icons';
@@ -31,16 +27,6 @@ const createUserFormSchema = z.object({
   role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const),
   organizationId: z.string().uuid(),
 });
-
-export async function loader({ request }: LoaderArgs) {
-  const { authService } = serverServices;
-  const { organization } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
-  const org = await organization.getCurrentOrganization();
-
-  return json({ org });
-}
 
 export async function action({ request }: ActionArgs) {
   const { authService } = serverServices;
@@ -68,7 +54,7 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export function CreateUser() {
+export function CreateUser({ orgId }: { orgId: string }) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = useState(false);
 
@@ -88,28 +74,22 @@ export function CreateUser() {
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <CreateUserContent />
+        <CreateUserContent orgId={orgId} />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-const CreateUserContent = () => {
+const CreateUserContent = ({ orgId }: { orgId: string }) => {
   const { t } = useTranslation(handle.i18n);
-  const dataFetcher = useFetcher<typeof loader>();
   const fetcher = useFetcher<typeof action>();
-  const { load } = dataFetcher;
-  useEffect(() => {
-    load('/ressources/settings/users/create');
-  }, [load]);
 
-  const org = dataFetcher.data?.org;
   const defaultValue = {
     firstName: '',
     lastName: '',
     email: '',
     role: 'VIEWER',
-    organizationId: org?.id ?? '',
+    organizationId: orgId,
   };
 
   const formId = useId();
@@ -124,11 +104,6 @@ const CreateUserContent = () => {
         schema: createUserFormSchema,
       });
     },
-  });
-
-  const shadowInputRef = useRef<HTMLInputElement>(null);
-  const control = useInputEvent({
-    ref: shadowInputRef,
   });
 
   return (
@@ -166,22 +141,13 @@ const CreateUserContent = () => {
           </FormField>
           <FormField config={role} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:users.role')}</FormLabel>
-            <input
-              ref={shadowInputRef}
-              {...conform.input(role, {
-                hidden: true,
-              })}
-            />
-            <Select.Default
-              defaultValue={role.defaultValue ?? ''}
-              onValueChange={control.change}
-            >
+            <FormSelect.Default config={role}>
               {roleOptions.map(({ value, labelTKey }) => (
                 <Select.DefaultItem key={value} value={value}>
                   {t(labelTKey)}
                 </Select.DefaultItem>
               ))}
-            </Select.Default>
+            </FormSelect.Default>
             <FormError />
           </FormField>
         </div>
