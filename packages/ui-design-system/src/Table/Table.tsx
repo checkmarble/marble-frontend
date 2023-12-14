@@ -254,7 +254,7 @@ function DefaultTable<TData extends RowData>({
   getContainerProps,
 }: ReturnType<typeof useTable<TData>>) {
   return (
-    <Table.Container {...getContainerProps()}>
+    <Table.Container {...getContainerProps()} className="bg-grey-00">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => (

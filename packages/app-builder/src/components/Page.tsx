@@ -63,7 +63,7 @@ function PageContent({
 }: PageContentProps) {
   return scrollable ? (
     <ScrollArea.Root className="flex flex-1 flex-col">
-      <ScrollArea.Viewport className="h-full">
+      <ScrollArea.Viewport className="bg-purple-02 h-full">
         <div
           className={clsx(
             'flex flex-1 flex-col',
@@ -78,15 +78,16 @@ function PageContent({
       </ScrollArea.Scrollbar>
     </ScrollArea.Root>
   ) : (
-    <div
-      className={clsx(
-        'flex flex-1 flex-col',
-        'gap-4 p-4 lg:gap-8 lg:p-8',
-        'overflow-auto',
-        className,
-      )}
-      {...props}
-    />
+    <div className="bg-purple-02 flex flex-1">
+      <div
+        className={clsx(
+          'flex flex-1 flex-col',
+          'gap-4 p-4 lg:gap-8 lg:p-8',
+          className,
+        )}
+        {...props}
+      />
+    </div>
   );
 }
 

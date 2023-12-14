@@ -1,30 +1,43 @@
-import clsx from 'clsx';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { Lightbulb } from 'ui-icons';
 
 export const variants = ['info', 'error'] as const;
 
+const callout = cva(
+  'text-s text-grey-100 flex flex-row items-center gap-2 rounded p-2 font-normal',
+  {
+    variants: {
+      /**
+       * Outlined variant is usefull when you want to use the callout on non white background
+       * @default soft
+       */
+      variant: {
+        outlined: 'bg-grey-00 border-grey-10 border',
+        soft: 'bg-grey-02',
+      },
+      color: {
+        purple: 'border-l-2 border-l-purple-100',
+        red: 'border-l-2 border-l-red-100',
+      },
+    },
+  },
+);
+
+interface CalloutProps extends VariantProps<typeof callout> {
+  children: React.ReactNode;
+  className?: string;
+}
+
 export function Callout({
   children,
   className,
-  variant = 'info',
-}: {
-  children: React.ReactNode;
-  className?: string;
-  variant?: (typeof variants)[number];
-}) {
+  color = 'purple',
+  variant = 'soft',
+}: CalloutProps) {
   if (!children) return null;
 
   return (
-    <div
-      className={clsx(
-        'bg-grey-02 text-s text-grey-100 flex flex-row items-center gap-2 rounded p-2 font-normal',
-        {
-          'border-l-2 border-l-purple-100': variant === 'info',
-          'border-l-2 border-l-red-100': variant === 'error',
-        },
-        className,
-      )}
-    >
+    <div className={callout({ color, variant, className })}>
       <Lightbulb height="24px" width="24px" className="shrink-0" />
       {children}
     </div>

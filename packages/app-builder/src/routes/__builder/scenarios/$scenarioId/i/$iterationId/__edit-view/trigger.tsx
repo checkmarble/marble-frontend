@@ -216,7 +216,7 @@ export default function Trigger() {
   };
 
   return (
-    <Paper.Container scrollable={false} className="max-w-3xl">
+    <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.run_scenario.title')}</Paper.Title>
         <RunByApiInfo scenarioId={scenarioIteration.scenarioId} />

@@ -107,7 +107,7 @@ export default function Builder() {
           <div className="flex h-full flex-1 flex-row overflow-hidden">
             <header
               className={clsx(
-                'bg-grey-02 border-r-grey-10 flex max-h-screen w-full shrink-0 flex-col border-r',
+                'bg-grey-00 border-r-grey-10 flex max-h-screen w-full shrink-0 flex-col border-r',
                 'max-w-min md:max-w-[235px]',
               )}
             >
