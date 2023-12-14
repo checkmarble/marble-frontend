@@ -406,6 +406,13 @@ export type CreateUser = {
     first_name: string;
     last_name: string;
 };
+export type UpdateUser = {
+    email: string;
+    role: string;
+    organization_id: string;
+    first_name: string;
+    last_name: string;
+};
 export type OrganizationDto = {
     id: string;
     name: string;
@@ -1664,6 +1671,27 @@ export function deleteUser(userId: string, opts?: Oazapfts.RequestOpts) {
         ...opts,
         method: "DELETE"
     }));
+}
+/**
+ * Update a user
+ */
+export function updateUser(userId: string, updateUser: UpdateUser, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            user: UserDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/users/${encodeURIComponent(userId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateUser
+    })));
 }
 /**
  * List all organizations present in the database
