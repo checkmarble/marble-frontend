@@ -105,6 +105,11 @@ export const routes = [
         "file": "routes/ressources/cases/edit-status.tsx"
       },
       {
+        "id": "routes/ressources/cases/edit-inbox",
+        "path": "ressources/cases/edit-inbox",
+        "file": "routes/ressources/cases/edit-inbox.tsx"
+      },
+      {
         "id": "routes/ressources/data/createField",
         "path": "ressources/data/createField",
         "file": "routes/ressources/data/createField.tsx"
@@ -123,6 +128,11 @@ export const routes = [
         "id": "routes/ressources/cases/edit-name",
         "path": "ressources/cases/edit-name",
         "file": "routes/ressources/cases/edit-name.tsx"
+      },
+      {
+        "id": "routes/ressources/cases/edit-tags",
+        "path": "ressources/cases/edit-tags",
+        "file": "routes/ressources/cases/edit-tags.tsx"
       },
       {
         "id": "routes/ressources/data/createLink",
