@@ -60,6 +60,11 @@ export const routes = [
         "file": "routes/ressources/cases/add-to-case.tsx"
       },
       {
+        "id": "routes/ressources/cases/create-case",
+        "path": "ressources/cases/create-case",
+        "file": "routes/ressources/cases/create-case.tsx"
+      },
+      {
         "id": "routes/ressources/cases/edit-status",
         "path": "ressources/cases/edit-status",
         "file": "routes/ressources/cases/edit-status.tsx"
@@ -209,6 +214,33 @@ export const routes = [
             "file": "routes/__builder/scheduled-executions.tsx"
           },
           {
+            "id": "routes/__builder/settings/__settings",
+            "path": "settings",
+            "file": "routes/__builder/settings/__settings.tsx",
+            "children": [
+              {
+                "id": "routes/__builder/settings/__settings/api-keys",
+                "path": "api-keys",
+                "file": "routes/__builder/settings/__settings/api-keys.tsx"
+              },
+              {
+                "id": "routes/__builder/settings/__settings/inboxes",
+                "path": "inboxes",
+                "file": "routes/__builder/settings/__settings/inboxes.tsx"
+              },
+              {
+                "id": "routes/__builder/settings/__settings/users",
+                "path": "users",
+                "file": "routes/__builder/settings/__settings/users.tsx"
+              },
+              {
+                "id": "routes/__builder/settings/__settings/tags",
+                "path": "tags",
+                "file": "routes/__builder/settings/__settings/tags.tsx"
+              }
+            ]
+          },
+          {
             "id": "routes/__builder/upload/$objectType",
             "path": "upload/:objectType",
             "file": "routes/__builder/upload/$objectType.tsx"
@@ -224,6 +256,12 @@ export const routes = [
             "index": true,
             "path": "scenarios",
             "file": "routes/__builder/scenarios/index.tsx"
+          },
+          {
+            "id": "routes/__builder/settings/index",
+            "index": true,
+            "path": "settings",
+            "file": "routes/__builder/settings/index.tsx"
           },
           {
             "id": "routes/__builder/cases/$caseId",

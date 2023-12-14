@@ -75,3 +75,5 @@ export function adaptUser(user: UserDto): User {
     organizationId: user.organization_id,
   };
 }
+
+export const isAdmin = (user: CurrentUser) => user.role === 'ADMIN';
