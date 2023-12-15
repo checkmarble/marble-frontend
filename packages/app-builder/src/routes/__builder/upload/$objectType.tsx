@@ -160,7 +160,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
     onDrop: (acceptedFiles) => {
       void onDrop(acceptedFiles);
     },
-    accept: { string: ['.csv'] },
+    accept: { 'text/*': ['.csv'] },
     multiple: false,
   });
 
