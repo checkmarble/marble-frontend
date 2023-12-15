@@ -4,6 +4,7 @@ export { default as Arrow2Down } from './Arrow2Down';
 export { default as Arrow2Up } from './Arrow2Up';
 export { default as ArrowLeft } from './ArrowLeft';
 export { default as ArrowRight } from './ArrowRight';
+export { default as Attachment } from './Attachment';
 export { default as Backtest } from './Backtest';
 export { default as Boolean } from './Boolean';
 export { default as Calendar } from './Calendar';
