@@ -7,6 +7,7 @@ import { type TFunction } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 import { Accordion, Avatar, Collapsible } from 'ui-design-system';
 import {
+  Attachment,
   CaseManager,
   CreateNewFolder,
   Decision,
@@ -132,6 +133,12 @@ export function getEventIcon(event: CaseEvent) {
         </IconContainer>
       );
     }
+    case 'file_added':
+      return (
+        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
+          <Attachment />
+        </IconContainer>
+      );
   }
 }
 
@@ -214,6 +221,22 @@ export function getEventTitle(
         </span>
       );
     }
+    case 'file_added': {
+      return (
+        <span className="text-s text-grey-100 font-semibold">
+          <Trans
+            t={t}
+            i18nKey="cases:case_detail.history.event_title.file_added"
+            components={{
+              Name: <span className="text-s text-grey-100 font-normal" />,
+            }}
+            values={{
+              name: event.additional_note || 'default file name',
+            }}
+          />
+        </span>
+      );
+    }
   }
 }
 
@@ -287,6 +310,9 @@ export function getEventDetail(event: CaseEvent) {
     }
     case 'status_updated': {
       return <Author userId={event.user_id} type="edited_by" />;
+    }
+    case 'file_added': {
+      return <Author userId={event.user_id} type="added_by" />;
     }
   }
 }
