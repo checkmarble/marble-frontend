@@ -90,7 +90,7 @@ export function CreateInbox() {
   );
 }
 
-export function CreateInboxContent() {
+function CreateInboxContent() {
   const { t } = useTranslation(handle.i18n);
 
   const fetcher = useFetcher<typeof action>();
