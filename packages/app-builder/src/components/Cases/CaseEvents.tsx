@@ -71,6 +71,7 @@ function displayedEventTypes(event: CaseEvent) {
     'name_updated',
     'status_updated',
     'tags_updated',
+    'file_added',
   ].includes(event.event_type);
 }
 

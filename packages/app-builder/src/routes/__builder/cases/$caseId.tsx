@@ -12,6 +12,7 @@ import {
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources/cases/add-comment';
 import { EditCaseStatus } from '@app-builder/routes/ressources/cases/edit-status';
+import { UploadFile } from '@app-builder/routes/ressources/cases/upload-file';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -29,7 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 
 export const handle = {
-  i18n: ['common', 'navigation', ...casesI18n] satisfies Namespace,
+  i18n: ['common', 'navigation', 'cases', ...casesI18n] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -89,6 +90,7 @@ export default function CasePage() {
       </Page.Content>
       <div className="bg-grey-00 border-t-grey-10 sticky inset-x-0 bottom-0 flex flex-row gap-4 border-t p-4">
         <AddComment caseId={caseDetail.id} />
+        <UploadFile caseDetail={caseDetail} />
       </div>
     </Page.Container>
   );
