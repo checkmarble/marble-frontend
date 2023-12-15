@@ -40,20 +40,20 @@ export default function Settings() {
               text={t('settings:users')}
               to={getRoute('/settings/users')}
             />
-            <SettingsNavLink
+            {/* <SettingsNavLink
               text={t('settings:api_keys')}
               to={getRoute('/settings/api-keys')}
-            />
+            /> */}
           </div>
           <div className="flex flex-row items-center gap-2 pb-4">
             <Inbox height="20px" width="20px" />
             <p className="font-bold">{t('settings:case_manager')}</p>
           </div>
           <div className="flex flex-col gap-1 pb-6">
-            <SettingsNavLink
+            {/* <SettingsNavLink
               text={t('settings:inboxes')}
               to={getRoute('/settings/inboxes')}
-            />
+            /> */}
             <SettingsNavLink
               text={t('settings:tags')}
               to={getRoute('/settings/tags')}
