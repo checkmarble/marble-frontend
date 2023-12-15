@@ -3032,6 +3032,7 @@ components:
           comment_added: '#/components/schemas/CommentAddedEvent'
           name_updated: '#/components/schemas/NameUpdatedEvent'
           tags_updated: '#/components/schemas/CaseTagsUpdatedEventDto'
+          file_added: '#/components/schemas/FileAddedEvent'
       required:
         - id
         - case_id
@@ -3159,6 +3160,22 @@ components:
             - new_value
           properties:
             new_value:
+              type: string
+    FileAddedEvent:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - resource_type
+            - resource_id
+            - additional_note
+          properties:
+            resource_type:
+              type: string
+            resource_id:
+              type: string
+              format: uuid
+            additional_note:
               type: string
     UpdateCaseBody:
       type: object
