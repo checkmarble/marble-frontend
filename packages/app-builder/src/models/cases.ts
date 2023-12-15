@@ -6,6 +6,7 @@ import {
   type CaseTagsUpdatedEventDto,
   type CommentAddedEvent,
   type DecisionAddedEvent,
+  type FileAddedEvent,
   type NameUpdatedEvent,
 } from 'marble-api';
 
@@ -30,7 +31,8 @@ export type CaseEvent =
   | DecisionAddedEvent
   | CommentAddedEvent
   | NameUpdatedEvent
-  | CaseTagsUpdatedEvent;
+  | CaseTagsUpdatedEvent
+  | FileAddedEvent;
 
 export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
   switch (caseEventDto.event_type) {
