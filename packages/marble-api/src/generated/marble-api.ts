@@ -133,7 +133,14 @@ export type CaseTagsUpdatedEventDto = {
 } & CaseEventDtoBase & {
     new_value: string;
 };
-export type CaseEventDto = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto;
+export type FileAddedEvent = {
+    event_type: "file_added";
+} & CaseEventDtoBase & {
+    resource_type: string;
+    resource_id: string;
+    additional_note: string;
+};
+export type CaseEventDto = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto | FileAddedEvent;
 export type CaseDetailDto = Case & {
     decisions: Decision[];
     events: CaseEventDto[];
