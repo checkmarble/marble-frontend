@@ -1,8 +1,8 @@
 import {
   navigationI18n,
   PermissionsProvider,
-  Sidebar,
-  type SidebarLinkProps,
+  SidebarButton,
+  SidebarLink,
 } from '@app-builder/components';
 import { isAdmin } from '@app-builder/models';
 import { ChatlioWidget } from '@app-builder/services/chatlio/ChatlioWidget';
@@ -20,10 +20,12 @@ import { json, type LoaderArgs } from '@remix-run/node';
 import { Form, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
+import { type SVGProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, ScrollArea } from 'ui-design-system';
 import {
   Arrow2Down,
+  ArrowRight,
   CaseManager,
   Decision,
   Harddrive,
@@ -39,36 +41,6 @@ import {
 import { getRoute } from '../utils/routes';
 import { useRefreshToken } from './ressources/auth/refresh';
 import { LanguagePicker } from './ressources/user/language';
-
-const LINKS: SidebarLinkProps[] = [
-  // { labelTKey: 'navigation:home', to: 'home', Icon: Home },
-  {
-    labelTKey: 'navigation:scenarios',
-    to: getRoute('/scenarios'),
-    Icon: Scenarios,
-  },
-  { labelTKey: 'navigation:lists', to: getRoute('/lists'), Icon: Lists },
-  {
-    labelTKey: 'navigation:decisions',
-    to: getRoute('/decisions'),
-    Icon: Decision,
-  },
-  {
-    labelTKey: 'navigation:scheduledExecutions',
-    to: getRoute('/scheduled-executions'),
-    Icon: ScheduledExecution,
-  },
-  {
-    labelTKey: 'navigation:caseManager',
-    to: getRoute('/cases'),
-    Icon: CaseManager,
-  },
-];
-
-const BOTTOM_LINKS: SidebarLinkProps[] = [
-  { labelTKey: 'navigation:data', to: getRoute('/data'), Icon: Harddrive },
-  { labelTKey: 'navigation:api', to: getRoute('/api'), Icon: World },
-];
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -100,30 +72,39 @@ export default function Builder() {
   // This is only added here to prevent "auto login" on /login pages... (/logout do not trigger logout from Firebase)
   useRefreshToken();
 
+  const [expanded, setExpanded] = useState(true);
+
   return (
     <PermissionsProvider userPermissions={user.permissions}>
       <OrganizationUsersContextProvider orgUsers={orgUsers}>
         <OrganizationTagsContextProvider orgTags={orgTags}>
           <div className="flex h-full flex-1 flex-row overflow-hidden">
             <header
-              className={clsx(
-                'bg-grey-00 border-r-grey-10 flex max-h-screen w-full shrink-0 flex-col border-r',
-                'max-w-min md:max-w-[235px]',
-              )}
+              aria-expanded={expanded}
+              className="bg-grey-00 border-r-grey-10 group/nav flex max-h-screen w-14 shrink-0 flex-col border-r transition-all aria-expanded:w-[235px]"
             >
-              <div className="px-2 pb-9 pt-3">
+              <div className="h-24 px-2 pt-3">
                 <Popover.Root>
                   <Popover.Trigger asChild>
-                    <button className="hover:bg-grey-05 active:bg-grey-10 group flex w-full flex-row items-center justify-between gap-2 rounded-md p-2">
-                      <LogoStandard
-                        className="max-h-12"
-                        width="100%"
-                        height="100%"
-                        preserveAspectRatio="xMinYMid meet"
-                        aria-labelledby="marble"
-                      />
+                    <button className="hover:bg-grey-05 active:bg-grey-10 group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
+                      <div className="inline-flex">
+                        <LogoStandard
+                          width={undefined}
+                          height={undefined}
+                          aria-labelledby="marble"
+                          viewBox="0 0 80 80"
+                          className="w-6 shrink-0 transition-all group-aria-expanded/nav:w-12"
+                        />
+                        <LogoStandard
+                          width={undefined}
+                          height={undefined}
+                          aria-labelledby="marble"
+                          viewBox="80 0 277 80"
+                          className="w-32 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
+                        />
+                      </div>
                       <Arrow2Down
-                        className="group-radix-state-open:rotate-180"
+                        className="group-radix-state-open:rotate-180 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
                         height="24px"
                         width="24px"
                       />
@@ -179,35 +160,93 @@ export default function Builder() {
               </div>
               <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
                 <ScrollArea.Viewport>
-                  <Sidebar.Nav className="p-2">
-                    {LINKS.map((linkProps) => (
-                      <li key={linkProps.labelTKey}>
-                        <Sidebar.Link {...linkProps} />
+                  <nav className="p-2">
+                    <ul className="flex flex-col gap-2">
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:scenarios"
+                          to={getRoute('/scenarios')}
+                          Icon={Scenarios}
+                        />
                       </li>
-                    ))}
-                  </Sidebar.Nav>
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:lists"
+                          to={getRoute('/lists')}
+                          Icon={Lists}
+                        />
+                      </li>
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:decisions"
+                          to={getRoute('/decisions')}
+                          Icon={Decision}
+                        />
+                      </li>
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:scheduledExecutions"
+                          to={getRoute('/scheduled-executions')}
+                          Icon={ScheduledExecution}
+                        />
+                      </li>
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:caseManager"
+                          to={getRoute('/cases')}
+                          Icon={CaseManager}
+                        />
+                      </li>
+                    </ul>
+                  </nav>
                 </ScrollArea.Viewport>
                 <ScrollArea.Scrollbar>
                   <ScrollArea.Thumb />
                 </ScrollArea.Scrollbar>
               </ScrollArea.Root>
-              <Sidebar.Nav className="p-2 pb-4">
-                {BOTTOM_LINKS.map((linkProps) => (
-                  <li key={linkProps.labelTKey}>
-                    <Sidebar.Link {...linkProps} />
-                  </li>
-                ))}
-                {isAdmin(user) ? (
-                  <li key="navigation:settings">
-                    <Sidebar.Link
-                      labelTKey="navigation:settings"
-                      to={getRoute('/settings')}
-                      Icon={Settings}
+              <nav className="p-2 pb-4">
+                <ul className="flex flex-col gap-2">
+                  <li>
+                    <SidebarLink
+                      labelTKey="navigation:data"
+                      to={getRoute('/data')}
+                      Icon={Harddrive}
                     />
                   </li>
-                ) : null}
-                <ChatlioWidget user={user} organization={organization} />
-              </Sidebar.Nav>
+                  <li>
+                    <SidebarLink
+                      labelTKey="navigation:api"
+                      to={getRoute('/api')}
+                      Icon={World}
+                    />
+                  </li>
+                  {isAdmin(user) ? (
+                    <li key="navigation:settings">
+                      <SidebarLink
+                        labelTKey="navigation:settings"
+                        to={getRoute('/settings')}
+                        Icon={Settings}
+                      />
+                    </li>
+                  ) : null}
+                  <li>
+                    <ChatlioWidget user={user} organization={organization} />
+                  </li>
+                  <li>
+                    <SidebarButton
+                      onClick={() => {
+                        setExpanded((expanded) => !expanded);
+                      }}
+                      labelTKey={
+                        expanded
+                          ? 'navigation:collapsed'
+                          : 'navigation:expanded'
+                      }
+                      Icon={ExpandedIcon}
+                    />
+                  </li>
+                </ul>
+              </nav>
             </header>
 
             <Outlet />
@@ -215,5 +254,17 @@ export default function Builder() {
         </OrganizationTagsContextProvider>
       </OrganizationUsersContextProvider>
     </PermissionsProvider>
+  );
+}
+
+function ExpandedIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
+  return (
+    <ArrowRight
+      className={clsx(
+        'transition-transform group-aria-expanded/nav:rotate-180',
+        className,
+      )}
+      {...props}
+    />
   );
 }

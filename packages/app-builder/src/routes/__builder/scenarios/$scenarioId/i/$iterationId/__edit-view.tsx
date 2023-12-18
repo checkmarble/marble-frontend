@@ -1,7 +1,7 @@
 import {
   navigationI18n,
   ScenarioPage,
-  Scenarios,
+  ScenariosLink,
   usePermissionsContext,
 } from '@app-builder/components';
 import { withCornerPing } from '@app-builder/components/Ping';
@@ -119,53 +119,55 @@ export default function ScenarioEditLayout() {
         </div>
       </ScenarioPage.Header>
       <ScenarioPage.Content>
-        <Scenarios.Nav>
-          <li>
-            <Scenarios.Link
-              aria-invalid={hasTriggerErrors(scenarioValidation)}
-              labelTKey="navigation:scenario.trigger"
-              to="./trigger"
-              Icon={
-                hasTriggerErrors(scenarioValidation)
-                  ? withCornerPing({
-                      children: <Trigger />,
-                      variant: 'top-right',
-                    })
-                  : Trigger
-              }
-            />
-          </li>
-          <li>
-            <Scenarios.Link
-              aria-invalid={hasRulesErrors(scenarioValidation)}
-              labelTKey="navigation:scenario.rules"
-              to="./rules"
-              Icon={
-                hasRulesErrors(scenarioValidation)
-                  ? withCornerPing({
-                      children: <Rules />,
-                      variant: 'top-right',
-                    })
-                  : Rules
-              }
-            />
-          </li>
-          <li>
-            <Scenarios.Link
-              aria-invalid={hasDecisionErrors(scenarioValidation)}
-              labelTKey="navigation:scenario.decision"
-              to="./decision"
-              Icon={
-                hasDecisionErrors(scenarioValidation)
-                  ? withCornerPing({
-                      children: <Decision />,
-                      variant: 'top-right',
-                    })
-                  : Decision
-              }
-            />
-          </li>
-        </Scenarios.Nav>
+        <nav>
+          <ul className="flex flex-row gap-2">
+            <li>
+              <ScenariosLink
+                aria-invalid={hasTriggerErrors(scenarioValidation)}
+                labelTKey="navigation:scenario.trigger"
+                to="./trigger"
+                Icon={
+                  hasTriggerErrors(scenarioValidation)
+                    ? withCornerPing({
+                        children: <Trigger />,
+                        variant: 'top-right',
+                      })
+                    : Trigger
+                }
+              />
+            </li>
+            <li>
+              <ScenariosLink
+                aria-invalid={hasRulesErrors(scenarioValidation)}
+                labelTKey="navigation:scenario.rules"
+                to="./rules"
+                Icon={
+                  hasRulesErrors(scenarioValidation)
+                    ? withCornerPing({
+                        children: <Rules />,
+                        variant: 'top-right',
+                      })
+                    : Rules
+                }
+              />
+            </li>
+            <li>
+              <ScenariosLink
+                aria-invalid={hasDecisionErrors(scenarioValidation)}
+                labelTKey="navigation:scenario.decision"
+                to="./decision"
+                Icon={
+                  hasDecisionErrors(scenarioValidation)
+                    ? withCornerPing({
+                        children: <Decision />,
+                        variant: 'top-right',
+                      })
+                    : Decision
+                }
+              />
+            </li>
+          </ul>
+        </nav>
         <Outlet />
       </ScenarioPage.Content>
     </ScenarioPage.Container>
