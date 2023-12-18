@@ -17,7 +17,7 @@ export const handle = {
   i18n: ['common', 'navigation', 'cases', ...casesI18n] satisfies Namespace,
 };
 
-const MAX_FILE_SIZE_MB = 1;
+const MAX_FILE_SIZE_MB = 20;
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export function UploadFile({ caseDetail }: { caseDetail: CaseDetail }) {
