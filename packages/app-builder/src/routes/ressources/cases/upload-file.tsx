@@ -4,6 +4,7 @@ import { type CaseDetail } from '@app-builder/models/cases';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { useNavigation, useRevalidator } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -14,10 +15,10 @@ import { Button, Modal } from 'ui-design-system';
 import { Attachment, Plus } from 'ui-icons';
 
 export const handle = {
-  i18n: ['common', 'navigation', 'cases', ...casesI18n] satisfies Namespace,
+  i18n: ['common', 'navigation', ...casesI18n] satisfies Namespace,
 };
 
-const MAX_FILE_SIZE_MB = 20;
+const MAX_FILE_SIZE_MB = 1;
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export function UploadFile({ caseDetail }: { caseDetail: CaseDetail }) {
@@ -84,9 +85,10 @@ function UploadFileContent({
 
   const onDrop = async (acceptedFiles: File[]) => {
     if (acceptedFiles.length < 1) {
-      toastError(
-        `Please select a file of an accepted type and of size less than ${MAX_FILE_SIZE_MB} MB`,
-      );
+      toast.error('Please select a file');
+      // toastError(
+      //   `Please select a file of an accepted type and of size less than ${MAX_FILE_SIZE_MB} MB`,
+      // );
       return;
     }
     const file = acceptedFiles[0];
@@ -106,6 +108,7 @@ function UploadFileContent({
         },
       );
       if (!response.ok) {
+        Sentry.captureException(response.text());
         console.error(response);
         toastError('An error occurred while trying to upload the file.');
         return;
