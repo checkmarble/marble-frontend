@@ -108,8 +108,7 @@ function UploadFileContent({
         },
       );
       if (!response.ok) {
-        Sentry.captureException(response.text());
-        console.error(response);
+        Sentry.captureException(await response.text());
         toastError('An error occurred while trying to upload the file.');
         return;
       }
@@ -117,7 +116,7 @@ function UploadFileContent({
       setLoading(false);
       setOpen(false);
     } catch (error) {
-      console.error(error);
+      Sentry.captureException(error);
       toastError('An error occurred while trying to upload the file.');
     } finally {
       setLoading(false);
