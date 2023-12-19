@@ -35,16 +35,19 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
-  const { cases, apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
+  const { user, cases, apiClient } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: '/login',
+    },
+  );
 
   const caseId = fromParams(params, 'caseId');
   try {
     const caseDetail = await cases.getCase({ caseId });
     const { inbox } = await apiClient.getInbox(caseDetail.inbox_id);
 
-    return json({ caseDetail, inbox });
+    return json({ caseDetail, inbox, user });
   } catch (error) {
     // On purpusely catch 403 errors to display a 404 page
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
@@ -56,7 +59,7 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export default function CasePage() {
-  const { caseDetail, inbox } = useLoaderData<typeof loader>();
+  const { caseDetail, inbox, user } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -81,7 +84,11 @@ export default function CasePage() {
       <Page.Content>
         <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
           <div className="flex flex-col gap-4 lg:gap-8">
-            <CaseInformation caseDetail={caseDetail} inbox={inbox} />
+            <CaseInformation
+              caseDetail={caseDetail}
+              inbox={inbox}
+              user={user}
+            />
             <CaseDecisions decisions={caseDetail.decisions} />
             <CaseEvents events={caseDetail.events} />
           </div>
