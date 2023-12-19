@@ -1,3 +1,4 @@
+import { type CurrentUser } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -29,8 +30,25 @@ export async function action({ request }: ActionArgs) {
   return redirect(getRoute('/settings/users'));
 }
 
-export function DeleteUser({ userId }: { userId: string }) {
+export function DeleteUser({
+  userId,
+  currentUser,
+}: {
+  userId: string;
+  currentUser: CurrentUser;
+}) {
   const { t } = useTranslation(handle.i18n);
+
+  if (userId === currentUser.actorIdentity.userId) {
+    return (
+      <Delete
+        width="24px"
+        height="24px"
+        className="group-hover:text-grey-25 cursor-not-allowed"
+        aria-label={t('settings:users.delete_user')}
+      />
+    );
+  }
 
   return (
     <Modal.Root>
