@@ -110,7 +110,7 @@ const CreateTagContent = () => {
 
   return (
     <fetcher.Form
-      action="/ressources/settings/tags/create"
+      action={getRoute('/ressources/settings/tags/create')}
       method="POST"
       {...form.props}
     >

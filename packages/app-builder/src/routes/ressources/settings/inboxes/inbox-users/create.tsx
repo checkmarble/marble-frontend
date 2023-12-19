@@ -128,7 +128,7 @@ export function CreateInboxUserContent({
   return (
     <fetcher.Form
       method="post"
-      action="/ressources/settings/inboxes/inbox-users/create"
+      action={getRoute('/ressources/settings/inboxes/inbox-users/create')}
       {...form.props}
     >
       <Modal.Title>

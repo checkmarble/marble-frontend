@@ -124,7 +124,7 @@ export function UpdateInboxUserContent({
   return (
     <fetcher.Form
       method="patch"
-      action="/ressources/settings/inboxes/inbox-users/update"
+      action={getRoute('/ressources/settings/inboxes/inbox-users/update')}
       {...form.props}
     >
       <Modal.Title>{t('settings:inboxes.inbox_user.update')}</Modal.Title>

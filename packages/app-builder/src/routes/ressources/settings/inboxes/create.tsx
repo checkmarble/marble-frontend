@@ -124,7 +124,7 @@ export function CreateInboxContent({
   return (
     <fetcher.Form
       method="post"
-      action="/ressources/settings/inboxes/create"
+      action={getRoute('/ressources/settings/inboxes/create')}
       {...form.props}
     >
       <Modal.Title>{t('settings:inboxes.new_inbox.explain')}</Modal.Title>

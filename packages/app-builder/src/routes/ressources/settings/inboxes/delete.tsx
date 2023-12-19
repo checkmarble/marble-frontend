@@ -66,7 +66,10 @@ const DeleteInboxContent = ({ inboxId }: { inboxId: string }) => {
   const { t } = useTranslation(handle.i18n);
 
   return (
-    <Form action="/ressources/settings/inboxes/delete" method="DELETE">
+    <Form
+      action={getRoute('/ressources/settings/inboxes/delete')}
+      method="DELETE"
+    >
       <Modal.Title>{t('settings:inboxes.delete_inbox')}</Modal.Title>
       <div className="bg-grey-00 flex flex-col gap-8 p-8">
         <div className="text-s flex flex-1 flex-col gap-4">

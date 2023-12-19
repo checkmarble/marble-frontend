@@ -105,7 +105,7 @@ const UpdateUserContent = ({ user }: { user: User }) => {
 
   return (
     <fetcher.Form
-      action="/ressources/settings/users/update"
+      action={getRoute('/ressources/settings/users/update')}
       method="PATCH"
       {...form.props}
     >

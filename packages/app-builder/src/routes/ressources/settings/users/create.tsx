@@ -108,7 +108,7 @@ const CreateUserContent = ({ orgId }: { orgId: string }) => {
 
   return (
     <fetcher.Form
-      action="/ressources/settings/users/create"
+      action={getRoute('/ressources/settings/users/create')}
       method="POST"
       {...form.props}
     >

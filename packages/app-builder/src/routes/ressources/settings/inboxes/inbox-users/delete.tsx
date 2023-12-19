@@ -70,7 +70,7 @@ const DeleteInboxUserContent = ({ inboxUser }: { inboxUser: InboxUserDto }) => {
 
   return (
     <Form
-      action="/ressources/settings/inboxes/inbox-users/delete"
+      action={getRoute('/ressources/settings/inboxes/inbox-users/delete')}
       method="DELETE"
     >
       <Modal.Title>{t('settings:inboxes.inbox_user.delete')}</Modal.Title>

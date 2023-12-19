@@ -132,7 +132,7 @@ export function UpdateInboxContent({
 
   return (
     <fetcher.Form
-      action="/ressources/settings/inboxes/update"
+      action={getRoute('/ressources/settings/inboxes/update')}
       method="PATCH"
       {...form.props}
     >
