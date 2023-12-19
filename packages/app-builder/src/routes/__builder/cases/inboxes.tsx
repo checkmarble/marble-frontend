@@ -1,6 +1,6 @@
 import { Page, usePermissionsContext } from '@app-builder/components';
 import { casesI18n } from '@app-builder/components/Cases';
-import { CreateInbox } from '@app-builder/routes/ressources/cases/create-inbox';
+import { CreateInbox } from '@app-builder/routes/ressources/settings/inboxes/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const { inboxes } = await apiClient.listInboxes();
+  const { inboxes } = await apiClient.listInboxes({ withCaseCount: false });
 
   return json({ inboxes });
 }
@@ -63,7 +63,9 @@ export default function Cases() {
               </NavLink>
             ))}
           </div>
-          {canEditInboxes ? <CreateInbox /> : null}
+          {canEditInboxes ? (
+            <CreateInbox redirectRoutePath="/cases/inboxes/:inboxId" />
+          ) : null}
         </div>
         <Outlet />
       </div>

@@ -50,10 +50,10 @@ export default function Settings() {
             <p className="font-bold">{t('settings:case_manager')}</p>
           </div>
           <div className="flex flex-col gap-1 pb-6">
-            {/* <SettingsNavLink
+            <SettingsNavLink
               text={t('settings:inboxes')}
               to={getRoute('/settings/inboxes')}
-            /> */}
+            />
             <SettingsNavLink
               text={t('settings:tags')}
               to={getRoute('/settings/tags')}

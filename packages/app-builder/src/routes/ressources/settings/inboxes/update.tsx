@@ -5,12 +5,14 @@ import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
+import { type RoutePath } from '@app-builder/utils/routes/types';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { useForm } from '@conform-to/react';
+import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
+import { type InboxDto } from 'marble-api';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -18,11 +20,16 @@ import { NewInbox } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
-  i18n: ['cases', 'common'] satisfies Namespace,
+  i18n: ['settings', 'common'] satisfies Namespace,
 };
 
-const createInboxFormSchema = z.object({
+const updateInboxFormSchema = z.object({
+  id: z.string().uuid(),
   name: z.string().min(1),
+  redirectRoute: z.enum([
+    '/cases/inboxes/:inboxId',
+    '/settings/inboxes/:inboxId',
+  ]),
 });
 
 export async function action({ request }: ActionArgs) {
@@ -35,19 +42,19 @@ export async function action({ request }: ActionArgs) {
   });
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema: createInboxFormSchema });
+  const submission = parse(formData, { schema: updateInboxFormSchema });
 
   if (submission.intent !== 'submit' || !submission.value) {
     return json(submission);
   }
 
   try {
-    const { inbox: createdInbox } = await apiClient.createInbox(
-      submission.value,
-    );
+    const { inbox } = await apiClient.updateInbox(submission.value.id, {
+      name: submission.value.name,
+    });
     return redirect(
-      getRoute('/cases/inboxes/:inboxId', {
-        inboxId: fromUUID(createdInbox.id),
+      getRoute(submission.value.redirectRoute, {
+        inboxId: fromUUID(inbox.id),
       }),
     );
   } catch (error) {
@@ -64,7 +71,13 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export function CreateInbox() {
+export function UpdateInbox({
+  inbox,
+  redirectRoutePath,
+}: {
+  inbox: InboxDto;
+  redirectRoutePath: RoutePath;
+}) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = useState(false);
 
@@ -80,43 +93,55 @@ export function CreateInbox() {
       <Modal.Trigger asChild>
         <Button className="w-fit whitespace-nowrap" variant="secondary">
           <NewInbox className="text-l" />
-          {t('cases:inbox.new_inbox.create')}
+          {t('settings:inboxes.update_inbox')}
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <CreateInboxContent />
+        <UpdateInboxContent
+          inbox={inbox}
+          redirectRoutePath={redirectRoutePath}
+        />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-function CreateInboxContent() {
+export function UpdateInboxContent({
+  inbox,
+  redirectRoutePath,
+}: {
+  inbox: InboxDto;
+  redirectRoutePath: RoutePath;
+}) {
   const { t } = useTranslation(handle.i18n);
 
   const fetcher = useFetcher<typeof action>();
 
   const formId = useId();
-  const [form, { name }] = useForm({
+  const [form, { id, name, redirectRoute }] = useForm({
     id: formId,
+    defaultValue: { ...inbox, redirectRoute: redirectRoutePath },
     lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(createInboxFormSchema),
+    constraint: getFieldsetConstraint(updateInboxFormSchema),
     onValidate({ formData }) {
       return parse(formData, {
-        schema: createInboxFormSchema,
+        schema: updateInboxFormSchema,
       });
     },
   });
 
   return (
     <fetcher.Form
-      method="post"
-      action={getRoute('/ressources/cases/create-inbox')}
+      action="/ressources/settings/inboxes/update"
+      method="PATCH"
       {...form.props}
     >
-      <Modal.Title>{t('cases:inbox.new_inbox.explain')}</Modal.Title>
+      <Modal.Title>{t('settings:inboxes.update_inbox')}</Modal.Title>
       <div className="bg-grey-00 flex flex-col gap-8 p-8">
+        <input {...conform.input(id, { type: 'hidden' })} />
+        <input {...conform.input(redirectRoute, { type: 'hidden' })} />
         <FormField config={name} className="group flex flex-col gap-2">
-          <FormLabel>{t('cases:inbox.new_inbox.name')}</FormLabel>
+          <FormLabel>{t('settings:inboxes.name')}</FormLabel>
           <FormInput type="text" />
           <FormError />
         </FormField>
@@ -130,10 +155,9 @@ function CreateInboxContent() {
             className="flex-1"
             variant="primary"
             type="submit"
-            name="create"
+            name="update"
           >
-            <NewInbox />
-            {t('cases:inbox.new_inbox.create')}
+            {t('common:save')}
           </Button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { Page } from '@app-builder/components';
 import { isAdmin } from '@app-builder/models';
+import { CreateInbox } from '@app-builder/routes/ressources/settings/inboxes/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -7,11 +8,11 @@ import { json, type LoaderArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type InboxDto, type InboxUserRole, type Tag } from 'marble-api';
+import { type InboxDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Table, useVirtualTable } from 'ui-design-system';
+import { Table, useVirtualTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -32,7 +33,6 @@ const columnHelper = createColumnHelper<InboxDto>();
 export default function Inboxes() {
   const { t } = useTranslation(['settings']);
   const { inboxes } = useLoaderData<typeof loader>();
-  console.log(inboxes);
 
   const navigate = useNavigate();
 
@@ -84,7 +84,7 @@ export default function Inboxes() {
         <div className="border-grey-10 w-full overflow-hidden rounded-lg border px-8 py-4 ">
           <div className="flex flex-row items-center justify-between py-4 font-bold capitalize">
             {t('settings:inboxes')}
-            <Button>{t('settings:inboxes.new_inbox')}</Button>
+            <CreateInbox redirectRoutePath="/settings/inboxes/:inboxId" />
           </div>
           <Table.Container {...getContainerProps()}>
             <Table.Header headerGroups={table.getHeaderGroups()} />
@@ -98,7 +98,7 @@ export default function Inboxes() {
                     row={row}
                     onClick={() => {
                       navigate(
-                        getRoute('/inboxes/:inboxId', {
+                        getRoute('/settings/inboxes/:inboxId', {
                           inboxId: fromUUID(row.original.id),
                         }),
                       );
@@ -114,7 +114,7 @@ export default function Inboxes() {
   );
 }
 
-const tKeyForInboxUserRole = (role: string) => {
+export const tKeyForInboxUserRole = (role: string) => {
   switch (role) {
     case 'admin':
       return 'settings:inboxes.user_role.admin';
