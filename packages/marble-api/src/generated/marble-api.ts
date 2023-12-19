@@ -139,9 +139,16 @@ export type FileAddedEvent = {
     additional_note: string;
 };
 export type CaseEventDto = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto | FileAddedEvent;
+export type CaseFile = {
+    id: string;
+    case_id: string;
+    created_at: string;
+    file_name: string;
+};
 export type CaseDetailDto = Case & {
     decisions: Decision[];
     events: CaseEventDto[];
+    files: CaseFile[];
 };
 export type UpdateCaseBody = {
     name?: string;
@@ -751,6 +758,25 @@ export function updateTagsForCase(caseId: string, body: {
         method: "POST",
         body
     })));
+}
+/**
+ * Download a case file
+ */
+export function downloadCaseFile(caseFileId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            url: string;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/cases/files/$${encodeURIComponent(caseFileId)}/download_link`, {
+        ...opts
+    }));
 }
 /**
  * List tags
