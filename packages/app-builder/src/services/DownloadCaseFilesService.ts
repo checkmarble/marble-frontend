@@ -85,6 +85,7 @@ async function openFileLink(url: string) {
 
       const clickHandler = () => {
         setTimeout(() => {
+          removeEventListener('click', clickHandler);
           resolve();
         }, TIME_TO_OPEN_DOWNLOAD_MODALE);
       };
