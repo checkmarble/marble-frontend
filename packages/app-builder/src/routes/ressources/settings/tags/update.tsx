@@ -14,7 +14,7 @@ import { type Namespace } from 'i18next';
 import { type Tag } from 'marble-api';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Edit } from 'ui-icons';
 import { z } from 'zod';
 

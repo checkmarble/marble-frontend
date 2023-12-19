@@ -1,7 +1,6 @@
-import { sidebarLink } from '@app-builder/components';
+import { SidebarButton } from '@app-builder/components';
 import { type CurrentUser } from '@app-builder/models';
 import { type Organization } from '@app-builder/models/organization';
-import { useTranslation } from 'react-i18next';
 import { Helpcenter } from 'ui-icons';
 
 import { getFullName } from '../user';
@@ -13,11 +12,11 @@ export function ChatlioWidget({
   user: CurrentUser;
   organization: Organization;
 }) {
-  const { t } = useTranslation(['navigation']);
   return (
     <>
-      <button
-        className={sidebarLink()}
+      <SidebarButton
+        labelTKey="navigation:helpCenter"
+        Icon={Helpcenter}
         onClick={() => {
           window._chatlio?.configure?.({
             collapsedMode: 'hidden',
@@ -33,14 +32,13 @@ export function ChatlioWidget({
           window._chatlio?.showOrHide?.();
         }}
         data-chatlio-widget-button
-      >
-        <Helpcenter height="24px" width="24px" />
-        {t('navigation:helpCenter')}
-      </button>
-      <chatlio-widget
-        widgetid="4aef4109-4ac2-4499-590d-511078df07fd"
-        data-start-hidden
-      ></chatlio-widget>
+      />
+      <div className="absolute">
+        <chatlio-widget
+          widgetid="4aef4109-4ac2-4499-590d-511078df07fd"
+          data-start-hidden
+        ></chatlio-widget>
+      </div>
     </>
   );
 }

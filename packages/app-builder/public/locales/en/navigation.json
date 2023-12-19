@@ -9,6 +9,8 @@
   "scenario.rules": "Rules",
   "scenario.decision": "Decision",
   "data": "Your Data",
+  "expanded": "Expanded",
+  "collapsed": "Collapsed",
   "api": "Marble API",
   "scheduledExecutions": "Scheduled Executions",
   "caseManager": "Case Manager",
