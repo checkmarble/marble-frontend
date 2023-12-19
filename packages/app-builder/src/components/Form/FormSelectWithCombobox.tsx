@@ -47,7 +47,10 @@ function FormSelectWithComboboxRoot<Schema extends string[]>({
       <FormSelectWithComboboxContext.Provider value={contextValue}>
         <input
           ref={shadowInputRef}
-          {...conform.input(config, { hidden: true })}
+          {...conform.input<string>(
+            { ...config, defaultValue: JSON.stringify(config.defaultValue) },
+            { hidden: true },
+          )}
           onFocus={() => buttonRef.current?.focus()}
           onChange={(e) => {
             const parsedValue = stringToStringArray.safeParse(e.target.value);

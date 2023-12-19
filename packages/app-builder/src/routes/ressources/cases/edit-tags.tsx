@@ -1,16 +1,20 @@
 import { CaseTag, CaseTags } from '@app-builder/components/Cases/CaseTags';
 import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
+import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { getRoute } from '@app-builder/utils/routes';
 import { stringToStringArray } from '@app-builder/utils/schema/stringToJSONSchema';
 import { conform, useForm } from '@conform-to/react';
 import { parse } from '@conform-to/zod';
+import * as Tooltip from '@radix-ui/react-tooltip';
 import { type ActionArgs, json } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
+import { Link, useFetcher } from '@remix-run/react';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useId, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input, ScrollArea } from 'ui-design-system';
+import { Tip } from 'ui-icons';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -41,10 +45,13 @@ export async function action({ request }: ActionArgs) {
 export function EditCaseTags({
   defaultCaseTagIds,
   caseId,
+  user,
 }: {
   defaultCaseTagIds: string[];
   caseId: string;
+  user: CurrentUser;
 }) {
+  const { t } = useTranslation(['cases']);
   const fetcher = useFetcher<typeof action>();
 
   const formId = useId();
@@ -53,6 +60,7 @@ export function EditCaseTags({
     defaultValue: { caseTagIds: defaultCaseTagIds, caseId },
     lastSubmission: fetcher.data,
     onValidate({ formData }) {
+      console.log('caseTagIds', formData.get('caseTagIds'));
       return parse(formData, {
         schema,
       });
@@ -69,6 +77,43 @@ export function EditCaseTags({
     () => matchSorter(orgTags, searchValue, { keys: ['name'] }),
     [orgTags, searchValue],
   );
+
+  const notTags = orgTags.length === 0;
+  if (notTags) {
+    return (
+      <div className="flex flex-row gap-2">
+        <p className="bg-grey-00 text-s text-grey-25">
+          {t('cases:case_detail.empty_tag_list')}
+        </p>
+
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger tabIndex={-1}>
+            <Tip className="text-l text-grey-10 outline-none transition-colors hover:text-purple-100" />
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              side="right"
+              sideOffset={4}
+              className="bg-grey-00 border-grey-10 flex max-h-[400px] max-w-[300px] overflow-y-auto overflow-x-hidden rounded border p-2 shadow-md"
+            >
+              {isAdmin(user) ? (
+                <Link
+                  to={getRoute('/settings/tags')}
+                  className="text-purple-100 underline"
+                >
+                  {t('cases:case_detail.empty_tag_list.create_tag')}
+                </Link>
+              ) : (
+                <p className="bg-grey-00 text-s text-grey-50">
+                  {t('cases:case_detail.empty_tag_list.info')}
+                </p>
+              )}
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </div>
+    );
+  }
 
   return (
     <fetcher.Form
@@ -109,6 +154,11 @@ export function EditCaseTags({
                     <CaseTag tagId={tag.id} />
                   </FormSelectWithCombobox.ComboboxItem>
                 ))}
+                {matches.length === 0 ? (
+                  <p className="text-grey-50 flex items-center justify-center p-2">
+                    {t('cases:case_detail.tags.empty_matches')}
+                  </p>
+                ) : null}
               </FormSelectWithCombobox.ComboboxList>
             </ScrollArea.Viewport>
           </div>

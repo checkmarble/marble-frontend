@@ -1,3 +1,4 @@
+import { type CurrentUser } from '@app-builder/models';
 import { EditCaseInbox } from '@app-builder/routes/ressources/cases/edit-inbox';
 import { EditCaseName } from '@app-builder/routes/ressources/cases/edit-name';
 import { EditCaseTags } from '@app-builder/routes/ressources/cases/edit-tags';
@@ -12,9 +13,11 @@ import { casesI18n } from './cases-i18n';
 export function CaseInformation({
   caseDetail: { created_at, name, id, contributors, tags },
   inbox,
+  user,
 }: {
   caseDetail: Case;
   inbox: InboxDto;
+  user: CurrentUser;
 }) {
   const {
     t,
@@ -40,6 +43,7 @@ export function CaseInformation({
           <EditCaseTags
             defaultCaseTagIds={tags.map(({ tag_id }) => tag_id)}
             caseId={id}
+            user={user}
           />
           <CaseLabel>{t('cases:case.contributors')}</CaseLabel>
           <CaseContributors contributors={contributors} />
