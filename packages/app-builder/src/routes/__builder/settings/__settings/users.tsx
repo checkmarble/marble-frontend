@@ -66,6 +66,9 @@ export default function Users() {
         id: 'email',
         header: t('settings:users.email'),
         size: 100,
+        cell: ({ getValue }) => (
+          <div className="overflow-hidden text-ellipsis">{getValue()}</div>
+        ),
       }),
       columnHelper.accessor((row) => row.role, {
         id: 'role',
