@@ -9,6 +9,7 @@ import {
   CaseInformation,
   casesI18n,
 } from '@app-builder/components/Cases';
+import { CaseFiles } from '@app-builder/components/Cases/CaseFiles';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources/cases/add-comment';
 import { EditCaseStatus } from '@app-builder/routes/ressources/cases/edit-status';
@@ -90,6 +91,7 @@ export default function CasePage() {
               user={user}
             />
             <CaseDecisions decisions={caseDetail.decisions} />
+            <CaseFiles files={caseDetail.files} />
             <CaseEvents events={caseDetail.events} />
           </div>
           <div className="flex flex-col gap-4 lg:gap-8"></div>
