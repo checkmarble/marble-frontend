@@ -495,6 +495,40 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /cases/files/${caseFileId}/download_link:
+    get:
+      tags:
+        - Cases
+      summary: Download a case file
+      operationId: downloadCaseFile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: caseFileId
+          description: ID of the case file that needs to be downloaded
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Signed url to download the case file's content
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - url
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                    description: Signed url to download the case file's content
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /tags:
     get:
       tags:
@@ -3012,6 +3046,7 @@ components:
           required:
             - decisions
             - events
+            - files
           properties:
             decisions:
               type: array
@@ -3021,6 +3056,10 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/CaseEventDto'
+            files:
+              type: array
+              items:
+                $ref: '#/components/schemas/CaseFile'
     CaseEventDto:
       type: object
       discriminator:
@@ -3053,6 +3092,25 @@ components:
           type: string
           format: date-time
         event_type:
+          type: string
+    CaseFile:
+      type: object
+      required:
+        - id
+        - case_id
+        - created_at
+        - file_name
+      properties:
+        id:
+          type: string
+          format: uuid
+        case_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        file_name:
           type: string
     CaseTag:
       type: object
