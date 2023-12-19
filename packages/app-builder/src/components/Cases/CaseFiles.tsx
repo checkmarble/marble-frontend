@@ -3,7 +3,7 @@ import {
   useDownloadCaseFiles,
 } from '@app-builder/services/DownloadCaseFilesService';
 import { formatDateTime } from '@app-builder/utils/format';
-import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type CaseFile } from 'marble-api';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
@@ -38,51 +38,49 @@ export function CaseFiles({ files }: { files: CaseFile[] }) {
   );
 }
 
+const columnHelper = createColumnHelper<CaseFile>();
+
 function FilesList({ files }: { files: CaseFile[] }) {
   const {
     t,
     i18n: { language },
   } = useTranslation(casesI18n);
 
-  const columns = useMemo<ColumnDef<CaseFile>[]>(
-    () => [
-      {
+  const columns = useMemo(() => {
+    const columns = [
+      columnHelper.accessor((row) => row.file_name, {
         id: 'file_name',
-        accessorKey: 'file_name',
         header: t('cases:case.file.name'),
         size: 120,
-      },
-      {
+      }),
+      columnHelper.accessor((row) => row.file_name, {
         id: 'extension',
         size: 40,
         header: t('cases:case.file.extension'),
-        cell: ({ cell }) => {
-          return last(cell.row.original.file_name.split('.'))?.toUpperCase();
+        cell: ({ getValue }) => {
+          return last(getValue().split('.'))?.toUpperCase();
         },
-      },
-      {
-        id: 'created_at',
-        header: t('cases:case.file.added_date'),
-        size: 40,
-        cell: ({ cell }) => {
-          return formatDateTime(cell.row.original.created_at, {
-            language,
-            timeStyle: undefined,
-          });
+      }),
+      columnHelper.accessor(
+        (row) =>
+          formatDateTime(row.created_at, { language, timeStyle: undefined }),
+        {
+          id: 'created_at',
+          header: t('cases:case.file.added_date'),
+          size: 40,
         },
-      },
-      {
+      ),
+      columnHelper.accessor((row) => row.id, {
         id: 'link',
-        accessorKey: 'file_name',
         header: t('cases:case.file.download'),
         size: 40,
-        cell: ({ cell }) => {
-          return <FileLink caseFileId={cell.row.original.id} />;
+        cell: ({ getValue }) => {
+          return <FileLink caseFileId={getValue()} />;
         },
-      },
-    ],
-    [language, t],
-  );
+      }),
+    ];
+    return columns;
+  }, [language, t]);
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: files,
@@ -91,8 +89,6 @@ function FilesList({ files }: { files: CaseFile[] }) {
     getCoreRowModel: getCoreRowModel(),
     enableSorting: false,
   });
-
-  // useDownloadCaseFiles()
 
   return (
     <Table.Container {...getContainerProps()} className="bg-grey-00">
