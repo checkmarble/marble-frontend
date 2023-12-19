@@ -143,9 +143,9 @@ export function CreateInboxUserContent({
           <FormLabel>{t('settings:inboxes.inbox_details.user')}</FormLabel>
           <FormSelect.Default config={userId}>
             {userOptions.map(({ id, name }) => (
-              <Select.DefaultItem key={id} value={id}>
+              <FormSelect.DefaultItem key={id} value={id}>
                 {name}
-              </Select.DefaultItem>
+              </FormSelect.DefaultItem>
             ))}
           </FormSelect.Default>
           <FormError />

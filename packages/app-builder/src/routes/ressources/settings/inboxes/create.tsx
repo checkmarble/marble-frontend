@@ -5,7 +5,6 @@ import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type RoutePath } from '@app-builder/utils/routes/types';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
@@ -22,12 +21,13 @@ export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
+export const redirectRouteOptions = [
+  '/cases/inboxes/:inboxId',
+  '/settings/inboxes/:inboxId',
+] as const;
 const createInboxFormSchema = z.object({
   name: z.string().min(1),
-  redirectRoute: z.enum([
-    '/cases/inboxes/:inboxId',
-    '/settings/inboxes/:inboxId',
-  ]),
+  redirectRoute: z.enum(redirectRouteOptions),
 });
 
 export async function action({ request }: ActionArgs) {
@@ -72,7 +72,7 @@ export async function action({ request }: ActionArgs) {
 export function CreateInbox({
   redirectRoutePath,
 }: {
-  redirectRoutePath: RoutePath;
+  redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = useState(false);
@@ -102,7 +102,7 @@ export function CreateInbox({
 export function CreateInboxContent({
   redirectRoutePath,
 }: {
-  redirectRoutePath: RoutePath;
+  redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
 

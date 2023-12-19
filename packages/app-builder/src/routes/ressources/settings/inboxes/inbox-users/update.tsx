@@ -15,7 +15,7 @@ import { type Namespace } from 'i18next';
 import { type InboxUserDto } from 'marble-api';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Edit } from 'ui-icons';
 import { z } from 'zod';
 
@@ -118,8 +118,6 @@ export function UpdateInboxUserContent({
       });
     },
   });
-  console.log('currentInboxUser', currentInboxUser);
-  console.log('inboxId', inbox_id);
 
   return (
     <fetcher.Form
@@ -138,9 +136,9 @@ export function UpdateInboxUserContent({
           <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
           <FormSelect.Default config={role}>
             {roleOptions.map((role) => (
-              <Select.DefaultItem key={role} value={role}>
+              <FormSelect.DefaultItem key={role} value={role}>
                 {t(tKeyForInboxUserRole(role))}
-              </Select.DefaultItem>
+              </FormSelect.DefaultItem>
             ))}
           </FormSelect.Default>
           <FormError />

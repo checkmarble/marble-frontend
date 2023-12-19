@@ -13,7 +13,7 @@ import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Plus } from 'ui-icons';
 import { z } from 'zod';
 
@@ -126,12 +126,12 @@ const CreateTagContent = () => {
             <FormLabel>{t('settings:tags.color')}</FormLabel>
             <FormSelect.Default config={color}>
               {tagColors.map((color) => (
-                <Select.DefaultItem key={color} value={color}>
+                <FormSelect.DefaultItem key={color} value={color}>
                   <div
                     className="h-4 w-4 rounded-full"
                     style={{ backgroundColor: color }}
                   ></div>
-                </Select.DefaultItem>
+                </FormSelect.DefaultItem>
               ))}
             </FormSelect.Default>
             <FormError />

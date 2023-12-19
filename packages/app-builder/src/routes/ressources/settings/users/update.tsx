@@ -13,7 +13,7 @@ import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Edit } from 'ui-icons';
 import { z } from 'zod';
 
@@ -141,9 +141,9 @@ const UpdateUserContent = ({ user }: { user: User }) => {
             <FormLabel>{t('settings:users.role')}</FormLabel>
             <FormSelect.Default config={role}>
               {roleOptions.map(({ value, labelTKey }) => (
-                <Select.DefaultItem key={value} value={value}>
+                <FormSelect.DefaultItem key={value} value={value}>
                   {t(labelTKey)}
-                </Select.DefaultItem>
+                </FormSelect.DefaultItem>
               ))}
             </FormSelect.Default>
             <FormError />
