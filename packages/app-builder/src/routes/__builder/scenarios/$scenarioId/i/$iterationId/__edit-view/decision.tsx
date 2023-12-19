@@ -173,7 +173,7 @@ export default function Decision() {
   const disabled = editorMode === 'view';
 
   return (
-    <Paper.Container className="max-w-3xl">
+    <Paper.Container className="bg-grey-00 max-w-3xl">
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:decision.score_based.title')}</Paper.Title>
         <Callout>{t('scenarios:decision.score_based.callout')}</Callout>

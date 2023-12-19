@@ -30,7 +30,7 @@ export default function Settings() {
         {t('navigation:settings')}
       </Page.Header>
       <div className="flex h-full flex-row">
-        <div className="border-r-grey-25 flex h-full w-full max-w-[300px] flex-col border-r p-4">
+        <div className="border-r-grey-10 flex h-full w-full max-w-[300px] flex-col border-r p-4">
           <div className="flex flex-row items-center gap-2 pb-4">
             <Inbox height="20px" width="20px" />
             <p className="font-bold">{t('settings:users')}</p>

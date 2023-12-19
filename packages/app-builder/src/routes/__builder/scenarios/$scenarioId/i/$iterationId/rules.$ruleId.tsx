@@ -284,26 +284,30 @@ function RuleViewContent({
 
   return (
     <ScenarioPage.Content>
-      <Callout className="max-w-3xl">{rule.description}</Callout>
+      <Callout className="max-w-3xl" variant="outlined">
+        {rule.description}
+      </Callout>
 
-      <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
-        <Trans
-          t={t}
-          i18nKey="scenarios:rules.consequence.score_modifier"
-          components={{
-            Score: <span className="font-semibold" />,
-          }}
-          values={{
-            score: formatNumber(rule.scoreModifier, {
-              language,
-              signDisplay: 'always',
-            }),
-          }}
-        />
+      <div className="flex flex-col gap-4">
+        <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
+          <Trans
+            t={t}
+            i18nKey="scenarios:rules.consequence.score_modifier"
+            components={{
+              Score: <span className="font-semibold" />,
+            }}
+            values={{
+              score: formatNumber(rule.scoreModifier, {
+                language,
+                signDisplay: 'always',
+              }),
+            }}
+          />
+        </div>
+        <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
+          <AstBuilder builder={builder} viewOnly={true} />
+        </Paper.Container>
       </div>
-      <Paper.Container scrollable={false} className="max-w-3xl">
-        <AstBuilder builder={builder} viewOnly={true} />
-      </Paper.Container>
     </ScenarioPage.Content>
   );
 }
@@ -328,7 +332,7 @@ function RuleEditContent({
 
   return (
     <ScenarioPage.Content>
-      <Paper.Container scrollable={false} className="max-w-3xl">
+      <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
         <FormProvider {...formMethods}>
           <FormField
             name="name"
@@ -386,7 +390,7 @@ function RuleEditContent({
         </FormProvider>
       </Paper.Container>
 
-      <Paper.Container scrollable={false} className="max-w-3xl">
+      <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
         <AstBuilder builder={builder} />
 
         {ruleValidation.errors ? (

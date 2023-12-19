@@ -9,7 +9,7 @@ import { Tip } from 'ui-icons';
 export const RulesDetail = ({ rules }: { rules: Decision['rules'] }) => {
   const { t } = useTranslation(decisionsI18n);
   return (
-    <Collapsible.Container>
+    <Collapsible.Container className="bg-grey-00">
       <Collapsible.Title>{t('decisions:rules.title')}</Collapsible.Title>
       <Collapsible.Content>
         <Accordion.Container>

@@ -26,7 +26,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
   } = useTranslation(casesI18n);
 
   return (
-    <Collapsible.Container>
+    <Collapsible.Container className="bg-grey-00">
       <Collapsible.Title>
         <span className="text-grey-100 text-m font-bold capitalize">
           {t('cases:case_detail.history')}
