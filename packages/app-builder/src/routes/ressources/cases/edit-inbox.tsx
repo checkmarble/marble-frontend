@@ -20,7 +20,7 @@ export async function loader({ request }: LoaderArgs) {
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: '/login',
   });
-  const inboxes = await apiClient.listInboxes();
+  const inboxes = await apiClient.listInboxes({ withCaseCount: false });
 
   return json(inboxes);
 }
