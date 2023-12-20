@@ -2333,6 +2333,13 @@ paths:
       operationId: listInboxes
       security:
         - bearerAuth: []
+      parameters:
+        - name: withCaseCount
+          description: whether the result should include the cases count
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: The list of inboxes
@@ -2415,6 +2422,71 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+    patch:
+      tags:
+        - Inboxes
+      summary: Update an inbox
+      operationId: updateInbox
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inboxId
+          description: ID of the inbox that needs to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Describe the fields to update
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: The updated inbox
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - inbox
+                properties:
+                  inbox:
+                    $ref: '#/components/schemas/InboxDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    delete:
+      tags:
+        - Inboxes
+      summary: Delete an inbox
+      operationId: deleteInbox
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inboxId
+          description: ID of the inbox that needs to be deleted
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: The inbox has been deleted
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /inboxes/{inboxId}/users:
     get:
       tags:
@@ -2541,6 +2613,71 @@ paths:
                 properties:
                   inbox_user:
                     $ref: '#/components/schemas/InboxUserDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    patch:
+      tags:
+        - Inboxes
+      summary: Update an inbox user
+      operationId: updateInboxUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inboxUserId
+          description: ID of the inbox user that needs to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Describe the fields to update
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  $ref: '#/components/schemas/InboxUserRole'
+        required: true
+      responses:
+        '200':
+          description: The updated inbox user
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - inbox_user
+                properties:
+                  inbox_user:
+                    $ref: '#/components/schemas/InboxUserDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    delete:
+      tags:
+        - Inboxes
+      summary: Delete an inbox user
+      operationId: deleteInboxUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inboxUserId
+          description: ID of the inbox user that needs to be deleted
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: The inbox user has been deleted
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -3847,6 +3984,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InboxUserDto'
+        cases_count:
+          type: number
     CreateInboxBodyDto:
       type: object
       required:

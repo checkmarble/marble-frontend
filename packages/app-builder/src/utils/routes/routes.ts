@@ -30,6 +30,36 @@ export const routes = [
         "file": "routes/ressources/scenarios/$scenarioId/$iterationId/rules/delete.tsx"
       },
       {
+        "id": "routes/ressources/settings/inboxes/inbox-users/create",
+        "path": "ressources/settings/inboxes/inbox-users/create",
+        "file": "routes/ressources/settings/inboxes/inbox-users/create.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/inboxes/inbox-users/delete",
+        "path": "ressources/settings/inboxes/inbox-users/delete",
+        "file": "routes/ressources/settings/inboxes/inbox-users/delete.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/inboxes/inbox-users/update",
+        "path": "ressources/settings/inboxes/inbox-users/update",
+        "file": "routes/ressources/settings/inboxes/inbox-users/update.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/inboxes/create",
+        "path": "ressources/settings/inboxes/create",
+        "file": "routes/ressources/settings/inboxes/create.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/inboxes/delete",
+        "path": "ressources/settings/inboxes/delete",
+        "file": "routes/ressources/settings/inboxes/delete.tsx"
+      },
+      {
+        "id": "routes/ressources/settings/inboxes/update",
+        "path": "ressources/settings/inboxes/update",
+        "file": "routes/ressources/settings/inboxes/update.tsx"
+      },
+      {
         "id": "routes/ressources/auth/login-with-email",
         "path": "ressources/auth/login-with-email",
         "file": "routes/ressources/auth/login-with-email.tsx"
@@ -68,11 +98,6 @@ export const routes = [
         "id": "routes/ressources/settings/tags/update",
         "path": "ressources/settings/tags/update",
         "file": "routes/ressources/settings/tags/update.tsx"
-      },
-      {
-        "id": "routes/ressources/cases/create-inbox",
-        "path": "ressources/cases/create-inbox",
-        "file": "routes/ressources/cases/create-inbox.tsx"
       },
       {
         "id": "routes/ressources/lists/value_create",
@@ -264,14 +289,20 @@ export const routes = [
             "file": "routes/__builder/settings/__settings.tsx",
             "children": [
               {
+                "id": "routes/__builder/settings/__settings/inboxes/$inboxId",
+                "path": "inboxes/:inboxId",
+                "file": "routes/__builder/settings/__settings/inboxes/$inboxId.tsx"
+              },
+              {
+                "id": "routes/__builder/settings/__settings/inboxes/index",
+                "index": true,
+                "path": "inboxes",
+                "file": "routes/__builder/settings/__settings/inboxes/index.tsx"
+              },
+              {
                 "id": "routes/__builder/settings/__settings/api-keys",
                 "path": "api-keys",
                 "file": "routes/__builder/settings/__settings/api-keys.tsx"
-              },
-              {
-                "id": "routes/__builder/settings/__settings/inboxes",
-                "path": "inboxes",
-                "file": "routes/__builder/settings/__settings/inboxes.tsx"
               },
               {
                 "id": "routes/__builder/settings/__settings/users",

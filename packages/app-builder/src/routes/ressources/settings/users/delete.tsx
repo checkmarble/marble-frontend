@@ -52,7 +52,10 @@ const DeleteUserContent = ({ userId }: { userId: string }) => {
   const { t } = useTranslation(handle.i18n);
 
   return (
-    <Form action="/ressources/settings/users/delete" method="DELETE">
+    <Form
+      action={getRoute('/ressources/settings/users/delete')}
+      method="DELETE"
+    >
       <Modal.Title>{t('settings:users.delete_user.title')}</Modal.Title>
       <div className="bg-grey-00 flex flex-col gap-8 p-8">
         <div className="text-s flex flex-1 flex-col gap-4">

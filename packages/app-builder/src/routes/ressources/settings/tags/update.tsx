@@ -107,7 +107,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
 
   return (
     <fetcher.Form
-      action="/ressources/settings/tags/update"
+      action={getRoute('/ressources/settings/tags/update')}
       method="PATCH"
       {...form.props}
     >

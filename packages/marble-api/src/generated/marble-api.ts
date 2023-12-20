@@ -465,6 +465,7 @@ export type InboxDto = {
     updated_at: string;
     status: "active" | "archived";
     users?: InboxUserDto[];
+    cases_count?: number;
 };
 export type CreateInboxBodyDto = {
     name: string;
@@ -2000,7 +2001,9 @@ export function listOperators(scenarioId: string, opts?: Oazapfts.RequestOpts) {
 /**
  * List all inboxes
  */
-export function listInboxes(opts?: Oazapfts.RequestOpts) {
+export function listInboxes({ withCaseCount }: {
+    withCaseCount?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -2012,7 +2015,9 @@ export function listInboxes(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 403;
         data: string;
-    }>("/inboxes", {
+    }>(`/inboxes${QS.query(QS.explode({
+        withCaseCount
+    }))}`, {
         ...opts
     }));
 }
@@ -2057,6 +2062,46 @@ export function getInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
         data: string;
     }>(`/inboxes/${encodeURIComponent(inboxId)}`, {
         ...opts
+    }));
+}
+/**
+ * Update an inbox
+ */
+export function updateInbox(inboxId: string, body: {
+    name: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox: InboxDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inboxes/${encodeURIComponent(inboxId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body
+    })));
+}
+/**
+ * Delete an inbox
+ */
+export function deleteInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inboxes/${encodeURIComponent(inboxId)}`, {
+        ...opts,
+        method: "DELETE"
     }));
 }
 /**
@@ -2135,5 +2180,45 @@ export function getInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts) {
         data: string;
     }>(`/inbox_users/${encodeURIComponent(inboxUserId)}`, {
         ...opts
+    }));
+}
+/**
+ * Update an inbox user
+ */
+export function updateInboxUser(inboxUserId: string, body: {
+    role: InboxUserRole;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            inbox_user: InboxUserDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inbox_users/${encodeURIComponent(inboxUserId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body
+    })));
+}
+/**
+ * Delete an inbox user
+ */
+export function deleteInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/inbox_users/${encodeURIComponent(inboxUserId)}`, {
+        ...opts,
+        method: "DELETE"
     }));
 }

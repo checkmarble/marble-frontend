@@ -1,5 +1,5 @@
 import { Page, usePermissionsContext } from '@app-builder/components';
-import { CreateInbox } from '@app-builder/routes/ressources/cases/create-inbox';
+import { CreateInbox } from '@app-builder/routes/ressources/settings/inboxes/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -13,7 +13,7 @@ export async function loader({ request }: LoaderArgs) {
     failureRedirect: '/login',
   });
 
-  const { inboxes } = await apiClient.listInboxes();
+  const { inboxes } = await apiClient.listInboxes({ withCaseCount: false });
 
   if (inboxes.length > 0) {
     return redirect(
@@ -37,7 +37,7 @@ export default function Cases() {
         {canEditInboxes ? (
           <div className="flex max-w-xl flex-col gap-4">
             <p>{t('cases:inbox.need_first_inbox')}</p>
-            <CreateInbox />
+            <CreateInbox redirectRoutePath="/cases/inboxes/:inboxId" />
           </div>
         ) : (
           <p>{t('cases:inbox.need_inbox_contact_admin')}</p>

@@ -6,7 +6,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { useForm } from '@conform-to/react';
+import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -18,11 +18,16 @@ import { NewInbox } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
-  i18n: ['cases', 'common'] satisfies Namespace,
+  i18n: ['settings', 'common'] satisfies Namespace,
 };
 
+export const redirectRouteOptions = [
+  '/cases/inboxes/:inboxId',
+  '/settings/inboxes/:inboxId',
+] as const;
 const createInboxFormSchema = z.object({
   name: z.string().min(1),
+  redirectRoute: z.enum(redirectRouteOptions),
 });
 
 export async function action({ request }: ActionArgs) {
@@ -42,11 +47,11 @@ export async function action({ request }: ActionArgs) {
   }
 
   try {
-    const { inbox: createdInbox } = await apiClient.createInbox(
-      submission.value,
-    );
+    const { inbox: createdInbox } = await apiClient.createInbox({
+      name: submission.value.name,
+    });
     return redirect(
-      getRoute('/cases/inboxes/:inboxId', {
+      getRoute(submission.value.redirectRoute, {
         inboxId: fromUUID(createdInbox.id),
       }),
     );
@@ -64,7 +69,11 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export function CreateInbox() {
+export function CreateInbox({
+  redirectRoutePath,
+}: {
+  redirectRoutePath: (typeof redirectRouteOptions)[number];
+}) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = useState(false);
 
@@ -80,24 +89,29 @@ export function CreateInbox() {
       <Modal.Trigger asChild>
         <Button className="w-fit whitespace-nowrap" variant="secondary">
           <NewInbox className="text-l" />
-          {t('cases:inbox.new_inbox.create')}
+          {t('settings:inboxes.new_inbox.create')}
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <CreateInboxContent />
+        <CreateInboxContent redirectRoutePath={redirectRoutePath} />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-function CreateInboxContent() {
+export function CreateInboxContent({
+  redirectRoutePath,
+}: {
+  redirectRoutePath: (typeof redirectRouteOptions)[number];
+}) {
   const { t } = useTranslation(handle.i18n);
 
   const fetcher = useFetcher<typeof action>();
 
   const formId = useId();
-  const [form, { name }] = useForm({
+  const [form, { name, redirectRoute }] = useForm({
     id: formId,
+    defaultValue: { name: '', redirectRoute: redirectRoutePath },
     lastSubmission: fetcher.data,
     constraint: getFieldsetConstraint(createInboxFormSchema),
     onValidate({ formData }) {
@@ -110,13 +124,14 @@ function CreateInboxContent() {
   return (
     <fetcher.Form
       method="post"
-      action={getRoute('/ressources/cases/create-inbox')}
+      action={getRoute('/ressources/settings/inboxes/create')}
       {...form.props}
     >
-      <Modal.Title>{t('cases:inbox.new_inbox.explain')}</Modal.Title>
+      <Modal.Title>{t('settings:inboxes.new_inbox.explain')}</Modal.Title>
       <div className="bg-grey-00 flex flex-col gap-8 p-8">
+        <input {...conform.input(redirectRoute, { type: 'hidden' })} />
         <FormField config={name} className="group flex flex-col gap-2">
-          <FormLabel>{t('cases:inbox.new_inbox.name')}</FormLabel>
+          <FormLabel>{t('settings:inboxes.new_inbox.name')}</FormLabel>
           <FormInput type="text" />
           <FormError />
         </FormField>
@@ -133,7 +148,7 @@ function CreateInboxContent() {
             name="create"
           >
             <NewInbox />
-            {t('cases:inbox.new_inbox.create')}
+            {t('settings:inboxes.new_inbox.create')}
           </Button>
         </div>
       </div>
