@@ -60,7 +60,6 @@ export function EditCaseTags({
     defaultValue: { caseTagIds: defaultCaseTagIds, caseId },
     lastSubmission: fetcher.data,
     onValidate({ formData }) {
-      console.log('caseTagIds', formData.get('caseTagIds'));
       return parse(formData, {
         schema,
       });
