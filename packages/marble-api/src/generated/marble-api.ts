@@ -138,7 +138,12 @@ export type FileAddedEvent = {
 } & CaseEventDtoBase & {
     additional_note: string;
 };
-export type CaseEventDto = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto | FileAddedEvent;
+export type InboxChangedEvent = {
+    event_type: "inbox_changed";
+} & CaseEventDtoBase & {
+    new_value: string;
+};
+export type CaseEventDto = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto | FileAddedEvent | InboxChangedEvent;
 export type CaseFile = {
     id: string;
     case_id: string;
