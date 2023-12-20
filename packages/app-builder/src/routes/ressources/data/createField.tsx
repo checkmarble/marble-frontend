@@ -106,7 +106,6 @@ export async function action({ request }: ActionArgs) {
     } else {
       const { getSession, commitSession } = serverServices.toastSessionService;
       const session = await getSession(request);
-      console.log('error log');
       setToastMessage(session, {
         type: 'error',
         messageKey: 'common:errors.unknown',
