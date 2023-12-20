@@ -30,14 +30,14 @@ export async function loader({ request }: LoaderArgs) {
   const { inbox_users } = await apiClient.listAllInboxUsers();
   const org = await organization.getCurrentOrganization();
 
-  return json({ inboxUsers: inbox_users, org });
+  return json({ inboxUsers: inbox_users, org, user });
 }
 
 const columnHelper = createColumnHelper<User>();
 
 export default function Users() {
   const { t } = useTranslation(['settings', 'cases']);
-  const { inboxUsers, org } = useLoaderData<typeof loader>();
+  const { inboxUsers, org, user } = useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
 
   const inboxUsersByUserId = useMemo(
@@ -98,7 +98,10 @@ export default function Users() {
           return (
             <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
               <UpdateUser user={cell.row.original} />
-              <DeleteUser userId={cell.row.original.userId} />
+              <DeleteUser
+                userId={cell.row.original.userId}
+                currentUser={user}
+              />
             </div>
           );
         },
