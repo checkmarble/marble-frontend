@@ -126,7 +126,7 @@ function UploadFileContent({
 
   return (
     <div>
-      <Modal.Title>{t('cases:inbox.new_inbox.explain')}</Modal.Title>
+      <Modal.Title>{t('cases:add_file')}</Modal.Title>
       <div className="bg-grey-00 flex flex-col gap-8 p-8">
         <div
           {...getRootProps()}
