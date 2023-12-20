@@ -3209,6 +3209,7 @@ components:
           name_updated: '#/components/schemas/NameUpdatedEvent'
           tags_updated: '#/components/schemas/CaseTagsUpdatedEventDto'
           file_added: '#/components/schemas/FileAddedEvent'
+          inbox_changed: '#/components/schemas/InboxChangedEvent'
       required:
         - id
         - case_id
@@ -3365,6 +3366,16 @@ components:
           properties:
             additional_note:
               type: string
+    InboxChangedEvent:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - new_value
+          properties:
+            new_value:
+              type: string
+              format: uuid
     UpdateCaseBody:
       type: object
       properties:

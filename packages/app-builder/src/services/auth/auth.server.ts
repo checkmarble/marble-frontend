@@ -233,6 +233,7 @@ export function makeAuthenticationServerService(
 
     if (options.successRedirect) throw redirect(options.successRedirect);
 
+    console.log(marbleToken.access_token);
     const apiClient = getMarbleAPIClient(marbleToken.access_token);
 
     return {

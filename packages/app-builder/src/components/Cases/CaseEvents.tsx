@@ -72,6 +72,7 @@ function displayedEventTypes(event: CaseEvent) {
     'status_updated',
     'tags_updated',
     'file_added',
+    'inbox_changed',
   ].includes(event.event_type);
 }
 
@@ -116,6 +117,7 @@ export function getEventIcon(event: CaseEvent) {
       );
     case 'tags_updated':
     case 'name_updated':
+    case 'inbox_changed':
       return (
         <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
           <Edit />
@@ -194,6 +196,13 @@ export function getEventTitle(
       return (
         <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
           {t('cases:case_detail.history.event_title.tags_updated')}
+        </span>
+      );
+    }
+    case 'inbox_changed': {
+      return (
+        <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
+          {t('cases:case_detail.history.event_title.inbox_changed')}
         </span>
       );
     }
@@ -303,17 +312,14 @@ export function getEventDetail(event: CaseEvent) {
         </div>
       );
     }
-    case 'decision_added': {
-      return <Author userId={event.user_id} type="added_by" />;
-    }
-    case 'name_updated': {
-      return <Author userId={event.user_id} type="edited_by" />;
-    }
-    case 'status_updated': {
-      return <Author userId={event.user_id} type="edited_by" />;
-    }
+    case 'decision_added':
     case 'file_added': {
       return <Author userId={event.user_id} type="added_by" />;
+    }
+    case 'name_updated':
+    case 'status_updated':
+    case 'inbox_changed': {
+      return <Author userId={event.user_id} type="edited_by" />;
     }
   }
 }
