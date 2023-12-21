@@ -20,7 +20,7 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
-import { Arrow2Down, Arrow2Up, SmallarrowDown } from 'ui-icons';
+import { Arrow2Down, Arrow2Up } from 'ui-icons';
 
 function SelectContent({
   children,
@@ -146,7 +146,7 @@ const SelectValue = forwardRef<HTMLDivElement, SelectValueProps>(
 
 const SelectArrow = () => (
   <Icon className="group-radix-state-open:rotate-180">
-    <SmallarrowDown height="24px" width="24px" />
+    <Arrow2Down height="24px" width="24px" />
   </Icon>
 );
 
