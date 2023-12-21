@@ -215,7 +215,7 @@ const ResultModal = ({
   return (
     <Modal.Root open={isOpen} onOpenChange={onOpenChange}>
       <Modal.Content>
-        <div className="bg-grey-00 text-s flex flex-col items-center gap-8 p-8">
+        <div className="bg-grey-00 text-s flex flex-col items-center gap-6 p-6">
           <Icon
             width="108px"
             height="108px"

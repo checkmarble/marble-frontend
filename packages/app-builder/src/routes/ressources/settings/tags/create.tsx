@@ -79,12 +79,12 @@ export function CreateTag() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button>
+        <Button onClick={(e) => e.stopPropagation()}>
           <Plus width={'24px'} height={'24px'} />
           {t('settings:tags.new_tag')}
         </Button>
       </Modal.Trigger>
-      <Modal.Content>
+      <Modal.Content onClick={(e) => e.stopPropagation()}>
         <CreateTagContent />
       </Modal.Content>
     </Modal.Root>
@@ -115,7 +115,7 @@ const CreateTagContent = () => {
       {...form.props}
     >
       <Modal.Title>{t('settings:tags.new_tag')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex gap-2 font-bold">
           <FormField config={name} className="group flex w-full flex-col gap-2">
             <FormLabel>{t('settings:tags.name')}</FormLabel>

@@ -1,4 +1,4 @@
-import { Page } from '@app-builder/components';
+import { CollapsiblePaper, Page } from '@app-builder/components';
 import { isAdmin } from '@app-builder/models';
 import { CreateTag } from '@app-builder/routes/ressources/settings/tags/create';
 import { DeleteTag } from '@app-builder/routes/ressources/settings/tags/delete';
@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { type Tag } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, useVirtualTable } from 'ui-design-system';
+import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -72,7 +72,7 @@ export default function Tags() {
     ];
   }, [t]);
 
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: tags,
     columns,
     columnResizeMode: 'onChange',
@@ -83,27 +83,29 @@ export default function Tags() {
   return (
     <Page.Container>
       <Page.Content>
-        <div className="border-grey-10 bg-grey-00 flex w-full flex-col gap-4 overflow-hidden rounded-lg border px-8 py-6">
-          <div className="flex flex-row items-center justify-between font-bold capitalize">
-            {t('settings:tags')}
+        <CollapsiblePaper.Container>
+          <CollapsiblePaper.Title>
+            <span className="flex-1">{t('settings:tags')}</span>
             <CreateTag />
-          </div>
-          <Table.Container {...getContainerProps()}>
-            <Table.Header headerGroups={table.getHeaderGroups()} />
-            <Table.Body {...getBodyProps()}>
-              {rows.map((row) => {
-                return (
-                  <Table.Row
-                    key={row.id}
-                    tabIndex={0}
-                    className={clsx('hover:bg-grey-02 cursor-pointer')}
-                    row={row}
-                  />
-                );
-              })}
-            </Table.Body>
-          </Table.Container>
-        </div>
+          </CollapsiblePaper.Title>
+          <CollapsiblePaper.Content>
+            <Table.Container {...getContainerProps()}>
+              <Table.Header headerGroups={table.getHeaderGroups()} />
+              <Table.Body {...getBodyProps()}>
+                {rows.map((row) => {
+                  return (
+                    <Table.Row
+                      key={row.id}
+                      tabIndex={0}
+                      className={clsx('hover:bg-grey-02 cursor-pointer')}
+                      row={row}
+                    />
+                  );
+                })}
+              </Table.Body>
+            </Table.Container>
+          </CollapsiblePaper.Content>
+        </CollapsiblePaper.Container>
       </Page.Content>
     </Page.Container>
   );

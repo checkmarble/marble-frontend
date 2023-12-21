@@ -42,7 +42,7 @@ function PageHeader({
   return (
     <div
       className={clsx(
-        'border-b-grey-10 bg-grey-00 text-l text-grey-100 flex shrink-0 flex-row items-center border-b px-4 font-bold lg:px-8',
+        'border-b-grey-10 bg-grey-00 text-l text-grey-100 flex shrink-0 flex-row items-center border-b px-4 font-bold lg:px-6',
         headerHeight({ type: 'height' }),
         className,
       )}
@@ -67,7 +67,7 @@ function PageContent({
         <div
           className={clsx(
             'flex flex-1 flex-col',
-            'gap-4 p-4 lg:gap-8 lg:p-8',
+            'gap-4 p-4 lg:gap-6 lg:p-6',
             className,
           )}
           {...props}
@@ -82,7 +82,7 @@ function PageContent({
       <div
         className={clsx(
           'flex flex-1 flex-col',
-          'gap-4 p-4 lg:gap-8 lg:p-8',
+          'gap-4 p-4 lg:gap-6 lg:p-6',
           className,
         )}
         {...props}

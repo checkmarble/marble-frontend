@@ -75,7 +75,7 @@ const DeleteUserContent = ({ userId }: { userId: string }) => {
       method="DELETE"
     >
       <Modal.Title>{t('settings:users.delete_user.title')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4">
           <input name="userId" value={userId} type="hidden" />
           <p className="text-center">

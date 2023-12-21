@@ -68,9 +68,9 @@ export function DeleteListValue({
       <Modal.Content>
         <fetcher.Form method="DELETE" action="/ressources/lists/value_delete">
           <HiddenInputs listId={listId} listValueId={listValueId} />
-          <div className="bg-grey-00 flex flex-col gap-8 p-8">
+          <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
-              <div className="bg-red-10 mb-8 box-border rounded-[90px] p-4">
+              <div className="bg-red-10 mb-6 box-border rounded-[90px] p-4">
                 <Delete width={'64px'} height={'64px'} color="red" />
               </div>
               <h1 className="text-l font-semibold">

@@ -33,7 +33,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
         </span>
       </Collapsible.Title>
       <Collapsible.Content>
-        <Accordion.Container className="relative">
+        <Accordion.Container className="relative z-0">
           <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
           {events.filter(displayedEventTypes).map((event) => {
             const Icon = getEventIcon(event);

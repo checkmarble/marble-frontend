@@ -110,7 +110,7 @@ const UpdateUserContent = ({ user }: { user: User }) => {
       {...form.props}
     >
       <Modal.Title>{t('settings:users.update_user')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4 font-bold">
           <input {...conform.input(userId, { type: 'hidden' })} />
           <input {...conform.input(organizationId, { type: 'hidden' })} />

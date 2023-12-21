@@ -106,7 +106,7 @@ export function EditCaseStatus({
         </DropdownMenu.Trigger>
       </div>
       <DropdownMenu.Content
-        className="bg-grey-00 border-grey-10 rounded border p-2 shadow-md will-change-[transform,opacity]"
+        className="bg-grey-00 border-grey-10 z-50 rounded border p-2 shadow-md will-change-[transform,opacity]"
         side="bottom"
         align="end"
         sideOffset={8}
@@ -192,7 +192,7 @@ function ModalContent({
       {...form.props}
     >
       <Modal.Title>{t('cases:change_status_modal.title')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <input {...conform.input(fieldset.caseId, { type: 'hidden' })} />
         <input {...conform.input(fieldset.status, { type: 'hidden' })} />
         <input {...conform.input(fieldset.nextStatus, { type: 'hidden' })} />

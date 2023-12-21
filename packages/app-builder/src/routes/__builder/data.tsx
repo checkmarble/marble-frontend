@@ -1,4 +1,9 @@
-import { Callout, Page, usePermissionsContext } from '@app-builder/components';
+import {
+  Callout,
+  CollapsiblePaper,
+  Page,
+  usePermissionsContext,
+} from '@app-builder/components';
 import {
   type DataModelField,
   type LinksToSingle,
@@ -233,97 +238,96 @@ function TableDetails({
   });
 
   return (
-    <div
-      key={tableModel.name}
-      className="border-grey-10 bg-grey-00 w-full overflow-hidden rounded-lg border"
-    >
-      <div className="bg-grey-02 border-b-grey-10 flex flex-row items-center justify-between border-b px-8 py-4 font-bold capitalize">
-        {tableModel.name}
-        <div className="flex flex-row gap-3">
-          {canEditDataModel ? <CreateField tableId={tableModel.id} /> : null}
-          {canIngestData ? (
-            <NavLink
-              className={clsx(
-                'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
-                'hover:bg-purple-110 active:bg-purple-120 text-grey-00 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50',
-              )}
-              to={getRoute('/upload/:objectType', {
-                objectType: tableModel.name,
-              })}
-            >
-              <Plus width={'24px'} height={'24px'} />
-              {t('data:upload_data')}
-            </NavLink>
+    <CollapsiblePaper.Container>
+      <CollapsiblePaper.Title>
+        <span className="flex flex-1">{tableModel.name}</span>
+        {canEditDataModel ? <CreateField tableId={tableModel.id} /> : null}
+        {canIngestData ? (
+          <NavLink
+            className={clsx(
+              'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
+              'hover:bg-purple-110 active:bg-purple-120 text-grey-00 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50',
+            )}
+            to={getRoute('/upload/:objectType', {
+              objectType: tableModel.name,
+            })}
+          >
+            <Plus width={'24px'} height={'24px'} />
+            {t('data:upload_data')}
+          </NavLink>
+        ) : null}
+      </CollapsiblePaper.Title>
+      <CollapsiblePaper.Content>
+        <div className="flex flex-col gap-6">
+          {canEditDataModel ? (
+            <EditableText className="group">
+              <EditTable table={tableModel}>
+                <div className="flex flex-row gap-5">
+                  <FormatDescription
+                    description={tableModel.description || ''}
+                  />
+                  <Edit
+                    className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
+                    width={'24px'}
+                    height={'24px'}
+                  />
+                </div>
+              </EditTable>
+            </EditableText>
+          ) : (
+            <FormatDescription description={tableModel.description || ''} />
+          )}
+
+          <div>
+            <Table.Container {...getContainerPropsFields()}>
+              <Table.Header headerGroups={tableFields.getHeaderGroups()} />
+              <Table.Body {...getBodyPropsFields()}>
+                {rowsFields.map((row) => (
+                  <Table.Row
+                    key={row.id}
+                    className="mb-4 break-words"
+                    row={row}
+                  />
+                ))}
+              </Table.Body>
+            </Table.Container>
+          </div>
+          {links.length > 0 ? (
+            <div>
+              <p className="pb-6">
+                <Trans
+                  t={t}
+                  i18nKey="data:links_from_table"
+                  components={{
+                    TableLocale: <span style={{ fontWeight: 'bold' }} />,
+                  }}
+                  values={{
+                    tableName: tableModel.name,
+                  }}
+                />
+              </p>
+              <div>
+                <Table.Container {...getContainerPropsLinks()}>
+                  <Table.Header headerGroups={tableLinks.getHeaderGroups()} />
+                  <Table.Body {...getBodyPropsLinks()}>
+                    {rowsLinks.map((row) => (
+                      <Table.Row
+                        key={row.id}
+                        className="mb-4 break-words"
+                        row={row}
+                      />
+                    ))}
+                  </Table.Body>
+                </Table.Container>
+              </div>
+            </div>
+          ) : null}
+          {canEditDataModel && otherTables.length > 0 ? (
+            <CreateLink thisTable={tableModel} otherTables={otherTables} />
           ) : null}
         </div>
-      </div>
-      <div className="flex flex-col gap-6 px-6 py-8">
-        {canEditDataModel ? (
-          <EditableText className="group">
-            <EditTable table={tableModel}>
-              <div className="flex flex-row gap-5">
-                <FormatDescription description={tableModel.description || ''} />
-                <Edit
-                  className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
-                  width={'24px'}
-                  height={'24px'}
-                />
-              </div>
-            </EditTable>
-          </EditableText>
-        ) : (
-          <FormatDescription description={tableModel.description || ''} />
-        )}
-
-        <div>
-          <Table.Container {...getContainerPropsFields()}>
-            <Table.Header headerGroups={tableFields.getHeaderGroups()} />
-            <Table.Body {...getBodyPropsFields()}>
-              {rowsFields.map((row) => (
-                <Table.Row
-                  key={row.id}
-                  className="mb-4 break-words"
-                  row={row}
-                />
-              ))}
-            </Table.Body>
-          </Table.Container>
-        </div>
-        {links.length > 0 ? (
-          <div>
-            <p className="pb-6">
-              <Trans
-                t={t}
-                i18nKey="data:links_from_table"
-                components={{
-                  TableLocale: <span style={{ fontWeight: 'bold' }} />,
-                }}
-                values={{
-                  tableName: tableModel.name,
-                }}
-              />
-            </p>
-            <div>
-              <Table.Container {...getContainerPropsLinks()}>
-                <Table.Header headerGroups={tableLinks.getHeaderGroups()} />
-                <Table.Body {...getBodyPropsLinks()}>
-                  {rowsLinks.map((row) => (
-                    <Table.Row
-                      key={row.id}
-                      className="mb-4 break-words"
-                      row={row}
-                    />
-                  ))}
-                </Table.Body>
-              </Table.Container>
-            </div>
-          </div>
-        ) : null}
-        {canEditDataModel && otherTables.length > 0 ? (
-          <CreateLink thisTable={tableModel} otherTables={otherTables} />
-        ) : null}
-      </div>
-    </div>
+      </CollapsiblePaper.Content>
+    </CollapsiblePaper.Container>
   );
 }
 

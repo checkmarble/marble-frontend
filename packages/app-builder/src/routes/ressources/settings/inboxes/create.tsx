@@ -87,12 +87,16 @@ export function CreateInbox({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button className="w-fit whitespace-nowrap" variant="secondary">
+        <Button
+          className="w-fit whitespace-nowrap"
+          variant="secondary"
+          onClick={(e) => e.stopPropagation()}
+        >
           <NewInbox className="text-l" />
           {t('settings:inboxes.new_inbox.create')}
         </Button>
       </Modal.Trigger>
-      <Modal.Content>
+      <Modal.Content onClick={(e) => e.stopPropagation()}>
         <CreateInboxContent redirectRoutePath={redirectRoutePath} />
       </Modal.Content>
     </Modal.Root>
@@ -128,7 +132,7 @@ export function CreateInboxContent({
       {...form.props}
     >
       <Modal.Title>{t('settings:inboxes.new_inbox.explain')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <input {...conform.input(redirectRoute, { type: 'hidden' })} />
         <FormField config={name} className="group flex flex-col gap-2">
           <FormLabel>{t('settings:inboxes.new_inbox.name')}</FormLabel>

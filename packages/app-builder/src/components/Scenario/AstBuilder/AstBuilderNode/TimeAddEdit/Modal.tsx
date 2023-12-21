@@ -177,7 +177,7 @@ const TimeAddEditModalContent = ({
   return (
     <>
       <Modal.Title>{t('scenarios:edit_date.title')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <div>
           <div className="flex gap-2 pb-2">
             <TimestampField

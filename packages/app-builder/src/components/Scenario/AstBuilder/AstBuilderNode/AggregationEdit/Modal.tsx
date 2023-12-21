@@ -250,7 +250,7 @@ const AggregationEditModalContent = ({
           {t('scenarios:edit_aggregation.subtitle')}
         </span>
       </Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-col gap-2">
             <label htmlFor="aggregation.label">

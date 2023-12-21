@@ -51,7 +51,7 @@ export const AggregationLabel = ({
       </Modal.Trigger>
       <Modal.Content size="medium">
         <Modal.Title>{aggregation.label}</Modal.Title>
-        <div className="bg-grey-00 flex flex-col p-8">
+        <div className="flex flex-col p-6">
           <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
             <span className="text-center font-bold text-purple-100">
               {aggregation.aggregator}

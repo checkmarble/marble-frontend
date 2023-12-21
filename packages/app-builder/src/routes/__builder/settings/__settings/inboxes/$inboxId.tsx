@@ -88,7 +88,7 @@ export default function Inbox() {
   return (
     <Page.Container>
       <Page.Content>
-        <div className="border-grey-10 flex w-full flex-col gap-4 overflow-hidden rounded-lg border px-8 py-4">
+        <div className="bg-grey-00 border-grey-10 flex w-full flex-col gap-4 overflow-hidden rounded-lg border px-8 py-4">
           <div className="flex flex-row items-center justify-between font-bold capitalize">
             {t('settings:inboxes.inbox_details.title')}
             <UpdateInbox

@@ -1,5 +1,4 @@
 import { decisionsI18n } from '@app-builder/components';
-import { Score } from '@app-builder/components/Decisions/Score';
 import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -18,7 +17,6 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
     created_at,
     scenario,
     trigger_object_type,
-    score,
   } = decision;
 
   return (
@@ -27,7 +25,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
         {t('decisions:decision_detail.title')}
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-[max-content_1fr] grid-rows-5 items-center gap-x-10 gap-y-2">
+        <div className="grid grid-cols-[max-content_1fr] grid-rows-4 items-center gap-x-10 gap-y-2">
           <DetailLabel>{t('decisions:created_at')}</DetailLabel>
           <div>{formatDateTime(created_at, { language })}</div>
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
@@ -54,8 +52,6 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
           ) : (
             <div>-</div>
           )}
-          <DetailLabel>{t('decisions:score')}</DetailLabel>
-          <Score score={score} />
         </div>
       </Collapsible.Content>
     </Collapsible.Container>

@@ -73,16 +73,18 @@ export default function DecisionPage() {
           {!decision.case ? <AddToCase decisionIds={[decision.id]} /> : null}
         </Page.Header>
         <Page.Content>
-          <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
-            <div className="flex flex-col gap-4 lg:gap-8">
-              <div className="flex gap-4 lg:gap-8">
-                <ScorePanel score={decision.score} />
-                <OutcomePanel outcome={decision.outcome} />
-              </div>
+          <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-6">
+            <div className="flex flex-col gap-4 lg:gap-6">
               <DecisionDetail decision={decision} />
               <RulesDetail rules={decision.rules} />
             </div>
-            <TriggerObjectDetail triggerObject={decision.trigger_object} />
+            <div className="flex flex-col gap-4 lg:gap-6">
+              <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
+                <ScorePanel score={decision.score} />
+                <OutcomePanel outcome={decision.outcome} />
+              </div>
+              <TriggerObjectDetail triggerObject={decision.trigger_object} />
+            </div>
           </div>
         </Page.Content>
       </Page.Container>

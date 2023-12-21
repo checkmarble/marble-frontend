@@ -1,4 +1,4 @@
-import { Page } from '@app-builder/components';
+import { CollapsiblePaper, Page } from '@app-builder/components';
 import { isAdmin } from '@app-builder/models';
 import { CreateInbox } from '@app-builder/routes/ressources/settings/inboxes/create';
 import { serverServices } from '@app-builder/services/init.server';
@@ -12,7 +12,7 @@ import { type InboxDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Table, useVirtualTable } from 'ui-design-system';
+import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -70,7 +70,7 @@ export default function Inboxes() {
     ];
   }, [t]);
 
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: inboxes,
     columns,
     columnResizeMode: 'onChange',
@@ -81,34 +81,36 @@ export default function Inboxes() {
   return (
     <Page.Container>
       <Page.Content>
-        <div className="border-grey-10 w-full overflow-hidden rounded-lg border px-8 py-4 ">
-          <div className="flex flex-row items-center justify-between py-4 font-bold capitalize">
-            {t('settings:inboxes')}
+        <CollapsiblePaper.Container>
+          <CollapsiblePaper.Title>
+            <span className="flex-1">{t('settings:inboxes')}</span>
             <CreateInbox redirectRoutePath="/settings/inboxes/:inboxId" />
-          </div>
-          <Table.Container {...getContainerProps()}>
-            <Table.Header headerGroups={table.getHeaderGroups()} />
-            <Table.Body {...getBodyProps()}>
-              {rows.map((row) => {
-                return (
-                  <Table.Row
-                    key={row.id}
-                    tabIndex={0}
-                    className={clsx('hover:bg-grey-02 cursor-pointer')}
-                    row={row}
-                    onClick={() => {
-                      navigate(
-                        getRoute('/settings/inboxes/:inboxId', {
-                          inboxId: fromUUID(row.original.id),
-                        }),
-                      );
-                    }}
-                  />
-                );
-              })}
-            </Table.Body>
-          </Table.Container>
-        </div>
+          </CollapsiblePaper.Title>
+          <CollapsiblePaper.Content>
+            <Table.Container {...getContainerProps()}>
+              <Table.Header headerGroups={table.getHeaderGroups()} />
+              <Table.Body {...getBodyProps()}>
+                {rows.map((row) => {
+                  return (
+                    <Table.Row
+                      key={row.id}
+                      tabIndex={0}
+                      className={clsx('hover:bg-grey-02 cursor-pointer')}
+                      row={row}
+                      onClick={() => {
+                        navigate(
+                          getRoute('/settings/inboxes/:inboxId', {
+                            inboxId: fromUUID(row.original.id),
+                          }),
+                        );
+                      }}
+                    />
+                  );
+                })}
+              </Table.Body>
+            </Table.Container>
+          </CollapsiblePaper.Content>
+        </CollapsiblePaper.Container>
       </Page.Content>
     </Page.Container>
   );

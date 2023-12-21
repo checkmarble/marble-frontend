@@ -156,18 +156,18 @@ function ModalContent({
 
   return isSuccess ? (
     // In success modal, use data.values.deploymentType (action will update deploymentType to the new state)
-    <div className="flex flex-col items-center p-8 text-center">
+    <div className="flex flex-col items-center p-6 text-center">
       <Tick
         width="108px"
         height="108px"
-        className="bg-purple-10 border-purple-10 mb-8 rounded-full border-8 text-purple-100"
+        className="bg-purple-10 border-purple-10 mb-6 rounded-full border-8 text-purple-100"
       />
       <Modal.Title className="text-l text-grey-100 mb-2 font-semibold">
         {t(
           `scenarios:deployment_modal_success.${data.values.deploymentType}.title`,
         )}
       </Modal.Title>
-      <p className="text-s text-grey-100 mb-8 font-normal">
+      <p className="text-s text-grey-100 mb-6 font-normal">
         {t(
           `scenarios:deployment_modal_success.${data.values.deploymentType}.description`,
         )}
@@ -182,7 +182,7 @@ function ModalContent({
         {t(`scenarios:deployment_modal.${deploymentType}.title`)}
       </Modal.Title>
       <fetcher.Form
-        className="bg-grey-00 flex-col p-8"
+        className="flex-col p-6"
         method="POST"
         action="/ressources/scenarios/deployment"
       >
@@ -192,7 +192,7 @@ function ModalContent({
           liveVersionId={liveVersionId}
           iterationId={currentIteration.id}
         />
-        <div className="text-s mb-8 flex flex-col gap-6 font-medium">
+        <div className="text-s mb-6 flex flex-col gap-6 font-medium">
           <p className="font-semibold">
             {t(`scenarios:deployment_modal.${deploymentType}.confirm`)}
           </p>

@@ -21,7 +21,7 @@ const AccordionContainer = ({
   return (
     <Root
       type="multiple"
-      className={clsx('flex flex-col gap-4 lg:gap-8', className)}
+      className={clsx('flex flex-col gap-4 lg:gap-6', className)}
     >
       {children}
     </Root>

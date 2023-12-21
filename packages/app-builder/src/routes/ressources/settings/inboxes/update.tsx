@@ -135,7 +135,7 @@ export function UpdateInboxContent({
       {...form.props}
     >
       <Modal.Title>{t('settings:inboxes.update_inbox')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="bg-grey-00 flex flex-col gap-6 p-6">
         <input {...conform.input(id, { type: 'hidden' })} />
         <input {...conform.input(redirectRoute, { type: 'hidden' })} />
         <FormField config={name} className="group flex flex-col gap-2">
