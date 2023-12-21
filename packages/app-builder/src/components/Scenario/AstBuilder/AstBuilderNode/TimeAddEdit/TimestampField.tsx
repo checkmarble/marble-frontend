@@ -15,8 +15,10 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import { useCallback, useMemo, useState } from 'react';
-import { Combobox } from 'ui-design-system';
+import { matchSorter } from 'match-sorter';
+import { useCallback, useDeferredValue, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Input, SelectWithCombobox } from 'ui-design-system';
 
 export const TimestampField = ({
   builder,
@@ -31,6 +33,7 @@ export const TimestampField = ({
   errors: EvaluationError[];
   value: EditorNodeViewModel | null;
 }) => {
+  const { t } = useTranslation(['scenarios']);
   const options: LabelledAst[] = useMemo(() => {
     const databaseAccessors = builder.input.identifiers.databaseAccessors.map(
       (node) =>
@@ -88,6 +91,7 @@ export const TimestampField = ({
 
   return (
     <TimestampFieldCombobox
+      placeholder={t('scenarios:edit_date.select_a_field')}
       className={className}
       value={initialValue}
       onChange={onSelect}
@@ -98,56 +102,68 @@ export const TimestampField = ({
 };
 
 const TimestampFieldCombobox = ({
+  placeholder,
   className,
+  defaultOpen,
   onChange,
   options,
   errors,
   value,
 }: {
+  placeholder: string;
   className?: string;
+  defaultOpen?: boolean;
   onChange: (value: LabelledAst | null) => void;
   options: LabelledAst[];
   errors: EvaluationError[];
   value: LabelledAst | null;
 }) => {
-  const selectedOption =
-    options.find((option) => option.name == value?.name) ?? null;
-  const [inputValue, setInputValue] = useState(() =>
-    optionToLabel(selectedOption),
-  );
+  const { optionLabels, getOption } = useMemo(() => {
+    const map = new Map(
+      options.map((option) => [getOptionLabel(option), option]),
+    );
+    return {
+      optionLabels: Array.from(map.keys()),
+      getOption: (label: string) => map.get(label) ?? null,
+    };
+  }, [options]);
+  const selectedValue = useMemo(() => getOptionLabel(value), [value]);
 
-  const filteredOptions = options.filter((option) =>
-    optionToLabel(option).toLowerCase().includes(inputValue.toLowerCase()),
+  const [searchValue, setSearchValue] = useState('');
+  const deferredSearchValue = useDeferredValue(searchValue);
+
+  const matches = useMemo(
+    () => matchSorter(optionLabels, deferredSearchValue),
+    [optionLabels, deferredSearchValue],
   );
 
   return (
-    <Combobox.Root<(typeof options)[0]>
-      value={value}
-      onChange={(value) => {
-        onChange(value);
-        setInputValue(optionToLabel(value));
-      }}
-      nullable
+    <SelectWithCombobox.Root
+      defaultOpen={defaultOpen}
+      selectedValue={selectedValue}
+      onSelectedValueChange={(value) => onChange(getOption(value))}
+      onSearchValueChange={setSearchValue}
     >
-      <div className={className}>
-        <Combobox.Input
-          displayValue={(selectedOption: (typeof options)[number]) =>
-            optionToLabel(selectedOption)
-          }
-          onChange={(event) => setInputValue(event.target.value)}
-          borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
-        />
-        <Combobox.Options className="w-fit">
-          {filteredOptions.map((option, index) => (
-            <Combobox.Option key={index} value={option}>
-              {optionToLabel(option)}
-            </Combobox.Option>
+      <SelectWithCombobox.Select
+        className={className}
+        borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
+      >
+        {selectedValue || <span className="text-grey-25">{placeholder}</span>}
+      </SelectWithCombobox.Select>
+      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2">
+        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} />
+        <SelectWithCombobox.ComboboxList>
+          {matches.map((label) => (
+            <SelectWithCombobox.ComboboxItem key={label} value={label}>
+              {label}
+            </SelectWithCombobox.ComboboxItem>
           ))}
-        </Combobox.Options>
-      </div>
-    </Combobox.Root>
+        </SelectWithCombobox.ComboboxList>
+      </SelectWithCombobox.Popover>
+    </SelectWithCombobox.Root>
   );
 };
 
-const optionToLabel = (option: LabelledAst | null): string =>
-  option ? option.name : '';
+function getOptionLabel(option: LabelledAst | null) {
+  return option ? option.name : '';
+}

@@ -15,7 +15,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
           ref={ref}
           {...props}
           className={clsx(
-            'border-grey-10 fixed left-[50%] top-[50%] flex h-fit w-full translate-x-[-50%] translate-y-[-50%]  flex-col overflow-hidden rounded-lg border drop-shadow-xl',
+            'border-grey-10 fixed left-[50%] top-[50%] flex h-fit w-full translate-x-[-50%] translate-y-[-50%] flex-col rounded-lg border drop-shadow-xl',
             {
               'max-w-lg': size === 'small',
               'max-w-2xl': size === 'medium',

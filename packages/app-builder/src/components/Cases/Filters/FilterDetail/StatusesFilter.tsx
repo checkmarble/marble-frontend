@@ -18,11 +18,11 @@ export function StatusesFilter() {
 
   return (
     <div className="flex flex-col gap-2 p-2">
-      <SelectWithCombobox.Provider
+      <SelectWithCombobox.Root
         open
-        setSearchValue={setSearchValue}
-        selectedValues={selectedStatuses}
-        onSelectedValuesChange={setSelectedStatuses}
+        onSearchValueChange={setSearchValue}
+        selectedValue={selectedStatuses}
+        onSelectedValueChange={setSelectedStatuses}
       >
         <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
         <SelectWithCombobox.ComboboxList>
@@ -40,7 +40,7 @@ export function StatusesFilter() {
             );
           })}
         </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Provider>
+      </SelectWithCombobox.Root>
     </div>
   );
 }

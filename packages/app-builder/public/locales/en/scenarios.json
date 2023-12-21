@@ -149,6 +149,7 @@
   "edit_aggregation.filter_and": "where",
   "edit_aggregation.add_filter": "Filter",
   "edit_aggregation.aggregator_average": "Average",
+  "edit_aggregation.select_a_field": "Select a field...",
   "aggregator.average": "Average",
   "aggregator.count": "Count",
   "aggregator.count_distinct": "Count distinct",
@@ -185,6 +186,7 @@
   "edit_date.duration_unit_minutes": "minutes",
   "edit_date.duration_unit_hours": "hours",
   "edit_date.duration_unit_days": "days",
+  "edit_date.select_a_field": "Select a timestamp field...",
   "enum_options": "Options:",
   "nest": "Nest"
 }

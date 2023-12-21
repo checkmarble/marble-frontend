@@ -298,6 +298,7 @@ const AggregationEditModalContent = ({
               />
 
               <EditDataModelField
+                placeholder={t('scenarios:edit_aggregation.select_a_field')}
                 value={aggregation.aggregatedField}
                 options={dataModelFieldOptions}
                 onChange={(aggregatedField) =>

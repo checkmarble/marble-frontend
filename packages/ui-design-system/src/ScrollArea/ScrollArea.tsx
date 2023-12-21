@@ -66,7 +66,10 @@ const ScrollAreaViewport = forwardRef<
 >(({ className, ...props }, ref) => (
   <Viewport
     ref={ref}
-    className={clsx('[&>:first-of-type]:!block', className)}
+    className={clsx(
+      'overscroll-x-contain [&>:first-of-type]:!block',
+      className,
+    )}
     {...props}
   />
 ));

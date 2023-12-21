@@ -3,7 +3,11 @@ import { useComposedRefs } from '@app-builder/utils/hooks/use-compose-refs';
 import { stringToStringArray } from '@app-builder/utils/schema/stringToJSONSchema';
 import { conform, type FieldConfig, useInputEvent } from '@conform-to/react';
 import { forwardRef, type RefObject, useRef, useState } from 'react';
-import { type Select, SelectWithCombobox } from 'ui-design-system';
+import {
+  type Select,
+  SelectWithCombobox,
+  type SelectWithComboboxProviderProps,
+} from 'ui-design-system';
 
 interface FormSelectWithComboboxContext<Schema extends string[]> {
   buttonRef: RefObject<HTMLButtonElement>;
@@ -17,13 +21,10 @@ const useFormSelectWithComboboxContext = FormSelectWithComboboxContext.useValue;
 function FormSelectWithComboboxRoot<Schema extends string[]>({
   config,
   children,
-  onSelectedValuesChange,
+  onSelectedValueChange: onSelectedValuesChange,
   onOpenChange,
   ...rest
-}: Omit<
-  React.ComponentProps<typeof SelectWithCombobox.Provider>,
-  'selectedValues'
-> & {
+}: Omit<SelectWithComboboxProviderProps<string[]>, 'selectedValues'> & {
   config: FieldConfig<Schema>;
   onOpenChange?: (open: boolean) => void;
 }) {
@@ -43,37 +44,35 @@ function FormSelectWithComboboxRoot<Schema extends string[]>({
     config,
   };
   return (
-    <SelectWithCombobox.Popover.Root onOpenChange={onOpenChange}>
-      <FormSelectWithComboboxContext.Provider value={contextValue}>
-        <input
-          ref={shadowInputRef}
-          {...conform.input<string>(
-            { ...config, defaultValue: JSON.stringify(config.defaultValue) },
-            { hidden: true },
-          )}
-          onFocus={() => buttonRef.current?.focus()}
-          onChange={(e) => {
-            const parsedValue = stringToStringArray.safeParse(e.target.value);
-            setSelectedValues(parsedValue.success ? parsedValue.data : []);
-          }}
-        />
-        <SelectWithCombobox.Provider
-          {...rest}
-          open
-          selectedValues={selectedValues}
-          onSelectedValuesChange={(value) => {
-            control.change(JSON.stringify(value));
-            onSelectedValuesChange?.(value);
-          }}
-        >
-          {children}
-        </SelectWithCombobox.Provider>
-      </FormSelectWithComboboxContext.Provider>
-    </SelectWithCombobox.Popover.Root>
+    <FormSelectWithComboboxContext.Provider value={contextValue}>
+      <input
+        ref={shadowInputRef}
+        {...conform.input<string>(
+          { ...config, defaultValue: JSON.stringify(config.defaultValue) },
+          { hidden: true },
+        )}
+        onFocus={() => buttonRef.current?.focus()}
+        onChange={(e) => {
+          const parsedValue = stringToStringArray.safeParse(e.target.value);
+          setSelectedValues(parsedValue.success ? parsedValue.data : []);
+        }}
+      />
+      <SelectWithCombobox.Root
+        {...rest}
+        onOpenChange={onOpenChange}
+        selectedValue={selectedValues}
+        onSelectedValueChange={(value) => {
+          control.change(JSON.stringify(value));
+          return onSelectedValuesChange?.(value);
+        }}
+      >
+        {children}
+      </SelectWithCombobox.Root>
+    </FormSelectWithComboboxContext.Provider>
   );
 }
 
-const FormSelectWithComboboxTrigger = forwardRef<
+const FormSelectWithComboboxSelect = forwardRef<
   HTMLButtonElement,
   Omit<React.ComponentProps<typeof Select.Trigger>, 'borderColor'>
 >(function FormSelectTrigger(props, ref) {
@@ -81,7 +80,7 @@ const FormSelectWithComboboxTrigger = forwardRef<
   const composedRef = useComposedRefs(ref, buttonRef);
 
   return (
-    <SelectWithCombobox.Popover.Trigger
+    <SelectWithCombobox.Select
       ref={composedRef}
       borderColor={config.error ? 'red-100' : 'grey-10'}
       {...props}
@@ -91,8 +90,9 @@ const FormSelectWithComboboxTrigger = forwardRef<
 
 export const FormSelectWithCombobox = {
   Root: FormSelectWithComboboxRoot,
-  Trigger: FormSelectWithComboboxTrigger,
-  Content: SelectWithCombobox.Popover.Content,
+  Select: FormSelectWithComboboxSelect,
+  Arrow: SelectWithCombobox.Arrow,
+  Popover: SelectWithCombobox.Popover,
   Combobox: SelectWithCombobox.Combobox,
   ComboboxList: SelectWithCombobox.ComboboxList,
   ComboboxItem: SelectWithCombobox.ComboboxItem,
