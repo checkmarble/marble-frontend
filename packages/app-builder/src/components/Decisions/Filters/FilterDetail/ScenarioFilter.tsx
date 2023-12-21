@@ -19,11 +19,11 @@ export function ScenarioFilter() {
   return (
     <ScrollArea.Root>
       <div className="flex flex-col gap-2 p-2">
-        <SelectWithCombobox.Provider
+        <SelectWithCombobox.Root
           open
-          setSearchValue={setSearchValue}
-          selectedValues={selectedScenarioIds}
-          onSelectedValuesChange={setSelectedScenarioIds}
+          onSearchValueChange={setSearchValue}
+          selectedValue={selectedScenarioIds}
+          onSelectedValueChange={setSelectedScenarioIds}
         >
           <SelectWithCombobox.Combobox
             render={<Input />}
@@ -44,7 +44,7 @@ export function ScenarioFilter() {
               })}
             </SelectWithCombobox.ComboboxList>
           </ScrollArea.Viewport>
-        </SelectWithCombobox.Provider>
+        </SelectWithCombobox.Root>
       </div>
       <ScrollArea.Scrollbar orientation="vertical">
         <ScrollArea.Thumb />

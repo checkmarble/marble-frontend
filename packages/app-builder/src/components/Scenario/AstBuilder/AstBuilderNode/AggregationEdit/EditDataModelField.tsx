@@ -1,68 +1,78 @@
 import { type EvaluationError } from '@app-builder/models';
-import { useState } from 'react';
-import { Combobox } from 'ui-design-system';
+import { matchSorter } from 'match-sorter';
+import { useDeferredValue, useMemo, useState } from 'react';
+import { Input, SelectWithCombobox } from 'ui-design-system';
 
 export type DataModelField = {
   tableName: string | null;
   fieldName: string | null;
 };
 
+function getDataModelFieldLabel(dataModelField: DataModelField | null) {
+  return [dataModelField?.tableName, dataModelField?.fieldName]
+    .filter(Boolean)
+    .join('.');
+}
+
 export const EditDataModelField = ({
+  placeholder,
   className,
+  defaultOpen,
   value,
   onChange,
   options,
   errors,
 }: {
+  placeholder: string;
   className?: string;
+  defaultOpen?: boolean;
   value: DataModelField | null;
   onChange: (dataModelField: DataModelField | null) => void;
   options: DataModelField[];
   errors: EvaluationError[];
 }) => {
-  const selectedOption: DataModelField | null =
-    options.find(
-      (option) =>
-        option.tableName == value?.tableName &&
-        option.fieldName == value?.fieldName,
-    ) ?? null;
+  const { optionLabels, getDataModelField } = useMemo(() => {
+    const map = new Map(
+      options.map((option) => [getDataModelFieldLabel(option), option]),
+    );
+    return {
+      optionLabels: Array.from(map.keys()),
+      getDataModelField: (label: string) => map.get(label) ?? null,
+    };
+  }, [options]);
+  const selectedValue = useMemo(() => getDataModelFieldLabel(value), [value]);
 
-  const [inputValue, setInputValue] = useState(optionToLabel(selectedOption));
+  const [searchValue, setSearchValue] = useState('');
+  const deferredSearchValue = useDeferredValue(searchValue);
 
-  const filteredOptions = options.filter((option) =>
-    optionToLabel(option).toLowerCase().includes(inputValue.toLowerCase()),
+  const matches = useMemo(
+    () => matchSorter(optionLabels, deferredSearchValue),
+    [optionLabels, deferredSearchValue],
   );
 
   return (
-    <Combobox.Root<(typeof options)[0]>
-      value={selectedOption}
-      onChange={(value) => {
-        onChange(value);
-        setInputValue(optionToLabel(value));
-      }}
-      nullable
+    <SelectWithCombobox.Root
+      defaultOpen={defaultOpen}
+      selectedValue={selectedValue}
+      onSelectedValueChange={(value) => onChange(getDataModelField(value))}
+      onSearchValueChange={setSearchValue}
     >
-      <div className={className}>
-        <Combobox.Input
-          displayValue={(selectedOption: (typeof options)[number]) =>
-            optionToLabel(selectedOption)
-          }
-          onChange={(event) => setInputValue(event.target.value)}
-          borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
-        />
-        <Combobox.Options className="w-fit">
-          {filteredOptions.map((option) => (
-            <Combobox.Option key={optionToLabel(option)} value={option}>
-              {optionToLabel(option)}
-            </Combobox.Option>
+      <SelectWithCombobox.Select
+        className={className}
+        borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
+      >
+        {selectedValue || <span className="text-grey-25">{placeholder}</span>}
+      </SelectWithCombobox.Select>
+      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2">
+        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} />
+        <SelectWithCombobox.ComboboxList>
+          {matches.map((label) => (
+            <SelectWithCombobox.ComboboxItem key={label} value={label}>
+              {label}
+            </SelectWithCombobox.ComboboxItem>
           ))}
-        </Combobox.Options>
-      </div>
-    </Combobox.Root>
+        </SelectWithCombobox.ComboboxList>
+      </SelectWithCombobox.Popover>
+    </SelectWithCombobox.Root>
   );
 };
-
-const optionToLabel = (option: DataModelField | null) =>
-  option
-    ? `${option.tableName || 'unknown'}.${option.fieldName || 'unknown'}`
-    : '';

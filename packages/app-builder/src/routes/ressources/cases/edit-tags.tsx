@@ -13,7 +13,7 @@ import { Link, useFetcher } from '@remix-run/react';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, ScrollArea } from 'ui-design-system';
+import { Input } from 'ui-design-system';
 import { Tip } from 'ui-icons';
 import { z } from 'zod';
 
@@ -125,43 +125,37 @@ export function EditCaseTags({
       <FormSelectWithCombobox.Root
         config={fields.caseTagIds}
         searchValue={searchValue}
-        setSearchValue={setSearchValue}
-        onSelectedValuesChange={(selectedValues) => {
+        onSearchValueChange={setSearchValue}
+        onSelectedValueChange={(selectedValues) => {
           setCaseTagIds(selectedValues);
         }}
         onOpenChange={(open) => {
           if (!open) form.ref.current?.requestSubmit();
         }}
       >
-        <FormSelectWithCombobox.Trigger className="w-full">
+        <FormSelectWithCombobox.Select className="w-full">
           <CaseTags caseTagIds={caseTagIds} />
-        </FormSelectWithCombobox.Trigger>
-        <FormSelectWithCombobox.Content>
-          <div className="flex flex-col gap-2 p-2">
-            <FormSelectWithCombobox.Combobox
-              render={<Input />}
-              autoSelect
-              autoFocus
-            />
-            <ScrollArea.Viewport className="max-h-40">
-              <FormSelectWithCombobox.ComboboxList>
-                {matches.map((tag) => (
-                  <FormSelectWithCombobox.ComboboxItem
-                    key={tag.id}
-                    value={tag.id}
-                  >
-                    <CaseTag tagId={tag.id} />
-                  </FormSelectWithCombobox.ComboboxItem>
-                ))}
-                {matches.length === 0 ? (
-                  <p className="text-grey-50 flex items-center justify-center p-2">
-                    {t('cases:case_detail.tags.empty_matches')}
-                  </p>
-                ) : null}
-              </FormSelectWithCombobox.ComboboxList>
-            </ScrollArea.Viewport>
-          </div>
-        </FormSelectWithCombobox.Content>
+          <FormSelectWithCombobox.Arrow />
+        </FormSelectWithCombobox.Select>
+        <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+          <FormSelectWithCombobox.Combobox
+            render={<Input className="shrink-0" />}
+            autoSelect
+            autoFocus
+          />
+          <FormSelectWithCombobox.ComboboxList>
+            {matches.map((tag) => (
+              <FormSelectWithCombobox.ComboboxItem key={tag.id} value={tag.id}>
+                <CaseTag tagId={tag.id} />
+              </FormSelectWithCombobox.ComboboxItem>
+            ))}
+            {matches.length === 0 ? (
+              <p className="text-grey-50 flex items-center justify-center p-2">
+                {t('cases:case_detail.tags.empty_matches')}
+              </p>
+            ) : null}
+          </FormSelectWithCombobox.ComboboxList>
+        </FormSelectWithCombobox.Popover>
       </FormSelectWithCombobox.Root>
     </fetcher.Form>
   );

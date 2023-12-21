@@ -17,11 +17,11 @@ function SelectFruitWithCombobox() {
   );
 
   return (
-    <SelectWithCombobox.Provider
+    <SelectWithCombobox.Root
       open
-      setSearchValue={setSearchValue}
-      selectedValues={selectedValues}
-      onSelectedValuesChange={setSelectedValues}
+      onSearchValueChange={setSearchValue}
+      selectedValue={selectedValues}
+      onSelectedValueChange={setSelectedValues}
     >
       <SelectWithCombobox.Combobox render={<Input />} />
       <SelectWithCombobox.ComboboxList>
@@ -29,42 +29,16 @@ function SelectFruitWithCombobox() {
           return <SelectWithCombobox.ComboboxItem key={fruit} value={fruit} />;
         })}
       </SelectWithCombobox.ComboboxList>
-    </SelectWithCombobox.Provider>
+    </SelectWithCombobox.Root>
   );
 }
-
 const Story: Meta = {
   component: SelectFruitWithCombobox,
   title: 'SelectWithCombobox',
 };
 export default Story;
 
-export const Default: StoryFn = () => {
-  const [value, setSearchValue] = useState('');
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  const deferredValue = useDeferredValue(value);
-
-  const matches = useMemo(
-    () => fruits.filter((fruit) => fruit.includes(deferredValue)),
-    [deferredValue],
-  );
-
-  return (
-    <SelectWithCombobox.Provider
-      open
-      setSearchValue={setSearchValue}
-      selectedValues={selectedValues}
-      onSelectedValuesChange={setSelectedValues}
-    >
-      <SelectWithCombobox.Combobox render={<Input />} />
-      <SelectWithCombobox.ComboboxList>
-        {matches.map((fruit) => {
-          return <SelectWithCombobox.ComboboxItem key={fruit} value={fruit} />;
-        })}
-      </SelectWithCombobox.ComboboxList>
-    </SelectWithCombobox.Provider>
-  );
-};
+export const Inline: StoryFn = () => <SelectFruitWithCombobox />;
 
 function SelectFruitWithComboboxAndPopover() {
   const [value, setSearchValue] = useState('');
@@ -77,28 +51,31 @@ function SelectFruitWithComboboxAndPopover() {
   );
 
   return (
-    <SelectWithCombobox.Popover.Root>
-      <SelectWithCombobox.Popover.Trigger>
+    <SelectWithCombobox.Root
+      onSearchValueChange={setSearchValue}
+      selectedValue={selectedValues}
+      onSelectedValueChange={setSelectedValues}
+    >
+      <SelectWithCombobox.Select>
         {selectedValues.join(', ') || 'Select fruits...'}
-      </SelectWithCombobox.Popover.Trigger>
-      <SelectWithCombobox.Popover.Content className="p-2">
-        <SelectWithCombobox.Provider
-          open
-          setSearchValue={setSearchValue}
-          selectedValues={selectedValues}
-          onSelectedValuesChange={setSelectedValues}
-        >
-          <SelectWithCombobox.Combobox render={<Input />} />
-          <SelectWithCombobox.ComboboxList>
-            {matches.map((fruit) => {
-              return (
-                <SelectWithCombobox.ComboboxItem key={fruit} value={fruit} />
-              );
-            })}
-          </SelectWithCombobox.ComboboxList>
-        </SelectWithCombobox.Provider>
-      </SelectWithCombobox.Popover.Content>
-    </SelectWithCombobox.Popover.Root>
+        <SelectWithCombobox.Arrow />
+      </SelectWithCombobox.Select>
+
+      <SelectWithCombobox.Popover
+        className="flex flex-col gap-2 p-2"
+        fitViewport
+      >
+        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} />
+
+        <SelectWithCombobox.ComboboxList>
+          {matches.map((fruit) => {
+            return (
+              <SelectWithCombobox.ComboboxItem key={fruit} value={fruit} />
+            );
+          })}
+        </SelectWithCombobox.ComboboxList>
+      </SelectWithCombobox.Popover>
+    </SelectWithCombobox.Root>
   );
 }
 

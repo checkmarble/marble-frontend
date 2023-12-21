@@ -91,39 +91,40 @@ export const EditFilters = ({
           ).map((error) => getNodeEvaluationErrorMessage(error));
           return (
             <div key={filterIndex}>
-              <div className="flex flex-row items-center gap-1">
+              <div className="flex flex-row items-center gap-2">
                 <span className="text-grey-50 text-xs">
                   {t('scenarios:edit_aggregation.filter_and')}
                 </span>
-                <EditDataModelField
-                  className="grow"
-                  value={filter.filteredField}
-                  options={filteredDataModalFieldOptions}
-                  onChange={(filteredField) =>
-                    onFilterChange({ filteredField }, filterIndex)
-                  }
-                  errors={filter.errors.filteredField}
-                />
+                <div className="flex flex-1 flex-row items-center gap-2">
+                  <EditDataModelField
+                    placeholder={t('scenarios:edit_aggregation.select_a_field')}
+                    defaultOpen
+                    value={filter.filteredField}
+                    options={filteredDataModalFieldOptions}
+                    onChange={(filteredField) =>
+                      onFilterChange({ filteredField }, filterIndex)
+                    }
+                    errors={filter.errors.filteredField}
+                  />
 
-                <FilterOperatorSelect
-                  value={filter.operator}
-                  onChange={(operator) =>
-                    onFilterChange({ operator }, filterIndex)
-                  }
-                  errors={filter.errors.operator}
-                />
-
-                <Operand
-                  builder={builder}
-                  operandViewModel={filter.value}
-                  onSave={(astNode) =>
-                    onFilterChange(
-                      { value: adaptEditorNodeViewModel({ ast: astNode }) },
-                      filterIndex,
-                    )
-                  }
-                />
-
+                  <FilterOperatorSelect
+                    value={filter.operator}
+                    onChange={(operator) =>
+                      onFilterChange({ operator }, filterIndex)
+                    }
+                    errors={filter.errors.operator}
+                  />
+                  <Operand
+                    builder={builder}
+                    operandViewModel={filter.value}
+                    onSave={(astNode) =>
+                      onFilterChange(
+                        { value: adaptEditorNodeViewModel({ ast: astNode }) },
+                        filterIndex,
+                      )
+                    }
+                  />
+                </div>
                 <RemoveButton onClick={() => removeFilter(filterIndex)} />
               </div>
               {filter.errors.filter.length > 0 ? (

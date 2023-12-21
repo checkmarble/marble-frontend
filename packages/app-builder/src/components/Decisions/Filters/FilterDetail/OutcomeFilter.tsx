@@ -18,11 +18,11 @@ export function OutcomeFilter() {
 
   return (
     <div className="flex flex-col gap-2 p-2">
-      <SelectWithCombobox.Provider
+      <SelectWithCombobox.Root
         open
-        setSearchValue={setSearchValue}
-        selectedValues={selectedOutcomes}
-        onSelectedValuesChange={setSelectedOutcomes}
+        onSearchValueChange={setSearchValue}
+        selectedValue={selectedOutcomes}
+        onSelectedValueChange={setSelectedOutcomes}
       >
         <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
         <SelectWithCombobox.ComboboxList>
@@ -42,7 +42,7 @@ export function OutcomeFilter() {
             );
           })}
         </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Provider>
+      </SelectWithCombobox.Root>
     </div>
   );
 }
