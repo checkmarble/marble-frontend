@@ -84,13 +84,13 @@ export function CreateInboxUser({ inboxId }: { inboxId: string }) {
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>
+      <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
         <Button>
           <Plus width={'24px'} height={'24px'} />
           {t('settings:inboxes.inbox_details.add_member')}
         </Button>
       </Modal.Trigger>
-      <Modal.Content>
+      <Modal.Content onClick={(e) => e.stopPropagation()}>
         <CreateInboxUserContent currentInboxId={inboxId} />
       </Modal.Content>
     </Modal.Root>
