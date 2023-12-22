@@ -15,7 +15,7 @@ import { type InboxDto } from 'marble-api';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { Edit, NewInbox } from 'ui-icons';
+import { Edit } from 'ui-icons';
 import { z } from 'zod';
 
 import { redirectRouteOptions } from './create';

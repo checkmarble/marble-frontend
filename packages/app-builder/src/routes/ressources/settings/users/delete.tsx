@@ -1,4 +1,3 @@
-import { type CurrentUser } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -32,14 +31,14 @@ export async function action({ request }: ActionArgs) {
 
 export function DeleteUser({
   userId,
-  currentUser,
+  currentUserId,
 }: {
   userId: string;
-  currentUser: CurrentUser;
+  currentUserId?: string;
 }) {
   const { t } = useTranslation(handle.i18n);
 
-  if (userId === currentUser.actorIdentity.userId) {
+  if (userId === currentUserId) {
     return (
       <Delete
         width="24px"

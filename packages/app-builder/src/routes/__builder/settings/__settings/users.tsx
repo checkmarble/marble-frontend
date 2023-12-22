@@ -10,6 +10,7 @@ import { json, type LoaderArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
+import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -43,7 +44,7 @@ export default function Users() {
   const inboxUsersByUserId = useMemo(
     () =>
       R.pipe(
-        inboxUsers,
+        inboxUsers as InboxUserDto[],
         R.groupBy((user) => user.user_id),
         R.mapValues((value) =>
           R.pipe(
@@ -100,7 +101,7 @@ export default function Users() {
               <UpdateUser user={cell.row.original} />
               <DeleteUser
                 userId={cell.row.original.userId}
-                currentUser={user}
+                currentUserId={user.actorIdentity.userId}
               />
             </div>
           );
@@ -108,7 +109,7 @@ export default function Users() {
       }),
     ];
     return columns;
-  }, [inboxUsersByUserId, t]);
+  }, [inboxUsersByUserId, t, user.actorIdentity.userId]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: orgUsers,
