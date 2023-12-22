@@ -50,6 +50,7 @@
   "inboxes.inbox_details.role": "Role",
   "inboxes.inbox_details.case_count": "Cases in inbox",
   "inboxes.inbox_details.delete_inbox": "Delete inbox",
+  "inboxes.inbox_details.delete_inbox.tooltip": "You cannot delete an inbox with cases in it",
   "inboxes.inbox_user.update": "Update user role in inbox",
   "inboxes.inbox_user.delete": "Remove user from inbox",
   "inboxes.inbox_user.delete.content": "You are about to delete this user from this inbox, do you want to proceed?",

@@ -31,7 +31,13 @@ export async function action({ request }: ActionArgs) {
   return redirect(getRoute('/settings/inboxes'));
 }
 
-export function DeleteInbox({ inbox }: { inbox: InboxDto }) {
+export function DeleteInbox({
+  inbox,
+  disabled,
+}: {
+  inbox: InboxDto;
+  disabled?: boolean;
+}) {
   const { t } = useTranslation(handle.i18n);
 
   const [open, setOpen] = useState(false);
@@ -46,7 +52,13 @@ export function DeleteInbox({ inbox }: { inbox: InboxDto }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button color="red" variant="primary" name="delete">
+        <Button
+          color="red"
+          variant="primary"
+          name="delete"
+          disabled={disabled}
+          className="w-fit"
+        >
           <Delete
             width="24px"
             height="24px"

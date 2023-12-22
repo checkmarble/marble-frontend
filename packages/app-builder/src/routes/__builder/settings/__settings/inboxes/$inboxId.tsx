@@ -1,4 +1,4 @@
-import { Page } from '@app-builder/components';
+import { CollapsiblePaper, Page } from '@app-builder/components';
 import { DeleteInbox } from '@app-builder/routes/ressources/settings/inboxes/delete';
 import { CreateInboxUser } from '@app-builder/routes/ressources/settings/inboxes/inbox-users/create';
 import { DeleteInboxUser } from '@app-builder/routes/ressources/settings/inboxes/inbox-users/delete';
@@ -15,7 +15,7 @@ import { type Namespace } from 'i18next';
 import { type InboxUserDto, type InboxUserRole } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, useVirtualTable } from 'ui-design-system';
+import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
 import { tKeyForInboxUserRole } from '.';
 
@@ -88,52 +88,70 @@ export default function Inbox() {
   return (
     <Page.Container>
       <Page.Content>
-        <div className="bg-grey-00 border-grey-10 flex w-full flex-col gap-4 overflow-hidden rounded-lg border px-8 py-4">
-          <div className="flex flex-row items-center justify-between font-bold capitalize">
-            {t('settings:inboxes.inbox_details.title')}
+        <CollapsiblePaper.Container>
+          <CollapsiblePaper.Title>
+            <span className="flex-1">
+              {t('settings:inboxes.inbox_details.title')}
+            </span>
             <UpdateInbox
               inbox={inbox}
               redirectRoutePath="/settings/inboxes/:inboxId"
             />
-          </div>
-          <div className="text-s grid grid-cols-[200px_2fr]">
-            <span className="font-bold">{t('settings:inboxes.name')}</span>
-            {inbox.name}
-          </div>
+          </CollapsiblePaper.Title>
+          <CollapsiblePaper.Content>
+            <div className="grid grid-cols-[max-content_1fr] grid-rows-2 items-center gap-x-10 gap-y-4">
+              <span className="font-bold">{t('settings:inboxes.name')}</span>
+              {inbox.name}
 
-          <div className="flex flex-row items-center justify-between font-bold capitalize">
-            {t('settings:inboxes.inbox_details.members')}
-            <CreateInboxUser inboxId={inbox.id} />
-          </div>
-          <Table.Container {...getContainerProps()}>
-            <Table.Header headerGroups={table.getHeaderGroups()} />
-            <Table.Body {...getBodyProps()}>
-              {rows.map((row) => {
-                return (
-                  <Table.Row
-                    key={row.id}
-                    tabIndex={0}
-                    className={clsx('hover:bg-grey-02 cursor-pointer')}
-                    row={row}
-                  />
-                );
-              })}
-            </Table.Body>
-          </Table.Container>
-
-          <div className="text-s grid grid-cols-[200px_2fr]">
-            <span className="font-bold">
-              {t('settings:inboxes.inbox_details.case_count')}
-            </span>
-            {caseList.total}
-          </div>
-
-          {caseList.total === 0 ? (
-            <div>
-              <DeleteInbox inbox={inbox} />
+              <span className="font-bold">
+                {t('settings:inboxes.inbox_details.case_count')}
+              </span>
+              {caseList.total}
             </div>
-          ) : null}
-        </div>
+          </CollapsiblePaper.Content>
+        </CollapsiblePaper.Container>
+
+        <CollapsiblePaper.Container>
+          <CollapsiblePaper.Title>
+            <span className="flex-1">
+              {t('settings:inboxes.inbox_details.members')}
+            </span>
+            <CreateInboxUser inboxId={inbox.id} />
+          </CollapsiblePaper.Title>
+          <CollapsiblePaper.Content>
+            <Table.Container {...getContainerProps()}>
+              <Table.Header headerGroups={table.getHeaderGroups()} />
+              <Table.Body {...getBodyProps()}>
+                {rows.map((row) => {
+                  return (
+                    <Table.Row
+                      key={row.id}
+                      tabIndex={0}
+                      className={clsx('hover:bg-grey-02 cursor-pointer')}
+                      row={row}
+                    />
+                  );
+                })}
+              </Table.Body>
+            </Table.Container>
+          </CollapsiblePaper.Content>
+        </CollapsiblePaper.Container>
+
+        {caseList.total === 0 ? (
+          <DeleteInbox inbox={inbox} />
+        ) : (
+          <Tooltip.Default
+            content={
+              <p className="p-2">
+                {t('settings:inboxes.inbox_details.delete_inbox.tooltip')}
+              </p>
+            }
+          >
+            <span className="w-fit">
+              <DeleteInbox inbox={inbox} disabled />
+            </span>
+          </Tooltip.Default>
+        )}
       </Page.Content>
     </Page.Container>
   );
