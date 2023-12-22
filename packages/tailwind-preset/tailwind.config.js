@@ -29,6 +29,52 @@ module.exports = {
             opacity: 0,
           },
         },
+        circleAnimation: {
+          from: {
+            transform: 'scale(0) rotate(45deg)',
+            opacity: 0,
+          },
+          to: {
+            transform: 'scale(1) rotate(45deg)',
+            opacity: 1,
+          },
+        },
+        firstLineAnimation: {
+          from: {
+            transform: 'scale(0)',
+            opacity: 0,
+          },
+          to: {
+            transform: 'scale(1)',
+            opacity: 1,
+          },
+        },
+        secondLineAnimation: {
+          from: {
+            transform: 'scale(0) rotate(90deg)',
+            opacity: 0,
+          },
+          to: {
+            transform: 'scale(1) rotate(90deg)',
+            opacity: 1,
+          },
+        },
+        checkmarkAnimation: {
+          '0%': {
+            height: 0,
+            width: 0,
+            opacity: 0,
+          },
+          '40%': {
+            height: 0,
+            width: '6px',
+            opacity: 1,
+          },
+          '100%': {
+            opacity: 1,
+            height: '10px',
+          },
+        },
         overlayShow: {
           from: {
             opacity: 0,
@@ -79,6 +125,11 @@ module.exports = {
       animation: {
         'ping-slow': 'ping-slow 5s ease infinite',
         slideUpAndFade: 'slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
+        circleAnimation:
+          'circleAnimation 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        firstLineAnimation: 'firstLineAnimation 300ms ease-out forwards',
+        secondLineAnimation: 'secondLineAnimation 300ms ease-out forwards',
+        checkmarkAnimation: 'checkmarkAnimation  300ms ease-out forwards',
         overlayShow: 'overlayShow 200ms cubic-bezier(0.16, 1, 0.3, 1)',
         slideRightAndFadeIn:
           'slideRightAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1)',
