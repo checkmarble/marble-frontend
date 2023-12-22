@@ -31,7 +31,13 @@ export async function action({ request }: ActionArgs) {
   return redirect(getRoute('/settings/inboxes'));
 }
 
-export function DeleteInbox({ inbox }: { inbox: InboxDto }) {
+export function DeleteInbox({
+  inbox,
+  disabled,
+}: {
+  inbox: InboxDto;
+  disabled?: boolean;
+}) {
   const { t } = useTranslation(handle.i18n);
 
   const [open, setOpen] = useState(false);
@@ -46,7 +52,13 @@ export function DeleteInbox({ inbox }: { inbox: InboxDto }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button color="red" variant="primary" name="delete">
+        <Button
+          color="red"
+          variant="primary"
+          name="delete"
+          disabled={disabled}
+          className="w-fit"
+        >
           <Delete
             width="24px"
             height="24px"
@@ -71,7 +83,7 @@ const DeleteInboxContent = ({ inboxId }: { inboxId: string }) => {
       method="DELETE"
     >
       <Modal.Title>{t('settings:inboxes.delete_inbox')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="bg-grey-00 flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4">
           <input name="inboxId" value={inboxId} type="hidden" />
           <p className="text-center">

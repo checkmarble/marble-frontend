@@ -68,12 +68,12 @@ export function CreateUser({ orgId }: { orgId: string }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button>
+        <Button onClick={(e) => e.stopPropagation()}>
           <Plus width={'24px'} height={'24px'} />
           {t('settings:users.new_user')}
         </Button>
       </Modal.Trigger>
-      <Modal.Content>
+      <Modal.Content onClick={(e) => e.stopPropagation()}>
         <CreateUserContent orgId={orgId} />
       </Modal.Content>
     </Modal.Root>
@@ -113,7 +113,7 @@ const CreateUserContent = ({ orgId }: { orgId: string }) => {
       {...form.props}
     >
       <Modal.Title>{t('settings:users.new_user')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4 font-bold">
           <input {...conform.input(organizationId, { type: 'hidden' })} />
           <div className="flex gap-2">

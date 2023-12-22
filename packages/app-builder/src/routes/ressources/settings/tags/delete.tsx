@@ -76,7 +76,7 @@ const DeleteTagContent = ({ tagId }: { tagId: string }) => {
   return (
     <Form action={getRoute('/ressources/settings/tags/delete')} method="DELETE">
       <Modal.Title>{t('settings:tags.delete_tag.title')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4">
           <input name="tagId" value={tagId} type="hidden" />
           <p className="text-center">{t('settings:tags.delete_tag.content')}</p>

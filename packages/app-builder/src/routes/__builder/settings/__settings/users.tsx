@@ -1,4 +1,4 @@
-import { Page } from '@app-builder/components';
+import { CollapsiblePaper, Page } from '@app-builder/components';
 import { isAdmin, type User } from '@app-builder/models';
 import { CreateUser } from '@app-builder/routes/ressources/settings/users/create';
 import { DeleteUser } from '@app-builder/routes/ressources/settings/users/delete';
@@ -10,10 +10,11 @@ import { json, type LoaderArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
+import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Table, useVirtualTable } from 'ui-design-system';
+import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -43,7 +44,7 @@ export default function Users() {
   const inboxUsersByUserId = useMemo(
     () =>
       R.pipe(
-        inboxUsers,
+        inboxUsers as InboxUserDto[],
         R.groupBy((user) => user.user_id),
         R.mapValues((value) =>
           R.pipe(
@@ -100,7 +101,7 @@ export default function Users() {
               <UpdateUser user={cell.row.original} />
               <DeleteUser
                 userId={cell.row.original.userId}
-                currentUser={user}
+                currentUserId={user.actorIdentity.userId}
               />
             </div>
           );
@@ -108,9 +109,9 @@ export default function Users() {
       }),
     ];
     return columns;
-  }, [inboxUsersByUserId, t]);
+  }, [inboxUsersByUserId, t, user.actorIdentity.userId]);
 
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: orgUsers,
     columns,
     columnResizeMode: 'onChange',
@@ -121,27 +122,29 @@ export default function Users() {
   return (
     <Page.Container>
       <Page.Content>
-        <div className="border-grey-10 bg-grey-00 flex w-full flex-col gap-4 overflow-hidden rounded-lg border px-8 py-6">
-          <div className="flex flex-row items-center justify-between font-bold capitalize">
-            {t('settings:users')}
+        <CollapsiblePaper.Container>
+          <CollapsiblePaper.Title>
+            <span className="flex-1">{t('settings:users')}</span>
             <CreateUser orgId={org.id} />
-          </div>
-          <Table.Container {...getContainerProps()}>
-            <Table.Header headerGroups={table.getHeaderGroups()} />
-            <Table.Body {...getBodyProps()}>
-              {rows.map((row) => {
-                return (
-                  <Table.Row
-                    key={row.id}
-                    tabIndex={0}
-                    className={clsx('hover:bg-grey-02 cursor-pointer')}
-                    row={row}
-                  />
-                );
-              })}
-            </Table.Body>
-          </Table.Container>
-        </div>
+          </CollapsiblePaper.Title>
+          <CollapsiblePaper.Content>
+            <Table.Container {...getContainerProps()}>
+              <Table.Header headerGroups={table.getHeaderGroups()} />
+              <Table.Body {...getBodyProps()}>
+                {rows.map((row) => {
+                  return (
+                    <Table.Row
+                      key={row.id}
+                      tabIndex={0}
+                      className={clsx('hover:bg-grey-02 cursor-pointer')}
+                      row={row}
+                    />
+                  );
+                })}
+              </Table.Body>
+            </Table.Container>
+          </CollapsiblePaper.Content>
+        </CollapsiblePaper.Container>
       </Page.Content>
     </Page.Container>
   );

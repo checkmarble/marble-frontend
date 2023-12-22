@@ -1,6 +1,7 @@
 import {
   type CollapsibleContentProps,
   type CollapsibleProps,
+  type CollapsibleTriggerProps,
   Content,
   Root,
   Trigger,
@@ -10,7 +11,7 @@ import { forwardRef } from 'react';
 import { SmallarrowUp } from 'ui-icons';
 
 const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
-  ({ className, ...props }, ref) => {
+  function CollapsibleContainer({ className, ...props }, ref) {
     return (
       <Root
         defaultOpen={true}
@@ -24,31 +25,28 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
     );
   },
 );
-CollapsibleContainer.displayName = 'CollapsibleContainer';
 
-const CollapsibleTitle = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => (
-  <Trigger asChild>
-    <div
-      className={clsx(
-        'group flex cursor-pointer justify-between gap-4 p-4 font-semibold lg:p-8',
-        className,
-      )}
-    >
-      {children}
-      <SmallarrowUp
-        aria-hidden
-        height="24px"
-        width="24px"
-        className="border-grey-10 group-radix-state-open:rotate-180 rounded border transition-transform duration-200"
-      />
-    </div>
-  </Trigger>
+const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
+  function CollapsibleTitle({ className, children, ...props }, ref) {
+    return (
+      <Trigger
+        ref={ref}
+        className={clsx(
+          'group flex cursor-pointer items-center justify-between gap-4 p-4 font-semibold lg:p-6',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+        <SmallarrowUp
+          aria-hidden
+          height="24px"
+          width="24px"
+          className="border-grey-10 group-radix-state-open:rotate-180 rounded border transition-transform duration-200"
+        />
+      </Trigger>
+    );
+  },
 );
 
 const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
@@ -63,7 +61,7 @@ const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
         {...props}
         ref={ref}
       >
-        <div className="text-s p-4 lg:p-8">{children}</div>
+        <div className="text-s p-4 lg:p-6">{children}</div>
       </Content>
     );
   },

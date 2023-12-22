@@ -122,7 +122,7 @@ export function EditField({
           <FormProvider {...formMethods}>
             <HiddenInputs fieldId={'dummy value'} />
             <Modal.Title>{t('data:edit_field.title')}</Modal.Title>
-            <div className="bg-grey-00 flex flex-col gap-8 p-8">
+            <div className="flex flex-col gap-6 p-6">
               <div className="flex flex-1 flex-col gap-4">
                 <input hidden {...register('fieldId')} />
                 <FormField

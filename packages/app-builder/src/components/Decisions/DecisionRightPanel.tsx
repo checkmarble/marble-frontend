@@ -96,7 +96,7 @@ function DecisionRightPanelContent() {
 
   return (
     <RightPanel.Content className="max-w-md">
-      <ScrollArea.Root className="flex h-full w-full flex-col gap-4 p-4 lg:gap-8 lg:p-8">
+      <ScrollArea.Root className="flex h-full w-full flex-col gap-4 p-4 lg:gap-6 lg:p-6">
         <RightPanel.Title>
           <span className="w-full first-letter:capitalize">
             {t('decisions:add_to_case')}

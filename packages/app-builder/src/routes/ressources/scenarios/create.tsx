@@ -116,7 +116,7 @@ function CreateScenarioContent() {
       action="/ressources/scenarios/create"
     >
       <Modal.Title>{t('scenarios:create_scenario.title')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-1 flex-col gap-4">
           <label htmlFor="name">{t('scenarios:create_scenario.name')}</label>
           <Input

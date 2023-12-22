@@ -15,7 +15,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
           ref={ref}
           {...props}
           className={clsx(
-            'border-grey-10 fixed left-[50%] top-[50%] flex h-fit w-full translate-x-[-50%] translate-y-[-50%] flex-col rounded-lg border drop-shadow-xl',
+            'bg-grey-00 fixed left-[50%] top-[50%] flex h-fit w-full translate-x-[-50%] translate-y-[-50%] flex-col rounded-lg drop-shadow-xl',
             {
               'max-w-lg': size === 'small',
               'max-w-2xl': size === 'medium',
@@ -32,7 +32,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
 function ModalTitle(props: Dialog.DialogTitleProps) {
   return (
     <Dialog.Title
-      className="border-b-grey-10 bg-grey-02 text-m border-b px-8 py-6 text-center font-bold"
+      className="border-b-grey-10 bg-grey-02 text-m rounded-t-lg border-b p-6 text-center font-bold"
       {...props}
     />
   );

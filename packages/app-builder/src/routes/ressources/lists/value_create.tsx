@@ -96,7 +96,7 @@ export function NewListValue({ listId }: { listId: string }) {
           <FormProvider {...formMethods}>
             <input hidden {...register('listId')} />
             <Modal.Title>{t('lists:create_value.title')}</Modal.Title>
-            <div className="bg-grey-00 flex flex-col gap-8 p-8">
+            <div className="flex flex-col gap-6 p-6">
               <FormField
                 name="value"
                 control={control}

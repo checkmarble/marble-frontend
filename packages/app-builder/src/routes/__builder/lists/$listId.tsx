@@ -194,7 +194,7 @@ export function ErrorBoundary() {
 //             </Dialog.Trigger>
 //             <Dialog.Portal>
 //               <Dialog.Overlay className="bg-grey-100 animate-overlayShow fixed inset-0 items-center justify-center bg-opacity-40" />
-//               <Dialog.Content className="bg-grey-00 fixed left-1/2 top-1/2 flex w-full max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-8 rounded-lg p-8">
+//               <Dialog.Content className="bg-grey-00 fixed left-1/2 top-1/2 flex w-full max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-lg p-6">
 //                 <Dialog.Title className="flex flex-row gap-2">
 //                   <Scenarios
 //                     height="24px"

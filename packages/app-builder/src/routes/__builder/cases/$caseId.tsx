@@ -83,8 +83,8 @@ export default function CasePage() {
         <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
       </Page.Header>
       <Page.Content>
-        <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
-          <div className="flex flex-col gap-4 lg:gap-8">
+        <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-6">
+          <div className="flex flex-col gap-4 lg:gap-6">
             <CaseInformation
               caseDetail={caseDetail}
               inbox={inbox}
@@ -92,9 +92,10 @@ export default function CasePage() {
             />
             <CaseDecisions decisions={caseDetail.decisions} />
             <CaseFiles files={caseDetail.files} />
+          </div>
+          <div className="flex flex-col gap-4 lg:gap-6">
             <CaseEvents events={caseDetail.events} />
           </div>
-          <div className="flex flex-col gap-4 lg:gap-8"></div>
         </div>
       </Page.Content>
       <div className="bg-grey-00 border-t-grey-10 sticky inset-x-0 bottom-0 flex flex-row gap-4 border-t p-4">

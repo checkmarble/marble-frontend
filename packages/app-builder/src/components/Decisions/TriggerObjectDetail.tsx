@@ -10,7 +10,7 @@ export const TriggerObjectDetail = ({
 }) => {
   const { t } = useTranslation(decisionsI18n);
   return (
-    <Collapsible.Container className="bg-grey-00 h-fit flex-1">
+    <Collapsible.Container className="bg-grey-00">
       <Collapsible.Title>
         {t('decisions:trigger_object.type')}
       </Collapsible.Title>

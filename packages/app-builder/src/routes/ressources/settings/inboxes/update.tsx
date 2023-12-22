@@ -15,7 +15,7 @@ import { type InboxDto } from 'marble-api';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { NewInbox } from 'ui-icons';
+import { Edit } from 'ui-icons';
 import { z } from 'zod';
 
 import { redirectRouteOptions } from './create';
@@ -88,13 +88,13 @@ export function UpdateInbox({
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>
-        <Button className="w-fit whitespace-nowrap" variant="secondary">
-          <NewInbox className="text-l" />
+      <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
+        <Button className="w-fit whitespace-nowrap">
+          <Edit width={'24px'} height={'24px'} />
           {t('settings:inboxes.update_inbox')}
         </Button>
       </Modal.Trigger>
-      <Modal.Content>
+      <Modal.Content onClick={(e) => e.stopPropagation()}>
         <UpdateInboxContent
           inbox={inbox}
           redirectRoutePath={redirectRoutePath}
@@ -135,7 +135,7 @@ export function UpdateInboxContent({
       {...form.props}
     >
       <Modal.Title>{t('settings:inboxes.update_inbox')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-8 p-8">
+      <div className="bg-grey-00 flex flex-col gap-6 p-6">
         <input {...conform.input(id, { type: 'hidden' })} />
         <input {...conform.input(redirectRoute, { type: 'hidden' })} />
         <FormField config={name} className="group flex flex-col gap-2">
