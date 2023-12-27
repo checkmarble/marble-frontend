@@ -20,6 +20,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AuthenticityTokenProvider,
+  ClientOnly,
   createAuthenticityToken,
   ExternalScripts,
 } from 'remix-utils';
@@ -177,7 +178,9 @@ function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <MarbleToaster toastMessage={toastMessage} />
+        <ClientOnly>
+          {() => <MarbleToaster toastMessage={toastMessage} />}
+        </ClientOnly>
       </body>
     </html>
   );
