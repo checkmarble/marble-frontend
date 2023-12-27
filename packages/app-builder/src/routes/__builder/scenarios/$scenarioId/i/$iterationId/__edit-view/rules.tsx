@@ -119,6 +119,14 @@ export default function Rules() {
     columns,
     columnResizeMode: 'onChange',
     enableSorting: hasRules,
+    initialState: {
+      sorting: [
+        {
+          id: 'name',
+          desc: false,
+        },
+      ],
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
