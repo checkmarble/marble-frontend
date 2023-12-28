@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Input, Modal } from 'ui-design-system';
-import { Edit } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -91,7 +91,7 @@ export function EditList({
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
         <Button variant="secondary">
-          <Edit width={'24px'} height={'24px'} />
+          <Icon icon="edit" className="h-6 w-6" />
           <p>{t('lists:edit_list.button')}</p>
         </Button>
       </Modal.Trigger>

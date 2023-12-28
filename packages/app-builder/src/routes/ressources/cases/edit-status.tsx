@@ -17,7 +17,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { Arrow2Down } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -98,10 +98,9 @@ export function EditCaseStatus({
           <span className="text-s ml-2 font-semibold capitalize">
             {t(caseStatus.tKey)}
           </span>
-          <Arrow2Down
-            height="24px"
-            width="24px"
-            className="group-radix-state-open:rotate-180"
+          <Icon
+            icon="arrow-2-down"
+            className="group-radix-state-open:rotate-180 h-6 w-6"
           />
         </DropdownMenu.Trigger>
       </div>

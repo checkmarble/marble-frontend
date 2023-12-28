@@ -2,16 +2,7 @@ import { type DataType, type LabelledAst } from '@app-builder/models';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
-import {
-  Boolean,
-  Enum,
-  Field,
-  Function,
-  List,
-  Number,
-  Schedule,
-  String,
-} from 'ui-icons';
+import { Icon, type IconName } from 'ui-icons';
 
 function OptionContainer({
   className,
@@ -29,10 +20,13 @@ function OptionContainer({
   );
 }
 
-function OptionIcon({ className, ...props }: React.ComponentProps<'div'>) {
+function OptionIcon({
+  className,
+  ...props
+}: React.ComponentProps<typeof Icon>) {
   return (
-    <div
-      className={clsx('shrink-0 text-[21px] transition-colors', className)}
+    <Icon
+      className={clsx('h-5 w-5 shrink-0 transition-colors', className)}
       {...props}
     />
   );
@@ -57,17 +51,17 @@ export const Option = {
   Value: OptionValue,
 };
 
-export function getDataTypeIcon(dataType?: DataType) {
+export function getDataTypeIcon(dataType?: DataType): IconName | undefined {
   switch (dataType) {
     case 'Timestamp':
-      return Schedule;
+      return 'schedule';
     case 'String':
-      return String;
+      return 'string';
     case 'Int':
     case 'Float':
-      return Number;
+      return 'number';
     case 'Bool':
-      return Boolean;
+      return 'boolean';
     default:
       return undefined;
   }
@@ -91,16 +85,18 @@ export function getDataTypeTKey(
   }
 }
 
-export function getOperatorTypeIcon(operatorType: LabelledAst['operandType']) {
+export function getOperatorTypeIcon(
+  operatorType: LabelledAst['operandType'],
+): IconName | undefined {
   switch (operatorType) {
     case 'CustomList':
-      return List;
+      return 'list';
     case 'Field':
-      return Field;
+      return 'field';
     case 'Function':
-      return Function;
+      return 'function';
     case 'Enum':
-      return Enum;
+      return 'enum';
     default:
       return undefined;
   }

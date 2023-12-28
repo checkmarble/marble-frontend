@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui-react';
 import swaggercss from 'swagger-ui-react/swagger-ui.css';
 import { Button } from 'ui-design-system';
-import { Download, Harddrive } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'api'] satisfies Namespace,
@@ -39,7 +39,7 @@ export default function Api() {
     <Page.Container>
       <Page.Header className="justify-between">
         <div className="items-center: flex flex-row items-center">
-          <Harddrive className="mr-2" height="24px" width="24px" />
+          <Icon icon="harddrive" className="mr-2 h-6 w-6" />
           {t('navigation:api')}
         </div>
       </Page.Header>
@@ -54,7 +54,7 @@ export default function Api() {
               void downloadBlob(blob, 'openapi.json');
             }}
           >
-            <Download className="mr-2" height="24px" width="24px" />
+            <Icon icon="download" className="mr-2 h-6 w-6" />
             {t('api:download_openapi_spec')}
           </Button>
         </div>

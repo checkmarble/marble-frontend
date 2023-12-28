@@ -11,15 +11,11 @@ This package contains all the icons used in the UI. This generate a React compon
 ![extract-svg-figma](./docs/extract-svg-figma.png)
 
 2. Add the svg in `/svgs`
+   - if this is a new icon, add it in `/svgs/new-icons` (= monocolored svg that can be colored)
+   - if this is a new logo, add it in `/svgs/logos` (= multicolored svg that won't be colored)
 
-> a good convention is to keep the exported name from Figma, to make it easier to find already imported assets
+> Favour kebab-case file name & keep the exported name from Figma to make it easier to find already imported assets.
 
 3. Run `pnpm --filter ui-icons run generate-icons`
 
-4. Check the generated file in `/src/`: it must have `<path fill="currentColor"/>` (it makes the icon color customizable). If this not the case :
-
-   1. No `fill=*` in the genereted file : you must edit the `.svg` file and add it manually.
-      > `<path fill="#080525" ... />` in should work.
-   2. `fill=#.....` in the genereted file : you must add `#...` hex color to the `replaceAttrValues` array in `packages/ui-icons/scripts/generate.ts`
-
-5. Commit your changes
+4. Commit your changes

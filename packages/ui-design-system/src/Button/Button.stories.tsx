@@ -1,5 +1,5 @@
 import { type Meta, type StoryFn } from '@storybook/react';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { Button, type ButtonProps, variantColors } from './Button';
 
@@ -36,7 +36,7 @@ const TemplateWithIcon: StoryFn<StoryProps> = ({
 }: StoryProps) => {
   return (
     <Button {...args}>
-      <Plus width={24} height={24} />
+      <Icon icon="plus" className="h-6 w-6" />
       {children}
     </Button>
   );

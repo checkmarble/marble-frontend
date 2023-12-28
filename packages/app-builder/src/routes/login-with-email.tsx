@@ -4,7 +4,7 @@ import { json, type LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { LogoStandard } from 'ui-icons';
+import { Logo } from 'ui-icons';
 
 import { SignInWithEmail } from './ressources/auth/login-with-email';
 import { LanguagePicker } from './ressources/user/language';
@@ -42,10 +42,9 @@ export default function LoginWithEmail() {
     <div className="from-purple-10 to-grey-02 flex h-full w-full flex-col items-center bg-gradient-to-r">
       <div className="flex h-full w-full flex-col items-center bg-[url('/img/login_background.svg')] bg-no-repeat">
         <div className="flex h-full max-h-80 flex-col justify-center">
-          <LogoStandard
-            className="w-auto"
-            width={undefined}
-            height="40px"
+          <Logo
+            logo="logo-standard"
+            className="h-10 w-auto"
             preserveAspectRatio="xMinYMid meet"
             aria-labelledby="marble"
           />

@@ -14,7 +14,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { NewInbox } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -88,11 +88,11 @@ export function CreateInbox({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button
-          className="w-fit whitespace-nowrap"
+          className="whitespace-nowrap"
           variant="secondary"
           onClick={(e) => e.stopPropagation()}
         >
-          <NewInbox className="text-l" />
+          <Icon icon="new-inbox" className="h-5 w-5 shrink-0" />
           {t('settings:inboxes.new_inbox.create')}
         </Button>
       </Modal.Trigger>
@@ -151,7 +151,7 @@ export function CreateInboxContent({
             type="submit"
             name="create"
           >
-            <NewInbox />
+            <Icon icon="new-inbox" className="h-5 w-5" />
             {t('settings:inboxes.new_inbox.create')}
           </Button>
         </div>

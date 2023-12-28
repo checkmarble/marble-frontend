@@ -11,7 +11,7 @@ import {
 } from '@app-builder/services/validation';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { ErrorMessage } from '../../ErrorMessage';
 import { RemoveButton } from '../../RemoveButton';
@@ -142,7 +142,7 @@ export const EditFilters = ({
         })}
       </div>
       <Button className="my-2" onClick={addNewFilter}>
-        <Plus width={'24px'} height={'24px'} />{' '}
+        <Icon icon="plus" className="h-6 w-6" />
         {t('scenarios:edit_aggregation.add_filter')}
       </Button>
     </div>

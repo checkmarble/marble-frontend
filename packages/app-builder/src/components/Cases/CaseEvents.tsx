@@ -6,14 +6,7 @@ import { cx } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 import { Accordion, Avatar, Collapsible } from 'ui-design-system';
-import {
-  Attachment,
-  CaseManager,
-  CreateNewFolder,
-  Decision,
-  Edit,
-  ManageSearch,
-} from 'ui-icons';
+import { Icon, type IconName } from 'ui-icons';
 
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping, caseStatusVariants } from './CaseStatus';
@@ -43,7 +36,9 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
               <Accordion.Item key={event.id} value={event.id}>
                 <Accordion.Title className="flex w-full flex-row items-center">
                   <span className="mr-2">{Icon}</span>
-                  <span className="flex-1 text-start">{Title}</span>
+                  <span className="line-clamp-1 flex-1 text-start">
+                    {Title}
+                  </span>
                   <span className="text-s text-grey-25 mx-4 font-normal">
                     {formatDateRelative(event.created_at, {
                       language,
@@ -76,71 +71,76 @@ function displayedEventTypes(event: CaseEvent) {
   ].includes(event.event_type);
 }
 
-function IconContainer({
+function EventIcon({
   className,
-  children,
+  icon,
 }: {
-  children: React.ReactNode;
+  icon: IconName;
   className?: string;
 }) {
   return (
     <div
       className={cx(
-        'text-m flex h-6 w-6 items-center justify-center rounded-full',
+        'flex h-6 w-6 items-center justify-center rounded-full',
         className,
       )}
     >
-      {children}
+      <Icon icon={icon} className="h-4 w-4" />
     </div>
   );
 }
+
 export function getEventIcon(event: CaseEvent) {
   const { event_type } = event;
   switch (event_type) {
     case 'case_created':
       return (
-        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
-          <CaseManager />
-        </IconContainer>
+        <EventIcon
+          className="border-grey-10 bg-grey-00 text-grey-100 border"
+          icon="case-manager"
+        />
       );
     case 'comment_added':
       return (
-        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
-          <CreateNewFolder />
-        </IconContainer>
+        <EventIcon
+          className="border-grey-10 bg-grey-00 text-grey-100 border"
+          icon="create-new-folder"
+        />
       );
     case 'decision_added':
       return (
-        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
-          <Decision />
-        </IconContainer>
+        <EventIcon
+          className="border-grey-10 bg-grey-00 text-grey-100 border"
+          icon="decision"
+        />
       );
     case 'tags_updated':
     case 'name_updated':
     case 'inbox_changed':
       return (
-        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
-          <Edit />
-        </IconContainer>
+        <EventIcon
+          className="border-grey-10 bg-grey-00 text-grey-100 border"
+          icon="edit"
+        />
       );
     case 'status_updated': {
       const newStatus = event.new_value;
       return (
-        <IconContainer
+        <EventIcon
           className={caseStatusVariants({
             color: caseStatusMapping[newStatus].color,
             variant: 'contained',
           })}
-        >
-          <ManageSearch />
-        </IconContainer>
+          icon="manage-search"
+        />
       );
     }
     case 'file_added':
       return (
-        <IconContainer className="border-grey-10 bg-grey-00 text-grey-100 border">
-          <Attachment />
-        </IconContainer>
+        <EventIcon
+          className="border-grey-10 bg-grey-00 text-grey-100 border"
+          icon="attachment"
+        />
       );
   }
 }

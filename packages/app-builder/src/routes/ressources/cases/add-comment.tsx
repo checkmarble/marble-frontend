@@ -11,7 +11,7 @@ import { useFetcher } from '@remix-run/react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
-import { Send } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -108,7 +108,7 @@ export function AddComment(
         className="h-14"
         aria-label={t('cases:case_detail.add_a_comment.post')}
       >
-        <Send className="text-m" />
+        <Icon icon="send" className="h-4 w-4 shrink-0" />
       </Button>
     </fetcher.Form>
   );

@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { ScrollArea } from 'ui-design-system';
-import { ArrowLeft } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 function PageContainer({
   className,
@@ -106,7 +106,7 @@ function PageBackButton({
       )}
       {...props}
     >
-      <ArrowLeft />
+      <Icon icon="arrow-left" className="h-5 w-5" />
     </div>
   );
 }

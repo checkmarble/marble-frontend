@@ -1,7 +1,7 @@
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
-import { ArrowLeft, ArrowRight } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const paginationSchema = z.object({
@@ -68,10 +68,10 @@ export const PaginationButtons = ({
         variant="secondary"
         disabled={start === 1}
       >
-        <ArrowLeft />
+        <Icon icon="arrow-left" className="h-4 w-4" />
       </Button>
       <Button onClick={fetchNext} variant="secondary" disabled={end === total}>
-        <ArrowRight />
+        <Icon icon="arrow-right" className="h-4 w-4" />
       </Button>
     </div>
   );

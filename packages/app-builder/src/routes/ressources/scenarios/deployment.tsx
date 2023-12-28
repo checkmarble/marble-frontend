@@ -16,7 +16,7 @@ import {
   Modal,
   Tooltip,
 } from 'ui-design-system';
-import { Play, Pushtolive, Stop, Tick } from 'ui-icons';
+import { Icon, type IconName } from 'ui-icons';
 import * as z from 'zod';
 
 import { setToastMessage } from '../../../components/MarbleToaster';
@@ -157,7 +157,8 @@ function ModalContent({
   return isSuccess ? (
     // In success modal, use data.values.deploymentType (action will update deploymentType to the new state)
     <div className="flex flex-col items-center p-6 text-center">
-      <Tick
+      <Icon
+        icon="tick"
         width="108px"
         height="108px"
         className="bg-purple-10 border-purple-10 mb-6 rounded-full border-8 text-purple-100"
@@ -248,7 +249,7 @@ function ModalContent({
             type="submit"
             {...buttonConfig.props}
           >
-            <buttonConfig.icon.submit height="24px" width="24px" />
+            <Icon icon={buttonConfig.icon.submit} className="h-6 w-6" />
             {t(buttonConfig.label)}
           </Button>
         </div>
@@ -274,7 +275,7 @@ const DeploymentModal = ({
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button {...buttonConfig.props}>
-          <buttonConfig.icon.trigger height="24px" width="24px" />
+          <Icon icon={buttonConfig.icon.trigger} className="h-6 w-6" />
           {t(buttonConfig.label)}
         </Button>
       </Modal.Trigger>
@@ -302,7 +303,7 @@ const DisabledDeploymentButton = ({
       content={t('common:errors.draft.invalid')}
     >
       <Button {...buttonConfig.props} disabled>
-        <buttonConfig.icon.trigger height="24px" width="24px" />
+        <Icon icon={buttonConfig.icon.trigger} className="h-6 w-6" />
         {t(buttonConfig.label)}
       </Button>
     </Tooltip.Default>
@@ -355,8 +356,8 @@ function getDeploymentType(
 function getButtonConfig(type: DeploymentType): {
   props: Pick<ButtonProps, 'color'>;
   icon: {
-    trigger: typeof Play;
-    submit: typeof Play;
+    trigger: IconName;
+    submit: IconName;
   };
   label: ParseKeys<['scenarios']>;
 } {
@@ -365,19 +366,19 @@ function getButtonConfig(type: DeploymentType): {
       return {
         label: 'scenarios:deployment_modal.activate.button',
         props: { color: 'purple' },
-        icon: { trigger: Pushtolive, submit: Play },
+        icon: { trigger: 'pushtolive', submit: 'play' },
       };
     case 'deactivate':
       return {
         label: 'scenarios:deployment_modal.deactivate.button',
         props: { color: 'red' },
-        icon: { trigger: Stop, submit: Stop },
+        icon: { trigger: 'stop', submit: 'stop' },
       };
     case 'reactivate':
       return {
         label: 'scenarios:deployment_modal.reactivate.button',
         props: { color: 'purple' },
-        icon: { trigger: Pushtolive, submit: Play },
+        icon: { trigger: 'pushtolive', submit: 'play' },
       };
   }
 }

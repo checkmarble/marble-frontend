@@ -3,7 +3,7 @@ import { type Direction } from '@radix-ui/react-scroll-area';
 import { type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 import { createContext, forwardRef, useContext, useEffect } from 'react';
-import { Arrow2Down, Tick } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 import { selectTrigger } from '../Select/Select';
@@ -89,7 +89,10 @@ const Arrow = forwardRef<HTMLSpanElement, Ariakit.SelectArrowProps>(
         ref={ref}
         {...props}
         render={
-          <Arrow2Down className="pointer-events-none flex items-center justify-center text-[24px] group-aria-expanded:rotate-180" />
+          <Icon
+            icon="arrow-2-down"
+            className="pointer-events-none flex items-center justify-center text-[24px] group-aria-expanded:rotate-180"
+          />
         }
       />
     );
@@ -164,12 +167,12 @@ const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
         {isMultiple ? (
           <Ariakit.SelectItemCheck
             className={clsx(
-              'bg-grey-00 border-grey-10 flex h-4 w-4 shrink-0 items-center justify-center overflow-hidden rounded-sm border outline-none',
+              'bg-grey-00 border-grey-10 flex shrink-0 items-center justify-center overflow-hidden rounded-sm border outline-none',
               'group-aria-disabled:bg-grey-10 group-aria-disabled:text-grey-100',
               'group-aria-selected:text-grey-00 group-aria-selected:border-purple-100 group-aria-selected:bg-purple-100',
             )}
           >
-            <Tick />
+            <Icon icon="tick" />
           </Ariakit.SelectItemCheck>
         ) : null}
         {props.children || props.value}

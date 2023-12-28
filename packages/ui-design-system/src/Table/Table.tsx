@@ -10,7 +10,7 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
 import { useRef } from 'react';
-import { Arrow2Down, Arrow2Up } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 
@@ -110,8 +110,8 @@ function Header<TData extends RowData>({
                       )}
                     </p>
                     {{
-                      asc: <Arrow2Up width="24px" height="24px" />,
-                      desc: <Arrow2Down width="24px" height="24px" />,
+                      asc: <Icon icon="arrow-2-up" className="h-6 w-6" />,
+                      desc: <Icon icon="arrow-2-down" className="h-6 w-6" />,
                     }[header.column.getIsSorted() as string] ?? null}
                     <div
                       className={clsx(

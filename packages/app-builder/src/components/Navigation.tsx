@@ -33,7 +33,7 @@ export function SidebarLink({ Icon, labelTKey, to }: SidebarLinkProps) {
 
   return (
     <NavLink className={({ isActive }) => sidebarLink({ isActive })} to={to}>
-      <Icon height="24px" width="24px" className="shrink-0" />
+      <Icon className="h-6 w-6 shrink-0" />
       <span className="line-clamp-1 text-left opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
         {t(labelTKey)}
       </span>
@@ -58,7 +58,7 @@ export function SidebarButton({
   return (
     <li>
       <button className={sidebarLink({ className })} {...props}>
-        <Icon height="24px" width="24px" className="shrink-0" />
+        <Icon className="h-6 w-6 shrink-0" />
         <span className="line-clamp-1 text-left opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
           {t(labelTKey)}
         </span>
@@ -88,7 +88,7 @@ export function ScenariosLink({ Icon, labelTKey, to }: SidebarLinkProps) {
       }
       to={to}
     >
-      <Icon className="text-[24px]" />
+      <Icon className="h-6 w-6 shrink-0" />
       {t(labelTKey)}
     </NavLink>
   );

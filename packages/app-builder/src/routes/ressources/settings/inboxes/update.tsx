@@ -15,7 +15,7 @@ import { type InboxDto } from 'marble-api';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { Edit } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 import { redirectRouteOptions } from './create';
@@ -90,7 +90,7 @@ export function UpdateInbox({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
         <Button className="w-fit whitespace-nowrap">
-          <Edit width={'24px'} height={'24px'} />
+          <Icon icon="edit" className="h-6 w-6" />
           {t('settings:inboxes.update_inbox')}
         </Button>
       </Modal.Trigger>

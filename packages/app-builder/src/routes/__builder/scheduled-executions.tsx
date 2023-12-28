@@ -10,7 +10,7 @@ import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { ScheduledExecution } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', ...scheduledExecutionI18n] satisfies Namespace,
@@ -36,7 +36,7 @@ export default function ScheduledExecutions() {
   return (
     <Page.Container>
       <Page.Header>
-        <ScheduledExecution className="mr-2" height="24px" width="24px" />
+        <Icon icon="scheduled-execution" className="mr-2 h-6 w-6" />
         {t('navigation:scheduledExecutions')}
       </Page.Header>
 

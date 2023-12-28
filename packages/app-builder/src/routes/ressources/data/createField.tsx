@@ -24,7 +24,7 @@ import {
   Modal,
   Select,
 } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -153,7 +153,7 @@ export function CreateField({ tableId }: { tableId: string }) {
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
         <Button>
-          <Plus width={'24px'} height={'24px'} />
+          <Icon icon="plus" className="h-6 w-6" />
           {t('data:create_field.title')}
         </Button>
       </Modal.Trigger>

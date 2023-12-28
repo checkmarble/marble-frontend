@@ -5,19 +5,18 @@
   "scripts": {
     "lint": "eslint .",
     "type-check": "npx tsc --noEmit",
-    "generate-icons": "tsx scripts/generate.ts"
+    "generate-icons": "tsx scripts/generate.ts",
+    "generate-sprite": "node scripts/generate.js"
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:^",
-    "@svgr/core": "^8.1.0",
-    "@svgr/plugin-jsx": "^8.1.0",
-    "@svgr/plugin-svgo": "^8.1.0",
     "@types/node": "20.10.3",
     "@types/react": "18.2.42",
+    "@types/svg-sprite": "^0.0.38",
     "eslint": "~8.55.0",
     "ora": "^7.0.1",
-    "p-map": "^7.0.0",
     "react": "18.2.0",
+    "svg-sprite": "^2.0.2",
     "tsx": "^4.6.2"
   },
   "author": "",

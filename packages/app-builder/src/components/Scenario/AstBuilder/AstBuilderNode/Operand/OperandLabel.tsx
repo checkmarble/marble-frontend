@@ -1,7 +1,7 @@
 import { type LabelledAst } from '@app-builder/models';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Tip } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import {
   getDataTypeIcon,
@@ -25,21 +25,22 @@ export function TypeInfos({
   const { t } = useTranslation('scenarios');
   const typeInfos = [
     {
-      Icon: getOperatorTypeIcon(operandType),
+      icon: getOperatorTypeIcon(operandType),
       tKey: getOperatorTypeTKey(operandType),
     },
     {
-      Icon: getDataTypeIcon(dataType),
+      icon: getDataTypeIcon(dataType),
       tKey: getDataTypeTKey(dataType),
     },
   ];
 
-  if (typeInfos.filter(({ Icon }) => !!Icon).length === 0) return null;
+  if (typeInfos.filter(({ icon }) => icon !== undefined).length === 0)
+    return null;
 
   return (
     <div className="flex flex-row gap-1">
-      {typeInfos.map(({ Icon, tKey }) => {
-        if (!Icon) return null;
+      {typeInfos.map(({ icon, tKey }) => {
+        if (!icon) return null;
         return (
           <div
             key={tKey}
@@ -49,8 +50,8 @@ export function TypeInfos({
             )}
           >
             <Icon
-              width="16px"
-              height="16px"
+              icon={icon}
+              className="h-4 w-4"
               aria-label={tKey ? t(tKey) : undefined}
             />
           </div>
@@ -110,7 +111,10 @@ export const OperandLabel = ({
         sideOffset={16}
         alignOffset={-16}
       >
-        <Tip className="shrink-0 text-[21px] text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100" />
+        <Icon
+          icon="tip"
+          className="h-5 w-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
+        />
       </OperandTooltip>
     </div>
   );

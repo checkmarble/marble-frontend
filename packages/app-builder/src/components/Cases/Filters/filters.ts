@@ -1,16 +1,16 @@
 import { assertNever } from 'typescript-utils';
-import { CalendarMonth, Category } from 'ui-icons';
+import { type IconName } from 'ui-icons';
 
 export const casesFilterNames = ['dateRange', 'statuses'] as const;
 
 export type CasesFilterName = (typeof casesFilterNames)[number];
 
-export function getFilterIcon(filterName: CasesFilterName) {
+export function getFilterIcon(filterName: CasesFilterName): IconName {
   switch (filterName) {
     case 'dateRange':
-      return CalendarMonth;
+      return 'calendar-month';
     case 'statuses':
-      return Category;
+      return 'category';
     default:
       assertNever('[CasesFilterName] unknown filter:', filterName);
   }

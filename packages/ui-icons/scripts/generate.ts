@@ -1,12 +1,13 @@
-import { transform } from '@svgr/core';
 import { mkdir, readdir, readFile, rm, writeFile } from 'fs/promises';
 import ora from 'ora';
-import pMap from 'p-map';
-import { join, parse } from 'path';
+import { basename, join } from 'path';
 import prettier from 'prettier';
+import { type Stream } from 'stream';
+import SVGSpriter from 'svg-sprite';
 
-const OUT_DIR = join(process.cwd(), '/src');
-const IN_DIR = join(process.cwd(), '/svgs');
+const OUT_DIR = join(process.cwd(), '/src/generated');
+const IN_ICONS_DIR = join(process.cwd(), '/svgs/icons/');
+const IN_LOGOS_DIR = join(process.cwd(), '/svgs/logos');
 
 async function getPrettierOptions() {
   const options = await prettier.resolveConfig(OUT_DIR);
@@ -16,78 +17,136 @@ async function getPrettierOptions() {
   };
 }
 
-function getComponentName(svgFileName: string) {
-  return parse(svgFileName).name.replace(/(?:^|-|_)(.)/g, ($1) =>
-    $1.toUpperCase().replace(/-|_/, ''),
+async function buildIconTypeFile(svgFileNames: string[]) {
+  const icons = svgFileNames.map((file) => basename(file, '.svg'));
+  const output = `export const iconNames = [
+${icons.map((icon) => `  "${icon}",`).join('\n')}
+] as const;
+
+export type IconName = typeof iconNames[number];
+`;
+
+  await writeFile(
+    join(OUT_DIR, 'icon-names.ts'),
+    await prettier.format(output, await getPrettierOptions()),
   );
 }
 
-async function buildIcon(svgFileName: string) {
-  const svgCode = await readFile(join(IN_DIR, svgFileName), {
-    encoding: 'utf-8',
+async function buildIconSvgSprite(svgFileNames: string[]) {
+  const spriter = new SVGSpriter({
+    dest: OUT_DIR,
+    mode: {
+      symbol: true,
+    },
+    shape: {
+      transform: [
+        {
+          svgo: {
+            //@ts-expect-error svg-sprite types are not up to date
+            plugins: [
+              {
+                name: 'convertColors',
+                params: {
+                  currentColor: true,
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
   });
 
-  const componentName = getComponentName(svgFileName);
+  for (const svgFileName of svgFileNames) {
+    const svgPath = join(IN_ICONS_DIR, svgFileName);
+    const svgCode = await readFile(svgPath, {
+      encoding: 'utf-8',
+    });
 
-  const component = await transform(
-    svgCode,
-    {
-      jsxRuntime: 'automatic',
-      icon: true,
-      typescript: true,
-      plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
-      replaceAttrValues: {
-        '#080525': 'currentColor',
-        '#1C1B1F': 'currentColor',
-        '#D9D9D9': 'currentColor',
-        '#F8BA03': 'currentColor',
-      },
-      svgoConfig: {
-        plugins: ['prefixIds'],
-      },
-    },
-    { componentName },
-  );
+    spriter.add(svgPath, null, svgCode);
+  }
+
+  const { result } = (await spriter.compileAsync()) as {
+    result: { symbol: { sprite: { contents: Stream } } };
+  };
+  const contents = result.symbol.sprite.contents;
+
+  await writeFile(join(OUT_DIR, 'icons-svg-sprite.svg'), contents);
+}
+
+async function buildLogoTypeFile(svgFileNames: string[]) {
+  const logos = svgFileNames.map((file) => basename(file, '.svg'));
+  const output = `export const logoNames = [
+${logos.map((logo) => `  "${logo}",`).join('\n')}
+] as const;
+
+export type LogoName = typeof logoNames[number];
+`;
 
   await writeFile(
-    join(OUT_DIR, `${componentName}.tsx`),
-    await prettier.format(component, await getPrettierOptions()),
+    join(OUT_DIR, 'logo-names.ts'),
+    await prettier.format(output, await getPrettierOptions()),
   );
 }
 
-async function buildIndex(svgFileNames: string[]) {
-  const indexFileContent = svgFileNames
-    .map(getComponentName)
-    .sort()
-    .map(
-      (componentName) =>
-        `export { default as ${componentName} } from './${componentName}';`,
-    )
-    .join('\n');
+async function buildLogoSvgSprite(svgFileNames: string[]) {
+  const spriter = new SVGSpriter({
+    dest: OUT_DIR,
+    mode: {
+      symbol: true,
+    },
+    shape: {
+      transform: [
+        {
+          svgo: {},
+        },
+      ],
+    },
+  });
 
-  await writeFile(
-    join(OUT_DIR, 'index.ts'),
-    await prettier.format(indexFileContent, await getPrettierOptions()),
-  );
+  for (const svgFileName of svgFileNames) {
+    const svgPath = join(IN_LOGOS_DIR, svgFileName);
+    const svgCode = await readFile(svgPath, {
+      encoding: 'utf-8',
+    });
+
+    spriter.add(svgPath, null, svgCode);
+  }
+
+  const { result } = (await spriter.compileAsync()) as {
+    result: { symbol: { sprite: { contents: Stream } } };
+  };
+  const contents = result.symbol.sprite.contents;
+
+  await writeFile(join(OUT_DIR, 'logos-svg-sprite.svg'), contents);
 }
 
 async function generateIcons() {
-  const spinner = ora('Start generating icons...').start();
+  const spinner = ora('Start generating svg sprites...').start();
 
   try {
-    const svgFileNames = (await readdir(IN_DIR)).filter((fileName) =>
+    const iconsSVGFileNames = (await readdir(IN_ICONS_DIR)).filter((fileName) =>
       fileName.endsWith('.svg'),
     );
+    await Promise.all([
+      buildIconSvgSprite(iconsSVGFileNames),
+      buildIconTypeFile(iconsSVGFileNames),
+    ]);
 
-    await pMap(svgFileNames, async (svgFileName) => buildIcon(svgFileName), {
-      concurrency: 20,
-    });
+    spinner.succeed(`${iconsSVGFileNames.length} icons succesfully generated`);
 
-    await buildIndex(svgFileNames);
+    const logosSVGFileNames = (await readdir(IN_LOGOS_DIR)).filter((fileName) =>
+      fileName.endsWith('.svg'),
+    );
+    await Promise.all([
+      buildLogoSvgSprite(logosSVGFileNames),
+      buildLogoTypeFile(logosSVGFileNames),
+    ]);
+    spinner.succeed(`${logosSVGFileNames.length} logos succesfully generated`);
 
-    spinner.succeed(`${svgFileNames.length} icons succesfully generated`);
+    spinner.succeed(`svg sprites succesfully generated`);
   } catch (error) {
-    spinner.fail('Fail to generate icons');
+    spinner.fail('Fail to generate svg sprites');
     throw error;
   }
 }

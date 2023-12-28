@@ -1,6 +1,5 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { type LabelledAst } from '@app-builder/models';
-import { Tip } from 'ui-icons';
 
 import { OperandDescription, OperandTooltip } from '../../OperandTooltip';
 import { getDataTypeIcon, Option } from './Option';
@@ -14,13 +13,11 @@ export function OperandOption({
   option: LabelledAst;
   onSelect: () => void;
 }) {
-  const DataTypeIcon = getDataTypeIcon(option.dataType);
+  const dataTypeIcon = getDataTypeIcon(option.dataType);
   return (
     <Option.Container onSelect={onSelect} className="group">
-      {DataTypeIcon ? (
-        <Option.Icon className="col-start-1">
-          <DataTypeIcon />
-        </Option.Icon>
+      {dataTypeIcon ? (
+        <Option.Icon className="col-start-1" icon={dataTypeIcon} />
       ) : null}
       <Option.Value className="col-start-2">
         <Highlight text={option.name} query={searchText} />
@@ -40,9 +37,10 @@ export function OperandOption({
         sideOffset={24}
         alignOffset={-8}
       >
-        <Option.Icon className="group-radix-highlighted:text-purple-50 group-radix-highlighted:hover:text-purple-100 text-transparent">
-          <Tip />
-        </Option.Icon>
+        <Option.Icon
+          className="group-radix-highlighted:text-purple-50 group-radix-highlighted:hover:text-purple-100 text-transparent"
+          icon="tip"
+        />
       </OperandTooltip>
     </Option.Container>
   );

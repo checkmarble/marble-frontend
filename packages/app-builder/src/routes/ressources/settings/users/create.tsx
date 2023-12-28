@@ -13,7 +13,7 @@ import { type Namespace, type ParseKeys } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -69,7 +69,7 @@ export function CreateUser({ orgId }: { orgId: string }) {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button onClick={(e) => e.stopPropagation()}>
-          <Plus width={'24px'} height={'24px'} />
+          <Icon icon="plus" className="h-6 w-6" />
           {t('settings:users.new_user')}
         </Button>
       </Modal.Trigger>

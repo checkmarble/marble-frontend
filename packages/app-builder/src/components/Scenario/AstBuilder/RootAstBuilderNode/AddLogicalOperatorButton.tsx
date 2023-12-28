@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 type AddLogicalOperatorButtonProps = React.ComponentProps<'button'> & {
   operator: 'and' | 'or';
@@ -23,7 +23,7 @@ export const AddLogicalOperatorButton = React.forwardRef<
       {...props}
       ref={ref}
     >
-      <Plus className="text-m" />
+      <Icon icon="plus" className="h-4 w-4" />
       {t(`scenarios:logical_operator.${operator}_button`)}
     </button>
   );

@@ -5,7 +5,7 @@ import { type ActionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
-import { GoogleLogo } from 'ui-icons';
+import { Logo } from 'ui-icons';
 
 export function loader() {
   return redirect('/login');
@@ -30,7 +30,7 @@ function SignInWithGoogleButton({ onClick }: { onClick?: () => void }) {
       }}
     >
       <div className="bg-grey-00 flex h-full w-10 items-center justify-center rounded-l-[3px]">
-        <GoogleLogo height="24px" width="24px" />
+        <Logo logo="google-logo" className="h-6 w-6" />
       </div>
       <span className="text-s text-grey-00 w-full whitespace-nowrap text-center align-middle font-medium">
         {t('login:sign_in.google')}

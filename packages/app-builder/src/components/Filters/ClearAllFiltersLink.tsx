@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CtaClassName } from 'ui-design-system';
-import { Cross } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { filtersI18n } from './filters-i18n';
 
@@ -22,7 +22,7 @@ export const ClearAllFiltersLink = forwardRef<
       ref={ref}
       {...props}
     >
-      <Cross className="text-l" />
+      <Icon icon="cross" className="h-5 w-5" />
       <span className="line-clamp-1 capitalize">
         {t('filters:clear_filters')}
       </span>

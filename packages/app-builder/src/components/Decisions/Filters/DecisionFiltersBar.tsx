@@ -8,6 +8,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { decisionsI18n } from '../decisions-i18n';
 import {
@@ -46,14 +47,14 @@ export function DecisionFiltersBar() {
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row flex-wrap gap-2">
           {definedDecisionFilterNames.map((filterName) => {
-            const Icon = getFilterIcon(filterName);
+            const icon = getFilterIcon(filterName);
             const tKey = getFilterTKey(filterName);
 
             return (
               <FilterPopover.Root key={filterName} onOpenChange={onOpenChange}>
                 <FilterItem.Root>
                   <FilterItem.Trigger>
-                    <Icon className="text-l" />
+                    <Icon icon={icon} className="h-5 w-5" />
                     <span className="text-s font-semibold first-letter:capitalize">
                       {t(tKey)}
                     </span>

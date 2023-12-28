@@ -14,7 +14,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -80,7 +80,7 @@ export function CreateTag() {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button onClick={(e) => e.stopPropagation()}>
-          <Plus width={'24px'} height={'24px'} />
+          <Icon icon="plus" className="h-6 w-6" />
           {t('settings:tags.new_tag')}
         </Button>
       </Modal.Trigger>

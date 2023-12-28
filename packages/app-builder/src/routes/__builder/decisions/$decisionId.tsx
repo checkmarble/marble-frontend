@@ -26,7 +26,7 @@ import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
@@ -103,7 +103,7 @@ function AddToCase({ decisionIds }: { decisionIds: string[] }) {
       }}
     >
       <Button>
-        <Plus />
+        <Icon icon="plus" />
         {t('decisions:add_to_case')}
       </Button>
     </DecisionRightPanel.Trigger>

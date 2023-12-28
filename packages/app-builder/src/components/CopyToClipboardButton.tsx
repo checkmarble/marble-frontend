@@ -1,6 +1,6 @@
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { type ComponentPropsWithoutRef, forwardRef } from 'react';
-import { Duplicate } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const CopyToClipboardButton = forwardRef<
   HTMLDivElement,
@@ -17,7 +17,7 @@ export const CopyToClipboardButton = forwardRef<
       {...props}
     >
       {children}
-      <Duplicate className="text-m" />
+      <Icon icon="duplicate" className="h-4 w-4" />
     </div>
   );
 });

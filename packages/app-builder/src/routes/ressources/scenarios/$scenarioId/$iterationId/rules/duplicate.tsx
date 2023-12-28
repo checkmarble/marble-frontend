@@ -7,7 +7,7 @@ import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Modal } from 'ui-design-system';
-import { Copy } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -61,7 +61,7 @@ export function DuplicateRule({
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button variant="secondary" className="w-fit">
-          <Copy width={'24px'} height={'24px'} />
+          <Icon icon="copy" className="h-6 w-6" />
           <p>{t('scenarios:clone_rule.button')}</p>
         </Button>
       </Modal.Trigger>
@@ -84,7 +84,7 @@ export function DuplicateRule({
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
               <div className="bg-purple-10 mb-8 box-border rounded-[90px] p-4">
-                <Copy width={'64px'} height={'64px'} />
+                <Icon icon="copy" className="h-16 w-16 text-purple-100" />
               </div>
               <h1 className="text-l font-semibold">
                 {t('scenarios:clone_rule.title')}
@@ -103,7 +103,7 @@ export function DuplicateRule({
                 type="submit"
                 name="confirm"
               >
-                <Copy width={'24px'} height={'24px'} />
+                <Icon icon="copy" className="h-6 w-6" />
                 {t('scenarios:clone_rule.confirmation_button')}
               </Button>
             </div>

@@ -6,7 +6,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Modal } from 'ui-design-system';
-import { Delete } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -71,7 +71,7 @@ export function DeleteListValue({
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
               <div className="bg-red-10 mb-6 box-border rounded-[90px] p-4">
-                <Delete width={'64px'} height={'64px'} color="red" />
+                <Icon icon="delete" className="h-16 w-16 text-red-100" />
               </div>
               <h1 className="text-l font-semibold">
                 {t('lists:delete_value.title')}
@@ -95,7 +95,7 @@ export function DeleteListValue({
                 type="submit"
                 name="delete"
               >
-                <Delete width={'24px'} height={'24px'} />
+                <Icon icon="delete" className="h-6 w-6" />
                 <p>{t('common:delete')}</p>
               </Button>
             </div>

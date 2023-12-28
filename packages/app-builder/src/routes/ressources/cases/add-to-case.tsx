@@ -30,7 +30,7 @@ import {
 } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select, Switch } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -264,7 +264,7 @@ const NewCaseFields = ({
         )}
       />
       <Button type="submit">
-        <Plus />
+        <Icon icon="plus" className="h-5 w-5" />
         {t('decisions:add_to_case.create_new_case')}
       </Button>
     </>
@@ -299,7 +299,7 @@ const AddToCaseFields = ({ control }: { control: Control<AddToCaseForm> }) => {
         )}
       />
       <Button type="submit">
-        <Plus />
+        <Icon icon="plus" className="h-5 w-5" />
         {t('decisions:add_to_case')}
       </Button>
     </>

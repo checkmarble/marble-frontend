@@ -25,7 +25,7 @@ import {
   ExternalScripts,
 } from 'remix-utils';
 import { Tooltip } from 'ui-design-system';
-import { LogoStandard } from 'ui-icons';
+import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
@@ -37,6 +37,8 @@ import tailwindStyles from './tailwind.css';
 import { getClientEnvVars } from './utils/environment.server';
 
 export const links: LinksFunction = () => [
+  { rel: 'preload', href: logosSVGSpriteHref, as: 'image' },
+  { rel: 'preload', href: iconsSVGSpriteHref, as: 'image' },
   { rel: 'stylesheet', href: tailwindStyles },
   { rel: 'stylesheet', href: '/fonts/Inter/inter.css' },
   {
@@ -122,10 +124,9 @@ export function ErrorBoundary() {
           <div className="flex h-full w-full flex-col items-center bg-[url('/img/login_background.svg')] bg-no-repeat">
             <div className="flex h-full max-h-80 flex-col justify-center">
               <a href="/login">
-                <LogoStandard
-                  className="w-auto"
-                  width={undefined}
-                  height="40px"
+                <Logo
+                  logo="logo-standard"
+                  className="h-10 w-auto"
                   preserveAspectRatio="xMinYMid meet"
                   aria-labelledby="marble"
                 />

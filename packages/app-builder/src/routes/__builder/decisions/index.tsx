@@ -36,7 +36,7 @@ import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
-import { Decision, Plus, Search } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
@@ -130,7 +130,7 @@ export default function Decisions() {
     <DecisionRightPanel.Root>
       <Page.Container>
         <Page.Header>
-          <Decision className="mr-2" height="24px" width="24px" />
+          <Icon icon="decision" className="mr-2 h-6 w-6" />
           {t('navigation:decisions')}
         </Page.Header>
 
@@ -194,7 +194,7 @@ function AddToCase({
   return (
     <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
       <Button disabled={!hasSelection}>
-        <Plus />
+        <Icon icon="plus" className="h-5 w-5" />
         {t('decisions:add_to_case')}
       </Button>
     </DecisionRightPanel.Trigger>
@@ -226,7 +226,7 @@ function SearchById() {
         placeholder={t('decisions:search.placeholder')}
         value={decisionId ?? ''}
         onChange={(e) => setDecisionId(e.target.value)}
-        startAdornment={<Search />}
+        startAdornment="search"
       />
       <Button type="submit" disabled={!decisionId}>
         {t('common:search')}

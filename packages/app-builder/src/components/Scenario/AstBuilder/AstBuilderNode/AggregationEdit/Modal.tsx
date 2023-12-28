@@ -240,15 +240,15 @@ const AggregationEditModalContent = ({
   return (
     <>
       <Modal.Title>
-        {t('scenarios:edit_aggregation.title')}
-        <Logo
-          className="m-1 ml-2 inline-block max-h-10"
-          height="100%"
-          preserveAspectRatio="xMinYMid meet"
-        />{' '}
-        <span className="text-grey-50 text-xs font-light">
-          {t('scenarios:edit_aggregation.subtitle')}
-        </span>
+        <div className="flex flex-row items-center justify-center gap-3">
+          {t('scenarios:edit_aggregation.title')}
+          <div className="flex flex-row items-center justify-center gap-1">
+            <Logo logo="logo" className="h-4 w-4" />
+            <span className="text-grey-50 text-xs font-light">
+              {t('scenarios:edit_aggregation.subtitle')}
+            </span>
+          </div>
+        </div>
       </Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-1 flex-col gap-4">

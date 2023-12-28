@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker/locale/en';
 import { type Meta, type StoryFn } from '@storybook/react';
 import {
   type ColumnDef,

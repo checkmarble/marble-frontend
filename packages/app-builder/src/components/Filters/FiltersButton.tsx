@@ -2,7 +2,7 @@ import { clsx } from 'clsx';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, type ButtonProps } from 'ui-design-system';
-import { Filters } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { filtersI18n } from './filters-i18n';
 
@@ -18,7 +18,7 @@ export const FiltersButton = forwardRef<
       ref={ref}
       {...props}
     >
-      <Filters className="text-l" />
+      <Icon icon="filters" className="h-5 w-5" />
       <span className="text-s font-semibold first-letter:capitalize">
         {t('filters:filters')}
       </span>

@@ -16,13 +16,7 @@ import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils';
 import { Button, Modal, Table, useVirtualTable } from 'ui-design-system';
-import {
-  Cross,
-  Help as HelpIcon,
-  Plus as PlusIcon,
-  RestartAlt,
-  Tick,
-} from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'upload'] satisfies Namespace,
@@ -182,7 +176,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
             <p>{t('upload:drop_file_cta')}</p>
             <p className="text-grey-25 uppercase">{t('common:or')}</p>
             <Button>
-              <PlusIcon height="24px" width="24px" />
+              <Icon icon="plus" className="h-6 w-6" />
               {t('upload:pick_file_cta')}
             </Button>
           </>
@@ -210,13 +204,14 @@ const ResultModal = ({
   objectType: string;
 }) => {
   const { t } = useTranslation(handle.i18n);
-  const Icon = modalContent.success ? Tick : Cross;
+  const icon = modalContent.success ? 'tick' : 'cross';
 
   return (
     <Modal.Root open={isOpen} onOpenChange={onOpenChange}>
       <Modal.Content>
         <div className="bg-grey-00 text-s flex flex-col items-center gap-6 p-6">
           <Icon
+            icon={icon}
             width="108px"
             height="108px"
             className={clsx(
@@ -243,7 +238,7 @@ const ResultModal = ({
           <Modal.Close asChild>
             <div className="flex justify-center">
               <Button>
-                <Tick height="24px" width="24px" />
+                <Icon icon="tick" className="h-6 w-6" />
                 {t('common:understand')}
               </Button>
             </div>
@@ -322,9 +317,9 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
 
 const getStatusIcon = (status: string) => {
   if (status === 'success') {
-    return <Tick className="text-green-100" height="24px" width="24px" />;
+    return <Icon icon="tick" className="h-6 w-6 text-green-100" />;
   }
-  return <RestartAlt className="text-grey-50" height="24px" width="24px" />;
+  return <Icon icon="restart-alt" className="text-grey-50 h-6 w-6" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['upload']> => {
@@ -341,7 +336,7 @@ export default function Upload() {
   return (
     <Page.Container>
       <Page.Header>
-        <HelpIcon className="mr-2" height="24px" width="24px" />
+        <Icon icon="help" className="mr-2 h-6 w-6" />
         {t('upload:upload_cta', { replace: { objectType } })}
       </Page.Header>
       <Page.Content>
@@ -362,7 +357,7 @@ export default function Upload() {
                   'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100',
                 )}
               >
-                <HelpIcon className="mr-2" height="24px" width="24px" />
+                <Icon icon="help" className="mr-2 h-6 w-6" />
                 {t('upload:download_template_cta')}
               </a>
             )}
@@ -395,7 +390,7 @@ const LoadingButton = () => {
   const { t } = useTranslation(handle.i18n);
   return (
     <Button variant="secondary" className="cursor-wait">
-      <HelpIcon className="mr-2" height="24px" width="24px" />
+      <Icon icon="help" className="mr-2 h-6 w-6" />
       {t('upload:download_template_cta')}
     </Button>
   );

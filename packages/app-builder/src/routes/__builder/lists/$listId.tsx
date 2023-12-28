@@ -23,7 +23,7 @@ import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Table, useVirtualTable } from 'ui-design-system';
-import { Delete, Search } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export async function loader({ request, params }: LoaderArgs) {
   const { authService } = serverServices;
@@ -78,7 +78,7 @@ export default function Lists() {
                     name="delete"
                     tabIndex={-1}
                   >
-                    <Delete width={'24px'} height={'24px'} />
+                    <Icon icon="delete" className="h-6 w-6 shrink-0" />
                   </button>
                 </DeleteListValue>
               ) : null}
@@ -131,7 +131,7 @@ export default function Lists() {
                 type="search"
                 aria-label={t('common:search')}
                 placeholder={t('common:search')}
-                startAdornment={<Search />}
+                startAdornment="search"
                 onChange={(event) => {
                   virtualTable.table.setGlobalFilter(event.target.value);
                 }}
