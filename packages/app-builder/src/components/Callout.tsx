@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Lightbulb } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const variants = ['info', 'error'] as const;
 
@@ -38,7 +38,7 @@ export function Callout({
 
   return (
     <div className={callout({ color, variant, className })}>
-      <Lightbulb height="24px" width="24px" className="shrink-0" />
+      <Icon icon="lightbulb" className="h-6 w-6 shrink-0" />
       {children}
     </div>
   );

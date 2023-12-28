@@ -1,7 +1,7 @@
 import { SidebarButton } from '@app-builder/components';
 import { type CurrentUser } from '@app-builder/models';
 import { type Organization } from '@app-builder/models/organization';
-import { Helpcenter } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { getFullName } from '../user';
 
@@ -16,7 +16,7 @@ export function ChatlioWidget({
     <>
       <SidebarButton
         labelTKey="navigation:helpCenter"
-        Icon={Helpcenter}
+        Icon={(props) => <Icon icon="helpcenter" {...props} />}
         onClick={() => {
           window._chatlio?.configure?.({
             collapsedMode: 'hidden',

@@ -4,7 +4,7 @@ import {
   ScenariosLink,
   usePermissionsContext,
 } from '@app-builder/components';
-import { withCornerPing } from '@app-builder/components/Ping';
+import { CornerPing } from '@app-builder/components/Ping';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/__builder/scenarios/$scenarioId';
@@ -26,7 +26,7 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 import { Tag } from 'ui-design-system';
-import { Decision, Rules, Trigger } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -126,14 +126,13 @@ export default function ScenarioEditLayout() {
                 aria-invalid={hasTriggerErrors(scenarioValidation)}
                 labelTKey="navigation:scenario.trigger"
                 to="./trigger"
-                Icon={
-                  hasTriggerErrors(scenarioValidation)
-                    ? withCornerPing({
-                        children: <Trigger />,
-                        variant: 'top-right',
-                      })
-                    : Trigger
-                }
+                Icon={(props) => (
+                  <ScenariosLinkIcon
+                    {...props}
+                    icon="trigger"
+                    withPing={hasTriggerErrors(scenarioValidation)}
+                  />
+                )}
               />
             </li>
             <li>
@@ -141,14 +140,13 @@ export default function ScenarioEditLayout() {
                 aria-invalid={hasRulesErrors(scenarioValidation)}
                 labelTKey="navigation:scenario.rules"
                 to="./rules"
-                Icon={
-                  hasRulesErrors(scenarioValidation)
-                    ? withCornerPing({
-                        children: <Rules />,
-                        variant: 'top-right',
-                      })
-                    : Rules
-                }
+                Icon={(props) => (
+                  <ScenariosLinkIcon
+                    {...props}
+                    icon="rules"
+                    withPing={hasRulesErrors(scenarioValidation)}
+                  />
+                )}
               />
             </li>
             <li>
@@ -156,14 +154,13 @@ export default function ScenarioEditLayout() {
                 aria-invalid={hasDecisionErrors(scenarioValidation)}
                 labelTKey="navigation:scenario.decision"
                 to="./decision"
-                Icon={
-                  hasDecisionErrors(scenarioValidation)
-                    ? withCornerPing({
-                        children: <Decision />,
-                        variant: 'top-right',
-                      })
-                    : Decision
-                }
+                Icon={(props) => (
+                  <ScenariosLinkIcon
+                    {...props}
+                    icon="decision"
+                    withPing={hasDecisionErrors(scenarioValidation)}
+                  />
+                )}
               />
             </li>
           </ul>
@@ -172,4 +169,18 @@ export default function ScenarioEditLayout() {
       </ScenarioPage.Content>
     </ScenarioPage.Container>
   );
+}
+
+function ScenariosLinkIcon({
+  withPing,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof Icon> & { withPing: boolean }) {
+  if (withPing) {
+    return (
+      <CornerPing position="top-right">
+        <Icon {...props} />
+      </CornerPing>
+    );
+  }
+  return <Icon {...props} />;
 }

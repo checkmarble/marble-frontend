@@ -2,6 +2,7 @@ import { type EnumValue, type LabelledAst } from '@app-builder/models';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Icon } from 'ui-icons';
 
 import {
   getDataTypeIcon,
@@ -117,11 +118,11 @@ function TypeInfos({
   const { t } = useTranslation(['scenarios']);
   const typeInfos = [
     {
-      Icon: getOperatorTypeIcon(operandType),
+      icon: getOperatorTypeIcon(operandType),
       tKey: getOperatorTypeTKey(operandType),
     },
     {
-      Icon: getDataTypeIcon(dataType),
+      icon: getDataTypeIcon(dataType),
       tKey: getDataTypeTKey(dataType),
     },
   ];
@@ -129,14 +130,14 @@ function TypeInfos({
 
   return (
     <div className="flex flex-row gap-2">
-      {typeInfos.map(({ Icon, tKey }) => {
+      {typeInfos.map(({ icon, tKey }) => {
         if (!tKey) return null;
         return (
           <span
             key={tKey}
             className="inline-flex items-center gap-[2px] text-xs font-normal text-purple-50"
           >
-            {Icon ? <Icon className="text-[12px]" /> : null}
+            {icon ? <Icon icon={icon} className="h-3 w-3" /> : null}
             {t(tKey, { count: 1 })}
           </span>
         );

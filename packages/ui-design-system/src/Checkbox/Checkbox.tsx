@@ -1,10 +1,10 @@
 import { type CheckboxProps, Indicator, Root } from '@radix-ui/react-checkbox';
 import { cva } from 'class-variance-authority';
 import { forwardRef } from 'react';
-import { CheckIndeterminateSmall, Tick } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 const checkbox = cva(
-  'disabled:bg-grey-10 bg-grey-00 hover:bg-purple-05 radix-state-checked:border-none radix-state-checked:bg-purple-100 text-grey-00 flex h-6 w-6 shrink-0 items-center justify-center rounded border text-[24px] outline-none',
+  'disabled:bg-grey-10 bg-grey-00 hover:bg-purple-05 radix-state-checked:border-none radix-state-checked:bg-purple-100 flex h-6 w-6 shrink-0 items-center justify-center rounded border outline-none',
   {
     variants: {
       color: {
@@ -28,13 +28,13 @@ export const Checkbox = forwardRef<
       checked={checked}
       {...props}
     >
-      <Indicator>
+      <Indicator className="h-6 w-6" asChild>
         {checked === undefined ? (
-          <Tick />
+          <Icon icon="tick" className="text-grey-00" />
         ) : checked === true ? (
-          <Tick />
+          <Icon icon="tick" className="text-grey-00" />
         ) : checked === 'indeterminate' ? (
-          <CheckIndeterminateSmall />
+          <Icon icon="check-indeterminate-small" className="text-purple-100" />
         ) : null}
       </Indicator>
     </Root>

@@ -4,8 +4,8 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderArgs, redirect } from '@remix-run/node';
-import CaseManager from 'packages/ui-icons/src/CaseManager';
 import { useTranslation } from 'react-i18next';
+import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -30,7 +30,7 @@ export default function Cases() {
   return (
     <Page.Container>
       <Page.Header>
-        <CaseManager className="mr-2" height="24px" width="24px" />
+        <Icon icon="case-manager" className="mr-2 h-6 w-6" />
         {t('navigation:caseManager')}
       </Page.Header>
       <Page.Content>

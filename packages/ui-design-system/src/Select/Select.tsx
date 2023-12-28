@@ -1,6 +1,6 @@
 import {
   Content,
-  Icon,
+  Icon as SelectIcon,
   Item,
   ItemText,
   Portal,
@@ -20,7 +20,7 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
-import { Arrow2Down, Arrow2Up } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 function SelectContent({
   children,
@@ -37,12 +37,12 @@ function SelectContent({
         position="popper"
         {...props}
       >
-        <ScrollUpButton className="flex justify-center">
-          <Arrow2Up />
+        <ScrollUpButton className="flex h-6 justify-center">
+          <Icon icon="arrow-2-up" />
         </ScrollUpButton>
         {children}
-        <ScrollDownButton className="flex justify-center">
-          <Arrow2Down />
+        <ScrollDownButton className="flex h-6 justify-center">
+          <Icon icon="arrow-2-down" />
         </ScrollDownButton>
       </Content>
     </Portal>
@@ -145,9 +145,12 @@ const SelectValue = forwardRef<HTMLDivElement, SelectValueProps>(
 );
 
 const SelectArrow = () => (
-  <Icon className="group-radix-state-open:rotate-180">
-    <Arrow2Down height="24px" width="24px" />
-  </Icon>
+  <SelectIcon
+    className="group-radix-state-open:rotate-180 h-6 w-6 shrink-0"
+    asChild
+  >
+    <Icon icon="arrow-2-down" />
+  </SelectIcon>
 );
 
 export type SelectProps = RawSelectProps &

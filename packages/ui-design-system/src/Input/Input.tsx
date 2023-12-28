@@ -1,6 +1,7 @@
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+import { Icon, type IconName } from 'ui-icons';
 
 import { type inputBorderColor } from './Input.constants';
 
@@ -22,8 +23,8 @@ export const input = cva(
 
 export interface InputProps extends React.ComponentPropsWithoutRef<'input'> {
   borderColor?: (typeof inputBorderColor)[number];
-  startAdornment?: JSX.Element;
-  endAdornment?: JSX.Element;
+  startAdornment?: IconName;
+  endAdornment?: IconName;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
@@ -52,22 +53,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         <div
           className={clsx(
             'pointer-events-none absolute flex items-center',
-            'text-grey-50 peer-focus:text-grey-100 text-[24px]',
+            'text-grey-50 peer-focus:text-grey-100',
             'inset-y-0 left-0 pl-2',
           )}
         >
-          {startAdornment}
+          <Icon icon={startAdornment} className="h-6 w-6" />
         </div>
       ) : null}
       {endAdornment ? (
         <div
           className={clsx(
             'pointer-events-none absolute flex items-center',
-            'text-grey-50 peer-focus:text-grey-100 text-[24px]',
+            'text-grey-50 peer-focus:text-grey-100',
             'inset-y-0 right-0 pr-2',
           )}
         >
-          {endAdornment}
+          <Icon icon={endAdornment} className="h-6 w-6" />
         </div>
       ) : null}
     </div>

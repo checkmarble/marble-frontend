@@ -9,7 +9,7 @@ import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { CaseManager, Inbox } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'cases', ...casesI18n] satisfies Namespace,
@@ -34,13 +34,13 @@ export default function Cases() {
   return (
     <Page.Container>
       <Page.Header>
-        <CaseManager className="mr-2" height="24px" width="24px" />
+        <Icon icon="case-manager" className="mr-2 h-6 w-6" />
         {t('navigation:caseManager')}
       </Page.Header>
       <div className="flex h-full flex-row">
-        <div className="border-r-grey-10 flex h-full w-full max-w-[300px] flex-col border-r p-4">
+        <div className="border-r-grey-10 flex h-full w-fit min-w-[200px] flex-col border-r p-4">
           <div className="flex flex-row items-center gap-2 pb-4">
-            <Inbox />
+            <Icon icon="inbox" className="h-5 w-5" />
             <p className="font-bold">{t('cases:case.inboxes')}</p>
           </div>
           <div className="flex flex-col gap-1 pb-6">

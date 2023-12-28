@@ -4,7 +4,7 @@ import { type ParseKeys } from 'i18next';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
-import { Function } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { createRightPanel, type RightPanelRootProps } from '../RightPanel';
 import { scenarioI18n } from './scenario-i18n';
@@ -87,7 +87,7 @@ function ScenarioRightPanelContent({ data }: { data: State['data'] }) {
   return (
     <RightPanel.Content className="flex max-w-xs flex-col gap-4 p-4 lg:max-w-sm lg:gap-6 lg:p-6">
       <RightPanel.Title>
-        <Function height="24px" width="24px" />
+        <Icon icon="function" className="h-6 w-6" />
         <span className="w-full capitalize">
           {t(titleK[data.type]) ?? data.type}
         </span>

@@ -28,7 +28,7 @@ import qs from 'qs';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', ...casesI18n] satisfies Namespace,
@@ -130,7 +130,7 @@ export default function Cases() {
                 </CasesFiltersMenu>
                 <CaseRightPanel.Trigger asChild data={{ inboxId }}>
                   <Button>
-                    <Plus />
+                    <Icon icon="plus" className="h-5 w-5" />
                     {t('cases:case.new_case')}
                   </Button>
                 </CaseRightPanel.Trigger>

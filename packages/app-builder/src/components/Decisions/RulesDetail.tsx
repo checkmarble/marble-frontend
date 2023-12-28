@@ -4,7 +4,7 @@ import { type ParseKeys } from 'i18next';
 import { type Decision } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { Accordion, Collapsible, Tag, type TagProps } from 'ui-design-system';
-import { Tip } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const RulesDetail = ({ rules }: { rules: Decision['rules'] }) => {
   const { t } = useTranslation(decisionsI18n);
@@ -61,7 +61,7 @@ const RuleWithDescription = ({
       </Accordion.Title>
       <Accordion.Content>
         <div className="bg-purple-10 mt-4 flex gap-2 rounded p-4 text-purple-100">
-          <Tip height="20px" width="20px" />
+          <Icon icon="tip" className="h-5 w-5" />
           <div className="flex flex-col gap-2">
             <div className="font-semibold">
               {t('decisions:rules.description')}

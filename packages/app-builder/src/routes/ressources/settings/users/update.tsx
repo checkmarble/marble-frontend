@@ -14,7 +14,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { Edit } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 import { roleOptions } from './create';
@@ -72,9 +72,9 @@ export function UpdateUser({ user }: { user: User }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Edit
-          width="24px"
-          height="24px"
+        <Icon
+          icon="edit"
+          className="h-6 w-6 shrink-0"
           aria-label={t('settings:users.update_user')}
         />
       </Modal.Trigger>

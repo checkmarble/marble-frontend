@@ -17,7 +17,7 @@ import { type CustomList } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
-import { Lists } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderArgs) {
   const { authService } = serverServices;
@@ -72,7 +72,7 @@ export default function ListsPage() {
   return (
     <Page.Container>
       <Page.Header>
-        <Lists className="mr-2" height="24px" width="24px" />
+        <Icon icon="lists" className="mr-2 h-6 w-6" />
         {t('navigation:lists')}
       </Page.Header>
       <Page.Content scrollable={false}>

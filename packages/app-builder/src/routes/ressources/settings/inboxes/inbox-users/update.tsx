@@ -16,7 +16,7 @@ import { type InboxUserDto } from 'marble-api';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { Edit } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -84,9 +84,9 @@ export function UpdateInboxUser({ inboxUser }: { inboxUser: InboxUserDto }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Edit
-          width="24px"
-          height="24px"
+        <Icon
+          icon="edit"
+          className="h-6 w-6 shrink-0"
           aria-label={t('settings:tags.update_tag')}
         />
       </Modal.Trigger>

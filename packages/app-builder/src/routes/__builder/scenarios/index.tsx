@@ -8,7 +8,7 @@ import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
-import { Scenarios } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['scenarios', 'navigation'] satisfies Namespace,
@@ -33,7 +33,7 @@ export default function ScenariosPage() {
   return (
     <Page.Container>
       <Page.Header>
-        <Scenarios className="mr-2" height="24px" width="24px" />
+        <Icon icon="scenarios" className="mr-2 h-6 w-6" />
         {t('navigation:scenarios')}
       </Page.Header>
       <Page.Content>

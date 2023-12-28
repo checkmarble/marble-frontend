@@ -1,6 +1,7 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';
+import { Icon } from 'ui-icons';
 
 const GroupContext = createSimpleContext<{ labelId: string }>('GroupContext');
 
@@ -36,8 +37,11 @@ function GroupHeaderContainer({
   );
 }
 
-function GroupHeaderIcon({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={clsx('text-l shrink-0', className)} {...props} />;
+function GroupHeaderIcon({
+  className,
+  ...props
+}: React.ComponentProps<typeof Icon>) {
+  return <Icon className={clsx('h-5 w-5 shrink-0', className)} {...props} />;
 }
 
 function GroupHeaderTitle({

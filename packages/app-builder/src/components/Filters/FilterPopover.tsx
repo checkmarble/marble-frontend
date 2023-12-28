@@ -1,7 +1,7 @@
 import * as Popover from '@radix-ui/react-popover';
 import clsx from 'clsx';
 import { type ComponentPropsWithoutRef, forwardRef } from 'react';
-import { Cross } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 const FilterPopoverContent = forwardRef<
   HTMLDivElement,
@@ -77,7 +77,7 @@ const FilterItemClear = forwardRef<
       )}
       {...props}
     >
-      <Cross className="text-l text-purple-100" />
+      <Icon icon="cross" className="h-5 w-5 shrink-0 text-purple-100" />
     </button>
   );
 });

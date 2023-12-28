@@ -1,5 +1,5 @@
 import { assertNever } from 'typescript-utils';
-import { AltRoute, CalendarMonth, Category, Scenarios } from 'ui-icons';
+import { type IconName } from 'ui-icons';
 
 export const decisionFilterNames = [
   'dateRange',
@@ -10,16 +10,16 @@ export const decisionFilterNames = [
 
 export type DecisionFilterName = (typeof decisionFilterNames)[number];
 
-export function getFilterIcon(filterName: DecisionFilterName) {
+export function getFilterIcon(filterName: DecisionFilterName): IconName {
   switch (filterName) {
     case 'dateRange':
-      return CalendarMonth;
+      return 'calendar-month';
     case 'scenarioId':
-      return Scenarios;
+      return 'scenarios';
     case 'outcome':
-      return Category;
+      return 'category';
     case 'triggerObject':
-      return AltRoute;
+      return 'alt-route';
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
   }

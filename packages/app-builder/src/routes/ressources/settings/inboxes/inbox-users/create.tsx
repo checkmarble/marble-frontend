@@ -16,7 +16,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
-import { NewInbox, Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -86,7 +86,7 @@ export function CreateInboxUser({ inboxId }: { inboxId: string }) {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
         <Button>
-          <Plus width={'24px'} height={'24px'} />
+          <Icon icon="plus" className="h-6 w-6" />
           {t('settings:inboxes.inbox_details.add_member')}
         </Button>
       </Modal.Trigger>
@@ -173,7 +173,7 @@ export function CreateInboxUserContent({
             type="submit"
             name="create"
           >
-            <NewInbox />
+            <Icon icon="new-inbox" className="h-6 w-6" />
             {t('settings:inboxes.inbox_details.create_user')}
           </Button>
         </div>

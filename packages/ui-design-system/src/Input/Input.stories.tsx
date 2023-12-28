@@ -1,15 +1,8 @@
 import { type Meta, type StoryFn } from '@storybook/react';
-import { Calendar, Help, Scenarios, Search } from 'ui-icons';
+import { iconNames } from 'ui-icons';
 
 import { Input } from './Input';
 import { inputBorderColor } from './Input.constants';
-
-const adornments = {
-  Calendar: <Calendar />,
-  Help: <Help />,
-  Scenarios: <Scenarios />,
-  Search: <Search />,
-};
 
 const Story: Meta<typeof Input> = {
   component: Input,
@@ -22,15 +15,13 @@ const Story: Meta<typeof Input> = {
       options: inputBorderColor,
     },
     startAdornment: {
-      options: Object.keys(adornments),
-      mapping: adornments,
+      options: iconNames,
       control: {
         type: 'select',
       },
     },
     endAdornment: {
-      options: Object.keys(adornments),
-      mapping: adornments,
+      options: iconNames,
       control: {
         type: 'select',
       },

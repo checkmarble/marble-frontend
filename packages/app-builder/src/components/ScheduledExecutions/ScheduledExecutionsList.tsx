@@ -6,7 +6,7 @@ import { type ScheduledExecution } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
-import { Cross, RestartAlt, Tick } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { scheduledExecutionI18n } from './scheduledExecution-i18n';
 import { ScheduledExecutionDetails } from './ScheduledExecutionDetails';
@@ -101,12 +101,12 @@ export function ScheduledExecutionsList({
 
 const getStatusIcon = (status: string) => {
   if (status === 'success') {
-    return <Tick className="text-green-100" height="24px" width="24px" />;
+    return <Icon icon="tick" className="h-6 w-6 text-green-100" />;
   }
   if (status === 'failure') {
-    return <Cross className="text-red-100" height="24px" width="24px" />;
+    return <Icon icon="cross" className="h-6 w-6 text-red-100" />;
   }
-  return <RestartAlt className="text-grey-50" height="24px" width="24px" />;
+  return <Icon icon="restart-alt" className="text-grey-50 h-6 w-6" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['scheduledExecution']> => {

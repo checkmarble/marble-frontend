@@ -14,7 +14,7 @@ import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from 'ui-design-system';
-import { Tip } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -87,7 +87,10 @@ export function EditCaseTags({
 
         <Tooltip.Root delayDuration={0}>
           <Tooltip.Trigger tabIndex={-1}>
-            <Tip className="text-l text-grey-10 outline-none transition-colors hover:text-purple-100" />
+            <Icon
+              icon="tip"
+              className="text-grey-10 h-5 w-5 shrink-0 outline-none transition-colors hover:text-purple-100"
+            />
           </Tooltip.Trigger>
           <Tooltip.Portal>
             <Tooltip.Content

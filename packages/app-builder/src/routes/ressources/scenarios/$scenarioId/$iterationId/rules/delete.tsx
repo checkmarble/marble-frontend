@@ -7,7 +7,7 @@ import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Modal } from 'ui-design-system';
-import { Delete } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -57,7 +57,7 @@ export function DeleteRule({
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button color="red" className="w-fit">
-          <Delete width={'24px'} height={'24px'} />
+          <Icon icon="delete" className="h-6 w-6" />
           <p>{t('scenarios:delete_rule.button')}</p>
         </Button>
       </Modal.Trigger>
@@ -76,7 +76,7 @@ export function DeleteRule({
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
               <div className="bg-red-10 mb-6 box-border rounded-[90px] p-4">
-                <Delete width={'64px'} height={'64px'} color="red" />
+                <Icon icon="delete" className="h-16 w-16 text-red-100" />
               </div>
               <h1 className="text-l font-semibold">
                 {t('scenarios:delete_rule.title')}
@@ -98,7 +98,7 @@ export function DeleteRule({
                 type="submit"
                 name="delete"
               >
-                <Delete width={'24px'} height={'24px'} />
+                <Icon icon="delete" className="h-6 w-6" />
                 {t('common:delete')}
               </Button>
             </div>

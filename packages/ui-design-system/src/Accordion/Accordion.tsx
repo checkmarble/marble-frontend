@@ -8,8 +8,8 @@ import {
   Trigger,
 } from '@radix-ui/react-accordion';
 import clsx from 'clsx';
-import { type ComponentPropsWithoutRef, forwardRef } from 'react';
-import { Arrow2Down } from 'ui-icons';
+import { forwardRef, type SVGProps } from 'react';
+import { Icon } from 'ui-icons';
 
 const AccordionContainer = ({
   children,
@@ -44,17 +44,13 @@ const AccordionTitle = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
   },
 );
 
-function AccordionArrow({
-  className,
-  ...props
-}: ComponentPropsWithoutRef<typeof Arrow2Down>) {
+function AccordionArrow({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
-    <Arrow2Down
+    <Icon
+      icon="arrow-2-down"
       aria-hidden
-      height="24px"
-      width="24px"
       className={clsx(
-        'group-radix-state-closed:rotate-180 rounded transition-transform',
+        'group-radix-state-closed:rotate-180 h-6 w-6 rounded transition-transform',
         className,
       )}
       {...props}

@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 import { noop } from 'typescript-utils';
-import { Cross } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export type RightPanelContext = {
   open: boolean;
@@ -103,7 +103,7 @@ export function createRightPanel(name: string) {
     return (
       <Dialog.Close asChild onClick={onClose}>
         <button aria-label="Close">
-          <Cross height="24px" width="24px" />
+          <Icon icon="cross" className="h-6 w-6" />
         </button>
       </Dialog.Close>
     );

@@ -8,7 +8,7 @@ import {
 } from '@radix-ui/react-collapsible';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
-import { SmallarrowUp } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
   function CollapsibleContainer({ className, ...props }, ref) {
@@ -38,11 +38,10 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
         {...props}
       >
         {children}
-        <SmallarrowUp
+        <Icon
+          icon="smallarrow-up"
           aria-hidden
-          height="24px"
-          width="24px"
-          className="border-grey-10 group-radix-state-open:rotate-180 rounded border transition-transform duration-200"
+          className="border-grey-10 group-radix-state-open:rotate-180 h-6 w-6 rounded border transition-transform duration-200"
         />
       </Trigger>
     );

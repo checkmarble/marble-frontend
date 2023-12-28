@@ -8,7 +8,7 @@ import { type InboxDto } from 'marble-api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { Delete } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -59,9 +59,9 @@ export function DeleteInbox({
           disabled={disabled}
           className="w-fit"
         >
-          <Delete
-            width="24px"
-            height="24px"
+          <Icon
+            icon="delete"
+            className="h-6 w-6"
             aria-label={t('settings:inboxes.delete_inbox')}
           />
           {t('settings:inboxes.delete_inbox')}
@@ -103,7 +103,7 @@ const DeleteInboxContent = ({ inboxId }: { inboxId: string }) => {
             type="submit"
             name="delete"
           >
-            <Delete width={'24px'} height={'24px'} />
+            <Icon icon="delete" className="h-6 w-6" />
             {t('common:delete')}
           </Button>
         </div>

@@ -12,7 +12,7 @@ import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { Attachment, Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'navigation', ...casesI18n] satisfies Namespace,
@@ -36,7 +36,7 @@ export function UploadFile({ caseDetail }: { caseDetail: CaseDetail }) {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button className="w-fit whitespace-nowrap" variant="secondary">
-          <Attachment className="text-l" />
+          <Icon icon="attachment" className="h-5 w-5" />
           {t('cases:add_file')}
         </Button>
       </Modal.Trigger>
@@ -145,7 +145,7 @@ function UploadFileContent({
               <p>{t('cases:drop_file_accepted_types')}</p>
               <p className="text-grey-25 uppercase">{t('common:or')}</p>
               <Button>
-                <Plus height="24px" width="24px" />
+                <Icon icon="plus" className="h-6 w-6" />
                 {t('cases:pick_file_cta')}
               </Button>
             </>

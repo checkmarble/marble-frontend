@@ -12,15 +12,13 @@ export function ConstantOption({
   onSelect: () => void;
 }) {
   const { t } = useTranslation('scenarios');
-  const DataTypeIcon = getDataTypeIcon(constant.dataType);
+  const dataTypeIcon = getDataTypeIcon(constant.dataType);
   const constantDataTypeTKey = getConstantDataTypeTKey(constant.dataType);
 
   return (
     <Option.Container onSelect={onSelect}>
-      {DataTypeIcon ? (
-        <Option.Icon className="col-start-1">
-          <DataTypeIcon />
-        </Option.Icon>
+      {dataTypeIcon ? (
+        <Option.Icon className="col-start-1" icon={dataTypeIcon} />
       ) : null}
       <div className="col-span-2 col-start-2 flex justify-between gap-1">
         <Option.Value className="line-clamp-1 text-ellipsis">

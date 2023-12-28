@@ -7,7 +7,6 @@ import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 import type * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ArrowRight } from 'ui-icons';
 
 import { Count, Group, GroupHeader, Label } from './Group';
 import { OperandDropdownMenu } from './OperandDropdownMenu';
@@ -74,9 +73,7 @@ export function OperandEditorDiscoveryResults({
               operandType="Enum"
               operandsCount={enumOptions.length}
             />
-            <GroupHeader.Icon>
-              <ArrowRight />
-            </GroupHeader.Icon>
+            <GroupHeader.Icon icon="arrow-right" />
           </GroupHeader.Container>
         </OperandDiscoverySubmenu>
       ) : null}
@@ -111,9 +108,7 @@ export function OperandEditorDiscoveryResults({
                 </Label>
                 <Count>{options.length}</Count>
               </GroupHeader.Title>
-              <GroupHeader.Icon>
-                <ArrowRight />
-              </GroupHeader.Icon>
+              <GroupHeader.Icon icon="arrow-right" />
             </GroupHeader.Container>
           </OperandDiscoverySubmenu>
         ))}
@@ -125,9 +120,7 @@ export function OperandEditorDiscoveryResults({
             operandType="CustomList"
             operandsCount={customListOptions.length}
           />
-          <GroupHeader.Icon>
-            <ArrowRight />
-          </GroupHeader.Icon>
+          <GroupHeader.Icon icon="arrow-right" />
         </GroupHeader.Container>
       </OperandDiscoverySubmenu>
 
@@ -137,9 +130,7 @@ export function OperandEditorDiscoveryResults({
             operandType="Function"
             operandsCount={functionOptions.length}
           />
-          <GroupHeader.Icon>
-            <ArrowRight />
-          </GroupHeader.Icon>
+          <GroupHeader.Icon icon="arrow-right" />
         </GroupHeader.Container>
       </OperandDiscoverySubmenu>
     </>
@@ -154,15 +145,13 @@ function OperandDiscoveryTitle({
   operandsCount: number;
 }) {
   const { t } = useTranslation('scenarios');
-  const Icon = getOperatorTypeIcon(operandType);
+  const icon = getOperatorTypeIcon(operandType);
   const tKey = getOperatorTypeTKey(operandType);
 
   return (
     <>
-      {Icon ? (
-        <GroupHeader.Icon className="text-purple-100">
-          <Icon />
-        </GroupHeader.Icon>
+      {icon ? (
+        <GroupHeader.Icon className="text-purple-100" icon={icon} />
       ) : null}
       {tKey ? (
         <GroupHeader.Title>

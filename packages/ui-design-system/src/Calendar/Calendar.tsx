@@ -5,7 +5,7 @@ import {
   type DayPickerRangeProps,
   type DayPickerSingleProps,
 } from 'react-day-picker';
-import { ArrowLeft, ArrowRight } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { CtaClassName } from '../Button/Button';
 
@@ -39,7 +39,7 @@ export function Calendar({
         ),
         nav_button_previous: 'absolute left-0',
         nav_button_next: 'absolute right-0',
-        nav_icon: 'text-l absolute m-auto',
+        nav_icon: 'absolute m-auto h-5 w-5',
         table: 'w-full border-none',
         head_row: 'flex w-full',
         head_cell:
@@ -63,8 +63,8 @@ export function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ArrowLeft,
-        IconRight: ArrowRight,
+        IconLeft: (props) => <Icon icon="arrow-left" {...props} />,
+        IconRight: (props) => <Icon icon="arrow-right" {...props} />,
       }}
       {...props}
     />

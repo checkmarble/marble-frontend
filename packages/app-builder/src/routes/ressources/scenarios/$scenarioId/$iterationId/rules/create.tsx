@@ -6,7 +6,7 @@ import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,
@@ -64,7 +64,7 @@ export function CreateRule({
       )}/rules/create`}
     >
       <Button type="submit" disabled={fetcher.state === 'submitting'}>
-        <Plus width={'24px'} height={'24px'} />
+        <Icon icon="plus" className="h-6 w-6" />
         {t('scenarios:create_rule.title')}
       </Button>
     </fetcher.Form>

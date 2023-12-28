@@ -28,7 +28,7 @@ import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
-import { Edit, Harddrive, Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'data'] satisfies Namespace,
@@ -155,7 +155,7 @@ function TableDetails({
               {canEditDataModel ? (
                 <EditField key={cell.row.original.id} field={cell.row.original}>
                   <div className="text-grey-00 group-hover:text-grey-100 group-hover:bg-grey-02 group-hover:border-grey-50 group-hover:hover:bg-grey-05 group-hover:active:bg-grey-10 relative cursor-pointer rounded border bg-transparent p-2 transition-colors ease-in-out">
-                    <Edit width={'24px'} height={'24px'} />
+                    <Icon icon="edit" className="h-6 w-6" />
                   </div>
                 </EditField>
               ) : null}
@@ -241,7 +241,17 @@ function TableDetails({
     <CollapsiblePaper.Container>
       <CollapsiblePaper.Title>
         <span className="flex flex-1">{tableModel.name}</span>
-        {canEditDataModel ? <CreateField tableId={tableModel.id} /> : null}
+        {canEditDataModel ? (
+          // eslint-disable-next-line
+          <span
+            onClick={(e) => {
+              //necessary to prevent the click on the button to trigger the collapsible
+              e.stopPropagation();
+            }}
+          >
+            <CreateField tableId={tableModel.id} />
+          </span>
+        ) : null}
         {canIngestData ? (
           <NavLink
             className={clsx(
@@ -252,7 +262,7 @@ function TableDetails({
               objectType: tableModel.name,
             })}
           >
-            <Plus width={'24px'} height={'24px'} />
+            <Icon icon="plus" className="h-6 w-6" />
             {t('data:upload_data')}
           </NavLink>
         ) : null}
@@ -266,10 +276,9 @@ function TableDetails({
                   <FormatDescription
                     description={tableModel.description || ''}
                   />
-                  <Edit
-                    className="text-grey-00 group-hover:text-grey-100 relative bg-transparent transition-colors ease-in-out"
-                    width={'24px'}
-                    height={'24px'}
+                  <Icon
+                    icon="edit"
+                    className="text-grey-00 group-hover:text-grey-100 relative h-6 w-6 bg-transparent transition-colors ease-in-out"
                   />
                 </div>
               </EditTable>
@@ -340,7 +349,7 @@ export default function Data() {
     <Page.Container>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center">
-          <Harddrive className="mr-2" height="24px" width="24px" />
+          <Icon icon="harddrive" className="mr-2 h-6 w-6" />
           {t('navigation:data')}
         </div>
       </Page.Header>

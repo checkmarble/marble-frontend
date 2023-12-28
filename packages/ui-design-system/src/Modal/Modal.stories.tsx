@@ -1,5 +1,5 @@
 import { type Meta, type StoryFn } from '@storybook/react';
-import { Pushtolive } from 'ui-icons';
+import { Icon } from 'ui-icons';
 
 import { Button } from '../Button/Button';
 import { Modal } from './Modal';
@@ -26,7 +26,7 @@ const Template: StoryFn<typeof Modal> = (args) => (
             </Button>
           </Modal.Close>
           <Button variant="primary" className="flex-1">
-            <Pushtolive height="24px" width="24px" />
+            <Icon icon="pushtolive" className="h-6 w-6" />
             Publish
           </Button>
         </div>

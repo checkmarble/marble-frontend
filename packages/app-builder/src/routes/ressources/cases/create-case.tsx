@@ -21,7 +21,7 @@ import { type Namespace } from 'i18next';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -170,7 +170,7 @@ export function CreateCase() {
             )}
           />
           <Button type="submit">
-            <Plus />
+            <Icon icon="plus" className="h-6 w-6" />
             {t('cases:case.new_case.create')}
           </Button>
         </div>

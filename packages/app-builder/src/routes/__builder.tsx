@@ -20,23 +20,10 @@ import { json, type LoaderArgs } from '@remix-run/node';
 import { Form, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { type SVGProps, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, ScrollArea } from 'ui-design-system';
-import {
-  Arrow2Down,
-  ArrowRight,
-  CaseManager,
-  Decision,
-  Harddrive,
-  Lists,
-  LogoStandard,
-  Logout,
-  Scenarios,
-  ScheduledExecution,
-  Settings,
-  World,
-} from 'ui-icons';
+import { Icon, Logo } from 'ui-icons';
 
 import { getRoute } from '../utils/routes';
 import { useRefreshToken } from './ressources/auth/refresh';
@@ -87,26 +74,21 @@ export default function Builder() {
                 <Popover.Root>
                   <Popover.Trigger asChild>
                     <button className="hover:bg-grey-05 active:bg-grey-10 group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
-                      <div className="inline-flex">
-                        <LogoStandard
-                          width={undefined}
-                          height={undefined}
-                          aria-labelledby="marble"
-                          viewBox="0 0 80 80"
-                          className="w-6 shrink-0 transition-all group-aria-expanded/nav:w-12"
+                      <div className="inline-flex items-center gap-5">
+                        <Logo
+                          logo="logo"
+                          aria-labelledby="marble logo"
+                          className="h-6 w-6 shrink-0 transition-all group-aria-expanded/nav:h-12 group-aria-expanded/nav:w-12"
                         />
-                        <LogoStandard
-                          width={undefined}
-                          height={undefined}
+                        <Logo
+                          logo="marble"
                           aria-labelledby="marble"
-                          viewBox="80 0 277 80"
-                          className="w-32 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
+                          className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
                         />
                       </div>
-                      <Arrow2Down
-                        className="group-radix-state-open:rotate-180 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
-                        height="24px"
-                        width="24px"
+                      <Icon
+                        icon="arrow-2-down"
+                        className="group-radix-state-open:rotate-180 h-6 w-6 shrink-0 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
                       />
                     </button>
                   </Popover.Trigger>
@@ -149,7 +131,7 @@ export default function Builder() {
                               void segment.reset();
                             }}
                           >
-                            <Logout height="24px" width="24px" />
+                            <Icon icon="logout" className="h-5 w-5" />
                             {t('common:auth.logout')}
                           </Button>
                         </Form>
@@ -166,35 +148,39 @@ export default function Builder() {
                         <SidebarLink
                           labelTKey="navigation:scenarios"
                           to={getRoute('/scenarios')}
-                          Icon={Scenarios}
+                          Icon={(props) => <Icon icon="scenarios" {...props} />}
                         />
                       </li>
                       <li>
                         <SidebarLink
                           labelTKey="navigation:lists"
                           to={getRoute('/lists')}
-                          Icon={Lists}
+                          Icon={(props) => <Icon icon="lists" {...props} />}
                         />
                       </li>
                       <li>
                         <SidebarLink
                           labelTKey="navigation:decisions"
                           to={getRoute('/decisions')}
-                          Icon={Decision}
+                          Icon={(props) => <Icon icon="decision" {...props} />}
                         />
                       </li>
                       <li>
                         <SidebarLink
                           labelTKey="navigation:scheduledExecutions"
                           to={getRoute('/scheduled-executions')}
-                          Icon={ScheduledExecution}
+                          Icon={(props) => (
+                            <Icon icon="scheduled-execution" {...props} />
+                          )}
                         />
                       </li>
                       <li>
                         <SidebarLink
                           labelTKey="navigation:caseManager"
                           to={getRoute('/cases')}
-                          Icon={CaseManager}
+                          Icon={(props) => (
+                            <Icon icon="case-manager" {...props} />
+                          )}
                         />
                       </li>
                     </ul>
@@ -210,14 +196,14 @@ export default function Builder() {
                     <SidebarLink
                       labelTKey="navigation:data"
                       to={getRoute('/data')}
-                      Icon={Harddrive}
+                      Icon={(props) => <Icon icon="harddrive" {...props} />}
                     />
                   </li>
                   <li>
                     <SidebarLink
                       labelTKey="navigation:api"
                       to={getRoute('/api')}
-                      Icon={World}
+                      Icon={(props) => <Icon icon="world" {...props} />}
                     />
                   </li>
                   {isAdmin(user) ? (
@@ -225,7 +211,7 @@ export default function Builder() {
                       <SidebarLink
                         labelTKey="navigation:settings"
                         to={getRoute('/settings')}
-                        Icon={Settings}
+                        Icon={(props) => <Icon icon="settings" {...props} />}
                       />
                     </li>
                   ) : null}
@@ -242,7 +228,16 @@ export default function Builder() {
                           ? 'navigation:collapsed'
                           : 'navigation:expanded'
                       }
-                      Icon={ExpandedIcon}
+                      Icon={({ className, ...props }) => (
+                        <Icon
+                          icon="arrow-right"
+                          className={clsx(
+                            'transition-transform group-aria-expanded/nav:rotate-180',
+                            className,
+                          )}
+                          {...props}
+                        />
+                      )}
                     />
                   </li>
                 </ul>
@@ -254,17 +249,5 @@ export default function Builder() {
         </OrganizationTagsContextProvider>
       </OrganizationUsersContextProvider>
     </PermissionsProvider>
-  );
-}
-
-function ExpandedIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
-  return (
-    <ArrowRight
-      className={clsx(
-        'transition-transform group-aria-expanded/nav:rotate-180',
-        className,
-      )}
-      {...props}
-    />
   );
 }

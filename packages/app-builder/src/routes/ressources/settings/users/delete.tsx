@@ -6,7 +6,7 @@ import { Form } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { Delete } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -40,10 +40,9 @@ export function DeleteUser({
 
   if (userId === currentUserId) {
     return (
-      <Delete
-        width="24px"
-        height="24px"
-        className="group-hover:text-grey-25 cursor-not-allowed"
+      <Icon
+        icon="delete"
+        className="group-hover:text-grey-25 h-6 w-6 shrink-0 cursor-not-allowed"
         aria-label={t('settings:users.delete_user')}
       />
     );
@@ -52,9 +51,9 @@ export function DeleteUser({
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Delete
-          width="24px"
-          height="24px"
+        <Icon
+          icon="delete"
+          className="h-6 w-6 shrink-0"
           aria-label={t('settings:users.delete_user')}
         />
       </Modal.Trigger>
@@ -94,7 +93,7 @@ const DeleteUserContent = ({ userId }: { userId: string }) => {
             type="submit"
             name="delete"
           >
-            <Delete width={'24px'} height={'24px'} />
+            <Icon icon="delete" className="h-6 w-6" />
             {t('common:delete')}
           </Button>
         </div>

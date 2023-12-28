@@ -18,7 +18,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Modal, Select } from 'ui-design-system';
-import { Plus } from 'ui-icons';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -140,7 +140,7 @@ export function CreateLink({
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
         <Button className="w-48" variant="secondary">
-          <Plus width={'24px'} height={'24px'} />
+          <Icon icon="plus" className="h-6 w-6" />
           {t('data:create_link.title')}
         </Button>
       </Modal.Trigger>
