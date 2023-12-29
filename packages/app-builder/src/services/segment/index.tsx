@@ -1,7 +1,7 @@
 import { type CurrentUser } from '@app-builder/models';
 import { useLocation, useMatches } from '@remix-run/react';
 import { useEffect } from 'react';
-import { useHydrated } from 'remix-utils';
+import { useHydrated } from 'remix-utils/use-hydrated';
 
 import getPageViewNameAndProps from './getPageviewNameAndProps';
 

@@ -1,7 +1,7 @@
 import { type PaginatedResponse } from '@app-builder/components';
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { type FiltersWithPagination } from '@app-builder/models/pagination';
-import { add } from 'date-fns';
+import { add } from 'date-fns/add';
 import { type Decision, type Outcome } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
 

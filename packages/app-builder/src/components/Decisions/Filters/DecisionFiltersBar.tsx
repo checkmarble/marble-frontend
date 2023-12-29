@@ -75,7 +75,7 @@ export function DecisionFiltersBar() {
             <AddNewFilterButton />
           </DecisionFiltersMenu>
         </div>
-        <ClearAllFiltersLink to={getRoute('/decisions')} replace />
+        <ClearAllFiltersLink to={getRoute('/decisions/')} replace />
       </div>
     </>
   );

@@ -2,7 +2,7 @@ import { type PaginatedResponse } from '@app-builder/components/PaginationButton
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { adaptCaseDetailDto, type CaseDetail } from '@app-builder/models/cases';
 import { type FiltersWithPagination } from '@app-builder/models/pagination';
-import { add } from 'date-fns';
+import { add } from 'date-fns/add';
 import { type Case, type CaseStatus, type UpdateCaseBody } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
 

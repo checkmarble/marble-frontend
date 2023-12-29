@@ -2,13 +2,14 @@ import { NavLink } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
+import { type IconProps } from 'packages/ui-icons/src/Icon';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const navigationI18n = ['navigation'] satisfies Namespace;
 
 export interface SidebarLinkProps {
-  Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+  Icon: (props: Omit<IconProps, 'icon'>) => JSX.Element;
   labelTKey: ParseKeys<['navigation']>;
   to: string;
 }
@@ -43,7 +44,7 @@ export function SidebarLink({ Icon, labelTKey, to }: SidebarLinkProps) {
 
 export interface SidebarButtonProps
   extends Omit<React.ComponentPropsWithoutRef<'button'>, 'children'> {
-  Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+  Icon: (props: Omit<IconProps, 'icon'>) => JSX.Element;
   labelTKey: ParseKeys<['navigation']>;
 }
 
@@ -56,14 +57,12 @@ export function SidebarButton({
   const { t } = useTranslation(navigationI18n);
 
   return (
-    <li>
-      <button className={sidebarLink({ className })} {...props}>
-        <Icon className="h-6 w-6 shrink-0" />
-        <span className="line-clamp-1 text-left opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-          {t(labelTKey)}
-        </span>
-      </button>
-    </li>
+    <button className={sidebarLink({ className })} {...props}>
+      <Icon className="h-6 w-6 shrink-0" />
+      <span className="line-clamp-1 text-left opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+        {t(labelTKey)}
+      </span>
+    </button>
   );
 }
 

@@ -2,7 +2,7 @@ import {
   createRightPanel,
   type RightPanelRootProps,
 } from '@app-builder/components/RightPanel';
-import { CreateCase } from '@app-builder/routes/ressources/cases/create-case';
+import { CreateCase } from '@app-builder/routes/ressources+/cases+/create-case';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type DialogTriggerProps } from '@radix-ui/react-dialog';
 import { useReducer } from 'react';

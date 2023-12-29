@@ -1,15 +1,15 @@
 import { type AuthErrors } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
-import { json, type LoaderArgs } from '@remix-run/node';
+import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Logo } from 'ui-icons';
 
-import { SignInWithEmail } from './ressources/auth/login-with-email';
-import { LanguagePicker } from './ressources/user/language';
+import { SignInWithEmail } from './ressources+/auth+/login-with-email';
+import { LanguagePicker } from './ressources+/user+/language';
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const {
     authService,
     authSessionService: { getSession },

@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { last } from 'remeda';
-import { ClientOnly } from 'remix-utils';
+import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Collapsible, Table, useVirtualTable } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';

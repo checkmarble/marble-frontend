@@ -4,8 +4,8 @@
  * DO NOT MODIFY - This file has been generated using oazapfts.
  * See https://www.npmjs.com/package/oazapfts
  */
-import * as Oazapfts from "oazapfts/lib/runtime";
-import * as QS from "oazapfts/lib/runtime/query";
+import * as Oazapfts from "oazapfts/lib/runtime/index.js";
+import * as QS from "oazapfts/lib/runtime/query.js";
 export const defaults: Oazapfts.RequestOpts = {
     baseUrl: "http://localhost:8080",
 };

@@ -2,22 +2,22 @@
   "name": "ui-icons",
   "version": "1.0.0",
   "description": "",
+  "sideEffect": false,
+  "type": "module",
   "scripts": {
     "lint": "eslint .",
     "type-check": "npx tsc --noEmit",
-    "generate-icons": "tsx scripts/generate.ts",
-    "generate-sprite": "node scripts/generate.js"
+    "generate-icons": "tsx scripts/generate.ts"
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:^",
-    "@types/node": "20.10.3",
-    "@types/react": "18.2.42",
+    "@types/node": "20.10.6",
+    "@types/react": "18.2.46",
     "@types/svg-sprite": "^0.0.38",
-    "eslint": "~8.55.0",
-    "ora": "^7.0.1",
+    "ora": "^8.0.1",
     "react": "18.2.0",
     "svg-sprite": "^2.0.2",
-    "tsx": "^4.6.2"
+    "tsx": "^4.7.0"
   },
   "author": "",
   "license": "ISC",

@@ -4,7 +4,7 @@ import {
 } from '@app-builder/services/DownloadDecisionsService';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils';
+import { ClientOnly } from 'remix-utils/client-only';
 import { Button } from 'ui-design-system';
 
 import { scheduledExecutionI18n } from './scheduledExecution-i18n';
