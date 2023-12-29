@@ -5,9 +5,6 @@
   "private": true,
   "type": "module",
   "sideEffect": false,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "format:write": "prettier --write .",
     "format:check": "prettier --check .",

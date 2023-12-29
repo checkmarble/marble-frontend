@@ -9,7 +9,7 @@
     "type-check": "npx tsc --noEmit"
   },
   "devDependencies": {
-    "@marble/eslint-config": "workspace:^",
+    "@marble/eslint-config": "workspace:*",
     "tailwindcss": "3.4.0",
     "tailwindcss-radix": "^2.8.0"
   },

@@ -5,7 +5,7 @@
   "sideEffect": false,
   "type": "module",
   "devDependencies": {
-    "@marble/eslint-config": "workspace:^",
+    "@marble/eslint-config": "workspace:*",
     "@types/node": "20.10.6"
   },
   "scripts": {
