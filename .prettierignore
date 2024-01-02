@@ -10,3 +10,6 @@ pnpm-lock.yaml
 
 # marble-api
 /packages/marble-api/src/generated
+
+# ui-design-system
+/packages/ui-design-system/storybook-static/

@@ -3,7 +3,7 @@ import { getClientEnv } from '@app-builder/utils/environment.client';
 import { FirebaseError } from 'firebase/app';
 import { marbleApi } from 'marble-api';
 import { useTranslation } from 'react-i18next';
-import { useAuthenticityToken } from 'remix-utils';
+import { useAuthenticityToken } from 'remix-utils/csrf/react';
 
 export function makeAuthenticationClientService(
   authenticationClientRepository: AuthenticationClientRepository,

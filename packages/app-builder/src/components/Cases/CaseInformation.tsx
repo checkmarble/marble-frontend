@@ -1,7 +1,7 @@
 import { type CurrentUser } from '@app-builder/models';
-import { EditCaseInbox } from '@app-builder/routes/ressources/cases/edit-inbox';
-import { EditCaseName } from '@app-builder/routes/ressources/cases/edit-name';
-import { EditCaseTags } from '@app-builder/routes/ressources/cases/edit-tags';
+import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
+import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
+import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
 import { formatDateTime } from '@app-builder/utils/format';
 import { type Case, type InboxDto } from 'marble-api';
 import { useTranslation } from 'react-i18next';

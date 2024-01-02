@@ -2,24 +2,26 @@
   "name": "marble-front",
   "version": "0.0.0",
   "license": "MIT",
+  "private": true,
+  "type": "module",
+  "sideEffect": false,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "format:write": "prettier --write .",
     "format:check": "prettier --check .",
     "test:all": "vitest"
   },
-  "private": true,
   "devDependencies": {
     "@vitejs/plugin-react": "4.2.1",
-    "@vitest/coverage-v8": "^1.0.1",
-    "@vitest/ui": "1.0.1",
-    "prettier": "^3.1.0",
-    "prettier-plugin-tailwindcss": "^0.5.9",
+    "@vitest/coverage-v8": "^1.1.1",
+    "@vitest/ui": "1.1.1",
+    "prettier": "^3.1.1",
+    "prettier-plugin-tailwindcss": "^0.5.10",
     "react-refresh": "^0.14.0",
-    "typescript": "5.3.2",
-    "vite-tsconfig-paths": "^4.2.1",
-    "vitest": "1.0.1"
-  },
-  "workspaces": [
-    "packages/*"
-  ]
+    "typescript": "5.3.3",
+    "vite-tsconfig-paths": "^4.2.3",
+    "vitest": "1.1.1"
+  }
 }

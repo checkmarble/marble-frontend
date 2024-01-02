@@ -1,11 +1,11 @@
 import {
-  type DataFunctionArgs,
+  createReadableStreamFromReadable,
   type EntryContext,
-  Response,
+  type HandleErrorFunction,
 } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
-import isbot from 'isbot';
+import { isbot } from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
 import { PassThrough } from 'stream';
@@ -28,13 +28,13 @@ export default async function handleRequest(
   );
 
   const App = (
-    // @ts-expect-error: weird TS bug
     <I18nextProvider i18n={i18n}>
       <RemixServer context={remixContext} url={request.url} />
     </I18nextProvider>
   );
 
-  return isbot(request.headers.get('user-agent'))
+  const userAgent = request.headers.get('user-agent');
+  return userAgent && isbot(userAgent)
     ? handleBotRequest(responseStatusCode, responseHeaders, App)
     : handleBrowserRequest(responseStatusCode, responseHeaders, App);
 }
@@ -54,7 +54,7 @@ function handleBotRequest(
         responseHeaders.set('Content-Type', 'text/html');
 
         resolve(
-          new Response(body, {
+          new Response(createReadableStreamFromReadable(body), {
             headers: responseHeaders,
             status: didError ? 500 : responseStatusCode,
           }),
@@ -91,7 +91,7 @@ function handleBrowserRequest(
         responseHeaders.set('Content-Type', 'text/html');
 
         resolve(
-          new Response(body, {
+          new Response(createReadableStreamFromReadable(body), {
             headers: responseHeaders,
             status: didError ? 500 : responseStatusCode,
           }),
@@ -122,14 +122,11 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-export async function handleError(
-  error: unknown,
-  { request }: DataFunctionArgs,
-) {
+export const handleError: HandleErrorFunction = (error, { request }) => {
   if (error instanceof Error) {
-    await Sentry.captureRemixServerException(error, 'remix.server', request);
+    void Sentry.captureRemixServerException(error, 'remix.server', request);
   } else {
     // Optionally capture non-Error objects
     Sentry.captureException(error);
   }
-}
+};

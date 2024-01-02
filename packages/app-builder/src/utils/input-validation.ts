@@ -43,7 +43,7 @@ export async function inputFromForm(request: Request, options?: IParseOptions) {
 }
 
 /**
- * Parse and validate Params from LoaderArgs or ActionArgs. Doesn't throw if validation fails.
+ * Parse and validate Params from LoaderFunctionArgs or ActionFunctionArgs. Doesn't throw if validation fails.
  */
 export async function parseParamsSafe<
   Output,
@@ -61,7 +61,7 @@ export async function parseParamsSafe<
 }
 
 /**
- * Parse and validate Params from LoaderArgs or ActionArgs. Throws if validation fails.
+ * Parse and validate Params from LoaderFunctionArgs or ActionFunctionArgs. Throws if validation fails.
  */
 export async function parseParams<
   Output,

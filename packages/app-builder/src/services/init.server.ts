@@ -4,15 +4,18 @@ import {
   type ServerRepositories,
 } from '@app-builder/repositories/init.server';
 import { getServerEnv } from '@app-builder/utils/environment.server';
+import { CSRF } from 'remix-utils/csrf/server';
 
 import { makeAuthenticationServerService } from './auth/auth.server';
 import { makeSessionService } from './auth/session.server';
 import { makeI18nextServerService } from './i18n/i18next.server';
 
 function makeServerServices(repositories: ServerRepositories) {
-  const csrfSessionService = makeSessionService(
-    repositories.csrfStorageRepository.csrfStorage,
-  );
+  const csrfService = new CSRF({
+    cookie: repositories.csrfCookie,
+    // TODO: inject secret from init phase
+    // secret: 's3cr3t',
+  });
   const authSessionService = makeSessionService(
     repositories.authStorageRepository.authStorage,
   );
@@ -21,7 +24,7 @@ function makeServerServices(repositories: ServerRepositories) {
   );
   return {
     authSessionService,
-    csrfSessionService,
+    csrfService,
     toastSessionService,
     authService: makeAuthenticationServerService(
       repositories.marbleAPIClient,
@@ -33,7 +36,7 @@ function makeServerServices(repositories: ServerRepositories) {
       repositories.scenarioRepository,
       repositories.dataModelRepository,
       authSessionService,
-      csrfSessionService,
+      csrfService,
     ),
     i18nextService: makeI18nextServerService(
       repositories.authStorageRepository,

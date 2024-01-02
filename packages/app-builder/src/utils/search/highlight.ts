@@ -1,5 +1,5 @@
-import match from 'autosuggest-highlight/match';
-import parse from 'autosuggest-highlight/parse';
+import match from 'autosuggest-highlight/match/index.js';
+import parse from 'autosuggest-highlight/parse/index.js';
 
 const defaultMatchOptions = {
   insideWords: true,

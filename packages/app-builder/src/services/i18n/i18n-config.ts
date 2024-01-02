@@ -1,6 +1,7 @@
-import 'cronstrue/locales/en';
+import 'cronstrue/locales/en.js';
 
-import { enGB } from 'date-fns/locale';
+import { type Locale } from 'date-fns/locale';
+import { enGB } from 'date-fns/locale/en-GB';
 import { type InitOptions } from 'i18next';
 
 export const defaultNS = 'common';

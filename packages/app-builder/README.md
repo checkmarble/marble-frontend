@@ -40,7 +40,7 @@ If the component is part of the marble design system, you need to create it insi
 
 1. The component is mostly "presentationnal" (not connected to external data source needing loaders/actions): create the new component inside `src/components/*`.
 
-2. The component is considered a [full-stack componente](https://www.epicweb.dev/full-stack-components) (connected to external data source needing loaders/actions): create the new component inside `src/routes/ressources/*`.
+2. The component is considered a [full-stack componente](https://www.epicweb.dev/full-stack-components) (connected to external data source needing loaders/actions): create the new component inside `src/routes/ressources+/*`.
 
 > NB: in both cases, look at existing components to see how to structure your component and/or help you decide what feats your needs.
 

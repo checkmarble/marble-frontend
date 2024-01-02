@@ -2,22 +2,16 @@
   "name": "tailwind-preset",
   "version": "1.0.0",
   "description": "Shared config that group all specific design tokens for Marble",
-  "main": "index.js",
+  "sideEffect": false,
+  "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "type-check": "npx tsc --noEmit",
-    "generate-tailwind-preset": "tsx scripts/generate.ts"
+    "type-check": "npx tsc --noEmit"
   },
   "devDependencies": {
-    "@headlessui/tailwindcss": "^0.2.0",
     "@marble/eslint-config": "workspace:^",
-    "@types/node": "20.10.3",
-    "eslint": "~8.55.0",
-    "ora": "^7.0.1",
-    "remeda": "^1.29.0",
-    "tailwindcss": "3.3.6",
-    "tailwindcss-radix": "^2.8.0",
-    "tsx": "^4.6.2"
+    "tailwindcss": "3.4.0",
+    "tailwindcss-radix": "^2.8.0"
   },
   "license": "ISC"
 }

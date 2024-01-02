@@ -9,7 +9,7 @@ import { getOrganizationRepository } from './OrganizationRepository';
 import { getScenarioRepository } from './ScenarioRepository';
 import {
   getAuthStorageRepository,
-  getCsrfStorageRepository,
+  getCsrfCookie,
   getToastStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepositories';
@@ -26,9 +26,7 @@ export function makeServerRepositories({
     authStorageRepository: getAuthStorageRepository(
       sessionStorageRepositoryOptions,
     ),
-    csrfStorageRepository: getCsrfStorageRepository(
-      sessionStorageRepositoryOptions,
-    ),
+    csrfCookie: getCsrfCookie(sessionStorageRepositoryOptions),
     toastStorageRepository: getToastStorageRepository(
       sessionStorageRepositoryOptions,
     ),

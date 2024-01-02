@@ -44,7 +44,10 @@ const AccordionTitle = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
   },
 );
 
-function AccordionArrow({ className, ...props }: SVGProps<SVGSVGElement>) {
+export const AccordionArrow = forwardRef<
+  SVGSVGElement,
+  SVGProps<SVGSVGElement>
+>(function AccordionArrow({ className, ...props }, ref) {
   return (
     <Icon
       icon="arrow-2-down"
@@ -54,9 +57,10 @@ function AccordionArrow({ className, ...props }: SVGProps<SVGSVGElement>) {
         className,
       )}
       {...props}
+      ref={ref}
     />
   );
-}
+});
 
 const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
   function AccordionContent({ children, className, ...props }, ref) {

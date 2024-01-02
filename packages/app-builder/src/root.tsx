@@ -1,8 +1,8 @@
 import {
   json,
   type LinksFunction,
-  type LoaderArgs,
-  type V2_MetaFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction,
 } from '@remix-run/node';
 import {
   Links,
@@ -18,12 +18,9 @@ import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  AuthenticityTokenProvider,
-  ClientOnly,
-  createAuthenticityToken,
-  ExternalScripts,
-} from 'remix-utils';
+import { ClientOnly } from 'remix-utils/client-only';
+import { AuthenticityTokenProvider } from 'remix-utils/csrf/react';
+import { ExternalScripts } from 'remix-utils/external-scripts';
 import { Tooltip } from 'ui-design-system';
 import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 
@@ -62,41 +59,43 @@ export const links: LinksFunction = () => [
   { rel: 'icon', href: '/favicon.ico' },
 ];
 
-export const loader = async ({ request }: LoaderArgs) => {
-  const { i18nextService, toastSessionService, csrfSessionService } =
-    serverServices;
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { i18nextService, toastSessionService, csrfService } = serverServices;
   const locale = await i18nextService.getLocale(request);
 
   const toastSession = await toastSessionService.getSession(request);
-  const csrfSession = await csrfSessionService.getSession(request);
+  const [csrfToken, csrfCookieHeader] = await csrfService.commitToken(request);
 
   const toastMessage = getToastMessage(toastSession);
-  const csrf = createAuthenticityToken(csrfSession);
 
   const ENV = getClientEnvVars();
+
+  const headers = new Headers();
+  headers.append(
+    'set-cookie',
+    await toastSessionService.commitSession(toastSession),
+  );
+  if (csrfCookieHeader) headers.append('set-cookie', csrfCookieHeader);
 
   return json(
     {
       ENV,
       locale,
-      csrf,
+      csrf: csrfToken,
       toastMessage,
       segmentScript: getSegmentScript(),
     },
     {
-      headers: [
-        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
-        ['Set-Cookie', await csrfSessionService.commitSession(csrfSession)],
-      ],
+      headers,
     },
   );
-};
+}
 
 export const handle = {
   i18n: ['common', 'navigation'] satisfies Namespace,
 };
 
-export const meta: V2_MetaFunction = () => [
+export const meta: MetaFunction = () => [
   {
     charset: 'utf-8',
   },

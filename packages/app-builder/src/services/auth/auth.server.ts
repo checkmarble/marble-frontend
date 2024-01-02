@@ -15,9 +15,10 @@ import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepos
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { getServerEnv } from '@app-builder/utils/environment.server';
 import { parseForm } from '@app-builder/utils/input-validation';
+import { type RoutePath } from '@app-builder/utils/routes/types';
 import { json, redirect } from '@remix-run/node';
 import { marbleApi } from 'marble-api';
-import { verifyAuthenticityToken } from 'remix-utils';
+import { type CSRF } from 'remix-utils/csrf/server';
 import * as z from 'zod';
 
 import { getRoute } from '../../utils/routes';
@@ -82,7 +83,7 @@ export function makeAuthenticationServerService(
   scenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository,
   dataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository,
   authSessionService: SessionService<AuthData, AuthFlashData>,
-  csrfSessionService: SessionService,
+  csrfService: CSRF,
 ) {
   function getMarbleAPIClient(marbleAccessToken: string) {
     const tokenService = {
@@ -103,7 +104,6 @@ export function makeAuthenticationServerService(
     },
   ) {
     const authSession = await authSessionService.getSession(request);
-    const csrfSession = await csrfSessionService.getSession(request);
 
     let redirectUrl = options.failureRedirect;
 
@@ -114,7 +114,7 @@ export function makeAuthenticationServerService(
           idToken: z.string(),
         }),
       );
-      await verifyAuthenticityToken(request, csrfSession);
+      await csrfService.validate(request);
 
       const marbleToken = await marbleApi.postToken(
         {
@@ -150,7 +150,6 @@ export function makeAuthenticationServerService(
     },
   ) {
     const authSession = await authSessionService.getSession(request);
-    const csrfSession = await csrfSessionService.getSession(request);
 
     try {
       const { idToken } = await parseForm(
@@ -159,7 +158,7 @@ export function makeAuthenticationServerService(
           idToken: z.string(),
         }),
       );
-      await verifyAuthenticityToken(request, csrfSession);
+      await csrfService.validate(request);
 
       const marbleToken = await marbleApi.postToken(
         {
@@ -249,7 +248,7 @@ export function makeAuthenticationServerService(
 
   async function logout(
     request: Request,
-    options: { redirectTo: string },
+    options: { redirectTo: RoutePath },
   ): Promise<never> {
     const authSession = await authSessionService.getSession(request);
 

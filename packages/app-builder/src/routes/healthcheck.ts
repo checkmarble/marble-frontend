@@ -1,6 +1,6 @@
-import { type LoaderArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 
-async function isServerLive(request: LoaderArgs['request']) {
+async function isServerLive(request: LoaderFunctionArgs['request']) {
   const host =
     request.headers.get('X-Forwarded-Host') ??
     request.headers.get('host') ??
@@ -12,7 +12,7 @@ async function isServerLive(request: LoaderArgs['request']) {
   });
 }
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   try {
     await Promise.all([isServerLive(request)]);
     return new Response('OK');
