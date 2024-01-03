@@ -11,7 +11,7 @@
     "operator-regex": "tsx scripts/operator-regexp.ts"
   },
   "devDependencies": {
-    "@marble/eslint-config": "workspace:^",
+    "@marble/eslint-config": "workspace:*",
     "@types/node": "20.10.6",
     "ora": "^8.0.1",
     "tailwind-preset": "^1.0.8",

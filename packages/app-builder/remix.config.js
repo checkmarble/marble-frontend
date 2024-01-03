@@ -7,7 +7,11 @@ const appDirectory = 'src';
  */
 export default {
   serverModuleFormat: 'esm',
-  serverDependenciesToBundle: ['remix-i18next', 'react-dropzone'],
+  serverDependenciesToBundle: [
+    'remix-i18next',
+    'accept-language-parser',
+    'intl-parse-accept-language',
+  ],
   serverPlatform: 'node',
   appDirectory,
   browserNodeBuiltinsPolyfill: { modules: { process: true } },
