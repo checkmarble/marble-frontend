@@ -23,4 +23,4 @@ ENV PORT=8080
 COPY --from=build /prod/app-builder /prod/app-builder
 WORKDIR /prod/app-builder
 EXPOSE 8080
-CMD [ "pnpm", "exec", "remix-serve", "build"]
+CMD [ "pnpm", "start"]
