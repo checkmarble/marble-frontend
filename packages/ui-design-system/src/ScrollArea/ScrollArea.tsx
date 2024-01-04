@@ -82,3 +82,63 @@ export const ScrollArea = {
   Thumb: ScrollAreaThumb,
   Corner: ScrollAreaCorner,
 };
+
+/**
+ * New ScrollArea with better DX
+ */
+
+type ScrollAreaElement = React.ElementRef<typeof Viewport>;
+interface ScrollAreaV2Props
+  extends React.ComponentPropsWithRef<typeof Root>,
+    Omit<React.ComponentPropsWithRef<typeof Viewport>, 'dir'> {
+  orientation?: 'vertical' | 'horizontal' | 'both';
+}
+
+export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(
+  function ScrollAreaV2(
+    {
+      className,
+      type,
+      scrollHideDelay,
+      dir,
+      orientation = 'vertical',
+      ...viewportProps
+    },
+    forwardedRef,
+  ) {
+    return (
+      <Root
+        type={type}
+        scrollHideDelay={scrollHideDelay}
+        dir={dir}
+        className={clsx('flex flex-col overflow-hidden', className)}
+      >
+        <Viewport
+          {...viewportProps}
+          ref={forwardedRef}
+          className="h-full w-full overscroll-x-contain"
+        />
+
+        {orientation !== 'vertical' ? (
+          <Scrollbar
+            orientation="horizontal"
+            className="hover:bg-grey-10 m-px flex h-1 touch-none select-none flex-col rounded-full transition"
+          >
+            <Thumb className="bg-grey-25 hover:bg-grey-50 relative flex-1 rounded-full transition-colors" />
+          </Scrollbar>
+        ) : null}
+
+        {orientation !== 'horizontal' ? (
+          <Scrollbar
+            orientation="vertical"
+            className="hover:bg-grey-10 m-px flex w-1 touch-none select-none flex-row rounded-full transition"
+          >
+            <Thumb className="bg-grey-25 hover:bg-grey-50 relative flex-1 rounded-full transition-colors" />
+          </Scrollbar>
+        ) : null}
+
+        {orientation === 'both' ? <Corner className="rounded-full" /> : null}
+      </Root>
+    );
+  },
+);
