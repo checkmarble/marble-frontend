@@ -21,6 +21,7 @@ import {
   type AstBuilder,
   getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
+import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
 import { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, ScrollAreaV2 } from 'ui-design-system';
@@ -217,6 +218,8 @@ const OperandEditorContent = forwardRef<
     bottomActions: {
       clear: labelledAst.name !== '',
       edit: true,
+      copy: labelledAst.name !== '',
+      paste: true,
     },
   });
 
@@ -292,9 +295,9 @@ function BottomOptions({ options }: { options: BottomOptionProps[] }) {
       <div className="flex shrink-0 flex-row gap-2 p-2">
         {options.map(({ icon, label, onSelect }) => (
           <OperandDropdownMenu.Item asChild key={label} onSelect={onSelect}>
-            <Button variant="secondary">
+            <Button variant="secondary" className="shrink-0">
               <Icon icon={icon} className="size-4" />
-              {label}
+              <span className="line-clamp-1">{label}</span>
             </Button>
           </OperandDropdownMenu.Item>
         ))}
@@ -313,13 +316,28 @@ function useBottomActions({
   onSave: (astNode: AstNode) => void;
   closeModal: () => void;
   bottomActions: {
-    clear: boolean;
-    edit: boolean;
+    /**
+     * If true, show the clear action
+     */
+    clear?: boolean;
+    /**
+     * If true, show the edit action if the operand is editable (e.g. aggregation)
+     */
+    edit?: boolean;
+    /**
+     * If true, show the copy action if a CopyPasteASTContext is present
+     */
+    copy?: boolean;
+    /**
+     * If true, show the paste action if a CopyPasteASTContext is present and a copy has been made
+     */
+    paste?: boolean;
   };
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const editAggregation = useEditAggregation();
   const editTimeAdd = useEditTimeAdd();
+  const copyPasteAST = useOptionalCopyPasteAST();
 
   const bottomOptions: BottomOptionProps[] = [];
 
@@ -357,6 +375,31 @@ function useBottomActions({
         onSelect: () => {
           const initialValue = adaptTimeAddViewModal(operandViewModel);
           editTimeAdd({ initialValue, onSave });
+          closeModal();
+        },
+      });
+    }
+  }
+
+  if (bottomActions.copy && copyPasteAST) {
+    bottomOptions.push({
+      icon: 'copy',
+      label: t('common:copy'),
+      onSelect: () => {
+        copyPasteAST.setAst(adaptAstNodeFromEditorViewModel(operandViewModel));
+        closeModal();
+      },
+    });
+  }
+
+  if (bottomActions.paste && copyPasteAST) {
+    const { ast } = copyPasteAST;
+    if (ast) {
+      bottomOptions.push({
+        icon: 'clipboard-document',
+        label: t('common:paste'),
+        onSelect: () => {
+          onSave(ast);
           closeModal();
         },
       });

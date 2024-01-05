@@ -9,7 +9,7 @@ const Story: Meta<typeof ScrollArea.Root> = {
 };
 export default Story;
 
-export const V1 = () => (
+export const V1: StoryFn = () => (
   <ScrollArea.Root className="border-grey-50 w-fit rounded border shadow-md">
     <ScrollArea.Viewport className="max-h-72 max-w-[100px]">
       <ul>
@@ -36,7 +36,7 @@ export const V1 = () => (
   </ScrollArea.Root>
 );
 
-export const V2 = () => (
+export const V2: StoryFn = () => (
   <ScrollAreaV2
     orientation="both"
     className="border-grey-50 max-h-72 w-fit max-w-[100px] rounded border shadow-md"

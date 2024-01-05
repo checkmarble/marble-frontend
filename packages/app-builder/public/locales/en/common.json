@@ -27,6 +27,8 @@
   "name": "Name",
   "description": "Description",
   "edit": "Edit",
+  "copy": "Copy",
+  "paste": "Paste",
   "go_back": "Go back",
   "error_boundary.default.title": "Did you lose your marbles?",
   "error_boundary.default.subtitle": "It looks like something went wrong.",

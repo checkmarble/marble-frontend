@@ -13,6 +13,7 @@ export const iconNames = [
   'case-manager',
   'category',
   'check-indeterminate-small',
+  'clipboard-document',
   'collapse',
   'copy',
   'create-new-folder',

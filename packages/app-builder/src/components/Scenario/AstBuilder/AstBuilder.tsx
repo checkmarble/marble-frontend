@@ -1,4 +1,5 @@
 import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
+import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 
 import { AggregationEditModal } from './AstBuilderNode/AggregationEdit';
 import { TimeAddEditModal } from './AstBuilderNode/TimeAddEdit/Modal';
@@ -12,14 +13,16 @@ export function AstBuilder({
   viewOnly?: boolean;
 }) {
   return (
-    <TimeAddEditModal builder={builder}>
-      <AggregationEditModal builder={builder}>
-        <RootAstBuilderNode
-          builder={builder}
-          editorNodeViewModel={builder.editorNodeViewModel}
-          viewOnly={viewOnly}
-        />
-      </AggregationEditModal>
-    </TimeAddEditModal>
+    <CopyPasteASTContextProvider>
+      <TimeAddEditModal builder={builder}>
+        <AggregationEditModal builder={builder}>
+          <RootAstBuilderNode
+            builder={builder}
+            editorNodeViewModel={builder.editorNodeViewModel}
+            viewOnly={viewOnly}
+          />
+        </AggregationEditModal>
+      </TimeAddEditModal>
+    </CopyPasteASTContextProvider>
   );
 }
