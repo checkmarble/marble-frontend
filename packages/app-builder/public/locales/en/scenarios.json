@@ -158,7 +158,7 @@
   "aggregator.sum": "Sum",
   "view_aggregation.tooltip": "Click to view details",
   "edit_operand.search.placeholder": "Select or create an operand",
-  "edit_operand.clear_operand": "Clear operand",
+  "edit_operand.clear_operand": "Clear",
   "edit_operand.result_one": "Result",
   "edit_operand.result_other": "Results",
   "edit_operand.constant.use_data_type.string": "Use string",

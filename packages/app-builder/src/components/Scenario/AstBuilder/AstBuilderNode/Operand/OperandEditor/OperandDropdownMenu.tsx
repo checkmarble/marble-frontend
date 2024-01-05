@@ -1,7 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
-import { ScrollArea } from 'ui-design-system';
 
 const style = {
   content:
@@ -13,21 +12,16 @@ const OperandDropdownMenuContent = forwardRef<
   React.ComponentProps<typeof DropdownMenu.Content>
 >(({ className, children, ...props }, ref) => {
   return (
-    <ScrollArea.Root>
-      <DropdownMenu.Content
-        ref={ref}
-        side="bottom"
-        align="start"
-        sideOffset={4}
-        className={clsx(style.content, 'max-h-[320px] w-[320px]', className)}
-        {...props}
-      >
-        {children}
-        <ScrollArea.Scrollbar>
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </DropdownMenu.Content>
-    </ScrollArea.Root>
+    <DropdownMenu.Content
+      ref={ref}
+      side="bottom"
+      align="start"
+      sideOffset={4}
+      className={clsx(style.content, 'max-h-80 w-80', className)}
+      {...props}
+    >
+      {children}
+    </DropdownMenu.Content>
   );
 });
 OperandDropdownMenuContent.displayName = 'OperandDropdownMenuContent';
@@ -52,32 +46,25 @@ OperandDropdownMenuSubTrigger.displayName = 'OperandDropdownMenuSubTrigger';
 const OperandDropdownMenuSubContent = forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof DropdownMenu.SubContent>
->(({ className, children, ...props }, ref) => {
+>(({ className, ...props }, ref) => {
   return (
-    <ScrollArea.Root>
-      <DropdownMenu.SubContent
-        ref={ref}
-        sideOffset={16}
-        className={clsx(style.content, 'max-h-[250px] w-[250px]', className)}
-        {...props}
-      >
-        {children}
-        <ScrollArea.Scrollbar>
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </DropdownMenu.SubContent>
-    </ScrollArea.Root>
+    <DropdownMenu.SubContent
+      ref={ref}
+      sideOffset={16}
+      className={clsx(style.content, 'max-h-64 w-64', className)}
+      {...props}
+    />
   );
 });
 OperandDropdownMenuSubContent.displayName = 'OperandDropdownMenuSubContent';
 
 export const OperandDropdownMenu = {
   Root: DropdownMenu.Root,
-  ScrollableViewport: ScrollArea.Viewport,
   Trigger: DropdownMenu.Trigger,
   Portal: DropdownMenu.Portal,
   Content: OperandDropdownMenuContent,
   Sub: DropdownMenu.Sub,
   SubTrigger: OperandDropdownMenuSubTrigger,
   SubContent: OperandDropdownMenuSubContent,
+  Item: DropdownMenu.Item,
 };
