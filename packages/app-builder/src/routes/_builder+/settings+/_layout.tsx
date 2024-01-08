@@ -26,13 +26,13 @@ export default function Settings() {
   return (
     <Page.Container>
       <Page.Header>
-        <Icon icon="case-manager" className="mr-2 h-6 w-6" />
+        <Icon icon="case-manager" className="mr-2 size-6" />
         {t('navigation:settings')}
       </Page.Header>
       <div className="flex h-full flex-row">
         <div className="border-r-grey-10 flex h-full w-fit min-w-[200px] flex-col border-r p-4">
           <div className="flex flex-row items-center gap-2 pb-4">
-            <Icon icon="inbox" className="h-5 w-5" />
+            <Icon icon="inbox" className="size-5" />
             <p className="font-bold">{t('settings:users')}</p>
           </div>
           <div className="flex flex-col gap-1 pb-6">
@@ -46,7 +46,7 @@ export default function Settings() {
             /> */}
           </div>
           <div className="flex flex-row items-center gap-2 pb-4">
-            <Icon icon="inbox" className="h-5 w-5" />
+            <Icon icon="inbox" className="size-5" />
             <p className="font-bold">{t('settings:case_manager')}</p>
           </div>
           <div className="flex flex-col gap-1 pb-6">

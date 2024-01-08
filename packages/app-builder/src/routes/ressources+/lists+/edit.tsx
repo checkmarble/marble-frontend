@@ -92,7 +92,7 @@ export function EditList({
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
         <Button variant="secondary">
-          <Icon icon="edit" className="h-6 w-6" />
+          <Icon icon="edit" className="size-6" />
           <p>{t('lists:edit_list.button')}</p>
         </Button>
       </Modal.Trigger>

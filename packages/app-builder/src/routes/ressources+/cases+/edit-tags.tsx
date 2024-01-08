@@ -89,7 +89,7 @@ export function EditCaseTags({
           <Tooltip.Trigger tabIndex={-1}>
             <Icon
               icon="tip"
-              className="text-grey-10 h-5 w-5 shrink-0 outline-none transition-colors hover:text-purple-100"
+              className="text-grey-10 size-5 shrink-0 outline-none transition-colors hover:text-purple-100"
             />
           </Tooltip.Trigger>
           <Tooltip.Portal>

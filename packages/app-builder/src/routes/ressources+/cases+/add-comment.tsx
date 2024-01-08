@@ -108,7 +108,7 @@ export function AddComment(
         className="h-14"
         aria-label={t('cases:case_detail.add_a_comment.post')}
       >
-        <Icon icon="send" className="h-4 w-4 shrink-0" />
+        <Icon icon="send" className="size-4 shrink-0" />
       </Button>
     </fetcher.Form>
   );

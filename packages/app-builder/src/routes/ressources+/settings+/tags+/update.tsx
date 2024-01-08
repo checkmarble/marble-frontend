@@ -77,7 +77,7 @@ export function UpdateTag({ tag }: { tag: Tag }) {
       <Modal.Trigger>
         <Icon
           icon="edit"
-          className="h-6 w-6 shrink-0"
+          className="size-6 shrink-0"
           aria-label={t('settings:tags.update_tag')}
         />
       </Modal.Trigger>
@@ -126,7 +126,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
               {tagColors.map((color) => (
                 <FormSelect.DefaultItem key={color} value={color}>
                   <div
-                    className="h-4 w-4 rounded-full"
+                    className="size-4 rounded-full"
                     style={{ backgroundColor: color }}
                   ></div>
                 </FormSelect.DefaultItem>

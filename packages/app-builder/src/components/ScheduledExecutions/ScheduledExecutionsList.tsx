@@ -101,12 +101,12 @@ export function ScheduledExecutionsList({
 
 const getStatusIcon = (status: string) => {
   if (status === 'success') {
-    return <Icon icon="tick" className="h-6 w-6 text-green-100" />;
+    return <Icon icon="tick" className="size-6 text-green-100" />;
   }
   if (status === 'failure') {
-    return <Icon icon="cross" className="h-6 w-6 text-red-100" />;
+    return <Icon icon="cross" className="size-6 text-red-100" />;
   }
-  return <Icon icon="restart-alt" className="text-grey-50 h-6 w-6" />;
+  return <Icon icon="restart-alt" className="text-grey-50 size-6" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['scheduledExecution']> => {

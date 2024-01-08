@@ -101,7 +101,7 @@ export function CreateList() {
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button>
-          <Icon icon="plus" className="h-6 w-6" />
+          <Icon icon="plus" className="size-6" />
           {t('lists:create_list.title')}
         </Button>
       </Modal.Trigger>

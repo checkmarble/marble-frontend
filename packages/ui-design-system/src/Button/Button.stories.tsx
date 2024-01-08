@@ -36,7 +36,7 @@ const TemplateWithIcon: StoryFn<StoryProps> = ({
 }: StoryProps) => {
   return (
     <Button {...args}>
-      <Icon icon="plus" className="h-6 w-6" />
+      <Icon icon="plus" className="size-6" />
       {children}
     </Button>
   );

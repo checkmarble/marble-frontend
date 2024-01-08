@@ -23,7 +23,7 @@ export const AddLogicalOperatorButton = React.forwardRef<
       {...props}
       ref={ref}
     >
-      <Icon icon="plus" className="h-4 w-4" />
+      <Icon icon="plus" className="size-4" />
       {t(`scenarios:logical_operator.${operator}_button`)}
     </button>
   );

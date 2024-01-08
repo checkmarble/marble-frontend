@@ -69,7 +69,7 @@ export function CreateUser({ orgId }: { orgId: string }) {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button onClick={(e) => e.stopPropagation()}>
-          <Icon icon="plus" className="h-6 w-6" />
+          <Icon icon="plus" className="size-6" />
           {t('settings:users.new_user')}
         </Button>
       </Modal.Trigger>

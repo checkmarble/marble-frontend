@@ -12,7 +12,7 @@ export const AddNewFilterButton = forwardRef<
   const { t } = useTranslation(filtersI18n);
   return (
     <Button variant="tertiary" ref={ref} {...props}>
-      <Icon icon="plus" className="h-5 w-5" />
+      <Icon icon="plus" className="size-5" />
       <span className="line-clamp-1 capitalize">{t('filters:new_filter')}</span>
     </Button>
   );

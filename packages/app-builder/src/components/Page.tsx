@@ -106,7 +106,7 @@ function PageBackButton({
       )}
       {...props}
     >
-      <Icon icon="arrow-left" className="h-5 w-5" />
+      <Icon icon="arrow-left" className="size-5" />
     </div>
   );
 }

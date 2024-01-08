@@ -177,7 +177,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
             <p>{t('upload:drop_file_cta')}</p>
             <p className="text-grey-25 uppercase">{t('common:or')}</p>
             <Button>
-              <Icon icon="plus" className="h-6 w-6" />
+              <Icon icon="plus" className="size-6" />
               {t('upload:pick_file_cta')}
             </Button>
           </>
@@ -213,10 +213,8 @@ const ResultModal = ({
         <div className="bg-grey-00 text-s flex flex-col items-center gap-6 p-6">
           <Icon
             icon={icon}
-            width="108px"
-            height="108px"
             className={clsx(
-              'rounded-full border-8',
+              'size-[108px] rounded-full border-8',
               modalContent.success
                 ? 'bg-purple-10 border-purple-10 text-purple-100'
                 : 'bg-red-10 border-red-10 text-red-100',
@@ -239,7 +237,7 @@ const ResultModal = ({
           <Modal.Close asChild>
             <div className="flex justify-center">
               <Button>
-                <Icon icon="tick" className="h-6 w-6" />
+                <Icon icon="tick" className="size-6" />
                 {t('common:understand')}
               </Button>
             </div>
@@ -318,9 +316,9 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
 
 const getStatusIcon = (status: string) => {
   if (status === 'success') {
-    return <Icon icon="tick" className="h-6 w-6 text-green-100" />;
+    return <Icon icon="tick" className="size-6 text-green-100" />;
   }
-  return <Icon icon="restart-alt" className="text-grey-50 h-6 w-6" />;
+  return <Icon icon="restart-alt" className="text-grey-50 size-6" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['upload']> => {
@@ -337,7 +335,7 @@ export default function Upload() {
   return (
     <Page.Container>
       <Page.Header>
-        <Icon icon="help" className="mr-2 h-6 w-6" />
+        <Icon icon="help" className="mr-2 size-6" />
         {t('upload:upload_cta', { replace: { objectType } })}
       </Page.Header>
       <Page.Content>
@@ -358,7 +356,7 @@ export default function Upload() {
                   'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100',
                 )}
               >
-                <Icon icon="help" className="mr-2 h-6 w-6" />
+                <Icon icon="help" className="mr-2 size-6" />
                 {t('upload:download_template_cta')}
               </a>
             )}
@@ -391,7 +389,7 @@ const LoadingButton = () => {
   const { t } = useTranslation(handle.i18n);
   return (
     <Button variant="secondary" className="cursor-wait">
-      <Icon icon="help" className="mr-2 h-6 w-6" />
+      <Icon icon="help" className="mr-2 size-6" />
       {t('upload:download_template_cta')}
     </Button>
   );

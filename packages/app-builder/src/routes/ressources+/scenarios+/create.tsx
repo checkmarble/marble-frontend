@@ -86,7 +86,7 @@ export function CreateScenario() {
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button>
-          <Icon icon="plus" className="h-6 w-6" />
+          <Icon icon="plus" className="size-6" />
           {t('scenarios:create_scenario.title')}
         </Button>
       </Modal.Trigger>
@@ -105,7 +105,7 @@ function CreateScenarioContent() {
 
   const { load: loadDataModel } = dataModelFetcher;
   useEffect(() => {
-    loadDataModel('/ressources+/scenarios+/create');
+    loadDataModel(getRoute('/ressources/scenarios/create'));
   }, [loadDataModel]);
 
   const dataModel = dataModelFetcher.data?.dataModel ?? [];

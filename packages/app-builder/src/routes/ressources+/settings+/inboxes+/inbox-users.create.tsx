@@ -86,7 +86,7 @@ export function CreateInboxUser({ inboxId }: { inboxId: string }) {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
         <Button>
-          <Icon icon="plus" className="h-6 w-6" />
+          <Icon icon="plus" className="size-6" />
           {t('settings:inboxes.inbox_details.add_member')}
         </Button>
       </Modal.Trigger>
@@ -173,7 +173,7 @@ export function CreateInboxUserContent({
             type="submit"
             name="create"
           >
-            <Icon icon="new-inbox" className="h-6 w-6" />
+            <Icon icon="new-inbox" className="size-6" />
             {t('settings:inboxes.inbox_details.create_user')}
           </Button>
         </div>

@@ -53,7 +53,7 @@ export const AccordionArrow = forwardRef<
       icon="arrow-2-down"
       aria-hidden
       className={clsx(
-        'group-radix-state-closed:rotate-180 h-6 w-6 rounded transition-transform',
+        'group-radix-state-closed:rotate-180 size-6 rounded transition-transform',
         className,
       )}
       {...props}

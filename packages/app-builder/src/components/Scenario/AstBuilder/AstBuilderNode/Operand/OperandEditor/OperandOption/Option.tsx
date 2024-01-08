@@ -26,7 +26,7 @@ function OptionIcon({
 }: React.ComponentProps<typeof Icon>) {
   return (
     <Icon
-      className={clsx('h-5 w-5 shrink-0 transition-colors', className)}
+      className={clsx('size-5 shrink-0 transition-colors', className)}
       {...props}
     />
   );

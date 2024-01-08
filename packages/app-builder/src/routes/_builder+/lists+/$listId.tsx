@@ -78,7 +78,7 @@ export default function Lists() {
                     name="delete"
                     tabIndex={-1}
                   >
-                    <Icon icon="delete" className="h-6 w-6 shrink-0" />
+                    <Icon icon="delete" className="size-6 shrink-0" />
                   </button>
                 </DeleteListValue>
               ) : null}

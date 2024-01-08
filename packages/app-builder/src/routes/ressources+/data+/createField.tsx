@@ -154,7 +154,7 @@ export function CreateField({ tableId }: { tableId: string }) {
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
         <Button>
-          <Icon icon="plus" className="h-6 w-6" />
+          <Icon icon="plus" className="size-6" />
           {t('data:create_field.title')}
         </Button>
       </Modal.Trigger>

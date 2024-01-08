@@ -142,7 +142,7 @@ export const EditFilters = ({
         })}
       </div>
       <Button className="my-2" onClick={addNewFilter}>
-        <Icon icon="plus" className="h-6 w-6" />
+        <Icon icon="plus" className="size-6" />
         {t('scenarios:edit_aggregation.add_filter')}
       </Button>
     </div>

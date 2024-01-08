@@ -87,7 +87,7 @@ function ScenarioRightPanelContent({ data }: { data: State['data'] }) {
   return (
     <RightPanel.Content className="flex max-w-xs flex-col gap-4 p-4 lg:max-w-sm lg:gap-6 lg:p-6">
       <RightPanel.Title>
-        <Icon icon="function" className="h-6 w-6" />
+        <Icon icon="function" className="size-6" />
         <span className="w-full capitalize">
           {t(titleK[data.type]) ?? data.type}
         </span>

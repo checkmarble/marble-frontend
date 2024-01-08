@@ -36,7 +36,7 @@ export default function ScheduledExecutions() {
   return (
     <Page.Container>
       <Page.Header>
-        <Icon icon="scheduled-execution" className="mr-2 h-6 w-6" />
+        <Icon icon="scheduled-execution" className="mr-2 size-6" />
         {t('navigation:scheduledExecutions')}
       </Page.Header>
 

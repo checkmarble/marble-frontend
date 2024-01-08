@@ -41,7 +41,7 @@ function GroupHeaderIcon({
   className,
   ...props
 }: React.ComponentProps<typeof Icon>) {
-  return <Icon className={clsx('h-5 w-5 shrink-0', className)} {...props} />;
+  return <Icon className={clsx('size-5 shrink-0', className)} {...props} />;
 }
 
 function GroupHeaderTitle({

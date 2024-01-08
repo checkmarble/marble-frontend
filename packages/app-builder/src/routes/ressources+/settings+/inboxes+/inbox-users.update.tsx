@@ -86,7 +86,7 @@ export function UpdateInboxUser({ inboxUser }: { inboxUser: InboxUserDto }) {
       <Modal.Trigger>
         <Icon
           icon="edit"
-          className="h-6 w-6 shrink-0"
+          className="size-6 shrink-0"
           aria-label={t('settings:tags.update_tag')}
         />
       </Modal.Trigger>

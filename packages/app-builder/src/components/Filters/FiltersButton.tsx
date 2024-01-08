@@ -18,7 +18,7 @@ export const FiltersButton = forwardRef<
       ref={ref}
       {...props}
     >
-      <Icon icon="filters" className="h-5 w-5" />
+      <Icon icon="filters" className="size-5" />
       <span className="text-s font-semibold first-letter:capitalize">
         {t('filters:filters')}
       </span>

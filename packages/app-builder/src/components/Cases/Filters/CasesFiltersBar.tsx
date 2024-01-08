@@ -54,7 +54,7 @@ export function CasesFiltersBar() {
               <FilterPopover.Root key={filterName} onOpenChange={onOpenChange}>
                 <FilterItem.Root>
                   <FilterItem.Trigger>
-                    <Icon icon={icon} className="h-5 w-5" />
+                    <Icon icon={icon} className="size-5" />
                     <span className="text-s font-semibold first-letter:capitalize">
                       {t(tKey)}
                     </span>

@@ -92,7 +92,7 @@ export function CreateInbox({
           variant="secondary"
           onClick={(e) => e.stopPropagation()}
         >
-          <Icon icon="new-inbox" className="h-5 w-5 shrink-0" />
+          <Icon icon="new-inbox" className="size-5 shrink-0" />
           {t('settings:inboxes.new_inbox.create')}
         </Button>
       </Modal.Trigger>
@@ -151,7 +151,7 @@ export function CreateInboxContent({
             type="submit"
             name="create"
           >
-            <Icon icon="new-inbox" className="h-5 w-5" />
+            <Icon icon="new-inbox" className="size-5" />
             {t('settings:inboxes.new_inbox.create')}
           </Button>
         </div>

@@ -16,7 +16,7 @@ export const Switch = forwardRef<
       )}
       {...props}
     >
-      <Thumb className="bg-grey-00 radix-state-checked:translate-x-5 block h-4 w-4 translate-x-1 rounded-full transition-transform" />
+      <Thumb className="bg-grey-00 radix-state-checked:translate-x-5 block size-4 translate-x-1 rounded-full transition-transform" />
     </Root>
   );
 });

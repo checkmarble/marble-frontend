@@ -47,7 +47,7 @@ export function DeleteTag({ tag }: { tag: Tag }) {
     return (
       <Icon
         icon="delete"
-        className="group-hover:text-grey-25 h-6 w-6 shrink-0 cursor-not-allowed"
+        className="group-hover:text-grey-25 size-6 shrink-0 cursor-not-allowed"
         aria-label={t('settings:tags.delete_tag')}
       />
     );
@@ -58,7 +58,7 @@ export function DeleteTag({ tag }: { tag: Tag }) {
       <Modal.Trigger>
         <Icon
           icon="delete"
-          className="h-6 w-6 shrink-0"
+          className="size-6 shrink-0"
           aria-label={t('settings:tags.delete_tag')}
         />
       </Modal.Trigger>
@@ -93,7 +93,7 @@ const DeleteTagContent = ({ tagId }: { tagId: string }) => {
             type="submit"
             name="delete"
           >
-            <Icon icon="delete" className="h-6 w-6" />
+            <Icon icon="delete" className="size-6" />
             {t('common:delete')}
           </Button>
         </div>

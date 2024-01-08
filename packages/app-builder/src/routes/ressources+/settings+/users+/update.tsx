@@ -74,7 +74,7 @@ export function UpdateUser({ user }: { user: User }) {
       <Modal.Trigger>
         <Icon
           icon="edit"
-          className="h-6 w-6 shrink-0"
+          className="size-6 shrink-0"
           aria-label={t('settings:users.update_user')}
         />
       </Modal.Trigger>

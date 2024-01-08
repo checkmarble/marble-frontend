@@ -146,7 +146,7 @@ const SelectValue = forwardRef<HTMLDivElement, SelectValueProps>(
 
 const SelectArrow = () => (
   <SelectIcon
-    className="group-radix-state-open:rotate-180 h-6 w-6 shrink-0"
+    className="group-radix-state-open:rotate-180 size-6 shrink-0"
     asChild
   >
     <Icon icon="arrow-2-down" />

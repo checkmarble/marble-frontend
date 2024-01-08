@@ -68,7 +68,7 @@ export function CreateRule({
       )}
     >
       <Button type="submit" disabled={fetcher.state === 'submitting'}>
-        <Icon icon="plus" className="h-6 w-6" />
+        <Icon icon="plus" className="size-6" />
         {t('scenarios:create_rule.title')}
       </Button>
     </fetcher.Form>

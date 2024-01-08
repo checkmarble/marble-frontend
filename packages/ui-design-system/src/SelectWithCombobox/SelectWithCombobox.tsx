@@ -91,6 +91,7 @@ const Arrow = forwardRef<HTMLSpanElement, Ariakit.SelectArrowProps>(
         render={
           <Icon
             icon="arrow-2-down"
+            // @ariakit/react inject width: 1em; height: 1em; into the style so use text-[24px] instead of size-6
             className="pointer-events-none flex items-center justify-center text-[24px] group-aria-expanded:rotate-180"
           />
         }

@@ -81,11 +81,11 @@ function EventIcon({
   return (
     <div
       className={cx(
-        'flex h-6 w-6 items-center justify-center rounded-full',
+        'flex size-6 items-center justify-center rounded-full',
         className,
       )}
     >
-      <Icon icon={icon} className="h-4 w-4" />
+      <Icon icon={icon} className="size-4" />
     </div>
   );
 }

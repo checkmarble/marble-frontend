@@ -61,7 +61,7 @@ const RuleWithDescription = ({
       </Accordion.Title>
       <Accordion.Content>
         <div className="bg-purple-10 mt-4 flex gap-2 rounded p-4 text-purple-100">
-          <Icon icon="tip" className="h-5 w-5" />
+          <Icon icon="tip" className="size-5" />
           <div className="flex flex-col gap-2">
             <div className="font-semibold">
               {t('decisions:rules.description')}

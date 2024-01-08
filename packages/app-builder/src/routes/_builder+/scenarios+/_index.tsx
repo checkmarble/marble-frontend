@@ -33,7 +33,7 @@ export default function ScenariosPage() {
   return (
     <Page.Container>
       <Page.Header>
-        <Icon icon="scenarios" className="mr-2 h-6 w-6" />
+        <Icon icon="scenarios" className="mr-2 size-6" />
         {t('navigation:scenarios')}
       </Page.Header>
       <Page.Content>

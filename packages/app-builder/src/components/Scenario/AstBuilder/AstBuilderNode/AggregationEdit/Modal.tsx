@@ -249,7 +249,7 @@ const AggregationEditModalContent = ({
         <div className="flex flex-row items-center justify-center gap-3">
           {t('scenarios:edit_aggregation.title')}
           <div className="flex flex-row items-center justify-center gap-1">
-            <Logo logo="logo" className="h-4 w-4" />
+            <Logo logo="logo" className="size-4" />
             <span className="text-grey-50 text-xs font-light">
               {t('scenarios:edit_aggregation.subtitle')}
             </span>

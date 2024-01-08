@@ -26,7 +26,7 @@ const Template: StoryFn<typeof Modal> = (args) => (
             </Button>
           </Modal.Close>
           <Button variant="primary" className="flex-1">
-            <Icon icon="pushtolive" className="h-6 w-6" />
+            <Icon icon="pushtolive" className="size-6" />
             Publish
           </Button>
         </div>

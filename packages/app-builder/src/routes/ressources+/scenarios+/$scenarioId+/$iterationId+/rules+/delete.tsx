@@ -57,7 +57,7 @@ export function DeleteRule({
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button color="red" className="w-fit">
-          <Icon icon="delete" className="h-6 w-6" />
+          <Icon icon="delete" className="size-6" />
           <p>{t('scenarios:delete_rule.button')}</p>
         </Button>
       </Modal.Trigger>
@@ -80,7 +80,7 @@ export function DeleteRule({
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
               <div className="bg-red-10 mb-6 box-border rounded-[90px] p-4">
-                <Icon icon="delete" className="h-16 w-16 text-red-100" />
+                <Icon icon="delete" className="size-16 text-red-100" />
               </div>
               <h1 className="text-l font-semibold">
                 {t('scenarios:delete_rule.title')}
@@ -102,7 +102,7 @@ export function DeleteRule({
                 type="submit"
                 name="delete"
               >
-                <Icon icon="delete" className="h-6 w-6" />
+                <Icon icon="delete" className="size-6" />
                 {t('common:delete')}
               </Button>
             </div>

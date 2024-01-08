@@ -18,7 +18,7 @@ export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
         tabIndex={-1}
         ref={ref}
       >
-        <Icon icon="delete" className="h-3 w-3" />
+        <Icon icon="delete" className="size-3" />
       </button>
     );
   },

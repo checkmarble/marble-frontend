@@ -103,7 +103,7 @@ function AddToCase({ decisionIds }: { decisionIds: string[] }) {
       }}
     >
       <Button>
-        <Icon icon="plus" />
+        <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
     </DecisionRightPanel.Trigger>

@@ -61,7 +61,7 @@ export function DeleteInbox({
         >
           <Icon
             icon="delete"
-            className="h-6 w-6"
+            className="size-6"
             aria-label={t('settings:inboxes.delete_inbox')}
           />
           {t('settings:inboxes.delete_inbox')}
@@ -103,7 +103,7 @@ const DeleteInboxContent = ({ inboxId }: { inboxId: string }) => {
             type="submit"
             name="delete"
           >
-            <Icon icon="delete" className="h-6 w-6" />
+            <Icon icon="delete" className="size-6" />
             {t('common:delete')}
           </Button>
         </div>

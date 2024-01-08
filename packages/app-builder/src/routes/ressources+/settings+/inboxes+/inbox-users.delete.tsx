@@ -54,7 +54,7 @@ export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUserDto }) {
       <Modal.Trigger>
         <Icon
           icon="delete"
-          className="h-6 w-6 shrink-0"
+          className="size-6 shrink-0"
           aria-label={t('settings:inboxes.inbox_user.delete')}
         />
       </Modal.Trigger>
@@ -95,7 +95,7 @@ const DeleteInboxUserContent = ({ inboxUser }: { inboxUser: InboxUserDto }) => {
             type="submit"
             name="delete"
           >
-            <Icon icon="delete" className="h-6 w-6" />
+            <Icon icon="delete" className="size-6" />
             {t('common:delete')}
           </Button>
         </div>

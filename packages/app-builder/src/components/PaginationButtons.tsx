@@ -68,10 +68,10 @@ export const PaginationButtons = ({
         variant="secondary"
         disabled={start === 1}
       >
-        <Icon icon="arrow-left" className="h-4 w-4" />
+        <Icon icon="arrow-left" className="size-4" />
       </Button>
       <Button onClick={fetchNext} variant="secondary" disabled={end === total}>
-        <Icon icon="arrow-right" className="h-4 w-4" />
+        <Icon icon="arrow-right" className="size-4" />
       </Button>
     </div>
   );

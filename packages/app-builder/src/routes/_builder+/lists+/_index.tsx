@@ -72,7 +72,7 @@ export default function ListsPage() {
   return (
     <Page.Container>
       <Page.Header>
-        <Icon icon="lists" className="mr-2 h-6 w-6" />
+        <Icon icon="lists" className="mr-2 size-6" />
         {t('navigation:lists')}
       </Page.Header>
       <Page.Content scrollable={false}>

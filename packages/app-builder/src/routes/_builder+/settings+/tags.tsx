@@ -47,7 +47,7 @@ export default function Tags() {
         size: 50,
         cell: ({ getValue }) => (
           <div
-            className="h-4 w-4 rounded-full"
+            className="size-4 rounded-full"
             style={{ backgroundColor: getValue() }}
           ></div>
         ),

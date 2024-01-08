@@ -57,7 +57,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             'inset-y-0 left-0 pl-2',
           )}
         >
-          <Icon icon={startAdornment} className="h-6 w-6" />
+          <Icon icon={startAdornment} className="size-6" />
         </div>
       ) : null}
       {endAdornment ? (
@@ -68,7 +68,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             'inset-y-0 right-0 pr-2',
           )}
         >
-          <Icon icon={endAdornment} className="h-6 w-6" />
+          <Icon icon={endAdornment} className="size-6" />
         </div>
       ) : null}
     </div>

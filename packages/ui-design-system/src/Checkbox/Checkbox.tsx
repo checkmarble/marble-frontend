@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
 const checkbox = cva(
-  'disabled:bg-grey-10 bg-grey-00 hover:bg-purple-05 radix-state-checked:border-none radix-state-checked:bg-purple-100 flex h-6 w-6 shrink-0 items-center justify-center rounded border outline-none',
+  'disabled:bg-grey-10 bg-grey-00 hover:bg-purple-05 radix-state-checked:border-none radix-state-checked:bg-purple-100 flex size-6 shrink-0 items-center justify-center rounded border outline-none',
   {
     variants: {
       color: {
@@ -28,7 +28,7 @@ export const Checkbox = forwardRef<
       checked={checked}
       {...props}
     >
-      <Indicator className="h-6 w-6" asChild>
+      <Indicator className="size-6" asChild>
         {checked === undefined ? (
           <Icon icon="tick" className="text-grey-00" />
         ) : checked === true ? (
