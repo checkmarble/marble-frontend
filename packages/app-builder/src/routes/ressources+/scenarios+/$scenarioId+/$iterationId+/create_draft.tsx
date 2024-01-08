@@ -106,7 +106,7 @@ const NewDraftButton = ({
     >
       <HiddenInputs iterationId={iterationId} />
       <Button type="submit">
-        <Icon icon="plus" className="h-6 w-6" />
+        <Icon icon="plus" className="size-6" />
         {t('scenarios:create_iteration.title')}
       </Button>
     </fetcher.Form>
@@ -130,7 +130,7 @@ const ExistingDraftModal = ({
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button>
-          <Icon icon="plus" className="h-6 w-6" />
+          <Icon icon="plus" className="size-6" />
           {t('scenarios:create_iteration.title')}
         </Button>
       </Modal.Trigger>

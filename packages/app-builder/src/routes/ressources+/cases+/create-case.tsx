@@ -170,7 +170,7 @@ export function CreateCase() {
             )}
           />
           <Button type="submit">
-            <Icon icon="plus" className="h-6 w-6" />
+            <Icon icon="plus" className="size-6" />
             {t('cases:case.new_case.create')}
           </Button>
         </div>

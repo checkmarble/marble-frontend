@@ -39,7 +39,7 @@ export function Calendar({
         ),
         nav_button_previous: 'absolute left-0',
         nav_button_next: 'absolute right-0',
-        nav_icon: 'absolute m-auto h-5 w-5',
+        nav_icon: 'absolute m-auto size-5',
         table: 'w-full border-none',
         head_row: 'flex w-full',
         head_cell:

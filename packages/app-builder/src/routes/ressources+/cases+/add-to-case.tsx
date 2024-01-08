@@ -264,7 +264,7 @@ const NewCaseFields = ({
         )}
       />
       <Button type="submit">
-        <Icon icon="plus" className="h-5 w-5" />
+        <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case.create_new_case')}
       </Button>
     </>
@@ -299,7 +299,7 @@ const AddToCaseFields = ({ control }: { control: Control<AddToCaseForm> }) => {
         )}
       />
       <Button type="submit">
-        <Icon icon="plus" className="h-5 w-5" />
+        <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
     </>

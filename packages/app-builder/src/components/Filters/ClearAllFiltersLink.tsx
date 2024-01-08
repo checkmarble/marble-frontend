@@ -22,7 +22,7 @@ export const ClearAllFiltersLink = forwardRef<
       ref={ref}
       {...props}
     >
-      <Icon icon="cross" className="h-5 w-5" />
+      <Icon icon="cross" className="size-5" />
       <span className="line-clamp-1 capitalize">
         {t('filters:clear_filters')}
       </span>

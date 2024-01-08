@@ -80,7 +80,7 @@ export function NewListValue({ listId }: { listId: string }) {
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
         <Button>
-          <Icon icon="plus" className="h-6 w-6" />
+          <Icon icon="plus" className="size-6" />
           {t('lists:create_value.title')}
         </Button>
       </Modal.Trigger>

@@ -103,7 +103,7 @@ export function createRightPanel(name: string) {
     return (
       <Dialog.Close asChild onClick={onClose}>
         <button aria-label="Close">
-          <Icon icon="cross" className="h-6 w-6" />
+          <Icon icon="cross" className="size-6" />
         </button>
       </Dialog.Close>
     );

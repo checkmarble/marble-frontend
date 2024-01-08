@@ -94,7 +94,7 @@ export function UpdateInbox({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
         <Button className="w-fit whitespace-nowrap">
-          <Icon icon="edit" className="h-6 w-6" />
+          <Icon icon="edit" className="size-6" />
           {t('settings:inboxes.update_inbox')}
         </Button>
       </Modal.Trigger>

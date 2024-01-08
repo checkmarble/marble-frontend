@@ -130,7 +130,7 @@ export default function Decisions() {
     <DecisionRightPanel.Root>
       <Page.Container>
         <Page.Header>
-          <Icon icon="decision" className="mr-2 h-6 w-6" />
+          <Icon icon="decision" className="mr-2 size-6" />
           {t('navigation:decisions')}
         </Page.Header>
 
@@ -194,7 +194,7 @@ function AddToCase({
   return (
     <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
       <Button disabled={!hasSelection}>
-        <Icon icon="plus" className="h-5 w-5" />
+        <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
     </DecisionRightPanel.Trigger>

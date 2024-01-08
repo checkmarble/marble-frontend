@@ -110,8 +110,8 @@ function Header<TData extends RowData>({
                       )}
                     </p>
                     {{
-                      asc: <Icon icon="arrow-2-up" className="h-6 w-6" />,
-                      desc: <Icon icon="arrow-2-down" className="h-6 w-6" />,
+                      asc: <Icon icon="arrow-2-up" className="size-6" />,
+                      desc: <Icon icon="arrow-2-down" className="size-6" />,
                     }[header.column.getIsSorted() as string] ?? null}
                     <div
                       className={clsx(

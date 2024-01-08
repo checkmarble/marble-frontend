@@ -155,7 +155,7 @@ function TableDetails({
               {canEditDataModel ? (
                 <EditField key={cell.row.original.id} field={cell.row.original}>
                   <div className="text-grey-00 group-hover:text-grey-100 group-hover:bg-grey-02 group-hover:border-grey-50 group-hover:hover:bg-grey-05 group-hover:active:bg-grey-10 relative cursor-pointer rounded border bg-transparent p-2 transition-colors ease-in-out">
-                    <Icon icon="edit" className="h-6 w-6" />
+                    <Icon icon="edit" className="size-6" />
                   </div>
                 </EditField>
               ) : null}
@@ -262,7 +262,7 @@ function TableDetails({
               objectType: tableModel.name,
             })}
           >
-            <Icon icon="plus" className="h-6 w-6" />
+            <Icon icon="plus" className="size-6" />
             {t('data:upload_data')}
           </NavLink>
         ) : null}
@@ -278,7 +278,7 @@ function TableDetails({
                   />
                   <Icon
                     icon="edit"
-                    className="text-grey-00 group-hover:text-grey-100 relative h-6 w-6 bg-transparent transition-colors ease-in-out"
+                    className="text-grey-00 group-hover:text-grey-100 relative size-6 bg-transparent transition-colors ease-in-out"
                   />
                 </div>
               </EditTable>
@@ -349,7 +349,7 @@ export default function Data() {
     <Page.Container>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center">
-          <Icon icon="harddrive" className="mr-2 h-6 w-6" />
+          <Icon icon="harddrive" className="mr-2 size-6" />
           {t('navigation:data')}
         </div>
       </Page.Header>

@@ -51,7 +51,7 @@ export function TypeInfos({
           >
             <Icon
               icon={icon}
-              className="h-4 w-4"
+              className="size-4"
               aria-label={tKey ? t(tKey) : undefined}
             />
           </div>
@@ -113,7 +113,7 @@ export const OperandLabel = ({
       >
         <Icon
           icon="tip"
-          className="h-5 w-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
+          className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
         />
       </OperandTooltip>
     </div>

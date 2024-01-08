@@ -77,7 +77,7 @@ const FilterItemClear = forwardRef<
       )}
       {...props}
     >
-      <Icon icon="cross" className="h-5 w-5 shrink-0 text-purple-100" />
+      <Icon icon="cross" className="size-5 shrink-0 text-purple-100" />
     </button>
   );
 });

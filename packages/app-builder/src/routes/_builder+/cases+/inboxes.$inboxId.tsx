@@ -130,7 +130,7 @@ export default function Cases() {
                 </CasesFiltersMenu>
                 <CaseRightPanel.Trigger asChild data={{ inboxId }}>
                   <Button>
-                    <Icon icon="plus" className="h-5 w-5" />
+                    <Icon icon="plus" className="size-5" />
                     {t('cases:case.new_case')}
                   </Button>
                 </CaseRightPanel.Trigger>

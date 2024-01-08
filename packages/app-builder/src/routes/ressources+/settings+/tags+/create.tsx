@@ -80,7 +80,7 @@ export function CreateTag() {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button onClick={(e) => e.stopPropagation()}>
-          <Icon icon="plus" className="h-6 w-6" />
+          <Icon icon="plus" className="size-6" />
           {t('settings:tags.new_tag')}
         </Button>
       </Modal.Trigger>
@@ -128,7 +128,7 @@ const CreateTagContent = () => {
               {tagColors.map((color) => (
                 <FormSelect.DefaultItem key={color} value={color}>
                   <div
-                    className="h-4 w-4 rounded-full"
+                    className="size-4 rounded-full"
                     style={{ backgroundColor: color }}
                   ></div>
                 </FormSelect.DefaultItem>

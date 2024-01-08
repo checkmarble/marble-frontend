@@ -100,7 +100,7 @@ export function EditCaseStatus({
           </span>
           <Icon
             icon="arrow-2-down"
-            className="group-radix-state-open:rotate-180 h-6 w-6"
+            className="group-radix-state-open:rotate-180 size-6"
           />
         </DropdownMenu.Trigger>
       </div>

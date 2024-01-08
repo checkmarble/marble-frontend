@@ -41,7 +41,7 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
         <Icon
           icon="smallarrow-up"
           aria-hidden
-          className="border-grey-10 group-radix-state-open:rotate-180 h-6 w-6 rounded border transition-transform duration-200"
+          className="border-grey-10 group-radix-state-open:rotate-180 size-6 rounded border transition-transform duration-200"
         />
       </Trigger>
     );

@@ -250,7 +250,7 @@ function ModalContent({
             type="submit"
             {...buttonConfig.props}
           >
-            <Icon icon={buttonConfig.icon.submit} className="h-6 w-6" />
+            <Icon icon={buttonConfig.icon.submit} className="size-6" />
             {t(buttonConfig.label)}
           </Button>
         </div>
@@ -276,7 +276,7 @@ const DeploymentModal = ({
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button {...buttonConfig.props}>
-          <Icon icon={buttonConfig.icon.trigger} className="h-6 w-6" />
+          <Icon icon={buttonConfig.icon.trigger} className="size-6" />
           {t(buttonConfig.label)}
         </Button>
       </Modal.Trigger>
@@ -304,7 +304,7 @@ const DisabledDeploymentButton = ({
       content={t('common:errors.draft.invalid')}
     >
       <Button {...buttonConfig.props} disabled>
-        <Icon icon={buttonConfig.icon.trigger} className="h-6 w-6" />
+        <Icon icon={buttonConfig.icon.trigger} className="size-6" />
         {t(buttonConfig.label)}
       </Button>
     </Tooltip.Default>

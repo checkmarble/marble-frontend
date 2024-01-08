@@ -75,7 +75,7 @@ export function DeleteListValue({
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
               <div className="bg-red-10 mb-6 box-border rounded-[90px] p-4">
-                <Icon icon="delete" className="h-16 w-16 text-red-100" />
+                <Icon icon="delete" className="size-16 text-red-100" />
               </div>
               <h1 className="text-l font-semibold">
                 {t('lists:delete_value.title')}
@@ -99,7 +99,7 @@ export function DeleteListValue({
                 type="submit"
                 name="delete"
               >
-                <Icon icon="delete" className="h-6 w-6" />
+                <Icon icon="delete" className="size-6" />
                 <p>{t('common:delete')}</p>
               </Button>
             </div>

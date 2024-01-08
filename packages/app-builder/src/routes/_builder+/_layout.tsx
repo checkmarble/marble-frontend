@@ -77,7 +77,7 @@ export default function Builder() {
                         <Logo
                           logo="logo"
                           aria-labelledby="marble logo"
-                          className="h-6 w-6 shrink-0 transition-all group-aria-expanded/nav:h-12 group-aria-expanded/nav:w-12"
+                          className="size-6 shrink-0 transition-all group-aria-expanded/nav:h-12 group-aria-expanded/nav:w-12"
                         />
                         <Logo
                           logo="marble"
@@ -87,7 +87,7 @@ export default function Builder() {
                       </div>
                       <Icon
                         icon="arrow-2-down"
-                        className="group-radix-state-open:rotate-180 h-6 w-6 shrink-0 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
+                        className="group-radix-state-open:rotate-180 size-6 shrink-0 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
                       />
                     </button>
                   </Popover.Trigger>
@@ -133,7 +133,7 @@ export default function Builder() {
                               void segment.reset();
                             }}
                           >
-                            <Icon icon="logout" className="h-5 w-5" />
+                            <Icon icon="logout" className="size-5" />
                             {t('common:auth.logout')}
                           </Button>
                         </Form>

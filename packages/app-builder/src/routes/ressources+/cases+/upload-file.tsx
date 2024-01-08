@@ -36,7 +36,7 @@ export function UploadFile({ caseDetail }: { caseDetail: CaseDetail }) {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button className="w-fit whitespace-nowrap" variant="secondary">
-          <Icon icon="attachment" className="h-5 w-5" />
+          <Icon icon="attachment" className="size-5" />
           {t('cases:add_file')}
         </Button>
       </Modal.Trigger>
@@ -145,7 +145,7 @@ function UploadFileContent({
               <p>{t('cases:drop_file_accepted_types')}</p>
               <p className="text-grey-25 uppercase">{t('common:or')}</p>
               <Button>
-                <Icon icon="plus" className="h-6 w-6" />
+                <Icon icon="plus" className="size-6" />
                 {t('cases:pick_file_cta')}
               </Button>
             </>
