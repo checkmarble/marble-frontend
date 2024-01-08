@@ -105,7 +105,7 @@ function CreateScenarioContent() {
 
   const { load: loadDataModel } = dataModelFetcher;
   useEffect(() => {
-    loadDataModel('/ressources+/scenarios+/create');
+    loadDataModel(getRoute('/ressources/scenarios/create'));
   }, [loadDataModel]);
 
   const dataModel = dataModelFetcher.data?.dataModel ?? [];
