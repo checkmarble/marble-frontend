@@ -1,7 +1,7 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 import clsx from 'clsx';
 
-import { ScrollArea } from './ScrollArea';
+import { ScrollArea, ScrollAreaV2 } from './ScrollArea';
 
 const Story: Meta<typeof ScrollArea.Root> = {
   component: ScrollArea.Root,
@@ -9,7 +9,7 @@ const Story: Meta<typeof ScrollArea.Root> = {
 };
 export default Story;
 
-const Template: StoryFn<typeof ScrollArea.Root> = () => (
+export const V1: StoryFn = () => (
   <ScrollArea.Root className="border-grey-50 w-fit rounded border shadow-md">
     <ScrollArea.Viewport className="max-h-72 max-w-[100px]">
       <ul>
@@ -36,5 +36,23 @@ const Template: StoryFn<typeof ScrollArea.Root> = () => (
   </ScrollArea.Root>
 );
 
-export const Primary = Template.bind({});
-Primary.args = {};
+export const V2: StoryFn = () => (
+  <ScrollAreaV2
+    orientation="both"
+    className="border-grey-50 max-h-72 w-fit max-w-[100px] rounded border shadow-md"
+  >
+    <ul>
+      {Array.from({ length: 15 }).map((_, index) => (
+        <li
+          className={clsx(
+            'flex w-48 flex-col px-3 py-2 shadow-sm',
+            index % 2 === 0 ? 'bg-grey-10' : 'bg-grey-00',
+          )}
+          key={index}
+        >
+          <span>{index}</span>
+        </li>
+      ))}
+    </ul>
+  </ScrollAreaV2>
+);

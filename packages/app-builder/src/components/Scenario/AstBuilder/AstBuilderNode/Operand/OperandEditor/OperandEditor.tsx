@@ -21,9 +21,11 @@ import {
   type AstBuilder,
   getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
-import React, { forwardRef, useCallback, useMemo, useState } from 'react';
+import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
+import { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input } from 'ui-design-system';
+import { Button, Input, ScrollAreaV2 } from 'ui-design-system';
+import { Icon, type IconName } from 'ui-icons';
 
 import {
   adaptAggregationViewModel,
@@ -39,7 +41,6 @@ import { type OperandViewModel } from '../Operand';
 import { OperandDropdownMenu } from './OperandDropdownMenu';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
 import { OperandEditorSearchResults } from './OperandEditorSearchResults';
-import { ClearOption, EditOption } from './OperandOption';
 import { OperandTrigger } from './OperandTrigger';
 
 export function getEnumOptionsFromNeighbour({
@@ -210,58 +211,42 @@ const OperandEditorContent = forwardRef<
     [closeModal, editAggregation, editTimeAdd, onSave, operandViewModel.nodeId],
   );
 
-  const showClearOption = labelledAst.name !== '';
+  const bottomOptions = useBottomActions({
+    operandViewModel,
+    onSave,
+    closeModal,
+    bottomActions: {
+      clear: labelledAst.name !== '',
+      edit: true,
+      copy: labelledAst.name !== '',
+      paste: true,
+    },
+  });
 
   return (
     <OperandDropdownMenu.Content ref={ref}>
       <SearchInput value={searchText} onValueChange={setSearchText} />
-      <OperandDropdownMenu.ScrollableViewport className="flex flex-col gap-2 p-2">
-        {searchText === '' ? (
-          <OperandEditorDiscoveryResults
-            builder={builder}
-            options={options}
-            onSelect={handleSelectOption}
-          />
-        ) : (
-          <OperandEditorSearchResults
-            searchText={searchText}
-            options={options}
-            onSelect={handleSelectOption}
-          />
-        )}
-      </OperandDropdownMenu.ScrollableViewport>
-      <BottomOptions>
-        {isAggregationEditorNodeViewModel(operandViewModel) ? (
-          <EditOption
-            onSelect={() => {
-              const initialAggregation =
-                adaptAggregationViewModel(operandViewModel);
+      <ScrollAreaV2>
+        <div className="flex flex-col gap-2 p-2">
+          {searchText === '' ? (
+            <OperandEditorDiscoveryResults
+              builder={builder}
+              options={options}
+              onSelect={handleSelectOption}
+            />
+          ) : (
+            <OperandEditorSearchResults
+              searchText={searchText}
+              options={options}
+              onSelect={handleSelectOption}
+            />
+          )}
+        </div>
+      </ScrollAreaV2>
 
-              editAggregation({
-                initialAggregation,
-                onSave,
-              });
-              closeModal();
-            }}
-          />
-        ) : null}
-        {isTimeAddEditorNodeViewModel(operandViewModel) ? (
-          <EditOption
-            onSelect={() => {
-              const initialValue = adaptTimeAddViewModal(operandViewModel);
-              editTimeAdd({ initialValue, onSave });
-              closeModal();
-            }}
-          />
-        ) : null}
-        {showClearOption ? (
-          <ClearOption
-            onSelect={() => {
-              handleSelectOption(newUndefinedLabelledAst());
-            }}
-          />
-        ) : null}
-      </BottomOptions>
+      {bottomOptions.length > 0 ? (
+        <BottomOptions options={bottomOptions} />
+      ) : null}
     </OperandDropdownMenu.Content>
   );
 });
@@ -295,9 +280,131 @@ function SearchInput({
   );
 }
 
-function BottomOptions({ children }: { children: React.ReactNode }) {
-  if (React.Children.count(children) === 0) return null;
+interface BottomOptionProps {
+  icon: IconName;
+  label: string;
+  onSelect: () => void;
+}
+
+function BottomOptions({ options }: { options: BottomOptionProps[] }) {
   return (
-    <div className="border-t-grey-10 flex flex-col border-t">{children}</div>
+    <ScrollAreaV2
+      orientation="horizontal"
+      className="border-t-grey-10 shrink-0 border-t"
+    >
+      <div className="flex shrink-0 flex-row gap-2 p-2">
+        {options.map(({ icon, label, onSelect }) => (
+          <OperandDropdownMenu.Item asChild key={label} onSelect={onSelect}>
+            <Button variant="secondary" className="shrink-0">
+              <Icon icon={icon} className="size-4" />
+              <span className="line-clamp-1">{label}</span>
+            </Button>
+          </OperandDropdownMenu.Item>
+        ))}
+      </div>
+    </ScrollAreaV2>
   );
+}
+
+function useBottomActions({
+  operandViewModel,
+  onSave,
+  closeModal,
+  bottomActions,
+}: {
+  operandViewModel: OperandViewModel;
+  onSave: (astNode: AstNode) => void;
+  closeModal: () => void;
+  bottomActions: {
+    /**
+     * If true, show the clear action
+     */
+    clear?: boolean;
+    /**
+     * If true, show the edit action if the operand is editable (e.g. aggregation)
+     */
+    edit?: boolean;
+    /**
+     * If true, show the copy action if a CopyPasteASTContext is present
+     */
+    copy?: boolean;
+    /**
+     * If true, show the paste action if a CopyPasteASTContext is present and a copy has been made
+     */
+    paste?: boolean;
+  };
+}) {
+  const { t } = useTranslation(['common', 'scenarios']);
+  const editAggregation = useEditAggregation();
+  const editTimeAdd = useEditTimeAdd();
+  const copyPasteAST = useOptionalCopyPasteAST();
+
+  const bottomOptions: BottomOptionProps[] = [];
+
+  if (bottomActions.clear) {
+    bottomOptions.push({
+      icon: 'restart-alt',
+      label: t('scenarios:edit_operand.clear_operand'),
+      onSelect: () => {
+        onSave(newUndefinedLabelledAst().astNode);
+        closeModal();
+      },
+    });
+  }
+
+  if (bottomActions.edit) {
+    if (isAggregationEditorNodeViewModel(operandViewModel)) {
+      bottomOptions.push({
+        icon: 'edit',
+        label: t('common:edit'),
+        onSelect: () => {
+          const initialAggregation =
+            adaptAggregationViewModel(operandViewModel);
+
+          editAggregation({
+            initialAggregation,
+            onSave,
+          });
+          closeModal();
+        },
+      });
+    } else if (isTimeAddEditorNodeViewModel(operandViewModel)) {
+      bottomOptions.push({
+        icon: 'edit',
+        label: t('common:edit'),
+        onSelect: () => {
+          const initialValue = adaptTimeAddViewModal(operandViewModel);
+          editTimeAdd({ initialValue, onSave });
+          closeModal();
+        },
+      });
+    }
+  }
+
+  if (bottomActions.copy && copyPasteAST) {
+    bottomOptions.push({
+      icon: 'copy',
+      label: t('common:copy'),
+      onSelect: () => {
+        copyPasteAST.setAst(adaptAstNodeFromEditorViewModel(operandViewModel));
+        closeModal();
+      },
+    });
+  }
+
+  if (bottomActions.paste && copyPasteAST) {
+    const { ast } = copyPasteAST;
+    if (ast) {
+      bottomOptions.push({
+        icon: 'clipboard-document',
+        label: t('common:paste'),
+        onSelect: () => {
+          onSave(ast);
+          closeModal();
+        },
+      });
+    }
+  }
+
+  return bottomOptions;
 }

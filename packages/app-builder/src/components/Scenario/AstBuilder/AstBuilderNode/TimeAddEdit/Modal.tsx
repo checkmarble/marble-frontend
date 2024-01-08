@@ -14,6 +14,7 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type PropsWithChildren, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -143,16 +144,19 @@ export const TimeAddEditModal = ({
       <TimeAddEditModalContext.Provider value={editTimeAdd}>
         {children}
         <Modal.Content>
-          {timeAddEditModalProps ? (
-            <TimeAddEditModalContent
-              builder={builder}
-              initialValue={timeAddEditModalProps.initialValue}
-              onSave={(astNode: AstNode) => {
-                timeAddEditModalProps.onSave(astNode);
-                onOpenChange(false);
-              }}
-            />
-          ) : null}
+          {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
+          <CopyPasteASTContextProvider>
+            {timeAddEditModalProps ? (
+              <TimeAddEditModalContent
+                builder={builder}
+                initialValue={timeAddEditModalProps.initialValue}
+                onSave={(astNode: AstNode) => {
+                  timeAddEditModalProps.onSave(astNode);
+                  onOpenChange(false);
+                }}
+              />
+            ) : null}
+          </CopyPasteASTContextProvider>
         </Modal.Content>
       </TimeAddEditModalContext.Provider>
     </Modal.Root>

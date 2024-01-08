@@ -12,6 +12,7 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type Namespace } from 'i18next';
 import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
@@ -191,16 +192,21 @@ export const AggregationEditModal = ({
       <AggregationEditModalContext.Provider value={editAgregation}>
         {children}
         <Modal.Content size="medium">
-          {aggregationEditModalProps ? (
-            <AggregationEditModalContent
-              builder={builder}
-              initialAggregation={aggregationEditModalProps.initialAggregation}
-              onSave={(astNode) => {
-                aggregationEditModalProps.onSave(astNode);
-                onOpenChange(false);
-              }}
-            />
-          ) : null}
+          {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
+          <CopyPasteASTContextProvider>
+            {aggregationEditModalProps ? (
+              <AggregationEditModalContent
+                builder={builder}
+                initialAggregation={
+                  aggregationEditModalProps.initialAggregation
+                }
+                onSave={(astNode) => {
+                  aggregationEditModalProps.onSave(astNode);
+                  onOpenChange(false);
+                }}
+              />
+            ) : null}
+          </CopyPasteASTContextProvider>
         </Modal.Content>
       </AggregationEditModalContext.Provider>
     </Modal.Root>

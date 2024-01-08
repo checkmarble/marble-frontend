@@ -7,6 +7,7 @@ import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 import type * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { ScrollAreaV2 } from 'ui-design-system';
 
 import { Count, Group, GroupHeader, Label } from './Group';
 import { OperandDropdownMenu } from './OperandDropdownMenu';
@@ -185,17 +186,19 @@ function OperandDiscoverySubmenu({
           {children}
         </OperandDropdownMenu.SubTrigger>
         <OperandDropdownMenu.SubContent>
-          <OperandDropdownMenu.ScrollableViewport className="flex flex-col gap-2 p-2">
-            {options.map((option) => (
-              <OperandOption
-                key={option.name}
-                option={option}
-                onSelect={() => {
-                  onSelect(option);
-                }}
-              />
-            ))}
-          </OperandDropdownMenu.ScrollableViewport>
+          <ScrollAreaV2>
+            <div className="flex flex-col gap-2 p-2">
+              {options.map((option) => (
+                <OperandOption
+                  key={option.name}
+                  option={option}
+                  onSelect={() => {
+                    onSelect(option);
+                  }}
+                />
+              ))}
+            </div>
+          </ScrollAreaV2>
         </OperandDropdownMenu.SubContent>
       </OperandDropdownMenu.Sub>
     </Group>
