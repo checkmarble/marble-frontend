@@ -24,6 +24,9 @@ export default {
   ],
   future: {},
   tailwind: true,
+  dev: {
+    port: 3003,
+  },
   postcss: true,
   routes: async (defineRoutes) => {
     return flatRoutes('routes', defineRoutes, {

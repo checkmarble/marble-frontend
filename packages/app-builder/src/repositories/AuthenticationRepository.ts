@@ -42,11 +42,18 @@ export function getAuthenticationClientRepository({
   }
 
   const firebaseIdToken = () => {
-    const currentUser = clientAuth.currentUser;
-    if (currentUser === null) {
-      throw Error('No authenticated user, no token');
-    }
-    return currentUser.getIdToken();
+    // Prefer onAuthStateChanged https://github.com/firebase/firebase-js-sdk/issues/7348#issuecomment-1579320535
+    // currentUser is not reliable when firebase app is initialising
+    return new Promise<string>((resolve, reject) => {
+      const unsubscribe = clientAuth.onAuthStateChanged((user) => {
+        unsubscribe();
+        if (user) {
+          void user.getIdToken().then(resolve);
+        } else {
+          reject(new Error('No authenticated user, no token'));
+        }
+      });
+    });
   };
 
   return { googleSignIn, emailAndPasswordSignIn, firebaseIdToken };
