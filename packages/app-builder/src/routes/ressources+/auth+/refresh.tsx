@@ -39,7 +39,6 @@ export function useRefreshToken() {
             { idToken, csrf },
             { method: 'POST', action: getRoute('/ressources/auth/refresh') },
           );
-          return;
         },
         () => {
           navigate(getRoute('/ressources/auth/logout'));
