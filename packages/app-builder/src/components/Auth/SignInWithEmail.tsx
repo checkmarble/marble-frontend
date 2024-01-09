@@ -11,30 +11,15 @@ import {
   UserNotFoundError,
   WrongPasswordError,
 } from '@app-builder/services/auth/auth.client';
+import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
-import { serverServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ActionFunctionArgs, redirect } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Input } from 'ui-design-system';
 import * as z from 'zod';
-
-export function loader() {
-  return redirect('/login-with-email');
-}
-
-export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
-  return await authService.authenticate(request, {
-    successRedirect: '/home',
-    failureRedirect: '/login-with-email',
-  });
-}
 
 const emailAndPasswordFormSchema = z.object({
   credentials: z.object({
@@ -44,7 +29,11 @@ const emailAndPasswordFormSchema = z.object({
 });
 type EmailAndPasswordFormValues = z.infer<typeof emailAndPasswordFormSchema>;
 
-export function SignInWithEmail() {
+export function SignInWithEmail({
+  signIn,
+}: {
+  signIn: (authPayload: AuthPayload) => void;
+}) {
   const { t } = useTranslation(['login', 'common']);
 
   const formMethods = useForm<z.infer<typeof emailAndPasswordFormSchema>>({
@@ -98,7 +87,9 @@ export function SignInWithEmail() {
         fallback={<SignInWithEmailForm>{children}</SignInWithEmailForm>}
       >
         {() => (
-          <ClientSignInWithEmailForm>{children}</ClientSignInWithEmailForm>
+          <ClientSignInWithEmailForm signIn={signIn}>
+            {children}
+          </ClientSignInWithEmailForm>
         )}
       </ClientOnly>
     </FormProvider>
@@ -111,11 +102,12 @@ function SignInWithEmailForm(props: React.ComponentPropsWithoutRef<'form'>) {
 
 function ClientSignInWithEmailForm({
   children,
+  signIn,
 }: {
   children: React.ReactNode;
+  signIn: (authPayload: AuthPayload) => void;
 }) {
   const { t } = useTranslation(['login', 'common']);
-  const fetcher = useFetcher();
 
   const emailAndPasswordSignIn = useEmailAndPasswordSignIn(
     clientServices.authenticationClientService,
@@ -132,13 +124,7 @@ function ClientSignInWithEmailForm({
         if (!result) return;
         const { idToken, csrf } = result;
         if (!idToken) return;
-        fetcher.submit(
-          { idToken, csrf },
-          {
-            method: 'POST',
-            action: getRoute('/ressources/auth/login-with-email'),
-          },
-        );
+        signIn({ idToken, csrf });
       } catch (error) {
         if (error instanceof UserNotFoundError) {
           setError(

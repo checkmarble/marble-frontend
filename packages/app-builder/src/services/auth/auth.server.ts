@@ -70,6 +70,12 @@ export interface AuthenticationServerService {
   ): Promise<null>;
 }
 
+const schema = z.object({
+  idToken: z.string(),
+  csrf: z.string(),
+});
+export type AuthPayload = z.infer<typeof schema>;
+
 export function makeAuthenticationServerService(
   marbleAPIClient: MarbleAPIRepository,
   userRepository: (marbleApiClient: MarbleApi) => UserRepository,
@@ -108,12 +114,7 @@ export function makeAuthenticationServerService(
     let redirectUrl = options.failureRedirect;
 
     try {
-      const { idToken } = await parseForm(
-        request,
-        z.object({
-          idToken: z.string(),
-        }),
-      );
+      const { idToken } = await parseForm(request, schema);
       await csrfService.validate(request);
 
       const marbleToken = await marbleApi.postToken(
