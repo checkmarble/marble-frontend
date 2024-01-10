@@ -9,6 +9,7 @@ import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
 import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
+import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
 import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
@@ -33,6 +34,7 @@ interface AuthenticatedInfo {
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   user: CurrentUser;
+  inbox: InboxRepository;
 }
 
 export interface AuthenticationServerService {
@@ -79,6 +81,7 @@ export type AuthPayload = z.infer<typeof schema>;
 export function makeAuthenticationServerService(
   marbleAPIClient: MarbleAPIRepository,
   userRepository: (marbleApiClient: MarbleApi) => UserRepository,
+  inboxRepository: (marbleApiClient: MarbleApi) => InboxRepository,
   editorRepository: (marbleApiClient: MarbleApi) => EditorRepository,
   decisionRepository: (marbleApiClient: MarbleApi) => DecisionRepository,
   caseRepository: (marbleApiClient: MarbleApi) => CaseRepository,
@@ -244,6 +247,7 @@ export function makeAuthenticationServerService(
       organization: organizationRepository(apiClient, user.organizationId),
       dataModelRepository: dataModelRepository(apiClient),
       user,
+      inbox: inboxRepository(apiClient),
     };
   }
 
