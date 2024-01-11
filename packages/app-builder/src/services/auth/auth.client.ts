@@ -109,6 +109,18 @@ export function useEmailAndPasswordSignUp({
 export class EmailExistsError extends Error {}
 export class WeakPasswordError extends Error {}
 
+export function useSendSignInLink({
+  authenticationClientRepository,
+}: AuthenticationClientService) {
+  const {
+    i18n: { language },
+  } = useTranslation();
+
+  return async (email: string) => {
+    await authenticationClientRepository.sendSignInLink(language, email);
+  };
+}
+
 export function useBackendInfo({
   authenticationClientRepository,
 }: AuthenticationClientService) {

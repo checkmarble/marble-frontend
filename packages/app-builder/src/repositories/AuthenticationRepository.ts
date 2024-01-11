@@ -1,4 +1,6 @@
 import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
+import { getClientEnv } from '@app-builder/utils/environment.client';
+import { getRoute } from '@app-builder/utils/routes';
 
 export interface AuthenticationClientRepository {
   googleSignIn: (locale: string) => Promise<string>;
@@ -12,6 +14,7 @@ export interface AuthenticationClientRepository {
     email: string,
     password: string,
   ) => Promise<string>;
+  sendSignInLink: (locale: string, email: string) => Promise<void>;
   firebaseIdToken: () => Promise<string>;
 }
 
@@ -21,6 +24,7 @@ export function getAuthenticationClientRepository({
   signInWithOAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendSignInLinkToEmail,
 }: FirebaseClientWrapper): AuthenticationClientRepository {
   function getClientAuth(locale: string) {
     if (locale) {
@@ -61,6 +65,20 @@ export function getAuthenticationClientRepository({
     return credential.user.getIdToken();
   }
 
+  async function sendSignInLink(locale: string, email: string) {
+    const auth = getClientAuth(locale);
+
+    const actionCodeSettings = {
+      url: new URL(
+        getRoute('/sign-up'),
+        getClientEnv('MARBLE_APP_DOMAIN'),
+      ).toString(),
+      handleCodeInApp: true,
+    };
+
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+  }
+
   const firebaseIdToken = () => {
     // Prefer onAuthStateChanged https://github.com/firebase/firebase-js-sdk/issues/7348#issuecomment-1579320535
     // currentUser is not reliable when firebase app is initialising
@@ -81,5 +99,6 @@ export function getAuthenticationClientRepository({
     emailAndPasswordSignIn,
     emailAndPassswordSignUp,
     firebaseIdToken,
+    sendSignInLink,
   };
 }

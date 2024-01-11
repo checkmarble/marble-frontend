@@ -1,3 +1,4 @@
+import { AutomaticSendSignInLink } from '@app-builder/components/Auth/SendSignInLink';
 import { FormError } from '@app-builder/components/Form/FormError';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
@@ -8,7 +9,12 @@ import { getRoute } from '@app-builder/utils/routes';
 import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
-import { useFetcher, useNavigation } from '@remix-run/react';
+import {
+  useFetcher,
+  useNavigate,
+  useNavigation,
+  useSearchParams,
+} from '@remix-run/react';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +33,8 @@ const createUserFormSchema = z.object({
   role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const),
   organizationId: z.string().uuid(),
 });
+
+const signInLinkEmailSearchParam = 'signInLinkEmail';
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
@@ -48,7 +56,11 @@ export async function action({ request }: ActionFunctionArgs) {
       role: submission.value.role,
       organization_id: submission.value.organizationId,
     });
-    return redirect(getRoute('/settings/users'));
+    return redirect(
+      `${getRoute('/settings/users')}?${signInLinkEmailSearchParam}=${
+        submission.value.email
+      }`,
+    );
   } catch (error) {
     return json(submission);
   }
@@ -65,8 +77,18 @@ export function CreateUser({ orgId }: { orgId: string }) {
     }
   }, [navigation.state]);
 
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const signInLinkEmail = searchParams.get(signInLinkEmailSearchParam);
+
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
+      <AutomaticSendSignInLink
+        email={signInLinkEmail}
+        onSend={() => {
+          navigate(getRoute('/settings/users'), { replace: true });
+        }}
+      />
       <Modal.Trigger asChild>
         <Button onClick={(e) => e.stopPropagation()}>
           <Icon icon="plus" className="size-6" />
