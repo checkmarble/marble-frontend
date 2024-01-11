@@ -5,6 +5,27 @@ export const routes = [
     "file": "root.tsx",
     "children": [
       {
+        "id": "routes/_auth+/_layout",
+        "file": "routes/_auth+/_layout.tsx",
+        "children": [
+          {
+            "id": "routes/_auth+/forgot-password",
+            "path": "forgot-password",
+            "file": "routes/_auth+/forgot-password.tsx"
+          },
+          {
+            "id": "routes/_auth+/login",
+            "path": "login",
+            "file": "routes/_auth+/login.tsx"
+          },
+          {
+            "id": "routes/_auth+/sign-up",
+            "path": "sign-up",
+            "file": "routes/_auth+/sign-up.tsx"
+          }
+        ]
+      },
+      {
         "id": "routes/_builder+/_layout",
         "file": "routes/_builder+/_layout.tsx",
         "children": [
@@ -185,11 +206,6 @@ export const routes = [
         "file": "routes/healthcheck.ts"
       },
       {
-        "id": "routes/login",
-        "path": "login",
-        "file": "routes/login.tsx"
-      },
-      {
         "id": "routes/ressources+/auth+/login",
         "path": "ressources/auth/login",
         "file": "routes/ressources+/auth+/login.tsx"
@@ -203,6 +219,11 @@ export const routes = [
         "id": "routes/ressources+/auth+/refresh",
         "path": "ressources/auth/refresh",
         "file": "routes/ressources+/auth+/refresh.tsx"
+      },
+      {
+        "id": "routes/ressources+/auth+/sign-up",
+        "path": "ressources/auth/sign-up",
+        "file": "routes/ressources+/auth+/sign-up.tsx"
       },
       {
         "id": "routes/ressources+/cases+/add-comment",

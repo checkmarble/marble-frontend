@@ -134,6 +134,7 @@ export function makeAuthenticationServerService(
       authSession.set('user', user);
       redirectUrl = options.successRedirect;
     } catch (error) {
+      console.log(error);
       authSession.flash('authError', { message: adaptAuthErrors(error) });
 
       redirectUrl = options.failureRedirect;

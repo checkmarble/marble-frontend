@@ -7,6 +7,11 @@ export interface AuthenticationClientRepository {
     email: string,
     password: string,
   ) => Promise<string>;
+  emailAndPassswordSignUp: (
+    locale: string,
+    email: string,
+    password: string,
+  ) => Promise<string>;
   firebaseIdToken: () => Promise<string>;
 }
 
@@ -15,6 +20,7 @@ export function getAuthenticationClientRepository({
   googleAuthProvider,
   signInWithOAuth,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 }: FirebaseClientWrapper): AuthenticationClientRepository {
   function getClientAuth(locale: string) {
     if (locale) {
@@ -41,6 +47,20 @@ export function getAuthenticationClientRepository({
     return credential.user.getIdToken();
   }
 
+  async function emailAndPassswordSignUp(
+    locale: string,
+    email: string,
+    password: string,
+  ) {
+    const auth = getClientAuth(locale);
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
+    return credential.user.getIdToken();
+  }
+
   const firebaseIdToken = () => {
     // Prefer onAuthStateChanged https://github.com/firebase/firebase-js-sdk/issues/7348#issuecomment-1579320535
     // currentUser is not reliable when firebase app is initialising
@@ -56,5 +76,10 @@ export function getAuthenticationClientRepository({
     });
   };
 
-  return { googleSignIn, emailAndPasswordSignIn, firebaseIdToken };
+  return {
+    googleSignIn,
+    emailAndPasswordSignIn,
+    emailAndPassswordSignUp,
+    firebaseIdToken,
+  };
 }
