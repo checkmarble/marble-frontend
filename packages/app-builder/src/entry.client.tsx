@@ -21,6 +21,13 @@ Sentry.init({
     // Replay is only available in the client
     new Sentry.Replay(),
   ],
+  beforeSend: (event, hint) => {
+    if (getClientEnv('ENV') === 'development') {
+      console.error(hint.originalException || hint.syntheticException);
+      return null; // this drops the event and nothing will be sent to sentry
+    }
+    return event;
+  },
 
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.
