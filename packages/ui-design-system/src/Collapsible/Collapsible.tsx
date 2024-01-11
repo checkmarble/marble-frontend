@@ -35,14 +35,17 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
           'group flex cursor-pointer items-center justify-between gap-4 p-4 font-semibold lg:p-6',
           className,
         )}
+        asChild
         {...props}
       >
-        {children}
-        <Icon
-          icon="smallarrow-up"
-          aria-hidden
-          className="border-grey-10 group-radix-state-open:rotate-180 size-6 rounded border transition-transform duration-200"
-        />
+        <div>
+          {children}
+          <Icon
+            icon="smallarrow-up"
+            aria-hidden
+            className="border-grey-10 group-radix-state-open:rotate-180 size-6 rounded border transition-transform duration-200"
+          />
+        </div>
       </Trigger>
     );
   },

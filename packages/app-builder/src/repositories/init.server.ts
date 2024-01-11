@@ -4,6 +4,7 @@ import { getCaseRepository } from './CaseRepository';
 import { getDataModelRepository } from './DataModelRepository';
 import { getDecisionRepository } from './DecisionRepository';
 import { getEditorRepository } from './EditorRepository';
+import { getInboxRepository } from './InboxRepository';
 import { getMarbleAPIRepository } from './MarbleAPIRepository';
 import { getOrganizationRepository } from './OrganizationRepository';
 import { getScenarioRepository } from './ScenarioRepository';
@@ -32,6 +33,7 @@ export function makeServerRepositories({
     ),
     marbleAPIClient: getMarbleAPIRepository(getMarbleAPIClient),
     userRepository: getUserRepository(),
+    inboxRepository: getInboxRepository(),
     editorRepository: getEditorRepository(),
     decisionRepository: getDecisionRepository(),
     caseRepository: getCaseRepository(),
