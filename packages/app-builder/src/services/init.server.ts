@@ -29,6 +29,7 @@ function makeServerServices(repositories: ServerRepositories) {
     authService: makeAuthenticationServerService(
       repositories.marbleAPIClient,
       repositories.userRepository,
+      repositories.inboxRepository,
       repositories.editorRepository,
       repositories.decisionRepository,
       repositories.caseRepository,

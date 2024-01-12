@@ -1,7 +1,7 @@
 {
+  "great_rules_right_tools": "Great rules are built with the <RightTools>right tools</RightTools>.",
+  "marble_description": "Marble is a real time rule engine for fraud and compliance monitoring, designed for fintech companies and financial institutions.",
   "title": "Login to your account",
-  "help.no_account": "Don’t have an account?",
-  "help.contact_us": "Contact us",
   "sign_in.google": "Sign in with Google",
   "errors.no_account": "No Marble account found for this address.",
   "sign_in_with_email.email": "Email",

@@ -1,7 +1,5 @@
 {
   "title": "Connectez-vous à votre compte",
-  "help.no_account": "Vous n'avez pas de compte ?",
-  "help.contact_us": "Contactez-nous",
   "sign_in.google": "Connectez-vous avec Google",
   "errors.no_account": "Aucun compte Marble trouvé pour cette adresse."
 }
