@@ -9,6 +9,7 @@ import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
 import { NewListValue } from '@app-builder/routes/ressources+/lists+/value_create';
 import { DeleteListValue } from '@app-builder/routes/ressources+/lists+/value_delete';
 import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';

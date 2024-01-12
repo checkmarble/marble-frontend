@@ -19,11 +19,6 @@ export const routes = [
             "file": "routes/_auth+/forgot-password.tsx"
           },
           {
-            "id": "routes/_auth+/sign-in-with-link",
-            "path": "sign-in-with-link",
-            "file": "routes/_auth+/sign-in-with-link.tsx"
-          },
-          {
             "id": "routes/_auth+/sign-in",
             "path": "sign-in",
             "file": "routes/_auth+/sign-in.tsx"

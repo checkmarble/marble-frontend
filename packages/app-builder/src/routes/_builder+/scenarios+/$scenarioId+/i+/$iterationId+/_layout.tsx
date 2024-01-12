@@ -3,6 +3,7 @@ import { EditorModeContextProvider } from '@app-builder/services/editor';
 import { CurrentScenarioIterationContextProvider } from '@app-builder/services/editor/current-scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
 import { CurrentScenarioValidationContextProvider } from '@app-builder/services/validation/current-scenario-validation';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';

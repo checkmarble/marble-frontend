@@ -24,6 +24,7 @@ import {
   useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';

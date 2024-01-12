@@ -6,6 +6,7 @@ import { UpdateInboxUser } from '@app-builder/routes/ressources+/settings+/inbox
 import { UpdateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/update';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
