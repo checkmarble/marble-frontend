@@ -125,7 +125,7 @@ export function ErrorBoundary() {
               <a href="/login">
                 <Logo
                   logo="logo-standard"
-                  className="h-10 w-auto"
+                  className="h-10 w-auto text-[#080525]"
                   preserveAspectRatio="xMinYMid meet"
                   aria-labelledby="marble"
                 />

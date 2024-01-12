@@ -185,19 +185,9 @@ export const routes = [
         "file": "routes/healthcheck.ts"
       },
       {
-        "id": "routes/login-with-email",
-        "path": "login-with-email",
-        "file": "routes/login-with-email.tsx"
-      },
-      {
         "id": "routes/login",
         "path": "login",
         "file": "routes/login.tsx"
-      },
-      {
-        "id": "routes/ressources+/auth+/login-with-email",
-        "path": "ressources/auth/login-with-email",
-        "file": "routes/ressources+/auth+/login-with-email.tsx"
       },
       {
         "id": "routes/ressources+/auth+/login",
