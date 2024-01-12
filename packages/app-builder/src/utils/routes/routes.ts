@@ -9,14 +9,24 @@ export const routes = [
         "file": "routes/_auth+/_layout.tsx",
         "children": [
           {
+            "id": "routes/_auth+/email-verification",
+            "path": "email-verification",
+            "file": "routes/_auth+/email-verification.tsx"
+          },
+          {
             "id": "routes/_auth+/forgot-password",
             "path": "forgot-password",
             "file": "routes/_auth+/forgot-password.tsx"
           },
           {
-            "id": "routes/_auth+/login",
-            "path": "login",
-            "file": "routes/_auth+/login.tsx"
+            "id": "routes/_auth+/sign-in-with-link",
+            "path": "sign-in-with-link",
+            "file": "routes/_auth+/sign-in-with-link.tsx"
+          },
+          {
+            "id": "routes/_auth+/sign-in",
+            "path": "sign-in",
+            "file": "routes/_auth+/sign-in.tsx"
           },
           {
             "id": "routes/_auth+/sign-up",
@@ -206,11 +216,6 @@ export const routes = [
         "file": "routes/healthcheck.ts"
       },
       {
-        "id": "routes/ressources+/auth+/login",
-        "path": "ressources/auth/login",
-        "file": "routes/ressources+/auth+/login.tsx"
-      },
-      {
         "id": "routes/ressources+/auth+/logout",
         "path": "ressources/auth/logout",
         "file": "routes/ressources+/auth+/logout.tsx"
@@ -219,11 +224,6 @@ export const routes = [
         "id": "routes/ressources+/auth+/refresh",
         "path": "ressources/auth/refresh",
         "file": "routes/ressources+/auth+/refresh.tsx"
-      },
-      {
-        "id": "routes/ressources+/auth+/sign-up",
-        "path": "ressources/auth/sign-up",
-        "file": "routes/ressources+/auth+/sign-up.tsx"
       },
       {
         "id": "routes/ressources+/cases+/add-comment",

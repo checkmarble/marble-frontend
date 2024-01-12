@@ -16,7 +16,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const scenarioId = fromParams(params, 'scenarioId');

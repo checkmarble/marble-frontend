@@ -6,7 +6,7 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { Logo } from 'ui-icons';
 
 function SignInWithGoogleButton({ onClick }: { onClick?: () => void }) {
-  const { t } = useTranslation(['login']);
+  const { t } = useTranslation(['auth']);
 
   return (
     <button
@@ -19,7 +19,7 @@ function SignInWithGoogleButton({ onClick }: { onClick?: () => void }) {
         <Logo logo="google-logo" className="size-6" />
       </div>
       <span className="text-s text-grey-00 w-full whitespace-nowrap text-center align-middle font-medium">
-        {t('login:sign_in.google')}
+        {t('auth:sign_in.google')}
       </span>
     </button>
   );

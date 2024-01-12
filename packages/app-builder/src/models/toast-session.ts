@@ -8,6 +8,7 @@ export const toastMessageScema = z.object({
     'common:empty_scenario_iteration_list',
     'common:errors.edit.forbidden_not_draft',
     'common:errors.list.duplicate_list_name',
+    'common:errors.list.duplicate_email',
     'common:errors.data.duplicate_field_name',
     'common:errors.data.duplicate_table_name',
     'common:errors.data.duplicate_link_name',

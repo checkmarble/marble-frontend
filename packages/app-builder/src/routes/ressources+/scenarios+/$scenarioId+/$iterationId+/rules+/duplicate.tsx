@@ -24,7 +24,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
   const t = await i18nextService.getFixedT(request, 'scenarios');
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const parsedForm = await parseFormSafe(request, duplicateRuleFormSchema);

@@ -27,7 +27,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await getSession(request);
 
   const { cases } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const formData = await request.formData();

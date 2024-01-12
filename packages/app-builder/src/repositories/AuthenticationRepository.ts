@@ -8,13 +8,18 @@ export interface AuthenticationClientRepository {
     locale: string,
     email: string,
     password: string,
-  ) => Promise<string>;
+  ) => Promise<
+    { idToken: string; emailVerified: true } | { emailVerified: false }
+  >;
   emailAndPassswordSignUp: (
     locale: string,
     email: string,
     password: string,
-  ) => Promise<string>;
-  sendSignInLink: (locale: string, email: string) => Promise<void>;
+  ) => Promise<void>;
+  resendEmailVerification: (
+    locale: string,
+    logout: () => void,
+  ) => Promise<void>;
   firebaseIdToken: () => Promise<string>;
 }
 
@@ -24,7 +29,7 @@ export function getAuthenticationClientRepository({
   signInWithOAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  sendSignInLinkToEmail,
+  sendEmailVerification,
 }: FirebaseClientWrapper): AuthenticationClientRepository {
   function getClientAuth(locale: string) {
     if (locale) {
@@ -48,7 +53,13 @@ export function getAuthenticationClientRepository({
   ) {
     const auth = getClientAuth(locale);
     const credential = await signInWithEmailAndPassword(auth, email, password);
-    return credential.user.getIdToken();
+    if (!credential.user.emailVerified) {
+      return { emailVerified: false as const };
+    }
+    return {
+      idToken: await credential.user.getIdToken(),
+      emailVerified: true as const,
+    };
   }
 
   async function emailAndPassswordSignUp(
@@ -62,21 +73,30 @@ export function getAuthenticationClientRepository({
       email,
       password,
     );
-    return credential.user.getIdToken();
-  }
-
-  async function sendSignInLink(locale: string, email: string) {
-    const auth = getClientAuth(locale);
 
     const actionCodeSettings = {
-      url: new URL(
-        getRoute('/sign-up'),
-        getClientEnv('MARBLE_APP_DOMAIN'),
-      ).toString(),
+      url: new URL(getRoute('/sign-in'), getClientEnv('MARBLE_APP_DOMAIN'))
+        .href,
       handleCodeInApp: true,
     };
 
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    await sendEmailVerification(credential.user, actionCodeSettings);
+  }
+
+  async function resendEmailVerification(locale: string, logout: () => void) {
+    const auth = getClientAuth(locale);
+    if (!auth.currentUser) {
+      logout();
+      return;
+    }
+
+    const actionCodeSettings = {
+      url: new URL(getRoute('/sign-in'), getClientEnv('MARBLE_APP_DOMAIN'))
+        .href,
+      handleCodeInApp: true,
+    };
+
+    await sendEmailVerification(auth.currentUser, actionCodeSettings);
   }
 
   const firebaseIdToken = () => {
@@ -98,7 +118,7 @@ export function getAuthenticationClientRepository({
     googleSignIn,
     emailAndPasswordSignIn,
     emailAndPassswordSignUp,
+    resendEmailVerification,
     firebaseIdToken,
-    sendSignInLink,
   };
 }

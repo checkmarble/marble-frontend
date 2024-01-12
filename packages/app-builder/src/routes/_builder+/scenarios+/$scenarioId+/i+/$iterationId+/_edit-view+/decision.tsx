@@ -85,7 +85,7 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
   const t = await i18nextService.getFixedT(request, 'scenarios');
   const parsedForm = await parseFormSafe(request, getFormSchema(t));

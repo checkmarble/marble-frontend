@@ -19,14 +19,14 @@ export default function AuthLayout() {
             <h1 className="text-grey-00 text-balance text-[30px] font-medium leading-tight lg:text-[44px]">
               <Trans
                 t={t}
-                i18nKey="login:great_rules_right_tools"
+                i18nKey="auth:great_rules_right_tools"
                 components={{
                   RightTools: <span className="capitalize text-[#ada7fd]" />,
                 }}
               />
             </h1>
             <p className="text-m lg:text-l text-grey-00 text-balance">
-              {t('login:marble_description')}
+              {t('auth:marble_description')}
             </p>
           </div>
           <div className="relative flex flex-1 flex-col justify-start [&>*]:absolute [&>*]:h-full">

@@ -36,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const formData = await request.formData();

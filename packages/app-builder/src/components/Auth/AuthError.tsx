@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { authI18n } from './auth-i18n';
 
 const errorLabels: Record<AuthErrors, ParseKeys<typeof authI18n>> = {
-  NoAccount: 'login:errors.no_account',
+  NoAccount: 'auth:errors.no_account',
   Unknown: 'common:errors.unknown',
 };
 

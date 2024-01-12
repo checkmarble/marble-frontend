@@ -1,6 +1,5 @@
 {
   "auth.logout": "Log out",
-  "auth.login": "Login",
   "search": "Search",
   "error_one": "{{count}} error",
   "error_other": "{{count}} errors",
@@ -10,6 +9,7 @@
   "errors.not_found": "This page could not be found.",
   "errors.edit.forbidden_not_draft": "You can only edit a draft version of a scenario.",
   "errors.list.duplicate_list_name": "A list with this name already exist",
+  "errors.list.duplicate_email": "This email is already used",
   "errors.data.duplicate_field_name": "A field with this name already exist",
   "errors.data.duplicate_table_name": "A table with this name already exist",
   "errors.data.duplicate_link_name": "A link with this name already exist",

@@ -58,7 +58,7 @@ const REQUIRED_OPTIONS = [
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const parsedData = createFieldFormSchema.safeParse(await request.json());

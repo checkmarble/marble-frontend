@@ -1,13 +1,21 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { AuthError } from '@app-builder/components/Auth/AuthError';
-import { SignInWithEmail } from '@app-builder/components/Auth/SignInWithEmail';
+import { SignInWithEmailAndPassword } from '@app-builder/components/Auth/SignInWithEmailAndPassword';
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
-import { useSignIn } from '@app-builder/routes/ressources+/auth+/login';
+import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import {
+  type ActionFunctionArgs,
+  json,
+  type LoaderFunctionArgs,
+} from '@remix-run/node';
+import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
+
+export const handle = {
+  i18n: authI18n,
+};
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const {
@@ -15,7 +23,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     authSessionService: { getSession },
   } = serverServices;
   await authService.isAuthenticated(request, {
-    successRedirect: '/home',
+    successRedirect: getRoute('/scenarios/'),
   });
   const session = await getSession(request);
   const error = session.get('authError');
@@ -25,15 +33,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
-export const handle = {
-  i18n: authI18n,
-};
+export async function action({ request }: ActionFunctionArgs) {
+  const { authService } = serverServices;
+  return await authService.authenticate(request, {
+    successRedirect: getRoute('/scenarios/'),
+    failureRedirect: getRoute('/sign-in'),
+  });
+}
 
 export default function Login() {
   const { t } = useTranslation(handle.i18n);
   const { authError } = useLoaderData<typeof loader>();
 
-  const signIn = useSignIn();
+  const fetcher = useFetcher();
+  const signIn = (authPayload: AuthPayload) =>
+    fetcher.submit(authPayload, {
+      method: 'POST',
+      action: getRoute('/sign-in'),
+    });
 
   return (
     <div className="flex w-full flex-col items-center">
@@ -51,11 +68,11 @@ export default function Login() {
       </div>
 
       <div className="flex w-full flex-col gap-2">
-        <SignInWithEmail signIn={signIn} />
+        <SignInWithEmailAndPassword signIn={signIn} />
         <p className="text-xs">
           <Trans
             t={t}
-            i18nKey="login:sign_in_with_email.dont_have_an_account_sign_up"
+            i18nKey="auth:sign_in.dont_have_an_account"
             components={{
               SignUp: (
                 <Link
@@ -65,7 +82,7 @@ export default function Login() {
               ),
             }}
             values={{
-              signUp: t('login:sign_in_with_email.sign_up'),
+              signUp: t('auth:sign_up'),
             }}
           />
         </p>
@@ -73,7 +90,7 @@ export default function Login() {
           className="text-xs text-purple-100 underline"
           to={getRoute('/forgot-password')}
         >
-          {t('login:sign_in_with_email.forgot_password')}
+          {t('auth:sign_in.forgot_password')}
         </Link>
       </div>
       {authError ? <AuthError error={authError} className="mt-8" /> : null}

@@ -10,7 +10,7 @@ import { Icon } from 'ui-icons';
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const { inboxes } = await apiClient.listInboxes({ withCaseCount: false });

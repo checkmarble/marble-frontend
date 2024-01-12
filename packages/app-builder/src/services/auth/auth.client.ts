@@ -48,13 +48,16 @@ export function useEmailAndPasswordSignIn({
 
   return async (email: string, password: string) => {
     try {
-      const idToken =
+      const result =
         await authenticationClientRepository.emailAndPasswordSignIn(
           language,
           email,
           password,
         );
-      return { idToken, csrf };
+      if (!result.emailVerified) {
+        throw new EmailUnverified();
+      }
+      return { idToken: result.idToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
@@ -71,6 +74,7 @@ export function useEmailAndPasswordSignIn({
   };
 }
 
+export class EmailUnverified extends Error {}
 export class UserNotFoundError extends Error {}
 export class WrongPasswordError extends Error {}
 export class InvalidLoginCredentials extends Error {}
@@ -109,15 +113,18 @@ export function useEmailAndPasswordSignUp({
 export class EmailExistsError extends Error {}
 export class WeakPasswordError extends Error {}
 
-export function useSendSignInLink({
+export function useResendEmailVerification({
   authenticationClientRepository,
 }: AuthenticationClientService) {
   const {
     i18n: { language },
   } = useTranslation();
 
-  return async (email: string) => {
-    await authenticationClientRepository.sendSignInLink(language, email);
+  return async (logout: () => void) => {
+    await authenticationClientRepository.resendEmailVerification(
+      language,
+      logout,
+    );
   };
 }
 

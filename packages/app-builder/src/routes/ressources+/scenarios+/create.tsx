@@ -23,7 +23,7 @@ export const handle = {
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
   const dataModel = await dataModelRepository.getDataModel();
 
@@ -41,7 +41,7 @@ const createScenarioFormSchema = z.object({
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
   const parsedForm = await parseFormSafe(request, createScenarioFormSchema);
   if (!parsedForm.success) {

@@ -1,10 +1,9 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
-import { AuthError } from '@app-builder/components/Auth/AuthError';
-import { SignUpWithEmailAndPassword } from '@app-builder/components/Auth/SignUpWithEmailAndPassword';
+import { SendEmailVerification } from '@app-builder/components/Auth/SendEmailVerification';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Link, useLoaderData, useNavigate } from '@remix-run/react';
+import { type LoaderFunctionArgs } from '@remix-run/node';
+import { Link } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
 
 export const handle = {
@@ -12,35 +11,26 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const {
-    authService,
-    authSessionService: { getSession },
-  } = serverServices;
+  const { authService } = serverServices;
   await authService.isAuthenticated(request, {
     successRedirect: getRoute('/scenarios/'),
   });
-  const session = await getSession(request);
-  const error = session.get('authError');
-
-  return json({
-    authError: error?.message,
-  });
+  return null;
 }
 
 export default function SignUp() {
   const { t } = useTranslation(handle.i18n);
-  const { authError } = useLoaderData<typeof loader>();
-
-  const navigate = useNavigate();
-  const signUp = () => navigate(getRoute('/email-verification'));
 
   return (
     <div className="flex w-full flex-col items-center">
-      <SignUpWithEmailAndPassword signUp={signUp} />
+      <p className="text-m text-grey-100 mb-4">
+        <Trans t={t} i18nKey="auth:email-verification.description" />
+      </p>
+      <SendEmailVerification />
       <p className="mt-2 text-xs">
         <Trans
           t={t}
-          i18nKey="auth:sign_up.already_have_an_account_sign_up"
+          i18nKey="auth:email-verification.wrong_place"
           components={{
             SignIn: (
               <Link
@@ -54,7 +44,6 @@ export default function SignUp() {
           }}
         />
       </p>
-      {authError ? <AuthError error={authError} className="mt-8" /> : null}
     </div>
   );
 }

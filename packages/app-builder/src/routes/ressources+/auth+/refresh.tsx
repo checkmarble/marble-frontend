@@ -7,7 +7,7 @@ import { useFetcher, useNavigate } from '@remix-run/react';
 import { useAuthenticityToken } from 'remix-utils/csrf/react';
 
 export function loader() {
-  return redirect(getRoute('/login'));
+  return redirect(getRoute('/sign-in'));
 }
 
 export async function action({ request }: ActionFunctionArgs) {

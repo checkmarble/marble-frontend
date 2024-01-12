@@ -1,5 +1,4 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { SendSignInLink } from '@app-builder/components/Auth/SendSignInLink';
 import { isAdmin, type User } from '@app-builder/models';
 import { CreateUser } from '@app-builder/routes/ressources+/settings+/users+/create';
 import { DeleteUser } from '@app-builder/routes/ressources+/settings+/users+/delete';
@@ -19,7 +18,7 @@ import { Table, useTable } from 'ui-design-system';
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { user, inbox } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
   if (!isAdmin(user)) {
     return redirect(getRoute('/'));
@@ -101,7 +100,6 @@ export default function Users() {
                 userId={cell.row.original.userId}
                 currentUserId={user.actorIdentity.userId}
               />
-              <SendSignInLink email={cell.row.original.email} />
             </div>
           );
         },
