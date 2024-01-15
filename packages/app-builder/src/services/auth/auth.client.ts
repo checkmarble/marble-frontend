@@ -128,6 +128,21 @@ export function useResendEmailVerification({
   };
 }
 
+export function useSendPasswordResetEmail({
+  authenticationClientRepository,
+}: AuthenticationClientService) {
+  const {
+    i18n: { language },
+  } = useTranslation();
+
+  return async (email: string) => {
+    await authenticationClientRepository.sendPasswordResetEmail(
+      language,
+      email,
+    );
+  };
+}
+
 export function useBackendInfo({
   authenticationClientRepository,
 }: AuthenticationClientService) {
