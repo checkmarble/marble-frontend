@@ -9,15 +9,7 @@ export function adaptAuthErrors(error: unknown): AuthErrors {
     error instanceof HttpError &&
     error.status === 401 &&
     typeof error.data === 'string' &&
-    error.data?.includes('unknown user')
-  )
-    return 'NoAccount';
-
-  if (
-    error instanceof HttpError &&
-    error.status === 401 &&
-    typeof error.data === 'string' &&
-    error.data?.includes('not found')
+    error.data?.includes('ErrUnknownUser')
   )
     return 'NoAccount';
 
