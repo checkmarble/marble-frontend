@@ -10,6 +10,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
 } from 'firebase/auth';
@@ -22,6 +23,7 @@ export type FirebaseClientWrapper = {
   signInWithEmailAndPassword: typeof signInWithEmailAndPassword;
   createUserWithEmailAndPassword: typeof createUserWithEmailAndPassword;
   sendEmailVerification: typeof sendEmailVerification;
+  sendPasswordResetEmail: typeof sendPasswordResetEmail;
 };
 
 export function initializeFirebaseClient({
@@ -50,5 +52,6 @@ export function initializeFirebaseClient({
     signInWithEmailAndPassword: signInWithEmailAndPassword,
     createUserWithEmailAndPassword: createUserWithEmailAndPassword,
     sendEmailVerification: sendEmailVerification,
+    sendPasswordResetEmail: sendPasswordResetEmail,
   };
 }
