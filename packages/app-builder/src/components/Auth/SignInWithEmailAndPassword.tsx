@@ -107,7 +107,7 @@ export function SignInWithEmailAndPassword({
 function SignInWithEmailAndPasswordForm(
   props: React.ComponentPropsWithoutRef<'form'>,
 ) {
-  return <form noValidate className="flex flex-col gap-4" {...props} />;
+  return <form noValidate className="flex w-full flex-col gap-4" {...props} />;
 }
 
 function ClientSignInWithEmailAndPasswordForm({

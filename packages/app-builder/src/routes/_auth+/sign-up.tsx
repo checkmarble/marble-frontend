@@ -1,3 +1,4 @@
+import { Callout } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { AuthError } from '@app-builder/components/Auth/AuthError';
 import { SignUpWithEmailAndPassword } from '@app-builder/components/Auth/SignUpWithEmailAndPassword';
@@ -36,6 +37,9 @@ export default function SignUp() {
 
   return (
     <div className="flex w-full flex-col items-center">
+      <Callout variant="soft" className="mb-6 text-left">
+        {t('auth:sign_up.description')}
+      </Callout>
       <SignUpWithEmailAndPassword signUp={signUp} />
       <p className="mt-2 text-xs">
         <Trans

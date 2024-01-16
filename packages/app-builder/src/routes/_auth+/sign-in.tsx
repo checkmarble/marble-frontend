@@ -67,9 +67,9 @@ export default function Login() {
         <div className="bg-grey-10 h-px w-full" />
       </div>
 
-      <div className="flex w-full flex-col gap-2">
+      <div className="flex w-full flex-col items-center gap-2">
         <SignInWithEmailAndPassword signIn={signIn} />
-        <p className="text-xs">
+        <p className="w-fit text-xs">
           <Trans
             t={t}
             i18nKey="auth:sign_in.dont_have_an_account"
@@ -87,7 +87,7 @@ export default function Login() {
           />
         </p>
         <Link
-          className="text-xs text-purple-100 underline"
+          className="w-fit text-xs text-purple-100 underline"
           to={getRoute('/forgot-password')}
         >
           {t('auth:sign_in.forgot_password')}
