@@ -24,6 +24,7 @@ import {
   useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -85,7 +86,7 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
   const t = await i18nextService.getFixedT(request, 'scenarios');
   const parsedForm = await parseFormSafe(request, getFormSchema(t));

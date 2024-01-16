@@ -6,6 +6,7 @@ import {
   FormLabel,
 } from '@app-builder/components/Form';
 import {
+  EmailUnverified,
   InvalidLoginCredentials,
   useEmailAndPasswordSignIn,
   UserNotFoundError,
@@ -13,7 +14,10 @@ import {
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
+import { getRoute } from '@app-builder/utils/routes';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -29,12 +33,12 @@ const emailAndPasswordFormSchema = z.object({
 });
 type EmailAndPasswordFormValues = z.infer<typeof emailAndPasswordFormSchema>;
 
-export function SignInWithEmail({
+export function SignInWithEmailAndPassword({
   signIn,
 }: {
   signIn: (authPayload: AuthPayload) => void;
 }) {
-  const { t } = useTranslation(['login', 'common']);
+  const { t } = useTranslation(['auth', 'common']);
 
   const formMethods = useForm<z.infer<typeof emailAndPasswordFormSchema>>({
     resolver: zodResolver(emailAndPasswordFormSchema),
@@ -51,7 +55,7 @@ export function SignInWithEmail({
         name="credentials.email"
         render={({ field }) => (
           <FormItem className="flex flex-col items-start gap-2">
-            <FormLabel>{t('login:sign_in_with_email.email')}</FormLabel>
+            <FormLabel>{t('auth:sign_in.email')}</FormLabel>
             <FormControl>
               <Input className="w-full" type="email" {...field} />
             </FormControl>
@@ -64,7 +68,7 @@ export function SignInWithEmail({
         name="credentials.password"
         render={({ field }) => (
           <FormItem className="flex flex-col items-start gap-2">
-            <FormLabel>{t('login:sign_in_with_email.password')}</FormLabel>
+            <FormLabel>{t('auth:sign_in.password')}</FormLabel>
             <FormControl>
               <Input className="w-full" type="password" {...field} />
             </FormControl>
@@ -77,37 +81,43 @@ export function SignInWithEmail({
         name="credentials"
         render={() => <FormError />}
       />
-      <Button type="submit">{t('login:sign_in_with_email.sign_in')}</Button>
+      <Button type="submit">{t('auth:sign_in')}</Button>
     </>
   );
 
   return (
     <FormProvider {...formMethods}>
       <ClientOnly
-        fallback={<SignInWithEmailForm>{children}</SignInWithEmailForm>}
+        fallback={
+          <SignInWithEmailAndPasswordForm>
+            {children}
+          </SignInWithEmailAndPasswordForm>
+        }
       >
         {() => (
-          <ClientSignInWithEmailForm signIn={signIn}>
+          <ClientSignInWithEmailAndPasswordForm signIn={signIn}>
             {children}
-          </ClientSignInWithEmailForm>
+          </ClientSignInWithEmailAndPasswordForm>
         )}
       </ClientOnly>
     </FormProvider>
   );
 }
 
-function SignInWithEmailForm(props: React.ComponentPropsWithoutRef<'form'>) {
+function SignInWithEmailAndPasswordForm(
+  props: React.ComponentPropsWithoutRef<'form'>,
+) {
   return <form noValidate className="flex flex-col gap-4" {...props} />;
 }
 
-function ClientSignInWithEmailForm({
+function ClientSignInWithEmailAndPasswordForm({
   children,
   signIn,
 }: {
   children: React.ReactNode;
   signIn: (authPayload: AuthPayload) => void;
 }) {
-  const { t } = useTranslation(['login', 'common']);
+  const { t } = useTranslation(['auth', 'common']);
 
   const emailAndPasswordSignIn = useEmailAndPasswordSignIn(
     clientServices.authenticationClientService,
@@ -115,6 +125,7 @@ function ClientSignInWithEmailForm({
 
   const { handleSubmit, setError } =
     useFormContext<EmailAndPasswordFormValues>();
+  const navigate = useNavigate();
 
   const handleEmailSignIn = handleSubmit(
     async ({ credentials: { email, password } }) => {
@@ -126,11 +137,13 @@ function ClientSignInWithEmailForm({
         if (!idToken) return;
         signIn({ idToken, csrf });
       } catch (error) {
-        if (error instanceof UserNotFoundError) {
+        if (error instanceof EmailUnverified) {
+          navigate(getRoute('/email-verification'));
+        } else if (error instanceof UserNotFoundError) {
           setError(
             'credentials.email',
             {
-              message: t('login:sign_in_with_email.errors.user_not_found'),
+              message: t('auth:sign_in.errors.user_not_found'),
             },
             { shouldFocus: true },
           );
@@ -138,20 +151,16 @@ function ClientSignInWithEmailForm({
           setError(
             'credentials.password',
             {
-              message: t(
-                'login:sign_in_with_email.errors.wrong_password_error',
-              ),
+              message: t('auth:sign_in.errors.wrong_password_error'),
             },
             { shouldFocus: true },
           );
         } else if (error instanceof InvalidLoginCredentials) {
           setError('credentials', {
-            message: t(
-              'login:sign_in_with_email.errors.invalid_login_credentials',
-            ),
+            message: t('auth:sign_in.errors.invalid_login_credentials'),
           });
         } else {
-          //TODO(sentry): colect unexpected errors
+          Sentry.captureException(error);
           toast.error(t('common:errors.unknown'));
         }
       }
@@ -159,12 +168,12 @@ function ClientSignInWithEmailForm({
   );
 
   return (
-    <SignInWithEmailForm
+    <SignInWithEmailAndPasswordForm
       onSubmit={(e) => {
         void handleEmailSignIn(e);
       }}
     >
       {children}
-    </SignInWithEmailForm>
+    </SignInWithEmailAndPasswordForm>
   );
 }

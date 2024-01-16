@@ -10,6 +10,7 @@ import {
   useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
 import { formatNumber } from '@app-builder/utils/format';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
@@ -31,7 +32,7 @@ export const handle = {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const scenarioIterationId = fromParams(params, 'iterationId');

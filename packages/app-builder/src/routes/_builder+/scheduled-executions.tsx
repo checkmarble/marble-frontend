@@ -5,6 +5,7 @@ import {
   ScheduledExecutionsList,
 } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -19,7 +20,7 @@ export const handle = {
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const { scheduled_executions } = await apiClient.listScheduledExecutions({});

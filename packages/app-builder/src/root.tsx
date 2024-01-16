@@ -5,6 +5,7 @@ import {
   type MetaFunction,
 } from '@remix-run/node';
 import {
+  Link,
   Links,
   LiveReload,
   Meta,
@@ -32,6 +33,7 @@ import { getSegmentScript } from './services/segment/segment.server';
 import { SegmentScript } from './services/segment/SegmentScript';
 import tailwindStyles from './tailwind.css';
 import { getClientEnvVars } from './utils/environment.server';
+import { getRoute } from './utils/routes';
 
 export const links: LinksFunction = () => [
   { rel: 'preload', href: logosSVGSpriteHref, as: 'image' },
@@ -122,14 +124,14 @@ export function ErrorBoundary() {
         <div className="from-purple-10 to-grey-02 flex h-full w-full flex-col items-center bg-gradient-to-r">
           <div className="flex h-full w-full flex-col items-center bg-[url('/img/login_background.svg')] bg-no-repeat">
             <div className="flex h-full max-h-80 flex-col justify-center">
-              <a href="/login">
+              <Link to={getRoute('/sign-in')}>
                 <Logo
                   logo="logo-standard"
                   className="h-10 w-auto text-[#080525]"
                   preserveAspectRatio="xMinYMid meet"
                   aria-labelledby="marble"
                 />
-              </a>
+              </Link>
             </div>
             <div className="bg-grey-00 mb-10 flex shrink-0 rounded-2xl p-10 text-center shadow-md">
               <ErrorComponent error={error} />

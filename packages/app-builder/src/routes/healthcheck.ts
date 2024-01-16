@@ -7,7 +7,7 @@ async function isServerLive(request: LoaderFunctionArgs['request']) {
     'NO_HOST';
   const url = new URL('/', `http://${host}`);
 
-  return fetch(url.toString(), { method: 'HEAD' }).then((r) => {
+  return fetch(url.href, { method: 'HEAD' }).then((r) => {
     if (!r.ok) return Promise.reject(r);
   });
 }

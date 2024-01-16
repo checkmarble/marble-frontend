@@ -35,7 +35,7 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService.setLanguage(authSession, preferredLanguage);
 
     return redirectBack(request, {
-      fallback: '/home',
+      fallback: getRoute('/scenarios/'),
       headers: {
         'Set-Cookie': await authSessionService.commitSession(authSession),
       },

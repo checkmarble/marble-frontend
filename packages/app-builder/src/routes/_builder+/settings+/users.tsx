@@ -18,7 +18,7 @@ import { Table, useTable } from 'ui-design-system';
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { user, inbox } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
   if (!isAdmin(user)) {
     return redirect(getRoute('/'));

@@ -1,6 +1,7 @@
 import { Page } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
 import { downloadBlob } from '@app-builder/utils/download-blob';
+import { getRoute } from '@app-builder/utils/routes';
 import {
   json,
   type LinksFunction,
@@ -24,7 +25,7 @@ export const links: LinksFunction = () =>
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const openapi = await dataModelRepository.getOpenApiSpec();

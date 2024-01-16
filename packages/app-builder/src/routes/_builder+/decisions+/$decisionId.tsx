@@ -13,6 +13,7 @@ import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { TriggerObjectDetail } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import {
@@ -35,7 +36,7 @@ export const handle = {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const decisionId = fromParams(params, 'decisionId');

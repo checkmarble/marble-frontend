@@ -39,6 +39,7 @@ import {
   useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
 import { formatNumber } from '@app-builder/utils/format';
+import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import {
   type ActionFunctionArgs,
@@ -61,7 +62,7 @@ export const handle = {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient, editor } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
@@ -104,7 +105,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const session = await getSession(request);
   const { editor } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const parsedForm = editRuleFormSchema.safeParse(formValuesRaw);

@@ -53,7 +53,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { apiClient, editor, organization } = await authService.isAuthenticated(
     request,
     {
-      failureRedirect: '/login',
+      failureRedirect: getRoute('/sign-in'),
     },
   );
 
@@ -98,7 +98,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   } = serverServices;
   const session = await getSession(request);
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   try {

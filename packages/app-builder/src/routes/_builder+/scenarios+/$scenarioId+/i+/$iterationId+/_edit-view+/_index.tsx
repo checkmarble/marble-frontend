@@ -1,10 +1,21 @@
 import { serverServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
+  const { scenarioId, iterationId } = params;
+  if (!scenarioId || !iterationId) {
+    return {
+      redirect: getRoute('/scenarios/'),
+    };
+  }
+
   return authService.isAuthenticated(request, {
-    successRedirect: './trigger',
-    failureRedirect: '/login',
+    successRedirect: getRoute('/scenarios/:scenarioId/i/:iterationId/trigger', {
+      scenarioId,
+      iterationId,
+    }),
+    failureRedirect: getRoute('/sign-in'),
   });
 }

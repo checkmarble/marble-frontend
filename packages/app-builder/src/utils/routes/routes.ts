@@ -5,6 +5,32 @@ export const routes = [
     "file": "root.tsx",
     "children": [
       {
+        "id": "routes/_auth+/_layout",
+        "file": "routes/_auth+/_layout.tsx",
+        "children": [
+          {
+            "id": "routes/_auth+/email-verification",
+            "path": "email-verification",
+            "file": "routes/_auth+/email-verification.tsx"
+          },
+          {
+            "id": "routes/_auth+/forgot-password",
+            "path": "forgot-password",
+            "file": "routes/_auth+/forgot-password.tsx"
+          },
+          {
+            "id": "routes/_auth+/sign-in",
+            "path": "sign-in",
+            "file": "routes/_auth+/sign-in.tsx"
+          },
+          {
+            "id": "routes/_auth+/sign-up",
+            "path": "sign-up",
+            "file": "routes/_auth+/sign-up.tsx"
+          }
+        ]
+      },
+      {
         "id": "routes/_builder+/_layout",
         "file": "routes/_builder+/_layout.tsx",
         "children": [
@@ -183,16 +209,6 @@ export const routes = [
         "id": "routes/healthcheck",
         "path": "healthcheck",
         "file": "routes/healthcheck.ts"
-      },
-      {
-        "id": "routes/login",
-        "path": "login",
-        "file": "routes/login.tsx"
-      },
-      {
-        "id": "routes/ressources+/auth+/login",
-        "path": "ressources/auth/login",
-        "file": "routes/ressources+/auth+/login.tsx"
       },
       {
         "id": "routes/ressources+/auth+/logout",
