@@ -59,6 +59,7 @@ export function EditCaseName(defaultValue: z.infer<typeof schema>) {
       <input {...conform.input(caseId, { type: 'hidden' })} />
       <Input
         {...conform.input(name, { type: 'text' })}
+        autoComplete="off"
         onBlur={(e) => {
           if (e.currentTarget.value !== e.currentTarget.defaultValue) {
             e.currentTarget.form?.requestSubmit();
