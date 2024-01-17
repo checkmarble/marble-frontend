@@ -13,6 +13,7 @@ import { Link, useFetcher } from '@remix-run/react';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -133,7 +134,8 @@ export function EditCaseTags({
           setCaseTagIds(selectedValues);
         }}
         onOpenChange={(open) => {
-          if (!open) form.ref.current?.requestSubmit();
+          if (!open && !R.equals(defaultCaseTagIds, caseTagIds))
+            form.ref.current?.requestSubmit();
         }}
       >
         <FormSelectWithCombobox.Select className="w-full">
