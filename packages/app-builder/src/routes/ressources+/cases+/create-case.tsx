@@ -17,16 +17,12 @@ import {
   redirect,
 } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
-export const handle = {
-  i18n: ['cases', 'navigation', 'common'] satisfies Namespace,
-};
 
 const createCaseFormSchema = z.object({
   name: z.string().min(1),
@@ -91,11 +87,13 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export function CreateCase() {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['cases']);
   const loadFetcher = useFetcher<typeof loader>();
-  if (loadFetcher.state === 'idle' && !loadFetcher.data) {
-    loadFetcher.load(getRoute('/ressources/cases/add-to-case'));
-  }
+  useEffect(() => {
+    if (loadFetcher.state === 'idle' && !loadFetcher.data) {
+      loadFetcher.load(getRoute('/ressources/cases/create-case'));
+    }
+  }, [loadFetcher]);
   const inboxes = loadFetcher.data?.inboxes || [];
 
   const fetcher = useFetcher<typeof action>();
