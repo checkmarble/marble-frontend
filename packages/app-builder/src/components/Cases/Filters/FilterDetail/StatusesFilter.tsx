@@ -25,7 +25,7 @@ export function StatusesFilter() {
         onSelectedValueChange={setSelectedStatuses}
       >
         <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
-        <SelectWithCombobox.ComboboxList>
+        <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((status) => {
             return (
               <SelectWithCombobox.ComboboxItem
