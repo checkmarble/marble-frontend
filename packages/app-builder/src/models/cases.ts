@@ -22,7 +22,7 @@ export function adaptCaseTagsUpdatedEventDto({
 }: CaseTagsUpdatedEventDto): CaseTagsUpdatedEvent {
   return {
     ...rest,
-    tagIds: new_value.split(','),
+    tagIds: new_value === '' ? [] : new_value.split(','),
   };
 }
 
