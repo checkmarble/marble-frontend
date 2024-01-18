@@ -47,6 +47,8 @@
   "case_detail.history.event_title.file_added": "File added: <Name>{{name}}</Name>",
   "case_detail.history.event_detail.added_by": "Added by: <Avatar/> <User>{{user}}</User>",
   "case_detail.history.event_detail.edited_by": "Edited by: <Avatar/> <User>{{user}}</User>",
+  "case_detail.history.event_detail.case_tags.new": "New tags: <CaseTags/>",
+  "case_detail.history.event_detail.case_tags.none": "removed all tags",
   "case_detail.add_a_comment.label": "Comment",
   "case_detail.add_a_comment.placeholder": "Write a note",
   "case_detail.add_a_comment.post": "post a comment",

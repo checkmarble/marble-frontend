@@ -26,6 +26,17 @@ export function adaptCaseTagsUpdatedEventDto({
   };
 }
 
+export type {
+  CaseCreatedEvent,
+  CaseStatusUpdatedEvent,
+  CaseTagsUpdatedEvent,
+  CommentAddedEvent,
+  DecisionAddedEvent,
+  FileAddedEvent,
+  InboxChangedEvent,
+  NameUpdatedEvent,
+};
+
 export type CaseEvent =
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
