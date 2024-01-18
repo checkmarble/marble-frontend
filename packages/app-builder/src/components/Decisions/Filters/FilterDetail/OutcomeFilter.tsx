@@ -25,7 +25,7 @@ export function OutcomeFilter() {
         onSelectedValueChange={setSelectedOutcomes}
       >
         <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
-        <SelectWithCombobox.ComboboxList>
+        <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((outcome) => {
             return (
               <SelectWithCombobox.ComboboxItem

@@ -23,7 +23,7 @@ function SelectFruitWithCombobox() {
       selectedValue={selectedValues}
       onSelectedValueChange={setSelectedValues}
     >
-      <SelectWithCombobox.Combobox render={<Input />} />
+      <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} />
       <SelectWithCombobox.ComboboxList>
         {matches.map((fruit) => {
           return <SelectWithCombobox.ComboboxItem key={fruit} value={fruit} />;

@@ -2,7 +2,7 @@ import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useComposedRefs } from '@app-builder/utils/hooks/use-compose-refs';
 import { stringToStringArray } from '@app-builder/utils/schema/stringToJSONSchema';
 import { conform, type FieldConfig, useInputEvent } from '@conform-to/react';
-import { forwardRef, type RefObject, useRef, useState } from 'react';
+import { forwardRef, type RefObject, useMemo, useRef, useState } from 'react';
 import {
   type Select,
   SelectWithCombobox,
@@ -39,10 +39,13 @@ function FormSelectWithComboboxRoot<Schema extends string[]>({
     onReset: () => setSelectedValues(config.defaultValue ?? []),
   });
 
-  const contextValue = {
-    buttonRef,
-    config,
-  };
+  const contextValue = useMemo(
+    () => ({
+      buttonRef,
+      config,
+    }),
+    [buttonRef, config],
+  );
   return (
     <FormSelectWithComboboxContext.Provider value={contextValue}>
       <input
@@ -88,11 +91,20 @@ const FormSelectWithComboboxSelect = forwardRef<
   );
 });
 
+const FormSelectWithComboboxPopover = forwardRef<
+  HTMLDivElement,
+  Omit<React.ComponentProps<typeof SelectWithCombobox.Popover>, 'portal'>
+>(function FormSelectWithComboboxPopover(props, ref) {
+  // Force portal=true to ensure the popover is rendered outside the form element
+  // otherwise the combobox search input will be included in the form and interact with it
+  return <SelectWithCombobox.Popover ref={ref} portal {...props} />;
+});
+
 export const FormSelectWithCombobox = {
   Root: FormSelectWithComboboxRoot,
   Select: FormSelectWithComboboxSelect,
   Arrow: SelectWithCombobox.Arrow,
-  Popover: SelectWithCombobox.Popover,
+  Popover: FormSelectWithComboboxPopover,
   Combobox: SelectWithCombobox.Combobox,
   ComboboxList: SelectWithCombobox.ComboboxList,
   ComboboxItem: SelectWithCombobox.ComboboxItem,

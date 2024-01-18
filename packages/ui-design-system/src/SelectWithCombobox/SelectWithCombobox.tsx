@@ -1,11 +1,10 @@
 import * as Ariakit from '@ariakit/react';
-import { type Direction } from '@radix-ui/react-scroll-area';
 import { type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
-import { createContext, forwardRef, useContext, useEffect } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { Icon } from 'ui-icons';
 
-import { ScrollArea } from '../ScrollArea/ScrollArea';
+import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
 import { selectTrigger } from '../Select/Select';
 
 type Value = string | string[];
@@ -100,45 +99,27 @@ const Arrow = forwardRef<HTMLSpanElement, Ariakit.SelectArrowProps>(
   },
 );
 
-const WithPopover = createContext<boolean>(false);
-WithPopover.displayName = 'WithPopover';
-
 const Popover = forwardRef<HTMLDivElement, Ariakit.SelectPopoverProps>(
   function SelectWithComboboxPopover({ className, ...props }, ref) {
     return (
-      <WithPopover.Provider value={true}>
-        <Ariakit.SelectPopover
-          ref={ref}
-          fitViewport
-          gutter={8}
-          className={clsx(
-            'animate-slideUpAndFade bg-grey-00 border-grey-10 max-h-[min(var(--popover-available-height),_300px)] rounded border shadow-md will-change-[transform,opacity]',
-            className,
-          )}
-          render={({ children, dir, ...props }) => (
-            <ScrollArea.Root dir={dir as Direction} {...props}>
-              {children}
-              <ScrollArea.Scrollbar orientation="vertical">
-                <ScrollArea.Thumb />
-              </ScrollArea.Scrollbar>
-            </ScrollArea.Root>
-          )}
-          {...props}
-        />
-      </WithPopover.Provider>
+      <Ariakit.SelectPopover
+        ref={ref}
+        fitViewport
+        gutter={8}
+        className={clsx(
+          'animate-slideUpAndFade bg-grey-00 border-grey-10 max-h-[min(var(--popover-available-height),_300px)] rounded border shadow-md will-change-[transform,opacity]',
+          className,
+        )}
+        {...props}
+      />
     );
   },
 );
 
 const ComboboxList = forwardRef<HTMLDivElement, Ariakit.ComboboxListProps>(
   function ComboboxList(props, ref) {
-    const value = useContext(WithPopover);
     return (
-      <Ariakit.ComboboxList
-        ref={ref}
-        render={value ? <ScrollArea.Viewport /> : undefined}
-        {...props}
-      />
+      <Ariakit.ComboboxList ref={ref} render={<ScrollAreaV2 />} {...props} />
     );
   },
 );

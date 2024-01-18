@@ -137,9 +137,11 @@ export async function action({ request }: ActionFunctionArgs) {
 export function AddToCase() {
   const { t } = useTranslation(handle.i18n);
   const loadFetcher = useFetcher<typeof loader>();
-  if (loadFetcher.state === 'idle' && !loadFetcher.data) {
-    loadFetcher.load(getRoute('/ressources/cases/add-to-case'));
-  }
+  useEffect(() => {
+    if (loadFetcher.state === 'idle' && !loadFetcher.data) {
+      loadFetcher.load(getRoute('/ressources/cases/add-to-case'));
+    }
+  }, [loadFetcher]);
   const inboxes = loadFetcher.data?.inboxes || [];
 
   const fetcher = useFetcher<typeof action>();
