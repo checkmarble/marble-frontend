@@ -21,7 +21,7 @@ const createDraftIterationFormSchema = z.object({
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const parsedForm = await parseFormSafe(

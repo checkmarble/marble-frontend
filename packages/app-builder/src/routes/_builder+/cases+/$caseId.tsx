@@ -39,7 +39,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { user, cases, apiClient } = await authService.isAuthenticated(
     request,
     {
-      failureRedirect: '/login',
+      failureRedirect: getRoute('/sign-in'),
     },
   );
 

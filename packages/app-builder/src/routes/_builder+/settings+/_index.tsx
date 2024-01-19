@@ -11,7 +11,7 @@ export const handle = {
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { user } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
   if (!isAdmin(user)) {
     return redirect(getRoute('/'));

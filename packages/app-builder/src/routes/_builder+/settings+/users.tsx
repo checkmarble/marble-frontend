@@ -10,7 +10,6 @@ import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -18,46 +17,40 @@ import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient, organization, user } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: '/login',
-    },
-  );
+  const { user, inbox } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
   if (!isAdmin(user)) {
     return redirect(getRoute('/'));
   }
 
-  const { inbox_users } = await apiClient.listAllInboxUsers();
-  const org = await organization.getCurrentOrganization();
+  const inboxUsers = await inbox.listAllInboxUsers();
 
-  return json({ inboxUsers: inbox_users, org, user });
+  const inboxUsersByUserId = R.pipe(
+    inboxUsers,
+    R.groupBy(({ userId }) => userId),
+    R.mapValues((value) =>
+      R.pipe(
+        value,
+        R.groupBy((v) => v.role),
+        R.mapValues((v) => v.length),
+        R.toPairs,
+      ),
+    ),
+  );
+
+  return json({ inboxUsersByUserId, user });
 }
 
 const columnHelper = createColumnHelper<User>();
 
 export default function Users() {
   const { t } = useTranslation(['settings', 'cases']);
-  const { inboxUsers, org, user } = useLoaderData<typeof loader>();
+  const { inboxUsersByUserId, user } = useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
 
-  const inboxUsersByUserId = useMemo(
-    () =>
-      R.pipe(
-        inboxUsers as InboxUserDto[],
-        R.groupBy((user) => user.user_id),
-        R.mapValues((value) =>
-          R.pipe(
-            value,
-            R.groupBy((v) => v.role),
-          ),
-        ),
-      ),
-    [inboxUsers],
-  );
-
-  const columns = useMemo(() => {
-    const columns = [
+  const columns = useMemo(
+    () => [
       columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
         id: 'name',
         header: t('settings:users.name'),
@@ -75,21 +68,25 @@ export default function Users() {
         id: 'role',
         header: t('settings:users.role'),
         size: 100,
-        cell: ({ getValue }) => t(tKeyForUserRole(getValue<User['role']>())),
+        cell: ({ getValue }) => t(tKeyForUserRole(getValue())),
       }),
       columnHelper.accessor((row) => row.userId, {
         id: 'inbox_user_role',
         header: t('settings:users.inbox_user_role'),
         size: 200,
         cell: ({ getValue }) => {
-          const inboxUsers = inboxUsersByUserId[getValue<User['userId']>()];
+          const inboxUsers = inboxUsersByUserId[getValue()];
           if (!inboxUsers) return null;
-          return Object.keys(inboxUsers)
-            .map((role) => {
-              const count = inboxUsers[role].length;
-              return t(tKeyForInboxUserRole(role), { count });
-            })
-            .join(', ');
+
+          return (
+            <ul>
+              {inboxUsers.map(([role, count]) => {
+                return (
+                  <li key={role}>{t(tKeyForInboxUserRole(role), { count })}</li>
+                );
+              })}
+            </ul>
+          );
         },
       }),
       columnHelper.display({
@@ -107,9 +104,9 @@ export default function Users() {
           );
         },
       }),
-    ];
-    return columns;
-  }, [inboxUsersByUserId, t, user.actorIdentity.userId]);
+    ],
+    [inboxUsersByUserId, t, user.actorIdentity.userId],
+  );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: orgUsers,
@@ -125,7 +122,7 @@ export default function Users() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:users')}</span>
-            <CreateUser orgId={org.id} />
+            <CreateUser orgId={user.organizationId} />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()}>

@@ -5,9 +5,9 @@ import {
 } from '@remix-run/node';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  await serverServices.authService.logout(request, { redirectTo: '/login' });
+  await serverServices.authService.logout(request, { redirectTo: '/sign-in' });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  await serverServices.authService.logout(request, { redirectTo: '/login' });
+  await serverServices.authService.logout(request, { redirectTo: '/sign-in' });
 }

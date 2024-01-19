@@ -1,27 +1,12 @@
 import { useGoogleSignIn } from '@app-builder/services/auth/auth.client';
+import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
-import { serverServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, redirect } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Logo } from 'ui-icons';
 
-export function loader() {
-  return redirect('/login');
-}
-
-export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
-  return await authService.authenticate(request, {
-    successRedirect: '/home',
-    failureRedirect: '/login',
-  });
-}
-
 function SignInWithGoogleButton({ onClick }: { onClick?: () => void }) {
-  const { t } = useTranslation(['login']);
+  const { t } = useTranslation(['auth']);
 
   return (
     <button
@@ -34,15 +19,17 @@ function SignInWithGoogleButton({ onClick }: { onClick?: () => void }) {
         <Logo logo="google-logo" className="size-6" />
       </div>
       <span className="text-s text-grey-00 w-full whitespace-nowrap text-center align-middle font-medium">
-        {t('login:sign_in.google')}
+        {t('auth:sign_in.google')}
       </span>
     </button>
   );
 }
 
-function ClientSignInWithGoogle() {
-  const fetcher = useFetcher();
-
+function ClientSignInWithGoogle({
+  signIn,
+}: {
+  signIn: (authPayload: AuthPayload) => void;
+}) {
   const googleSignIn = useGoogleSignIn(
     clientServices.authenticationClientService,
   );
@@ -52,10 +39,7 @@ function ClientSignInWithGoogle() {
     if (!result) return;
     const { idToken, csrf } = result;
     if (!idToken) return;
-    fetcher.submit(
-      { idToken, csrf },
-      { method: 'POST', action: getRoute('/ressources/auth/login') },
-    );
+    signIn({ idToken, csrf });
   };
 
   return (
@@ -67,10 +51,14 @@ function ClientSignInWithGoogle() {
   );
 }
 
-export function SignInWithGoogle() {
+export function SignInWithGoogle({
+  signIn,
+}: {
+  signIn: (authPayload: AuthPayload) => void;
+}) {
   return (
     <ClientOnly fallback={<SignInWithGoogleButton />}>
-      {() => <ClientSignInWithGoogle />}
+      {() => <ClientSignInWithGoogle signIn={signIn} />}
     </ClientOnly>
   );
 }

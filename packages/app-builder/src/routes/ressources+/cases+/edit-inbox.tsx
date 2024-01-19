@@ -22,7 +22,7 @@ const schema = z.object({
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
   const inboxes = await apiClient.listInboxes({ withCaseCount: false });
 
@@ -32,7 +32,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
   const { cases } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const formData = await request.formData();

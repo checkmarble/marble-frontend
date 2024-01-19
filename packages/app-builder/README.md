@@ -52,7 +52,7 @@ Then, it depends on the use case. For simple cases, you can directly consume the
 
 ```typescript
 const { apiClient } = await authenticator.isAuthenticated(request, {
-  failureRedirect: '/login',
+  failureRedirect: getRoute('/sign-in'),
 });
 
 const decisions = await apiClient.listDecisions();

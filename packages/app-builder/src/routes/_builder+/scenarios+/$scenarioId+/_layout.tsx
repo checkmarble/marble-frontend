@@ -1,6 +1,6 @@
 import { ErrorComponent } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
-import { type RouteID } from '@app-builder/utils/routes';
+import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import {
   json,
@@ -18,7 +18,7 @@ export const handle = {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const scenarioId = fromParams(params, 'scenarioId');

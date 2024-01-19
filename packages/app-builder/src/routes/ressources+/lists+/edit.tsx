@@ -32,7 +32,7 @@ const editListFormSchema = z.object({
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const parsedForm = await parseFormSafe(request, editListFormSchema);

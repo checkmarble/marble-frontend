@@ -3,6 +3,8 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { isStatusConflictHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { conform, useForm } from '@conform-to/react';
@@ -12,6 +14,7 @@ import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -29,10 +32,12 @@ const createUserFormSchema = z.object({
 });
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, csrfService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
+  await csrfService.validate(request);
+
   const formData = await request.formData();
   const submission = parse(formData, { schema: createUserFormSchema });
 
@@ -48,9 +53,25 @@ export async function action({ request }: ActionFunctionArgs) {
       role: submission.value.role,
       organization_id: submission.value.organizationId,
     });
+
     return redirect(getRoute('/settings/users'));
   } catch (error) {
-    return json(submission);
+    const { getSession, commitSession } = serverServices.toastSessionService;
+    const session = await getSession(request);
+    if (isStatusConflictHttpError(error)) {
+      setToastMessage(session, {
+        type: 'error',
+        messageKey: 'common:errors.list.duplicate_email',
+      });
+    } else {
+      setToastMessage(session, {
+        type: 'error',
+        messageKey: 'common:errors.unknown',
+      });
+    }
+    return json(submission, {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
   }
 }
 
@@ -115,6 +136,7 @@ const CreateUserContent = ({ orgId }: { orgId: string }) => {
       <Modal.Title>{t('settings:users.new_user')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4 font-bold">
+          <AuthenticityTokenInput />
           <input {...conform.input(organizationId, { type: 'hidden' })} />
           <div className="flex gap-2">
             <FormField

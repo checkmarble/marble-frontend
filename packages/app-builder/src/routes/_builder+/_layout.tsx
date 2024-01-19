@@ -31,7 +31,7 @@ import { Icon, Logo } from 'ui-icons';
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { user, organization } = await authService.isAuthenticated(request, {
-    failureRedirect: '/login',
+    failureRedirect: getRoute('/sign-in'),
   });
 
   const [organizationDetail, orgUsers, orgTags] = await Promise.all([
@@ -54,8 +54,8 @@ export default function Builder() {
     useLoaderData<typeof loader>();
   useSegmentIdentification(user);
 
-  // Refresh is done in the client because it needs to be done in the browser
-  // This is only added here to prevent "auto login" on /login pages... (/logout do not trigger logout from Firebase)
+  // Refresh is done in the JSX because it needs to be done in the browser
+  // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
   useRefreshToken();
 
   const [expanded, setExpanded] = useState(true);
