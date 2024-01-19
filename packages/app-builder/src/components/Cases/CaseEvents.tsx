@@ -1,4 +1,8 @@
-import { type CaseEvent } from '@app-builder/models/cases';
+import {
+  type CaseEvent,
+  type CaseTagsUpdatedEvent,
+  type CommentAddedEvent,
+} from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { formatDateRelative } from '@app-builder/utils/format';
@@ -293,24 +297,10 @@ export function getEventDetail(event: CaseEvent) {
       return <Author userId={event.user_id} type="added_by" />;
     }
     case 'comment_added': {
-      return (
-        <div className="flex flex-col gap-2">
-          <Author userId={event.user_id} type="added_by" />
-          {event.additional_note ? (
-            <div className="text-s text-grey-100 whitespace-break-spaces font-normal">
-              {event.additional_note}
-            </div>
-          ) : null}
-        </div>
-      );
+      return <CommentAddedEventDetail event={event} />;
     }
     case 'tags_updated': {
-      return (
-        <div className="flex flex-col gap-2">
-          <Author userId={event.user_id} type="added_by" />
-          <CaseTags caseTagIds={event.tagIds} />
-        </div>
-      );
+      return <TagsUpdatedEventDetail event={event} />;
     }
     case 'decision_added':
     case 'file_added': {
@@ -322,4 +312,41 @@ export function getEventDetail(event: CaseEvent) {
       return <Author userId={event.user_id} type="edited_by" />;
     }
   }
+}
+
+function CommentAddedEventDetail({ event }: { event: CommentAddedEvent }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <Author userId={event.user_id} type="added_by" />
+      {event.additional_note ? (
+        <div className="text-s text-grey-100 whitespace-break-spaces font-normal">
+          {event.additional_note}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function TagsUpdatedEventDetail({ event }: { event: CaseTagsUpdatedEvent }) {
+  const { t } = useTranslation(casesI18n);
+  return (
+    <div className="flex flex-col gap-2">
+      <Author userId={event.user_id} type="edited_by" />
+      {event.tagIds.length === 0 ? (
+        <p className="text-grey-100 text-s font-normal first-letter:capitalize">
+          {t('cases:case_detail.history.event_detail.case_tags.none')}
+        </p>
+      ) : (
+        <div className="text-grey-100 text-s inline-flex flex-wrap whitespace-pre font-semibold">
+          <Trans
+            t={t}
+            i18nKey="cases:case_detail.history.event_detail.case_tags.new"
+            components={{
+              CaseTags: <CaseTags caseTagIds={event.tagIds} />,
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
 }

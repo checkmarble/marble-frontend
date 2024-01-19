@@ -22,9 +22,20 @@ export function adaptCaseTagsUpdatedEventDto({
 }: CaseTagsUpdatedEventDto): CaseTagsUpdatedEvent {
   return {
     ...rest,
-    tagIds: new_value.split(','),
+    tagIds: new_value === '' ? [] : new_value.split(','),
   };
 }
+
+export type {
+  CaseCreatedEvent,
+  CaseStatusUpdatedEvent,
+  CaseTagsUpdatedEvent,
+  CommentAddedEvent,
+  DecisionAddedEvent,
+  FileAddedEvent,
+  InboxChangedEvent,
+  NameUpdatedEvent,
+};
 
 export type CaseEvent =
   | CaseCreatedEvent
