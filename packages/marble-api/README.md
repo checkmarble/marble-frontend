@@ -8,7 +8,8 @@ The generated code can be found in `src/lib/generated/marble-api.ts`
 
 1. Make sure to have `scripts/openapi.yaml` up to date
 2. Run `pnpm --filter marble-api run generate-api` to generate the client
-3. Review generated code and commit changes
+3. Reset the change in the imports in the generated file to `import * as Oazapfts from "oazapfts/lib/runtime/index.js";`, `import * as QS from "oazapfts/lib/runtime/query.js";` (https://github.com/oazapfts/oazapfts/issues/541)
+4. Review generated code and commit changes
 
 > NB: in case update introduced breaking changes, you may need to resolve TS issues in places the client is used
 

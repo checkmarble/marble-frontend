@@ -3960,14 +3960,24 @@ components:
       required:
         - startIndex
         - endIndex
-        - total
+        - total_count
       properties:
         startIndex:
           type: integer
         endIndex:
           type: integer
-        total:
+        total_count:
+          $ref: '#/components/schemas/PaginationCount'
+    PaginationCount:
+      type: object
+      required:
+        - value
+        - is_max_count
+      properties:
+        value:
           type: integer
+        is_max_count:
+          type: boolean
     InboxDto:
       type: object
       required:

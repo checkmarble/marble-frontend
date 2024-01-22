@@ -33,10 +33,14 @@ export type CredentialsDto = {
     };
 };
 export type Outcome = "approve" | "review" | "decline" | "null" | "unknown";
+export type PaginationCount = {
+    value: number;
+    is_max_count: boolean;
+};
 export type Pagination = {
     startIndex: number;
     endIndex: number;
-    total: number;
+    total_count: PaginationCount;
 };
 export type Error = {
     code: number;
@@ -131,6 +135,7 @@ export type NameUpdatedEvent = {
 export type CaseTagsUpdatedEventDto = {
     event_type: "tags_updated";
 } & CaseEventDtoBase & {
+    /** comma separated list of tag ids */
     new_value: string;
 };
 export type FileAddedEvent = {
@@ -495,11 +500,10 @@ export function postToken({ xApiKey, authorization }: {
     }>("/token", {
         ...opts,
         method: "POST",
-        headers: {
-            ...opts && opts.headers,
+        headers: oazapfts.mergeHeaders(opts?.headers, {
             "X-API-Key": xApiKey,
             Authorization: authorization
-        }
+        })
     }));
 }
 /**
@@ -691,6 +695,7 @@ export function updateCase(caseId: string, updateCaseBody: UpdateCaseBody, opts?
  * Add decisions to a case
  */
 export function addDecisionsToCase(caseId: string, body: {
+    /** List of decision IDs to add to the case */
     decision_ids: string[];
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -743,6 +748,7 @@ export function addCommentToCase(caseId: string, body: {
  * Define tags for a case
  */
 export function updateTagsForCase(caseId: string, body: {
+    /** List of all tag IDs for the case */
     tag_ids: string[];
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -772,6 +778,7 @@ export function downloadCaseFile(caseFileId: string, opts?: Oazapfts.RequestOpts
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
+            /** Signed url to download the case file's content */
             url: string;
         };
     } | {
