@@ -1,4 +1,7 @@
-import { type PaginationParams } from '@app-builder/models/pagination';
+import {
+  type PaginatedResponse,
+  type PaginationParams,
+} from '@app-builder/models/pagination';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -13,13 +16,6 @@ export const paginationSchema = z.object({
   sorting: z.enum(['created_at']).optional(),
 });
 
-export type PaginatedResponse<T> = {
-  items: T[];
-  total_count: { value: number; is_max_count: boolean };
-  startIndex: number;
-  endIndex: number;
-};
-
 type ItemWithId = {
   id: string;
 };
@@ -30,7 +26,7 @@ type PaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
 
 export const PaginationButtons = ({
   items,
-  total_count: { value: total, is_max_count: isMaxCount },
+  totalCount: { value: total, isMaxCount },
   startIndex,
   endIndex,
   onPaginationChange,

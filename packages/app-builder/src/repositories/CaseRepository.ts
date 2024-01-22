@@ -1,7 +1,10 @@
-import { type PaginatedResponse } from '@app-builder/components/PaginationButtons';
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { adaptCaseDetailDto, type CaseDetail } from '@app-builder/models/cases';
-import { type FiltersWithPagination } from '@app-builder/models/pagination';
+import {
+  type FiltersWithPagination,
+  fromPaginationDto,
+  type PaginatedResponse,
+} from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
 import { type Case, type CaseStatus, type UpdateCaseBody } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
@@ -53,11 +56,16 @@ export function getCaseRepository() {
         startDate = add(new Date(), fromNowDuration).toISOString();
       }
 
-      return marbleApiClient.listCases({
+      const { items, ...pagination } = await marbleApiClient.listCases({
         ...rest,
         startDate,
         endDate,
       });
+
+      return {
+        items,
+        ...fromPaginationDto(pagination),
+      };
     },
     getCase: async ({ caseId }) => {
       const result = await marbleApiClient.getCase(caseId);

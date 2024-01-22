@@ -1,6 +1,9 @@
-import { type PaginatedResponse } from '@app-builder/components';
 import { type MarbleApi } from '@app-builder/infra/marble-api';
-import { type FiltersWithPagination } from '@app-builder/models/pagination';
+import {
+  type FiltersWithPagination,
+  fromPaginationDto,
+  type PaginatedResponse,
+} from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
 import { type Decision, type Outcome } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
@@ -44,11 +47,16 @@ export function getDecisionRepository() {
         startDate = add(new Date(), fromNowDuration).toISOString();
       }
 
-      return marbleApiClient.listDecisions({
+      const { items, ...pagination } = await marbleApiClient.listDecisions({
         ...rest,
         startDate,
         endDate,
       });
+
+      return {
+        items,
+        ...fromPaginationDto(pagination),
+      };
     },
   });
 }
