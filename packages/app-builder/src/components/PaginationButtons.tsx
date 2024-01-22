@@ -15,7 +15,7 @@ export const paginationSchema = z.object({
 
 export type PaginatedResponse<T> = {
   items: T[];
-  total: number;
+  total_count: { value: number; is_max_count: boolean };
   startIndex: number;
   endIndex: number;
 };
@@ -30,7 +30,7 @@ type PaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
 
 export const PaginationButtons = ({
   items,
-  total,
+  total_count: { value: total, is_max_count: isMaxCount },
   startIndex,
   endIndex,
   onPaginationChange,
@@ -55,14 +55,25 @@ export const PaginationButtons = ({
     onPaginationChange(pagination);
   };
 
+  const nextDisabled = end === total && !isMaxCount;
   return (
     <div className="flex items-center justify-end gap-2">
-      <Trans
-        t={t}
-        i18nKey="common:items_displayed_out_of_total"
-        components={{ StartToEnd: <span style={{ fontWeight: 'bold' }} /> }}
-        values={{ start, end, total }}
-      />
+      {isMaxCount ? (
+        <Trans
+          t={t}
+          i18nKey="common:items_displayed_out_of_total_over_max"
+          components={{ StartToEnd: <span style={{ fontWeight: 'bold' }} /> }}
+          values={{ start, end, total }}
+        />
+      ) : (
+        <Trans
+          t={t}
+          i18nKey="common:items_displayed_out_of_total"
+          components={{ StartToEnd: <span style={{ fontWeight: 'bold' }} /> }}
+          values={{ start, end, total }}
+        />
+      )}
+
       <Button
         onClick={fetchPrevious}
         variant="secondary"
@@ -70,7 +81,7 @@ export const PaginationButtons = ({
       >
         <Icon icon="arrow-left" className="size-4" />
       </Button>
-      <Button onClick={fetchNext} variant="secondary" disabled={end === total}>
+      <Button onClick={fetchNext} variant="secondary" disabled={nextDisabled}>
         <Icon icon="arrow-right" className="size-4" />
       </Button>
     </div>

@@ -39,7 +39,7 @@ const fakeDecisions: Decision[] = Array.from({
 
 const fakeDecisionsWithPagination = {
   items: fakeDecisions,
-  total: fakeDecisions.length,
+  total_count: { value: fakeDecisions.length, is_max_count: false },
   startIndex: 0,
   endIndex: fakeDecisions.length,
 };
