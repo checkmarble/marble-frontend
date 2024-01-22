@@ -107,9 +107,9 @@ export default function Inbox() {
               <span className="font-bold">
                 {t('settings:inboxes.inbox_details.case_count')}
               </span>
-              {!caseList.total_count.is_max_count
-                ? caseList.total_count.value + '+'
-                : caseList.total_count.value}
+              {!caseList.totalCount.isMaxCount
+                ? caseList.totalCount.value + '+'
+                : caseList.totalCount.value}
             </div>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
@@ -140,7 +140,7 @@ export default function Inbox() {
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
 
-        {caseList.total_count.value === 0 ? (
+        {caseList.totalCount.value === 0 ? (
           <DeleteInbox inbox={inbox} />
         ) : (
           <Tooltip.Default

@@ -38,8 +38,8 @@ export type PaginationCount = {
     is_max_count: boolean;
 };
 export type Pagination = {
-    startIndex: number;
-    endIndex: number;
+    start_index: number;
+    end_index: number;
     total_count: PaginationCount;
 };
 export type Error = {

@@ -3958,13 +3958,13 @@ components:
     Pagination:
       type: object
       required:
-        - startIndex
-        - endIndex
+        - start_index
+        - end_index
         - total_count
       properties:
-        startIndex:
+        start_index:
           type: integer
-        endIndex:
+        end_index:
           type: integer
         total_count:
           $ref: '#/components/schemas/PaginationCount'
