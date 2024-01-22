@@ -1,4 +1,4 @@
-import { type ClientEnvVars } from './environment.client';
+import { type FirebaseOptions } from 'firebase/app';
 
 /**
  * The separation in three types are here
@@ -51,6 +51,9 @@ type ServerEnvVarName =
   | ServerPublicEnvVarName
   | ServerSecretEnvVarName;
 
+/**
+ * Used to access env vars inside loaders/actions code
+ */
 export function getServerEnv(
   serverEnvVarName: ServerEnvVarName,
   defaultValue?: string,
@@ -58,10 +61,25 @@ export function getServerEnv(
   // eslint-disable-next-line no-restricted-properties
   const serverEnvVar = process.env[serverEnvVarName] ?? defaultValue;
   if (serverEnvVar === undefined) {
-    throw new Error(`[MissingEnv] ${serverEnvVarName} is not defined`);
+    throw new Error(
+      `[MissingEnv] getServerEnv: ${serverEnvVarName} is not defined`,
+    );
   }
   return serverEnvVar;
 }
+
+/**
+ * List of all env vars sent to the client
+ */
+type ClientEnvVars = {
+  ENV: string;
+  AUTH_EMULATOR_HOST?: string;
+  FIREBASE_OPTIONS: FirebaseOptions;
+  MARBLE_API_DOMAIN: string;
+  MARBLE_APP_DOMAIN: string;
+  SENTRY_DSN: string;
+  SENTRY_ENVIRONMENT: string;
+};
 
 /**
  * Browser env vars :
@@ -92,4 +110,33 @@ export function getClientEnvVars(): ClientEnvVars {
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
   };
+}
+
+/**
+ * Used to access env vars inside components code (SSR and CSR)
+ */
+export function getClientEnv<K extends keyof ClientEnvVars>(
+  clientEnvVarName: K,
+  defaultValue?: ClientEnvVars[K],
+) {
+  let clientEnv: ClientEnvVars;
+  if (typeof window === 'undefined') {
+    clientEnv = getClientEnvVars();
+  } else {
+    //@ts-expect-error ENV is a custom global variable injected in root.tsx
+    clientEnv = window.ENV as ClientEnvVars;
+    if (clientEnv === undefined) {
+      throw new Error(
+        `[MissingEnv] window.ENV is not defined. Check the root.tsx loader`,
+      );
+    }
+  }
+
+  const clientEnvVar = clientEnv[clientEnvVarName] ?? defaultValue;
+  if (clientEnvVar === undefined) {
+    throw new Error(
+      `[MissingEnv] getClientEnv: ${clientEnvVarName} is not defined`,
+    );
+  }
+  return clientEnvVar;
 }

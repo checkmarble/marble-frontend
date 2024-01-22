@@ -3,7 +3,7 @@ import {
   type ClientRepositories,
   makeClientRepositories,
 } from '@app-builder/repositories/init.client';
-import { getClientEnv } from '@app-builder/utils/environment.client';
+import { getClientEnv } from '@app-builder/utils/environment';
 
 import { makeAuthenticationClientService } from './auth/auth.client';
 import { makeI18nextClientService } from './i18n/i18next.client';

@@ -1,4 +1,4 @@
-import { getServerEnv } from '@app-builder/utils/environment.server';
+import { getServerEnv } from '@app-builder/utils/environment';
 import { min } from '@segment/snippet';
 
 export function getSegmentScript() {

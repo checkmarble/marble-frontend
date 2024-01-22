@@ -3,7 +3,7 @@ import {
   makeServerRepositories,
   type ServerRepositories,
 } from '@app-builder/repositories/init.server';
-import { getServerEnv } from '@app-builder/utils/environment.server';
+import { getServerEnv } from '@app-builder/utils/environment';
 import { CSRF } from 'remix-utils/csrf/server';
 
 import { makeAuthenticationServerService } from './auth/auth.server';

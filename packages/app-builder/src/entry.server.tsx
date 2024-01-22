@@ -11,7 +11,7 @@ import { I18nextProvider } from 'react-i18next';
 import { PassThrough } from 'stream';
 
 import { serverServices } from './services/init.server';
-import { getServerEnv } from './utils/environment.server';
+import { getServerEnv } from './utils/environment';
 
 const ABORT_DELAY = 5000;
 

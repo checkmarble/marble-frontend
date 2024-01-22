@@ -32,7 +32,7 @@ import { useSegmentPageTracking } from './services/segment';
 import { getSegmentScript } from './services/segment/segment.server';
 import { SegmentScript } from './services/segment/SegmentScript';
 import tailwindStyles from './tailwind.css';
-import { getClientEnvVars } from './utils/environment.server';
+import { getClientEnvVars } from './utils/environment';
 import { getRoute } from './utils/routes';
 
 export const links: LinksFunction = () => [
