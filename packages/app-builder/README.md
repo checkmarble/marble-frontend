@@ -4,7 +4,7 @@ This is the app builder package.
 
 ## Getting started
 
-The application is built using the Remax framework. You can find the documentation [here](https://remaxjs.org/).
+The application is built using the Remix framework. You can find the documentation [here](https://remix.run/).
 
 ### Development
 
