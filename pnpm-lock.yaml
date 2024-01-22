@@ -137,9 +137,6 @@ importers:
       date-fns:
         specifier: ^3.1.0
         version: 3.1.0
-      dotenv:
-        specifier: ^16.3.1
-        version: 16.3.1
       firebase:
         specifier: ^10.7.1
         version: 10.7.1
@@ -264,9 +261,6 @@ importers:
       '@types/swagger-ui-react':
         specifier: ^4.18.3
         version: 4.18.3
-      dotenv-cli:
-        specifier: ^7.3.0
-        version: 7.3.0
       eslint-plugin-tailwindcss:
         specifier: ^3.13.1
         version: 3.13.1(tailwindcss@3.4.1)
@@ -10135,15 +10129,6 @@ packages:
       dom-serializer: 1.4.1
       domelementtype: 2.3.0
       domhandler: 4.3.1
-    dev: true
-
-  /dotenv-cli@7.3.0:
-    resolution: {integrity: sha512-314CA4TyK34YEJ6ntBf80eUY+t1XaFLyem1k9P0sX1gn30qThZ5qZr/ZwE318gEnzyYP9yj9HJk6SqwE0upkfw==}
-    dependencies:
-      cross-spawn: 7.0.3
-      dotenv: 16.3.1
-      dotenv-expand: 10.0.0
-      minimist: 1.2.8
     dev: true
 
   /dotenv-expand@10.0.0:
