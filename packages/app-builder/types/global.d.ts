@@ -5,7 +5,7 @@ declare global {
     /**
      * Segment
      */
-    analytics: AnalyticsSnippet;
+    analytics?: AnalyticsSnippet;
 
     /**
      * Chatlio

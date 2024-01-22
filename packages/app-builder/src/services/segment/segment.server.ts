@@ -1,9 +1,8 @@
-import { getServerEnv } from '@app-builder/utils/environment';
 import { min } from '@segment/snippet';
 
-export function getSegmentScript() {
+export function getSegmentScript(apiKey: string) {
   return min({
-    apiKey: getServerEnv('SEGMENT_WRITE_KEY'),
+    apiKey,
 
     // TODO(GDPR): uncomment to lazy load segment after GDPR consent
     // Ressource to implement in house cookie consent banner: https://github.com/remix-run/examples/tree/main/gdpr-cookie-consent
