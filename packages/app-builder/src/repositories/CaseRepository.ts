@@ -1,8 +1,8 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import { adaptCaseDetailDto, type CaseDetail } from '@app-builder/models/cases';
 import {
+  adaptPagination,
   type FiltersWithPagination,
-  fromPaginationDto,
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
@@ -64,7 +64,7 @@ export function getCaseRepository() {
 
       return {
         items,
-        ...fromPaginationDto(pagination),
+        ...adaptPagination(pagination),
       };
     },
     getCase: async ({ caseId }) => {

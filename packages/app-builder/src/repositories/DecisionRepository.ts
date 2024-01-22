@@ -1,7 +1,7 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
+  adaptPagination,
   type FiltersWithPagination,
-  fromPaginationDto,
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
@@ -55,7 +55,7 @@ export function getDecisionRepository() {
 
       return {
         items,
-        ...fromPaginationDto(pagination),
+        ...adaptPagination(pagination),
       };
     },
   });

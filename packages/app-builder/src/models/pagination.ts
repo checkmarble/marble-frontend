@@ -13,14 +13,14 @@ export type PaginatedResponse<T> = {
   endIndex: number;
 };
 
-export function fromPaginationDto(pagination: PaginationDto): Pagination {
+export function adaptPagination(paginationDto: PaginationDto): Pagination {
   return {
     totalCount: {
-      value: pagination.total_count.value,
-      isMaxCount: pagination.total_count.is_max_count,
+      value: paginationDto.total_count.value,
+      isMaxCount: paginationDto.total_count.is_max_count,
     },
-    startIndex: pagination.start_index,
-    endIndex: pagination.end_index,
+    startIndex: paginationDto.start_index,
+    endIndex: paginationDto.end_index,
   };
 }
 
