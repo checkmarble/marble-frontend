@@ -3,7 +3,7 @@ import {
   makeServerRepositories,
   type ServerRepositories,
 } from '@app-builder/repositories/init.server';
-import { getServerEnv } from '@app-builder/utils/environment';
+import { checkServerEnv, getServerEnv } from '@app-builder/utils/environment';
 import { CSRF } from 'remix-utils/csrf/server';
 
 import { makeAuthenticationServerService } from './auth/auth.server';
@@ -46,6 +46,7 @@ function makeServerServices(repositories: ServerRepositories) {
 }
 
 function initServerServices() {
+  checkServerEnv();
   const getMarbleAPIClient = initializeGetMarbleAPIClient({
     baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
   });

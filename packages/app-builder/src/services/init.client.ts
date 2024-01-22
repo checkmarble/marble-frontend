@@ -20,7 +20,7 @@ function makeClientServices(repositories: ClientRepositories) {
 function initClientServices() {
   const firebaseClient = initializeFirebaseClient({
     firebaseOptions: getClientEnv('FIREBASE_OPTIONS'),
-    authEmulatorHost: getClientEnv('AUTH_EMULATOR_HOST', ''),
+    authEmulatorHost: getClientEnv('AUTH_EMULATOR_HOST'),
   });
   const clientRepositories = makeClientRepositories(firebaseClient);
   return makeClientServices(clientRepositories);
