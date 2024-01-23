@@ -32,7 +32,7 @@ import { useSegmentPageTracking } from './services/segment';
 import { getSegmentScript } from './services/segment/segment.server';
 import { SegmentScript } from './services/segment/SegmentScript';
 import tailwindStyles from './tailwind.css';
-import { getClientEnvVars } from './utils/environment.server';
+import { getClientEnvVars, getServerEnv } from './utils/environment';
 import { getRoute } from './utils/routes';
 
 export const links: LinksFunction = () => [
@@ -79,13 +79,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
   );
   if (csrfCookieHeader) headers.append('set-cookie', csrfCookieHeader);
 
+  const segmentApiKey = getServerEnv('SEGMENT_WRITE_KEY');
+
   return json(
     {
       ENV,
       locale,
       csrf: csrfToken,
       toastMessage,
-      segmentScript: getSegmentScript(),
+      segmentScript: segmentApiKey
+        ? getSegmentScript(segmentApiKey)
+        : undefined,
     },
     {
       headers,
@@ -163,7 +167,7 @@ function App() {
       <head>
         <Meta />
         <Links />
-        <SegmentScript script={segmentScript} />
+        {segmentScript ? <SegmentScript script={segmentScript} /> : null}
         <ExternalScripts />
       </head>
       <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">

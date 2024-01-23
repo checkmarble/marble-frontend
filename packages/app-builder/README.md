@@ -4,23 +4,29 @@ This is the app builder package.
 
 ## Getting started
 
-The application is built using the Remax framework. You can find the documentation [here](https://remaxjs.org/).
+The application is built using the Remix framework. You can find the documentation [here](https://remix.run/).
 
 ### Development
 
-#### VSCode users
+#### Run the project
 
-We recommand to use the launch task: "Launch app-builder" to start the app in dev mode. The debugger should be automatically attached (work for both SSR and client parts).
+1. Create you own `.env` file based on `.env.example`.
 
-#### From the CLI
+> You can fill it with your own values but it should work locally with the default values.
 
-```bash
-# Start the builder app in dev mode
-pnpm --filter app-builder run dev
+2. launch the app in dev mode
 
-# Start the builder app in dev mode with debug
-pnpm --filter app-builder run dev --debug
-```
+   2.1. **VSCode users:** we recommand to use the launch task: "Launch app-builder" to start the app in dev mode. The debugger should be automatically attached (work for both SSR and client parts).
+
+   2.2. **CLI users:** you can use the following command to start the app in dev mode:
+
+   ```bash
+   # Start the builder app in dev mode
+   pnpm --filter app-builder run dev
+
+   # Start the builder app in dev mode with debug
+   pnpm --filter app-builder run dev --debug
+   ```
 
 #### Add a new route
 

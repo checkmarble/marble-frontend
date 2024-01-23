@@ -14,7 +14,7 @@ import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRep
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
-import { getServerEnv } from '@app-builder/utils/environment.server';
+import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { type RoutePath } from '@app-builder/utils/routes/types';
 import { json, redirect } from '@remix-run/node';

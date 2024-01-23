@@ -8,9 +8,11 @@ import { getFullName } from '../user';
 export function ChatlioWidget({
   user,
   organization,
+  widgetid,
 }: {
   user: CurrentUser;
   organization: Organization;
+  widgetid: string;
 }) {
   return (
     <>
@@ -34,10 +36,7 @@ export function ChatlioWidget({
         data-chatlio-widget-button
       />
       <div className="absolute">
-        <chatlio-widget
-          widgetid="4aef4109-4ac2-4499-590d-511078df07fd"
-          data-start-hidden
-        ></chatlio-widget>
+        <chatlio-widget widgetid={widgetid} data-start-hidden></chatlio-widget>
       </div>
     </>
   );
