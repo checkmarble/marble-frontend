@@ -17,6 +17,7 @@ import {
   useSegmentIdentification,
 } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
+import { getClientEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
 import * as Popover from '@radix-ui/react-popover';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -45,7 +46,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export const handle = {
   i18n: ['common', ...navigationI18n] satisfies Namespace,
-  scripts: () => [chatlioScript],
+  scripts: () => [
+    ...(getClientEnv('CHATLIO_WIDGET_ID') ? [chatlioScript] : []),
+  ],
 };
 
 export default function Builder() {
@@ -59,6 +62,7 @@ export default function Builder() {
   useRefreshToken();
 
   const [expanded, setExpanded] = useState(true);
+  const chatlioWidgetId = getClientEnv('CHATLIO_WIDGET_ID');
 
   return (
     <PermissionsProvider userPermissions={user.permissions}>
@@ -217,9 +221,15 @@ export default function Builder() {
                       />
                     </li>
                   ) : null}
-                  <li>
-                    <ChatlioWidget user={user} organization={organization} />
-                  </li>
+                  {chatlioWidgetId ? (
+                    <li>
+                      <ChatlioWidget
+                        user={user}
+                        organization={organization}
+                        widgetid={chatlioWidgetId}
+                      />
+                    </li>
+                  ) : null}
                   <li>
                     <SidebarButton
                       onClick={() => {
