@@ -125,8 +125,8 @@ export function ErrorBoundary() {
         <Links />
       </head>
       <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
-        <div className="from-purple-10 to-grey-02 flex h-full w-full flex-col items-center bg-gradient-to-r">
-          <div className="flex h-full w-full flex-col items-center bg-[url('/img/login_background.svg')] bg-no-repeat">
+        <div className="from-purple-10 to-grey-02 flex size-full flex-col items-center bg-gradient-to-r">
+          <div className="flex size-full flex-col items-center bg-[url('/img/login_background.svg')] bg-no-repeat">
             <div className="flex h-full max-h-80 flex-col justify-center">
               <Link to={getRoute('/sign-in')}>
                 <Logo

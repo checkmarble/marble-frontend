@@ -77,7 +77,7 @@ export const OperandLabel = ({
       aria-label={ariaLabel}
       className={clsx(
         'text-s text-grey-100 group flex flex-row items-center justify-between gap-2 font-normal transition-colors',
-        'h-fit min-h-[40px] w-fit min-w-[40px] rounded px-2',
+        'size-fit min-h-[40px] min-w-[40px] rounded px-2',
         variant === 'edit' && 'bg-grey-00 group-radix-state-open:bg-purple-05',
         variant === 'view' && 'bg-grey-02',
       )}

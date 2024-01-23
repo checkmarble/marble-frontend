@@ -137,7 +137,7 @@ function TypeInfos({
             key={tKey}
             className="inline-flex items-center gap-[2px] text-xs font-normal text-purple-50"
           >
-            {icon ? <Icon icon={icon} className="h-3 w-3" /> : null}
+            {icon ? <Icon icon={icon} className="size-3" /> : null}
             {t(tKey, { count: 1 })}
           </span>
         );

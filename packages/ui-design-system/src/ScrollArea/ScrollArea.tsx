@@ -116,7 +116,7 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(
         <Viewport
           {...viewportProps}
           ref={forwardedRef}
-          className="h-full w-full overscroll-x-contain"
+          className="size-full overscroll-x-contain"
         />
 
         {orientation !== 'vertical' ? (
