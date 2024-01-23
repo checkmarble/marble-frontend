@@ -1,5 +1,5 @@
 import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
-import { getClientEnv } from '@app-builder/utils/environment.client';
+import { getClientEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
 
 export interface AuthenticationClientRepository {

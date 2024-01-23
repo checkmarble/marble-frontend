@@ -5,7 +5,7 @@ import { hydrateRoot } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 
 import { clientServices } from './services/init.client';
-import { getClientEnv } from './utils/environment.client';
+import { getClientEnv } from './utils/environment';
 
 Sentry.init({
   dsn: getClientEnv('SENTRY_DSN'),

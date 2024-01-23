@@ -3,7 +3,7 @@ import {
   toastMessageScema,
   type ToastSession,
 } from '@app-builder/models/toast-session';
-import { getClientEnv } from '@app-builder/utils/environment.client';
+import { getClientEnv } from '@app-builder/utils/environment';
 import { useEffect } from 'react';
 import { toast, ToastBar, Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
