@@ -12,10 +12,10 @@ const avatar = cva(
     variants: {
       size: {
         xs: 'size-6 text-xs',
-        s: 'h-8 w-8 text-s',
-        m: 'h-10 w-10 text-m',
-        l: 'h-14 w-14 text-l',
-        xl: 'h-16 w-16 text-l',
+        s: 'size-8 text-s',
+        m: 'size-10 text-m',
+        l: 'size-14 text-l',
+        xl: 'size-16 text-l',
       },
     },
     defaultVariants: {
@@ -49,7 +49,7 @@ export function Avatar({
     >
       <Image
         referrerPolicy="no-referrer"
-        className="h-full w-full object-cover"
+        className="size-full object-cover"
         src={src}
         alt={
           firstName || lastName
@@ -58,7 +58,7 @@ export function Avatar({
         }
       />
       <Fallback
-        className="text-grey-100 flex h-full w-full items-center justify-center text-center font-normal uppercase"
+        className="text-grey-100 flex size-full items-center justify-center text-center font-normal uppercase"
         delayMs={src ? 400 : 0}
       >
         {`${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}` || '👤'}

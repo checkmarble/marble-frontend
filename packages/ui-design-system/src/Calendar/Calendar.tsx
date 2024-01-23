@@ -35,7 +35,7 @@ export function Calendar({
             variant: 'secondary',
             color: 'grey',
           }),
-          'w-10 h-10',
+          'size-10',
         ),
         nav_button_previous: 'absolute left-0',
         nav_button_next: 'absolute right-0',

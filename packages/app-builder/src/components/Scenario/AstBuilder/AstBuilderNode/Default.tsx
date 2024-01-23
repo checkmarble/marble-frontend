@@ -30,7 +30,7 @@ export function Default({
         displayErrors ? getBorderColor(editorNodeViewModel) : 'grey-10'
       }
       className={clsx(
-        'bg-grey-02 border-grey-02 flex h-fit min-h-[40px] w-fit min-w-[40px] items-center justify-between rounded border px-2 outline-none',
+        'bg-grey-02 border-grey-02 flex size-fit min-h-[40px] min-w-[40px] items-center justify-between rounded border px-2 outline-none',
         // Border color variants
         'data-[border-color=grey-10]:border-grey-10',
         'data-[border-color=red-100]:border-red-100',

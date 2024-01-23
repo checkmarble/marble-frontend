@@ -14,8 +14,8 @@ export function Ping({ className }: { className?: string }) {
         className,
       )}
     >
-      <span className="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>
-      <span className="relative inline-flex h-full w-full rounded-full bg-current"></span>
+      <span className="animate-ping-slow absolute inline-flex size-full rounded-full bg-current opacity-75"></span>
+      <span className="relative inline-flex size-full rounded-full bg-current"></span>
     </span>
   );
 }

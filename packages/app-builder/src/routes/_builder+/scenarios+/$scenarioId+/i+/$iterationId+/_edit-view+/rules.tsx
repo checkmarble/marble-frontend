@@ -75,7 +75,7 @@ export default function Rules() {
             <span className="flex items-center gap-2">
               <span className="flex w-2 items-center justify-center">
                 {hasErrors ? (
-                  <Ping className="relative box-content h-[6px] w-[6px] border border-transparent text-red-100" />
+                  <Ping className="relative box-content size-[6px] border border-transparent text-red-100" />
                 ) : null}
               </span>
               <span>{getValue<string>()}</span>

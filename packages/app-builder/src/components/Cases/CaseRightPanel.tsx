@@ -89,7 +89,7 @@ const CaseRightPanelContent = () => {
   const { t } = useTranslation(casesI18n);
   return (
     <RightPanel.Content className="max-w-md">
-      <ScrollArea.Root className="flex h-full w-full flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+      <ScrollArea.Root className="flex size-full flex-col gap-4 p-4 lg:gap-6 lg:p-6">
         <RightPanel.Title>
           <span className="w-full first-letter:capitalize">
             {t('cases:case.new_case')}

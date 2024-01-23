@@ -81,7 +81,7 @@ export default function Builder() {
                         <Logo
                           logo="logo"
                           aria-labelledby="marble logo"
-                          className="size-6 shrink-0 transition-all group-aria-expanded/nav:h-12 group-aria-expanded/nav:w-12"
+                          className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12"
                         />
                         <Logo
                           logo="marble"

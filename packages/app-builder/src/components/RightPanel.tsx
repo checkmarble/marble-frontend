@@ -27,7 +27,7 @@ export function createRightPanel(name: string) {
   }: RightPanelRootProps) {
     const value = { open, onClose };
     return (
-      <div className={clsx('relative flex h-full w-full', className)}>
+      <div className={clsx('relative flex size-full', className)}>
         <Provider value={value}>
           <Dialog.Root
             modal={false}
@@ -55,7 +55,7 @@ export function createRightPanel(name: string) {
             onClose();
           }
         }}
-        className={clsx('flex h-full w-full', className)}
+        className={clsx('flex size-full', className)}
         aria-hidden="true"
       >
         {children}

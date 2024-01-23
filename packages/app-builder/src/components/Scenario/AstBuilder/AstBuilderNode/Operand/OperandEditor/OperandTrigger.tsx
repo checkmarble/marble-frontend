@@ -25,7 +25,7 @@ export const OperandTrigger = forwardRef<
       data-border-color={borderColor}
       className={clsx(
         'group',
-        'h-fit min-h-[40px] w-fit min-w-[40px] rounded border px-2 outline-none',
+        'size-fit min-h-[40px] min-w-[40px] rounded border px-2 outline-none',
         'radix-state-open:border-purple-100 radix-state-open:bg-purple-05',
         // Border color variants
         'enabled:radix-state-closed:data-[border-color=grey-10]:border-grey-10 enabled:radix-state-closed:data-[border-color=grey-10]:focus:border-purple-100',

@@ -4,7 +4,7 @@ This library regroup the Marble design system implementation.
 
 ## Develop
 
-To develop locally, lauch the Storybook :
+To develop locally, launch the Storybook :
 
 ```sh
 pnpm --filter ui-design-system run storybook
