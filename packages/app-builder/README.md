@@ -1,6 +1,6 @@
 # App builder
 
-This is the app builder package.
+This is the app builder package, it contains the main application code.
 
 ## Getting started
 
@@ -23,12 +23,11 @@ The application is built using the Remix framework. You can find the documentati
    ```bash
    # Start the builder app in dev mode
    pnpm --filter app-builder run dev
-
-   # Start the builder app in dev mode with debug
-   pnpm --filter app-builder run dev --debug
    ```
 
 #### Add a new route
+
+The app uses the [flat routes convention](https://github.com/kiliman/remix-flat-routes?tab=readme-ov-file#remix-v2-flat-routes-convention) to define routes. You can find the routes in `src/routes/`.
 
 When adding a new route you need to run :
 

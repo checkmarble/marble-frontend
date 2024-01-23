@@ -1,3 +1,7 @@
+/**
+ * Used to assert that a value is never.
+ * Particularly useful for exhaustiveness checks (ex: in switch statements default).
+ */
 export function assertNever(
   prefix: string,
   x: never,
