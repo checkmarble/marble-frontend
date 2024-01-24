@@ -64,6 +64,7 @@ export const iconNames = [
   'tick',
   'tip',
   'trigger',
+  'users',
   'world',
 ] as const;
 

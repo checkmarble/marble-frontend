@@ -75,7 +75,7 @@ export default function ListsPage() {
         <Icon icon="lists" className="mr-2 size-6" />
         {t('navigation:lists')}
       </Page.Header>
-      <Page.Content scrollable={false}>
+      <Page.Content>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row justify-end">
             {canManageList ? <CreateList /> : null}
@@ -87,7 +87,10 @@ export default function ListsPage() {
               </p>
             </div>
           ) : (
-            <Table.Container {...getContainerProps()} className="bg-grey-00">
+            <Table.Container
+              {...getContainerProps()}
+              className="bg-grey-00 max-h-[70dvh]"
+            >
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => (

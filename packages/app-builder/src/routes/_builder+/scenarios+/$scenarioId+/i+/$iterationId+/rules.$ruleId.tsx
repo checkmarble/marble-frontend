@@ -1,4 +1,4 @@
-import { Callout, Paper, scenarioI18n, Page } from '@app-builder/components';
+import { Callout, Page, Paper, scenarioI18n } from '@app-builder/components';
 import {
   FormControl,
   FormError,

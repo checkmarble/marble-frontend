@@ -27,6 +27,7 @@ type Column =
   | 'outcome';
 
 type DecisionsListProps = {
+  className?: string;
   decisions: DecisionDetail[];
   columnVisibility?: Partial<Record<Column, boolean>>;
 } & (WithSelectable | WithoutSelectable);
@@ -63,6 +64,7 @@ export function useSelectedDecisionIds() {
 const columnHelper = createColumnHelper<DecisionDetail>();
 
 export function DecisionsList({
+  className,
   decisions,
   columnVisibility,
   selectable,
@@ -189,7 +191,10 @@ export function DecisionsList({
   );
 
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-00">
+    <Table.Container
+      {...getContainerProps()}
+      className={clsx('bg-grey-00', className)}
+    >
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

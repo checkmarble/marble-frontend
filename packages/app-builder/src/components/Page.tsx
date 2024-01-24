@@ -1,18 +1,15 @@
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
-import { ScrollArea } from 'ui-design-system';
+import { ScrollAreaV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-function PageContainer({
-  className,
-  ...props
-}: React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
->) {
+function PageContainer({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <main
-      className={clsx('flex flex-1 flex-col overflow-hidden', className)}
+      className={clsx(
+        'bg-purple-02 flex flex-1 flex-col overflow-hidden',
+        className,
+      )}
       {...props}
     />
   );
@@ -32,13 +29,7 @@ export const headerHeight = cva(undefined, {
   },
 });
 
-function PageHeader({
-  className,
-  ...props
-}: React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
->) {
+function PageHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={clsx(
@@ -51,34 +42,9 @@ function PageHeader({
   );
 }
 
-export type PageContentProps = React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
-> & { scrollable?: boolean };
-
-function PageContent({
-  className,
-  scrollable = true,
-  ...props
-}: PageContentProps) {
-  return scrollable ? (
-    <ScrollArea.Root className="flex flex-1 flex-col">
-      <ScrollArea.Viewport className="bg-purple-02 h-full">
-        <div
-          className={clsx(
-            'flex flex-1 flex-col',
-            'gap-4 p-4 lg:gap-6 lg:p-6',
-            className,
-          )}
-          {...props}
-        />
-      </ScrollArea.Viewport>
-      <ScrollArea.Scrollbar>
-        <ScrollArea.Thumb />
-      </ScrollArea.Scrollbar>
-    </ScrollArea.Root>
-  ) : (
-    <div className="bg-purple-02 flex flex-1">
+function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <ScrollAreaV2 className="size-full" type="auto">
       <div
         className={clsx(
           'flex flex-1 flex-col',
@@ -87,17 +53,11 @@ function PageContent({
         )}
         {...props}
       />
-    </div>
+    </ScrollAreaV2>
   );
 }
 
-function PageBackButton({
-  className,
-  ...props
-}: React.DetailedHTMLProps<
-  React.AnchorHTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
->) {
+function PageBackButton({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={clsx(

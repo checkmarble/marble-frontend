@@ -15,7 +15,7 @@ import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
-  type ColumnDef,
+  createColumnHelper,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -47,32 +47,33 @@ type ListValues = {
   value: string;
 };
 
+const columnHelper = createColumnHelper<ListValues>();
+
 export default function Lists() {
   const customList = useLoaderData<typeof loader>();
   const listValues = customList.values ?? [];
   const { t } = useTranslation(handle.i18n);
   const { canManageListItem, canManageList } = usePermissionsContext();
 
-  const columns = useMemo<ColumnDef<ListValues>[]>(
+  const columns = useMemo(
     () => [
-      {
-        accessorKey: 'value',
+      columnHelper.accessor((row) => row.value, {
+        id: 'value',
         header: t('lists:value', { count: listValues.length }),
         size: 600,
         sortingFn: 'text',
         enableSorting: true,
-        cell: ({ cell }) => {
+        cell: ({ getValue }) => {
+          const value = getValue();
           return (
             <div className="group flex items-center justify-between">
-              <p className="text-grey-100 text-s font-medium">
-                {cell.row.original.value}
-              </p>
+              <p className="text-grey-100 text-s font-medium">{value}</p>
 
               {canManageListItem ? (
                 <DeleteListValue
                   listId={customList.id}
-                  listValueId={cell.row.original.id}
-                  value={cell.row.original.value}
+                  listValueId={value}
+                  value={value}
                 >
                   <button
                     className="text-grey-00 group-hover:text-grey-100 transition-colors duration-200 ease-in-out"
@@ -86,7 +87,7 @@ export default function Lists() {
             </div>
           );
         },
-      },
+      }),
     ],
     [customList.id, listValues.length, t, canManageListItem],
   );
@@ -118,7 +119,7 @@ export default function Lists() {
           ) : null}
         </div>
       </Page.Header>
-      <Page.Content scrollable={false} className="max-w-3xl">
+      <Page.Content className="max-w-3xl">
         <Callout className="w-full" variant="outlined">
           {customList.description}
         </Callout>

@@ -302,7 +302,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
   return (
     <Paper.Container className="bg-grey-00 mb-10 w-full">
       <Paper.Title> {t('upload:past_uploads')} </Paper.Title>
-      <Table.Container {...getContainerProps()}>
+      <Table.Container {...getContainerProps()} className="max-h-96">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
           {rows.map((row) => (

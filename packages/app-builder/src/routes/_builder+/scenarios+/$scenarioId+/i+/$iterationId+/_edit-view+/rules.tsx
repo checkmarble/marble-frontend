@@ -148,7 +148,7 @@ export default function Rules() {
           ) : null}
         </span>
       </div>
-      <Table.Container {...getContainerProps()} className="bg-grey-00">
+      <Table.Container {...getContainerProps()} className="bg-grey-00 max-h-96">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
           {hasRules ? (
