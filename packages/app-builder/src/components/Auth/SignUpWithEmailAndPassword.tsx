@@ -61,7 +61,12 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
           <FormItem className="flex flex-col items-start gap-2">
             <FormLabel>{t('auth:sign_in.password')}</FormLabel>
             <FormControl>
-              <Input className="w-full" type="password" {...field} />
+              <Input
+                className="w-full"
+                type="password"
+                autoComplete="new-password"
+                {...field}
+              />
             </FormControl>
             <FormError />
           </FormItem>
