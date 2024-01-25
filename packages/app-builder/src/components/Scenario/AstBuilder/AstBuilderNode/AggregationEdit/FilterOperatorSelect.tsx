@@ -3,6 +3,17 @@ import { Select } from 'ui-design-system';
 
 import { useGetOperatorName } from '../Operator';
 
+const filterOperators = [
+  '=',
+  '!=',
+  '>',
+  '<',
+  '>=',
+  '<=',
+  'IsInList',
+  'IsNotInList',
+];
+
 export const FilterOperatorSelect = ({
   value,
   onChange,
@@ -12,16 +23,6 @@ export const FilterOperatorSelect = ({
   onChange: (value: string) => void;
   errors: EvaluationError[];
 }) => {
-  const filterOperators = [
-    '=',
-    '!=',
-    '>',
-    '<',
-    '>=',
-    '<=',
-    'IsInList',
-    'IsNotInList',
-  ];
   const getOperatorName = useGetOperatorName();
 
   return (
