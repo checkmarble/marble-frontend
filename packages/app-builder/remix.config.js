@@ -14,7 +14,15 @@ export default {
   ],
   serverPlatform: 'node',
   appDirectory,
-  browserNodeBuiltinsPolyfill: { modules: { process: true } },
+  browserNodeBuiltinsPolyfill: {
+    modules: {
+      process: true,
+      buffer: true,
+      stream: true,
+      util: true,
+      crypto: true,
+    },
+  },
   ignoredRouteFiles: ['**/*'],
   watchPaths: [
     '../ui-design-system/**/*',
