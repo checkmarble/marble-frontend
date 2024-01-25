@@ -9,6 +9,7 @@ import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { ScrollAreaV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -37,32 +38,37 @@ export default function Cases() {
         <Icon icon="case-manager" className="mr-2 size-6" />
         {t('navigation:caseManager')}
       </Page.Header>
-      <div className="flex h-full flex-row">
-        <div className="border-r-grey-10 flex h-full w-fit min-w-[200px] flex-col border-r p-4">
-          <div className="flex flex-row items-center gap-2 pb-4">
+      <div className="flex h-full flex-row overflow-hidden">
+        <div className="border-r-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] flex-col border-r p-4">
+          <div className="flex flex-row items-center gap-2">
             <Icon icon="inbox" className="size-5" />
             <p className="font-bold">{t('cases:case.inboxes')}</p>
           </div>
-          <div className="flex flex-col gap-1 pb-6">
-            {inboxes.map((inbox) => (
-              <NavLink
-                key={inbox.id}
-                className={({ isActive }) =>
-                  clsx(
-                    'text-s cursor-pointer rounded p-2 font-medium first-letter:capitalize',
-                    isActive
-                      ? 'bg-purple-10 text-purple-100'
-                      : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
-                  )
-                }
-                to={getRoute('/cases/inboxes/:inboxId', {
-                  inboxId: fromUUID(inbox.id),
-                })}
-              >
-                {inbox.name}
-              </NavLink>
-            ))}
-          </div>
+          <ScrollAreaV2 className="-mx-4 mb-6 mt-4 max-h-[70dvh] px-4">
+            <nav>
+              <ul className="flex flex-col gap-1">
+                {inboxes.map((inbox) => (
+                  <li key={inbox.id}>
+                    <NavLink
+                      className={({ isActive }) =>
+                        clsx(
+                          'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium first-letter:capitalize',
+                          isActive
+                            ? 'bg-purple-10 text-purple-100'
+                            : 'text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                        )
+                      }
+                      to={getRoute('/cases/inboxes/:inboxId', {
+                        inboxId: fromUUID(inbox.id),
+                      })}
+                    >
+                      {inbox.name}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </ScrollAreaV2>
           {canEditInboxes ? (
             <CreateInbox redirectRoutePath="/cases/inboxes/:inboxId" />
           ) : null}

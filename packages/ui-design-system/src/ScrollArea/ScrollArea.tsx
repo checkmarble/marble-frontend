@@ -116,7 +116,8 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(
         <Viewport
           {...viewportProps}
           ref={forwardedRef}
-          className="size-full overscroll-x-contain"
+          // Override hardcoded style to bypass https://github.com/radix-ui/primitives/issues/926
+          className="size-full overscroll-x-contain [&>:first-of-type]:!block"
         />
 
         {orientation !== 'vertical' ? (

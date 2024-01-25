@@ -24,6 +24,7 @@ export function CaseDecisions({ decisions }: { decisions: Decision[] }) {
       </Collapsible.Title>
       <Collapsible.Content>
         <DecisionsList
+          className="max-h-96"
           decisions={decisions}
           columnVisibility={{ case: false }}
         />

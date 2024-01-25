@@ -1,9 +1,4 @@
-import {
-  Callout,
-  Paper,
-  scenarioI18n,
-  ScenarioPage,
-} from '@app-builder/components';
+import { Callout, Page, Paper, scenarioI18n } from '@app-builder/components';
 import {
   FormControl,
   FormError,
@@ -218,11 +213,11 @@ export default function RuleEdit() {
   }, [errors, setError]);
 
   return (
-    <ScenarioPage.Container>
-      <ScenarioPage.Header className="justify-between">
+    <Page.Container>
+      <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Link to="./..">
-            <ScenarioPage.BackButton />
+            <Page.BackButton />
           </Link>
           {rule.name ?? fromUUID(ruleId)}
           {editorMode === 'edit' ? (
@@ -257,7 +252,7 @@ export default function RuleEdit() {
             </Button>
           </div>
         ) : null}
-      </ScenarioPage.Header>
+      </Page.Header>
 
       {editorMode === 'view' ? (
         <RuleViewContent builder={astEditor} rule={rule} />
@@ -270,7 +265,7 @@ export default function RuleEdit() {
           formMethods={formMethods}
         />
       )}
-    </ScenarioPage.Container>
+    </Page.Container>
   );
 }
 
@@ -287,7 +282,7 @@ function RuleViewContent({
   } = useTranslation(handle.i18n);
 
   return (
-    <ScenarioPage.Content>
+    <Page.Content>
       <Callout className="max-w-3xl" variant="outlined">
         {rule.description}
       </Callout>
@@ -312,7 +307,7 @@ function RuleViewContent({
           <AstBuilder builder={builder} viewOnly={true} />
         </Paper.Container>
       </div>
-    </ScenarioPage.Content>
+    </Page.Content>
   );
 }
 
@@ -335,7 +330,7 @@ function RuleEditContent({
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   return (
-    <ScenarioPage.Content>
+    <Page.Content>
       <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
         <FormProvider {...formMethods}>
           <FormField
@@ -415,6 +410,6 @@ function RuleEditContent({
         iterationId={iterationId}
         scenarioId={scenarioId}
       />
-    </ScenarioPage.Content>
+    </Page.Content>
   );
 }

@@ -1,6 +1,6 @@
 import {
   navigationI18n,
-  ScenarioPage,
+  Page,
   ScenariosLink,
   usePermissionsContext,
 } from '@app-builder/components';
@@ -79,11 +79,11 @@ export default function ScenarioEditLayout() {
   const withDeploymentActions = canPublishScenario;
 
   return (
-    <ScenarioPage.Container>
-      <ScenarioPage.Header className="justify-between">
+    <Page.Container>
+      <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Link to={getRoute('/scenarios/')}>
-            <ScenarioPage.BackButton />
+            <Page.BackButton />
           </Link>
           {currentScenario.name}
           <VersionSelect
@@ -117,8 +117,8 @@ export default function ScenarioEditLayout() {
             />
           ) : null}
         </div>
-      </ScenarioPage.Header>
-      <ScenarioPage.Content>
+      </Page.Header>
+      <Page.Content>
         <nav>
           <ul className="flex flex-row gap-2">
             <li>
@@ -166,8 +166,8 @@ export default function ScenarioEditLayout() {
           </ul>
         </nav>
         <Outlet />
-      </ScenarioPage.Content>
-    </ScenarioPage.Container>
+      </Page.Content>
+    </Page.Container>
   );
 }
 

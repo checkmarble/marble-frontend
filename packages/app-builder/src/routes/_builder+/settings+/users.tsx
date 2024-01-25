@@ -125,7 +125,7 @@ export default function Users() {
             <CreateUser orgId={user.organizationId} />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
-            <Table.Container {...getContainerProps()}>
+            <Table.Container {...getContainerProps()} className="max-h-96">
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => {

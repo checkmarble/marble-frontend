@@ -12,53 +12,29 @@ import clsx from 'clsx';
 import { useRef } from 'react';
 import { Icon } from 'ui-icons';
 
-import { ScrollArea } from '../ScrollArea/ScrollArea';
-
-interface TableContainerProps
-  extends Pick<
-    React.DetailedHTMLProps<
-      React.HTMLAttributes<HTMLDivElement>,
-      HTMLDivElement
-    >,
-    'children' | 'className'
-  > {
-  tableContainerRef: React.RefObject<HTMLDivElement>;
-}
+import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
 
 function TableContainer({
-  tableContainerRef,
-  children,
   className,
-}: TableContainerProps) {
-  return (
-    <ScrollArea.Root className="border-grey-10 overflow-hidden rounded-lg border">
-      <ScrollArea.Viewport
-        ref={tableContainerRef}
-        className={clsx('flex h-full overflow-auto', className)}
-      >
-        <table className="w-full table-fixed border-separate border-spacing-0">
-          {children}
-        </table>
-      </ScrollArea.Viewport>
-      <ScrollArea.Scrollbar>
-        <ScrollArea.Thumb />
-      </ScrollArea.Scrollbar>
-      <ScrollArea.Scrollbar orientation="horizontal">
-        <ScrollArea.Thumb />
-      </ScrollArea.Scrollbar>
-      <ScrollArea.Corner />
-    </ScrollArea.Root>
-  );
-}
-
-function TableTHead({
-  className,
+  scrollElementRef,
   ...props
-}: React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLTableSectionElement>,
-  HTMLTableSectionElement
->) {
-  return <thead className={clsx('sticky top-0', className)} {...props} />;
+}: React.ComponentProps<'table'> & {
+  scrollElementRef: React.RefObject<HTMLDivElement>;
+}) {
+  return (
+    <ScrollAreaV2
+      ref={scrollElementRef}
+      className={clsx(
+        'border-grey-10 border-spacing-0 rounded-lg border',
+        className,
+      )}
+    >
+      <table
+        className="w-full table-fixed border-separate border-spacing-0"
+        {...props}
+      />
+    </ScrollAreaV2>
+  );
 }
 
 function TableTH<TData extends RowData, TValue>({
@@ -66,10 +42,7 @@ function TableTH<TData extends RowData, TValue>({
   children,
   className,
   ...props
-}: React.DetailedHTMLProps<
-  React.ThHTMLAttributes<HTMLTableCellElement>,
-  HTMLTableCellElement
-> & { header: Header<TData, TValue> }) {
+}: React.ComponentProps<'th'> & { header: Header<TData, TValue> }) {
   return (
     <th
       colSpan={header.colSpan}
@@ -95,7 +68,7 @@ function Header<TData extends RowData>({
   headerGroups: HeaderGroup<TData>[];
 }) {
   return (
-    <Table.THead>
+    <thead className="sticky top-0">
       {headerGroups.map((headerGroup) => (
         <tr key={headerGroup.id}>
           {headerGroup.headers.map((header, index) => {
@@ -136,7 +109,7 @@ function Header<TData extends RowData>({
           })}
         </tr>
       ))}
-    </Table.THead>
+    </thead>
   );
 }
 
@@ -145,11 +118,11 @@ export function useVirtualTable<TData extends RowData>(
 ) {
   const table = useReactTable(options);
 
-  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const scrollElementRef = useRef<HTMLTableElement>(null);
 
   const { rows } = table.getRowModel();
   const rowVirtualizer = useVirtualizer({
-    getScrollElement: () => tableContainerRef.current,
+    getScrollElement: () => scrollElementRef.current,
     count: rows.length,
     estimateSize: () => 64,
     overscan: 10,
@@ -171,7 +144,7 @@ export function useVirtualTable<TData extends RowData>(
       return { paddingTop, paddingBottom };
     },
     getContainerProps: () => {
-      return { table, tableContainerRef };
+      return { scrollElementRef };
     },
     isEmpty: rows.length === 0,
     rows: virtualRows.map((virtualRow) => rows[virtualRow.index]),
@@ -181,7 +154,7 @@ export function useVirtualTable<TData extends RowData>(
 export function useTable<TData extends RowData>(options: TableOptions<TData>) {
   const table = useReactTable(options);
 
-  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const scrollElementRef = useRef<HTMLTableElement>(null);
 
   const { rows } = table.getRowModel();
 
@@ -191,7 +164,7 @@ export function useTable<TData extends RowData>(options: TableOptions<TData>) {
       return { paddingTop: 0, paddingBottom: 0 };
     },
     getContainerProps: () => {
-      return { table, tableContainerRef };
+      return { scrollElementRef };
     },
     rows,
   };
@@ -227,10 +200,7 @@ function Row<TData extends RowData>({
   row,
   className,
   ...props
-}: React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLTableRowElement>,
-  HTMLTableRowElement
-> & { row: Row<TData> }) {
+}: Omit<React.ComponentProps<'tr'>, 'children'> & { row: Row<TData> }) {
   return (
     <tr className={clsx('group h-16', className)} {...props}>
       {row.getVisibleCells().map((cell) => {
@@ -254,7 +224,7 @@ function DefaultTable<TData extends RowData>({
   getContainerProps,
 }: ReturnType<typeof useTable<TData>>) {
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-00">
+    <Table.Container {...getContainerProps()} className="bg-grey-00 max-h-96">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => (
@@ -267,7 +237,6 @@ function DefaultTable<TData extends RowData>({
 
 export const Table = {
   Container: TableContainer,
-  THead: TableTHead,
   TH: TableTH,
   Header,
   Body,

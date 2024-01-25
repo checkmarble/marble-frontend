@@ -91,7 +91,7 @@ function FilesList({ files }: { files: CaseFile[] }) {
   });
 
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-00">
+    <Table.Container {...getContainerProps()} className="bg-grey-00 max-h-96">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

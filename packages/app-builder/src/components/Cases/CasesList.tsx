@@ -16,7 +16,13 @@ import { CaseTags } from './CaseTags';
 
 const columnHelper = createColumnHelper<Case>();
 
-export function CasesList({ cases }: { cases: Case[] }) {
+export function CasesList({
+  className,
+  cases,
+}: {
+  cases: Case[];
+  className?: string;
+}) {
   const {
     t,
     i18n: { language },
@@ -78,7 +84,10 @@ export function CasesList({ cases }: { cases: Case[] }) {
   });
 
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-00">
+    <Table.Container
+      {...getContainerProps()}
+      className={clsx('bg-grey-00', className)}
+    >
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

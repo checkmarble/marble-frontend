@@ -107,7 +107,7 @@ export default function Inbox() {
               <span className="font-bold">
                 {t('settings:inboxes.inbox_details.case_count')}
               </span>
-              {!caseList.totalCount.isMaxCount
+              {caseList.totalCount.isMaxCount
                 ? caseList.totalCount.value + '+'
                 : caseList.totalCount.value}
             </div>
@@ -122,7 +122,7 @@ export default function Inbox() {
             <CreateInboxUser inboxId={inbox.id} />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
-            <Table.Container {...getContainerProps()}>
+            <Table.Container {...getContainerProps()} className="max-h-96">
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => {
