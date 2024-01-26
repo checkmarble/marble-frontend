@@ -526,12 +526,13 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
 /**
  * List decisions
  */
-export function listDecisions({ outcome, scenarioId, triggerObject, startDate, endDate, offsetId, previous, next, limit, order, sorting }: {
+export function listDecisions({ outcome, scenarioId, triggerObject, startDate, endDate, hasCase, offsetId, previous, next, limit, order, sorting }: {
     outcome?: Outcome[];
     scenarioId?: string[];
     triggerObject?: string[];
     startDate?: string;
     endDate?: string;
+    hasCase?: boolean[];
     offsetId?: string;
     previous?: boolean;
     next?: boolean;
@@ -556,6 +557,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
         "triggerObject[]": triggerObject,
         startDate,
         endDate,
+        has_case: hasCase,
         offsetId,
         previous,
         next,

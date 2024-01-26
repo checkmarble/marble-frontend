@@ -22,14 +22,35 @@ export type DecisionFilters = {
         fromNow: string;
       };
   scenarioId?: string[];
+  hasCase?: string[];
+};
+
+export type DecisionFiltersDto = {
+  outcome?: Outcome[];
+  triggerObject?: string[];
+  dateRange?:
+    | {
+        type: 'static';
+        startDate?: string;
+        endDate?: string;
+      }
+    | {
+        type: 'dynamic';
+        fromNow: string;
+      };
+  scenarioId?: string[];
+  hasCase?: boolean[];
 };
 
 export type DecisionFiltersWithPagination =
   FiltersWithPagination<DecisionFilters>;
 
+export type DecisionFiltersDtoWithPagination =
+  FiltersWithPagination<DecisionFiltersDto>;
+
 export interface DecisionRepository {
   listDecisions(
-    args: DecisionFiltersWithPagination,
+    args: DecisionFiltersDtoWithPagination,
   ): Promise<PaginatedResponse<Decision>>;
 }
 

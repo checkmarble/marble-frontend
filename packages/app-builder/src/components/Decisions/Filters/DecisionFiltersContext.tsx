@@ -18,6 +18,7 @@ import * as z from 'zod';
 import { type DecisionFilterName, decisionFilterNames } from './filters';
 
 export const decisionFiltersSchema = z.object({
+  hasCase: z.array(z.string()).optional(),
   outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
   triggerObject: z.array(z.string()).optional(),
   dateRange: dateRangeSchema.optional(),
@@ -39,11 +40,14 @@ const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
 
 export type DecisionFiltersForm = {
   outcome: Exclude<Outcome, 'null' | 'unknown'>[];
+
+  hasCase: string[];
   triggerObject: string[];
   dateRange: DateRangeFilterForm;
   scenarioId: string[];
 };
 const emptyDecisionFilters: DecisionFiltersForm = {
+  hasCase: [],
   outcome: [],
   triggerObject: [],
   dateRange: null,
@@ -130,6 +134,15 @@ export function useOutcomeFilter() {
   const selectedOutcomes = field.value;
   const setSelectedOutcomes = field.onChange;
   return { selectedOutcomes, setSelectedOutcomes };
+}
+
+export function useHasCaseFilter() {
+  const { field } = useController<DecisionFiltersForm, 'hasCase'>({
+    name: 'hasCase',
+  });
+  const selectedHasCase = field.value;
+  const setSelectedHasCase = field.onChange;
+  return { selectedHasCase, setSelectedHasCase };
 }
 
 export function useDateRangeFilter() {

@@ -1,4 +1,6 @@
 {
+  "true": "True",
+  "false": "False",
   "auth.logout": "Log out",
   "search": "Search",
   "error_one": "{{count}} error",
