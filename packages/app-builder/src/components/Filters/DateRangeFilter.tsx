@@ -2,23 +2,56 @@ import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { formatDateTime, formatDuration } from '@app-builder/utils/format';
 import { clsx } from 'clsx';
+import { add, sub } from 'date-fns';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Calendar, type DateRange } from 'ui-design-system';
 
+interface StaticDateRangeFilterType {
+  type: 'static';
+  startDate: string;
+  endDate: string;
+}
+
+interface DynamicDateRangeFilterType {
+  type: 'dynamic';
+  fromNow: string;
+}
+
 type DateRangeFilterType =
-  | {
-      type: 'static';
-      startDate: string;
-      endDate: string;
-    }
-  | {
-      type: 'dynamic';
-      fromNow: string;
-    }
+  | StaticDateRangeFilterType
+  | DynamicDateRangeFilterType
   | null
   | undefined;
+
+function adaptStaticDateRangeFilterType({
+  from,
+  to,
+}: DateRange): StaticDateRangeFilterType {
+  const startDate = from?.toISOString() ?? '';
+  // Add a day to the end date because the user expects the end date to be included.
+  // To fully understand that, think about the special case where the user selects the same day in the Calendar picker (from = to)
+  // "From" means the start of the day, and "to" means the end of the day.
+  const endDate = to ? add(to, { days: 1 }).toISOString() : '';
+
+  return {
+    type: 'static',
+    startDate,
+    endDate,
+  };
+}
+
+function adaptDateRange({
+  startDate,
+  endDate,
+}: StaticDateRangeFilterType): DateRange | undefined {
+  const from = startDate ? new Date(startDate) : undefined;
+  // look at adaptStaticDateRangeFilterType for the reason why we substract a day
+  const to = endDate ? sub(new Date(endDate), { days: 1 }) : undefined;
+
+  return from || to ? { from, to } : undefined;
+}
 
 const DateRangeFilterContext = createSimpleContext<{
   fromNow?: string;
@@ -40,17 +73,16 @@ function DateRangeFilterRoot({
   children: React.ReactNode;
   className?: string;
 }) {
-  const calendarSelected = getSelected(dateRangeFilter);
+  const calendarSelected =
+    dateRangeFilter?.type === 'static'
+      ? adaptDateRange(dateRangeFilter)
+      : undefined;
+
   const onCalendarSelect = useCallback(
     (range?: DateRange) => {
-      const startDate = range?.from?.toISOString() ?? '';
-      const endDate = range?.to?.toISOString() ?? '';
-
-      setDateRangeFilter({
-        type: 'static',
-        startDate,
-        endDate,
-      });
+      setDateRangeFilter(
+        adaptStaticDateRangeFilterType(range ?? { from: undefined }),
+      );
     },
     [setDateRangeFilter],
   );
@@ -78,21 +110,6 @@ function DateRangeFilterRoot({
       <div className={className}>{children}</div>
     </DateRangeFilterContext.Provider>
   );
-}
-
-function getSelected(dateRangeFilter: DateRangeFilterType) {
-  if (!dateRangeFilter) return undefined;
-  if (dateRangeFilter.type === 'dynamic') return undefined;
-
-  const from = dateRangeFilter.startDate
-    ? new Date(dateRangeFilter.startDate)
-    : undefined;
-  const to = dateRangeFilter.endDate
-    ? new Date(dateRangeFilter.endDate)
-    : undefined;
-  const selected = from || to ? { from, to } : undefined;
-
-  return selected;
 }
 
 export const fromNowDurations = [
