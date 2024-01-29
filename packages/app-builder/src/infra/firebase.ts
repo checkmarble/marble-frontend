@@ -9,6 +9,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   GoogleAuthProvider,
+  OAuthProvider,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -19,6 +20,7 @@ export type FirebaseClientWrapper = {
   app: FirebaseApp;
   clientAuth: Auth;
   googleAuthProvider: GoogleAuthProvider;
+  microsoftAuthProvider: OAuthProvider;
   signInWithOAuth: typeof signInWithPopup;
   signInWithEmailAndPassword: typeof signInWithEmailAndPassword;
   createUserWithEmailAndPassword: typeof createUserWithEmailAndPassword;
@@ -44,10 +46,13 @@ export function initializeFirebaseClient({
   const googleAuthProvider = new GoogleAuthProvider();
   googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
 
+  const microsoftAuthProvider = new OAuthProvider('microsoft.com');
+
   return {
     app,
     clientAuth,
     googleAuthProvider,
+    microsoftAuthProvider,
     signInWithOAuth: signInWithPopup,
     signInWithEmailAndPassword: signInWithEmailAndPassword,
     createUserWithEmailAndPassword: createUserWithEmailAndPassword,

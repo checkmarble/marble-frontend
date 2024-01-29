@@ -2,6 +2,7 @@ import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { AuthError } from '@app-builder/components/Auth/AuthError';
 import { SignInWithEmailAndPassword } from '@app-builder/components/Auth/SignInWithEmailAndPassword';
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
+import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -56,6 +57,7 @@ export default function Login() {
     <div className="flex w-full flex-col items-center">
       <div className="flex w-full flex-col gap-2">
         <SignInWithGoogle signIn={signIn} />
+        <SignInWithMicrosoft signIn={signIn} />
       </div>
 
       <div

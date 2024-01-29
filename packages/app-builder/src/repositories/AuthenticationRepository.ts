@@ -4,6 +4,7 @@ import { getRoute } from '@app-builder/utils/routes';
 
 export interface AuthenticationClientRepository {
   googleSignIn: (locale: string) => Promise<string>;
+  microsoftSignIn: (locale: string) => Promise<string>;
   emailAndPasswordSignIn: (
     locale: string,
     email: string,
@@ -42,6 +43,15 @@ export function getAuthenticationClientRepository(
     const credential = await firebaseClient.signInWithOAuth(
       auth,
       firebaseClient.googleAuthProvider,
+    );
+    return credential.user.getIdToken();
+  }
+
+  async function microsoftSignIn(locale: string) {
+    const auth = getClientAuth(locale);
+    const credential = await firebaseClient.signInWithOAuth(
+      auth,
+      firebaseClient.microsoftAuthProvider,
     );
     return credential.user.getIdToken();
   }
@@ -134,6 +144,7 @@ export function getAuthenticationClientRepository(
 
   return {
     googleSignIn,
+    microsoftSignIn,
     emailAndPasswordSignIn,
     emailAndPassswordSignUp,
     resendEmailVerification,

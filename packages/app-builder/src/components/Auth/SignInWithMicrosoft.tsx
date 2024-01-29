@@ -1,4 +1,4 @@
-import { useGoogleSignIn } from '@app-builder/services/auth/auth.client';
+import { useMicrosoftSignIn } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
 import * as Sentry from '@sentry/remix';
@@ -7,39 +7,39 @@ import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Logo } from 'ui-icons';
 
-function SignInWithGoogleButton({ onClick }: { onClick?: () => void }) {
+function SignInWithMicrosoftButton({ onClick }: { onClick?: () => void }) {
   const { t } = useTranslation(['auth']);
 
   return (
     <button
-      className="flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)]"
+      className="bg-grey-00 hover:bg-grey-05 active:bg-grey-10 flex h-10 w-full items-center gap-3 border border-[#8C8C8C] p-px transition"
       onClick={() => {
         void onClick?.();
       }}
     >
-      <div className="bg-grey-00 flex h-full w-10 items-center justify-center rounded-l-[3px]">
-        <Logo logo="google-logo" className="size-6" />
+      <div className="flex h-full w-10 items-center justify-center">
+        <Logo logo="microsoft-logo" className="size-6" />
       </div>
-      <span className="text-s text-grey-00 w-full whitespace-nowrap text-center align-middle font-medium">
-        {t('auth:sign_in.google')}
+      <span className="text-s w-full whitespace-nowrap text-center align-middle font-semibold text-[#5E5E5E]">
+        {t('auth:sign_in.microsoft')}
       </span>
     </button>
   );
 }
 
-function ClientSignInWithGoogle({
+function ClientSignInWithMicrosoft({
   signIn,
 }: {
   signIn: (authPayload: AuthPayload) => void;
 }) {
   const { t } = useTranslation(['common']);
-  const googleSignIn = useGoogleSignIn(
+  const microsoftSignIn = useMicrosoftSignIn(
     clientServices.authenticationClientService,
   );
 
-  const handleGoogleSignIn = async () => {
+  const handleMicrosoftSignIn = async () => {
     try {
-      const result = await googleSignIn();
+      const result = await microsoftSignIn();
       if (!result) return;
       const { idToken, csrf } = result;
       if (!idToken) return;
@@ -51,22 +51,22 @@ function ClientSignInWithGoogle({
   };
 
   return (
-    <SignInWithGoogleButton
+    <SignInWithMicrosoftButton
       onClick={() => {
-        void handleGoogleSignIn();
+        void handleMicrosoftSignIn();
       }}
     />
   );
 }
 
-export function SignInWithGoogle({
+export function SignInWithMicrosoft({
   signIn,
 }: {
   signIn: (authPayload: AuthPayload) => void;
 }) {
   return (
-    <ClientOnly fallback={<SignInWithGoogleButton />}>
-      {() => <ClientSignInWithGoogle signIn={signIn} />}
+    <ClientOnly fallback={<SignInWithMicrosoftButton />}>
+      {() => <ClientSignInWithMicrosoft signIn={signIn} />}
     </ClientOnly>
   );
 }
