@@ -532,7 +532,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
     triggerObject?: string[];
     startDate?: string;
     endDate?: string;
-    hasCase?: boolean[];
+    hasCase?: boolean;
     offsetId?: string;
     previous?: boolean;
     next?: boolean;

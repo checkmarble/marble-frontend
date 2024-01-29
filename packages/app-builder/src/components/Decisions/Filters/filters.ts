@@ -39,7 +39,7 @@ export function getFilterTKey(filterName: DecisionFilterName) {
     case 'triggerObject':
       return 'decisions:trigger_object.type';
     case 'hasCase':
-      return 'decisions:presence_of_case';
+      return 'decisions:filters.has_case';
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
   }

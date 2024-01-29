@@ -18,7 +18,10 @@ import * as z from 'zod';
 import { type DecisionFilterName, decisionFilterNames } from './filters';
 
 export const decisionFiltersSchema = z.object({
-  hasCase: z.array(z.string()).optional(),
+  hasCase: z
+    .enum(['true', 'false'])
+    .transform((val) => val === 'true')
+    .optional(),
   outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
   triggerObject: z.array(z.string()).optional(),
   dateRange: dateRangeSchema.optional(),
@@ -40,14 +43,13 @@ const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
 
 export type DecisionFiltersForm = {
   outcome: Exclude<Outcome, 'null' | 'unknown'>[];
-
-  hasCase: string[];
+  hasCase: boolean | null;
   triggerObject: string[];
   dateRange: DateRangeFilterForm;
   scenarioId: string[];
 };
 const emptyDecisionFilters: DecisionFiltersForm = {
-  hasCase: [],
+  hasCase: null,
   outcome: [],
   triggerObject: [],
   dateRange: null,
@@ -98,6 +100,7 @@ export function DecisionFiltersProvider({
     const formValues = formMethods.getValues();
     _submitDecisionFilters({
       ...formValues,
+      hasCase: formValues.hasCase ?? undefined,
       dateRange: formValues.dateRange ?? undefined,
     });
   });

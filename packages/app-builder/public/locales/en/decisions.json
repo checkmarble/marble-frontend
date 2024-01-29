@@ -4,7 +4,7 @@
   "detail.scenario_name_runs_on": "<ScenarioName>{{scenarioName}}</ScenarioName> (runs on <TriggerObjectType>{{triggerObjectType}}</TriggerObjectType>)",
   "detail.error": "An error as occured. Make sure the provided decision id is valid.",
   "trigger_object.type": "Trigger object",
-  "presence_of_case": "Presence of a case",
+  "filters.has_case": "Presence of a case",
   "filters.date_range.title": "creation date is:",
   "score": "Score",
   "outcome": "Outcome",

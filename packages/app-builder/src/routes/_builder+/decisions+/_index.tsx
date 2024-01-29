@@ -58,30 +58,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/decisions/'));
   }
 
-  const parseBool = (value: string) => {
-    if (value === 'true') return true;
-    return false;
-  };
-  const filters = parsedFilterQuery.data;
-  const hasCase = filters.hasCase
-    ? filters.hasCase
-        .filter((x) => ['true', 'false'].includes(x))
-        .map(parseBool)
-    : undefined;
-
-  console.log({
-    ...{
-      ...filters,
-      hasCase,
-    },
-    ...parsedPaginationQuery.data,
-  });
   const [decisionsData, scenarios] = await Promise.all([
     decision.listDecisions({
-      ...{
-        ...filters,
-        hasCase,
-      },
+      ...parsedFilterQuery.data,
       ...parsedPaginationQuery.data,
     }),
     scenario.listScenarios(),
@@ -128,7 +107,7 @@ export default function Decisions() {
                     }
                 : {},
               scenarioId: decisionFilters.scenarioId ?? [],
-              hasCase: decisionFilters.hasCase ?? [],
+              hasCase: decisionFilters?.hasCase ?? null,
               offsetId: pagination?.offsetId || null,
               next: pagination?.next || null,
               previous: pagination?.previous || null,

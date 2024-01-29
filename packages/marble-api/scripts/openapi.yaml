@@ -139,9 +139,7 @@ paths:
           in: query
           required: false
           schema:
-            type: array
-            items:
-              type: boolean
+            type: boolean
         - $ref: '#/components/parameters/offsetId'
         - $ref: '#/components/parameters/previous'
         - $ref: '#/components/parameters/next'
