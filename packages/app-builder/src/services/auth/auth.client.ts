@@ -32,8 +32,40 @@ export function useGoogleSignIn({
         await authenticationClientRepository.googleSignIn(language);
       return { idToken, csrf };
     } catch (error) {
-      //TODO: handle errors correctly for UI
-      console.error(error);
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          // Fired when the user close the popup without logging in, this shouldn't raise an error on our side
+          case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
+            return;
+        }
+      }
+      throw error;
+    }
+  };
+}
+
+export function useMicrosoftSignIn({
+  authenticationClientRepository,
+}: AuthenticationClientService) {
+  const {
+    i18n: { language },
+  } = useTranslation();
+  const csrf = useAuthenticityToken();
+
+  return async () => {
+    try {
+      const idToken =
+        await authenticationClientRepository.microsoftSignIn(language);
+      return { idToken, csrf };
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          // Fired when the user close the popup without logging in, this shouldn't raise an error on our side
+          case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
+            return;
+        }
+      }
+      throw error;
     }
   };
 }
@@ -69,7 +101,6 @@ export function useEmailAndPasswordSignIn({
             throw new InvalidLoginCredentials();
         }
       }
-      throw error;
     }
   };
 }

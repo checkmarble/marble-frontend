@@ -38,7 +38,7 @@ export function CtaClassName({
   color,
 }: Pick<ButtonProps, 'variant' | 'color'>) {
   return clsx(
-    'text-s flex flex-row items-center justify-center gap-1 rounded px-4 py-2 font-semibold outline-none border border-solid',
+    'text-s flex flex-row items-center justify-center gap-1 rounded px-4 py-2 font-semibold outline-none border border-solid transition-colors',
     {
       'hover:bg-green-110 active:bg-green-120  text-grey-00 border-bg-green-100 focus:border-grey-100 bg-green-100 disabled:bg-green-50':
         variant === 'primary' && color === 'green',
