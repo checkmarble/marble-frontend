@@ -1,4 +1,4 @@
-import { decisionsI18n, Outcome } from '@app-builder/components';
+import { CaseStatus, decisionsI18n, Outcome } from '@app-builder/components';
 import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -104,23 +104,25 @@ export function DecisionsList({
         id: 'case',
         header: t('decisions:case'),
         size: 100,
-        cell: ({ getValue, row }) => (
-          <span className="bg-grey-02 text-grey-100 text-s flex h-8 w-fit items-center justify-center rounded px-2 font-normal">
-            {row.original.case ? (
+        cell: ({ getValue, row }) =>
+          row.original.case ? (
+            <div className="flex w-fit flex-row items-center justify-center gap-1">
+              <CaseStatus status={row.original.case.status} />
               <Link
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUID(row.original.case.id),
                 })}
                 onClick={(e) => e.stopPropagation()}
-                className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100"
+                className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
               >
                 {getValue()}
               </Link>
-            ) : (
-              getValue()
-            )}
-          </span>
-        ),
+            </div>
+          ) : (
+            <span className="bg-grey-02 text-grey-100 text-s flex h-8 w-fit items-center justify-center rounded px-2 font-normal">
+              {getValue()}
+            </span>
+          ),
       }),
       columnHelper.accessor((row) => row.score, {
         id: 'score',
