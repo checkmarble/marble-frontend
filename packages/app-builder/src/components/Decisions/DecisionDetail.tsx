@@ -1,4 +1,4 @@
-import { decisionsI18n } from '@app-builder/components';
+import { CaseStatus, decisionsI18n } from '@app-builder/components';
 import { formatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -33,7 +33,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
             to={getRoute('/scenarios/:scenarioId', {
               scenarioId: fromUUID(scenario.id),
             })}
-            className="font-semibold capitalize text-purple-100"
+            className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
           >
             {scenario.name}
           </Link>
@@ -41,14 +41,17 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
           <div className="capitalize">{trigger_object_type}</div>
           <DetailLabel>{t('decisions:case')}</DetailLabel>
           {caseDetail ? (
-            <Link
-              to={getRoute('/cases/:caseId', {
-                caseId: fromUUID(caseDetail.id),
-              })}
-              className="font-semibold capitalize text-purple-100"
-            >
-              {caseDetail.name}
-            </Link>
+            <div className="flex w-fit flex-row items-center justify-center gap-1">
+              <CaseStatus status={caseDetail.status} />
+              <Link
+                to={getRoute('/cases/:caseId', {
+                  caseId: fromUUID(caseDetail.id),
+                })}
+                className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+              >
+                {caseDetail.name}
+              </Link>
+            </div>
           ) : (
             <div>-</div>
           )}
