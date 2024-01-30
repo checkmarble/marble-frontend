@@ -19,8 +19,7 @@ import * as z from 'zod';
  * They are useless for other envs
  */
 const DevServerEnvVarNameSchema = z.object({
-  FIREBASE_AUTH_EMULATOR_HOST: z.string(),
-  FIREBASE_AUTH_EMULATOR: z.string(),
+  FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
 });
 type DevServerEnvVarName = z.infer<typeof DevServerEnvVarNameSchema>;
 
