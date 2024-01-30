@@ -107,6 +107,7 @@ export default function Decisions() {
                     }
                 : {},
               scenarioId: decisionFilters.scenarioId ?? [],
+              hasCase: decisionFilters?.hasCase ?? null,
               offsetId: pagination?.offsetId || null,
               next: pagination?.next || null,
               previous: pagination?.previous || null,

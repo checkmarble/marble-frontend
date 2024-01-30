@@ -22,6 +22,7 @@ export type DecisionFilters = {
         fromNow: string;
       };
   scenarioId?: string[];
+  hasCase?: boolean;
 };
 
 export type DecisionFiltersWithPagination =

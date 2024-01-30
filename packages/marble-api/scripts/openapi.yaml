@@ -134,6 +134,12 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: has_case
+          description: 'Optional filter: the decision is attached to a case'
+          in: query
+          required: false
+          schema:
+            type: boolean
         - $ref: '#/components/parameters/offsetId'
         - $ref: '#/components/parameters/previous'
         - $ref: '#/components/parameters/next'

@@ -1,3 +1,4 @@
+import { scenarioI18n } from '@app-builder/components';
 import { type LabelledAst } from '@app-builder/models';
 import { coerceToConstantsLabelledAst } from '@app-builder/services/editor';
 import { matchSorter } from 'match-sorter';
@@ -17,10 +18,10 @@ export function OperandEditorSearchResults({
   searchText,
   onSelect,
 }: OperandEditorSearchResultsProps) {
-  const { t } = useTranslation('scenarios');
+  const { t } = useTranslation(scenarioI18n);
 
   const constantOptions = coerceToConstantsLabelledAst(searchText, {
-    booleans: { true: [t('true')], false: [t('false')] },
+    booleans: { true: [t('common:true')], false: [t('common:false')] },
   });
 
   const availableOptions = matchSorter(options, searchText, {
@@ -44,7 +45,7 @@ export function OperandEditorSearchResults({
         <GroupHeader.Container>
           <GroupHeader.Title>
             <Label className="text-grey-100 text-m font-semibold">
-              {t('edit_operand.result', {
+              {t('scenarios:edit_operand.result', {
                 count: availableOptions.length,
               })}
             </Label>

@@ -91,17 +91,21 @@ function coerceToConstantArray(search: string): LabelledAst[] {
 function getBooleanCoercionLogic(
   options: CoerceToConstantsLabelledAstOptions['booleans'],
 ) {
+  const sanitizedOptions = {
+    true: options.true.map((value) => value.trim().toLocaleLowerCase()),
+    false: options.false.map((value) => value.trim().toLocaleLowerCase()),
+  };
   return {
     isCoerceableToBoolean: (search: string) => {
       const sanitizedSearch = search.trim().toLocaleLowerCase();
       return (
-        options.true.includes(sanitizedSearch) ||
-        options.false.includes(sanitizedSearch)
+        sanitizedOptions.true.includes(sanitizedSearch) ||
+        sanitizedOptions.false.includes(sanitizedSearch)
       );
     },
     coerceToBoolean: (search: string) => {
       const sanitizedSearch = search.trim().toLocaleLowerCase();
-      return options.true.includes(sanitizedSearch);
+      return sanitizedOptions.true.includes(sanitizedSearch);
     },
   };
 }
