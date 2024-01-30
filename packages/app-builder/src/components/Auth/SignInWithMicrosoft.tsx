@@ -1,4 +1,7 @@
-import { useMicrosoftSignIn } from '@app-builder/services/auth/auth.client';
+import {
+  AccountExistsWithDifferentCredential,
+  useMicrosoftSignIn,
+} from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
 import * as Sentry from '@sentry/remix';
@@ -45,8 +48,14 @@ function ClientSignInWithMicrosoft({
       if (!idToken) return;
       signIn({ idToken, csrf });
     } catch (error) {
-      Sentry.captureException(error);
-      toast.error(t('common:errors.unknown'));
+      if (error instanceof AccountExistsWithDifferentCredential) {
+        toast.error(
+          t('common:errors.account_exists_with_different_credential'),
+        );
+      } else {
+        Sentry.captureException(error);
+        toast.error(t('common:errors.unknown'));
+      }
     }
   };
 

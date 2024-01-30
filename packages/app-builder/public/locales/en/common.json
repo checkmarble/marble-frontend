@@ -8,6 +8,7 @@
   "validation_error_one": "{{count}} validation error",
   "validation_error_other": "{{count}} validation errors",
   "errors.unknown": "An unknown error as occured",
+  "errors.account_exists_with_different_credential": "An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.",
   "errors.not_found": "This page could not be found.",
   "errors.edit.forbidden_not_draft": "You can only edit a draft version of a scenario.",
   "errors.list.duplicate_list_name": "A list with this name already exist",
