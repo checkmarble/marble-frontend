@@ -36,6 +36,7 @@ export function useGoogleSignIn({
         switch (error.code) {
           // Fired when the user close the popup without logging in, this shouldn't raise an error on our side
           case AuthErrorCodes.POPUP_CLOSED_BY_USER:
+          case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
           case AuthErrorCodes.USER_CANCELLED:
             return;
           case AuthErrorCodes.NEED_CONFIRMATION:
@@ -65,6 +66,7 @@ export function useMicrosoftSignIn({
         switch (error.code) {
           // Fired when the user close the popup without logging in, this shouldn't raise an error on our side
           case AuthErrorCodes.POPUP_CLOSED_BY_USER:
+          case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
           case AuthErrorCodes.USER_CANCELLED:
             return;
           case AuthErrorCodes.NEED_CONFIRMATION:
