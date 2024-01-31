@@ -1,4 +1,4 @@
-# Marble Front Monorepo
+# Marble Frontend Monorepo
 
 This is the frontend marble monorepo. We use `pnpm` to handle dependancies.
 
