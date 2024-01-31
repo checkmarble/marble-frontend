@@ -28,6 +28,8 @@ function TableContainer({
         'border-grey-10 border-spacing-0 rounded-lg border',
         className,
       )}
+      orientation="both"
+      type="auto"
     >
       <table
         className="w-full table-fixed border-separate border-spacing-0"

@@ -54,12 +54,12 @@ export default function Users() {
       columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
         id: 'name',
         header: t('settings:users.name'),
-        size: 100,
+        size: 150,
       }),
       columnHelper.accessor((row) => row.email, {
         id: 'email',
         header: t('settings:users.email'),
-        size: 100,
+        size: 150,
         cell: ({ getValue }) => (
           <div className="overflow-hidden text-ellipsis">{getValue()}</div>
         ),
@@ -67,7 +67,7 @@ export default function Users() {
       columnHelper.accessor((row) => row.role, {
         id: 'role',
         header: t('settings:users.role'),
-        size: 100,
+        size: 150,
         cell: ({ getValue }) => t(tKeyForUserRole(getValue())),
       }),
       columnHelper.accessor((row) => row.userId, {

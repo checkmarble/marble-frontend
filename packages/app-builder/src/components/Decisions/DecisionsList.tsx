@@ -84,18 +84,18 @@ export function DecisionsList({
         {
           id: 'created_at',
           header: t('decisions:created_at'),
-          size: 50,
+          size: 100,
         },
       ),
       columnHelper.accessor((row) => row.scenario.name, {
         id: 'scenario_name',
         header: t('decisions:scenario.name'),
-        size: 100,
+        size: 200,
       }),
       columnHelper.accessor((row) => row.trigger_object_type, {
         id: 'trigger_object_type',
         header: t('decisions:trigger_object.type'),
-        size: 100,
+        size: 200,
         cell: ({ getValue }) => (
           <span className="capitalize">{getValue()}</span>
         ),
@@ -103,7 +103,7 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.case?.name ?? '-', {
         id: 'case',
         header: t('decisions:case'),
-        size: 100,
+        size: 200,
         cell: ({ getValue, row }) =>
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-1">
@@ -127,13 +127,13 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.score, {
         id: 'score',
         header: t('decisions:score'),
-        size: 50,
+        size: 100,
         cell: ({ getValue }) => <Score score={getValue()} />,
       }),
       columnHelper.accessor((row) => row.outcome, {
         id: 'outcome',
         header: t('decisions:outcome'),
-        size: 50,
+        size: 100,
         cell: ({ getValue }) => (
           <Outcome border="square" size="big" outcome={getValue()} />
         ),
@@ -165,7 +165,8 @@ export function DecisionsList({
               }}
             />
           ),
-          size: 30,
+          size: 58,
+          enableResizing: false,
         }),
       );
     }

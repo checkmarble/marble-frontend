@@ -39,12 +39,12 @@ export default function Tags() {
       columnHelper.accessor((row) => row.name, {
         id: 'name',
         header: t('settings:tags.name'),
-        size: 100,
+        size: 200,
       }),
       columnHelper.accessor((row) => row.color, {
         id: 'color',
         header: t('settings:tags.color'),
-        size: 50,
+        size: 100,
         cell: ({ getValue }) => (
           <div
             className="size-4 rounded-full"
@@ -55,11 +55,11 @@ export default function Tags() {
       columnHelper.accessor((row) => row.cases_count, {
         id: 'cases',
         header: t('settings:tags.cases'),
-        size: 100,
+        size: 200,
       }),
       columnHelper.display({
         id: 'actions',
-        size: 50,
+        size: 100,
         cell: ({ cell }) => {
           return (
             <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">

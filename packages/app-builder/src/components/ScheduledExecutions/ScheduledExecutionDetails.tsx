@@ -53,9 +53,11 @@ function ScheduledExecutionDetailsInternal({
       name="download"
       disabled={downloadingDecisions}
     >
-      {downloadingDecisions
-        ? t('scheduledExecution:downloading_decisions')
-        : t('scheduledExecution:download_decisions')}
+      <span className="line-clamp-1 shrink-0">
+        {downloadingDecisions
+          ? t('scheduledExecution:downloading_decisions')
+          : t('scheduledExecution:download_decisions')}
+      </span>
     </Button>
   );
 }

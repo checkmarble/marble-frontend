@@ -1,7 +1,7 @@
 {
   "scenario_name": "Scenario name",
   "scenario_trigger_object_type": "Trigger Object",
-  "number_of_created_decisions": "Number of decisions",
+  "number_of_created_decisions": "Decisions",
   "status": "Status",
   "created_at": "Created at",
   "started_at": "Started at",

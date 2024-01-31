@@ -80,12 +80,14 @@ export default function ScenarioEditLayout() {
 
   return (
     <Page.Container>
-      <Page.Header className="justify-between">
+      <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
           <Link to={getRoute('/scenarios/')}>
             <Page.BackButton />
           </Link>
-          {currentScenario.name}
+          <span className="line-clamp-2 text-ellipsis">
+            {currentScenario.name}
+          </span>
           <VersionSelect
             scenarioIterations={sortedScenarioIterations}
             currentIteration={currentIteration}

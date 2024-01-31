@@ -277,7 +277,9 @@ const DeploymentModal = ({
       <Modal.Trigger asChild>
         <Button {...buttonConfig.props}>
           <Icon icon={buttonConfig.icon.trigger} className="size-6" />
-          {t(buttonConfig.label)}
+          <span className="line-clamp-1 hidden shrink-0 lg:block">
+            {t(buttonConfig.label)}
+          </span>
         </Button>
       </Modal.Trigger>
       <Modal.Content className="bg-grey-00">
@@ -305,7 +307,9 @@ const DisabledDeploymentButton = ({
     >
       <Button {...buttonConfig.props} disabled>
         <Icon icon={buttonConfig.icon.trigger} className="size-6" />
-        {t(buttonConfig.label)}
+        <span className="line-clamp-1 hidden shrink-0 lg:block">
+          {t(buttonConfig.label)}
+        </span>
       </Button>
     </Tooltip.Default>
   );
