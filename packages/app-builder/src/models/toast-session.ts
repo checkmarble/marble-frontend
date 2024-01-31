@@ -5,6 +5,7 @@ export const toastMessageScema = z.object({
   type: z.enum(['success', 'error', 'loading', 'custom']),
   messageKey: z.enum([
     'common:errors.unknown',
+    'common:errors.account_exists_with_different_credential',
     'common:empty_scenario_iteration_list',
     'common:errors.edit.forbidden_not_draft',
     'common:errors.list.duplicate_list_name',

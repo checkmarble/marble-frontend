@@ -35,8 +35,11 @@ export function useGoogleSignIn({
       if (error instanceof FirebaseError) {
         switch (error.code) {
           // Fired when the user close the popup without logging in, this shouldn't raise an error on our side
-          case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
+          case AuthErrorCodes.POPUP_CLOSED_BY_USER:
+          case AuthErrorCodes.USER_CANCELLED:
             return;
+          case AuthErrorCodes.NEED_CONFIRMATION:
+            throw new AccountExistsWithDifferentCredential();
         }
       }
       throw error;
@@ -61,14 +64,19 @@ export function useMicrosoftSignIn({
       if (error instanceof FirebaseError) {
         switch (error.code) {
           // Fired when the user close the popup without logging in, this shouldn't raise an error on our side
-          case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
+          case AuthErrorCodes.POPUP_CLOSED_BY_USER:
+          case AuthErrorCodes.USER_CANCELLED:
             return;
+          case AuthErrorCodes.NEED_CONFIRMATION:
+            throw new AccountExistsWithDifferentCredential();
         }
       }
       throw error;
     }
   };
 }
+
+export class AccountExistsWithDifferentCredential extends Error {}
 
 export function useEmailAndPasswordSignIn({
   authenticationClientRepository,
