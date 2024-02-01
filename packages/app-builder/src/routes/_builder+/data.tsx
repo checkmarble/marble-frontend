@@ -135,7 +135,7 @@ function TableDetails({
       {
         id: 'required',
         accessorKey: 'required',
-        size: 80,
+        size: 100,
         header: t('data:field_required'),
         cell: ({ cell }) => {
           return cell.row.original.nullable
@@ -198,26 +198,26 @@ function TableDetails({
         id: 'foreignKey',
         accessorKey: 'foreignKey',
         header: t('data:foreign_key'),
-        size: 50,
+        size: 150,
         enableSorting: true,
       },
       {
         id: 'parentTable',
         accessorKey: 'parentTable',
-        size: 50,
+        size: 150,
         header: t('data:parent_table'),
       },
       {
         id: 'parentFieldName',
         accessorKey: 'parentFieldName',
         header: t('data:parent_field_name'),
-        size: 50,
+        size: 150,
       },
       {
         id: 'exampleUsage',
         accessorKey: 'exampleUsage',
         header: t('data:example_usage'),
-        size: 100,
+        size: 300,
       },
     ],
     [t],

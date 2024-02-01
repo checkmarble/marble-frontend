@@ -47,9 +47,9 @@ export default function Inbox() {
   const columns = useMemo(() => {
     return [
       columnHelper.accessor((row) => row.user_id, {
-        id: 'name:',
+        id: 'name',
         header: t('settings:inboxes.name'),
-        size: 100,
+        size: 200,
         cell: ({ getValue }) => {
           const user = orgUsers.find((u) => u.userId === getValue());
           if (!user) return;
@@ -57,15 +57,15 @@ export default function Inbox() {
         },
       }),
       columnHelper.accessor((row) => row.role, {
-        id: 'role:',
+        id: 'role',
         header: t('settings:inboxes.inbox_details.role'),
-        size: 100,
+        size: 200,
         cell: ({ getValue }) =>
           t(tKeyForInboxUserRole(getValue<InboxUserRole>())),
       }),
       columnHelper.display({
         id: 'actions',
-        size: 50,
+        size: 100,
         cell: ({ cell }) => {
           return (
             <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">

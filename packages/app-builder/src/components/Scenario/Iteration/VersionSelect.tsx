@@ -25,7 +25,7 @@ export function VersionSelect({
     <Select.Default
       value={currentIteration.id}
       border="rounded"
-      className="min-w-[126px]"
+      className="min-w-[126px] shrink-0"
       onValueChange={(selectedId) => {
         const elem = scenarioIterations.find(({ id }) => id === selectedId);
         if (!elem?.id) return;

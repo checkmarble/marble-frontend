@@ -60,7 +60,7 @@ export default function Lists() {
       columnHelper.accessor((row) => row.value, {
         id: 'value',
         header: t('lists:value', { count: listValues.length }),
-        size: 600,
+        size: 500,
         sortingFn: 'text',
         enableSorting: true,
         cell: ({ getValue }) => {

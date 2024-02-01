@@ -40,7 +40,7 @@ export function ScheduledExecutionsList({
         accessorFn: (s) =>
           s.status == 'success' ? s.number_of_created_decisions : '0',
         header: t('scheduledExecution:number_of_created_decisions'),
-        size: 200,
+        size: 100,
       },
       {
         id: 'status',
@@ -104,12 +104,12 @@ export function ScheduledExecutionsList({
 
 const getStatusIcon = (status: string) => {
   if (status === 'success') {
-    return <Icon icon="tick" className="size-6 text-green-100" />;
+    return <Icon icon="tick" className="size-6 shrink-0 text-green-100" />;
   }
   if (status === 'failure') {
-    return <Icon icon="cross" className="size-6 text-red-100" />;
+    return <Icon icon="cross" className="size-6 shrink-0 text-red-100" />;
   }
-  return <Icon icon="restart-alt" className="text-grey-50 size-6" />;
+  return <Icon icon="restart-alt" className="text-grey-50 size-6 shrink-0" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['scheduledExecution']> => {
