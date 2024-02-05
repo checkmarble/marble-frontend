@@ -113,7 +113,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
     >
       <Modal.Title>{t('settings:tags.new_tag')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <div className="text-s flex gap-2 font-bold">
+        <div className="flex gap-2">
           <input {...conform.input(id, { type: 'hidden' })} />
           <FormField config={name} className="group flex w-full flex-col gap-2">
             <FormLabel>{t('settings:tags.name')}</FormLabel>

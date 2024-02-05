@@ -14,6 +14,7 @@ import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -24,13 +25,13 @@ const createApiKeyFormSchema = z.object({
 });
 
 export async function action({ request }: ActionFunctionArgs) {
-  const {
-    authService,
-    toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  const { authService, csrfService, toastSessionService, authSessionService } =
+    serverServices;
   const { apiKey } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
+  await csrfService.validate(request);
+
   const formData = await request.formData();
   const submission = parse(formData, { schema: createApiKeyFormSchema });
 
@@ -38,19 +39,27 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(submission);
   }
 
-  const session = await getSession(request);
-
   try {
-    //TODO(apikey): find a way to display created api key
-    await apiKey.createApiKey(submission.value);
-    return redirect(getRoute('/settings/api-keys'));
+    const createdApiKey = await apiKey.createApiKey(submission.value);
+
+    const authSession = await authSessionService.getSession(request);
+    authSession.flash('createdApiKey', createdApiKey);
+
+    return redirect(getRoute('/settings/api-keys'), {
+      headers: {
+        'Set-Cookie': await authSessionService.commitSession(authSession),
+      },
+    });
   } catch (error) {
-    setToastMessage(session, {
+    const toastSession = await toastSessionService.getSession(request);
+    setToastMessage(toastSession, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
     return json(submission, {
-      headers: { 'Set-Cookie': await commitSession(session) },
+      headers: {
+        'Set-Cookie': await toastSessionService.commitSession(toastSession),
+      },
     });
   }
 }
@@ -106,10 +115,8 @@ const CreateApiKeyContent = () => {
     >
       <Modal.Title>{t('settings:api_keys.new_api_key')}</Modal.Title>
       <div className="bg-grey-00 flex flex-col gap-6 p-6">
-        <FormField
-          config={description}
-          className="text-s group flex flex-col gap-2 font-bold"
-        >
+        <AuthenticityTokenInput />
+        <FormField config={description} className="group flex flex-col gap-2">
           <FormLabel>{t('settings:api_keys.description')}</FormLabel>
           <FormInput type="text" />
           <FormError />

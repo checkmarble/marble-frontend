@@ -23,7 +23,7 @@
   "delete": "Delete",
   "close": "Close",
   "clipboard.aria-label": "Copy to clipboard: {{value}}",
-  "clipboard.copy": "Copied in clipboard: {{value}}",
+  "clipboard.copy": "Copied in clipboard: <Value>{{value}}</Value>",
   "empty_scenario_iteration_list": "You don't have any rules. Click on create rule to make a new one",
   "success.save": "Saved successfully",
   "success.add_to_case": "Decision successfully added to case",

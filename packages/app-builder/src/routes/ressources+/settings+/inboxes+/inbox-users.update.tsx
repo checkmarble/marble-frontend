@@ -129,10 +129,7 @@ export function UpdateInboxUserContent({
       <div className="bg-grey-00 flex flex-col gap-6 p-6">
         <input {...conform.input(id, { type: 'hidden' })} />
         <input {...conform.input(inbox_id, { type: 'hidden' })} />
-        <FormField
-          config={role}
-          className="text-s group flex flex-col gap-2 font-bold"
-        >
+        <FormField config={role} className="group flex flex-col gap-2">
           <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
           <FormSelect.Default config={role}>
             {roleOptions.map((role) => (

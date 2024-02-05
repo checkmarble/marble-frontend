@@ -1,6 +1,11 @@
-import { CollapsiblePaper, Page } from '@app-builder/components';
+import {
+  Callout,
+  CollapsiblePaper,
+  CopyToClipboardButton,
+  Page,
+} from '@app-builder/components';
 import { isAdmin } from '@app-builder/models';
-import { type ApiKey } from '@app-builder/models/api-keys';
+import { type ApiKey, type CreatedApiKey } from '@app-builder/models/api-keys';
 import { CreateApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/create';
 import { DeleteApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/delete';
 import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
@@ -15,24 +20,38 @@ import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, authSessionService } = serverServices;
   const { apiKey, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   if (!isAdmin(user)) {
     return redirect(getRoute('/'));
   }
-
   const apiKeys = await apiKey.listApiKeys();
 
-  return json({ apiKeys });
+  const authSession = await authSessionService.getSession(request);
+  const createdApiKey = authSession.get('createdApiKey');
+  const headers = new Headers();
+  if (createdApiKey) {
+    headers.set(
+      'Set-Cookie',
+      await authSessionService.commitSession(authSession),
+    );
+  }
+
+  return json(
+    { apiKeys, createdApiKey },
+    {
+      headers,
+    },
+  );
 }
 
 const columnHelper = createColumnHelper<ApiKey>();
 
 export default function ApiKeys() {
   const { t } = useTranslation(['settings']);
-  const { apiKeys } = useLoaderData<typeof loader>();
+  const { apiKeys, createdApiKey } = useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
     return [
@@ -71,6 +90,7 @@ export default function ApiKeys() {
   return (
     <Page.Container>
       <Page.Content>
+        {createdApiKey ? <CreatedAPIKey createdApiKey={createdApiKey} /> : null}
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:tags')}</span>
@@ -96,5 +116,20 @@ export default function ApiKeys() {
         </CollapsiblePaper.Container>
       </Page.Content>
     </Page.Container>
+  );
+}
+
+function CreatedAPIKey({ createdApiKey }: { createdApiKey: CreatedApiKey }) {
+  const { t } = useTranslation(['settings']);
+  return (
+    <Callout variant="outlined">
+      <div className="flex flex-col gap-1">
+        <span className="font-bold">{t('settings:api_keys.new_api_key')}</span>
+        <span>{t('settings:api_keys.copy_api_key')}</span>
+        <CopyToClipboardButton toCopy={createdApiKey.key}>
+          <span className="text-s font-semibold">{createdApiKey.key}</span>
+        </CopyToClipboardButton>
+      </div>
+    </Callout>
   );
 }

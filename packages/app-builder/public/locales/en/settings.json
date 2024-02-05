@@ -24,6 +24,7 @@
   "users.inbox_user_role.unknown": "unknown",
   "api_keys": "API Keys",
   "api_keys.new_api_key": "New API Key",
+  "api_keys.copy_api_key": "Make sure to copy it now as you will not be able to see this again.",
   "api_keys.description": "Description",
   "api_keys.role": "API key role",
   "api_keys.role.admin": "ADMIN",
