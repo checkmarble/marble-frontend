@@ -36,6 +36,7 @@ function makeServerServices(repositories: ServerRepositories) {
       repositories.organizationRepository,
       repositories.scenarioRepository,
       repositories.dataModelRepository,
+      repositories.apiKeyRepository,
       authSessionService,
       csrfService,
     ),

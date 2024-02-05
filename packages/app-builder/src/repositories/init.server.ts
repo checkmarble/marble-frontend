@@ -1,5 +1,6 @@
 import { type GetMarbleAPIClient } from '@app-builder/infra/marble-api';
 
+import { getApiKeyRepository } from './ApiKeyRepository';
 import { getCaseRepository } from './CaseRepository';
 import { getDataModelRepository } from './DataModelRepository';
 import { getDecisionRepository } from './DecisionRepository';
@@ -40,6 +41,7 @@ export function makeServerRepositories({
     scenarioRepository: getScenarioRepository(),
     organizationRepository: getOrganizationRepository(),
     dataModelRepository: getDataModelRepository(),
+    apiKeyRepository: getApiKeyRepository(),
   };
 }
 
