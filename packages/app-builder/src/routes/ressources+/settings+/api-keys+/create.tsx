@@ -1,34 +1,26 @@
 import { FormError } from '@app-builder/components/Form/FormError';
 import { FormField } from '@app-builder/components/Form/FormField';
+import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { tKeyForInboxUserRole } from '@app-builder/routes/_builder+/settings+/inboxes._index';
+import { apiKeyRoleOptions } from '@app-builder/models/api-keys';
+import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
 import { serverServices } from '@app-builder/services/init.server';
-import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
-import { conform, useForm } from '@conform-to/react';
+import { useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
-import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
-export const handle = {
-  i18n: ['settings', 'common'] satisfies Namespace,
-};
-
-const roleOptions = ['member', 'admin'] as const;
-
-const createInboxUserFormSchema = z.object({
-  userId: z.string().uuid(),
-  inboxId: z.string().uuid(),
-  role: z.enum(roleOptions),
+const createApiKeyFormSchema = z.object({
+  description: z.string().min(1),
+  role: z.enum(apiKeyRoleOptions),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -36,43 +28,35 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { apiKey } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-
   const formData = await request.formData();
-  const submission = parse(formData, { schema: createInboxUserFormSchema });
+  const submission = parse(formData, { schema: createApiKeyFormSchema });
 
   if (submission.intent !== 'submit' || !submission.value) {
     return json(submission);
   }
 
-  try {
-    await apiClient.addInboxUser(submission.value.inboxId, {
-      user_id: submission.value.userId,
-      role: submission.value.role,
-    });
-    return redirect(
-      getRoute('/settings/inboxes/:inboxId', {
-        inboxId: fromUUID(submission.value.inboxId),
-      }),
-    );
-  } catch (error) {
-    const session = await getSession(request);
+  const session = await getSession(request);
 
+  try {
+    //TODO(apikey): find a way to display created api key
+    await apiKey.createApiKey(submission.value);
+    return redirect(getRoute('/settings/api-keys'));
+  } catch (error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
-
     return json(submission, {
       headers: { 'Set-Cookie': await commitSession(session) },
     });
   }
 }
 
-export function CreateInboxUser({ inboxId }: { inboxId: string }) {
-  const { t } = useTranslation(handle.i18n);
+export function CreateApiKey() {
+  const { t } = useTranslation(['settings']);
   const [open, setOpen] = useState(false);
 
   const navigation = useNavigation();
@@ -84,78 +68,58 @@ export function CreateInboxUser({ inboxId }: { inboxId: string }) {
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
-        <Button>
+      <Modal.Trigger onClick={(e) => e.stopPropagation()} asChild>
+        <Button onClick={(e) => e.stopPropagation()}>
           <Icon icon="plus" className="size-6" />
-          {t('settings:inboxes.inbox_details.add_member')}
+          {t('settings:api_keys.new_api_key')}
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateInboxUserContent currentInboxId={inboxId} />
+        <CreateApiKeyContent />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-export function CreateInboxUserContent({
-  currentInboxId,
-}: {
-  currentInboxId: string;
-}) {
-  const { t } = useTranslation(handle.i18n);
-
+const CreateApiKeyContent = () => {
+  const { t } = useTranslation(['settings', 'common']);
   const fetcher = useFetcher<typeof action>();
 
   const formId = useId();
-  const [form, { userId, inboxId, role }] = useForm({
+  const [form, { description, role }] = useForm({
     id: formId,
-    defaultValue: { userId: '', inboxId: currentInboxId, role: 'member' },
+    defaultValue: { description: '', role: 'API_CLIENT' },
     lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(createInboxUserFormSchema),
+    constraint: getFieldsetConstraint(createApiKeyFormSchema),
     onValidate({ formData }) {
       return parse(formData, {
-        schema: createInboxUserFormSchema,
+        schema: createApiKeyFormSchema,
       });
     },
   });
 
-  const { orgUsers } = useOrganizationUsers();
-  const userOptions = orgUsers.map((user) => ({
-    id: user.userId,
-    name: `${user.firstName} ${user.lastName}`,
-  }));
-
   return (
     <fetcher.Form
-      method="post"
-      action={getRoute('/ressources/settings/inboxes/inbox-users/create')}
+      action={getRoute('/ressources/settings/api-keys/create')}
+      method="POST"
       {...form.props}
     >
-      <Modal.Title>
-        {t('settings:inboxes.inbox_details.add_member')}
-      </Modal.Title>
+      <Modal.Title>{t('settings:api_keys.new_api_key')}</Modal.Title>
       <div className="bg-grey-00 flex flex-col gap-6 p-6">
-        <input {...conform.input(inboxId, { type: 'hidden' })} />
         <FormField
-          config={userId}
+          config={description}
           className="text-s group flex flex-col gap-2 font-bold"
         >
-          <FormLabel>{t('settings:inboxes.inbox_details.user')}</FormLabel>
-          <FormSelect.Default config={userId}>
-            {userOptions.map(({ id, name }) => (
-              <FormSelect.DefaultItem key={id} value={id}>
-                {name}
-              </FormSelect.DefaultItem>
-            ))}
-          </FormSelect.Default>
+          <FormLabel>{t('settings:api_keys.description')}</FormLabel>
+          <FormInput type="text" />
           <FormError />
         </FormField>
         <FormField config={role} className="group flex flex-col gap-2">
-          <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
+          <FormLabel>{t('settings:api_keys.role')}</FormLabel>
           <FormSelect.Default config={role}>
-            {roleOptions.map((role) => (
+            {apiKeyRoleOptions.map((role) => (
               <FormSelect.DefaultItem key={role} value={role}>
-                {t(tKeyForInboxUserRole(role))}
+                {t(tKeyForApiKeyRole(role))}
               </FormSelect.DefaultItem>
             ))}
           </FormSelect.Default>
@@ -173,11 +137,10 @@ export function CreateInboxUserContent({
             type="submit"
             name="create"
           >
-            <Icon icon="new-inbox" className="size-6" />
-            {t('settings:inboxes.inbox_details.create_user')}
+            {t('settings:api_keys.create')}
           </Button>
         </div>
       </div>
     </fetcher.Form>
   );
-}
+};

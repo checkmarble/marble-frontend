@@ -351,6 +351,16 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/update.tsx"
       },
       {
+        "id": "routes/ressources+/settings+/api-keys+/create",
+        "path": "ressources/settings/api-keys/create",
+        "file": "routes/ressources+/settings+/api-keys+/create.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/api-keys+/delete",
+        "path": "ressources/settings/api-keys/delete",
+        "file": "routes/ressources+/settings+/api-keys+/delete.tsx"
+      },
+      {
         "id": "routes/ressources+/settings+/inboxes+/create",
         "path": "ressources/settings/inboxes/create",
         "file": "routes/ressources+/settings+/inboxes+/create.tsx"

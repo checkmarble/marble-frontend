@@ -1,19 +1,40 @@
 import { type ApiKeyDto, type CreatedApiKeyDto } from 'marble-api';
+import { assertNever } from 'typescript-utils';
+
+export const apiKeyRoleOptions = [
+  'ADMIN',
+  'PUBLISHER',
+  'BUILDER',
+  'VIEWER',
+  'API_CLIENT',
+] as const;
+type ApiKeyRole = (typeof apiKeyRoleOptions)[number];
+
+function isApiKeyRole(role: string): role is ApiKeyRole {
+  return apiKeyRoleOptions.includes(role as ApiKeyRole);
+}
 
 export interface ApiKey {
   id: string;
   organizationId: string;
   description: string;
-  role: string;
+  role: ApiKeyRole | 'UNKNWON';
 }
 
-export function adaptApiKey(apiKey: ApiKeyDto): ApiKey {
-  return {
-    id: apiKey.id,
-    organizationId: apiKey.organization_id,
-    description: apiKey.description,
-    role: apiKey.role,
+export function adaptApiKey(apiKeyDto: ApiKeyDto): ApiKey {
+  const apiKey: ApiKey = {
+    id: apiKeyDto.id,
+    organizationId: apiKeyDto.organization_id,
+    description: apiKeyDto.description,
+    role: 'UNKNWON',
   };
+  if (isApiKeyRole(apiKeyDto.role)) {
+    apiKey.role = apiKeyDto.role;
+  } else {
+    // @ts-expect-error should be unreachable if all roles are handled
+    assertNever('[ApiKeyDto] Unknown role', apiKeyDto.role);
+  }
+  return apiKey;
 }
 
 export type CreatedApiKey = ApiKey & {
