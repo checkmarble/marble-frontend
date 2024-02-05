@@ -414,11 +414,18 @@ export type OpenApiSpec = {
         securitySchemes?: object;
     };
 };
-export type ApiKey = {
-    api_key_id: string;
+export type ApiKeyDto = {
+    id: string;
     organization_id: string;
-    key: string;
+    description: string;
     role: string;
+};
+export type CreateApiKey = {
+    description: string;
+    role: string;
+};
+export type CreatedApiKeyDto = ApiKeyDto & {
+    key: string;
 };
 export type UserDto = {
     user_id: string;
@@ -1718,7 +1725,7 @@ export function listApiKeys(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            api_keys: ApiKey[];
+            api_keys: ApiKeyDto[];
         };
     } | {
         status: 401;
@@ -1731,6 +1738,50 @@ export function listApiKeys(opts?: Oazapfts.RequestOpts) {
         data: string;
     }>("/apikeys", {
         ...opts
+    }));
+}
+/**
+ * Create an api key
+ */
+export function createApiKey(createApiKey: CreateApiKey, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            api_key: CreatedApiKeyDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/apikeys", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createApiKey
+    })));
+}
+/**
+ * Delete an api key
+ */
+export function deleteApiKey(apiKeyId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/apikeys/${encodeURIComponent(apiKeyId)}`, {
+        ...opts,
+        method: "DELETE"
     }));
 }
 /**

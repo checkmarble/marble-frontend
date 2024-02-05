@@ -1892,7 +1892,64 @@ paths:
                   api_keys:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ApiKey'
+                      $ref: '#/components/schemas/ApiKeyDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Authorization
+      summary: Create an api key
+      operationId: createApiKey
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Describe the api key to create'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKey'
+        required: true
+      responses:
+        '200':
+          description: The created api key
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - api_key
+                properties:
+                  api_key:
+                    $ref: '#/components/schemas/CreatedApiKeyDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /apikeys/{apiKeyId}:
+    delete:
+      tags:
+        - Authorization
+      summary: Delete an api key
+      operationId: deleteApiKey
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: apiKeyId
+          description: ID of the api key that need to be deleted
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: The api key has been deleted
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -2838,23 +2895,42 @@ components:
           type: string
         last_name:
           type: string
-    ApiKey:
+    ApiKeyDto:
       type: object
       required:
-        - api_key_id
+        - id
         - organization_id
-        - key
+        - description
         - role
       properties:
-        api_key_id:
+        id:
           type: string
         organization_id:
           type: string
           format: uuid
-        key:
+        description:
           type: string
         role:
           type: string
+    CreateApiKey:
+      type: object
+      required:
+        - description
+        - role
+      properties:
+        description:
+          type: string
+        role:
+          type: string
+    CreatedApiKeyDto:
+      allOf:
+        - $ref: '#/components/schemas/ApiKeyDto'
+        - type: object
+          required:
+            - key
+          properties:
+            key:
+              type: string
     LinkToSingleDto:
       type: object
       required:
