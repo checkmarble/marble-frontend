@@ -346,6 +346,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/deployment.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/update",
+        "path": "ressources/scenarios/update",
+        "file": "routes/ressources+/scenarios+/update.tsx"
+      },
+      {
         "id": "routes/ressources+/settings+/inboxes+/create",
         "path": "ressources/settings/inboxes/create",
         "file": "routes/ressources+/settings+/inboxes+/create.tsx"

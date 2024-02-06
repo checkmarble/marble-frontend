@@ -10,6 +10,7 @@ import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { CreateDraftIteration } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft';
 import { DeploymentActions } from '@app-builder/routes/ressources+/scenarios+/deployment';
+import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -85,9 +86,17 @@ export default function ScenarioEditLayout() {
           <Link to={getRoute('/scenarios/')}>
             <Page.BackButton />
           </Link>
-          <span className="line-clamp-2 text-ellipsis">
-            {currentScenario.name}
-          </span>
+          <UpdateScenario
+            defaultValue={{
+              name: currentScenario.name,
+              scenarioId: currentScenario.id,
+              description: currentScenario.description,
+            }}
+          >
+            <button className="line-clamp-2 text-ellipsis outline-none hover:text-purple-100 hover:underline focus:text-purple-100 focus:underline">
+              {currentScenario.name}
+            </button>
+          </UpdateScenario>
           <VersionSelect
             scenarioIterations={sortedScenarioIterations}
             currentIteration={currentIteration}

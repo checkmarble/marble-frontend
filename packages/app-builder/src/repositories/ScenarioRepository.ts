@@ -17,6 +17,19 @@ import { type Scenario } from 'marble-api';
 
 export interface ScenarioRepository {
   listScenarios(): Promise<Scenario[]>;
+  createScenario(args: {
+    name: string;
+    description: string;
+    triggerObjectType: string;
+  }): Promise<Scenario>;
+  updateScenario(args: {
+    scenarioId: string;
+    name: string;
+    description: string | null;
+  }): Promise<Scenario>;
+  createScenarioIteration(args: {
+    scenarioId: string;
+  }): Promise<ScenarioIteration>;
   getScenarioIterationRule(args: {
     ruleId: string;
   }): Promise<ScenarioIterationRule>;
@@ -38,6 +51,23 @@ export function getScenarioRepository() {
     listScenarios: async () => {
       const scenarios = await marbleApiClient.listScenarios();
       return scenarios;
+    },
+    createScenario: async (args) => {
+      const scenario = await marbleApiClient.createScenario(args);
+      return scenario;
+    },
+    updateScenario: async ({ scenarioId, name, description }) => {
+      const scenario = await marbleApiClient.updateScenario(scenarioId, {
+        name,
+        description: description ?? '',
+      });
+      return scenario;
+    },
+    createScenarioIteration: async ({ scenarioId }) => {
+      const scenarioIteration = await marbleApiClient.createScenarioIteration({
+        scenarioId,
+      });
+      return adaptScenarioIteration(scenarioIteration);
     },
     getScenarioIterationRule: async ({ ruleId }) => {
       const { rule } = await marbleApiClient.getScenarioIterationRule(ruleId);
