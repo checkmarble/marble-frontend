@@ -5,6 +5,7 @@ import {
   type AuthFlashData,
   type CurrentUser,
 } from '@app-builder/models';
+import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
 import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
@@ -31,6 +32,7 @@ interface AuthenticatedInfo {
   decision: DecisionRepository;
   cases: CaseRepository;
   dataModelRepository: DataModelRepository;
+  apiKey: ApiKeyRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   user: CurrentUser;
@@ -91,6 +93,7 @@ export function makeAuthenticationServerService(
   ) => OrganizationRepository,
   scenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository,
   dataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository,
+  apiKeysRepository: (marbleApiClient: MarbleApi) => ApiKeyRepository,
   authSessionService: SessionService<AuthData, AuthFlashData>,
   csrfService: CSRF,
 ) {
@@ -246,6 +249,7 @@ export function makeAuthenticationServerService(
       scenario: scenarioRepository(apiClient),
       organization: organizationRepository(apiClient, user.organizationId),
       dataModelRepository: dataModelRepository(apiClient),
+      apiKey: apiKeysRepository(apiClient),
       user,
       inbox: inboxRepository(apiClient),
     };

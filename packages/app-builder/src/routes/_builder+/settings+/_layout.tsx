@@ -39,12 +39,12 @@ export default function Settings() {
                   to={getRoute('/settings/users')}
                 />
               </li>
-              {/* <li>
-              <SettingsNavLink
-                text={t('settings:api_keys')}
-                to={getRoute('/settings/api-keys')}
-              />
-            </li> */}
+              <li>
+                <SettingsNavLink
+                  text={t('settings:api_keys')}
+                  to={getRoute('/settings/api-keys')}
+                />
+              </li>
             </ul>
           </SettingsNavSection>
           <SettingsNavSection

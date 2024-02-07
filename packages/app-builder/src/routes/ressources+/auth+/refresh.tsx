@@ -34,7 +34,7 @@ export function useRefreshToken() {
           .authenticationClientRepository;
 
       firebaseIdToken().then(
-        (idToken) => {
+        (idToken: string) => {
           submit(
             { idToken, csrf },
             { method: 'POST', action: getRoute('/ressources/auth/refresh') },

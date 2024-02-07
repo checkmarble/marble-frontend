@@ -12,7 +12,7 @@ export const CopyToClipboardButton = forwardRef<
   return (
     <div
       ref={ref}
-      className="border-grey-10 text-grey-100 flex h-8 cursor-pointer select-none items-center gap-3 rounded border px-2 font-normal"
+      className="border-grey-10 text-grey-100 flex min-h-8 cursor-pointer select-none items-center gap-3 break-all rounded border px-2 font-normal"
       {...getCopyToClipboardProps(toCopy)}
       {...props}
     >

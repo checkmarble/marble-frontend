@@ -15,7 +15,7 @@ import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -136,10 +136,7 @@ export function CreateInboxUserContent({
       </Modal.Title>
       <div className="bg-grey-00 flex flex-col gap-6 p-6">
         <input {...conform.input(inboxId, { type: 'hidden' })} />
-        <FormField
-          config={userId}
-          className="text-s group flex flex-col gap-2 font-bold"
-        >
+        <FormField config={userId} className="group flex flex-col gap-2">
           <FormLabel>{t('settings:inboxes.inbox_details.user')}</FormLabel>
           <FormSelect.Default config={userId}>
             {userOptions.map(({ id, name }) => (
@@ -154,9 +151,9 @@ export function CreateInboxUserContent({
           <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
           <FormSelect.Default config={role}>
             {roleOptions.map((role) => (
-              <Select.DefaultItem key={role} value={role}>
+              <FormSelect.DefaultItem key={role} value={role}>
                 {t(tKeyForInboxUserRole(role))}
-              </Select.DefaultItem>
+              </FormSelect.DefaultItem>
             ))}
           </FormSelect.Default>
           <FormError />

@@ -135,7 +135,7 @@ const CreateUserContent = ({ orgId }: { orgId: string }) => {
     >
       <Modal.Title>{t('settings:users.new_user')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <div className="text-s flex flex-1 flex-col gap-4 font-bold">
+        <div className="flex flex-1 flex-col gap-4">
           <AuthenticityTokenInput />
           <input {...conform.input(organizationId, { type: 'hidden' })} />
           <div className="flex gap-2">
