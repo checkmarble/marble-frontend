@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  remix-utils@7.5.0:
+    hash: 3aypkaget5nnzpznqt4forq5sa
+    path: patches/remix-utils@7.5.0.patch
+
 importers:
 
   .:
@@ -205,7 +210,7 @@ importers:
         version: 5.5.0(@remix-run/react@2.5.1)(@remix-run/server-runtime@2.5.1)(i18next@23.7.16)(react-i18next@14.0.0)(react@18.2.0)
       remix-utils:
         specifier: ^7.5.0
-        version: 7.5.0(@remix-run/node@2.5.1)(@remix-run/react@2.5.1)(crypto-js@4.2.0)(react@18.2.0)(zod@3.22.4)
+        version: 7.5.0(patch_hash=3aypkaget5nnzpznqt4forq5sa)(@remix-run/node@2.5.1)(@remix-run/react@2.5.1)(crypto-js@4.2.0)(react@18.2.0)(zod@3.22.4)
       short-uuid:
         specifier: ^4.2.2
         version: 4.2.2
@@ -15125,7 +15130,7 @@ packages:
       use-consistent-value: 1.0.0(react@18.2.0)
     dev: false
 
-  /remix-utils@7.5.0(@remix-run/node@2.5.1)(@remix-run/react@2.5.1)(crypto-js@4.2.0)(react@18.2.0)(zod@3.22.4):
+  /remix-utils@7.5.0(patch_hash=3aypkaget5nnzpznqt4forq5sa)(@remix-run/node@2.5.1)(@remix-run/react@2.5.1)(crypto-js@4.2.0)(react@18.2.0)(zod@3.22.4):
     resolution: {integrity: sha512-vzjDhbdwK+3XxqL2LM7ZPzq0zyjb+77eAWbKhDqhnh0nlA11n3CmTtYzrZYpVf6h24+6m5mD6KnRfcdD3Zrl7w==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -15168,6 +15173,7 @@ packages:
       type-fest: 4.9.0
       zod: 3.22.4
     dev: false
+    patched: true
 
   /remix@2.5.1:
     resolution: {integrity: sha512-yKfDD6Opqv7xXFHs64Ej2nIHzt4kiaMkGGPzDPTc+hLOqF7rGFxjFuMj7JAPfysc/MocrxFMQoJamIpXGlobHA==}

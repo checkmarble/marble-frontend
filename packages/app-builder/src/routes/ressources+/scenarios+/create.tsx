@@ -40,7 +40,7 @@ const createScenarioFormSchema = z.object({
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const parsedForm = await parseFormSafe(request, createScenarioFormSchema);
@@ -56,17 +56,17 @@ export async function action({ request }: ActionFunctionArgs) {
   const { name, description, triggerObjectType } = parsedForm.data;
 
   try {
-    const scenario = await apiClient.createScenario({
+    const createdScenario = await scenario.createScenario({
       name: name,
       description: description,
       triggerObjectType: triggerObjectType,
     });
-    const scenarioIteration = await apiClient.createScenarioIteration({
-      scenarioId: scenario.id,
+    const scenarioIteration = await scenario.createScenarioIteration({
+      scenarioId: createdScenario.id,
     });
     return redirect(
       getRoute('/scenarios/:scenarioId/i/:iterationId', {
-        scenarioId: fromUUID(scenario.id),
+        scenarioId: fromUUID(createdScenario.id),
         iterationId: fromUUID(scenarioIteration.id),
       }),
     );
