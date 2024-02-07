@@ -1,13 +1,7 @@
 import { type ApiKeyDto, type CreatedApiKeyDto } from 'marble-api';
 import { assertNever } from 'typescript-utils';
 
-export const apiKeyRoleOptions = [
-  'ADMIN',
-  'PUBLISHER',
-  'BUILDER',
-  'VIEWER',
-  'API_CLIENT',
-] as const;
+export const apiKeyRoleOptions = ['API_CLIENT'] as const;
 type ApiKeyRole = (typeof apiKeyRoleOptions)[number];
 
 function isApiKeyRole(role: string): role is ApiKeyRole {

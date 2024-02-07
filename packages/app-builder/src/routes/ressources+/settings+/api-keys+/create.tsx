@@ -123,7 +123,10 @@ const CreateApiKeyContent = () => {
         </FormField>
         <FormField config={role} className="group flex flex-col gap-2">
           <FormLabel>{t('settings:api_keys.role')}</FormLabel>
-          <FormSelect.Default config={role}>
+          <FormSelect.Default
+            config={role}
+            disabled={apiKeyRoleOptions.length === 1}
+          >
             {apiKeyRoleOptions.map((role) => (
               <FormSelect.DefaultItem key={role} value={role}>
                 {t(tKeyForApiKeyRole(role))}
