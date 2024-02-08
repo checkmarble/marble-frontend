@@ -13,8 +13,11 @@ import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { TriggerObjectDetail } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
+import { handleParseParamError } from '@app-builder/utils/handle-errors';
+import { NOT_FOUND } from '@app-builder/utils/http-status-codes';
+import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams } from '@app-builder/utils/short-uuid';
+import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
@@ -28,6 +31,7 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import * as z from 'zod';
 
 export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
@@ -38,15 +42,22 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
+  const parsedParam = await parseParamsSafe(
+    params,
+    z.object({ decisionId: shortUUIDSchema }),
+  );
+  if (!parsedParam.success) {
+    throw handleParseParamError(request, parsedParam.error);
+  }
+  const { decisionId } = parsedParam.data;
 
-  const decisionId = fromParams(params, 'decisionId');
   try {
     const decision = await apiClient.getDecision(decisionId);
 
     return json({ decision });
   } catch (error) {
     if (isNotFoundHttpError(error)) {
-      throw new Response(null, { status: 404, statusText: 'Not Found' });
+      throw json(null, NOT_FOUND);
     } else {
       throw error;
     }
