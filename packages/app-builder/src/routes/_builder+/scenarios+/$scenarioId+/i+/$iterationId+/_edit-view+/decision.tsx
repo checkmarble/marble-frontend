@@ -29,6 +29,7 @@ import { fromParams } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useSubmit } from '@remix-run/react';
+import clsx from 'clsx';
 import { type Namespace, type TFunction } from 'i18next';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import { useEffect } from 'react';
@@ -165,12 +166,23 @@ export default function Decision() {
       },
     },
   });
-  const { control, trigger, watch } = formMethods;
+  const {
+    control,
+    trigger,
+    watch,
+    formState: { errors },
+  } = formMethods;
 
+  const thresholds = watch('thresholds');
   useEffect(() => {
     void trigger();
-  }, [trigger]);
+  }, [
+    thresholds.scoreRejectThreshold,
+    thresholds.scoreReviewThreshold,
+    trigger,
+  ]);
 
+  const thresholdsError = errors.thresholds?.root?.message;
   const disabled = editorMode === 'view';
 
   return (
@@ -223,14 +235,10 @@ export default function Decision() {
             <Outcome border="square" size="big" outcome="review" />
             {t('scenarios:decision.score_based.review_condition', {
               replace: {
-                reviewThreshold: watch(
-                  'thresholds.scoreReviewThreshold',
-                  scoreReviewThreshold,
-                ),
-                rejectThreshold: watch(
-                  'thresholds.scoreRejectThreshold',
-                  scoreRejectThreshold,
-                ),
+                reviewThreshold:
+                  thresholds.scoreReviewThreshold ?? scoreReviewThreshold,
+                rejectThreshold:
+                  thresholds.scoreRejectThreshold ?? scoreRejectThreshold,
               },
             })}
 
@@ -266,12 +274,16 @@ export default function Decision() {
           </div>
           <div className="flex flex-row items-center justify-between">
             <div className="flex min-h-[40px] flex-row flex-wrap gap-1">
-              <FormField
-                control={control}
-                name="thresholds"
-                disabled={disabled}
-                render={() => <FormError className={style.errorMessage} />}
-              />
+              {thresholdsError ? (
+                <p
+                  className={clsx(
+                    'text-s text-left font-medium text-red-100 transition-opacity duration-200 ease-in-out',
+                    style.errorMessage,
+                  )}
+                >
+                  {thresholdsError}
+                </p>
+              ) : null}
               {scenarioValidation.decision.errors
                 .filter(
                   (error) =>
