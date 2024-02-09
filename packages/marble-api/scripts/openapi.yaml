@@ -10,6 +10,10 @@ tags:
     description: Operations about data model.
   - name: Authorization
     description: Operations about authorization.
+  - name: Analytics
+    description: Operations about analytics.
+  - name: ApiKeys
+    description: Operations about api keys.
   - name: Users
     description: Operations about users.
   - name: Organizations
@@ -1871,10 +1875,38 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /analytics:
+    get:
+      tags:
+        - Analytics
+      summary: List analytics associated with the current organization (present in the JWT)
+      operationId: listAnalytics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The analytics corresponding to the current organization (present in the JWT)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - analytics
+                properties:
+                  analytics:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AnalyticsDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /apikeys:
     get:
       tags:
-        - Authorization
+        - ApiKeys
       summary: List api keys associated with the current organization (present in the JWT)
       operationId: listApiKeys
       security:
@@ -1901,7 +1933,7 @@ paths:
           $ref: '#/components/responses/404'
     post:
       tags:
-        - Authorization
+        - ApiKeys
       summary: Create an api key
       operationId: createApiKey
       security:
@@ -1934,7 +1966,7 @@ paths:
   /apikeys/{apiKeyId}:
     delete:
       tags:
-        - Authorization
+        - ApiKeys
       summary: Delete an api key
       operationId: deleteApiKey
       security:
@@ -2895,6 +2927,18 @@ components:
           type: string
         last_name:
           type: string
+    AnalyticsDto:
+      type: object
+      required:
+        - embedding_id
+        - signed_embedding_url
+      properties:
+        embedding_id:
+          type: string
+          enum: [global_dashboard, unknown_embedding_id]
+        signed_embedding_url:
+          type: string
+          format: uri
     ApiKeyDto:
       type: object
       required:

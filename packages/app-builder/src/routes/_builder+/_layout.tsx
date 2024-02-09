@@ -189,6 +189,17 @@ export default function Builder() {
                           )}
                         />
                       </li>
+                      {user.permissions.canReadAnalytics ? (
+                        <li>
+                          <SidebarLink
+                            labelTKey="navigation:analytics"
+                            to={getRoute('/analytics')}
+                            Icon={(props) => (
+                              <Icon icon="analytics" {...props} />
+                            )}
+                          />
+                        </li>
+                      ) : null}
                     </ul>
                   </nav>
                 </ScrollArea.Viewport>

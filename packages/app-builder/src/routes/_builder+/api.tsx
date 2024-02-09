@@ -43,7 +43,7 @@ export default function Api() {
   return (
     <Page.Container>
       <Page.Header className="justify-between">
-        <div className="items-center: flex flex-row items-center">
+        <div className="flex flex-row items-center">
           <Icon icon="harddrive" className="mr-2 size-6" />
           {t('navigation:api')}
         </div>
