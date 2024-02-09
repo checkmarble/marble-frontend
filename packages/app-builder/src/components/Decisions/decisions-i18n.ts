@@ -5,5 +5,6 @@ import { filtersI18n } from '../Filters/filters-i18n';
 export const decisionsI18n = [
   'decisions',
   'common',
+  'cases',
   ...filtersI18n,
 ] satisfies Namespace;
