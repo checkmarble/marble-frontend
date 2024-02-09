@@ -93,7 +93,7 @@ export default function ApiKeys() {
         {createdApiKey ? <CreatedAPIKey createdApiKey={createdApiKey} /> : null}
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:tags')}</span>
+            <span className="flex-1">{t('settings:api_keys')}</span>
             <CreateApiKey />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
