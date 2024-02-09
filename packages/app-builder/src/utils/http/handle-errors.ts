@@ -1,9 +1,9 @@
-import { json, redirect } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { type ZodError, type ZodIssueOptionalMessage } from 'zod';
 
-import { BAD_REQUEST } from './http-status-codes';
-import { isRawUUIDIssue } from './schema/shortUUIDSchema';
-import { fromUUID } from './short-uuid';
+import { isRawUUIDIssue } from '../schema/shortUUIDSchema';
+import { fromUUID } from '../short-uuid';
+import { badRequest } from './http-responses';
 
 /**
  * Handles a ZodError that is thrown when parsing request parameters.
@@ -24,5 +24,5 @@ export function handleParseParamError<Input>(
       }, request.url);
     return redirect(redirectURL);
   }
-  return json(null, BAD_REQUEST);
+  return badRequest(error.issues);
 }

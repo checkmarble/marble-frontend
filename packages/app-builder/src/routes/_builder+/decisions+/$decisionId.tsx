@@ -13,8 +13,8 @@ import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { TriggerObjectDetail } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
-import { handleParseParamError } from '@app-builder/utils/handle-errors';
-import { NOT_FOUND } from '@app-builder/utils/http-status-codes';
+import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
+import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
@@ -47,7 +47,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     z.object({ decisionId: shortUUIDSchema }),
   );
   if (!parsedParam.success) {
-    throw handleParseParamError(request, parsedParam.error);
+    return handleParseParamError(request, parsedParam.error);
   }
   const { decisionId } = parsedParam.data;
 
@@ -57,7 +57,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return json({ decision });
   } catch (error) {
     if (isNotFoundHttpError(error)) {
-      throw json(null, NOT_FOUND);
+      return notFound(null);
     } else {
       throw error;
     }

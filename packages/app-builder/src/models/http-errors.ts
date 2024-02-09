@@ -3,7 +3,7 @@ import {
   CONFLICT,
   FORBIDDEN,
   NOT_FOUND,
-} from '@app-builder/utils/http-status-codes';
+} from '@app-builder/utils/http/http-status-codes';
 import { type HttpError } from 'oazapfts';
 
 export function isHttpError(error: unknown): error is HttpError {

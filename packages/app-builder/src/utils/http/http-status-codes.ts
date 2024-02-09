@@ -3,6 +3,7 @@
  *
  * Copied from 'http-status-codes' package. This is a copy of the package to avoid a dependency on the package and allow tree shaking.
  * @see https://www.npmjs.com/package/http-status-codes
+ * @license MIT
  */
 
 /**
