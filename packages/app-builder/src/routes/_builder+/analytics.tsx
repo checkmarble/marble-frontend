@@ -24,7 +24,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const analyticsList = await analytics.listAnalytics();
   const globalDashbord = analyticsList.find(
-    ({ embeddingId }) => embeddingId === 'global_dashboard',
+    ({ embeddingType }) => embeddingType === 'global_dashboard',
   );
   if (!globalDashbord) {
     return notFound("Global dashboard doesn't exist");

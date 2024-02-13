@@ -2930,12 +2930,12 @@ components:
     AnalyticsDto:
       type: object
       required:
-        - embedding_id
+        - embedding_type
         - signed_embedding_url
       properties:
-        embedding_id:
+        embedding_type:
           type: string
-          enum: [global_dashboard, unknown_embedding_id]
+          enum: [global_dashboard, unknown_embedding_type]
         signed_embedding_url:
           type: string
           format: uri

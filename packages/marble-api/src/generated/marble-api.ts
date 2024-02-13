@@ -415,7 +415,7 @@ export type OpenApiSpec = {
     };
 };
 export type AnalyticsDto = {
-    embedding_id: "global_dashboard" | "unknown_embedding_id";
+    embedding_type: "global_dashboard" | "unknown_embedding_type";
     signed_embedding_url: string;
 };
 export type ApiKeyDto = {

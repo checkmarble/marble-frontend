@@ -1,13 +1,13 @@
 import { type AnalyticsDto } from 'marble-api';
 
 export interface Analytics {
-  embeddingId: 'global_dashboard' | 'unknown_embedding_id';
+  embeddingType: 'global_dashboard' | 'unknown_embedding_type';
   signedEmbeddingUrl: string;
 }
 
 export function adaptAnalytics(analyticsDto: AnalyticsDto): Analytics {
   return {
-    embeddingId: analyticsDto.embedding_id,
+    embeddingType: analyticsDto.embedding_type,
     signedEmbeddingUrl: analyticsDto.signed_embedding_url,
   };
 }
