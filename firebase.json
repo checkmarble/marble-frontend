@@ -6,6 +6,6 @@
     "ui": {
       "enabled": true
     },
-    "singleProjectMode": false
+    "singleProjectMode": true
   }
 }
