@@ -40,6 +40,11 @@ export const routes = [
             "file": "routes/_builder+/$.tsx"
           },
           {
+            "id": "routes/_builder+/analytics",
+            "path": "analytics",
+            "file": "routes/_builder+/analytics.tsx"
+          },
+          {
             "id": "routes/_builder+/api",
             "path": "api",
             "file": "routes/_builder+/api.tsx"

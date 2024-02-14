@@ -414,6 +414,10 @@ export type OpenApiSpec = {
         securitySchemes?: object;
     };
 };
+export type AnalyticsDto = {
+    embedding_type: "global_dashboard" | "unknown_embedding_type";
+    signed_embedding_url: string;
+};
 export type ApiKeyDto = {
     id: string;
     organization_id: string;
@@ -1715,6 +1719,28 @@ export function getDataModelOpenApi(opts?: Oazapfts.RequestOpts) {
         status: 403;
         data: string;
     }>("/data-model/openapi", {
+        ...opts
+    }));
+}
+/**
+ * List analytics associated with the current organization (present in the JWT)
+ */
+export function listAnalytics(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            analytics: AnalyticsDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/analytics", {
         ...opts
     }));
 }

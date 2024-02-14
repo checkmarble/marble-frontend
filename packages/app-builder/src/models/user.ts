@@ -23,6 +23,7 @@ function NewPermissionsList() {
     canEditDataModel: 'DATA_MODEL_WRITE',
     canManageDecision: 'DECISION_CREATE',
     canEditInboxes: 'INBOX_EDITOR',
+    canReadAnalytics: 'ANALYTICS_READ',
   } as const;
 }
 
