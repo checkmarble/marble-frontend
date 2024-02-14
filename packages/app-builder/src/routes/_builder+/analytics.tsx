@@ -67,3 +67,7 @@ export function ErrorBoundary() {
 
   return <ErrorComponent error={error} />;
 }
+
+export function shouldRevalidate() {
+  return false;
+}
