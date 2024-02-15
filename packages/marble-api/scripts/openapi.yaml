@@ -1583,91 +1583,170 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-  /scenario-publications:
+  /scenario-life-cycle:
     get:
       tags:
-        - Scenario Publications
-      summary: List scenario publications
-      description: List scenario publications using provided filters
-      operationId: listScenarioPublications
+        - Scenario Life Cycle
+      summary: List scenario life cycle events
+      description: List scenario life cycle events corresponding to filters
+      operationId: listScenarioLifeCycleEvents
       security:
         - bearerAuth: []
       parameters:
         - name: scenarioId
-          description: ID of the scenario returned publications should be linked to
+          description: ID of the scenario returned events should be linked to
           in: query
           required: false
           schema:
             type: string
             format: uuid
         - name: scenarioIterationId
-          description: ID of the scenario iteration returned publications should be linked to
+          description: ID of the scenario iteration returned events should be linked to
           in: query
           required: false
           schema:
             type: string
             format: uuid
-        - name: publicationAction
-          description: publication action to return
+        - name: eventType
+          description: Type of the event returned
           in: query
           required: false
           schema:
-            $ref: '#/components/schemas/PublicationAction'
+            $ref: '#/components/schemas/ScenarioLifeCycleEventType'
       responses:
         '200':
-          description: Scenario publications corresponding to filters
+          description: Scenario life cycle events corresponding to filters
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ScenarioPublication'
+                  $ref: '#/components/schemas/ScenarioLifeCycleEventDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /scenario-life-cycle/publish:
     post:
       tags:
-        - Scenario Publications
-      summary: Create a scenario publication
-      operationId: createScenarioPublication
+        - Scenario Life Cycle
+      summary: Publish a scenario iteration
+      operationId: publishScenarioIteration
       security:
         - bearerAuth: []
       requestBody:
-        description: 'Describe the scenario publication action'
+        description: 'Describe the scenario publication'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateScenarioPublicationBody'
+              type: object
+              required:
+                - scenario_iteration_id
+              properties:
+                scenario_iteration_id:
+                  type: string
+                  format: uuid
         required: true
       responses:
         '200':
-          description: The list of created scenario publication actions
+          description: The list of events that occurred during the publication
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ScenarioPublication'
+                  $ref: '#/components/schemas/ScenarioLifeCycleEventDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-  /scenario-publications/{scenarioPublicationId}:
+  /scenario-life-cycle/activate:
+    post:
+      tags:
+        - Scenario Life Cycle
+      summary: Activate a scenario iteration
+      operationId: activateScenarioIteration
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Describe the scenario activation'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_iteration_id
+              properties:
+                scenario_iteration_id:
+                  type: string
+                  format: uuid
+        required: true
+      responses:
+        '200':
+          description: The list of events that occurred during the activation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScenarioLifeCycleEventDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /scenario-life-cycle/deactivate:
+    post:
+      tags:
+        - Scenario Life Cycle
+      summary: Deactivate a scenario
+      operationId: deactivateScenario
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Describe the scenario deactivation'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_id
+              properties:
+                scenario_id:
+                  type: string
+                  format: uuid
+        required: true
+      responses:
+        '200':
+          description: The list of events that occurred during the deactivation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScenarioLifeCycleEventDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /scenario-life-cycle/{scenarioLifeCycleEventId}:
     get:
       tags:
-        - Scenario Publications
-      summary: Get a scenario publication by id
-      operationId: getScenarioPublication
+        - Scenario Life Cycle
+      summary: Get a scenario life cycle event by id
+      operationId: getScenarioLifeCycleEvent
       security:
         - bearerAuth: []
       parameters:
-        - name: scenarioPublicationId
-          description: ID of the scenario publication that need to be fetched
+        - name: scenarioLifeCycleEventId
+          description: ID of the scenario life cycle event that need to be fetched
           in: path
           required: true
           schema:
@@ -1675,11 +1754,11 @@ paths:
             format: uuid
       responses:
         '200':
-          description: The scenario publication corresponding to the provided `scenarioPublicationId`
+          description: The scenario life cycle event corresponding to the provided `scenarioLifeCycleEventId`
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioPublication'
+                $ref: '#/components/schemas/ScenarioLifeCycleEventDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -3910,13 +3989,13 @@ components:
             - $ref: '#/components/schemas/NodeDto'
         scoreModifier:
           type: integer
-    ScenarioPublication:
+    ScenarioLifeCycleEventDto:
       type: object
       required:
         - id
         - createdAt
         - scenarioIterationId
-        - publicationAction
+        - type
       properties:
         id:
           type: string
@@ -3927,22 +4006,11 @@ components:
         scenarioIterationId:
           type: string
           format: uuid
-        publicationAction:
-          $ref: '#/components/schemas/PublicationAction'
-    CreateScenarioPublicationBody:
-      type: object
-      required:
-        - scenarioIterationId
-        - publicationAction
-      properties:
-        scenarioIterationId:
-          type: string
-          format: uuid
-        publicationAction:
-          $ref: '#/components/schemas/PublicationAction'
-    PublicationAction:
+        type:
+          $ref: '#/components/schemas/ScenarioLifeCycleEventType'
+    ScenarioLifeCycleEventType:
       type: string
-      enum: ['publish', 'unpublish']
+      enum: ['publish', 'activate', 'deactivate']
     ConstantDto:
       nullable: true
       example: 'some constant value'
