@@ -10,13 +10,17 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getSortedRowModel,
+} from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { type InboxUserDto, type InboxUserRole } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
+import { Table, Tooltip, useTable } from 'ui-design-system';
 
 import { tKeyForInboxUserRole } from './inboxes._index';
 
@@ -78,13 +82,17 @@ export default function Inbox() {
     ];
   }, [orgUsers, t]);
 
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: inbox.users ?? [],
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
-    enableSorting: false,
+    getSortedRowModel: getSortedRowModel(),
   });
+
+  const nonInboxUsers = orgUsers.filter(
+    (user) => !inbox.users?.some((u) => u.user_id === user.userId),
+  );
 
   return (
     <Page.Container>
@@ -119,7 +127,7 @@ export default function Inbox() {
             <span className="flex-1">
               {t('settings:inboxes.inbox_details.members')}
             </span>
-            <CreateInboxUser inboxId={inbox.id} />
+            <CreateInboxUser inboxId={inbox.id} users={nonInboxUsers} />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()} className="max-h-96">
