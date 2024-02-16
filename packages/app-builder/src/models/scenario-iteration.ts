@@ -24,7 +24,7 @@ export function sortScenarioIterations<T extends ScenarioIterationSummary>(
           type:
             version.id === liveVersionId
               ? ('live version' as const)
-              : ('past version' as const),
+              : ('version' as const),
         })),
         R.sortBy([({ createdAt }) => createdAt, 'desc']),
       );
