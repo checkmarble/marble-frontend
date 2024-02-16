@@ -35,7 +35,7 @@ export const handle = {
  * - Tenter de factoriser des helpers
  */
 
-const Deployment = ['activate', 'deactivate', 'reactivate'] as const;
+const Deployment = ['activate', 'deactivate'] as const;
 type DeploymentType = (typeof Deployment)[number];
 
 const formSchema = z.object({
@@ -350,11 +350,10 @@ function getDeploymentType(
 ): DeploymentType {
   switch (type) {
     case 'draft':
+    case 'version':
       return 'activate';
     case 'live version':
       return 'deactivate';
-    case 'past version':
-      return 'reactivate';
   }
 }
 
@@ -378,12 +377,6 @@ function getButtonConfig(type: DeploymentType): {
         label: 'scenarios:deployment_modal.deactivate.button',
         props: { color: 'red' },
         icon: { trigger: 'stop', submit: 'stop' },
-      };
-    case 'reactivate':
-      return {
-        label: 'scenarios:deployment_modal.reactivate.button',
-        props: { color: 'purple' },
-        icon: { trigger: 'pushtolive', submit: 'play' },
       };
   }
 }
