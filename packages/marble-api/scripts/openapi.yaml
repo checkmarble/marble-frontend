@@ -1657,6 +1657,78 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /scenario-publications/preparation:
+    get:
+      tags:
+        - Scenario Publications
+      summary: Get the preparation status of a scenario publication
+      operationId: getScenarioPublicationPreparationStatus
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Describe the scenario publication action'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_iteration_id
+              properties:
+                scenario_iteration_id:
+                  type: string
+                  format: uuid
+        required: true
+      responses:
+        '200':
+          description: The preparation status of the scenario publication
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - preparation_status
+                properties:
+                  preparation_status:
+                    type: string
+                    enum:
+                      - 'PENDING'
+                      - 'IN_PROGRESS'
+                      - 'DONE'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Scenario Publications
+      summary: Prepare a scenario publication
+      operationId: prepareScenarioPublication
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Describe the scenario publication action'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_iteration_id
+              properties:
+                scenario_iteration_id:
+                  type: string
+                  format: uuid
+        required: true
+      responses:
+        '204':
+          description: The preparation of the scenario publication has been started
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scenario-publications/{scenarioPublicationId}:
     get:
       tags:
