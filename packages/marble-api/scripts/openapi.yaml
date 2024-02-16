@@ -1420,6 +1420,40 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /scenario-iterations/{scenarioIterationId}/commit:
+    post:
+      tags:
+        - Scenario Iterations
+      summary: Commit a scenario iteration
+      operationId: commitScenarioIteration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioIterationId
+          description: ID of the scenario iteration
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The committed scenario iteration
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - iteration
+                properties:
+                  iteration:
+                    $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scenario-iteration-rules:
     get:
       tags:

@@ -1395,6 +1395,29 @@ export function validateScenarioIterationWithGivenTriggerOrRule(scenarioIteratio
     })));
 }
 /**
+ * Commit a scenario iteration
+ */
+export function commitScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            iteration: ScenarioIterationWithBodyDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/commit`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
  * List rules
  */
 export function listScenarioIterationRules({ scenarioIterationId }: {
