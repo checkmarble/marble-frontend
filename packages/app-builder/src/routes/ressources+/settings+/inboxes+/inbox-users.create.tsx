@@ -3,9 +3,9 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { type User } from '@app-builder/models';
 import { tKeyForInboxUserRole } from '@app-builder/routes/_builder+/settings+/inboxes._index';
 import { serverServices } from '@app-builder/services/init.server';
-import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { conform, useForm } from '@conform-to/react';
@@ -71,7 +71,13 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function CreateInboxUser({ inboxId }: { inboxId: string }) {
+export function CreateInboxUser({
+  inboxId,
+  users,
+}: {
+  inboxId: string;
+  users: User[];
+}) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = useState(false);
 
@@ -91,7 +97,7 @@ export function CreateInboxUser({ inboxId }: { inboxId: string }) {
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateInboxUserContent currentInboxId={inboxId} />
+        <CreateInboxUserContent currentInboxId={inboxId} users={users} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -99,8 +105,10 @@ export function CreateInboxUser({ inboxId }: { inboxId: string }) {
 
 export function CreateInboxUserContent({
   currentInboxId,
+  users,
 }: {
   currentInboxId: string;
+  users: User[];
 }) {
   const { t } = useTranslation(handle.i18n);
 
@@ -119,8 +127,7 @@ export function CreateInboxUserContent({
     },
   });
 
-  const { orgUsers } = useOrganizationUsers();
-  const userOptions = orgUsers.map((user) => ({
+  const userOptions = users.map((user) => ({
     id: user.userId,
     name: `${user.firstName} ${user.lastName}`,
   }));
