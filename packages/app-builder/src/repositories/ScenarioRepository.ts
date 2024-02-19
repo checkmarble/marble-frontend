@@ -9,9 +9,11 @@ import {
   adaptScenarioIteration,
   adaptScenarioIterationRule,
   adaptScenarioIterationSummary,
+  adaptScenarioPublicationStatus,
   type ScenarioIteration,
   type ScenarioIterationRule,
   type ScenarioIterationSummary,
+  type ScenarioPublicationStatus,
 } from '@app-builder/models/scenario';
 import { type Scenario } from 'marble-api';
 
@@ -47,6 +49,10 @@ export interface ScenarioRepository {
   commitScenarioIteration(args: {
     iterationId: string;
   }): Promise<ScenarioIteration>;
+  getPublicationPreparationStatus(args: {
+    iterationId: string;
+  }): Promise<ScenarioPublicationStatus>;
+  startPublicationPreparation(args: { iterationId: string }): Promise<void>;
 }
 
 export function getScenarioRepository() {
@@ -107,6 +113,16 @@ export function getScenarioRepository() {
       const { iteration } =
         await marbleApiClient.commitScenarioIteration(iterationId);
       return adaptScenarioIteration(iteration);
+    },
+    getPublicationPreparationStatus: async ({ iterationId }) => {
+      const status =
+        await marbleApiClient.getScenarioPublicationPreparationStatus(
+          iterationId,
+        );
+      return adaptScenarioPublicationStatus(status);
+    },
+    startPublicationPreparation: async ({ iterationId }) => {
+      await marbleApiClient.startScenarioPublicationPreparation(iterationId);
     },
   });
 }
