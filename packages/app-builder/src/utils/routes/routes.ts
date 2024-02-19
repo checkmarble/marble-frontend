@@ -316,9 +316,24 @@ export const routes = [
         "file": "routes/ressources+/lists+/value_delete.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/activate",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/commit",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/commit",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/commit.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft",
         "path": "ressources/scenarios/:scenarioId/:iterationId/create_draft",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/deactivate",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create",
@@ -344,11 +359,6 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources+/scenarios+/create.tsx"
-      },
-      {
-        "id": "routes/ressources+/scenarios+/deployment",
-        "path": "ressources/scenarios/deployment",
-        "file": "routes/ressources+/scenarios+/deployment.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/update",

@@ -15,6 +15,7 @@ export const iconNames = [
   'check-indeterminate-small',
   'clipboard-document',
   'collapse',
+  'commit',
   'copy',
   'create-new-folder',
   'cross',
