@@ -1,7 +1,12 @@
 import { type Session } from '@remix-run/node';
 import * as z from 'zod';
 
-export const toastMessageScema = z.object({
+/**
+ * @param messageKey translation key for the message
+ *
+ * @deprecated use `newToastMessageSchema` instead
+ */
+const oldToastMessageSchema = z.object({
   type: z.enum(['success', 'error', 'loading', 'custom']),
   messageKey: z.enum([
     'common:errors.unknown',
@@ -16,9 +21,28 @@ export const toastMessageScema = z.object({
     'common:errors.add_to_case.invalid',
     'common:success.save',
     'common:success.add_to_case',
-    'common:errors.draft.invalid',
   ]),
 });
+
+/**
+ * @param message the translated message
+ */
+const newToastMessageSchema = z.object({
+  type: z.enum(['success', 'error', 'loading', 'custom']),
+  message: z.string(),
+});
+
+export const toastMessageScema = z.union([
+  oldToastMessageSchema,
+  newToastMessageSchema,
+]);
+
+export type NewToastMessage = z.infer<typeof newToastMessageSchema>;
+export function isNewToastMessage(
+  message: ToastMessage,
+): message is NewToastMessage {
+  return Object.hasOwn(message, 'message');
+}
 
 export type ToastMessage = z.infer<typeof toastMessageScema>;
 

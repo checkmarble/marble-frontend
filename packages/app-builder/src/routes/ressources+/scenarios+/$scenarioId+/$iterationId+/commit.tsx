@@ -50,17 +50,21 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }),
     });
   } catch (error) {
-    const { getSession, commitSession } = serverServices.toastSessionService;
+    const {
+      i18nextService: { getFixedT },
+      toastSessionService: { getSession, commitSession },
+    } = serverServices;
+    const t = await getFixedT(request, ['scenarios', 'common']);
     const session = await getSession(request);
     if (isStatusBadRequestHttpError(error)) {
       setToastMessage(session, {
         type: 'error',
-        messageKey: 'common:errors.draft.invalid',
+        message: t('scenarios:deployment_modal.commit.validation_error'),
       });
     } else {
       setToastMessage(session, {
         type: 'error',
-        messageKey: 'common:errors.unknown',
+        message: t('common:errors.unknown'),
       });
     }
     return json(submission, {
@@ -79,7 +83,7 @@ export function CommitScenarioDraft({
     isValid: boolean;
   };
 }) {
-  const { t } = useTranslation(['common', 'scenarios']);
+  const { t } = useTranslation(['scenarios']);
   const [open, setOpen] = useState(false);
 
   const navigation = useNavigation();
@@ -105,7 +109,7 @@ export function CommitScenarioDraft({
     return (
       <Tooltip.Default
         className="text-xs"
-        content={t('common:errors.draft.invalid')}
+        content={t('scenarios:deployment_modal.commit.validation_error')}
       >
         {button}
       </Tooltip.Default>

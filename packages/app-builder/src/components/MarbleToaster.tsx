@@ -1,4 +1,5 @@
 import {
+  isNewToastMessage,
   type ToastMessage,
   toastMessageScema,
   type ToastSession,
@@ -34,15 +35,17 @@ export function MarbleToaster({
   const { t } = useTranslation(['common']);
 
   useEffect(() => {
-    const type = toastMessage?.type;
-    const message = toastMessage?.messageKey
-      ? t(toastMessage.messageKey)
-      : undefined;
+    if (!toastMessage) return;
 
-    if (!type || !message) {
-      return;
+    if (isNewToastMessage(toastMessage)) {
+      const { type, message } = toastMessage;
+      toast[type](getMessage(message));
+    } else {
+      const { type, messageKey } = toastMessage;
+      const message = t(messageKey);
+
+      toast[type](getMessage(message));
     }
-    toast[type](getMessage(message));
   }, [t, toastMessage]);
 
   return (

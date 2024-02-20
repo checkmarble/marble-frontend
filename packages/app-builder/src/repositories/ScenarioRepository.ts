@@ -3,6 +3,7 @@ import {
   adaptNodeDto,
   adaptScenarioValidation,
   type AstNode,
+  isStatusBadRequestHttpError,
   type ScenarioValidation,
 } from '@app-builder/models';
 import {
@@ -53,6 +54,10 @@ export interface ScenarioRepository {
     iterationId: string;
   }): Promise<ScenarioPublicationStatus>;
   startPublicationPreparation(args: { iterationId: string }): Promise<void>;
+  createScenarioPublication(args: {
+    publicationAction: 'publish' | 'unpublish';
+    scenarioIterationId: string;
+  }): Promise<void>;
 }
 
 export function getScenarioRepository() {
@@ -124,5 +129,46 @@ export function getScenarioRepository() {
     startPublicationPreparation: async ({ iterationId }) => {
       await marbleApiClient.startScenarioPublicationPreparation(iterationId);
     },
+    createScenarioPublication: async (args) => {
+      try {
+        await marbleApiClient.createScenarioPublication(args);
+      } catch (error) {
+        if (isStatusBadRequestHttpError(error)) {
+          //TODO: handle error based on new JSON API error format
+          if (
+            typeof error.data === 'string' &&
+            error.data.includes("can't validate scenario")
+          ) {
+            throw new ValidationError(error.message);
+          }
+          if (
+            typeof error.data === 'string' &&
+            error.data.includes('requires data preparation')
+          ) {
+            throw new PreparationError(error.message);
+          }
+          if (
+            typeof error.data === 'string' &&
+            error.data.includes('cannot activate a draft iteration')
+          ) {
+            throw new IsDraftError(error.message);
+          }
+        }
+        throw error;
+      }
+    },
   });
 }
+
+/**
+ * The error thrown when a scenario iteration validation fails.
+ */
+export class ValidationError extends Error {}
+/**
+ * The error thrown when a scenario iteration to be activated requires preparation.
+ */
+export class PreparationError extends Error {}
+/**
+ * The error thrown when a scenario iteration to be activated is a draft.
+ */
+export class IsDraftError extends Error {}
