@@ -18,8 +18,8 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const deactivateFormSchema = z.object({
-  stopOperating: z.boolean(),
-  changeIsImmediate: z.boolean(),
+  stopOperating: z.coerce.boolean().pipe(z.literal(true)),
+  changeIsImmediate: z.coerce.boolean().pipe(z.literal(true)),
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -82,7 +82,7 @@ export function DeactivateScenarioVersion({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button className="flex-1" variant="primary" type="submit" color="red">
+        <Button className="flex-1" variant="primary" color="red">
           <Icon icon="stop" className="size-6" />
           {t('scenarios:deployment_modal.deactivate.button')}
         </Button>

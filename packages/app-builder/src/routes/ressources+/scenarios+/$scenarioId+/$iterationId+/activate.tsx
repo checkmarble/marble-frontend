@@ -4,7 +4,8 @@ import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import {
   IsDraftError,
-  PreparationError,
+  PreparationIsRequiredError,
+  PreparationServiceOccupied,
   ValidationError,
 } from '@app-builder/repositories/ScenarioRepository';
 import { serverServices } from '@app-builder/services/init.server';
@@ -26,7 +27,7 @@ const activateFormSchema = z
   .object({
     type: z.enum(['live', 'not_live']),
     replaceCurrentLiveVersion: z.coerce.boolean(),
-    changeIsImmediate: z.boolean(),
+    changeIsImmediate: z.coerce.boolean().pipe(z.literal(true)),
   })
   .refine(
     (data) => {
@@ -79,10 +80,19 @@ export async function action({ request, params }: ActionFunctionArgs) {
         type: 'error',
         message: t('scenarios:deployment_modal.activate.validation_error'),
       });
-    } else if (error instanceof PreparationError) {
+    } else if (error instanceof PreparationIsRequiredError) {
       setToastMessage(session, {
         type: 'error',
-        message: t('scenarios:deployment_modal.activate.preparation_error'),
+        message: t(
+          'scenarios:deployment_modal.activate.preparation_is_required_error',
+        ),
+      });
+    } else if (error instanceof PreparationServiceOccupied) {
+      setToastMessage(session, {
+        type: 'error',
+        message: t(
+          'scenarios:deployment_modal.activate.preparation_service_occupied_error',
+        ),
       });
     } else if (error instanceof IsDraftError) {
       setToastMessage(session, {
@@ -125,12 +135,7 @@ export function ActivateScenarioVersion({
   }, [navigation.state]);
 
   const button = (
-    <Button
-      className="flex-1"
-      variant="primary"
-      type="submit"
-      disabled={!iteration.isValid}
-    >
+    <Button className="flex-1" variant="primary" disabled={!iteration.isValid}>
       <Icon icon="pushtolive" className="size-6" />
       {t('scenarios:deployment_modal.activate.button')}
     </Button>

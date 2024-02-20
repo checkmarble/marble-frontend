@@ -48,6 +48,7 @@ export const iconNames = [
   'play',
   'plus',
   'pushtolive',
+  'queue-list',
   'restart-alt',
   'rules',
   'scenarios',

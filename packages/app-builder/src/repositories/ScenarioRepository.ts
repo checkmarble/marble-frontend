@@ -3,7 +3,9 @@ import {
   adaptNodeDto,
   adaptScenarioValidation,
   type AstNode,
+  isMarbleError,
   isStatusBadRequestHttpError,
+  isStatusConflictHttpError,
   type ScenarioValidation,
 } from '@app-builder/models';
 import {
@@ -127,31 +129,34 @@ export function getScenarioRepository() {
       return adaptScenarioPublicationStatus(status);
     },
     startPublicationPreparation: async ({ iterationId }) => {
-      await marbleApiClient.startScenarioPublicationPreparation(iterationId);
+      try {
+        await marbleApiClient.startScenarioPublicationPreparation({
+          scenario_iteration_id: iterationId,
+        });
+      } catch (error) {
+        if (isStatusConflictHttpError(error)) {
+          throw new PreparationServiceOccupied(error.message);
+        }
+        throw error;
+      }
     },
     createScenarioPublication: async (args) => {
       try {
         await marbleApiClient.createScenarioPublication(args);
       } catch (error) {
-        if (isStatusBadRequestHttpError(error)) {
-          //TODO: handle error based on new JSON API error format
-          if (
-            typeof error.data === 'string' &&
-            error.data.includes("can't validate scenario")
-          ) {
+        if (isStatusBadRequestHttpError(error) && isMarbleError(error)) {
+          const errorCode = error.data.error_code;
+          if (errorCode === 'scenario_iteration_is_invalid') {
             throw new ValidationError(error.message);
           }
-          if (
-            typeof error.data === 'string' &&
-            error.data.includes('requires data preparation')
-          ) {
-            throw new PreparationError(error.message);
+          if (errorCode === 'scenario_iteration_requires_preparation') {
+            throw new PreparationIsRequiredError(error.message);
           }
-          if (
-            typeof error.data === 'string' &&
-            error.data.includes('cannot activate a draft iteration')
-          ) {
+          if (errorCode === 'scenario_iteration_is_draft') {
             throw new IsDraftError(error.message);
+          }
+          if (errorCode === 'data_preparation_service_unavailable') {
+            throw new PreparationServiceOccupied(error.message);
           }
         }
         throw error;
@@ -167,8 +172,12 @@ export class ValidationError extends Error {}
 /**
  * The error thrown when a scenario iteration to be activated requires preparation.
  */
-export class PreparationError extends Error {}
+export class PreparationIsRequiredError extends Error {}
 /**
  * The error thrown when a scenario iteration to be activated is a draft.
  */
 export class IsDraftError extends Error {}
+/**
+ * The error thrown when the preparation service is occupied.
+ */
+export class PreparationServiceOccupied extends Error {}

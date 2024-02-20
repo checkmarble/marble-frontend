@@ -12,6 +12,7 @@ import { ActivateScenarioVersion } from '@app-builder/routes/ressources+/scenari
 import { CommitScenarioDraft } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/commit';
 import { CreateDraftIteration } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft';
 import { DeactivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate';
+import { PrepareScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/prepare';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
@@ -42,13 +43,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
+  const iterationId = fromParams(params, 'iterationId');
 
-  const scenarioIterations = await scenario.listScenarioIterations({
-    scenarioId,
-  });
+  const [scenarioIterations, publicationPreparationStatus] = await Promise.all([
+    scenario.listScenarioIterations({
+      scenarioId,
+    }),
+    scenario.getPublicationPreparationStatus({
+      iterationId,
+    }),
+  ]);
 
   return json({
     scenarioIterations,
+    publicationPreparationStatus,
   });
 }
 
@@ -56,7 +64,8 @@ export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
   const scenarioValidation = useCurrentScenarioValidation();
-  const { scenarioIterations } = useLoaderData<typeof loader>();
+  const { scenarioIterations, publicationPreparationStatus } =
+    useLoaderData<typeof loader>();
   const { canManageScenario, canPublishScenario } = usePermissionsContext();
 
   const sortedScenarioIterations = sortScenarioIterations(
@@ -130,7 +139,11 @@ export default function ScenarioEditLayout() {
                   !hasTriggerErrors(scenarioValidation) &&
                   !hasRulesErrors(scenarioValidation) &&
                   !hasDecisionErrors(scenarioValidation),
+                status: publicationPreparationStatus.status,
               }}
+              isPreparationServiceOccupied={
+                publicationPreparationStatus.serviceStatus === 'occupied'
+              }
             />
           ) : null}
         </div>
@@ -205,6 +218,7 @@ function ScenariosLinkIcon({
 function DeploymentActions({
   scenario,
   iteration,
+  isPreparationServiceOccupied,
 }: {
   scenario: {
     id: string;
@@ -214,7 +228,9 @@ function DeploymentActions({
     id: string;
     type: 'draft' | 'version' | 'live version';
     isValid: boolean;
+    status: 'required' | 'ready_to_activate';
   };
+  isPreparationServiceOccupied: boolean;
 }) {
   switch (iteration.type) {
     case 'draft':
@@ -222,6 +238,15 @@ function DeploymentActions({
         <CommitScenarioDraft scenarioId={scenario.id} iteration={iteration} />
       );
     case 'version':
+      if (iteration.status === 'required') {
+        return (
+          <PrepareScenarioVersion
+            scenarioId={scenario.id}
+            iteration={iteration}
+            isPreparationServiceOccupied={isPreparationServiceOccupied}
+          />
+        );
+      }
       return (
         <ActivateScenarioVersion scenario={scenario} iteration={iteration} />
       );
