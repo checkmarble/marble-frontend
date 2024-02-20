@@ -350,6 +350,10 @@ export type CreateScenarioPublicationBody = {
     scenarioIterationId: string;
     publicationAction: PublicationAction;
 };
+export type ScenarioPublicationStatusDto = {
+    preparation_status: "required" | "ready_to_activate";
+    preparation_service_status: "available" | "occupied";
+};
 export type DataModelFieldDto = {
     id?: string;
     name: string;
@@ -1579,6 +1583,51 @@ export function createScenarioPublication(createScenarioPublicationBody: CreateS
         ...opts,
         method: "POST",
         body: createScenarioPublicationBody
+    })));
+}
+/**
+ * Get scenario publication preparation status
+ */
+export function getScenarioPublicationPreparationStatus(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioPublicationStatusDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-publications/preparation${QS.query(QS.explode({
+        scenario_iteration_id: scenarioIterationId
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Start scenario publication preparation
+ */
+export function startScenarioPublicationPreparation(body: {
+    scenario_iteration_id: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 202;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/scenario-publications/preparation", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
     })));
 }
 /**

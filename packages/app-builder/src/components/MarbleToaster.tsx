@@ -1,6 +1,7 @@
 import {
+  isNewToastMessage,
   type ToastMessage,
-  toastMessageScema,
+  toastMessageSchema,
   type ToastSession,
 } from '@app-builder/models/toast-session';
 import { getClientEnv } from '@app-builder/utils/environment';
@@ -20,7 +21,7 @@ export function setToastMessage(
 
 export function getToastMessage(session: ToastSession) {
   try {
-    return toastMessageScema.parse(session.get('toastMessage'));
+    return toastMessageSchema.parse(session.get('toastMessage'));
   } catch (err) {
     return undefined;
   }
@@ -34,15 +35,17 @@ export function MarbleToaster({
   const { t } = useTranslation(['common']);
 
   useEffect(() => {
-    const type = toastMessage?.type;
-    const message = toastMessage?.messageKey
-      ? t(toastMessage.messageKey)
-      : undefined;
+    if (!toastMessage) return;
 
-    if (!type || !message) {
-      return;
+    if (isNewToastMessage(toastMessage)) {
+      const { type, message } = toastMessage;
+      toast[type](getMessage(message));
+    } else {
+      const { type, messageKey } = toastMessage;
+      const message = t(messageKey);
+
+      toast[type](getMessage(message));
     }
-    toast[type](getMessage(message));
   }, [t, toastMessage]);
 
   return (

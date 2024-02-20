@@ -1691,6 +1691,63 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /scenario-publications/preparation:
+    get:
+      tags:
+        - Scenario Publications
+      summary: Get scenario publication preparation status
+      operationId: getScenarioPublicationPreparationStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenario_iteration_id
+          description: ID of the scenario iteration to check the preparation status
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The scenario publication preparation status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioPublicationStatusDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Scenario Publications
+      summary: Start scenario publication preparation
+      operationId: startScenarioPublicationPreparation
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_iteration_id
+              properties:
+                scenario_iteration_id:
+                  type: string
+                  format: uuid
+        required: true
+      responses:
+        '202':
+          description: The scenario publication preparation has started
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scenario-publications/{scenarioPublicationId}:
     get:
       tags:
@@ -3944,6 +4001,18 @@ components:
             - $ref: '#/components/schemas/NodeDto'
         scoreModifier:
           type: integer
+    ScenarioPublicationStatusDto:
+      type: object
+      required:
+        - preparation_status
+        - preparation_service_status
+      properties:
+        preparation_status:
+          type: string
+          enum: ['required', 'ready_to_activate']
+        preparation_service_status:
+          type: string
+          enum: ['available', 'occupied']
     ScenarioPublication:
       type: object
       required:

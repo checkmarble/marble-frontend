@@ -336,6 +336,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/prepare",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/prepare",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/prepare.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create",
         "path": "ressources/scenarios/:scenarioId/:iterationId/rules/create",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create.tsx"

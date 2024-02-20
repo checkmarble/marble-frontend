@@ -2,6 +2,7 @@ import {
   type ScenarioIterationDto,
   type ScenarioIterationRuleDto,
   type ScenarioIterationWithBodyDto,
+  type ScenarioPublicationStatusDto,
 } from 'marble-api';
 
 import { adaptAstNode, type AstNode } from './ast-node';
@@ -85,5 +86,19 @@ export function adaptScenarioIterationSummary(
     version: dto.version,
     createdAt: dto.createdAt,
     updatedAt: dto.updatedAt,
+  };
+}
+
+export interface ScenarioPublicationStatus {
+  status: 'required' | 'ready_to_activate';
+  serviceStatus: 'available' | 'occupied';
+}
+
+export function adaptScenarioPublicationStatus(
+  dto: ScenarioPublicationStatusDto,
+): ScenarioPublicationStatus {
+  return {
+    status: dto.preparation_status,
+    serviceStatus: dto.preparation_service_status,
   };
 }

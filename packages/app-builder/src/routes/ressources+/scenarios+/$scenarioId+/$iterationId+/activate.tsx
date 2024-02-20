@@ -2,6 +2,12 @@ import { FormCheckbox } from '@app-builder/components/Form/FormCheckbox';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import {
+  IsDraftError,
+  PreparationIsRequiredError,
+  PreparationServiceOccupied,
+  ValidationError,
+} from '@app-builder/repositories/ScenarioRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -21,7 +27,7 @@ const activateFormSchema = z
   .object({
     type: z.enum(['live', 'not_live']),
     replaceCurrentLiveVersion: z.coerce.boolean(),
-    changeIsImmediate: z.boolean(),
+    changeIsImmediate: z.coerce.boolean().pipe(z.literal(true)),
   })
   .refine(
     (data) => {
@@ -37,7 +43,7 @@ const activateFormSchema = z
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, csrfService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   await csrfService.validate(request);
@@ -51,7 +57,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   try {
-    await apiClient.createScenarioPublication({
+    await scenario.createScenarioPublication({
       publicationAction: 'publish',
       scenarioIterationId: iterationId,
     });
@@ -63,12 +69,42 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }),
     });
   } catch (error) {
-    const { getSession, commitSession } = serverServices.toastSessionService;
+    const {
+      i18nextService: { getFixedT },
+      toastSessionService: { getSession, commitSession },
+    } = serverServices;
+    const t = await getFixedT(request, ['scenarios', 'common']);
     const session = await getSession(request);
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: 'common:errors.unknown',
-    });
+    if (error instanceof ValidationError) {
+      setToastMessage(session, {
+        type: 'error',
+        message: t('scenarios:deployment_modal.activate.validation_error'),
+      });
+    } else if (error instanceof PreparationIsRequiredError) {
+      setToastMessage(session, {
+        type: 'error',
+        message: t(
+          'scenarios:deployment_modal.activate.preparation_is_required_error',
+        ),
+      });
+    } else if (error instanceof PreparationServiceOccupied) {
+      setToastMessage(session, {
+        type: 'error',
+        message: t(
+          'scenarios:deployment_modal.activate.preparation_service_occupied_error',
+        ),
+      });
+    } else if (error instanceof IsDraftError) {
+      setToastMessage(session, {
+        type: 'error',
+        message: t('scenarios:deployment_modal.activate.is_draft_error'),
+      });
+    } else {
+      setToastMessage(session, {
+        type: 'error',
+        message: t('common:errors.unknown'),
+      });
+    }
     return json(submission, {
       headers: { 'Set-Cookie': await commitSession(session) },
     });
@@ -99,12 +135,7 @@ export function ActivateScenarioVersion({
   }, [navigation.state]);
 
   const button = (
-    <Button
-      className="flex-1"
-      variant="primary"
-      type="submit"
-      disabled={!iteration.isValid}
-    >
+    <Button className="flex-1" variant="primary" disabled={!iteration.isValid}>
       <Icon icon="pushtolive" className="size-6" />
       {t('scenarios:deployment_modal.activate.button')}
     </Button>
@@ -114,7 +145,7 @@ export function ActivateScenarioVersion({
     return (
       <Tooltip.Default
         className="text-xs"
-        content={t('common:errors.scenario_iteration.invalid')}
+        content={t('scenarios:deployment_modal.activate.validation_error')}
       >
         {button}
       </Tooltip.Default>

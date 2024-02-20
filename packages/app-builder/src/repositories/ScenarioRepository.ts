@@ -3,15 +3,20 @@ import {
   adaptNodeDto,
   adaptScenarioValidation,
   type AstNode,
+  isMarbleError,
+  isStatusBadRequestHttpError,
+  isStatusConflictHttpError,
   type ScenarioValidation,
 } from '@app-builder/models';
 import {
   adaptScenarioIteration,
   adaptScenarioIterationRule,
   adaptScenarioIterationSummary,
+  adaptScenarioPublicationStatus,
   type ScenarioIteration,
   type ScenarioIterationRule,
   type ScenarioIterationSummary,
+  type ScenarioPublicationStatus,
 } from '@app-builder/models/scenario';
 import { type Scenario } from 'marble-api';
 
@@ -47,6 +52,14 @@ export interface ScenarioRepository {
   commitScenarioIteration(args: {
     iterationId: string;
   }): Promise<ScenarioIteration>;
+  getPublicationPreparationStatus(args: {
+    iterationId: string;
+  }): Promise<ScenarioPublicationStatus>;
+  startPublicationPreparation(args: { iterationId: string }): Promise<void>;
+  createScenarioPublication(args: {
+    publicationAction: 'publish' | 'unpublish';
+    scenarioIterationId: string;
+  }): Promise<void>;
 }
 
 export function getScenarioRepository() {
@@ -108,5 +121,63 @@ export function getScenarioRepository() {
         await marbleApiClient.commitScenarioIteration(iterationId);
       return adaptScenarioIteration(iteration);
     },
+    getPublicationPreparationStatus: async ({ iterationId }) => {
+      const status =
+        await marbleApiClient.getScenarioPublicationPreparationStatus(
+          iterationId,
+        );
+      return adaptScenarioPublicationStatus(status);
+    },
+    startPublicationPreparation: async ({ iterationId }) => {
+      try {
+        await marbleApiClient.startScenarioPublicationPreparation({
+          scenario_iteration_id: iterationId,
+        });
+      } catch (error) {
+        if (isStatusConflictHttpError(error)) {
+          throw new PreparationServiceOccupied(error.message);
+        }
+        throw error;
+      }
+    },
+    createScenarioPublication: async (args) => {
+      try {
+        await marbleApiClient.createScenarioPublication(args);
+      } catch (error) {
+        if (isStatusBadRequestHttpError(error) && isMarbleError(error)) {
+          const errorCode = error.data.error_code;
+          if (errorCode === 'scenario_iteration_is_invalid') {
+            throw new ValidationError(error.message);
+          }
+          if (errorCode === 'scenario_iteration_requires_preparation') {
+            throw new PreparationIsRequiredError(error.message);
+          }
+          if (errorCode === 'scenario_iteration_is_draft') {
+            throw new IsDraftError(error.message);
+          }
+          if (errorCode === 'data_preparation_service_unavailable') {
+            throw new PreparationServiceOccupied(error.message);
+          }
+        }
+        throw error;
+      }
+    },
   });
 }
+
+/**
+ * The error thrown when a scenario iteration validation fails.
+ */
+export class ValidationError extends Error {}
+/**
+ * The error thrown when a scenario iteration to be activated requires preparation.
+ */
+export class PreparationIsRequiredError extends Error {}
+/**
+ * The error thrown when a scenario iteration to be activated is a draft.
+ */
+export class IsDraftError extends Error {}
+/**
+ * The error thrown when the preparation service is occupied.
+ */
+export class PreparationServiceOccupied extends Error {}

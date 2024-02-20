@@ -16,8 +16,6 @@
   "errors.data.duplicate_field_name": "A field with this name already exist",
   "errors.data.duplicate_table_name": "A table with this name already exist",
   "errors.data.duplicate_link_name": "A link with this name already exist",
-  "errors.draft.invalid": "This draft can't be committed because it contains errors.",
-  "errors.scenario_iteration.invalid": "This version can't be activated because it contains errors.",
   "errors.add_to_case.invalid": "A decision already belongs to a case",
   "cancel": "Cancel",
   "save": "Save",
