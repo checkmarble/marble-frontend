@@ -1,7 +1,7 @@
 import {
   isNewToastMessage,
   type ToastMessage,
-  toastMessageScema,
+  toastMessageSchema,
   type ToastSession,
 } from '@app-builder/models/toast-session';
 import { getClientEnv } from '@app-builder/utils/environment';
@@ -21,7 +21,7 @@ export function setToastMessage(
 
 export function getToastMessage(session: ToastSession) {
   try {
-    return toastMessageScema.parse(session.get('toastMessage'));
+    return toastMessageSchema.parse(session.get('toastMessage'));
   } catch (err) {
     return undefined;
   }

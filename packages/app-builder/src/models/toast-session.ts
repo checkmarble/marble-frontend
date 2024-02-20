@@ -32,7 +32,7 @@ const newToastMessageSchema = z.object({
   message: z.string(),
 });
 
-export const toastMessageScema = z.union([
+export const toastMessageSchema = z.union([
   oldToastMessageSchema,
   newToastMessageSchema,
 ]);
@@ -44,7 +44,7 @@ export function isNewToastMessage(
   return Object.hasOwn(message, 'message');
 }
 
-export type ToastMessage = z.infer<typeof toastMessageScema>;
+export type ToastMessage = z.infer<typeof toastMessageSchema>;
 
 export type ToastSessionData = void;
 export type ToastFlashData = {
