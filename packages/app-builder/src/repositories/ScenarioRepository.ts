@@ -44,6 +44,9 @@ export interface ScenarioRepository {
     iterationId: string;
     trigger: AstNode;
   }): Promise<ScenarioValidation['trigger']>;
+  commitScenarioIteration(args: {
+    iterationId: string;
+  }): Promise<ScenarioIteration>;
 }
 
 export function getScenarioRepository() {
@@ -99,6 +102,11 @@ export function getScenarioRepository() {
         );
       const scenarioValidation = adaptScenarioValidation(scenario_validation);
       return scenarioValidation.trigger;
+    },
+    commitScenarioIteration: async ({ iterationId }) => {
+      const { iteration } =
+        await marbleApiClient.commitScenarioIteration(iterationId);
+      return adaptScenarioIteration(iteration);
     },
   });
 }

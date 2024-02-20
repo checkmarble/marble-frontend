@@ -8,8 +8,10 @@ import { CornerPing } from '@app-builder/components/Ping';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import { ActivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate';
+import { CommitScenarioDraft } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/commit';
 import { CreateDraftIteration } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft';
-import { DeploymentActions } from '@app-builder/routes/ressources+/scenarios+/deployment';
+import { DeactivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
@@ -117,14 +119,18 @@ export default function ScenarioEditLayout() {
           ) : null}
           {withDeploymentActions ? (
             <DeploymentActions
-              scenarioId={currentScenario.id}
-              liveVersionId={currentScenario.liveVersionId}
-              currentIteration={currentIteration}
-              hasScenarioErrors={
-                hasTriggerErrors(scenarioValidation) ||
-                hasRulesErrors(scenarioValidation) ||
-                hasDecisionErrors(scenarioValidation)
-              }
+              scenario={{
+                id: currentScenario.id,
+                isLive: !!currentScenario.liveVersionId,
+              }}
+              iteration={{
+                id: currentIteration.id,
+                type: currentIteration.type,
+                isValid:
+                  !hasTriggerErrors(scenarioValidation) &&
+                  !hasRulesErrors(scenarioValidation) &&
+                  !hasDecisionErrors(scenarioValidation),
+              }}
             />
           ) : null}
         </div>
@@ -194,4 +200,39 @@ function ScenariosLinkIcon({
     );
   }
   return <Icon {...props} />;
+}
+
+function DeploymentActions({
+  scenario,
+  iteration,
+}: {
+  scenario: {
+    id: string;
+    isLive: boolean;
+  };
+  iteration: {
+    id: string;
+    type: 'draft' | 'version' | 'live version';
+    isValid: boolean;
+  };
+}) {
+  switch (iteration.type) {
+    case 'draft':
+      return (
+        <CommitScenarioDraft scenarioId={scenario.id} iteration={iteration} />
+      );
+    case 'version':
+      return (
+        <ActivateScenarioVersion scenario={scenario} iteration={iteration} />
+      );
+    case 'live version':
+      return (
+        <DeactivateScenarioVersion
+          scenarioId={scenario.id}
+          iterationId={iteration.id}
+        />
+      );
+    default:
+      return null;
+  }
 }
