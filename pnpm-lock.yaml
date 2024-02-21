@@ -105,19 +105,22 @@ importers:
         version: 1.0.7(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
       '@remix-run/node':
         specifier: ^2.5.1
-        version: 2.5.1(typescript@5.3.3)
+        version: 2.5.1
       '@remix-run/react':
         specifier: ^2.5.1
-        version: 2.5.1(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)
+        version: 2.5.1(react-dom@18.2.0)(react@18.2.0)
       '@remix-run/serve':
         specifier: ^2.5.1
-        version: 2.5.1(typescript@5.3.3)
+        version: 2.5.1
       '@segment/snippet':
         specifier: ^5.2.0
         version: 5.2.0
+      '@sentry/integrations':
+        specifier: ^7.102.0
+        version: 7.102.0
       '@sentry/remix':
-        specifier: ^7.92.0
-        version: 7.92.0(@remix-run/node@2.5.1)(@remix-run/react@2.5.1)(react@18.2.0)
+        specifier: ^7.102.0
+        version: 7.102.0(@remix-run/node@2.5.1)(@remix-run/react@2.5.1)(react@18.2.0)
       '@tanstack/react-table':
         specifier: ^8.11.3
         version: 8.11.3(react-dom@18.2.0)(react@18.2.0)
@@ -207,7 +210,7 @@ importers:
         version: 0.6.4(@remix-run/dev@2.5.1)
       remix-i18next:
         specifier: ^5.5.0
-        version: 5.5.0(@remix-run/react@2.5.1)(@remix-run/server-runtime@2.5.1)(i18next@23.7.16)(react-i18next@14.0.0)(react@18.2.0)
+        version: 5.5.0(@remix-run/react@2.5.1)(@remix-run/server-runtime@2.7.1)(i18next@23.7.16)(react-i18next@14.0.0)(react@18.2.0)
       remix-utils:
         specifier: ^7.5.0
         version: 7.5.0(patch_hash=3aypkaget5nnzpznqt4forq5sa)(@remix-run/node@2.5.1)(@remix-run/react@2.5.1)(crypto-js@4.2.0)(react@18.2.0)(zod@3.22.4)
@@ -244,7 +247,7 @@ importers:
         version: link:../eslint-config
       '@remix-run/dev':
         specifier: ^2.5.1
-        version: 2.5.1(@remix-run/serve@2.5.1)(typescript@5.3.3)(vite@5.0.12)
+        version: 2.5.1(@remix-run/serve@2.5.1)
       '@segment/analytics-next':
         specifier: ^1.62.0
         version: 1.62.0
@@ -4828,7 +4831,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.5
 
-  /@remix-run/dev@2.5.1(@remix-run/serve@2.5.1)(typescript@5.3.3)(vite@5.0.12):
+  /@remix-run/dev@2.5.1(@remix-run/serve@2.5.1):
     resolution: {integrity: sha512-IrYhWANubH+WM62Wz55n8NWT5kBqfbyytXDFlP0VoZLrr1IpJf2GtaT4IA+CODMaNoeXeMACOD5Tw5/Y2bO5lA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
@@ -4854,10 +4857,10 @@ packages:
       '@babel/types': 7.23.6
       '@mdx-js/mdx': 2.3.0
       '@npmcli/package-json': 4.0.1
-      '@remix-run/node': 2.5.1(typescript@5.3.3)
+      '@remix-run/node': 2.5.1
       '@remix-run/router': 1.14.2
-      '@remix-run/serve': 2.5.1(typescript@5.3.3)
-      '@remix-run/server-runtime': 2.5.1(typescript@5.3.3)
+      '@remix-run/serve': 2.5.1
+      '@remix-run/server-runtime': 2.5.1
       '@types/mdx': 2.0.10
       '@vanilla-extract/integration': 6.2.5
       arg: 5.0.2
@@ -4897,8 +4900,6 @@ packages:
       set-cookie-parser: 2.6.0
       tar-fs: 2.1.1
       tsconfig-paths: 4.2.0
-      typescript: 5.3.3
-      vite: 5.0.12
       ws: 7.5.9
     transitivePeerDependencies:
       - '@types/node'
@@ -4914,7 +4915,7 @@ packages:
       - ts-node
       - utf-8-validate
 
-  /@remix-run/express@2.5.1(express@4.18.2)(typescript@5.3.3):
+  /@remix-run/express@2.5.1(express@4.18.2):
     resolution: {integrity: sha512-ISaf2hzHxDTS1hNsOovRoSfIQC29m4ogzXvBC6xp2BuJj0K8R0yQ4RFD4+qUFEUnS2n6MyWyjFQRhOC6PhQhRw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -4924,11 +4925,10 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@remix-run/node': 2.5.1(typescript@5.3.3)
+      '@remix-run/node': 2.5.1
       express: 4.18.2
-      typescript: 5.3.3
 
-  /@remix-run/node@2.5.1(typescript@5.3.3):
+  /@remix-run/node@2.5.1:
     resolution: {integrity: sha512-UI442xzHAiokmsfrYOabMQB024+IizmRhZBGcNa42QjJWsNqogy1bNwYhzEpB6oQEB1wF3vwOKK1AD1/iYA/9A==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -4937,7 +4937,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@remix-run/server-runtime': 2.5.1(typescript@5.3.3)
+      '@remix-run/server-runtime': 2.5.1
       '@remix-run/web-fetch': 4.4.2
       '@remix-run/web-file': 3.1.0
       '@remix-run/web-stream': 1.1.0
@@ -4945,9 +4945,8 @@ packages:
       cookie-signature: 1.2.1
       source-map-support: 0.5.21
       stream-slice: 0.1.2
-      typescript: 5.3.3
 
-  /@remix-run/react@2.5.1(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3):
+  /@remix-run/react@2.5.1(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-MNXHLj4Iu9Iyi+3uY61JZJ1Rtx2nM/z11j9AtwQdEADkh1/t9GruhtT/8VLplToOl0qWZKItboWScKf6uRQsrw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -4959,25 +4958,29 @@ packages:
         optional: true
     dependencies:
       '@remix-run/router': 1.14.2
-      '@remix-run/server-runtime': 2.5.1(typescript@5.3.3)
+      '@remix-run/server-runtime': 2.5.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-router: 6.21.3(react@18.2.0)
       react-router-dom: 6.21.3(react-dom@18.2.0)(react@18.2.0)
-      typescript: 5.3.3
     dev: false
 
   /@remix-run/router@1.14.2:
     resolution: {integrity: sha512-ACXpdMM9hmKZww21yEqWwiLws/UPLhNKvimN8RrYSqPSvB3ov7sLvAcfvaxePeLvccTQKGdkDIhLYApZVDFuKg==}
     engines: {node: '>=14.0.0'}
 
-  /@remix-run/serve@2.5.1(typescript@5.3.3):
+  /@remix-run/router@1.15.1:
+    resolution: {integrity: sha512-zcU0gM3z+3iqj8UX45AmWY810l3oUmXM7uH4dt5xtzvMhRtYVhKGOmgOd1877dOPPepfCjUv57w+syamWIYe7w==}
+    engines: {node: '>=14.0.0'}
+    dev: false
+
+  /@remix-run/serve@2.5.1:
     resolution: {integrity: sha512-r1IWfirwkLrxADd8uFUIpLR1wMU8VeRI4ED4SpbhrKwqODLrYtv5irzjei+r/w0y0Oob8DMHnYxg03UY4T7ejg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
-      '@remix-run/express': 2.5.1(express@4.18.2)(typescript@5.3.3)
-      '@remix-run/node': 2.5.1(typescript@5.3.3)
+      '@remix-run/express': 2.5.1(express@4.18.2)
+      '@remix-run/node': 2.5.1
       chokidar: 3.5.3
       compression: 1.7.4
       express: 4.18.2
@@ -4988,7 +4991,7 @@ packages:
       - supports-color
       - typescript
 
-  /@remix-run/server-runtime@2.5.1(typescript@5.3.3):
+  /@remix-run/server-runtime@2.5.1:
     resolution: {integrity: sha512-bP31jrVbYTJ2eP5sxZfDgT1YyXzDlzsfMxGYVzpaoLCYDJAekq1QpHLLXKGOXhmyb46O9rdhlQKfwD6WpAxr3A==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -5003,14 +5006,30 @@ packages:
       cookie: 0.6.0
       set-cookie-parser: 2.6.0
       source-map: 0.7.4
-      typescript: 5.3.3
+
+  /@remix-run/server-runtime@2.7.1:
+    resolution: {integrity: sha512-idmg8Tf9w5fZ+Dgq2aRjZDKlLaZt+rB0yAw+Ht5yzI6MLeKI4SKHsdnGlEY/EeFcbbrXhArrrSjf+mKLJfJ8qw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      typescript: ^5.1.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@remix-run/router': 1.15.1
+      '@types/cookie': 0.6.0
+      '@web3-storage/multipart-parser': 1.0.0
+      cookie: 0.6.0
+      set-cookie-parser: 2.6.0
+      source-map: 0.7.4
+    dev: false
 
   /@remix-run/v1-route-convention@0.1.4(@remix-run/dev@2.5.1):
     resolution: {integrity: sha512-fVTr9YlNLWfaiM/6Y56sOtcY8x1bBJQHY0sDWO5+Z/vjJ2Ni7fe2fwrzs1jUFciMPXqBQdFGePnkuiYLz3cuUA==}
     peerDependencies:
       '@remix-run/dev': ^1.15.0 || ^2.0.0
     dependencies:
-      '@remix-run/dev': 2.5.1(@remix-run/serve@2.5.1)(typescript@5.3.3)(vite@5.0.12)
+      '@remix-run/dev': 2.5.1(@remix-run/serve@2.5.1)
       minimatch: 7.4.6
     dev: false
 
@@ -5355,34 +5374,45 @@ packages:
       - supports-color
     dev: true
 
-  /@sentry-internal/feedback@7.92.0:
-    resolution: {integrity: sha512-/jEALRtVqboxB9kcK2tag8QCO6XANTlGBb9RV3oeGXJe0DDNJXRq6wVZbfgztXJRrfgx4XVDcNt1pRVoGGG++g==}
+  /@sentry-internal/feedback@7.102.0:
+    resolution: {integrity: sha512-GxHdzbOF4tg6TtyQzFqb/8c/p07n68qZC5KYwzs7AuW5ey0IPmdC58pOh3Kk52JA0P69/RZy39+r1p1Swr6C+Q==}
     engines: {node: '>=12'}
     dependencies:
-      '@sentry/core': 7.92.0
-      '@sentry/types': 7.92.0
-      '@sentry/utils': 7.92.0
+      '@sentry/core': 7.102.0
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
     dev: false
 
-  /@sentry-internal/tracing@7.92.0:
-    resolution: {integrity: sha512-ur55vPcUUUWFUX4eVLNP71ohswK7ZZpleNZw9Y1GfLqyI+0ILQUwjtzqItJrdClvVsdRZJMRmDV40Hp9Lbb9mA==}
-    engines: {node: '>=8'}
+  /@sentry-internal/replay-canvas@7.102.0:
+    resolution: {integrity: sha512-rgNO4PdFv0AYflBsCNbSIwpQuOOJQTqyu8i8U0PupjveNjkm0CUJhber/ZOcaGmbyjdvwikGwgWY2O0Oj0USCA==}
+    engines: {node: '>=12'}
     dependencies:
-      '@sentry/core': 7.92.0
-      '@sentry/types': 7.92.0
-      '@sentry/utils': 7.92.0
+      '@sentry/core': 7.102.0
+      '@sentry/replay': 7.102.0
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
     dev: false
 
-  /@sentry/browser@7.92.0:
-    resolution: {integrity: sha512-loMr02/zQ38u8aQhYLtIBg0i5n3ps2e3GUXrt3CdsJQdkRYfa62gcrE7SzvoEpMVHTk7VOI4fWGht8cWw/1k3A==}
+  /@sentry-internal/tracing@7.102.0:
+    resolution: {integrity: sha512-BlE33HWL1IzkGa0W+pwTiyu01MUIfYf+WnO9UC8qkDW3jxVvg2zhoSjXSxikT+KPCOgoZpQHspaTzwjnI1LCvw==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry-internal/feedback': 7.92.0
-      '@sentry-internal/tracing': 7.92.0
-      '@sentry/core': 7.92.0
-      '@sentry/replay': 7.92.0
-      '@sentry/types': 7.92.0
-      '@sentry/utils': 7.92.0
+      '@sentry/core': 7.102.0
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
+    dev: false
+
+  /@sentry/browser@7.102.0:
+    resolution: {integrity: sha512-hIggcMnojIbWhbmlRfkykHmy6n7pjug0AHfF19HRUQxAx9KJfMH5YdWvohov0Hb9fS+jdvqgE+/4AWbEeXQrHw==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry-internal/feedback': 7.102.0
+      '@sentry-internal/replay-canvas': 7.102.0
+      '@sentry-internal/tracing': 7.102.0
+      '@sentry/core': 7.102.0
+      '@sentry/replay': 7.102.0
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
     dev: false
 
   /@sentry/cli-darwin@2.24.1:
@@ -5390,6 +5420,15 @@ packages:
     engines: {node: '>=10'}
     os: [darwin]
     requiresBuild: true
+    dev: true
+    optional: true
+
+  /@sentry/cli-darwin@2.28.6:
+    resolution: {integrity: sha512-KRf0VvTltHQ5gA7CdbUkaIp222LAk/f1+KqpDzO6nB/jC/tL4sfiy6YyM4uiH6IbVEudB8WpHCECiatmyAqMBA==}
+    engines: {node: '>=10'}
+    os: [darwin]
+    requiresBuild: true
+    dev: false
     optional: true
 
   /@sentry/cli-linux-arm64@2.24.1:
@@ -5398,6 +5437,16 @@ packages:
     cpu: [arm64]
     os: [linux, freebsd]
     requiresBuild: true
+    dev: true
+    optional: true
+
+  /@sentry/cli-linux-arm64@2.28.6:
+    resolution: {integrity: sha512-caMDt37FI752n4/3pVltDjlrRlPFCOxK4PHvoZGQ3KFMsai0ZhE/0CLBUMQqfZf0M0r8KB2x7wqLm7xSELjefQ==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [linux, freebsd]
+    requiresBuild: true
+    dev: false
     optional: true
 
   /@sentry/cli-linux-arm@2.24.1:
@@ -5406,6 +5455,16 @@ packages:
     cpu: [arm]
     os: [linux, freebsd]
     requiresBuild: true
+    dev: true
+    optional: true
+
+  /@sentry/cli-linux-arm@2.28.6:
+    resolution: {integrity: sha512-ANG7U47yEHD1g3JrfhpT4/MclEvmDZhctWgSP5gVw5X4AlcI87E6dTqccnLgvZjiIAQTaJJAZuSHVVF3Jk403w==}
+    engines: {node: '>=10'}
+    cpu: [arm]
+    os: [linux, freebsd]
+    requiresBuild: true
+    dev: false
     optional: true
 
   /@sentry/cli-linux-i686@2.24.1:
@@ -5414,6 +5473,16 @@ packages:
     cpu: [x86, ia32]
     os: [linux, freebsd]
     requiresBuild: true
+    dev: true
+    optional: true
+
+  /@sentry/cli-linux-i686@2.28.6:
+    resolution: {integrity: sha512-Tj1+GMc6lFsDRquOqaGKXFpW9QbmNK4TSfynkWKiJxdTEn5jSMlXXfr0r9OQrxu3dCCqEHkhEyU63NYVpgxIPw==}
+    engines: {node: '>=10'}
+    cpu: [x86, ia32]
+    os: [linux, freebsd]
+    requiresBuild: true
+    dev: false
     optional: true
 
   /@sentry/cli-linux-x64@2.24.1:
@@ -5422,6 +5491,16 @@ packages:
     cpu: [x64]
     os: [linux, freebsd]
     requiresBuild: true
+    dev: true
+    optional: true
+
+  /@sentry/cli-linux-x64@2.28.6:
+    resolution: {integrity: sha512-Dt/Xz784w/z3tEObfyJEMmRIzn0D5qoK53H9kZ6e0yNvJOSKNCSOq5cQk4n1/qeG0K/6SU9dirmvHwFUiVNyYg==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [linux, freebsd]
+    requiresBuild: true
+    dev: false
     optional: true
 
   /@sentry/cli-win32-i686@2.24.1:
@@ -5430,6 +5509,16 @@ packages:
     cpu: [x86, ia32]
     os: [win32]
     requiresBuild: true
+    dev: true
+    optional: true
+
+  /@sentry/cli-win32-i686@2.28.6:
+    resolution: {integrity: sha512-zkpWtvY3kt+ogVaAbfFr2MEkgMMHJNJUnNMO8Ixce9gh38sybIkDkZNFnVPBXMClJV0APa4QH0EwumYBFZUMuQ==}
+    engines: {node: '>=10'}
+    cpu: [x86, ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: false
     optional: true
 
   /@sentry/cli-win32-x64@2.24.1:
@@ -5438,6 +5527,16 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
+    dev: true
+    optional: true
+
+  /@sentry/cli-win32-x64@2.28.6:
+    resolution: {integrity: sha512-TG2YzZ9JMeNFzbicdr5fbtsusVGACbrEfHmPgzWGDeLUP90mZxiMTjkXsE1X/5jQEQjB2+fyfXloba/Ugo51hA==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
     optional: true
 
   /@sentry/cli@2.24.1:
@@ -5462,43 +5561,76 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: true
 
-  /@sentry/core@7.92.0:
-    resolution: {integrity: sha512-1Tly7YB2I1byI5xb0Cwrxs56Rhww+6mQ7m9P7rTmdC3/ijOzbEoohtYIUPwcooCEarpbEJe/tAayRx6BrH2UbQ==}
-    engines: {node: '>=8'}
+  /@sentry/cli@2.28.6:
+    resolution: {integrity: sha512-o2Ngz7xXuhwHxMi+4BFgZ4qjkX0tdZeOSIZkFAGnTbRhQe5T8bxq6CcQRLdPhqMgqvDn7XuJ3YlFtD3ZjHvD7g==}
+    engines: {node: '>= 10'}
+    hasBin: true
+    requiresBuild: true
     dependencies:
-      '@sentry/types': 7.92.0
-      '@sentry/utils': 7.92.0
-    dev: false
-
-  /@sentry/node@7.92.0:
-    resolution: {integrity: sha512-LZeQL1r6kikEoOzA9K61OmMl32/lK/6PzmFNDH6z7UYwQopCZgVA6IP+CZuln8K2ys5c9hCyF7ICQMysXfpNJA==}
-    engines: {node: '>=8'}
-    dependencies:
-      '@sentry-internal/tracing': 7.92.0
-      '@sentry/core': 7.92.0
-      '@sentry/types': 7.92.0
-      '@sentry/utils': 7.92.0
       https-proxy-agent: 5.0.1
+      node-fetch: 2.7.0
+      progress: 2.0.3
+      proxy-from-env: 1.1.0
+      which: 2.0.2
+    optionalDependencies:
+      '@sentry/cli-darwin': 2.28.6
+      '@sentry/cli-linux-arm': 2.28.6
+      '@sentry/cli-linux-arm64': 2.28.6
+      '@sentry/cli-linux-i686': 2.28.6
+      '@sentry/cli-linux-x64': 2.28.6
+      '@sentry/cli-win32-i686': 2.28.6
+      '@sentry/cli-win32-x64': 2.28.6
     transitivePeerDependencies:
+      - encoding
       - supports-color
     dev: false
 
-  /@sentry/react@7.92.0(react@18.2.0):
-    resolution: {integrity: sha512-lTvrLuvxtGEZbkW6NHru03K6eyixKyBliwiLwO+k37FK7Ha8Bwat2m77weyizWCdQ6DKlVazJNppkNeAlACIvQ==}
+  /@sentry/core@7.102.0:
+    resolution: {integrity: sha512-GO9eLOSBK1waW4AD0wDXAreaNqXFQ1MPQZrkKcN+GJYEFhJK1+u+MSV7vO5Fs/rIfaTZIZ2jtEkxSSAOucE8EQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
+    dev: false
+
+  /@sentry/integrations@7.102.0:
+    resolution: {integrity: sha512-WW7DiAcihi+Fya2YrB6lEUzDAIPuO23wDm4tLJ9vQpMw4LaTj/XkulITTXFI7XLJLzs5Eks9pIfZJdmKrqjchA==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/core': 7.102.0
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
+      localforage: 1.10.0
+    dev: false
+
+  /@sentry/node@7.102.0:
+    resolution: {integrity: sha512-ZS1s2uO/+K4rHkmWjyqm5Jtl6dT7klbZSMvn4tfIpkfWuqrs7pP0jaATyvmF+96z3lpq6fRAJliV5tRqPy7w5Q==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry-internal/tracing': 7.102.0
+      '@sentry/core': 7.102.0
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
+    dev: false
+
+  /@sentry/react@7.102.0(react@18.2.0):
+    resolution: {integrity: sha512-Dz2JZwQMU/gpAVRHz6usMGgDF5Y0QcPUAnRoNpewEanZW7nChN8FsIYjOkvEbbsgk8bAlAjWErNlKGfl0B3YoA==}
     engines: {node: '>=8'}
     peerDependencies:
       react: 15.x || 16.x || 17.x || 18.x
     dependencies:
-      '@sentry/browser': 7.92.0
-      '@sentry/types': 7.92.0
-      '@sentry/utils': 7.92.0
+      '@sentry/browser': 7.102.0
+      '@sentry/core': 7.102.0
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
     dev: false
 
-  /@sentry/remix@7.92.0(@remix-run/node@2.5.1)(@remix-run/react@2.5.1)(react@18.2.0):
-    resolution: {integrity: sha512-oaOlR8vh5F7QBolXkN0TXlGNn3lsip+7Lr4EgA13dq34XaWqPp6YdUd7CBLQ19Evw1zcnNOvIGre4KX9f1TJmQ==}
+  /@sentry/remix@7.102.0(@remix-run/node@2.5.1)(@remix-run/react@2.5.1)(react@18.2.0):
+    resolution: {integrity: sha512-AIDaeHBOLfCLcEqBuwsQSV9f9ZNw/FJ0upjKKJpuZSTTsFQCJRsP2INHP4ER4bjVxfY37l6Ber+qCwMTkUNxDA==}
     engines: {node: '>=14'}
     hasBin: true
     peerDependencies:
@@ -5506,14 +5638,14 @@ packages:
       '@remix-run/react': 1.x || 2.x
       react: 16.x || 17.x || 18.x
     dependencies:
-      '@remix-run/node': 2.5.1(typescript@5.3.3)
-      '@remix-run/react': 2.5.1(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)
-      '@sentry/cli': 2.24.1
-      '@sentry/core': 7.92.0
-      '@sentry/node': 7.92.0
-      '@sentry/react': 7.92.0(react@18.2.0)
-      '@sentry/types': 7.92.0
-      '@sentry/utils': 7.92.0
+      '@remix-run/node': 2.5.1
+      '@remix-run/react': 2.5.1(react-dom@18.2.0)(react@18.2.0)
+      '@sentry/cli': 2.28.6
+      '@sentry/core': 7.102.0
+      '@sentry/node': 7.102.0
+      '@sentry/react': 7.102.0(react@18.2.0)
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
       glob: 10.3.10
       react: 18.2.0
       yargs: 17.7.2
@@ -5522,26 +5654,26 @@ packages:
       - supports-color
     dev: false
 
-  /@sentry/replay@7.92.0:
-    resolution: {integrity: sha512-G1t9Uvc9cR8VpNkElwvHIMGzykjIKikb10n0tfVd3e+rBPMCCjCPWOduwG6jZYxcvCjTpqmJh6NSLXxL/Mt4JA==}
+  /@sentry/replay@7.102.0:
+    resolution: {integrity: sha512-sUIBN4ZY0J5/dQS3KOe5VLykm856KZkTrhV8kmBEylzQhw1BBc8i2ehTILy5ZYh9Ra8uXPTAmtwpvYf/dRDfAg==}
     engines: {node: '>=12'}
     dependencies:
-      '@sentry-internal/tracing': 7.92.0
-      '@sentry/core': 7.92.0
-      '@sentry/types': 7.92.0
-      '@sentry/utils': 7.92.0
+      '@sentry-internal/tracing': 7.102.0
+      '@sentry/core': 7.102.0
+      '@sentry/types': 7.102.0
+      '@sentry/utils': 7.102.0
     dev: false
 
-  /@sentry/types@7.92.0:
-    resolution: {integrity: sha512-APmSOuZuoRGpbPpPeYIbMSplPjiWNLZRQa73QiXuTflW4Tu/ItDlU8hOa2+A6JKVkJCuD2EN6yUrxDGSMyNXeg==}
+  /@sentry/types@7.102.0:
+    resolution: {integrity: sha512-FPfFBP0x3LkPARw1/6cWySLq1djIo8ao3Qo2KNBeE9CHdq8bsS1a8zzjJLuWG4Ww+wieLP8/lY3WTgrCz4jowg==}
     engines: {node: '>=8'}
     dev: false
 
-  /@sentry/utils@7.92.0:
-    resolution: {integrity: sha512-3nEfrQ1z28b/2zgFGANPh5yMVtgwXmrasZxTvKbrAj+KWJpjrJHrIR84r9W277J44NMeZ5RhRW2uoDmuBslPnA==}
+  /@sentry/utils@7.102.0:
+    resolution: {integrity: sha512-cp5KCRe0slOVMwG4iP2Z4UajQkjryRTiFskZ5H7Q3X9R5voM8+DAhiDcIW88GL9NxqyUrAJOjmKdeLK2vM+bdA==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry/types': 7.92.0
+      '@sentry/types': 7.102.0
     dev: false
 
   /@sinclair/typebox@0.27.8:
@@ -10366,6 +10498,10 @@ packages:
     resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}
     engines: {node: '>=6'}
 
+  /escalade@3.1.2:
+    resolution: {integrity: sha512-ErCHMCae19vR8vQGe50xIsVomy19rg6gFu3+r3jkEO46suLMWBksvVyoGgQV+jOfl84ZSOSlmv6Gxa89PmTGmA==}
+    engines: {node: '>=6'}
+
   /escape-html@1.0.3:
     resolution: {integrity: sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==}
 
@@ -11728,6 +11864,10 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immediate@3.0.6:
+    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
+    dev: false
+
   /immutable@3.8.2:
     resolution: {integrity: sha512-15gZoQ38eYjEjxkorfbcgBKBL6R7T459OuK+CpcWt7O3KF4uPCx2tD0uFETlUDIyo+1789crbMhTvQBSR5yBMg==}
     engines: {node: '>=0.10.0'}
@@ -12502,6 +12642,12 @@ packages:
       type-check: 0.4.0
     dev: true
 
+  /lie@3.1.1:
+    resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
+    dependencies:
+      immediate: 3.0.6
+    dev: false
+
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
@@ -12537,6 +12683,12 @@ packages:
       mlly: 1.5.0
       pkg-types: 1.0.3
     dev: true
+
+  /localforage@1.10.0:
+    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
+    dependencies:
+      lie: 3.1.1
+    dev: false
 
   /locate-path@3.0.0:
     resolution: {integrity: sha512-7AO748wWnIhNqAuaty2ZWHkQHRSNfPVIsPIfwEOWO22AmaoVrWavlOcMR5nzTLNYvp36X220/maaRsrec1G65A==}
@@ -12647,8 +12799,8 @@ packages:
       highlight.js: 10.7.3
     dev: false
 
-  /lru-cache@10.1.0:
-    resolution: {integrity: sha512-/1clY/ui8CzjKFyjdvwPWJUYKiFVXG2I2cY0ssG7h4+hwk+XOIX7ZSG9Q7TW8TW3Kp3BUSqgFWBLgL4PJ+Blag==}
+  /lru-cache@10.2.0:
+    resolution: {integrity: sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==}
     engines: {node: 14 || >=16.14}
 
   /lru-cache@5.1.1:
@@ -13953,7 +14105,7 @@ packages:
     resolution: {integrity: sha512-MkhCqzzBEpPvxxQ71Md0b1Kk51W01lrYvlMzSUaIzNsODdd7mqhiimSZlr+VegAz5Z6Vzt9Xg2ttE//XBhH3EQ==}
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
-      lru-cache: 10.1.0
+      lru-cache: 10.2.0
       minipass: 7.0.4
 
   /path-to-regexp@0.1.7:
@@ -15104,13 +15256,13 @@ packages:
     peerDependencies:
       '@remix-run/dev': ^1.15.0 || ^2
     dependencies:
-      '@remix-run/dev': 2.5.1(@remix-run/serve@2.5.1)(typescript@5.3.3)(vite@5.0.12)
+      '@remix-run/dev': 2.5.1(@remix-run/serve@2.5.1)
       '@remix-run/v1-route-convention': 0.1.4(@remix-run/dev@2.5.1)
       fs-extra: 11.2.0
       minimatch: 5.1.6
     dev: false
 
-  /remix-i18next@5.5.0(@remix-run/react@2.5.1)(@remix-run/server-runtime@2.5.1)(i18next@23.7.16)(react-i18next@14.0.0)(react@18.2.0):
+  /remix-i18next@5.5.0(@remix-run/react@2.5.1)(@remix-run/server-runtime@2.7.1)(i18next@23.7.16)(react-i18next@14.0.0)(react@18.2.0):
     resolution: {integrity: sha512-QAHYlwb/0fmoSmH+t7AiJ3EhyG4SSQNQnAAPfqbkn/3UJfWO+NFFVxuggGx25FRJ3SOPexaspoiaCddcEayPAQ==}
     peerDependencies:
       '@remix-run/react': ^1.0.0 || ^2.0.0
@@ -15119,8 +15271,8 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-i18next: ^13.0.0 || ^14.0.0
     dependencies:
-      '@remix-run/react': 2.5.1(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)
-      '@remix-run/server-runtime': 2.5.1(typescript@5.3.3)
+      '@remix-run/react': 2.5.1(react-dom@18.2.0)(react@18.2.0)
+      '@remix-run/server-runtime': 2.7.1
       accept-language-parser: 1.5.0
       i18next: 23.7.16
       intl-parse-accept-language: 1.0.0
@@ -15166,8 +15318,8 @@ packages:
       zod:
         optional: true
     dependencies:
-      '@remix-run/node': 2.5.1(typescript@5.3.3)
-      '@remix-run/react': 2.5.1(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)
+      '@remix-run/node': 2.5.1
+      '@remix-run/react': 2.5.1(react-dom@18.2.0)(react@18.2.0)
       crypto-js: 4.2.0
       react: 18.2.0
       type-fest: 4.9.0
@@ -17393,7 +17545,7 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       cliui: 8.0.1
-      escalade: 3.1.1
+      escalade: 3.1.2
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3
