@@ -158,6 +158,7 @@
   "edit_aggregation.function_title": "Function",
   "edit_aggregation.filter_and": "where",
   "edit_aggregation.add_filter": "Filter",
+  "edit_aggregation.add_filter.callout": "Add filters to restrict the computation to a subset of your data and ensure good performance.",
   "edit_aggregation.aggregator_average": "Average",
   "edit_aggregation.select_a_field": "Select a field...",
   "aggregator.average": "Average",

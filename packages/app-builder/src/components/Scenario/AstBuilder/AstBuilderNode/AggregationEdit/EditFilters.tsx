@@ -1,3 +1,4 @@
+import { Callout } from '@app-builder/components';
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { NewUndefinedAstNode } from '@app-builder/models';
@@ -141,10 +142,13 @@ export const EditFilters = ({
           );
         })}
       </div>
-      <Button className="my-2" onClick={addNewFilter}>
-        <Icon icon="plus" className="size-6" />
-        {t('scenarios:edit_aggregation.add_filter')}
-      </Button>
+      <div className="my-2 flex flex-row justify-start gap-2">
+        <Button className="h-fit" onClick={addNewFilter}>
+          <Icon icon="plus" className="size-6" />
+          {t('scenarios:edit_aggregation.add_filter')}
+        </Button>
+        <Callout>{t('scenarios:edit_aggregation.add_filter.callout')}</Callout>
+      </div>
     </div>
   );
 };
