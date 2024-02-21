@@ -238,17 +238,17 @@ function DeploymentActions({
         <CommitScenarioDraft scenarioId={scenario.id} iteration={iteration} />
       );
     case 'version':
-      if (iteration.status === 'required') {
+      if (iteration.status === 'ready_to_activate') {
         return (
-          <PrepareScenarioVersion
-            scenarioId={scenario.id}
-            iteration={iteration}
-            isPreparationServiceOccupied={isPreparationServiceOccupied}
-          />
+          <ActivateScenarioVersion scenario={scenario} iteration={iteration} />
         );
       }
       return (
-        <ActivateScenarioVersion scenario={scenario} iteration={iteration} />
+        <PrepareScenarioVersion
+          scenarioId={scenario.id}
+          iteration={iteration}
+          isPreparationServiceOccupied={isPreparationServiceOccupied}
+        />
       );
     case 'live version':
       return (
