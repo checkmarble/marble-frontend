@@ -124,12 +124,12 @@ function TableDetails({
         id: 'name',
         accessorKey: 'name',
         header: t('data:field_name'),
-        size: 150,
+        size: 350,
       },
       {
         id: 'type',
         accessorKey: 'displayType',
-        size: 130,
+        size: 150,
         header: t('data:field_type'),
       },
       {
@@ -147,7 +147,7 @@ function TableDetails({
         id: 'description',
         accessorKey: 'description',
         header: t('data:description'),
-        size: 500,
+        size: 400,
         cell: ({ cell }) => {
           return (
             <div className="flex flex-row items-center justify-between gap-1">
