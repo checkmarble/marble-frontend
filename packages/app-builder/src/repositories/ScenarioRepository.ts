@@ -18,6 +18,7 @@ import {
   type ScenarioIterationSummary,
   type ScenarioPublicationStatus,
 } from '@app-builder/models/scenario';
+import { findRuleValidation } from '@app-builder/services/validation/scenario-validation';
 import { type Scenario } from 'marble-api';
 
 export interface ScenarioRepository {
@@ -45,10 +46,15 @@ export interface ScenarioRepository {
     scenarioId: string;
   }): Promise<ScenarioIterationSummary[]>;
   validate(args: { iterationId: string }): Promise<ScenarioValidation>;
-  validateScenarioIterationTrigger(args: {
+  validateTrigger(args: {
     iterationId: string;
     trigger: AstNode;
   }): Promise<ScenarioValidation['trigger']>;
+  validateRule(args: {
+    iterationId: string;
+    rule: AstNode;
+    ruleId: string;
+  }): Promise<ScenarioValidation['rules']['ruleItems'][number]>;
   commitScenarioIteration(args: {
     iterationId: string;
   }): Promise<ScenarioIteration>;
@@ -100,21 +106,28 @@ export function getScenarioRepository() {
       return dtos.map(adaptScenarioIterationSummary);
     },
     validate: async ({ iterationId }) => {
-      const result =
-        await marbleApiClient.validateScenarioIteration(iterationId);
-      return adaptScenarioValidation(result.scenario_validation);
-    },
-    validateScenarioIterationTrigger: async ({ iterationId, trigger }) => {
       const { scenario_validation } =
-        await marbleApiClient.validateScenarioIterationWithGivenTriggerOrRule(
-          iterationId,
-          {
-            trigger_or_rule: adaptNodeDto(trigger),
-            rule_id: null,
-          },
-        );
-      const scenarioValidation = adaptScenarioValidation(scenario_validation);
-      return scenarioValidation.trigger;
+        await marbleApiClient.validateScenarioIteration(iterationId, undefined);
+      return adaptScenarioValidation(scenario_validation);
+    },
+    validateTrigger: async ({ iterationId, trigger }) => {
+      const { scenario_validation } =
+        await marbleApiClient.validateScenarioIteration(iterationId, {
+          trigger_or_rule: adaptNodeDto(trigger),
+          rule_id: null,
+        });
+      return adaptScenarioValidation(scenario_validation).trigger;
+    },
+    validateRule: async ({ iterationId, rule, ruleId }) => {
+      const { scenario_validation } =
+        await marbleApiClient.validateScenarioIteration(iterationId, {
+          trigger_or_rule: adaptNodeDto(rule),
+          rule_id: ruleId,
+        });
+      return findRuleValidation(
+        adaptScenarioValidation(scenario_validation),
+        ruleId,
+      );
     },
     commitScenarioIteration: async ({ iterationId }) => {
       const { iteration } =

@@ -15,7 +15,7 @@ import {
   NewEmptyTriggerAstNode,
 } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
-import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
+import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import {
   useCurrentScenarioIteration,
   useEditorMode,
@@ -172,11 +172,10 @@ export default function Trigger() {
 
   const [schedule, setSchedule] = useState(scenarioIteration.schedule ?? '');
 
-  const { validate, validation: localValidation } =
-    useTriggerOrRuleValidationFetcher(
-      scenarioIteration.scenarioId,
-      scenarioIteration.id,
-    );
+  const { validate, validation: localValidation } = useTriggerValidationFetcher(
+    scenarioIteration.scenarioId,
+    scenarioIteration.id,
+  );
 
   const scenario = useCurrentScenario();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();

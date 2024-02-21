@@ -1337,44 +1337,11 @@ paths:
         '404':
           $ref: '#/components/responses/404'
   /scenario-iterations/{scenarioIterationId}/validate:
-    get:
-      tags:
-        - Scenario Iterations
-      summary: Validate a scenario iteration by id
-      operationId: validateScenarioIteration
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: The scenario validation of the iteration
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - scenario_validation
-                properties:
-                  scenario_validation:
-                    $ref: '#/components/schemas/ScenarioValidationDto'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
     post:
       tags:
         - Scenario Iterations
-      summary: Validate a scenario iteration using the rule or trigger passed in body
-      operationId: validateScenarioIterationWithGivenTriggerOrRule
+      summary: Validate a scenario iteration by id. A rule or trigger can be override in the body
+      operationId: validateScenarioIteration
       security:
         - bearerAuth: []
       parameters:
@@ -1401,10 +1368,9 @@ paths:
                   type: string
                   nullable: true
                   format: uuid
-        required: true
       responses:
         '200':
-          description: The scenario validation of the iteration using the rule or tigger passed in the body
+          description: The scenario validation of the sent iteration
           content:
             application/json:
               schema:
