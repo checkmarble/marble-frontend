@@ -18,7 +18,7 @@ import { adaptDataModelDto } from '@app-builder/models/data-model';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
-import { useTriggerOrRuleValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
+import { useRuleValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import {
   useCurrentScenarioIterationRule,
   useEditorMode,
@@ -163,8 +163,11 @@ export default function RuleEdit() {
   const ruleId = useParam('ruleId');
 
   const fetcher = useFetcher<typeof action>();
-  const { validate, validation: localValidation } =
-    useTriggerOrRuleValidationFetcher(scenarioId, iterationId, ruleId);
+  const { validate, validation: localValidation } = useRuleValidationFetcher(
+    scenarioId,
+    iterationId,
+    ruleId,
+  );
 
   const scenario = useCurrentScenario();
   const rule = useCurrentScenarioIterationRule();

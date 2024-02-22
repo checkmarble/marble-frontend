@@ -1350,31 +1350,9 @@ export function scheduleScenarioExecution(scenarioIterationId: string, opts?: Oa
     }));
 }
 /**
- * Validate a scenario iteration by id
+ * Validate a scenario iteration by id. A rule or trigger can be override in the body
  */
-export function validateScenarioIteration(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            scenario_validation: ScenarioValidationDto;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/validate`, {
-        ...opts
-    }));
-}
-/**
- * Validate a scenario iteration using the rule or trigger passed in body
- */
-export function validateScenarioIterationWithGivenTriggerOrRule(scenarioIterationId: string, body: {
+export function validateScenarioIteration(scenarioIterationId: string, body?: {
     trigger_or_rule: NodeDto;
     rule_id: string | null;
 }, opts?: Oazapfts.RequestOpts) {

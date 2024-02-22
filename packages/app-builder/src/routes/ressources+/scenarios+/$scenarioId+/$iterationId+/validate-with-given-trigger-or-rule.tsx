@@ -1,67 +1,60 @@
-import {
-  adaptNodeDto,
-  adaptScenarioValidation,
-  type AstNode,
-} from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
-import { findRuleValidation } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { type NodeDto } from 'marble-api';
 import { useCallback } from 'react';
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const body = (await request.json()) as {
-    trigger_or_rule: NodeDto;
-    rule_id: string | null;
-  };
+  const body = (await request.json()) as
+    | TriggerValidationArgs
+    | RuleValidationArgs;
 
   const iterationId = fromParams(params, 'iterationId');
 
-  const validationDto = (
-    await apiClient.validateScenarioIterationWithGivenTriggerOrRule(
-      iterationId,
-      body,
-    )
-  ).scenario_validation;
+  if ('rule' in body) {
+    const validation = await scenario.validateRule({ iterationId, ...body });
 
-  const validation = adaptScenarioValidation(validationDto);
+    return json(validation.ruleEvaluation);
+  }
 
-  return json(validation);
+  const validation = await scenario.validateTrigger({ iterationId, ...body });
+
+  return json(validation.triggerEvaluation);
 }
 
-export function useScenarioValidationFetcher(
+type TriggerValidationArgs = {
+  trigger: AstNode;
+};
+
+export function useTriggerValidationFetcher(
   scenarioId: string,
   iterationId: string,
 ) {
   const fetcher = useFetcher<typeof action>();
 
   const validate = useCallback(
-    (triggerOrRule: AstNode, ruleId: string | null) => {
-      fetcher.submit(
-        {
-          trigger_or_rule: adaptNodeDto(triggerOrRule),
-          rule_id: ruleId,
-        },
-        {
-          method: 'POST',
-          encType: 'application/json',
-          action: getRoute(
-            '/ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule',
-            {
-              scenarioId: fromUUID(scenarioId),
-              iterationId: fromUUID(iterationId),
-            },
-          ),
-        },
-      );
+    (ast: AstNode) => {
+      const args: TriggerValidationArgs = {
+        trigger: ast,
+      };
+      fetcher.submit(args, {
+        method: 'POST',
+        encType: 'application/json',
+        action: getRoute(
+          '/ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule',
+          {
+            scenarioId: fromUUID(scenarioId),
+            iterationId: fromUUID(iterationId),
+          },
+        ),
+      });
     },
     [fetcher, iterationId, scenarioId],
   );
@@ -72,30 +65,41 @@ export function useScenarioValidationFetcher(
   };
 }
 
-export function useTriggerOrRuleValidationFetcher(
+type RuleValidationArgs = {
+  rule: AstNode;
+  ruleId: string;
+};
+
+export function useRuleValidationFetcher(
   scenarioId: string,
   iterationId: string,
-  ruleId: string | null = null,
+  ruleId: string,
 ) {
-  const { validate, validation: scenarioValidation } =
-    useScenarioValidationFetcher(scenarioId, iterationId);
+  const fetcher = useFetcher<typeof action>();
 
-  const validateTriggerOrRule = useCallback(
+  const validate = useCallback(
     (ast: AstNode) => {
-      validate(ast, ruleId);
+      const args: RuleValidationArgs = {
+        rule: ast,
+        ruleId,
+      };
+      fetcher.submit(args, {
+        method: 'POST',
+        encType: 'application/json',
+        action: getRoute(
+          '/ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule',
+          {
+            scenarioId: fromUUID(scenarioId),
+            iterationId: fromUUID(iterationId),
+          },
+        ),
+      });
     },
-    [ruleId, validate],
+    [fetcher, iterationId, scenarioId, ruleId],
   );
 
-  const triggerOrRuleValidation =
-    scenarioValidation === null
-      ? null
-      : ruleId === null
-        ? scenarioValidation.trigger.triggerEvaluation
-        : findRuleValidation(scenarioValidation, ruleId).ruleEvaluation;
-
   return {
-    validate: validateTriggerOrRule,
-    validation: triggerOrRuleValidation,
+    validate,
+    validation: fetcher.data ?? null,
   };
 }
