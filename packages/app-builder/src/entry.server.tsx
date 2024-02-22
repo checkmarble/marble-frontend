@@ -116,7 +116,11 @@ function handleBrowserRequest(
 Sentry.init({
   dsn: getServerEnv('SENTRY_DSN'),
   environment: getServerEnv('SENTRY_ENVIRONMENT'),
-  integrations: [Sentry.httpIntegration(), Sentry.requestDataIntegration()],
+  integrations: [
+    //TODO: replace with `Sentry.httpIntegration` when it's available (need to be checked on build bundle)
+    new Sentry.Integrations.Http(),
+    Sentry.requestDataIntegration(),
+  ],
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.
   // We recommend adjusting this value in production
