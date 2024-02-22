@@ -1,4 +1,5 @@
 import { type EvaluationError } from '@app-builder/models';
+import { cva } from 'class-variance-authority';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
@@ -50,6 +51,9 @@ export const EditDataModelField = ({
     [optionLabels, deferredSearchValue],
   );
 
+  const isPlaceholder = !selectedValue;
+  const displayValue = isPlaceholder ? placeholder : selectedValue;
+
   return (
     <SelectWithCombobox.Root
       defaultOpen={defaultOpen}
@@ -58,10 +62,14 @@ export const EditDataModelField = ({
       onSearchValueChange={setSearchValue}
     >
       <SelectWithCombobox.Select
-        className={className}
+        className={selectDisplayText({
+          type: isPlaceholder ? 'placeholder' : 'value',
+          size: displayValue.length > 20 ? 'long' : 'short',
+          className,
+        })}
         borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
       >
-        {selectedValue || <span className="text-grey-25">{placeholder}</span>}
+        {displayValue}
       </SelectWithCombobox.Select>
       <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2">
         <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} />
@@ -76,3 +84,16 @@ export const EditDataModelField = ({
     </SelectWithCombobox.Root>
   );
 };
+
+const selectDisplayText = cva(undefined, {
+  variants: {
+    type: {
+      placeholder: 'text-grey-25',
+      value: 'text-grey-100',
+    },
+    size: {
+      long: 'hyphens-auto [overflow-wrap:anywhere]',
+      short: 'shrink-0',
+    },
+  },
+});

@@ -1,4 +1,5 @@
 import { type LabelledAst } from '@app-builder/models';
+import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
@@ -91,7 +92,14 @@ export const OperandLabel = ({
           variant === 'view' && 'bg-grey-10',
         )}
       />
-      {operandLabelledAst.name}
+      <span
+        className={selectDisplayText({
+          type: 'value',
+          size: operandLabelledAst.name.length > 20 ? 'long' : 'short',
+        })}
+      >
+        {operandLabelledAst.name}
+      </span>
       <OperandTooltip
         content={
           tooltipContent ? (
@@ -119,3 +127,16 @@ export const OperandLabel = ({
     </div>
   );
 };
+
+const selectDisplayText = cva(undefined, {
+  variants: {
+    type: {
+      placeholder: 'text-grey-25',
+      value: 'text-grey-100',
+    },
+    size: {
+      long: 'hyphens-auto [overflow-wrap:anywhere]',
+      short: '',
+    },
+  },
+});
