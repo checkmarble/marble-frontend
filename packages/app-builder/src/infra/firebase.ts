@@ -14,6 +14,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signOut,
 } from 'firebase/auth';
 
 export type FirebaseClientWrapper = {
@@ -26,6 +27,7 @@ export type FirebaseClientWrapper = {
   createUserWithEmailAndPassword: typeof createUserWithEmailAndPassword;
   sendEmailVerification: typeof sendEmailVerification;
   sendPasswordResetEmail: typeof sendPasswordResetEmail;
+  logout: typeof signOut;
 };
 
 export function initializeFirebaseClient({
@@ -58,5 +60,6 @@ export function initializeFirebaseClient({
     createUserWithEmailAndPassword: createUserWithEmailAndPassword,
     sendEmailVerification: sendEmailVerification,
     sendPasswordResetEmail: sendPasswordResetEmail,
+    logout: signOut,
   };
 }

@@ -40,6 +40,8 @@ export function getAuthenticationClientRepository(
 
   async function googleSignIn(locale: string) {
     const auth = getClientAuth(locale);
+    // Logout before sign in to avoid grant token firebase error
+    await firebaseClient.logout(auth);
     const credential = await firebaseClient.signInWithOAuth(
       auth,
       firebaseClient.googleAuthProvider,
@@ -49,6 +51,8 @@ export function getAuthenticationClientRepository(
 
   async function microsoftSignIn(locale: string) {
     const auth = getClientAuth(locale);
+    // Logout before sign in to avoid grant token firebase error
+    await firebaseClient.logout(auth);
     const credential = await firebaseClient.signInWithOAuth(
       auth,
       firebaseClient.microsoftAuthProvider,
@@ -62,6 +66,8 @@ export function getAuthenticationClientRepository(
     password: string,
   ) {
     const auth = getClientAuth(locale);
+    // Logout before sign in to avoid grant token firebase error
+    await firebaseClient.logout(auth);
     const credential = await firebaseClient.signInWithEmailAndPassword(
       auth,
       email,
@@ -86,6 +92,8 @@ export function getAuthenticationClientRepository(
     password: string,
   ) {
     const auth = getClientAuth(locale);
+    // Logout before sign up to avoid grant token firebase error
+    await firebaseClient.logout(auth);
     const credential = await firebaseClient.createUserWithEmailAndPassword(
       auth,
       email,
