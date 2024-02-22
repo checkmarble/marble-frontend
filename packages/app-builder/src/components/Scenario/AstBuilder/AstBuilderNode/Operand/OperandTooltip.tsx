@@ -81,7 +81,7 @@ export const OperandDescription = ({
           operandType={operand.operandType}
           dataType={operand.dataType}
         />
-        <p className="text-grey-100 text-s text-ellipsis font-normal">
+        <p className="text-grey-100 text-s text-ellipsis hyphens-auto font-normal">
           {operand.name}
         </p>
       </div>

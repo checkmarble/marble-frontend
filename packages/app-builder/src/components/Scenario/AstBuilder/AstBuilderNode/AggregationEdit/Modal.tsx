@@ -191,7 +191,7 @@ export const AggregationEditModal = ({
     <Modal.Root open={open} onOpenChange={onOpenChange}>
       <AggregationEditModalContext.Provider value={editAgregation}>
         {children}
-        <Modal.Content size="medium">
+        <Modal.Content size="large">
           {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
           <CopyPasteASTContextProvider>
             {aggregationEditModalProps ? (
