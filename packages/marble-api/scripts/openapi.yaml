@@ -2892,14 +2892,11 @@ components:
       required:
         - id
         - name
-        - database_name
       properties:
         id:
           type: string
           format: uuid
         name:
-          type: string
-        database_name:
           type: string
         export_scheduled_execution_s3:
           type: string
@@ -2907,18 +2904,13 @@ components:
       type: object
       required:
         - name
-        - database_name
       properties:
         name:
-          type: string
-        database_name:
           type: string
     UpdateOrganizationBodyDto:
       type: object
       properties:
         name:
-          type: string
-        database_name:
           type: string
     UserDto:
       type: object
