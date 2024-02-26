@@ -6,7 +6,11 @@ import {
   FormLabel,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { EnumDataTypes, isStatusConflictHttpError } from '@app-builder/models';
+import {
+  EnumDataTypes,
+  isStatusConflictHttpError,
+  UniqueDataTypes,
+} from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,6 +46,7 @@ const createFieldFormSchema = z.object({
   type: z.enum(['String', 'Bool', 'Timestamp', 'Float', 'Int']),
   tableId: z.string(),
   isEnum: z.boolean(),
+  isUnique: z.boolean(),
 });
 
 const VALUE_TYPES = [
@@ -72,7 +77,7 @@ export async function action({ request }: ActionFunctionArgs) {
       error: parsedData.error.format(),
     });
   }
-  const { name, description, type, required, tableId, isEnum } =
+  const { name, description, type, required, tableId, isEnum, isUnique } =
     parsedData.data;
 
   try {
@@ -82,6 +87,7 @@ export async function action({ request }: ActionFunctionArgs) {
       type,
       nullable: required === 'optional',
       is_enum: isEnum,
+      is_unique: isUnique,
     });
     return json({
       success: true as const,
@@ -138,10 +144,15 @@ export function CreateField({ tableId }: { tableId: string }) {
       type: VALUE_TYPES[0].value,
       tableId: tableId,
       isEnum: false,
+      isUnique: false,
     },
   });
   const { control, register, reset } = formMethods;
+
   const selectedType = useWatch({ control, name: 'type' });
+  const selectedEnum = useWatch({ control, name: 'isEnum' });
+  const selectedUnique = useWatch({ control, name: 'isUnique' });
+
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
@@ -276,6 +287,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                         <FormControl>
                           <Checkbox
                             checked={field.value}
+                            disabled={selectedUnique}
                             onCheckedChange={(checked) => {
                               field.onChange(checked);
                             }}
@@ -286,6 +298,38 @@ export function CreateField({ tableId }: { tableId: string }) {
                           <p className="text-xs">
                             {t('data:create_field.is_enum.subtitle')}
                           </p>
+                        </FormLabel>
+                        <FormError />
+                      </FormItem>
+                    )}
+                  />
+                ) : null}
+                {UniqueDataTypes.includes(selectedType) ? (
+                  <FormField
+                    name="isUnique"
+                    control={control}
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center gap-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            disabled={selectedEnum}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked);
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel>
+                          <p>{'Is Unique'}</p>
+                          <p className="text-xs">
+                            {'It takes only unique values'}
+                          </p>
+                          {field.value ? (
+                            <p className="text-xs text-red-100">
+                              Beware: creating the constraint that makes a field
+                              enforce unique values is asynchronous.
+                            </p>
+                          ) : null}
                         </FormLabel>
                         <FormError />
                       </FormItem>

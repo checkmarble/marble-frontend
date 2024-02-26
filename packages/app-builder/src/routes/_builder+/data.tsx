@@ -52,6 +52,7 @@ const mapFieldToTableRow = (field: DataModelField) => ({
   displayType: field.isEnum ? `${field.dataType} (enum)` : field.dataType,
   nullable: field.nullable,
   isEnum: field.isEnum,
+  unicityConstraint: field.unicityConstraint,
 });
 
 const mapLinkToTableRow = (table: TableModel, link: LinksToSingle) => ({
@@ -141,6 +142,21 @@ function TableDetails({
           return cell.row.original.nullable
             ? t('data:nullable')
             : t('data:required');
+        },
+      },
+      {
+        id: 'unicityConstraint',
+        accessorKey: 'unicityConstraint',
+        size: 40,
+        header: 'Unique',
+        cell: ({ cell }) => {
+          return cell.row.original.unicityConstraint ===
+            'active_unique_constraint'
+            ? '✅'
+            : cell.row.original.unicityConstraint ===
+                'pending_unique_constraint'
+              ? '🔄'
+              : '❌';
         },
       },
       {
