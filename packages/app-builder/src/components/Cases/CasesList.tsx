@@ -1,4 +1,4 @@
-import { formatDateTime } from '@app-builder/utils/format';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { useNavigate } from '@remix-run/react';
@@ -23,11 +23,9 @@ export function CasesList({
   cases: Case[];
   className?: string;
 }) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(casesI18n);
+  const { t } = useTranslation(casesI18n);
   const navigate = useNavigate();
+  const language = useFormatLanguage();
 
   const columns = useMemo(
     () => [
@@ -42,15 +40,19 @@ export function CasesList({
         header: t('cases:case.name'),
         size: 200,
       }),
-      columnHelper.accessor(
-        ({ created_at }) =>
-          formatDateTime(created_at, { language, timeStyle: undefined }),
-        {
-          id: 'created_at',
-          header: t('cases:case.date'),
-          size: 100,
+      columnHelper.accessor(({ created_at }) => created_at, {
+        id: 'created_at',
+        header: t('cases:case.date'),
+        size: 100,
+        cell: ({ getValue }) => {
+          const dateTime = getValue();
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+            </time>
+          );
         },
-      ),
+      }),
       columnHelper.accessor(({ decisions_count }) => decisions_count, {
         id: 'decisions',
         header: t('cases:case.decisions'),

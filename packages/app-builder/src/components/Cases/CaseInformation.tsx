@@ -2,7 +2,7 @@ import { type CurrentUser } from '@app-builder/models';
 import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
 import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
 import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
-import { formatDateTime } from '@app-builder/utils/format';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { type Case, type InboxDto } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
@@ -19,10 +19,8 @@ export function CaseInformation({
   inbox: InboxDto;
   user: CurrentUser;
 }) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(casesI18n);
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
 
   return (
     <Collapsible.Container className="bg-grey-00">
@@ -34,9 +32,9 @@ export function CaseInformation({
           <CaseLabel>{t('cases:case.name')}</CaseLabel>
           <EditCaseName caseId={id} name={name} />
           <CaseLabel>{t('cases:case.date')}</CaseLabel>
-          <div>
+          <time dateTime={created_at}>
             {formatDateTime(created_at, { language, timeStyle: undefined })}
-          </div>
+          </time>
           <CaseLabel>{t('cases:case.inbox')}</CaseLabel>
           <EditCaseInbox defaultInbox={inbox} caseId={id} />
           <CaseLabel>{t('cases:case.tags')}</CaseLabel>

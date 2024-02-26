@@ -9,13 +9,13 @@ import {
   useCurrentScenarioValidation,
   useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
-import { formatNumber } from '@app-builder/utils/format';
+import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import {
-  type ColumnDef,
+  createColumnHelper,
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
@@ -44,11 +44,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json(scenarioIterationRules);
 }
 
+const columnHelper = createColumnHelper<ScenarioIterationRuleDto>();
+
 export default function Rules() {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(handle.i18n);
+  const { t } = useTranslation(handle.i18n);
+  const language = useFormatLanguage();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -59,11 +59,10 @@ export default function Rules() {
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
-  const columns = useMemo<ColumnDef<ScenarioIterationRuleDto>[]>(
+  const columns = useMemo(
     () => [
-      {
+      columnHelper.accessor((row) => row.name, {
         id: 'name',
-        accessorFn: (row) => row.name,
         header: () => <span className="ml-4">{t('scenarios:rules.name')}</span>,
         size: 200,
         cell: ({ getValue, row }) => {
@@ -78,22 +77,20 @@ export default function Rules() {
                   <Ping className="relative box-content size-[6px] border border-transparent text-red-100" />
                 ) : null}
               </span>
-              <span>{getValue<string>()}</span>
+              <span>{getValue()}</span>
             </span>
           );
         },
-      },
-      {
+      }),
+      columnHelper.accessor((row) => row.description, {
         id: 'description',
-        accessorFn: (row) => row.description,
         header: t('scenarios:rules.description'),
         size: 400,
-      },
-      {
+      }),
+      columnHelper.accessor((row) => row.scoreModifier, {
         id: 'score',
-        accessorFn: (row) => row.scoreModifier,
         cell: ({ getValue }) => {
-          const scoreModifier = getValue<number>();
+          const scoreModifier = getValue();
           if (!scoreModifier) return '';
           return (
             <span
@@ -108,7 +105,7 @@ export default function Rules() {
         },
         header: t('scenarios:rules.score'),
         size: 100,
-      },
+      }),
     ],
     [language, scenarioValidation, t],
   );

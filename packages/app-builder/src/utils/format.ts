@@ -4,7 +4,27 @@ import { type Options as ConstrueOptions } from 'cronstrue/dist/options';
 import { add } from 'date-fns/add';
 import { formatDistanceStrict } from 'date-fns/formatDistanceStrict';
 import { formatRelative } from 'date-fns/formatRelative';
+import { useMemo } from 'react';
 import { Temporal } from 'temporal-polyfill';
+
+/**
+ * Get the language of the user's browser.
+ *
+ * This is a workaround for the fact that we only support en, and we want to format dates in the user's language.
+ * Since we do not store the user's language preferences, we use the browser's language.
+ *
+ * This introduce hydration issues for non 'fr-FR' browsers, as the language is not available on the server.
+ * We use a hook to ease the migration to a better solution.
+ */
+export function useFormatLanguage() {
+  return useMemo(
+    () =>
+      typeof navigator === 'undefined'
+        ? 'fr-FR'
+        : navigator?.languages[0] ?? 'fr-FR',
+    [],
+  );
+}
 
 export function formatDateTime(
   createdAt: string | Date,

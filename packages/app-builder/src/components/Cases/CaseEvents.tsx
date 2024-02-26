@@ -5,7 +5,10 @@ import {
 } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
-import { formatDateRelative } from '@app-builder/utils/format';
+import {
+  formatDateRelative,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { cx } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
@@ -17,10 +20,8 @@ import { caseStatusMapping, caseStatusVariants } from './CaseStatus';
 import { CaseTags } from './CaseTags';
 
 export function CaseEvents({ events }: { events: CaseEvent[] }) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(casesI18n);
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
 
   return (
     <Collapsible.Container className="bg-grey-00">

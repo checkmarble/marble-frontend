@@ -1,3 +1,4 @@
+import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,10 +13,8 @@ export const TriggerObjectDetail = ({
 }: {
   triggerObject: Record<string, unknown>;
 }) => {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(decisionsI18n);
+  const { t } = useTranslation(decisionsI18n);
+  const language = useFormatLanguage();
 
   const parsedTriggerObject = useMemo(
     () => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.toPairs),

@@ -1,5 +1,5 @@
 import { CaseStatus, decisionsI18n } from '@app-builder/components';
-import { formatDateTime } from '@app-builder/utils/format';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -8,10 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 
 export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(decisionsI18n);
+  const { t } = useTranslation(decisionsI18n);
+  const language = useFormatLanguage();
+
   const {
     case: caseDetail,
     created_at,
@@ -27,7 +26,9 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
       <Collapsible.Content>
         <div className="grid grid-cols-[max-content_1fr] grid-rows-4 items-center gap-x-10 gap-y-2">
           <DetailLabel>{t('decisions:created_at')}</DetailLabel>
-          <div>{formatDateTime(created_at, { language })}</div>
+          <time dateTime={created_at}>
+            {formatDateTime(created_at, { language })}
+          </time>
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
           <Link
             to={getRoute('/scenarios/:scenarioId', {
