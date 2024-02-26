@@ -96,6 +96,11 @@ function FormatDescription({ description }: { description: string }) {
   );
 }
 
+const hasUniqueFields = (table: TableModel) =>
+  table.fields.some(
+    (field) => field.unicityConstraint === 'active_unique_constraint',
+  );
+
 function TableDetails({
   tableModel,
   dataModel,
@@ -106,8 +111,11 @@ function TableDetails({
   const { t } = useTranslation(handle.i18n);
   const { canIngestData, canEditDataModel } = usePermissionsContext();
 
-  const otherTables = useMemo(
-    () => dataModel.filter((table) => table.id !== tableModel.id),
+  const otherTablesWithUnique = useMemo(
+    () =>
+      dataModel
+        .filter((table) => table.id !== tableModel.id)
+        .filter(hasUniqueFields),
     [dataModel, tableModel],
   );
 
@@ -347,8 +355,11 @@ function TableDetails({
               </div>
             </div>
           ) : null}
-          {canEditDataModel && otherTables.length > 0 ? (
-            <CreateLink thisTable={tableModel} otherTables={otherTables} />
+          {canEditDataModel && otherTablesWithUnique.length > 0 ? (
+            <CreateLink
+              thisTable={tableModel}
+              otherTables={otherTablesWithUnique}
+            />
           ) : null}
         </div>
       </CollapsiblePaper.Content>
