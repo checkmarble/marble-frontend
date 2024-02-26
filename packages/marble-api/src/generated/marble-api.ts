@@ -460,16 +460,13 @@ export type UpdateUser = {
 export type OrganizationDto = {
     id: string;
     name: string;
-    database_name: string;
     export_scheduled_execution_s3?: string;
 };
 export type CreateOrganizationBodyDto = {
     name: string;
-    database_name: string;
 };
 export type UpdateOrganizationBodyDto = {
     name?: string;
-    database_name?: string;
 };
 export type FuncAttributes = {
     name: string;
