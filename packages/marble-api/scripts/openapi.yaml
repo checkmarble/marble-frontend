@@ -3045,6 +3045,7 @@ components:
         - data_type
         - description
         - is_enum
+        - unicity_constraint
       properties:
         id:
           type: string
@@ -3059,6 +3060,14 @@ components:
           type: string
         is_enum:
           type: boolean
+        unicity_constraint:
+          type: string
+          enum:
+            [
+              no_unicity_constraint,
+              pending_unique_constraint,
+              active_unique_constraint,
+            ]
         values:
           type: array
           items:
@@ -3117,6 +3126,7 @@ components:
         - type
         - nullable
         - description
+        - is_unique
       properties:
         name:
           type: string
@@ -3128,6 +3138,8 @@ components:
         nullable:
           type: boolean
         is_enum:
+          type: boolean
+        is_unique:
           type: boolean
     UpdateTableFieldBody:
       type: object

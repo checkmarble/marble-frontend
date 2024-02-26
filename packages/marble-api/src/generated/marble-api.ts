@@ -363,6 +363,7 @@ export type DataModelFieldDto = {
     nullable: boolean;
     description: string;
     is_enum: boolean;
+    unicity_constraint: "no_unicity_constraint" | "pending_unique_constraint" | "active_unique_constraint";
     values?: (string | number)[];
 };
 export type LinkToSingleDto = {
@@ -398,6 +399,7 @@ export type CreateTableFieldBody = {
     "type": "Bool" | "Int" | "Float" | "String" | "Timestamp";
     nullable: boolean;
     is_enum?: boolean;
+    is_unique: boolean;
 };
 export type UpdateTableFieldBody = {
     description?: string;

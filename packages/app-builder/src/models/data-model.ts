@@ -8,6 +8,11 @@ import * as R from 'remeda';
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
 export const EnumDataTypes = ['Float', 'Int', 'String'];
+export const UniqueDataTypes = ['Float', 'Int', 'String'];
+type UnicityConstraintType =
+  | 'no_unicity_constraint'
+  | 'pending_unique_constraint'
+  | 'active_unique_constraint';
 
 export type EnumValue = string | number;
 export interface DataModelField {
@@ -17,6 +22,7 @@ export interface DataModelField {
   description: string;
   nullable: boolean;
   isEnum: boolean;
+  unicityConstraint: UnicityConstraintType;
   values?: EnumValue[];
 }
 
@@ -47,6 +53,7 @@ function adaptFieldDto(dataModelFieldsDto: {
       description: field.description,
       nullable: field.nullable,
       isEnum: field.is_enum,
+      unicityConstraint: field.unicity_constraint,
       values: field.values,
     })),
   );
