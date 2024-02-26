@@ -7,8 +7,8 @@ import { type InitOptions } from 'i18next';
 export const defaultNS = 'common';
 
 // When adding a new supported lng, add corresponding cronstrue locale above too
-export const supportedLngs = ['en-GB', 'en'] as const;
-const fallbackLng = 'en-GB';
+export const supportedLngs = ['en'] as const;
+const fallbackLng = 'en';
 
 export const i18nConfig = {
   defaultNS,
@@ -22,7 +22,6 @@ export const i18nConfig = {
 } satisfies InitOptions;
 
 const dateFnsLocales = {
-  'en-GB': enGB,
   en: enGB,
 } satisfies Record<(typeof supportedLngs)[number], Locale>;
 

@@ -17,8 +17,8 @@ import {
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useChangeLanguage } from 'remix-i18next/react';
 import { ClientOnly } from 'remix-utils/client-only';
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react';
 import { ExternalScripts } from 'remix-utils/external-scripts';
@@ -156,9 +156,7 @@ function App() {
 
   const { i18n } = useTranslation(handle.i18n);
 
-  useEffect(() => {
-    void i18n.changeLanguage(locale);
-  }, [locale, i18n]);
+  useChangeLanguage(locale);
 
   useSegmentPageTracking();
 
