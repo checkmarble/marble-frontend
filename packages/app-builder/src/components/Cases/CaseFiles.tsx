@@ -2,7 +2,7 @@ import {
   AlreadyDownloadingError,
   useDownloadCaseFiles,
 } from '@app-builder/services/DownloadCaseFilesService';
-import { formatDateTime } from '@app-builder/utils/format';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type CaseFile } from 'marble-api';
 import { useMemo } from 'react';
@@ -41,10 +41,8 @@ export function CaseFiles({ files }: { files: CaseFile[] }) {
 const columnHelper = createColumnHelper<CaseFile>();
 
 function FilesList({ files }: { files: CaseFile[] }) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(casesI18n);
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
 
   const columns = useMemo(() => {
     const columns = [
@@ -61,15 +59,19 @@ function FilesList({ files }: { files: CaseFile[] }) {
           return last(getValue().split('.'))?.toUpperCase();
         },
       }),
-      columnHelper.accessor(
-        (row) =>
-          formatDateTime(row.created_at, { language, timeStyle: undefined }),
-        {
-          id: 'created_at',
-          header: t('cases:case.file.added_date'),
-          size: 40,
+      columnHelper.accessor((row) => row.created_at, {
+        id: 'created_at',
+        header: t('cases:case.file.added_date'),
+        size: 40,
+        cell: ({ getValue }) => {
+          const dateTime = getValue();
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+            </time>
+          );
         },
-      ),
+      }),
       columnHelper.accessor((row) => row.id, {
         id: 'link',
         header: t('cases:case.file.download'),

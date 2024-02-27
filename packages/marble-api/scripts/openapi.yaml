@@ -3260,7 +3260,7 @@ components:
           type: string
           format: date-time
         trigger_object:
-          type: object
+          additionalProperties: true
         trigger_object_type:
           type: string
         outcome:

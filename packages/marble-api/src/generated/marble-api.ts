@@ -49,7 +49,9 @@ export type Error = {
 export type Decision = {
     id: string;
     created_at: string;
-    trigger_object: object;
+    trigger_object: {
+        [key: string]: any;
+    };
     trigger_object_type: string;
     outcome: Outcome;
     scenario: {

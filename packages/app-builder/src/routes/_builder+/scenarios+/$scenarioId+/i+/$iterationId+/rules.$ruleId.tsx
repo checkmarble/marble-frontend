@@ -33,7 +33,7 @@ import {
   useCurrentRuleValidationRule,
   useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
-import { formatNumber } from '@app-builder/utils/format';
+import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import {
@@ -279,10 +279,8 @@ function RuleViewContent({
   builder: AstBuilderType;
   rule: ScenarioIterationRule;
 }) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(handle.i18n);
+  const { t } = useTranslation(handle.i18n);
+  const language = useFormatLanguage();
 
   return (
     <Page.Content>

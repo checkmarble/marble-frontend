@@ -1,10 +1,13 @@
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { formatDateTime, formatDuration } from '@app-builder/utils/format';
+import {
+  formatDateTime,
+  formatDuration,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { clsx } from 'clsx';
 import { add, sub } from 'date-fns';
 import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Calendar, type DateRange } from 'ui-design-system';
 
@@ -128,9 +131,7 @@ function DateRangeFilterFromNowPicker({
   title: string;
   className?: string;
 }) {
-  const {
-    i18n: { language },
-  } = useTranslation();
+  const language = useFormatLanguage();
   const { onFromNowSelect } = useDateRangeFilterContext();
 
   return (
@@ -149,7 +150,9 @@ function DateRangeFilterFromNowPicker({
             }}
             className="text-s hover:bg-purple-05 active:bg-purple-10 bg-grey-00 text-grey-100 border-grey-00 flex h-10 items-center rounded border p-2 outline-none hover:text-purple-100 focus:border-purple-100"
           >
-            {formatDuration(duration, language)}
+            <time dateTime={duration}>
+              {formatDuration(duration, language)}
+            </time>
           </button>
         ))}
       </div>
@@ -158,9 +161,7 @@ function DateRangeFilterFromNowPicker({
 }
 
 function DateRangeFilterCalendar({ className }: { className?: string }) {
-  const {
-    i18n: { language },
-  } = useTranslation();
+  const language = useFormatLanguage();
   const { calendarSelected, onCalendarSelect } = useDateRangeFilterContext();
 
   return (
@@ -177,9 +178,7 @@ function DateRangeFilterCalendar({ className }: { className?: string }) {
 }
 
 function DateRangeFilterSummary({ className }: { className?: string }) {
-  const {
-    i18n: { language },
-  } = useTranslation();
+  const language = useFormatLanguage();
   const { fromNow, calendarSelected } = useDateRangeFilterContext();
 
   if (fromNow) {
@@ -190,9 +189,9 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
           className,
         )}
       >
-        <span className="text-grey-100">
+        <time className="text-grey-100" dateTime={fromNow}>
           {formatDuration(fromNow, language)}
-        </span>
+        </time>
       </div>
     );
   }
@@ -221,24 +220,27 @@ function FormatStaticDate({
   date?: string | Date;
   className?: string;
 }) {
-  const {
-    i18n: { language },
-  } = useTranslation();
+  const language = useFormatLanguage();
+
+  const dateTime = typeof date === 'string' ? date : date?.toDateString();
+  const formattedDate = date
+    ? formatDateTime(date, {
+        language,
+        timeStyle: undefined,
+      })
+    : '--/--/----';
+
   return (
-    <span
+    <time
+      dateTime={dateTime}
       className={clsx(
         'border-grey-10 h-10 w-fit rounded border p-2',
         date ? 'text-grey-100' : 'text-grey-50',
         className,
       )}
     >
-      {date
-        ? formatDateTime(date, {
-            language,
-            timeStyle: undefined,
-          })
-        : '--/--/----'}
-    </span>
+      {formattedDate}
+    </time>
   );
 }
 

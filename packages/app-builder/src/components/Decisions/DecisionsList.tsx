@@ -1,5 +1,5 @@
 import { CaseStatus, decisionsI18n, Outcome } from '@app-builder/components';
-import { formatDateTime } from '@app-builder/utils/format';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link, useNavigate } from '@remix-run/react';
@@ -70,23 +70,25 @@ export function DecisionsList({
   selectable,
   selectionProps,
 }: DecisionsListProps) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(decisionsI18n);
+  const { t } = useTranslation(decisionsI18n);
+  const language = useFormatLanguage();
   const navigate = useNavigate();
 
   const columns = useMemo(() => {
     const columns = [
-      columnHelper.accessor(
-        (row) =>
-          formatDateTime(row.created_at, { language, timeStyle: undefined }),
-        {
-          id: 'created_at',
-          header: t('decisions:created_at'),
-          size: 100,
+      columnHelper.accessor((row) => row.created_at, {
+        id: 'created_at',
+        header: t('decisions:created_at'),
+        size: 100,
+        cell: ({ getValue }) => {
+          const dateTime = getValue();
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+            </time>
+          );
         },
-      ),
+      }),
       columnHelper.accessor((row) => row.scenario.name, {
         id: 'scenario_name',
         header: t('decisions:scenario.name'),

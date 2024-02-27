@@ -6,7 +6,7 @@ import { type EntryContext } from '@remix-run/node';
 import { createInstance, type InitOptions, type Namespace } from 'i18next';
 import Backend from 'i18next-fs-backend';
 import { initReactI18next } from 'react-i18next';
-import { RemixI18Next } from 'remix-i18next';
+import { RemixI18Next } from 'remix-i18next/server';
 
 import { i18nConfig } from './i18n-config';
 

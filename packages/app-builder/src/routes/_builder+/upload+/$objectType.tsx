@@ -3,11 +3,11 @@ import { type TableModel } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
-import { formatDateTime } from '@app-builder/utils/format';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useRevalidator } from '@remix-run/react';
-import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
@@ -248,45 +248,57 @@ const ResultModal = ({
   );
 };
 
-const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(handle.i18n);
+const columnHelper = createColumnHelper<UploadLog>();
 
-  const columns = useMemo<ColumnDef<UploadLog>[]>(
+const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
+  const { t } = useTranslation(handle.i18n);
+  const language = useFormatLanguage();
+
+  const columns = useMemo(
     () => [
-      {
+      columnHelper.accessor((row) => row.started_at, {
         id: 'upload.started_at',
-        accessorFn: (row) => formatDateTime(row.started_at, { language }),
         header: t('upload:started_at'),
         size: 200,
-      },
-      {
+        cell: ({ getValue }) => {
+          const dateTime = getValue();
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTime(dateTime, { language })}
+            </time>
+          );
+        },
+      }),
+      columnHelper.accessor((row) => row.finished_at, {
         id: 'upload.finished_at',
-        accessorFn: (row) =>
-          row.finished_at ? formatDateTime(row.finished_at, { language }) : '',
         header: t('upload:finished_at'),
         size: 200,
-      },
-      {
+        cell: ({ getValue }) => {
+          const dateTime = getValue();
+          if (!dateTime) return '';
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTime(dateTime, { language })}
+            </time>
+          );
+        },
+      }),
+      columnHelper.accessor((row) => row.lines_processed, {
         id: 'upload.lines_processed',
-        accessorFn: (row) => row.lines_processed,
         header: t('upload:lines_processed'),
         size: 200,
-      },
-      {
+      }),
+      columnHelper.accessor((row) => row.status, {
         id: 'upload.status',
-        accessorFn: (row) => row.status,
         cell: ({ getValue }) => (
           <div className="flex flex-row items-center gap-2">
-            {getStatusIcon(getValue<string>())}
-            <p className="capitalize">{t(getStatusTKey(getValue<string>()))}</p>
+            {getStatusIcon(getValue())}
+            <p className="capitalize">{t(getStatusTKey(getValue()))}</p>
           </div>
         ),
         header: t('upload:upload_status'),
         size: 200,
-      },
+      }),
     ],
     [language, t],
   );

@@ -8,7 +8,6 @@ const appDirectory = 'src';
 export default {
   serverModuleFormat: 'esm',
   serverDependenciesToBundle: [
-    'remix-i18next',
     'accept-language-parser',
     'intl-parse-accept-language',
   ],

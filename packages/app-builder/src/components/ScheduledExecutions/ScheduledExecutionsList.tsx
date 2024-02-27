@@ -1,5 +1,5 @@
-import { formatDateTime } from '@app-builder/utils/format';
-import { type ColumnDef, getCoreRowModel } from '@tanstack/react-table';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type ScheduledExecution } from 'marble-api';
@@ -11,65 +11,73 @@ import { Icon } from 'ui-icons';
 import { scheduledExecutionI18n } from './scheduledExecution-i18n';
 import { ScheduledExecutionDetails } from './ScheduledExecutionDetails';
 
+const columnHelper = createColumnHelper<ScheduledExecution>();
+
 export function ScheduledExecutionsList({
   scheduledExecutions,
 }: {
   scheduledExecutions: ScheduledExecution[];
 }) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(scheduledExecutionI18n);
+  const { t } = useTranslation(scheduledExecutionI18n);
+  const language = useFormatLanguage();
 
-  const columns = useMemo<ColumnDef<ScheduledExecution, string>[]>(
+  const columns = useMemo(
     () => [
-      {
+      columnHelper.accessor((s) => s.scenario_name, {
         id: 'scenario-name',
-        accessorFn: (s) => s.scenario_name,
         header: t('scheduledExecution:scenario_name'),
         size: 200,
-      },
-      {
+      }),
+      columnHelper.accessor((s) => s.scenario_trigger_object_type, {
         id: 'scenario-trigger_object_type',
-        accessorFn: (s) => s.scenario_trigger_object_type,
         header: t('scheduledExecution:scenario_trigger_object_type'),
         size: 200,
-      },
-      {
-        id: 'number-of-created-decisions',
-        accessorFn: (s) =>
-          s.status == 'success' ? s.number_of_created_decisions : '0',
-        header: t('scheduledExecution:number_of_created_decisions'),
-        size: 100,
-      },
-      {
+      }),
+      columnHelper.accessor(
+        (s) => (s.status == 'success' ? s.number_of_created_decisions : '0'),
+        {
+          id: 'number-of-created-decisions',
+          header: t('scheduledExecution:number_of_created_decisions'),
+          size: 100,
+        },
+      ),
+      columnHelper.accessor((s) => s.status, {
         id: 'status',
-        accessorFn: (s) => s.status,
+
         cell: ({ getValue }) => (
           <div className="flex flex-row items-center gap-2">
             {getStatusIcon(getValue<string>())}
-            <p className="capitalize">{t(getStatusTKey(getValue<string>()))}</p>
+            <p className="capitalize">{t(getStatusTKey(getValue()))}</p>
           </div>
         ),
         header: t('scheduledExecution:status'),
         size: 150,
-      },
-      {
+      }),
+      columnHelper.accessor((s) => formatDateTime(s.started_at, { language }), {
         id: 'created_at',
-        accessorFn: (s) => formatDateTime(s.started_at, { language }),
         header: t('scheduledExecution:created_at'),
         size: 200,
-      },
-      {
+        cell: ({ getValue, cell }) => {
+          return (
+            <time dateTime={cell.row.original.started_at}>{getValue()}</time>
+          );
+        },
+      }),
+      columnHelper.display({
         id: 'download',
-        accessorFn: (s) => s.number_of_created_decisions > 0 && s.id,
         header: '',
         size: 200,
-        cell: (r) =>
-          r.getValue() ? (
-            <ScheduledExecutionDetails scheduleExecutionId={r.getValue()} />
-          ) : null,
-      },
+        cell: (cell) => {
+          if (cell.row.original.number_of_created_decisions > 0) {
+            return (
+              <ScheduledExecutionDetails
+                scheduleExecutionId={cell.row.original.id}
+              />
+            );
+          }
+          return null;
+        },
+      }),
     ],
     [language, t],
   );

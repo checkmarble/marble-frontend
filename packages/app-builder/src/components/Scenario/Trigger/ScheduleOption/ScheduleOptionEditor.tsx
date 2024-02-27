@@ -1,3 +1,4 @@
+import { useFormatLanguage } from '@app-builder/utils/format';
 import { Label } from '@radix-ui/react-label';
 import { type ParseKeys } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
@@ -19,10 +20,8 @@ export function ScheduleOptionEditor({
   scheduleOption: ScheduleOption;
   setScheduleOption: (schedule: ScheduleOption) => void;
 }) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(scenarioI18n);
+  const { t } = useTranslation(scenarioI18n);
+  const language = useFormatLanguage();
 
   return (
     <>

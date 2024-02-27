@@ -13,7 +13,7 @@ import { ScrollAreaV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
-  i18n: ['navigation', 'cases', ...casesI18n] satisfies Namespace,
+  i18n: ['navigation', 'cases', 'settings', ...casesI18n] satisfies Namespace,
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
