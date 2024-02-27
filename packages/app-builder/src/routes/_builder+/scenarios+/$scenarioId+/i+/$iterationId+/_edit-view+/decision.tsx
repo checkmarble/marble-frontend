@@ -165,6 +165,7 @@ export default function Decision() {
         scoreRejectThreshold: scoreRejectThreshold ?? 0,
       },
     },
+    disabled: editorMode === 'view',
   });
   const {
     control,
@@ -183,7 +184,6 @@ export default function Decision() {
   ]);
 
   const thresholdsError = errors.thresholds?.root?.message;
-  const disabled = editorMode === 'view';
 
   return (
     <Paper.Container className="bg-grey-00 max-w-3xl">
@@ -205,7 +205,6 @@ export default function Decision() {
             <FormField
               control={control}
               name="thresholds.scoreReviewThreshold"
-              disabled={disabled}
               render={({ field }) => (
                 <FormItem className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
                   <FormLabel className="sr-only">
@@ -246,7 +245,6 @@ export default function Decision() {
             <FormField
               control={control}
               name="thresholds.scoreRejectThreshold"
-              disabled={disabled}
               render={({ field }) => (
                 <FormItem className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
                   <FormLabel className="sr-only">
