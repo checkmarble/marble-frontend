@@ -1876,7 +1876,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateTableFieldBody'
+              $ref: '#/components/schemas/UpdateTableFieldDto'
         required: true
       security:
         - bearerAuth: []
@@ -3141,12 +3141,14 @@ components:
           type: boolean
         is_unique:
           type: boolean
-    UpdateTableFieldBody:
+    UpdateTableFieldDto:
       type: object
       properties:
         description:
           type: string
         is_enum:
+          type: boolean
+        is_unique:
           type: boolean
     CreateTableLinkBody:
       type: object

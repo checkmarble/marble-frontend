@@ -401,9 +401,10 @@ export type CreateTableFieldBody = {
     is_enum?: boolean;
     is_unique: boolean;
 };
-export type UpdateTableFieldBody = {
+export type UpdateTableFieldDto = {
     description?: string;
     is_enum?: boolean;
+    is_unique?: boolean;
 };
 export type CreateTableLinkBody = {
     name: string;
@@ -1717,7 +1718,7 @@ export function postDataModelTableField(tableId: string, createTableFieldBody: C
 /**
  * Update data model field
  */
-export function patchDataModelField(fieldId: string, updateTableFieldBody: UpdateTableFieldBody, opts?: Oazapfts.RequestOpts) {
+export function patchDataModelField(fieldId: string, updateTableFieldDto: UpdateTableFieldDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -1732,7 +1733,7 @@ export function patchDataModelField(fieldId: string, updateTableFieldBody: Updat
     }>(`/data-model/fields/${encodeURIComponent(fieldId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: updateTableFieldBody
+        body: updateTableFieldDto
     })));
 }
 /**

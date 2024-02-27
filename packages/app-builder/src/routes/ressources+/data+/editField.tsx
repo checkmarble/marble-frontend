@@ -6,7 +6,12 @@ import {
   FormLabel,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { type DataModelField, EnumDataTypes } from '@app-builder/models';
+import {
+  type DataModelField,
+  EnumDataTypes,
+  type LinksToSingle,
+  UniqueDataTypes,
+} from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,8 +19,8 @@ import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { useEffect, useState } from 'react';
-import { Form, FormProvider, useForm } from 'react-hook-form';
+import { useEffect, useMemo, useState } from 'react';
+import { Form, FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, HiddenInputs, Input, Modal } from 'ui-design-system';
 import { z } from 'zod';
@@ -28,6 +33,7 @@ const editFieldFormSchema = z.object({
   description: z.string(),
   fieldId: z.string().uuid(),
   isEnum: z.boolean(),
+  isUnique: z.boolean(),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -47,12 +53,14 @@ export async function action({ request }: ActionFunctionArgs) {
       error: parsedData.error.format(),
     });
   }
-  const { description, fieldId, isEnum } = parsedData.data;
+  const { description, fieldId, isEnum, isUnique } = parsedData.data;
+  console.log({ description, fieldId, isEnum, isUnique });
 
   try {
     await apiClient.patchDataModelField(fieldId, {
       description,
       is_enum: isEnum,
+      is_unique: isUnique,
     });
     return json({
       success: true as const,
@@ -78,11 +86,65 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
+type fieldIsUniqueOverride = {
+  checked: boolean;
+  disabled: boolean;
+  reason:
+    | 'cannot_toggle_enum_enabled'
+    | 'cannot_toggle_index_pending'
+    | 'cannot_untoggle_field_linked'
+    | '';
+};
+
+function overrideStatusFieldUnique({
+  field,
+  linksToThisTable,
+  selectedEnum,
+}: {
+  field: DataModelField;
+  linksToThisTable: LinksToSingle[];
+  selectedEnum: boolean;
+}): fieldIsUniqueOverride {
+  if (selectedEnum) {
+    return {
+      checked: false,
+      disabled: true,
+      reason: 'cannot_toggle_enum_enabled',
+    };
+  }
+  if (field.unicityConstraint === 'pending_unique_constraint') {
+    return {
+      checked: true,
+      disabled: true,
+      reason: 'cannot_toggle_index_pending',
+    };
+  }
+  console.log({ linksToThisTable, field });
+  const linksToThisField = linksToThisTable.filter(
+    (link) => link.parentFieldName === field.name,
+  );
+  console.log({ linksToThisField });
+  if (linksToThisField.length > 0) {
+    return {
+      checked: true,
+      disabled: true,
+      reason: 'cannot_untoggle_field_linked',
+    };
+  }
+  return {
+    disabled: false,
+    checked: false,
+    reason: '',
+  };
+}
+
 export function EditField({
   field: inputField,
+  linksToThisTable,
   children,
 }: {
   field: DataModelField;
+  linksToThisTable: LinksToSingle[];
   children: React.ReactNode;
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -95,6 +157,7 @@ export function EditField({
       description: inputField.description,
       fieldId: inputField.id,
       isEnum: inputField.isEnum,
+      isUnique: inputField.unicityConstraint !== 'no_unicity_constraint',
     },
   });
   const { control, register, setValue } = formMethods;
@@ -105,6 +168,21 @@ export function EditField({
       setValue('description', fetcher.data?.values.description);
     }
   }, [fetcher.data?.success, fetcher.data?.values, fetcher.state, setValue]);
+  const selectedEnum = useWatch({ control, name: 'isEnum' });
+  const selectedUnique = useWatch({ control, name: 'isUnique' });
+  const fieldIsUniqueOverride = useMemo(
+    () =>
+      overrideStatusFieldUnique({
+        field: inputField,
+        linksToThisTable,
+        selectedEnum,
+      }),
+    [inputField, linksToThisTable, selectedEnum],
+  );
+  const toggledUnique = useMemo(
+    () => selectedUnique || fieldIsUniqueOverride.checked,
+    [selectedUnique, fieldIsUniqueOverride.checked],
+  );
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
@@ -155,6 +233,7 @@ export function EditField({
                       <FormControl>
                         <Checkbox
                           checked={field.value}
+                          disabled={toggledUnique}
                           onCheckedChange={(checked) => {
                             field.onChange(checked);
                           }}
@@ -165,6 +244,64 @@ export function EditField({
                         <p className="text-xs">
                           {t('data:create_field.is_enum.subtitle')}
                         </p>
+                      </FormLabel>
+                      <FormError />
+                    </FormItem>
+                  )}
+                />
+              ) : null}
+              {UniqueDataTypes.includes(inputField.dataType) ? (
+                <FormField
+                  name="isUnique"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center gap-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value || fieldIsUniqueOverride.checked}
+                          disabled={fieldIsUniqueOverride.disabled}
+                          onCheckedChange={(checked) => {
+                            console.log({
+                              checked,
+                              fieldIsUniqueOverride,
+                              oldVal: field.value,
+                              oldChecked:
+                                field.value || fieldIsUniqueOverride.checked,
+                            });
+                            field.onChange(checked);
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel>
+                        <p>{'Is Unique'}</p>
+                        {inputField.unicityConstraint ===
+                        'no_unicity_constraint' ? (
+                          <p className="text-xs">
+                            If toggled the field will only accept unique values
+                          </p>
+                        ) : null}
+                        {fieldIsUniqueOverride.reason ===
+                        'cannot_toggle_index_pending' ? (
+                          <p className="text-xs text-red-50">
+                            Cannot disable unique while the constraint is being
+                            created
+                          </p>
+                        ) : null}
+                        {fieldIsUniqueOverride.reason ===
+                        'cannot_untoggle_field_linked' ? (
+                          <p className="text-xs text-red-50">
+                            Cannot disable unique while the field is linked to
+                            another table
+                          </p>
+                        ) : null}
+                        {field.value &&
+                        inputField.unicityConstraint ===
+                          'no_unicity_constraint' ? (
+                          <p className="text-xs text-red-100">
+                            Beware: creating the constraint that makes a field
+                            enforce unique values is asynchronous.
+                          </p>
+                        ) : null}
                       </FormLabel>
                       <FormError />
                     </FormItem>
