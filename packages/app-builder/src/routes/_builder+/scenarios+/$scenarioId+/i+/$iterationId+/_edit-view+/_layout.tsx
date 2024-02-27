@@ -38,12 +38,21 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { scenario } = await authService.isAuthenticated(request, {
+  const { scenario, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
+
+  if (!user.permissions.canPublishScenario) {
+    return json({
+      withDeploymentActions: false as const,
+      scenarioIterations: await scenario.listScenarioIterations({
+        scenarioId,
+      }),
+    });
+  }
 
   const [scenarioIterations, publicationPreparationStatus] = await Promise.all([
     scenario.listScenarioIterations({
@@ -55,6 +64,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   return json({
+    withDeploymentActions: true as const,
     scenarioIterations,
     publicationPreparationStatus,
   });
@@ -64,9 +74,9 @@ export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
   const scenarioValidation = useCurrentScenarioValidation();
-  const { scenarioIterations, publicationPreparationStatus } =
-    useLoaderData<typeof loader>();
-  const { canManageScenario, canPublishScenario } = usePermissionsContext();
+  const loaderData = useLoaderData<typeof loader>();
+  const { canManageScenario } = usePermissionsContext();
+  const { scenarioIterations } = loaderData;
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
@@ -88,7 +98,6 @@ export default function ScenarioEditLayout() {
   const withEditTag = editorMode === 'edit';
   const withCreateDraftIteration =
     canManageScenario && currentIteration.type !== 'draft';
-  const withDeploymentActions = canPublishScenario;
 
   return (
     <Page.Container>
@@ -126,7 +135,7 @@ export default function ScenarioEditLayout() {
               draftId={draftIteration?.id}
             />
           ) : null}
-          {withDeploymentActions ? (
+          {loaderData.withDeploymentActions ? (
             <DeploymentActions
               scenario={{
                 id: currentScenario.id,
@@ -139,10 +148,11 @@ export default function ScenarioEditLayout() {
                   !hasTriggerErrors(scenarioValidation) &&
                   !hasRulesErrors(scenarioValidation) &&
                   !hasDecisionErrors(scenarioValidation),
-                status: publicationPreparationStatus.status,
+                status: loaderData.publicationPreparationStatus.status,
               }}
               isPreparationServiceOccupied={
-                publicationPreparationStatus.serviceStatus === 'occupied'
+                loaderData.publicationPreparationStatus.serviceStatus ===
+                'occupied'
               }
             />
           ) : null}
