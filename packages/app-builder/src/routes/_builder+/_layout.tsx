@@ -26,7 +26,7 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, ScrollArea } from 'ui-design-system';
+import { Avatar, Button, ScrollArea, Tag } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -119,6 +119,7 @@ export default function Builder() {
                         <p className="text-s mb-2 font-normal">
                           {user.actorIdentity.email}
                         </p>
+                        <Tag border="square">{user.role}</Tag>
                         <p className="text-grey-50 m-2 text-xs font-normal">
                           {organization.name}
                         </p>
