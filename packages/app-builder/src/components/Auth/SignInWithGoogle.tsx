@@ -1,5 +1,7 @@
 import {
   AccountExistsWithDifferentCredential,
+  NetworkRequestFailed,
+  PopupBlockedByClient,
   useGoogleSignIn,
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
@@ -9,6 +11,8 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Logo } from 'ui-icons';
+
+import { PopupBlockedError } from './PopupBlockedError';
 
 function SignInWithGoogleButton({ onClick }: { onClick?: () => void }) {
   const { t } = useTranslation(['auth']);
@@ -52,6 +56,10 @@ function ClientSignInWithGoogle({
         toast.error(
           t('common:errors.account_exists_with_different_credential'),
         );
+      } else if (error instanceof PopupBlockedByClient) {
+        toast.error(<PopupBlockedError />);
+      } else if (error instanceof NetworkRequestFailed) {
+        toast.error(t('common:errors.firebase_network_error'));
       } else {
         Sentry.captureException(error);
         toast.error(t('common:errors.unknown'));

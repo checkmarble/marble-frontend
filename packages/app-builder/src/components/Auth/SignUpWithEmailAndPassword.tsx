@@ -7,6 +7,7 @@ import {
 } from '@app-builder/components/Form';
 import {
   EmailExistsError,
+  NetworkRequestFailed,
   useEmailAndPasswordSignUp,
   WeakPasswordError,
 } from '@app-builder/services/auth/auth.client';
@@ -144,6 +145,8 @@ function ClientSignUpWithEmailAndPasswordForm({
             },
             { shouldFocus: true },
           );
+        } else if (error instanceof NetworkRequestFailed) {
+          toast.error(t('common:errors.firebase_network_error'));
         } else {
           Sentry.captureException(error);
           toast.error(t('common:errors.unknown'));

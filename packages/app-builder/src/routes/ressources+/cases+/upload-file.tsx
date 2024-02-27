@@ -47,10 +47,6 @@ export function UploadFile({ caseDetail }: { caseDetail: CaseDetail }) {
   );
 }
 
-function toastError(error: string): void {
-  toast(error, { icon: '❌' });
-}
-
 function UploadFileContent({
   caseDetail,
   setOpen,
@@ -62,7 +58,7 @@ function UploadFileContent({
   const [loading, setLoading] = useState(false);
   const revalidator = useRevalidator();
 
-  const { accessToken, backendUrl } = useBackendInfo(
+  const { getAccessToken, backendUrl } = useBackendInfo(
     clientServices.authenticationClientService,
   );
 
@@ -94,6 +90,12 @@ function UploadFileContent({
     const file = acceptedFiles[0];
     try {
       setLoading(true);
+      const tokenResponse = await getAccessToken();
+      if (!tokenResponse.success) {
+        toast.error(t('common:errors.firebase_auth_error'));
+        return;
+      }
+
       const formData = new FormData();
       formData.append('file', file);
 
@@ -103,13 +105,13 @@ function UploadFileContent({
           method: 'POST',
           body: formData,
           headers: {
-            Authorization: `Bearer ${await accessToken()}`,
+            Authorization: `Bearer ${tokenResponse.accessToken}`,
           },
         },
       );
       if (!response.ok) {
         Sentry.captureException(await response.text());
-        toastError('An error occurred while trying to upload the file.');
+        toast.error('An error occurred while trying to upload the file.');
         return;
       }
 
@@ -117,7 +119,7 @@ function UploadFileContent({
       setOpen(false);
     } catch (error) {
       Sentry.captureException(error);
-      toastError('An error occurred while trying to upload the file.');
+      toast.error('An error occurred while trying to upload the file.');
     } finally {
       setLoading(false);
     }

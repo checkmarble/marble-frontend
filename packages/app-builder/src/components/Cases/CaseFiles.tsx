@@ -1,5 +1,6 @@
 import {
   AlreadyDownloadingError,
+  AuthRequestError,
   useDownloadCaseFiles,
 } from '@app-builder/services/DownloadCaseFilesService';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -112,8 +113,15 @@ function FileLink({ caseFileId }: { caseFileId: string }) {
         if (e instanceof AlreadyDownloadingError) {
           // Already downloading, do nothing
           return;
+        } else if (e instanceof AuthRequestError) {
+          toast.error(
+            t('cases:case.file.errors.downloading_decisions_link.auth_error'),
+          );
+        } else {
+          toast.error(
+            t('cases:case.file.errors.downloading_decisions_link.unknown'),
+          );
         }
-        toast.error(t('cases:case.file.errors.downloading_decisions_link'));
       },
     },
   );

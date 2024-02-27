@@ -74,8 +74,9 @@ export function MarbleToaster({
                 <button
                   onClick={() => toast.dismiss(currentToast.id)}
                   aria-label="Close"
+                  className="shrink-0"
                 >
-                  <Icon icon="cross" className="size-6" />
+                  <Icon icon="cross" className="size-6 shrink-0" />
                 </button>
               ) : null}
             </>
