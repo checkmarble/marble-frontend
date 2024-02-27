@@ -125,6 +125,18 @@ function TableDetails({
     [tableModel.fields],
   );
 
+  const linksToThisTable = useMemo(
+    () =>
+      dataModel
+        .filter((table) => table.id !== tableModel.id)
+        .flatMap((table) =>
+          table.linksToSingle.filter(
+            (link) => link.linkedTableName === tableModel.name,
+          ),
+        ),
+    [dataModel, tableModel],
+  );
+
   const columnsFields = useMemo<
     ColumnDef<ReturnType<typeof mapFieldToTableRow>>[]
   >(
@@ -177,7 +189,11 @@ function TableDetails({
             <div className="flex flex-row items-center justify-between gap-1">
               <FormatDescription description={cell.row.original.description} />
               {canEditDataModel ? (
-                <EditField key={cell.row.original.id} field={cell.row.original}>
+                <EditField
+                  key={cell.row.original.id}
+                  field={cell.row.original}
+                  linksToThisTable={linksToThisTable}
+                >
                   <div className="text-grey-00 group-hover:text-grey-100 group-hover:bg-grey-02 group-hover:border-grey-50 group-hover:hover:bg-grey-05 group-hover:active:bg-grey-10 relative cursor-pointer rounded border bg-transparent p-2 transition-colors ease-in-out">
                     <Icon icon="edit" className="size-6" />
                   </div>
