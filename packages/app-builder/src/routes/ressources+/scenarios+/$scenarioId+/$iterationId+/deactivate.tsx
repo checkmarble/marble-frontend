@@ -140,7 +140,7 @@ function DeactivateScenarioVersionContent({
       </Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <AuthenticityTokenInput />
-        <div className="text-s flex flex-col gap-6 font-medium">
+        <div className="text-s flex flex-col gap-4 font-medium">
           <p className="font-semibold">
             {t('scenarios:deployment_modal.deactivate.confirm')}
           </p>

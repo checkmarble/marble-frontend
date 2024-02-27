@@ -19,6 +19,7 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const prepareFormSchema = z.object({
+  activateToGoInProd: z.coerce.boolean().pipe(z.literal(true)),
   preparationIsAsync: z.coerce.boolean().pipe(z.literal(true)),
 });
 
@@ -151,7 +152,7 @@ function PrepareScenarioVersionContent({
   const fetcher = useFetcher<typeof action>();
 
   const formId = useId();
-  const [form, { preparationIsAsync }] = useForm({
+  const [form, { activateToGoInProd, preparationIsAsync }] = useForm({
     id: formId,
     defaultValue: {
       preparationIsAsync: false,
@@ -180,10 +181,33 @@ function PrepareScenarioVersionContent({
       <Modal.Title>{t('scenarios:deployment_modal.prepare.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <AuthenticityTokenInput />
-        <div className="text-s flex flex-col gap-6 font-medium">
+        <div className="text-s flex flex-col gap-4 font-medium">
           <p className="font-semibold">
             {t('scenarios:deployment_modal.prepare.confirm')}
           </p>
+          <FormField
+            config={activateToGoInProd}
+            className="group flex flex-row items-center gap-2"
+          >
+            <FormCheckbox />
+            <FormLabel>
+              {t('scenarios:deployment_modal.prepare.activate_to_go_in_prod')}
+            </FormLabel>
+          </FormField>
+          <Tooltip.Default
+            content={
+              <p className="max-w-60">
+                {t(
+                  'scenarios:deployment_modal.prepare.activate_to_go_in_prod.tooltip',
+                )}
+              </p>
+            }
+          >
+            <Icon
+              icon="tip"
+              className="size-6 text-purple-50 hover:text-purple-100"
+            />
+          </Tooltip.Default>
           <FormField
             config={preparationIsAsync}
             className="group flex flex-row items-center gap-2"
@@ -193,9 +217,6 @@ function PrepareScenarioVersionContent({
               {t('scenarios:deployment_modal.prepare.preparation_is_async')}
             </FormLabel>
           </FormField>
-          <p className="text-grey-25 text-xs font-medium">
-            {t('scenarios:deployment_modal.prepare.helper')}
-          </p>
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>

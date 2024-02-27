@@ -19,7 +19,8 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const commitFormSchema = z.object({
-  draftIsCommited: z.coerce.boolean().pipe(z.literal(true)),
+  draftIsReadOnly: z.coerce.boolean().pipe(z.literal(true)),
+  activateToGoInProd: z.coerce.boolean().pipe(z.literal(true)),
   changeIsImmediate: z.coerce.boolean().pipe(z.literal(true)),
 });
 
@@ -136,17 +137,18 @@ function CommitScenarioDraftContent({
 
   const formId = useId();
 
-  const [form, { draftIsCommited, changeIsImmediate }] = useForm({
-    id: formId,
-    defaultValue: { draftIsCommited: false, changeIsImmediate: false },
-    lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(commitFormSchema),
-    onValidate({ formData }) {
-      return parse(formData, {
-        schema: commitFormSchema,
-      });
-    },
-  });
+  const [form, { draftIsReadOnly, activateToGoInProd, changeIsImmediate }] =
+    useForm({
+      id: formId,
+      defaultValue: { draftIsCommited: false, changeIsImmediate: false },
+      lastSubmission: fetcher.data,
+      constraint: getFieldsetConstraint(commitFormSchema),
+      onValidate({ formData }) {
+        return parse(formData, {
+          schema: commitFormSchema,
+        });
+      },
+    });
 
   return (
     <fetcher.Form
@@ -163,18 +165,55 @@ function CommitScenarioDraftContent({
       <Modal.Title>{t('scenarios:deployment_modal.commit.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <AuthenticityTokenInput />
-        <div className="text-s mb-6 flex flex-col gap-6 font-medium">
+        <div className="text-s flex flex-col gap-4 font-medium">
           <p className="font-semibold">
             {t('scenarios:deployment_modal.commit.confirm')}
           </p>
           <FormField
-            config={draftIsCommited}
+            config={draftIsReadOnly}
             className="group flex flex-row items-center gap-2"
           >
             <FormCheckbox />
             <FormLabel>
-              {t('scenarios:deployment_modal.commit.draft_will_be_commited')}
+              {t('scenarios:deployment_modal.commit.draft_is_readonly')}
             </FormLabel>
+            <Tooltip.Default
+              content={
+                <p className="max-w-60">
+                  {t(
+                    'scenarios:deployment_modal.commit.draft_is_readonly.tooltip',
+                  )}
+                </p>
+              }
+            >
+              <Icon
+                icon="tip"
+                className="size-6 text-purple-50 hover:text-purple-100"
+              />
+            </Tooltip.Default>
+          </FormField>
+          <FormField
+            config={activateToGoInProd}
+            className="group flex flex-row items-center gap-2"
+          >
+            <FormCheckbox />
+            <FormLabel>
+              {t('scenarios:deployment_modal.commit.activate_to_go_in_prod')}
+            </FormLabel>
+            <Tooltip.Default
+              content={
+                <p className="max-w-60">
+                  {t(
+                    'scenarios:deployment_modal.commit.activate_to_go_in_prod.tooltip',
+                  )}
+                </p>
+              }
+            >
+              <Icon
+                icon="tip"
+                className="size-6 text-purple-50 hover:text-purple-100"
+              />
+            </Tooltip.Default>
           </FormField>
           <FormField
             config={changeIsImmediate}
@@ -185,9 +224,6 @@ function CommitScenarioDraftContent({
               {t('scenarios:deployment_modal.commit.change_is_immediate')}
             </FormLabel>
           </FormField>
-          <p className="text-grey-25 text-xs font-medium">
-            {t('scenarios:deployment_modal.commit.helper')}
-          </p>
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
