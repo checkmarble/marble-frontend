@@ -167,17 +167,27 @@ function TableDetails({
       {
         id: 'unicityConstraint',
         accessorKey: 'unicityConstraint',
-        size: 30,
-        header: 'Unique',
-        cell: ({ cell }) => {
-          const msg =
-            cell.row.original.unicityConstraint === 'active_unique_constraint'
-              ? '☑'
-              : cell.row.original.unicityConstraint ===
-                  'pending_unique_constraint'
-                ? '🔄'
-                : '☐';
-          return <p className="text-l text-center">{msg}</p>;
+        size: 70,
+        header: t('data:unique.col_header'),
+        cell: ({ getValue }) => {
+          const unicityConstraint = getValue();
+          if (unicityConstraint === 'active_unique_constraint') {
+            return (
+              <Icon
+                icon="tick"
+                className="size-6 shrink-0 justify-center text-green-100"
+              />
+            );
+          }
+          if (unicityConstraint === 'pending_unique_constraint') {
+            return (
+              <Icon
+                icon="restart-alt"
+                className="text-grey-50 size-6 shrink-0"
+              />
+            );
+          }
+          return null;
         },
       },
       {

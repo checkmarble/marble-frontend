@@ -85,18 +85,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-type fieldIsUniqueOverride = {
-  checked: boolean;
-  disabled: boolean;
-  reason:
-    | 'cannot_toggle_enum_enabled'
-    | 'cannot_toggle_index_pending'
-    | 'cannot_untoggle_field_linked'
-    | 'object_id_must_be_unique'
-    | '';
-};
-
-function overrideStatusFieldUnique({
+function disableEditUnique({
   field,
   linksToThisTable,
   selectedEnum,
@@ -104,24 +93,21 @@ function overrideStatusFieldUnique({
   field: DataModelField;
   linksToThisTable: LinksToSingle[];
   selectedEnum: boolean;
-}): fieldIsUniqueOverride {
+}) {
   if (field.name === 'object_id') {
     return {
-      checked: true,
       disabled: true,
       reason: 'object_id_must_be_unique',
     };
   }
   if (selectedEnum) {
     return {
-      checked: false,
       disabled: true,
       reason: 'cannot_toggle_enum_enabled',
     };
   }
   if (field.unicityConstraint === 'pending_unique_constraint') {
     return {
-      checked: true,
       disabled: true,
       reason: 'cannot_toggle_index_pending',
     };
@@ -129,17 +115,19 @@ function overrideStatusFieldUnique({
   const linksToThisField = linksToThisTable.filter(
     (link) => link.parentFieldName === field.name,
   );
-  if (linksToThisField.length > 0) {
+  if (
+    field.unicityConstraint !== 'no_unicity_constraint' &&
+    linksToThisField.length > 0
+  ) {
     return {
-      checked: true,
       disabled: true,
       reason: 'cannot_untoggle_field_linked',
     };
   }
+
   return {
     disabled: false,
-    checked: false,
-    reason: '',
+    reason: null,
   };
 }
 
@@ -175,18 +163,14 @@ export function EditField({
   }, [fetcher.data?.success, fetcher.data?.values, fetcher.state, setValue]);
   const selectedEnum = useWatch({ control, name: 'isEnum' });
   const selectedUnique = useWatch({ control, name: 'isUnique' });
-  const fieldIsUniqueOverride = useMemo(
+  const uniqueSettingDisabled = useMemo(
     () =>
-      overrideStatusFieldUnique({
+      disableEditUnique({
         field: inputField,
         linksToThisTable,
         selectedEnum,
       }),
     [inputField, linksToThisTable, selectedEnum],
-  );
-  const toggledUnique = useMemo(
-    () => selectedUnique || fieldIsUniqueOverride.checked,
-    [selectedUnique, fieldIsUniqueOverride.checked],
   );
 
   return (
@@ -238,7 +222,7 @@ export function EditField({
                       <FormControl>
                         <Checkbox
                           checked={field.value}
-                          disabled={toggledUnique}
+                          disabled={selectedUnique}
                           onCheckedChange={(checked) => {
                             field.onChange(checked);
                           }}
@@ -263,22 +247,22 @@ export function EditField({
                     <FormItem className="flex flex-row items-center gap-4">
                       <FormControl>
                         <Checkbox
-                          checked={field.value || fieldIsUniqueOverride.checked}
-                          disabled={fieldIsUniqueOverride.disabled}
+                          checked={field.value}
+                          disabled={uniqueSettingDisabled.disabled}
                           onCheckedChange={(checked) => {
                             field.onChange(checked);
                           }}
                         />
                       </FormControl>
                       <FormLabel>
-                        <p>{'Is Unique'}</p>
+                        <p>{t('data:edit_field.is_unique.title')}</p>
                         {inputField.unicityConstraint ===
                         'no_unicity_constraint' ? (
                           <p className="text-xs">
                             {t('data:edit_field.is_unique.toggle')}
                           </p>
                         ) : null}
-                        {fieldIsUniqueOverride.reason ===
+                        {uniqueSettingDisabled.reason ===
                         'cannot_toggle_index_pending' ? (
                           <p className="text-xs text-red-50">
                             {t(
@@ -286,7 +270,7 @@ export function EditField({
                             )}
                           </p>
                         ) : null}
-                        {fieldIsUniqueOverride.reason ===
+                        {uniqueSettingDisabled.reason ===
                         'cannot_untoggle_field_linked' ? (
                           <p className="text-xs text-red-50">
                             {t(
