@@ -1844,7 +1844,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTableFieldBody'
+              $ref: '#/components/schemas/CreateTableFieldDto'
         required: true
       security:
         - bearerAuth: []
@@ -3119,14 +3119,13 @@ components:
       properties:
         description:
           type: string
-    CreateTableFieldBody:
+    CreateTableFieldDto:
       type: object
       required:
         - name
         - type
         - nullable
         - description
-        - is_unique
       properties:
         name:
           type: string

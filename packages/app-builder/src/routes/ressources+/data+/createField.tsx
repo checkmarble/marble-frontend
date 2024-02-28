@@ -62,7 +62,7 @@ const REQUIRED_OPTIONS = [
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { dataModelRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -81,13 +81,13 @@ export async function action({ request }: ActionFunctionArgs) {
     parsedData.data;
 
   try {
-    await apiClient.postDataModelTableField(tableId, {
+    await dataModelRepository.postDataModelTableField(tableId, {
       name: name,
       description: description,
       type,
       nullable: required === 'optional',
-      is_enum: isEnum,
-      is_unique: isUnique,
+      isEnum,
+      isUnique,
     });
     return json({
       success: true as const,

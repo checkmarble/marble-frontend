@@ -1,7 +1,9 @@
 import {
+  type CreateTableFieldDto,
   type DataModelDto,
   type DataModelFieldDto,
   type LinkToSingleDto,
+  type UpdateTableFieldDto,
 } from 'marble-api';
 import * as R from 'remeda';
 
@@ -39,6 +41,44 @@ export interface TableModel {
   fields: DataModelField[];
   linksToSingle: LinksToSingle[];
   description?: string;
+}
+
+export interface CreateFieldInput {
+  name: string;
+  description: string;
+  type: 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
+  nullable: boolean;
+  isEnum?: boolean;
+  isUnique?: boolean;
+}
+
+export function adaptCreateTableFieldDto(
+  createFieldInput: CreateFieldInput,
+): CreateTableFieldDto {
+  return {
+    name: createFieldInput.name,
+    description: createFieldInput.description,
+    type: createFieldInput.type,
+    nullable: createFieldInput.nullable,
+    is_enum: createFieldInput.isEnum,
+    is_unique: createFieldInput.isUnique,
+  };
+}
+
+export interface UpdateFieldInput {
+  description?: string;
+  isEnum?: boolean;
+  isUnique?: boolean;
+}
+
+export function adaptUpdateFieldDto(
+  updateFieldInput: UpdateFieldInput,
+): UpdateTableFieldDto {
+  return {
+    description: updateFieldInput.description,
+    is_enum: updateFieldInput.isEnum,
+    is_unique: updateFieldInput.isUnique,
+  };
 }
 
 function adaptFieldDto(dataModelFieldsDto: {
