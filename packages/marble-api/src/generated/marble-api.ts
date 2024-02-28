@@ -393,13 +393,13 @@ export type CreateTableBody = {
 export type UpdateTableBody = {
     description?: string;
 };
-export type CreateTableFieldBody = {
+export type CreateTableFieldDto = {
     name: string;
     description: string;
     "type": "Bool" | "Int" | "Float" | "String" | "Timestamp";
     nullable: boolean;
     is_enum?: boolean;
-    is_unique: boolean;
+    is_unique?: boolean;
 };
 export type UpdateTableFieldDto = {
     description?: string;
@@ -1697,7 +1697,7 @@ export function patchDataModelTable(tableId: string, updateTableBody: UpdateTabl
 /**
  * Create a new field on a table from the data model
  */
-export function postDataModelTableField(tableId: string, createTableFieldBody: CreateTableFieldBody, opts?: Oazapfts.RequestOpts) {
+export function postDataModelTableField(tableId: string, createTableFieldDto: CreateTableFieldDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -1712,7 +1712,7 @@ export function postDataModelTableField(tableId: string, createTableFieldBody: C
     }>(`/data-model/tables/${encodeURIComponent(tableId)}/fields`, oazapfts.json({
         ...opts,
         method: "POST",
-        body: createTableFieldBody
+        body: createTableFieldDto
     })));
 }
 /**

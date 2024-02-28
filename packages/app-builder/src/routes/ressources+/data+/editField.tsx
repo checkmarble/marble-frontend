@@ -38,7 +38,7 @@ const editFieldFormSchema = z.object({
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { dataModelRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -56,10 +56,10 @@ export async function action({ request }: ActionFunctionArgs) {
   const { description, fieldId, isEnum, isUnique } = parsedData.data;
 
   try {
-    await apiClient.patchDataModelField(fieldId, {
+    await dataModelRepository.patchDataModelField(fieldId, {
       description,
-      is_enum: isEnum,
-      is_unique: isUnique,
+      isEnum,
+      isUnique,
     });
     return json({
       success: true as const,
