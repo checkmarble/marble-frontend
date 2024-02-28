@@ -30,6 +30,7 @@
   "create_link.child_field": "the field",
   "create_link.parent_table": "refers to the table",
   "create_link.parent_field": "on the field",
+  "create_link.must_point_to_unique_field": "A link must point to a unique field in the target table. If you want to point to another field of the table, please mark it as unique first.",
   "create_field.option_optional": "Optional",
   "create_field.option_required": "Required",
   "create_field.type_string": "String",
@@ -38,6 +39,7 @@
   "create_field.type_timestamp": "Timestamp",
   "edit_field.button_accept": "Save changes",
   "edit_field.title": "Edit field",
+  "edit_field.is_unique.title": "This field is unique",
   "edit_field.is_unique.toggle": "If toggled, duplicate values (two objects sharing the same value for this field) will not be allowed",
   "edit_field.is_unique.cannot_toggle_index_pending": "The unicity constraint on the field is currently being created. Please wait for the operation to complete before untoggling this setting.",
   "edit_field.is_unique.cannot_untoggle_field_linked": "A link from another table pointing to this field exists. This requires the values being unique, so you cannot untoggle this setting.",
@@ -48,5 +50,6 @@
   "empty_description": "No description",
   "upload_data": "Upload data",
   "required": "Required",
-  "nullable": "Nullable"
+  "nullable": "Nullable",
+  "unique.col_header": "Unique"
 }

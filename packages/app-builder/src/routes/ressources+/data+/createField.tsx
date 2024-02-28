@@ -320,7 +320,7 @@ export function CreateField({ tableId }: { tableId: string }) {
                           />
                         </FormControl>
                         <FormLabel>
-                          <p>{'Is Unique'}</p>
+                          <p>{t('data:edit_field.is_unique.title')}</p>
                           <p className="text-xs">
                             {t('data:edit_field.is_unique.toggle')}
                           </p>

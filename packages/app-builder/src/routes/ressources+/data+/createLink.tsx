@@ -302,11 +302,7 @@ export function CreateLink({
                     )}
                   />
                 </div>
-                <p>
-                  A link must point to a unique field in the target table. If
-                  you want to point to another field of the table, please mark
-                  it as unique first.
-                </p>
+                <p>{t('data:create_link.must_point_to_unique_field')}</p>
               </div>
               <div className="flex flex-1 flex-row gap-2">
                 <Modal.Close asChild>
