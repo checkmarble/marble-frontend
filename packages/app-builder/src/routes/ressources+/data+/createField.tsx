@@ -322,12 +322,13 @@ export function CreateField({ tableId }: { tableId: string }) {
                         <FormLabel>
                           <p>{'Is Unique'}</p>
                           <p className="text-xs">
-                            {'It takes only unique values'}
+                            {t('data:edit_field.is_unique.toggle')}
                           </p>
                           {field.value ? (
                             <p className="text-xs text-red-100">
-                              Beware: creating the constraint that makes a field
-                              enforce unique values is asynchronous.
+                              {t(
+                                'data:edit_field.is_unique.warning_creation_asynchronous',
+                              )}
                             </p>
                           ) : null}
                         </FormLabel>

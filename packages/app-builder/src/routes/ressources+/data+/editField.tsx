@@ -54,7 +54,6 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
   const { description, fieldId, isEnum, isUnique } = parsedData.data;
-  console.log({ description, fieldId, isEnum, isUnique });
 
   try {
     await apiClient.patchDataModelField(fieldId, {
@@ -93,6 +92,7 @@ type fieldIsUniqueOverride = {
     | 'cannot_toggle_enum_enabled'
     | 'cannot_toggle_index_pending'
     | 'cannot_untoggle_field_linked'
+    | 'object_id_must_be_unique'
     | '';
 };
 
@@ -105,6 +105,13 @@ function overrideStatusFieldUnique({
   linksToThisTable: LinksToSingle[];
   selectedEnum: boolean;
 }): fieldIsUniqueOverride {
+  if (field.name === 'object_id') {
+    return {
+      checked: true,
+      disabled: true,
+      reason: 'object_id_must_be_unique',
+    };
+  }
   if (selectedEnum) {
     return {
       checked: false,
@@ -119,11 +126,9 @@ function overrideStatusFieldUnique({
       reason: 'cannot_toggle_index_pending',
     };
   }
-  console.log({ linksToThisTable, field });
   const linksToThisField = linksToThisTable.filter(
     (link) => link.parentFieldName === field.name,
   );
-  console.log({ linksToThisField });
   if (linksToThisField.length > 0) {
     return {
       checked: true,
@@ -261,13 +266,6 @@ export function EditField({
                           checked={field.value || fieldIsUniqueOverride.checked}
                           disabled={fieldIsUniqueOverride.disabled}
                           onCheckedChange={(checked) => {
-                            console.log({
-                              checked,
-                              fieldIsUniqueOverride,
-                              oldVal: field.value,
-                              oldChecked:
-                                field.value || fieldIsUniqueOverride.checked,
-                            });
                             field.onChange(checked);
                           }}
                         />
@@ -277,29 +275,38 @@ export function EditField({
                         {inputField.unicityConstraint ===
                         'no_unicity_constraint' ? (
                           <p className="text-xs">
-                            If toggled the field will only accept unique values
+                            {t('data:edit_field.is_unique.toggle')}
                           </p>
                         ) : null}
                         {fieldIsUniqueOverride.reason ===
                         'cannot_toggle_index_pending' ? (
                           <p className="text-xs text-red-50">
-                            Cannot disable unique while the constraint is being
-                            created
+                            {t(
+                              'data:edit_field.is_unique.cannot_toggle_index_pending',
+                            )}
                           </p>
                         ) : null}
                         {fieldIsUniqueOverride.reason ===
                         'cannot_untoggle_field_linked' ? (
                           <p className="text-xs text-red-50">
-                            Cannot disable unique while the field is linked to
-                            another table
+                            {t(
+                              'data:edit_field.is_unique.cannot_untoggle_field_linked',
+                            )}
                           </p>
                         ) : null}
                         {field.value &&
                         inputField.unicityConstraint ===
                           'no_unicity_constraint' ? (
-                          <p className="text-xs text-red-100">
-                            Beware: creating the constraint that makes a field
-                            enforce unique values is asynchronous.
+                          <p className="text-xs text-red-50">
+                            {t(
+                              'data:edit_field.is_unique.warning_creation_asynchronous',
+                            )}
+                          </p>
+                        ) : null}
+                        {inputField.unicityConstraint ===
+                          'active_unique_constraint' && !field.value ? (
+                          <p className="text-xs text-red-50">
+                            {t('data:edit_field.is_unique.warning_untoggle')}
                           </p>
                         ) : null}
                       </FormLabel>

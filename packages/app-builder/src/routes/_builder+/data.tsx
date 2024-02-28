@@ -167,16 +167,17 @@ function TableDetails({
       {
         id: 'unicityConstraint',
         accessorKey: 'unicityConstraint',
-        size: 40,
+        size: 30,
         header: 'Unique',
         cell: ({ cell }) => {
-          return cell.row.original.unicityConstraint ===
-            'active_unique_constraint'
-            ? '✅'
-            : cell.row.original.unicityConstraint ===
-                'pending_unique_constraint'
-              ? '🔄'
-              : '❌';
+          const msg =
+            cell.row.original.unicityConstraint === 'active_unique_constraint'
+              ? '☑'
+              : cell.row.original.unicityConstraint ===
+                  'pending_unique_constraint'
+                ? '🔄'
+                : '☐';
+          return <p className="text-l text-center">{msg}</p>;
         },
       },
       {
@@ -204,7 +205,7 @@ function TableDetails({
         },
       },
     ],
-    [canEditDataModel, t],
+    [canEditDataModel, linksToThisTable, t],
   );
 
   const {
