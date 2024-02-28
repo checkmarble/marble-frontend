@@ -7,18 +7,20 @@ import { clientServices } from './init.client';
 
 export class AlreadyDownloadingError extends Error {}
 export class FetchLinkError extends Error {}
+export class AuthRequestError extends Error {}
 type DownloadDecisionsError =
   | AlreadyDownloadingError
   | FetchLinkError
   | DownloadError
-  | UnknownError;
+  | UnknownError
+  | AuthRequestError;
 
 export function useDownloadDecisions(
   scheduleExecutionId: string,
   { onError }: { onError?: (error: DownloadDecisionsError) => void } = {},
 ) {
   const [downloading, setDownloading] = useState(false);
-  const { backendUrl, accessToken } = useBackendInfo(
+  const { backendUrl, getAccessToken } = useBackendInfo(
     clientServices.authenticationClientService,
   );
 
@@ -31,13 +33,19 @@ export function useDownloadDecisions(
       }
       setDownloading(true);
 
+      const tokenResponse = await getAccessToken();
+      if (!tokenResponse.success) {
+        throw new AuthRequestError();
+      }
+
       const downloadLink = `${backendUrl}/scheduled-executions/${encodeURIComponent(
         scheduleExecutionId,
       )}/decisions.zip`;
+
       const response = await fetch(downloadLink, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${await accessToken()}`,
+          Authorization: `Bearer ${tokenResponse.accessToken}`,
         },
       });
 
@@ -54,7 +62,8 @@ export function useDownloadDecisions(
       if (
         error instanceof AlreadyDownloadingError ||
         error instanceof FetchLinkError ||
-        error instanceof DownloadError
+        error instanceof DownloadError ||
+        error instanceof AuthRequestError
       ) {
         onError?.(error);
       } else {

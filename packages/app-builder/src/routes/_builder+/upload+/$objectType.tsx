@@ -66,7 +66,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
   });
   const revalidator = useRevalidator();
 
-  const { accessToken, backendUrl } = useBackendInfo(
+  const { getAccessToken, backendUrl } = useBackendInfo(
     clientServices.authenticationClientService,
   );
 
@@ -108,13 +108,23 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
       const formData = new FormData();
       formData.append('file', file);
 
+      const tokenResponse = await getAccessToken();
+      if (!tokenResponse.success) {
+        setIsModalOpen(true);
+        computeModalMessage({
+          success: false,
+          errorMessage: t('common:errors.firebase_auth_error'),
+        });
+        return;
+      }
+
       const response = await fetch(
         `${backendUrl}/ingestion/${objectType}/batch`,
         {
           method: 'POST',
           body: formData,
           headers: {
-            Authorization: `Bearer ${await accessToken()}`,
+            Authorization: `Bearer ${tokenResponse.accessToken}`,
           },
         },
       );

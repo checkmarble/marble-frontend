@@ -41,6 +41,10 @@ export function useGoogleSignIn({
             return;
           case AuthErrorCodes.NEED_CONFIRMATION:
             throw new AccountExistsWithDifferentCredential();
+          case AuthErrorCodes.POPUP_BLOCKED:
+            throw new PopupBlockedByClient();
+          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+            throw new NetworkRequestFailed();
         }
       }
       throw error;
@@ -71,6 +75,10 @@ export function useMicrosoftSignIn({
             return;
           case AuthErrorCodes.NEED_CONFIRMATION:
             throw new AccountExistsWithDifferentCredential();
+          case AuthErrorCodes.POPUP_BLOCKED:
+            throw new PopupBlockedByClient();
+          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+            throw new NetworkRequestFailed();
         }
       }
       throw error;
@@ -79,6 +87,8 @@ export function useMicrosoftSignIn({
 }
 
 export class AccountExistsWithDifferentCredential extends Error {}
+export class PopupBlockedByClient extends Error {}
+export class NetworkRequestFailed extends Error {}
 
 export function useEmailAndPasswordSignIn({
   authenticationClientRepository,
@@ -109,6 +119,8 @@ export function useEmailAndPasswordSignIn({
             throw new WrongPasswordError();
           case AuthErrorCodes.INVALID_LOGIN_CREDENTIALS:
             throw new InvalidLoginCredentials();
+          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+            throw new NetworkRequestFailed();
         }
       }
     }
@@ -144,6 +156,8 @@ export function useEmailAndPasswordSignUp({
             throw new EmailExistsError();
           case AuthErrorCodes.WEAK_PASSWORD:
             throw new WeakPasswordError();
+          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+            throw new NetworkRequestFailed();
         }
       }
       throw error;
@@ -189,23 +203,27 @@ export function useBackendInfo({
 }: AuthenticationClientService) {
   const backendUrl = getClientEnv('MARBLE_API_DOMAIN');
 
-  const accessToken = async () => {
-    const firebaseIdToken =
-      await authenticationClientRepository.firebaseIdToken();
-    const token = await marbleApi.postToken(
-      {
-        authorization: `Bearer ${firebaseIdToken}`,
-      },
-      {
-        baseUrl: backendUrl,
-      },
-    );
+  const getAccessToken = async () => {
+    try {
+      const firebaseIdToken =
+        await authenticationClientRepository.firebaseIdToken();
+      const token = await marbleApi.postToken(
+        {
+          authorization: `Bearer ${firebaseIdToken}`,
+        },
+        {
+          baseUrl: backendUrl,
+        },
+      );
 
-    return token.access_token;
+      return { accessToken: token.access_token, success: true as const };
+    } catch (error) {
+      return { error, success: false as const };
+    }
   };
 
   return {
-    accessToken,
+    getAccessToken,
     backendUrl,
   };
 }

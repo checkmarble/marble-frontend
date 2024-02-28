@@ -8,11 +8,13 @@ import { clientServices } from './init.client';
 
 export class AlreadyDownloadingError extends Error {}
 export class FetchLinkError extends Error {}
+export class AuthRequestError extends Error {}
 type DownloadFileError =
   | AlreadyDownloadingError
   | FetchLinkError
   | DownloadError
-  | UnknownError;
+  | UnknownError
+  | AuthRequestError;
 
 const fileDownloadUrlSchema = z.object({
   url: z.string(),
@@ -23,7 +25,7 @@ export function useDownloadCaseFiles(
   { onError }: { onError?: (error: DownloadFileError) => void } = {},
 ) {
   const [downloading, setDownloading] = useState(false);
-  const { backendUrl, accessToken } = useBackendInfo(
+  const { backendUrl, getAccessToken } = useBackendInfo(
     clientServices.authenticationClientService,
   );
 
@@ -36,13 +38,18 @@ export function useDownloadCaseFiles(
       }
       setDownloading(true);
 
+      const tokenResponse = await getAccessToken();
+      if (!tokenResponse.success) {
+        throw new AuthRequestError();
+      }
+
       const downloadLink = `${backendUrl}/cases/files/${encodeURIComponent(
         caseFileId,
       )}/download_link`;
       const response = await fetch(downloadLink, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${await accessToken()}`,
+          Authorization: `Bearer ${tokenResponse.accessToken}`,
         },
       });
 
@@ -57,7 +64,8 @@ export function useDownloadCaseFiles(
       if (
         error instanceof AlreadyDownloadingError ||
         error instanceof FetchLinkError ||
-        error instanceof DownloadError
+        error instanceof DownloadError ||
+        error instanceof AuthRequestError
       ) {
         onError?.(error);
       } else {

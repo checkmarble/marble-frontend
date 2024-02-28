@@ -1,5 +1,6 @@
 import {
   AlreadyDownloadingError,
+  AuthRequestError,
   useDownloadDecisions,
 } from '@app-builder/services/DownloadDecisionsService';
 import { toast } from 'react-hot-toast';
@@ -37,8 +38,17 @@ function ScheduledExecutionDetailsInternal({
         if (e instanceof AlreadyDownloadingError) {
           // Already downloading, do nothing
           return;
+        } else if (e instanceof AuthRequestError) {
+          toast.error(
+            t(
+              'scheduledExecution:errors.downloading_decisions_link.auth_error',
+            ),
+          );
+        } else {
+          toast.error(
+            t('scheduledExecution:errors.downloading_decisions_link.unknown'),
+          );
         }
-        toast.error(t('scheduledExecution:errors.downloading_decisions_link'));
       },
     },
   );

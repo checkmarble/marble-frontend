@@ -8,6 +8,7 @@ import {
 import {
   EmailUnverified,
   InvalidLoginCredentials,
+  NetworkRequestFailed,
   useEmailAndPasswordSignIn,
   UserNotFoundError,
   WrongPasswordError,
@@ -164,6 +165,8 @@ function ClientSignInWithEmailAndPasswordForm({
           setError('credentials', {
             message: t('auth:sign_in.errors.invalid_login_credentials'),
           });
+        } else if (error instanceof NetworkRequestFailed) {
+          toast.error(t('common:errors.firebase_network_error'));
         } else {
           Sentry.captureException(error);
           toast.error(t('common:errors.unknown'));
