@@ -91,7 +91,6 @@ function UpdateScenarioContent({
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const fetcher = useFetcher<typeof action>();
-  console.log(defaultValue);
   const formId = useId();
   const [form, { name, description, scenarioId }] = useForm({
     id: formId,
