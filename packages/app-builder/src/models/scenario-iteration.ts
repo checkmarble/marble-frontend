@@ -34,8 +34,7 @@ export function sortScenarioIterations<T extends ScenarioIterationSummary>(
   );
 }
 
-export type SortedScenarioIteration = ReturnType<
-  typeof sortScenarioIterations
-> extends Array<infer ItemT>
-  ? ItemT
-  : unknown;
+export type SortedScenarioIteration =
+  ReturnType<typeof sortScenarioIterations> extends Array<infer ItemT>
+    ? ItemT
+    : unknown;

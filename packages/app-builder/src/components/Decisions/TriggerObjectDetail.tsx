@@ -17,7 +17,7 @@ export const TriggerObjectDetail = ({
   const language = useFormatLanguage();
 
   const parsedTriggerObject = useMemo(
-    () => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.toPairs),
+    () => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.toPairs()),
     [triggerObject],
   );
 
