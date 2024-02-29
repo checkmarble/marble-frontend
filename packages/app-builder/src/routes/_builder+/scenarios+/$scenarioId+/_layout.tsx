@@ -17,15 +17,15 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const scenario = await apiClient.getScenario(scenarioId);
+  const currentScenario = await scenario.getScenario({ scenarioId });
 
-  return json(scenario);
+  return json(currentScenario);
 }
 
 export const useCurrentScenario = () =>
