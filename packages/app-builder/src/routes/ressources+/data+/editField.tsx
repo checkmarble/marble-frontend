@@ -94,7 +94,10 @@ function disableEditUnique({
   linksToThisTable: LinksToSingle[];
   selectedEnum: boolean;
 }) {
-  if (field.name === 'object_id') {
+  if (
+    field.unicityConstraint !== 'no_unicity_constraint' &&
+    field.name === 'object_id'
+  ) {
     return {
       disabled: true,
       reason: 'object_id_must_be_unique',
