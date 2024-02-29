@@ -15,18 +15,33 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     authService,
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const scenarioIterations = await apiClient.listScenarioIterations({
+  const currentScenario = await scenario.getScenario({ scenarioId });
+
+  if (currentScenario.liveVersionId) {
+    return redirect(
+      getRoute('/scenarios/:scenarioId/i/:iterationId', {
+        scenarioId: fromUUID(scenarioId),
+        iterationId: fromUUID(currentScenario.liveVersionId),
+      }),
+    );
+  }
+
+  const scenarioIterations = await scenario.listScenarioIterations({
     scenarioId,
   });
 
-  //TODO(CatchBoundary): replace this with according CatchBoundary
-  if (scenarioIterations.length === 0) {
+  const lastScenarioIteration = R.pipe(
+    scenarioIterations,
+    R.firstBy([({ createdAt }) => createdAt, 'desc']),
+  );
+
+  if (!lastScenarioIteration) {
     const session = await getSession(request);
     setToastMessage(session, {
       type: 'error',
@@ -38,14 +53,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     });
   }
 
-  const lastScenarioIteration = R.sortBy(scenarioIterations, [
-    ({ version }) => version !== null,
-    'desc',
-  ])[0];
-
   return redirect(
     getRoute('/scenarios/:scenarioId/i/:iterationId', {
-      scenarioId: fromUUID(lastScenarioIteration.scenarioId),
+      scenarioId: fromUUID(scenarioId),
       iterationId: fromUUID(lastScenarioIteration.id),
     }),
   );

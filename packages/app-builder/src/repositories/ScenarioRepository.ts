@@ -23,6 +23,7 @@ import { type Scenario } from 'marble-api';
 
 export interface ScenarioRepository {
   listScenarios(): Promise<Scenario[]>;
+  getScenario(args: { scenarioId: string }): Promise<Scenario>;
   createScenario(args: {
     name: string;
     description: string;
@@ -73,6 +74,10 @@ export function getScenarioRepository() {
     listScenarios: async () => {
       const scenarios = await marbleApiClient.listScenarios();
       return scenarios;
+    },
+    getScenario: async ({ scenarioId }) => {
+      const scenario = await marbleApiClient.getScenario(scenarioId);
+      return scenario;
     },
     createScenario: async (args) => {
       const scenario = await marbleApiClient.createScenario(args);
