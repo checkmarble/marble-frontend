@@ -173,18 +173,22 @@ function TableDetails({
           const unicityConstraint = getValue();
           if (unicityConstraint === 'active_unique_constraint') {
             return (
-              <Icon
-                icon="tick"
-                className="size-6 shrink-0 justify-center text-green-100"
-              />
+              <div className="flex size-full items-center justify-center">
+                <Icon
+                  icon="tick"
+                  className="size-6 shrink-0 justify-center text-green-100"
+                />
+              </div>
             );
           }
           if (unicityConstraint === 'pending_unique_constraint') {
             return (
-              <Icon
-                icon="restart-alt"
-                className="text-grey-50 size-6 shrink-0"
-              />
+              <div className="flex size-full items-center justify-center">
+                <Icon
+                  icon="restart-alt"
+                  className="text-grey-50 size-6 shrink-0"
+                />
+              </div>
             );
           }
           return null;
