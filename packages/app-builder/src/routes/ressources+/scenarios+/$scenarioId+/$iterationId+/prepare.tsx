@@ -193,21 +193,21 @@ function PrepareScenarioVersionContent({
             <FormLabel>
               {t('scenarios:deployment_modal.prepare.activate_to_go_in_prod')}
             </FormLabel>
+            <Tooltip.Default
+              content={
+                <p className="max-w-60">
+                  {t(
+                    'scenarios:deployment_modal.prepare.activate_to_go_in_prod.tooltip',
+                  )}
+                </p>
+              }
+            >
+              <Icon
+                icon="tip"
+                className="size-6 text-purple-50 hover:text-purple-100"
+              />
+            </Tooltip.Default>
           </FormField>
-          <Tooltip.Default
-            content={
-              <p className="max-w-60">
-                {t(
-                  'scenarios:deployment_modal.prepare.activate_to_go_in_prod.tooltip',
-                )}
-              </p>
-            }
-          >
-            <Icon
-              icon="tip"
-              className="size-6 text-purple-50 hover:text-purple-100"
-            />
-          </Tooltip.Default>
           <FormField
             config={preparationIsAsync}
             className="group flex flex-row items-center gap-2"
