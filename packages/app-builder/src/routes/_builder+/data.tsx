@@ -293,7 +293,7 @@ function TableDetails({
   });
 
   return (
-    <CollapsiblePaper.Container>
+    <CollapsiblePaper.Container defaultOpen={false}>
       <CollapsiblePaper.Title>
         <span className="flex flex-1">{tableModel.name}</span>
         {canEditDataModel ? (
