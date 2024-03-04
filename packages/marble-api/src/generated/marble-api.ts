@@ -222,11 +222,13 @@ export type CreateCustomListValueBody = {
 };
 export type Scenario = {
     id: string;
-    name: string;
-    description: string;
-    triggerObjectType: string;
     createdAt: string;
+    decision_to_case_inbox_id?: string;
+    decision_to_case_outcomes: Outcome[];
+    description: string;
     liveVersionId?: string;
+    name: string;
+    triggerObjectType: string;
 };
 export type CreateScenarioBody = {
     name: string;
@@ -234,8 +236,10 @@ export type CreateScenarioBody = {
     triggerObjectType: string;
 };
 export type UpdateScenarioBody = {
-    name?: string;
+    decision_to_case_inbox_id?: string;
+    decision_to_case_outcomes?: Outcome[];
     description?: string;
+    name?: string;
 };
 export type ScenarioIterationDto = {
     id: string;

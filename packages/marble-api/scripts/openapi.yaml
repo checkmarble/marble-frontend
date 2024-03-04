@@ -3717,26 +3717,34 @@ components:
       type: object
       required:
         - id
-        - name
-        - description
-        - triggerObjectType
         - createdAt
+        - decision_to_case_outcomes
+        - description
+        - name
+        - triggerObjectType
       properties:
         id:
           type: string
           format: uuid
-        name:
-          type: string
-        description:
-          type: string
-        triggerObjectType:
-          type: string
         createdAt:
           type: string
           format: date-time
+        decision_to_case_inbox_id:
+          type: string
+          format: uuid
+        decision_to_case_outcomes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Outcome'
+        description:
+          type: string
         liveVersionId:
           type: string
           format: uuid
+        name:
+          type: string
+        triggerObjectType:
+          type: string
     CreateScenarioBody:
       type: object
       required:
@@ -3753,9 +3761,16 @@ components:
     UpdateScenarioBody:
       type: object
       properties:
-        name:
+        decision_to_case_inbox_id:
           type: string
+          format: uuid
+        decision_to_case_outcomes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Outcome'
         description:
+          type: string
+        name:
           type: string
     ScenarioIterationDto:
       type: object
