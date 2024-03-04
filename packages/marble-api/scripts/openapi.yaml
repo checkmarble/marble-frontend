@@ -3391,6 +3391,7 @@ components:
         propertyName: event_type
         mapping:
           case_created: '#/components/schemas/CaseCreatedEvent'
+          case_created_automatically: '#/components/schemas/CaseCreatedAutomaticallyEvent'
           status_updated: '#/components/schemas/CaseStatusUpdatedEvent'
           decision_added: '#/components/schemas/DecisionAddedEvent'
           comment_added: '#/components/schemas/CommentAddedEvent'
@@ -3503,6 +3504,9 @@ components:
           type: string
           format: date-time
     CaseCreatedEvent:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+    CaseCreatedAutomaticallyEvent:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
     CaseStatusUpdatedEvent:
