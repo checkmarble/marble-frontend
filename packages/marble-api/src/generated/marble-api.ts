@@ -116,6 +116,9 @@ export type CaseEventDtoBase = {
 export type CaseCreatedEvent = {
     event_type: "case_created";
 } & CaseEventDtoBase;
+export type CaseCreatedAutomaticallyEvent = {
+    event_type: "case_created_automatically";
+} & CaseEventDtoBase;
 export type CaseStatusUpdatedEvent = {
     event_type: "status_updated";
 } & CaseEventDtoBase & {
@@ -150,7 +153,7 @@ export type InboxChangedEvent = {
 } & CaseEventDtoBase & {
     new_value: string;
 };
-export type CaseEventDto = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto | FileAddedEvent | InboxChangedEvent;
+export type CaseEventDto = CaseCreatedEvent | CaseCreatedAutomaticallyEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto | FileAddedEvent | InboxChangedEvent;
 export type CaseFile = {
     id: string;
     case_id: string;

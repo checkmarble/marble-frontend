@@ -73,6 +73,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
 function displayedEventTypes(event: CaseEvent) {
   return [
     'case_created',
+    'case_created_automatically',
     'comment_added',
     'decision_added',
     'name_updated',
@@ -106,6 +107,7 @@ export function getEventIcon(event: CaseEvent) {
   const { event_type } = event;
   switch (event_type) {
     case 'case_created':
+    case 'case_created_automatically':
       return (
         <EventIcon
           className="border-grey-10 bg-grey-00 text-grey-100 border"
@@ -167,6 +169,15 @@ export function getEventTitle(
       return (
         <span className="text-s text-grey-100 font-semibold">
           {t('cases:case_detail.history.event_title.case_created')}
+        </span>
+      );
+    }
+    case 'case_created_automatically': {
+      return (
+        <span className="text-s text-grey-100 font-semibold">
+          {t(
+            'cases:case_detail.history.event_title.case_created_automatically',
+          )}
         </span>
       );
     }
@@ -298,12 +309,27 @@ function Author({
   );
 }
 
+function ByWorkflow({
+  type,
+}: {
+  type: 'added_by_workflow' | 'edited_by_workflow';
+}) {
+  const { t } = useTranslation(casesI18n);
+  return (
+    <div className="text-grey-100 text-s font-semibold">
+      <Trans t={t} i18nKey={`cases:case_detail.history.event_detail.${type}`} />
+    </div>
+  );
+}
+
 export function getEventDetail(event: CaseEvent) {
   const { event_type } = event;
   switch (event_type) {
     case 'case_created': {
       return <Author userId={event.user_id} type="added_by" />;
     }
+    case 'case_created_automatically':
+      return <ByWorkflow type="added_by_workflow" />;
     case 'comment_added': {
       return <CommentAddedEventDetail event={event} />;
     }
@@ -312,6 +338,9 @@ export function getEventDetail(event: CaseEvent) {
     }
     case 'decision_added':
     case 'file_added': {
+      if (event.user_id === '') {
+        return <ByWorkflow type="added_by_workflow" />;
+      }
       return <Author userId={event.user_id} type="added_by" />;
     }
     case 'name_updated':
