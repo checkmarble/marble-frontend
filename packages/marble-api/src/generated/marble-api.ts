@@ -115,7 +115,7 @@ export type CaseEventDtoBase = {
 export type CaseCreatedEvent = {
     event_type: "case_created";
 } & CaseEventDtoBase & {
-    user_id: string;
+    user_id?: string;
 };
 export type CaseStatusUpdatedEvent = {
     event_type: "status_updated";
