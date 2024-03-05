@@ -1,5 +1,4 @@
 import {
-  type CaseCreatedAutomaticallyEvent,
   type CaseCreatedEvent,
   type CaseDetailDto,
   type CaseEventDto,
@@ -28,7 +27,6 @@ export function adaptCaseTagsUpdatedEventDto({
 }
 
 export type {
-  CaseCreatedAutomaticallyEvent,
   CaseCreatedEvent,
   CaseStatusUpdatedEvent,
   CaseTagsUpdatedEvent,
@@ -40,7 +38,6 @@ export type {
 };
 
 export type CaseEvent =
-  | CaseCreatedAutomaticallyEvent
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
   | DecisionAddedEvent

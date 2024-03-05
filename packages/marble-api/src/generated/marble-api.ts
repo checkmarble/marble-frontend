@@ -109,51 +109,57 @@ export type CreateCaseBody = {
 export type CaseEventDtoBase = {
     id: string;
     case_id: string;
-    user_id: string;
     created_at: string;
     event_type: string;
 };
 export type CaseCreatedEvent = {
     event_type: "case_created";
-} & CaseEventDtoBase;
-export type CaseCreatedAutomaticallyEvent = {
-    event_type: "case_created_automatically";
-} & CaseEventDtoBase;
+} & CaseEventDtoBase & {
+    user_id: string;
+};
 export type CaseStatusUpdatedEvent = {
     event_type: "status_updated";
 } & CaseEventDtoBase & {
     new_value: CaseStatus;
+    user_id: string;
 };
 export type DecisionAddedEvent = {
     event_type: "decision_added";
-} & CaseEventDtoBase;
+} & CaseEventDtoBase & {
+    user_id?: string;
+};
 export type CommentAddedEvent = {
     event_type: "comment_added";
 } & CaseEventDtoBase & {
     additional_note: string;
+    user_id: string;
 };
 export type NameUpdatedEvent = {
     event_type: "name_updated";
 } & CaseEventDtoBase & {
     new_value: string;
+    user_id: string;
 };
 export type CaseTagsUpdatedEventDto = {
     event_type: "tags_updated";
 } & CaseEventDtoBase & {
     /** comma separated list of tag ids */
     new_value: string;
+    user_id: string;
 };
 export type FileAddedEvent = {
     event_type: "file_added";
 } & CaseEventDtoBase & {
     additional_note: string;
+    user_id: string;
 };
 export type InboxChangedEvent = {
     event_type: "inbox_changed";
 } & CaseEventDtoBase & {
     new_value: string;
+    user_id: string;
 };
-export type CaseEventDto = CaseCreatedEvent | CaseCreatedAutomaticallyEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto | FileAddedEvent | InboxChangedEvent;
+export type CaseEventDto = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto | FileAddedEvent | InboxChangedEvent;
 export type CaseFile = {
     id: string;
     case_id: string;

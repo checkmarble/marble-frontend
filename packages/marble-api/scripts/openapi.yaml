@@ -3391,7 +3391,6 @@ components:
         propertyName: event_type
         mapping:
           case_created: '#/components/schemas/CaseCreatedEvent'
-          case_created_automatically: '#/components/schemas/CaseCreatedAutomaticallyEvent'
           status_updated: '#/components/schemas/CaseStatusUpdatedEvent'
           decision_added: '#/components/schemas/DecisionAddedEvent'
           comment_added: '#/components/schemas/CommentAddedEvent'
@@ -3402,7 +3401,6 @@ components:
       required:
         - id
         - case_id
-        - user_id
         - created_at
         - event_type
       properties:
@@ -3410,9 +3408,6 @@ components:
           type: string
           format: uuid
         case_id:
-          type: string
-          format: uuid
-        user_id:
           type: string
           format: uuid
         created_at:
@@ -3506,66 +3501,97 @@ components:
     CaseCreatedEvent:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
-    CaseCreatedAutomaticallyEvent:
-      allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          properties:
+            user_id:
+              type: string
+              format: uuid
     CaseStatusUpdatedEvent:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
             - new_value
+            - user_id
           properties:
             new_value:
               $ref: '#/components/schemas/CaseStatus'
+            user_id:
+              type: string
+              format: uuid
     CaseTagsUpdatedEventDto:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
             - new_value
+            - user_id
           properties:
             new_value:
               type: string
               description: comma separated list of tag ids
+            user_id:
+              type: string
+              format: uuid
     DecisionAddedEvent:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          properties:
+            user_id:
+              type: string
+              format: uuid
     CommentAddedEvent:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
             - additional_note
+            - user_id
           properties:
             additional_note:
               type: string
+            user_id:
+              type: string
+              format: uuid
     NameUpdatedEvent:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
             - new_value
+            - user_id
           properties:
             new_value:
               type: string
+            user_id:
+              type: string
+              format: uuid
     FileAddedEvent:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
             - additional_note
+            - user_id
           properties:
             additional_note:
               type: string
+            user_id:
+              type: string
+              format: uuid
     InboxChangedEvent:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
             - new_value
+            - user_id
           properties:
             new_value:
+              type: string
+              format: uuid
+            user_id:
               type: string
               format: uuid
     UpdateCaseBody:
