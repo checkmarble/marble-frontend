@@ -16,14 +16,12 @@ export function ConstantOption({
   const constantDataTypeTKey = getConstantDataTypeTKey(constant.dataType);
 
   return (
-    <Option.Container onSelect={onSelect}>
+    <Option.Container onClick={onSelect}>
       {dataTypeIcon ? (
         <Option.Icon className="col-start-1" icon={dataTypeIcon} />
       ) : null}
       <div className="col-span-2 col-start-2 flex justify-between gap-1">
-        <Option.Value className="line-clamp-1 text-ellipsis">
-          {constant.name}
-        </Option.Value>
+        <Option.Value>{constant.name}</Option.Value>
         {constantDataTypeTKey ? (
           <span className="text-s shrink-0 font-semibold text-purple-100">
             {t(constantDataTypeTKey)}

@@ -22,12 +22,10 @@ export const AggregationLabel = ({
   builder,
   labelledAst,
   viewModel,
-  ariaLabel,
 }: {
   builder: AstBuilder;
   labelledAst: LabelledAst;
   viewModel: AggregationEditorNodeViewModel;
-  ariaLabel?: string;
 }) => {
   const { t } = useTranslation(['common', 'scenarios']);
   const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +36,6 @@ export const AggregationLabel = ({
         <OperandLabel
           operandLabelledAst={labelledAst}
           variant="view"
-          ariaLabel={ariaLabel}
           tooltipContent={
             <span className="text-xs">
               {t('scenarios:view_aggregation.tooltip')}

@@ -22,9 +22,19 @@ import {
   getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
 import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
-import { forwardRef, useCallback, useMemo, useState } from 'react';
+import { useCallback, useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, ScrollAreaV2 } from 'ui-design-system';
+import {
+  Button,
+  Input,
+  MenuButton,
+  MenuCombobox,
+  MenuContent,
+  MenuItem,
+  MenuPopover,
+  MenuRoot,
+  ScrollAreaV2,
+} from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 import {
@@ -38,7 +48,6 @@ import {
   useEditTimeAdd,
 } from '../../TimeAddEdit/Modal';
 import { type OperandViewModel } from '../Operand';
-import { OperandDropdownMenu } from './OperandDropdownMenu';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
 import { OperandEditorSearchResults } from './OperandEditorSearchResults';
 import { OperandTrigger } from './OperandTrigger';
@@ -88,51 +97,52 @@ export function OperandEditor({
   operandViewModel,
   labelledAst,
   onSave,
-  ariaLabel,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
   labelledAst: LabelledAst;
   onSave: (astNode: AstNode) => void;
-  ariaLabel?: string;
 }) {
-  const [open, onOpenChange] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState('');
+  const deferredSearchValue = useDeferredValue(searchValue);
 
   return (
-    <div className="flex flex-col gap-1">
-      <OperandDropdownMenu.Root modal open={open} onOpenChange={onOpenChange}>
-        <OperandDropdownMenu.Trigger asChild aria-label={ariaLabel}>
+    <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
+      <MenuButton
+        render={
           <OperandTrigger
             borderColor={getBorderColor(operandViewModel)}
             operandLabelledAst={labelledAst}
           />
-        </OperandDropdownMenu.Trigger>
-        <OperandDropdownMenu.Portal>
-          <OperandEditorContent
-            builder={builder}
-            onSave={onSave}
-            closeModal={() => {
-              onOpenChange(false);
-            }}
-            labelledAst={labelledAst}
-            operandViewModel={operandViewModel}
-          />
-        </OperandDropdownMenu.Portal>
-      </OperandDropdownMenu.Root>
-    </div>
+        }
+      />
+      <MenuPopover className="w-80 flex-col">
+        <OperandEditorContent
+          builder={builder}
+          onSave={onSave}
+          labelledAst={labelledAst}
+          operandViewModel={operandViewModel}
+          searchValue={deferredSearchValue}
+        />
+      </MenuPopover>
+    </MenuRoot>
   );
 }
 
-const OperandEditorContent = forwardRef<
-  HTMLDivElement,
-  {
-    builder: AstBuilder;
-    onSave: (astNode: AstNode) => void;
-    closeModal: () => void;
-    operandViewModel: OperandViewModel;
-    labelledAst: LabelledAst;
-  }
->(({ builder, onSave, closeModal, labelledAst, operandViewModel }, ref) => {
+function OperandEditorContent({
+  builder,
+  onSave,
+  labelledAst,
+  operandViewModel,
+  searchValue,
+}: {
+  builder: AstBuilder;
+  onSave: (astNode: AstNode) => void;
+  operandViewModel: OperandViewModel;
+  labelledAst: LabelledAst;
+  searchValue: string;
+}) {
+  const { t } = useTranslation('scenarios');
   const options = useMemo(() => {
     const databaseAccessors = builder.input.identifiers.databaseAccessors.map(
       (node) =>
@@ -177,8 +187,6 @@ const OperandEditorContent = forwardRef<
     ];
   }, [builder.input, operandViewModel]);
 
-  const [searchText, setSearchText] = useState('');
-
   const editAggregation = useEditAggregation();
   const editTimeAdd = useEditTimeAdd();
 
@@ -206,15 +214,13 @@ const OperandEditorContent = forwardRef<
       } else {
         onSave(newSelection.astNode);
       }
-      closeModal();
     },
-    [closeModal, editAggregation, editTimeAdd, onSave, operandViewModel.nodeId],
+    [editAggregation, editTimeAdd, onSave, operandViewModel.nodeId],
   );
 
   const bottomOptions = useBottomActions({
     operandViewModel,
     onSave,
-    closeModal,
     bottomActions: {
       clear: labelledAst.name !== '',
       edit: true,
@@ -224,59 +230,40 @@ const OperandEditorContent = forwardRef<
   });
 
   return (
-    <OperandDropdownMenu.Content ref={ref}>
-      <SearchInput value={searchText} onValueChange={setSearchText} />
-      <ScrollAreaV2>
-        <div className="flex flex-col gap-2 p-2">
-          {searchText === '' ? (
-            <OperandEditorDiscoveryResults
-              builder={builder}
-              options={options}
-              onSelect={handleSelectOption}
-            />
-          ) : (
-            <OperandEditorSearchResults
-              searchText={searchText}
-              options={options}
-              onSelect={handleSelectOption}
-            />
-          )}
-        </div>
-      </ScrollAreaV2>
-
-      {bottomOptions.length > 0 ? (
-        <BottomOptions options={bottomOptions} />
-      ) : null}
-    </OperandDropdownMenu.Content>
-  );
-});
-OperandEditorContent.displayName = 'OperandEditorContent';
-
-function SearchInput({
-  value,
-  onValueChange,
-}: {
-  value: string;
-  onValueChange: (value: string) => void;
-}) {
-  const { t } = useTranslation('scenarios');
-  return (
-    <Input
-      className="m-2 shrink-0"
-      type="search"
-      value={value}
-      onChange={(event) => {
-        onValueChange(event.target.value);
-      }}
-      onKeyDownCapture={(e) => {
-        e.stopPropagation();
-        if (e.code === 'Escape') {
-          onValueChange('');
+    <>
+      <MenuCombobox
+        render={
+          <Input
+            className="m-2 shrink-0"
+            type="search"
+            startAdornment="search"
+            placeholder={t('edit_operand.search.placeholder')}
+          />
         }
-      }}
-      startAdornment="search"
-      placeholder={t('edit_operand.search.placeholder')}
-    />
+      />
+      <MenuContent>
+        <ScrollAreaV2 type="auto">
+          <div className="flex flex-col gap-2 p-2">
+            {searchValue === '' ? (
+              <OperandEditorDiscoveryResults
+                builder={builder}
+                options={options}
+                onSelect={handleSelectOption}
+              />
+            ) : (
+              <OperandEditorSearchResults
+                searchText={searchValue}
+                options={options}
+                onSelect={handleSelectOption}
+              />
+            )}
+          </div>
+        </ScrollAreaV2>
+        {bottomOptions.length > 0 ? (
+          <BottomOptions options={bottomOptions} />
+        ) : null}
+      </MenuContent>
+    </>
   );
 }
 
@@ -290,16 +277,23 @@ function BottomOptions({ options }: { options: BottomOptionProps[] }) {
   return (
     <ScrollAreaV2
       orientation="horizontal"
-      className="border-t-grey-10 shrink-0 border-t"
+      className="border-t-grey-10 sticky bottom-0 shrink-0 border-t"
     >
-      <div className="flex shrink-0 flex-row gap-2 p-2">
+      <div className="flex w-fit shrink-0 flex-row gap-2 p-2">
         {options.map(({ icon, label, onSelect }) => (
-          <OperandDropdownMenu.Item asChild key={label} onSelect={onSelect}>
-            <Button variant="secondary" className="shrink-0">
-              <Icon icon={icon} className="size-4" />
-              <span className="line-clamp-1">{label}</span>
-            </Button>
-          </OperandDropdownMenu.Item>
+          <MenuItem
+            key={label}
+            render={
+              <Button
+                variant="secondary"
+                className="data-[active-item]:bg-purple-05 scroll-mx-2 data-[active-item]:border-purple-100"
+                onClick={onSelect}
+              >
+                <Icon icon={icon} className="size-4" />
+                <span className="line-clamp-1">{label}</span>
+              </Button>
+            }
+          />
         ))}
       </div>
     </ScrollAreaV2>
@@ -309,12 +303,10 @@ function BottomOptions({ options }: { options: BottomOptionProps[] }) {
 function useBottomActions({
   operandViewModel,
   onSave,
-  closeModal,
   bottomActions,
 }: {
   operandViewModel: OperandViewModel;
   onSave: (astNode: AstNode) => void;
-  closeModal: () => void;
   bottomActions: {
     /**
      * If true, show the clear action
@@ -347,7 +339,6 @@ function useBottomActions({
       label: t('scenarios:edit_operand.clear_operand'),
       onSelect: () => {
         onSave(newUndefinedLabelledAst().astNode);
-        closeModal();
       },
     });
   }
@@ -365,7 +356,6 @@ function useBottomActions({
             initialAggregation,
             onSave,
           });
-          closeModal();
         },
       });
     } else if (isTimeAddEditorNodeViewModel(operandViewModel)) {
@@ -375,7 +365,6 @@ function useBottomActions({
         onSelect: () => {
           const initialValue = adaptTimeAddViewModal(operandViewModel);
           editTimeAdd({ initialValue, onSave });
-          closeModal();
         },
       });
     }
@@ -387,7 +376,6 @@ function useBottomActions({
       label: t('common:copy'),
       onSelect: () => {
         copyPasteAST.setAst(adaptAstNodeFromEditorViewModel(operandViewModel));
-        closeModal();
       },
     });
   }
@@ -400,7 +388,6 @@ function useBottomActions({
         label: t('common:paste'),
         onSelect: () => {
           onSave(ast);
-          closeModal();
         },
       });
     }

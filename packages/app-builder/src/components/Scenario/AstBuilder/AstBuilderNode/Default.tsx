@@ -12,12 +12,10 @@ export function Default({
   builder,
   editorNodeViewModel,
   displayErrors,
-  ariaLabel,
 }: {
   builder: AstBuilder;
   editorNodeViewModel: EditorNodeViewModel;
   displayErrors?: boolean;
-  ariaLabel?: string;
 }) {
   const stringifiedAstNode = stringifyAstNode(
     adaptAstNodeFromEditorViewModel(editorNodeViewModel),
@@ -25,7 +23,6 @@ export function Default({
   );
   return (
     <div
-      aria-label={ariaLabel}
       data-border-color={
         displayErrors ? getBorderColor(editorNodeViewModel) : 'grey-10'
       }
