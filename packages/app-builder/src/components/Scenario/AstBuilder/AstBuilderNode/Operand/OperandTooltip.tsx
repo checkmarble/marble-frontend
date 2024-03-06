@@ -9,7 +9,7 @@ import {
   getDataTypeTKey,
   getOperatorTypeIcon,
   getOperatorTypeTKey,
-} from './OperandEditor/OperandOption/Option';
+} from './utils';
 
 const MAX_ENUM_VALUES = 50;
 

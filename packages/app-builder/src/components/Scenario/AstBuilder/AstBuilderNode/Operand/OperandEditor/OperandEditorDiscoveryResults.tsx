@@ -15,12 +15,9 @@ import {
   ScrollAreaV2,
 } from 'ui-design-system';
 
+import { getOperatorTypeIcon, getOperatorTypeTKey } from '../utils';
 import { Count, Group, GroupHeader, Label } from './Group';
-import { OperandOption } from './OperandOption';
-import {
-  getOperatorTypeIcon,
-  getOperatorTypeTKey,
-} from './OperandOption/Option';
+import { OperandOption } from './OperandMenuItem';
 
 interface OperandEditorDiscoveryResultsProps {
   builder: AstBuilder;

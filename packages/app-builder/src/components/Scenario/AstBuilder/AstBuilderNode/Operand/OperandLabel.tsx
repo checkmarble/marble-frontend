@@ -4,13 +4,13 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
+import { OperandDescription, OperandTooltip } from './OperandTooltip';
 import {
   getDataTypeIcon,
   getDataTypeTKey,
   getOperatorTypeIcon,
   getOperatorTypeTKey,
-} from './OperandEditor/OperandOption/Option';
-import { OperandDescription, OperandTooltip } from './OperandTooltip';
+} from './utils';
 
 export const selectBorderColor = ['grey-10', 'red-100', 'red-25'] as const;
 

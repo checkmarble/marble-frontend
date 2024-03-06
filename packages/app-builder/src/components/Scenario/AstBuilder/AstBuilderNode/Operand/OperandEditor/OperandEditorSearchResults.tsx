@@ -5,7 +5,7 @@ import { matchSorter } from 'match-sorter';
 import { useTranslation } from 'react-i18next';
 
 import { Count, Group, GroupHeader, Label } from './Group';
-import { ConstantOption, OperandOption } from './OperandOption';
+import { ConstantOption, OperandOption } from './OperandMenuItem';
 
 interface OperandEditorSearchResultsProps {
   searchText: string;
