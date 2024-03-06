@@ -15,7 +15,7 @@ export function OperandOption({
 }) {
   const dataTypeIcon = getDataTypeIcon(option.dataType);
   return (
-    <Option.Container onSelect={onSelect} className="group">
+    <Option.Container onClick={onSelect} className="group">
       {dataTypeIcon ? (
         <Option.Icon className="col-start-1" icon={dataTypeIcon} />
       ) : null}
@@ -38,7 +38,7 @@ export function OperandOption({
         alignOffset={-8}
       >
         <Option.Icon
-          className="group-radix-highlighted:text-purple-50 group-radix-highlighted:hover:text-purple-100 text-transparent"
+          className="text-transparent group-data-[active-item]:text-purple-50 group-data-[active-item]:hover:text-purple-100"
           icon="tip"
         />
       </OperandTooltip>

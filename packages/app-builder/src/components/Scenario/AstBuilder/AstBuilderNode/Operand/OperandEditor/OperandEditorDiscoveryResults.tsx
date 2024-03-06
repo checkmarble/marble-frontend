@@ -7,10 +7,15 @@ import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 import type * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ScrollAreaV2 } from 'ui-design-system';
+import {
+  MenuButton,
+  MenuContent,
+  MenuPopover,
+  MenuRoot,
+  ScrollAreaV2,
+} from 'ui-design-system';
 
 import { Count, Group, GroupHeader, Label } from './Group';
-import { OperandDropdownMenu } from './OperandDropdownMenu';
 import { OperandOption } from './OperandOption';
 import {
   getOperatorTypeIcon,
@@ -175,18 +180,18 @@ function OperandDiscoverySubmenu({
 }: {
   options: LabelledAst[];
   onSelect: (option: LabelledAst) => void;
-  children: React.ReactNode;
+  children: React.ReactElement;
 }) {
   if (options.length === 0) return null;
 
   return (
-    <Group>
-      <OperandDropdownMenu.Sub>
-        <OperandDropdownMenu.SubTrigger>
-          {children}
-        </OperandDropdownMenu.SubTrigger>
-        <OperandDropdownMenu.SubContent>
-          <ScrollAreaV2>
+    <MenuRoot>
+      <MenuButton className="data-[active-item]:bg-purple-05 scroll-mb-2 scroll-mt-12 rounded-sm outline-none transition-colors">
+        {children}
+      </MenuButton>
+      <MenuPopover className="max-h-64 w-64 flex-col" gutter={16}>
+        <MenuContent>
+          <ScrollAreaV2 type="auto">
             <div className="flex flex-col gap-2 p-2">
               {options.map((option) => (
                 <OperandOption
@@ -199,8 +204,8 @@ function OperandDiscoverySubmenu({
               ))}
             </div>
           </ScrollAreaV2>
-        </OperandDropdownMenu.SubContent>
-      </OperandDropdownMenu.Sub>
-    </Group>
+        </MenuContent>
+      </MenuPopover>
+    </MenuRoot>
   );
 }

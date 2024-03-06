@@ -25,19 +25,19 @@ export const OperandTrigger = forwardRef<
       data-border-color={borderColor}
       className={clsx(
         'group',
-        'size-fit min-h-[40px] min-w-[40px] rounded border px-2 outline-none',
-        'radix-state-open:border-purple-100 radix-state-open:bg-purple-05',
+        'size-fit min-h-[40px] min-w-[40px] rounded border px-2 outline-none transition-colors',
+        'aria-expanded:bg-purple-05 aria-expanded:border-purple-100',
         // Border color variants
-        'enabled:radix-state-closed:data-[border-color=grey-10]:border-grey-10 enabled:radix-state-closed:data-[border-color=grey-10]:focus:border-purple-100',
-        'enabled:radix-state-closed:data-[border-color=red-100]:border-red-100 enabled:radix-state-closed:data-[border-color=red-100]:focus:border-purple-100',
-        'enabled:radix-state-closed:data-[border-color=red-25]:border-red-25 enabled:radix-state-closed:data-[border-color=red-25]:focus:border-purple-100',
+        'enabled:aria-[expanded=false]:data-[border-color=grey-10]:border-grey-10 enabled:aria-[expanded=false]:data-[border-color=grey-10]:focus:border-purple-100',
+        'enabled:aria-[expanded=false]:data-[border-color=red-100]:border-red-100 enabled:aria-[expanded=false]:data-[border-color=red-100]:focus:border-purple-100',
+        'enabled:aria-[expanded=false]:data-[border-color=red-25]:border-red-25 enabled:aria-[expanded=false]:data-[border-color=red-25]:focus:border-purple-100',
       )}
       {...props}
     >
       {operandLabelledAst.name ? (
         <OperandLabel operandLabelledAst={operandLabelledAst} variant="edit" />
       ) : (
-        <span className="text-s text-grey-25 group-radix-state-open:text-purple-100 font-medium transition-colors">
+        <span className="text-s text-grey-25 font-medium transition-colors group-aria-expanded:text-purple-100">
           {t('edit_operand.placeholder')}
         </span>
       )}

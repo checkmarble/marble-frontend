@@ -64,7 +64,6 @@ export function TwoOperandsLine({
       <div className="flex flex-row flex-wrap items-center gap-2">
         {!root ? <span className="text-grey-25">(</span> : null}
         <AstBuilderNode
-          ariaLabel="left-operand"
           builder={builder}
           editorNodeViewModel={twoOperandsViewModel.left}
           onSave={(astNode) => {
@@ -81,7 +80,6 @@ export function TwoOperandsLine({
           viewOnly={viewOnly}
         />
         <AstBuilderNode
-          ariaLabel="right-operand"
           builder={builder}
           editorNodeViewModel={twoOperandsViewModel.right}
           onSave={(astNode) => {
