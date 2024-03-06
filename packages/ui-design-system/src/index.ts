@@ -6,6 +6,7 @@ export * from './Checkbox/Checkbox';
 export * from './Collapsible/Collapsible';
 export * from './HiddenInputs/HiddenInputs';
 export * from './Input/Input';
+export * from './MenuWithCombobox/MenuWithCombobox';
 export * from './Modal/Modal';
 export * from './ScrollArea/ScrollArea';
 export * from './Select/Select';
