@@ -40,13 +40,11 @@ export function Operand({
   operandViewModel,
   onSave,
   viewOnly,
-  ariaLabel,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
   onSave?: (astNode: AstNode) => void;
   viewOnly?: boolean;
-  ariaLabel?: string;
 }) {
   const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
   const labelledAst = adaptLabelledAst(astNode, {
@@ -62,19 +60,12 @@ export function Operand({
   const isEditable = !!labelledAst && isEditableOperand(astNode);
 
   if (!isEditable) {
-    return (
-      <Default
-        ariaLabel={ariaLabel}
-        editorNodeViewModel={operandViewModel}
-        builder={builder}
-      />
-    );
+    return <Default editorNodeViewModel={operandViewModel} builder={builder} />;
   }
 
   if (viewOnly || !onSave) {
     return (
       <OperandViewer
-        ariaLabel={ariaLabel}
         labelledAst={labelledAst}
         operandViewModel={operandViewModel}
         builder={builder}
@@ -84,7 +75,6 @@ export function Operand({
 
   return (
     <OperandEditor
-      ariaLabel={ariaLabel}
       builder={builder}
       operandViewModel={operandViewModel}
       labelledAst={labelledAst}

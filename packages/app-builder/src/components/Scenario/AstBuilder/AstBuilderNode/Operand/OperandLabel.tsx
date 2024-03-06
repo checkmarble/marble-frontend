@@ -64,22 +64,19 @@ export function TypeInfos({
 
 export const OperandLabel = ({
   operandLabelledAst,
-  ariaLabel,
   variant,
   tooltipContent,
 }: {
   operandLabelledAst: LabelledAst;
-  ariaLabel?: string;
   variant: 'edit' | 'view';
   tooltipContent?: React.ReactNode;
 }) => {
   return (
     <div
-      aria-label={ariaLabel}
       className={clsx(
         'text-s text-grey-100 group flex flex-row items-center justify-between gap-2 font-normal transition-colors',
         'size-fit min-h-[40px] min-w-[40px] rounded px-2',
-        variant === 'edit' && 'bg-grey-00 group-radix-state-open:bg-purple-05',
+        variant === 'edit' && 'bg-grey-00 group-aria-expanded:bg-purple-05',
         variant === 'view' && 'bg-grey-02',
       )}
     >
@@ -88,7 +85,7 @@ export const OperandLabel = ({
         dataType={operandLabelledAst.dataType}
         className={clsx(
           variant === 'edit' &&
-            'bg-grey-02  group-radix-state-open:bg-purple-10',
+            'bg-grey-02  group-aria-expanded:bg-purple-10 transition-colors',
           variant === 'view' && 'bg-grey-10',
         )}
       />

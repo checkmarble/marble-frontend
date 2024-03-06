@@ -1,18 +1,17 @@
 import { type DataType, type LabelledAst } from '@app-builder/models';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
+import { MenuItem } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 function OptionContainer({
   className,
   ...props
-}: React.ComponentProps<typeof DropdownMenu.Item>) {
+}: React.ComponentProps<typeof MenuItem>) {
   return (
-    <DropdownMenu.Item
+    <MenuItem
       className={clsx(
-        'radix-highlighted:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr_20px] gap-1 rounded-sm p-2 outline-none transition-colors',
-
+        'data-[active-item]:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr_20px] gap-1 rounded-sm p-2 outline-none transition-colors',
         className,
       )}
       {...props}
@@ -26,6 +25,7 @@ function OptionIcon({
 }: React.ComponentProps<typeof Icon>) {
   return (
     <Icon
+      aria-hidden="true"
       className={clsx('size-5 shrink-0 transition-colors', className)}
       {...props}
     />

@@ -14,29 +14,20 @@ export const OperandViewer = ({
   builder,
   labelledAst,
   operandViewModel,
-  ariaLabel,
 }: {
   builder: AstBuilder;
   labelledAst: LabelledAst;
   operandViewModel: OperandViewModel;
-  ariaLabel?: string;
 }) => {
   if (isAggregationEditorNodeViewModel(operandViewModel)) {
     return (
       <AggregationLabel
         labelledAst={labelledAst}
-        ariaLabel={ariaLabel}
         viewModel={operandViewModel}
         builder={builder}
       />
     );
   }
 
-  return (
-    <OperandLabel
-      operandLabelledAst={labelledAst}
-      ariaLabel={ariaLabel}
-      variant="view"
-    />
-  );
+  return <OperandLabel operandLabelledAst={labelledAst} variant="view" />;
 };
