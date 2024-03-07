@@ -50,7 +50,7 @@ function makeServerServices(repositories: ServerRepositories) {
 function initServerServices() {
   checkServerEnv();
   const getMarbleAPIClient = initializeGetMarbleAPIClient({
-    baseUrl: getServerEnv('MARBLE_API_DOMAIN'),
+    baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
   });
   const serverRepositories = makeServerRepositories({
     getMarbleAPIClient,

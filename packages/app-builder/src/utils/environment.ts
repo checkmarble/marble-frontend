@@ -30,7 +30,8 @@ const ServerPublicEnvVarNameSchema = z.object({
   ENV: z.string(),
   NODE_ENV: z.string(),
   SESSION_MAX_AGE: z.string(),
-  MARBLE_API_DOMAIN: z.string(),
+  MARBLE_API_DOMAIN_CLIENT: z.string(),
+  MARBLE_API_DOMAIN_SERVER: z.string(),
   MARBLE_APP_DOMAIN: z.string(),
 
   FIREBASE_API_KEY: z.string(),
@@ -106,7 +107,11 @@ export function getServerEnv<K extends keyof ServerEnvVarName>(
 export function getClientEnvVars() {
   return {
     ENV: getServerEnv('ENV'),
-    AUTH_EMULATOR_HOST: getServerEnv('FIREBASE_AUTH_EMULATOR_HOST'),
+    FIREBASE_AUTH_EMULATOR_HOST: getServerEnv(
+      'FIREBASE_AUTH_EMULATOR_HOST',
+    )?.startsWith('http://')
+      ? getServerEnv('FIREBASE_AUTH_EMULATOR_HOST')
+      : 'http://' + getServerEnv('FIREBASE_AUTH_EMULATOR_HOST'),
     FIREBASE_OPTIONS: {
       apiKey: getServerEnv('FIREBASE_API_KEY'),
       authDomain: getServerEnv('FIREBASE_AUTH_DOMAIN'),
@@ -115,7 +120,8 @@ export function getClientEnvVars() {
       messagingSenderId: getServerEnv('FIREBASE_MESSAGING_SENDER_ID'),
       appId: getServerEnv('FIREBASE_APP_ID'),
     },
-    MARBLE_API_DOMAIN: getServerEnv('MARBLE_API_DOMAIN'),
+    MARBLE_API_DOMAIN_SERVER: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+    MARBLE_API_DOMAIN_CLIENT: getServerEnv('MARBLE_API_DOMAIN_CLIENT'),
     MARBLE_APP_DOMAIN: getServerEnv('MARBLE_APP_DOMAIN'),
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
