@@ -48,9 +48,9 @@ import {
   useEditTimeAdd,
 } from '../../TimeAddEdit/Modal';
 import { type OperandViewModel } from '../Operand';
+import { OperandLabel } from '../OperandLabel';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
 import { OperandEditorSearchResults } from './OperandEditorSearchResults';
-import { OperandTrigger } from './OperandTrigger';
 
 export function getEnumOptionsFromNeighbour({
   viewModel,
@@ -103,6 +103,7 @@ export function OperandEditor({
   labelledAst: LabelledAst;
   onSave: (astNode: AstNode) => void;
 }) {
+  const { t } = useTranslation('scenarios');
   const [searchValue, setSearchValue] = useState('');
   const deferredSearchValue = useDeferredValue(searchValue);
 
@@ -110,9 +111,11 @@ export function OperandEditor({
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
       <MenuButton
         render={
-          <OperandTrigger
-            borderColor={getBorderColor(operandViewModel)}
+          <OperandLabel
             operandLabelledAst={labelledAst}
+            type="edit"
+            borderColor={getBorderColor(operandViewModel)}
+            placeholder={t('edit_operand.placeholder')}
           />
         }
       />

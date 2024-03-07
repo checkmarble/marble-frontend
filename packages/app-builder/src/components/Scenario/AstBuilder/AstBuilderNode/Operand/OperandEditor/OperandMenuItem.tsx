@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { MenuItem } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
-import { OperandDescription, OperandTooltip } from '../OperandTooltip';
+import { OperandDescription, OperandInfos } from '../OperandInfos';
 import { getConstantDataTypeTKey, getDataTypeIcon } from '../utils';
 
 interface OperandMenuItemProps extends React.ComponentProps<typeof MenuItem> {
@@ -22,7 +22,7 @@ function MenuItemContainer({
   return (
     <MenuItem
       className={clsx(
-        'data-[active-item]:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none transition-colors',
+        'data-[active-item]:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none',
         className,
       )}
       {...props}
@@ -95,26 +95,21 @@ export function OperandOption({
       <MenuItemLabel>
         <Highlight text={option.name} query={searchText} />
       </MenuItemLabel>
-      <OperandTooltip
-        content={
-          <OperandDescription
-            operand={{
-              name: option.name,
-              operandType: option.operandType,
-              dataType: option.dataType,
-              description: option.description,
-              values: option.values,
-            }}
-          />
-        }
-        sideOffset={24}
-        alignOffset={-8}
+      <OperandInfos
+        gutter={24}
+        shift={-8}
+        className="size-5 shrink-0 text-transparent transition-colors group-data-[active-item]:text-purple-50 group-data-[active-item]:hover:text-purple-100"
       >
-        <Icon
-          icon="tip"
-          className="size-5 shrink-0 text-transparent transition-colors group-data-[active-item]:text-purple-50 group-data-[active-item]:hover:text-purple-100"
+        <OperandDescription
+          operand={{
+            name: option.name,
+            operandType: option.operandType,
+            dataType: option.dataType,
+            description: option.description,
+            values: option.values,
+          }}
         />
-      </OperandTooltip>
+      </OperandInfos>
     </MenuItemContainer>
   );
 }

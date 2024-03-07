@@ -1,5 +1,5 @@
 import { type EnumValue, type LabelledAst } from '@app-builder/models';
-import * as Tooltip from '@radix-ui/react-tooltip';
+import * as Ariakit from '@ariakit/react';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
@@ -13,40 +13,37 @@ import {
 
 const MAX_ENUM_VALUES = 50;
 
-interface OperandTooltipProps {
+interface OperandInfosProps {
   children: React.ReactNode;
-  content: React.ReactNode;
-  side?: Tooltip.TooltipContentProps['side'];
-  align?: Tooltip.TooltipContentProps['align'];
-  sideOffset?: Tooltip.TooltipContentProps['sideOffset'];
-  alignOffset?: Tooltip.TooltipContentProps['alignOffset'];
+  className?: string;
+  gutter?: number;
+  shift?: number;
 }
 
-export function OperandTooltip({
+export function OperandInfos({
   children,
-  content,
-  side = 'right',
-  align = 'start',
-  sideOffset,
-  alignOffset,
-}: OperandTooltipProps) {
+  className,
+  gutter,
+  shift,
+}: OperandInfosProps) {
   return (
-    <Tooltip.Root delayDuration={0}>
-      <Tooltip.Trigger tabIndex={-1} asChild>
-        <span>{children}</span>
-      </Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Content
-          side={side}
-          align={align}
-          sideOffset={sideOffset}
-          alignOffset={alignOffset}
-          className="bg-grey-00 border-grey-10 flex max-h-[400px] max-w-[300px] overflow-y-auto overflow-x-hidden rounded border shadow-md"
-        >
-          <div className="flex flex-col gap-2 p-4">{content}</div>
-        </Tooltip.Content>
-      </Tooltip.Portal>
-    </Tooltip.Root>
+    <Ariakit.HovercardProvider
+      showTimeout={0}
+      hideTimeout={0}
+      placement="right-start"
+    >
+      <Ariakit.HovercardAnchor tabIndex={-1}>
+        <Icon icon="tip" className={className} />
+      </Ariakit.HovercardAnchor>
+      <Ariakit.Hovercard
+        gutter={gutter}
+        shift={shift}
+        portal
+        className="bg-grey-00 border-grey-10 flex max-h-[400px] overflow-y-auto overflow-x-hidden rounded border shadow-md"
+      >
+        <div className="flex flex-col gap-2 p-4">{children}</div>
+      </Ariakit.Hovercard>
+    </Ariakit.HovercardProvider>
   );
 }
 
@@ -86,22 +83,25 @@ export const OperandDescription = ({
         </p>
       </div>
       {operand.description ? (
-        <p className="text-grey-50 text-xs font-normal first-letter:capitalize">
+        <p className="text-grey-50 max-w-[300px] text-xs font-normal first-letter:capitalize">
           {operand.description}
         </p>
       ) : null}
       {values && values.length > 0 ? (
-        <div>
+        <div className="flex max-w-[300px] flex-col gap-1">
           <p className="text-grey-50 text-s">{t('scenarios:enum_options')}</p>
-          <div className="px-1">
+          <ul className="flex flex-col">
             {values.map((value) => {
               return (
-                <p key={value} className="text-grey-50 text-xs font-normal">
+                <li
+                  key={value}
+                  className="text-grey-50 truncate text-xs font-normal"
+                >
                   {value}
-                </p>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
       ) : null}
     </Fragment>

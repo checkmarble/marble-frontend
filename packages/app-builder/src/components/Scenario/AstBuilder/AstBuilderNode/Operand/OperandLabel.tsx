@@ -1,10 +1,11 @@
 import { type LabelledAst } from '@app-builder/models';
-import { cva } from 'class-variance-authority';
-import clsx from 'clsx';
+import * as Ariakit from '@ariakit/react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-import { OperandDescription, OperandTooltip } from './OperandTooltip';
+import { OperandDescription, OperandInfos } from './OperandInfos';
 import {
   getDataTypeIcon,
   getDataTypeTKey,
@@ -12,17 +13,131 @@ import {
   getOperatorTypeTKey,
 } from './utils';
 
-export const selectBorderColor = ['grey-10', 'red-100', 'red-25'] as const;
+const operandContainerClassnames = cva(
+  [
+    'group',
+    'size-fit min-h-[40px] min-w-[40px] rounded outline-none',
+    'flex flex-row items-center justify-between gap-2 px-2',
+  ],
+  {
+    variants: {
+      type: {
+        view: 'bg-grey-02',
+        edit: 'bg-grey-00 aria-expanded:bg-purple-05 aria-expanded:border-purple-100',
+      },
+      borderColor: {
+        'grey-10':
+          'border enabled:aria-[expanded=false]:border-grey-10 enabled:aria-[expanded=false]:focus:border-purple-100',
+        'red-100':
+          'border enabled:aria-[expanded=false]:border-red-100 enabled:aria-[expanded=false]:focus:border-purple-100',
+        'red-25':
+          'border enabled:aria-[expanded=false]:border-red-25 enabled:aria-[expanded=false]:focus:border-purple-100',
+      },
+    },
+  },
+);
 
-export function TypeInfos({
-  operandType,
-  dataType,
-  className,
-}: {
+interface OperandLabelProps
+  extends VariantProps<typeof operandContainerClassnames> {
+  operandLabelledAst: LabelledAst;
+  tooltipContent?: React.ReactNode;
+  placeholder?: string;
+}
+
+export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
+  function OperandLabel(
+    {
+      operandLabelledAst,
+      tooltipContent,
+      borderColor,
+      placeholder,
+      type,
+      ...props
+    },
+    ref,
+  ) {
+    const displayPlaceholder = !operandLabelledAst.name && !!placeholder;
+
+    return (
+      <Ariakit.Role
+        ref={ref}
+        {...props}
+        className={operandContainerClassnames({
+          type,
+          borderColor,
+        })}
+        render={(props) =>
+          type === 'edit' ? <button {...props} /> : <div {...props} />
+        }
+      >
+        {displayPlaceholder ? (
+          <span
+            className={selectDisplayText({
+              type: 'placeholder',
+              size: placeholder.length > 20 ? 'long' : 'short',
+            })}
+          >
+            {placeholder}
+          </span>
+        ) : (
+          <>
+            <TypeInfos
+              type={type}
+              operandType={operandLabelledAst.operandType}
+              dataType={operandLabelledAst.dataType}
+            />
+            <span
+              className={selectDisplayText({
+                type: 'value',
+                size: operandLabelledAst.name.length > 20 ? 'long' : 'short',
+              })}
+            >
+              {operandLabelledAst.name}
+            </span>
+            <OperandInfos
+              gutter={16}
+              shift={-16}
+              className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
+            >
+              {tooltipContent ? (
+                tooltipContent
+              ) : (
+                <OperandDescription
+                  operand={{
+                    name: operandLabelledAst.name,
+                    operandType: operandLabelledAst.operandType,
+                    dataType: operandLabelledAst.dataType,
+                    description: operandLabelledAst.description,
+                    values: operandLabelledAst.values,
+                  }}
+                />
+              )}
+            </OperandInfos>
+          </>
+        )}
+      </Ariakit.Role>
+    );
+  },
+);
+
+const typeInfosClassnames = cva(
+  'flex items-center justify-center rounded-sm p-1 text-grey-100',
+  {
+    variants: {
+      type: {
+        view: 'bg-grey-10',
+        edit: 'bg-grey-02 group-aria-expanded:bg-purple-10 group-aria-expanded:text-purple-100',
+      },
+    },
+  },
+);
+
+interface TypeInfosProps extends VariantProps<typeof typeInfosClassnames> {
   operandType: LabelledAst['operandType'];
   dataType: LabelledAst['dataType'];
-  className?: string;
-}) {
+}
+
+export function TypeInfos({ operandType, dataType, type }: TypeInfosProps) {
   const { t } = useTranslation('scenarios');
   const typeInfos = [
     {
@@ -43,16 +158,10 @@ export function TypeInfos({
       {typeInfos.map(({ icon, tKey }) => {
         if (!icon) return null;
         return (
-          <div
-            key={tKey}
-            className={clsx(
-              'bg-grey-02 flex items-center justify-center rounded-sm p-1',
-              className,
-            )}
-          >
+          <div key={tKey} className={typeInfosClassnames({ type })}>
             <Icon
               icon={icon}
-              className="size-4"
+              className="size-4 shrink-0"
               aria-label={tKey ? t(tKey) : undefined}
             />
           </div>
@@ -62,78 +171,18 @@ export function TypeInfos({
   );
 }
 
-export const OperandLabel = ({
-  operandLabelledAst,
-  variant,
-  tooltipContent,
-}: {
-  operandLabelledAst: LabelledAst;
-  variant: 'edit' | 'view';
-  tooltipContent?: React.ReactNode;
-}) => {
-  return (
-    <div
-      className={clsx(
-        'text-s text-grey-100 group flex flex-row items-center justify-between gap-2 font-normal transition-colors',
-        'size-fit min-h-[40px] min-w-[40px] rounded px-2',
-        variant === 'edit' && 'bg-grey-00 group-aria-expanded:bg-purple-05',
-        variant === 'view' && 'bg-grey-02',
-      )}
-    >
-      <TypeInfos
-        operandType={operandLabelledAst.operandType}
-        dataType={operandLabelledAst.dataType}
-        className={clsx(
-          variant === 'edit' &&
-            'bg-grey-02  group-aria-expanded:bg-purple-10 transition-colors',
-          variant === 'view' && 'bg-grey-10',
-        )}
-      />
-      <span
-        className={selectDisplayText({
-          type: 'value',
-          size: operandLabelledAst.name.length > 20 ? 'long' : 'short',
-        })}
-      >
-        {operandLabelledAst.name}
-      </span>
-      <OperandTooltip
-        content={
-          tooltipContent ? (
-            tooltipContent
-          ) : (
-            <OperandDescription
-              operand={{
-                name: operandLabelledAst.name,
-                operandType: operandLabelledAst.operandType,
-                dataType: operandLabelledAst.dataType,
-                description: operandLabelledAst.description,
-                values: operandLabelledAst.values,
-              }}
-            />
-          )
-        }
-        sideOffset={16}
-        alignOffset={-16}
-      >
-        <Icon
-          icon="tip"
-          className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
-        />
-      </OperandTooltip>
-    </div>
-  );
-};
-
-const selectDisplayText = cva(undefined, {
-  variants: {
-    type: {
-      placeholder: 'text-grey-25',
-      value: 'text-grey-100',
-    },
-    size: {
-      long: 'hyphens-auto [overflow-wrap:anywhere]',
-      short: '',
+const selectDisplayText = cva(
+  'text-s font-medium group-aria-expanded:text-purple-100',
+  {
+    variants: {
+      type: {
+        placeholder: 'text-grey-25',
+        value: 'text-grey-100',
+      },
+      size: {
+        long: 'hyphens-auto [overflow-wrap:anywhere]',
+        short: '',
+      },
     },
   },
-});
+);
