@@ -3,6 +3,8 @@ import {
   type LabelledAst,
   NewAggregatorAstNode,
 } from '@app-builder/models';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function newAggregatorLabelledAst(
   nodeOrAggregator: string | AggregationAstNode,
@@ -29,6 +31,46 @@ export function newAggregatorLabelledAst(
   };
 }
 
+export const allAggregators: string[] = [
+  'AVG',
+  'COUNT',
+  'COUNT_DISTINCT',
+  'MAX',
+  'MIN',
+  'SUM',
+];
+
+export function useGetAggregatorName() {
+  const { t } = useTranslation(['scenarios']);
+
+  return useCallback(
+    (aggregatorName: string) => {
+      switch (aggregatorName) {
+        case 'AVG':
+          return t('scenarios:aggregator.average');
+        case 'COUNT':
+          return t('scenarios:aggregator.count');
+        case 'COUNT_DISTINCT':
+          return t('scenarios:aggregator.count_distinct');
+        case 'MAX':
+          return t('scenarios:aggregator.max');
+        case 'MIN':
+          return t('scenarios:aggregator.min');
+        case 'SUM':
+          return t('scenarios:aggregator.sum');
+      }
+
+      // eslint-disable-next-line no-restricted-properties
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Unhandled aggregator', aggregatorName);
+      }
+      return aggregatorName;
+    },
+    [t],
+  );
+}
+
+//TODO: replace by above localised function
 export const getAggregatorName = (aggregatorName: string): string => {
   switch (aggregatorName) {
     case 'AVG':

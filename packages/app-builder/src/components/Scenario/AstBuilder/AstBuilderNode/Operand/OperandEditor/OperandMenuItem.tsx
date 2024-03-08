@@ -100,15 +100,7 @@ export function OperandOption({
         shift={-8}
         className="size-5 shrink-0 text-transparent transition-colors group-data-[active-item]:text-purple-50 group-data-[active-item]:hover:text-purple-100"
       >
-        <OperandDescription
-          operand={{
-            name: option.name,
-            operandType: option.operandType,
-            dataType: option.dataType,
-            description: option.description,
-            values: option.values,
-          }}
-        />
+        <OperandDescription option={option} />
       </OperandInfos>
     </MenuItemContainer>
   );

@@ -1,11 +1,28 @@
 import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
 
-import { type AstNode, isCustomListAccess } from '../ast-node';
 import {
-  type AstNodeDisplayNameOptions,
-  defaultOptions,
-  getAstNodeDisplayName,
-} from './getAstNodeDisplayName';
+  type AstNode,
+  isAggregation,
+  isConstant,
+  isCustomListAccess,
+  isDatabaseAccess,
+  isPayload,
+  isUndefinedAstNode,
+} from '../ast-node';
+import {
+  getAggregationDisplayName,
+  getConstantDisplayName,
+  getDatabaseAccessorDisplayName,
+  getPayloadAccessorsDisplayName,
+  getUndefinedDisplayName,
+} from '.';
+
+export interface AstNodeDisplayNameOptions {
+  getDefaultDisplayName: (astNode: AstNode) => string | undefined;
+}
+export const defaultOptions = {
+  getDefaultDisplayName: (astNode: AstNode) => astNode.name ?? '??',
+};
 
 export function getAstNodeLabelName(
   astNode: AstNode,
@@ -35,5 +52,25 @@ export function getAstNodeLabelName(
     return customList?.name ?? 'Unknown list';
   }
 
-  return getAstNodeDisplayName(astNode, options);
+  if (isConstant(astNode)) {
+    return getConstantDisplayName(astNode.constant);
+  }
+
+  if (isDatabaseAccess(astNode)) {
+    return getDatabaseAccessorDisplayName(astNode);
+  }
+
+  if (isPayload(astNode)) {
+    return getPayloadAccessorsDisplayName(astNode);
+  }
+
+  if (isAggregation(astNode)) {
+    return getAggregationDisplayName(astNode);
+  }
+
+  if (isUndefinedAstNode(astNode)) {
+    return getUndefinedDisplayName();
+  }
+
+  return options.getDefaultDisplayName(astNode);
 }

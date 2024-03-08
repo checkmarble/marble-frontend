@@ -1,4 +1,4 @@
-import { type EnumValue, type LabelledAst } from '@app-builder/models';
+import { type LabelledAst } from '@app-builder/models';
 import * as Ariakit from '@ariakit/react';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -47,44 +47,35 @@ export function OperandInfos({
   );
 }
 
-export const OperandDescription = ({
-  operand,
-}: {
-  operand: {
-    name: string;
-    operandType: LabelledAst['operandType'];
-    dataType: LabelledAst['dataType'];
-    description?: string;
-    values?: EnumValue[];
-  };
-}) => {
+//TODO: change for a polymorphic option with a conditional render on the type
+export const OperandDescription = ({ option }: { option: LabelledAst }) => {
   const { t } = useTranslation(['scenarios']);
 
   const values = useMemo(() => {
-    if (!operand.values) return null;
-    const sorted = [...operand.values].sort();
+    if (!option.values) return null;
+    const sorted = [...option.values].sort();
     if (sorted.length > MAX_ENUM_VALUES) {
       const sliced = sorted.slice(0, MAX_ENUM_VALUES);
       sliced.push('...');
       return sliced;
     }
     return sorted;
-  }, [operand.values]);
+  }, [option.values]);
 
   return (
     <Fragment>
       <div className="flex flex-col gap-1">
         <TypeInfos
-          operandType={operand.operandType}
-          dataType={operand.dataType}
+          operandType={option.operandType}
+          dataType={option.dataType}
         />
         <p className="text-grey-100 text-s text-ellipsis hyphens-auto font-normal">
-          {operand.name}
+          {option.name}
         </p>
       </div>
-      {operand.description ? (
+      {option.description ? (
         <p className="text-grey-50 max-w-[300px] text-xs font-normal first-letter:capitalize">
-          {operand.description}
+          {option.description}
         </p>
       ) : null}
       {values && values.length > 0 ? (

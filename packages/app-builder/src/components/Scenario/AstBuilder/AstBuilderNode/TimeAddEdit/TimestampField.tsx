@@ -35,19 +35,17 @@ export const TimestampField = ({
 }) => {
   const { t } = useTranslation(['scenarios']);
   const options: LabelledAst[] = useMemo(() => {
-    const databaseAccessors = builder.input.identifiers.databaseAccessors.map(
-      (node) =>
-        newDatabaseAccessorsLabelledAst({
-          dataModel: builder.input.dataModel,
-          node,
-        }),
+    const databaseAccessors = builder.input.databaseAccessors.map((node) =>
+      newDatabaseAccessorsLabelledAst({
+        dataModel: builder.input.dataModel,
+        node,
+      }),
     );
-    const payloadAccessors = builder.input.identifiers.payloadAccessors.map(
-      (node) =>
-        newPayloadAccessorsLabelledAst({
-          triggerObjectTable: builder.input.triggerObjectTable,
-          node,
-        }),
+    const payloadAccessors = builder.input.payloadAccessors.map((node) =>
+      newPayloadAccessorsLabelledAst({
+        triggerObjectTable: builder.input.triggerObjectTable,
+        node,
+      }),
     );
     const timestampFieldOptions = [
       ...payloadAccessors,
@@ -57,8 +55,8 @@ export const TimestampField = ({
     return [newTimeNowLabelledAst(), ...timestampFieldOptions];
   }, [
     builder.input.dataModel,
-    builder.input.identifiers.databaseAccessors,
-    builder.input.identifiers.payloadAccessors,
+    builder.input.databaseAccessors,
+    builder.input.payloadAccessors,
     builder.input.triggerObjectTable,
   ]);
 

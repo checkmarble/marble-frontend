@@ -102,15 +102,7 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
               {tooltipContent ? (
                 tooltipContent
               ) : (
-                <OperandDescription
-                  operand={{
-                    name: operandLabelledAst.name,
-                    operandType: operandLabelledAst.operandType,
-                    dataType: operandLabelledAst.dataType,
-                    description: operandLabelledAst.description,
-                    values: operandLabelledAst.values,
-                  }}
-                />
+                <OperandDescription option={operandLabelledAst} />
               )}
             </OperandInfos>
           </>
