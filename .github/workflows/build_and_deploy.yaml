@@ -63,6 +63,7 @@ jobs:
           push: true
           target: app-builder
           tags: ${{ env.IMAGE }}
+          file: ./Dockerfile
           build-args: |
             "SENTRY_RELEASE=${{ env.SENTRY_RELEASE }}"
           secrets: |

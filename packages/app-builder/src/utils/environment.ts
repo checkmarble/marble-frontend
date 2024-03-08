@@ -107,11 +107,7 @@ export function getServerEnv<K extends keyof ServerEnvVarName>(
 export function getClientEnvVars() {
   return {
     ENV: getServerEnv('ENV'),
-    FIREBASE_AUTH_EMULATOR_HOST: getServerEnv(
-      'FIREBASE_AUTH_EMULATOR_HOST',
-    )?.startsWith('http://')
-      ? getServerEnv('FIREBASE_AUTH_EMULATOR_HOST')
-      : 'http://' + getServerEnv('FIREBASE_AUTH_EMULATOR_HOST'),
+    FIREBASE_AUTH_EMULATOR_HOST: getServerEnv('FIREBASE_AUTH_EMULATOR_HOST'),
     FIREBASE_OPTIONS: {
       apiKey: getServerEnv('FIREBASE_API_KEY'),
       authDomain: getServerEnv('FIREBASE_AUTH_DOMAIN'),
