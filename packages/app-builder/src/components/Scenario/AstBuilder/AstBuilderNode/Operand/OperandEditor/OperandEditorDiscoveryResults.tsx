@@ -1,4 +1,5 @@
 import {
+  type DataType,
   isDatabaseAccess,
   isPayload,
   type LabelledAst,
@@ -30,28 +31,31 @@ interface OperandEditorDiscoveryResultsProps {
 }
 
 interface LeafGroup {
-  key: string;
+  id: string;
   label: React.ReactNode;
-  options: LabelledAst[];
+  options: {
+    id: string;
+    label: React.ReactNode;
+    dataType: DataType;
+    option: LabelledAst;
+    onSelect: () => void;
+  }[];
 }
 
 interface NodeGroup {
-  key: string;
+  id: string;
   label: React.ReactNode;
   subGroups: LeafGroup[];
 }
 
 type Group = LeafGroup | NodeGroup;
 
-export function renderGroup(
-  group: Group,
-  onSelect: (option: LabelledAst) => void,
-) {
+export function renderGroup(group: Group) {
   const isLeafGroup = 'options' in group;
 
   if (isLeafGroup) {
     return (
-      <MenuRoot key={group.key}>
+      <MenuRoot key={group.id}>
         <MenuButton className="data-[active-item]:bg-purple-05 flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2 outline-none">
           {group.label}
           <Icon
@@ -66,11 +70,11 @@ export function renderGroup(
               <div className="flex flex-col gap-2 p-2">
                 {group.options.map((option) => (
                   <OperandOption
-                    key={option.name}
-                    option={option}
-                    onSelect={() => {
-                      onSelect(option);
-                    }}
+                    key={option.id}
+                    dataType={option.dataType}
+                    label={option.label}
+                    option={option.option}
+                    onSelect={option.onSelect}
                   />
                 ))}
               </div>
@@ -82,9 +86,9 @@ export function renderGroup(
   }
 
   return (
-    <MenuGroup key={group.key} className="flex w-full flex-col">
+    <MenuGroup key={group.id} className="flex w-full flex-col">
       {group.label}
-      {group.subGroups.map((subGroup) => renderGroup(subGroup, onSelect))}
+      {group.subGroups.map((subGroup) => renderGroup(subGroup))}
     </MenuGroup>
   );
 }
@@ -94,30 +98,68 @@ export function OperandEditorDiscoveryResults({
   options,
   onSelect,
 }: OperandEditorDiscoveryResultsProps) {
-  const { customListOptions, fieldOptions, functionOptions, enumOptions } =
-    R.pipe(
-      options,
-      R.groupBy.strict((option) => option.operandType),
-      ({ Field, CustomList, Function, Enum }) => {
-        const customListOptions: LabelledAst[] = CustomList ?? [];
-        const fieldOptions: LabelledAst[] = Field ?? [];
-        const functionOptions: LabelledAst[] = Function ?? [];
-        const enumOptions: LabelledAst[] = Enum ?? [];
-        return {
-          customListOptions,
-          fieldOptions,
-          functionOptions,
-          enumOptions,
-        };
-      },
-    );
+  const optionsGroups = R.pipe(
+    options,
+    R.groupBy.strict((option) => option.operandType),
+  );
+
+  const groups = R.pipe(
+    defaultDiscoveryResultsConfig,
+    R.toPairs.strict(),
+    R.map(([operandType, getter]) => {
+      const options = optionsGroups[operandType] ?? [];
+      return getter(options, {
+        onSelect,
+        triggerObjectTableName: builder.input.triggerObjectTable.name,
+      });
+    }),
+    R.filter(R.isDefined.strict),
+  );
+
+  return groups.map((group) => renderGroup(group));
+}
+
+type GroupGetter = (
+  options: LabelledAst[],
+  config: {
+    onSelect: (option: LabelledAst) => void;
+    triggerObjectTableName: string;
+  },
+) => Group | undefined;
+
+function leafGroupGetter(operandType: LabelledAst['operandType']): GroupGetter {
+  return (options, { onSelect }): LeafGroup | undefined => {
+    const count = options.length;
+
+    if (count === 0) return undefined;
+
+    return {
+      id: operandType,
+      label: <OperandDiscoveryTitle operandType={operandType} count={count} />,
+      options: options.map((option) => ({
+        id: option.name,
+        label: option.name,
+        dataType: option.dataType,
+        option,
+        onSelect: () => onSelect(option),
+      })),
+    };
+  };
+}
+
+const getFieldGroup: GroupGetter = (
+  options,
+  { onSelect, triggerObjectTableName },
+) => {
+  const count = options.length;
+  if (count === 0) return undefined;
 
   const fieldByPathOptions = R.pipe(
-    fieldOptions,
+    options,
     R.groupBy.strict((option) => {
       const { astNode } = option;
       if (isPayload(astNode)) {
-        return builder.input.triggerObjectTable.name;
+        return triggerObjectTableName;
       }
       if (isDatabaseAccess(astNode)) {
         return [
@@ -130,57 +172,30 @@ export function OperandEditorDiscoveryResults({
     R.toPairs(),
   );
 
-  const groups = R.pipe(
-    [
-      {
-        key: 'Enum' as const,
-        options: enumOptions,
-      },
-      {
-        key: 'CustomList' as const,
-        options: customListOptions,
-      },
-      {
-        key: 'Function' as const,
-        options: functionOptions,
-      },
-    ],
-    R.map(({ key, options }) => {
-      const count = options.length;
-
-      if (count === 0) return undefined;
-
-      return {
-        key,
-        label: <OperandDiscoveryTitle operandType={key} count={count} />,
-        options,
-      };
-    }),
-    R.filter(R.isDefined),
-  );
-
-  const fieldNodeGroup: NodeGroup = {
-    key: 'Field',
+  return {
+    id: 'Field',
     label: (
       <OperandDiscoveryTitle
         operandType="Field"
-        count={fieldOptions.length}
+        count={count}
         className="min-h-10 p-2"
         renderLabel={<MenuGroupLabel />}
       />
     ),
     subGroups: fieldByPathOptions.map(([path, options]) => ({
-      key: path,
+      id: path,
       label: <FieldByPathLabel path={path} count={options.length} />,
       count: options.length,
-      options,
+      options: options.map((option) => ({
+        id: option.name,
+        label: option.name,
+        dataType: option.dataType,
+        option,
+        onSelect: () => onSelect(option),
+      })),
     })),
   };
-
-  return [fieldNodeGroup, ...groups].map((group) =>
-    renderGroup(group, onSelect),
-  );
-}
+};
 
 function OperandDiscoveryTitle({
   operandType,
@@ -249,3 +264,20 @@ function FieldByPathLabel({ path, count }: { path: string; count: number }) {
     </div>
   );
 }
+
+/**
+ * Organize the options into groups and subgroups
+ * - Key order is used to determine the order of the groups in the UI
+ * - GroupGetter is used to display the options in each group
+ */
+type OperandEditorDiscoveryResultsConfig = Partial<
+  Record<LabelledAst['operandType'], GroupGetter>
+>;
+
+export const defaultDiscoveryResultsConfig: OperandEditorDiscoveryResultsConfig =
+  {
+    Enum: leafGroupGetter('Enum'),
+    Field: getFieldGroup,
+    CustomList: leafGroupGetter('CustomList'),
+    Function: leafGroupGetter('Function'),
+  };

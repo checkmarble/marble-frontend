@@ -1,3 +1,4 @@
+import { Highlight } from '@app-builder/components/Highlight';
 import {
   allAggregators,
   type AstNode,
@@ -15,6 +16,7 @@ import {
 } from '@app-builder/models';
 import { newTimeAddLabelledAst } from '@app-builder/models/LabelledAst/TimeAdd';
 import { newTimeNowLabelledAst } from '@app-builder/models/LabelledAst/TimeNow';
+import { coerceToConstantsLabelledAst } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
@@ -22,7 +24,8 @@ import {
   getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
 import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
-import { useCallback, useDeferredValue, useMemo, useState } from 'react';
+import { matchSorter } from 'match-sorter';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -105,7 +108,6 @@ export function OperandEditor({
 }) {
   const { t } = useTranslation('scenarios');
   const [searchValue, setSearchValue] = useState('');
-  const deferredSearchValue = useDeferredValue(searchValue);
 
   return (
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
@@ -125,7 +127,7 @@ export function OperandEditor({
           onSave={onSave}
           labelledAst={labelledAst}
           operandViewModel={operandViewModel}
-          searchValue={deferredSearchValue}
+          searchValue={searchValue}
         />
       </MenuPopover>
     </MenuRoot>
@@ -230,6 +232,12 @@ function OperandEditorContent({
     },
   });
 
+  const { constantOptions, matchOptions } = useMatchOptions({
+    options,
+    onSelect: handleSelectOption,
+    searchValue,
+  });
+
   return (
     <>
       <MenuCombobox
@@ -253,9 +261,8 @@ function OperandEditorContent({
               />
             ) : (
               <OperandEditorSearchResults
-                searchText={searchValue}
-                options={options}
-                onSelect={handleSelectOption}
+                constantOptions={constantOptions}
+                matchOptions={matchOptions}
               />
             )}
           </div>
@@ -395,4 +402,41 @@ function useBottomActions({
   }
 
   return bottomOptions;
+}
+
+function useMatchOptions({
+  onSelect,
+  options,
+  searchValue,
+}: {
+  onSelect: (option: LabelledAst) => void;
+  options: LabelledAst[];
+  searchValue: string;
+}) {
+  const { t } = useTranslation(['common']);
+  const constantOptions = useMemo(() => {
+    const constants = coerceToConstantsLabelledAst(searchValue, {
+      booleans: { true: [t('common:true')], false: [t('common:false')] },
+    });
+    return constants.map((constant) => ({
+      id: constant.name,
+      dataType: constant.dataType,
+      label: constant.name,
+      onSelect: () => onSelect(constant),
+    }));
+  }, [searchValue, onSelect, t]);
+  const matchOptions = useMemo(() => {
+    const matches = matchSorter(options, searchValue, {
+      keys: ['name'],
+    });
+    return matches.map((match) => ({
+      id: match.name,
+      dataType: match.dataType,
+      label: <Highlight text={match.name} query={searchValue} />,
+      option: match,
+      onSelect: () => onSelect(match),
+    }));
+  }, [searchValue, onSelect, options]);
+
+  return { constantOptions, matchOptions };
 }

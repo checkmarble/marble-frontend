@@ -1,32 +1,31 @@
 import { scenarioI18n } from '@app-builder/components';
-import { type LabelledAst } from '@app-builder/models';
-import { coerceToConstantsLabelledAst } from '@app-builder/services/editor';
-import { matchSorter } from 'match-sorter';
+import { type DataType, type LabelledAst } from '@app-builder/models';
 import { useTranslation } from 'react-i18next';
 import { MenuGroup, MenuGroupLabel } from 'ui-design-system';
 
 import { ConstantOption, OperandOption } from './OperandMenuItem';
 
 interface OperandEditorSearchResultsProps {
-  searchText: string;
-  options: LabelledAst[];
-  onSelect: (option: LabelledAst) => void;
+  constantOptions: {
+    id: string;
+    dataType: DataType;
+    label: React.ReactNode;
+    onSelect: () => void;
+  }[];
+  matchOptions: {
+    id: string;
+    label: React.ReactNode;
+    dataType: DataType;
+    option: LabelledAst;
+    onSelect: () => void;
+  }[];
 }
 
 export function OperandEditorSearchResults({
-  options,
-  searchText,
-  onSelect,
+  constantOptions,
+  matchOptions,
 }: OperandEditorSearchResultsProps) {
   const { t } = useTranslation(scenarioI18n);
-
-  const constantOptions = coerceToConstantsLabelledAst(searchText, {
-    booleans: { true: [t('common:true')], false: [t('common:false')] },
-  });
-
-  const matchOptions = matchSorter(options, searchText, {
-    keys: ['name'],
-  });
 
   return (
     <>
@@ -35,11 +34,10 @@ export function OperandEditorSearchResults({
           <MenuGroupLabel className="sr-only">Constants</MenuGroupLabel>
           {constantOptions.map((constant) => (
             <ConstantOption
-              key={constant.name}
-              constant={constant}
-              onSelect={() => {
-                onSelect(constant);
-              }}
+              key={constant.id}
+              dataType={constant.dataType}
+              label={constant.label}
+              onSelect={constant.onSelect}
             />
           ))}
         </MenuGroup>
@@ -59,12 +57,11 @@ export function OperandEditorSearchResults({
         </div>
         {matchOptions.map((option) => (
           <OperandOption
-            key={option.name}
-            searchText={searchText}
-            option={option}
-            onSelect={() => {
-              onSelect(option);
-            }}
+            key={option.id}
+            dataType={option.dataType}
+            label={option.label}
+            option={option.option}
+            onSelect={option.onSelect}
           />
         ))}
       </MenuGroup>
