@@ -14,9 +14,9 @@ RUN pnpm deploy --filter=app-builder --prod /prod/app-builder
 
 FROM base AS app-builder
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=${PORT:-8080}
 RUN apt-get update && apt-get install -y curl
 COPY --from=build /prod/app-builder /prod/app-builder
 WORKDIR /prod/app-builder
-EXPOSE 8080
+EXPOSE $PORT
 CMD [ "pnpm", "start"]
