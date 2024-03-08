@@ -2,11 +2,12 @@ import {
   type AstNode,
   type AstOperator,
   type ConstantType,
-  type EditorIdentifiersByType,
+  type DatabaseAccessAstNode,
   type EvaluationError,
   findDataModelTableByName,
   functionNodeNames,
   type NodeEvaluation,
+  type PayloadAstNode,
   separateChildrenErrors,
   type TableModel,
 } from '@app-builder/models';
@@ -169,7 +170,8 @@ export interface AstBuilder {
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
   input: {
-    identifiers: EditorIdentifiersByType;
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
     operators: AstOperator[];
     dataModel: TableModel[];
     customLists: CustomList[];
@@ -181,7 +183,8 @@ export function useAstBuilder({
   backendAst,
   backendValidation,
   localValidation,
-  identifiers,
+  databaseAccessors,
+  payloadAccessors,
   operators,
   dataModel,
   customLists,
@@ -191,7 +194,8 @@ export function useAstBuilder({
   backendAst: AstNode;
   backendValidation: NodeEvaluation;
   localValidation: NodeEvaluation | null;
-  identifiers: EditorIdentifiersByType;
+  databaseAccessors: DatabaseAccessAstNode[];
+  payloadAccessors: PayloadAstNode[];
   operators: AstOperator[];
   dataModel: TableModel[];
   customLists: CustomList[];
@@ -314,7 +318,8 @@ export function useAstBuilder({
     appendChild,
     remove,
     input: {
-      identifiers,
+      databaseAccessors,
+      payloadAccessors,
       operators,
       dataModel,
       customLists,

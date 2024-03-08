@@ -4,7 +4,6 @@ import {
   adaptNodeDto,
   type AstNode,
   type DatabaseAccessAstNode,
-  type EditorIdentifiersByType,
   isDatabaseAccess,
   isPayload,
   type PayloadAstNode,
@@ -15,9 +14,10 @@ import {
 } from '@app-builder/models/ast-operators';
 
 export interface EditorRepository {
-  listIdentifiers(args: {
-    scenarioId: string;
-  }): Promise<EditorIdentifiersByType>;
+  listAccessors(args: { scenarioId: string }): Promise<{
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+  }>;
   listOperators(args: { scenarioId: string }): Promise<AstOperator[]>;
   saveRule(args: {
     ruleId: string;
@@ -31,9 +31,7 @@ export interface EditorRepository {
 
 export function getEditorRepository() {
   return (marbleApiClient: MarbleApi): EditorRepository => ({
-    listIdentifiers: async ({
-      scenarioId,
-    }): Promise<EditorIdentifiersByType> => {
+    listAccessors: async ({ scenarioId }) => {
       const { database_accessors, payload_accessors } =
         await marbleApiClient.listIdentifiers(scenarioId);
       const databaseAccessors = database_accessors

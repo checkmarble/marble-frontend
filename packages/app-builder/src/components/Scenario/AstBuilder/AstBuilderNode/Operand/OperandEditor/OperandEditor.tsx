@@ -1,4 +1,5 @@
 import {
+  allAggregators,
   type AstNode,
   isDatabaseAccess,
   isPayload,
@@ -14,7 +15,6 @@ import {
 } from '@app-builder/models';
 import { newTimeAddLabelledAst } from '@app-builder/models/LabelledAst/TimeAdd';
 import { newTimeNowLabelledAst } from '@app-builder/models/LabelledAst/TimeNow';
-import { allAggregators } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
@@ -48,9 +48,9 @@ import {
   useEditTimeAdd,
 } from '../../TimeAddEdit/Modal';
 import { type OperandViewModel } from '../Operand';
+import { OperandLabel } from '../OperandLabel';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
 import { OperandEditorSearchResults } from './OperandEditorSearchResults';
-import { OperandTrigger } from './OperandTrigger';
 
 export function getEnumOptionsFromNeighbour({
   viewModel,
@@ -103,6 +103,7 @@ export function OperandEditor({
   labelledAst: LabelledAst;
   onSave: (astNode: AstNode) => void;
 }) {
+  const { t } = useTranslation('scenarios');
   const [searchValue, setSearchValue] = useState('');
   const deferredSearchValue = useDeferredValue(searchValue);
 
@@ -110,9 +111,11 @@ export function OperandEditor({
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
       <MenuButton
         render={
-          <OperandTrigger
-            borderColor={getBorderColor(operandViewModel)}
+          <OperandLabel
             operandLabelledAst={labelledAst}
+            type="edit"
+            borderColor={getBorderColor(operandViewModel)}
+            placeholder={t('edit_operand.placeholder')}
           />
         }
       />
@@ -144,19 +147,17 @@ function OperandEditorContent({
 }) {
   const { t } = useTranslation('scenarios');
   const options = useMemo(() => {
-    const databaseAccessors = builder.input.identifiers.databaseAccessors.map(
-      (node) =>
-        newDatabaseAccessorsLabelledAst({
-          dataModel: builder.input.dataModel,
-          node,
-        }),
+    const databaseAccessors = builder.input.databaseAccessors.map((node) =>
+      newDatabaseAccessorsLabelledAst({
+        dataModel: builder.input.dataModel,
+        node,
+      }),
     );
-    const payloadAccessors = builder.input.identifiers.payloadAccessors.map(
-      (node) =>
-        newPayloadAccessorsLabelledAst({
-          triggerObjectTable: builder.input.triggerObjectTable,
-          node,
-        }),
+    const payloadAccessors = builder.input.payloadAccessors.map((node) =>
+      newPayloadAccessorsLabelledAst({
+        triggerObjectTable: builder.input.triggerObjectTable,
+        node,
+      }),
     );
     const customLists = builder.input.customLists.map(newCustomListLabelledAst);
     const functions = [

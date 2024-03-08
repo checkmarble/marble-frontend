@@ -1,55 +1,6 @@
 import { type DataType, type LabelledAst } from '@app-builder/models';
-import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
-import { MenuItem } from 'ui-design-system';
-import { Icon, type IconName } from 'ui-icons';
-
-function OptionContainer({
-  className,
-  ...props
-}: React.ComponentProps<typeof MenuItem>) {
-  return (
-    <MenuItem
-      className={clsx(
-        'data-[active-item]:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr_20px] gap-1 rounded-sm p-2 outline-none transition-colors',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-function OptionIcon({
-  className,
-  ...props
-}: React.ComponentProps<typeof Icon>) {
-  return (
-    <Icon
-      aria-hidden="true"
-      className={clsx('size-5 shrink-0 transition-colors', className)}
-      {...props}
-    />
-  );
-}
-
-function OptionValue({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className={clsx(
-        'text-grey-100 text-s overflow-hidden text-ellipsis text-start font-normal transition-colors',
-
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-export const Option = {
-  Container: OptionContainer,
-  Icon: OptionIcon,
-  Value: OptionValue,
-};
+import { type IconName } from 'ui-icons';
 
 export function getDataTypeIcon(dataType?: DataType): IconName | undefined {
   switch (dataType) {
@@ -114,6 +65,29 @@ export function getOperatorTypeTKey(
       return 'edit_operand.operator_type.function';
     case 'Enum':
       return 'edit_operand.operator_type.enum';
+    default:
+      return undefined;
+  }
+}
+
+export function getConstantDataTypeTKey(
+  dataType?: DataType,
+): ParseKeys<'scenarios'> | undefined {
+  switch (dataType) {
+    case 'String':
+      return 'edit_operand.constant.use_data_type.string';
+    case 'Int':
+    case 'Float':
+      return 'edit_operand.constant.use_data_type.number';
+    case 'Bool':
+      return 'edit_operand.constant.use_data_type.boolean';
+    case 'String[]':
+      return 'edit_operand.constant.use_data_type.string[]';
+    case 'Int[]':
+    case 'Float[]':
+      return 'edit_operand.constant.use_data_type.number[]';
+    case 'Bool[]':
+      return 'edit_operand.constant.use_data_type.boolean[]';
     default:
       return undefined;
   }

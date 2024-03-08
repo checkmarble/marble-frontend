@@ -29,5 +29,5 @@ export const OperandViewer = ({
     );
   }
 
-  return <OperandLabel operandLabelledAst={labelledAst} variant="view" />;
+  return <OperandLabel operandLabelledAst={labelledAst} type="view" />;
 };
