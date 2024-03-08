@@ -20,6 +20,7 @@ import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { type RoutePath } from '@app-builder/utils/routes/types';
 import { json, redirect } from '@remix-run/node';
+import * as Sentry from '@sentry/remix';
 import { marbleApi } from 'marble-api';
 import { type CSRF } from 'remix-utils/csrf/server';
 import * as z from 'zod';
@@ -130,7 +131,7 @@ export function makeAuthenticationServerService(
         {
           authorization: `Bearer ${idToken}`,
         },
-        { baseUrl: getServerEnv('MARBLE_API_DOMAIN_CLIENT') },
+        { baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER') },
       );
 
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
@@ -140,6 +141,7 @@ export function makeAuthenticationServerService(
       authSession.set('user', user);
       redirectUrl = options.successRedirect;
     } catch (error) {
+      Sentry.captureException(error);
       authSession.flash('authError', { message: adaptAuthErrors(error) });
 
       redirectUrl = options.failureRedirect;
@@ -174,7 +176,7 @@ export function makeAuthenticationServerService(
         {
           authorization: `Bearer ${idToken}`,
         },
-        { baseUrl: getServerEnv('MARBLE_API_DOMAIN_CLIENT') },
+        { baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER') },
       );
 
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
@@ -199,6 +201,7 @@ export function makeAuthenticationServerService(
         },
       );
     } catch (error) {
+      Sentry.captureException(error);
       throw redirect(options.failureRedirect);
     }
   }
