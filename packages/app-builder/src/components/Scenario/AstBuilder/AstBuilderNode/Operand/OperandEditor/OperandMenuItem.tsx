@@ -1,5 +1,4 @@
-import { Highlight } from '@app-builder/components/Highlight';
-import { type LabelledAst } from '@app-builder/models';
+import { type DataType, type LabelledAst } from '@app-builder/models';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { MenuItem } from 'ui-design-system';
@@ -54,19 +53,21 @@ function MenuItemLabel({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 export function ConstantOption({
-  constant,
+  label,
+  dataType,
   onSelect,
 }: {
-  constant: LabelledAst;
+  label: React.ReactNode;
+  dataType: DataType;
   onSelect: () => void;
 }) {
   const { t } = useTranslation('scenarios');
-  const dataTypeIcon = getDataTypeIcon(constant.dataType);
-  const constantDataTypeTKey = getConstantDataTypeTKey(constant.dataType);
+  const dataTypeIcon = getDataTypeIcon(dataType);
+  const constantDataTypeTKey = getConstantDataTypeTKey(dataType);
 
   return (
     <MenuItemContainer onClick={onSelect} leftIcon={dataTypeIcon}>
-      <MenuItemLabel>{constant.name}</MenuItemLabel>
+      <MenuItemLabel>{label}</MenuItemLabel>
       {constantDataTypeTKey ? (
         <span className="text-s shrink-0 font-semibold text-purple-100">
           {t(constantDataTypeTKey)}
@@ -77,24 +78,24 @@ export function ConstantOption({
 }
 
 export function OperandOption({
-  searchText = '',
+  label,
+  dataType,
   option,
   onSelect,
 }: {
-  searchText?: string;
+  label: React.ReactNode;
+  dataType: DataType;
   option: LabelledAst;
   onSelect: () => void;
 }) {
-  const dataTypeIcon = getDataTypeIcon(option.dataType);
+  const dataTypeIcon = getDataTypeIcon(dataType);
   return (
     <MenuItemContainer
       onClick={onSelect}
       className="group"
       leftIcon={dataTypeIcon}
     >
-      <MenuItemLabel>
-        <Highlight text={option.name} query={searchText} />
-      </MenuItemLabel>
+      <MenuItemLabel>{label}</MenuItemLabel>
       <OperandInfos
         gutter={24}
         shift={-8}
