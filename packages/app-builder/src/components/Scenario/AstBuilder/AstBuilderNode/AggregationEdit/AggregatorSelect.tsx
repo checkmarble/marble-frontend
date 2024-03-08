@@ -1,8 +1,8 @@
-import { type EvaluationError } from '@app-builder/models';
 import {
   allAggregators,
+  type EvaluationError,
   useGetAggregatorName,
-} from '@app-builder/services/editor';
+} from '@app-builder/models';
 import { useMemo } from 'react';
 import { Select } from 'ui-design-system';
 

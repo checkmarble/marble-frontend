@@ -61,7 +61,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const [
     operators,
-    identifiers,
+    accessors,
     dataModel,
     customLists,
     currentOrganization,
@@ -70,7 +70,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     editor.listOperators({
       scenarioId,
     }),
-    editor.listIdentifiers({
+    editor.listAccessors({
       scenarioId,
     }),
     apiClient.getDataModel(),
@@ -82,7 +82,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   return json({
-    identifiers,
+    databaseAccessors: accessors.databaseAccessors,
+    payloadAccessors: accessors.payloadAccessors,
     operators,
     dataModel: adaptDataModelDto(dataModel.data_model),
     customLists: customLists.custom_lists,
@@ -158,7 +159,8 @@ export default function Trigger() {
   const scenarioValidation = useCurrentScenarioValidation();
 
   const {
-    identifiers,
+    databaseAccessors,
+    payloadAccessors,
     operators,
     dataModel,
     customLists,
@@ -184,7 +186,8 @@ export default function Trigger() {
     backendAst: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),
     backendValidation: scenarioValidation.trigger.triggerEvaluation,
     localValidation,
-    identifiers,
+    databaseAccessors,
+    payloadAccessors,
     operators,
     dataModel,
     customLists,

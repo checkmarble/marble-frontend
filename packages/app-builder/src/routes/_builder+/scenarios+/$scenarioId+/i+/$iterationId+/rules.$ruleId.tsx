@@ -66,7 +66,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenarioId,
   });
 
-  const identifiersPromise = editor.listIdentifiers({
+  const accessorsPromise = editor.listAccessors({
     scenarioId,
   });
 
@@ -74,7 +74,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { custom_lists } = await apiClient.listCustomLists();
 
   return json({
-    identifiers: await identifiersPromise,
+    databaseAccessors: (await accessorsPromise).databaseAccessors,
+    payloadAccessors: (await accessorsPromise).payloadAccessors,
     operators: await operatorsPromise,
     dataModel: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
@@ -155,8 +156,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
 
-  const { identifiers, operators, dataModel, customLists } =
-    useLoaderData<typeof loader>();
+  const {
+    databaseAccessors,
+    payloadAccessors,
+    operators,
+    dataModel,
+    customLists,
+  } = useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -180,7 +186,8 @@ export default function RuleEdit() {
     backendAst: initialAst,
     backendValidation: ruleValidation.ruleEvaluation,
     localValidation,
-    identifiers,
+    databaseAccessors,
+    payloadAccessors,
     operators,
     dataModel,
     customLists,

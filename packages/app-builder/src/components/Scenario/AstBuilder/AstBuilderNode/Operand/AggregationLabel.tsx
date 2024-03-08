@@ -3,9 +3,7 @@ import {
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import { Fragment, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Fragment } from 'react';
 
 import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
 import {
@@ -27,37 +25,6 @@ export const AggregationLabel = ({
   labelledAst: LabelledAst;
   viewModel: AggregationEditorNodeViewModel;
 }) => {
-  const { t } = useTranslation(['common', 'scenarios']);
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Modal.Trigger>
-        <OperandLabel
-          operandLabelledAst={labelledAst}
-          variant="view"
-          tooltipContent={
-            <span className="text-xs">
-              {t('scenarios:view_aggregation.tooltip')}
-            </span>
-          }
-        />
-      </Modal.Trigger>
-      <Modal.Content size="medium">
-        <AggregationLabelModalContent builder={builder} viewModel={viewModel} />
-      </Modal.Content>
-    </Modal.Root>
-  );
-};
-
-function AggregationLabelModalContent({
-  builder,
-  viewModel,
-}: {
-  builder: AstBuilder;
-  viewModel: AggregationEditorNodeViewModel;
-}) {
-  const { t } = useTranslation(['common', 'scenarios']);
   const getOperatorName = useGetOperatorName();
   const aggregation = adaptAggregationViewModel(viewModel);
   const aggregatedFieldName = `${
@@ -65,9 +32,10 @@ function AggregationLabelModalContent({
   }.${aggregation.aggregatedField?.fieldName ?? ''}`;
 
   return (
-    <>
-      <Modal.Title>{aggregation.label}</Modal.Title>
-      <div className="flex flex-col p-6">
+    <OperandLabel
+      operandLabelledAst={labelledAst}
+      type="view"
+      tooltipContent={
         <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
           <span className="text-center font-bold text-purple-100">
             {aggregation.aggregator}
@@ -94,12 +62,7 @@ function AggregationLabelModalContent({
             </Fragment>
           ))}
         </div>
-        <div className="flex justify-center pt-4">
-          <Modal.Close asChild>
-            <Button name="close">{t('common:close')}</Button>
-          </Modal.Close>
-        </div>
-      </div>
-    </>
+      }
+    />
   );
-}
+};

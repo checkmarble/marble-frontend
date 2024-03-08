@@ -64,6 +64,7 @@ export function MenuRoot({ children, searchValue, onSearch }: MenuRootProps) {
         resetValueOnHide
         value={searchValue}
         setValue={onSearch}
+        includesBaseElement={false}
       >
         {element}
       </Ariakit.ComboboxProvider>
