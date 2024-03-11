@@ -1,39 +1,17 @@
-import {
-  adaptLabelledAst,
-  type AstNode,
-  isAggregation,
-  isConstant,
-  isCustomListAccess,
-  isDatabaseAccess,
-  isPayload,
-  isTimeAdd,
-  isTimeNow,
-  isUndefinedAstNode,
-} from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
+import { adaptEditableAstNode } from '@app-builder/models/editable-ast-node';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { useTranslation } from 'react-i18next';
 
 import { Default } from '../Default';
 import { getEnumOptionsFromNeighbour, OperandEditor } from './OperandEditor';
-import { OperandViewer } from './OperandViewer';
+import { OperandLabel } from './OperandLabel';
 
 export type OperandViewModel = EditorNodeViewModel;
-
-export function isEditableOperand(node: AstNode): boolean {
-  return (
-    isConstant(node) ||
-    isCustomListAccess(node) ||
-    isDatabaseAccess(node) ||
-    isPayload(node) ||
-    isAggregation(node) ||
-    isTimeAdd(node) ||
-    isTimeNow(node) ||
-    isUndefinedAstNode(node)
-  );
-}
 
 export function Operand({
   builder,
@@ -46,8 +24,9 @@ export function Operand({
   onSave?: (astNode: AstNode) => void;
   viewOnly?: boolean;
 }) {
+  const { t } = useTranslation(['scenarios']);
   const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
-  const labelledAst = adaptLabelledAst(astNode, {
+  const editableAstNode = adaptEditableAstNode(t, astNode, {
     dataModel: builder.input.dataModel,
     triggerObjectTable: builder.input.triggerObjectTable,
     customLists: builder.input.customLists,
@@ -57,27 +36,20 @@ export function Operand({
       dataModel: builder.input.dataModel,
     }),
   });
-  const isEditable = !!labelledAst && isEditableOperand(astNode);
 
-  if (!isEditable) {
+  if (!editableAstNode) {
     return <Default editorNodeViewModel={operandViewModel} builder={builder} />;
   }
 
   if (viewOnly || !onSave) {
-    return (
-      <OperandViewer
-        labelledAst={labelledAst}
-        operandViewModel={operandViewModel}
-        builder={builder}
-      />
-    );
+    return <OperandLabel editableAstNode={editableAstNode} type="view" />;
   }
 
   return (
     <OperandEditor
       builder={builder}
       operandViewModel={operandViewModel}
-      labelledAst={labelledAst}
+      editableAstNode={editableAstNode}
       onSave={onSave}
     />
   );

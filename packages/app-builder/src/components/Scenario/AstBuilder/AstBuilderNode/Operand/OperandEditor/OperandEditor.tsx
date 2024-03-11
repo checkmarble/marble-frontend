@@ -1,22 +1,27 @@
-import { Highlight } from '@app-builder/components/Highlight';
 import {
-  allAggregators,
   type AstNode,
+  type EnumValue,
+  findDataModelField,
+  findDataModelTable,
   isDatabaseAccess,
   isPayload,
-  type LabelledAst,
-  newAggregatorLabelledAst,
+  isUndefinedAstNode,
+  NewAggregatorAstNode,
   NewConstantAstNode,
-  newCustomListLabelledAst,
-  newDatabaseAccessorsLabelledAst,
-  newEnumConstantLabelledAst,
-  newPayloadAccessorsLabelledAst,
-  newUndefinedLabelledAst,
+  NewUndefinedAstNode,
   type TableModel,
 } from '@app-builder/models';
-import { newTimeAddLabelledAst } from '@app-builder/models/LabelledAst/TimeAdd';
-import { newTimeNowLabelledAst } from '@app-builder/models/LabelledAst/TimeNow';
-import { coerceToConstantsLabelledAst } from '@app-builder/services/editor';
+import {
+  AggregatorEditableAstNode,
+  ConstantEditableAstNode,
+  CustomListEditableAstNode,
+  DatabaseAccessEditableAstNode,
+  type EditableAstNode,
+  PayloadAccessorsEditableAstNode,
+  TimeAddEditableAstNode,
+  TimeNowEditableAstNode,
+} from '@app-builder/models/editable-ast-node';
+import { coerceToConstantEditableAstNode } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
@@ -63,7 +68,7 @@ export function getEnumOptionsFromNeighbour({
   viewModel: OperandViewModel;
   triggerObjectTable: TableModel;
   dataModel: TableModel[];
-}) {
+}): EnumValue[] {
   if (!viewModel.parent) {
     return [];
   }
@@ -78,19 +83,24 @@ export function getEnumOptionsFromNeighbour({
   }
   const neighbourNode = adaptAstNodeFromEditorViewModel(neighbourNodeViewModel);
   if (isPayload(neighbourNode)) {
-    const payloadAst = newPayloadAccessorsLabelledAst({
-      node: neighbourNode,
-      triggerObjectTable,
+    const field = findDataModelField({
+      table: triggerObjectTable,
+      fieldName: neighbourNode.children[0].constant,
     });
-    return payloadAst.values ?? [];
+    return field.isEnum ? field.values ?? [] : [];
   }
 
   if (isDatabaseAccess(neighbourNode)) {
-    const dbAccessAst = newDatabaseAccessorsLabelledAst({
-      node: neighbourNode,
+    const table = findDataModelTable({
       dataModel,
+      tableName: neighbourNode.namedChildren.tableName.constant,
+      path: neighbourNode.namedChildren.path.constant,
     });
-    return dbAccessAst.values ?? [];
+    const field = findDataModelField({
+      table: table,
+      fieldName: neighbourNode.namedChildren.fieldName.constant,
+    });
+    return field.isEnum ? field.values ?? [] : [];
   }
   return [];
 }
@@ -98,12 +108,12 @@ export function getEnumOptionsFromNeighbour({
 export function OperandEditor({
   builder,
   operandViewModel,
-  labelledAst,
+  editableAstNode,
   onSave,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
-  labelledAst: LabelledAst;
+  editableAstNode: EditableAstNode;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation('scenarios');
@@ -114,7 +124,7 @@ export function OperandEditor({
       <MenuButton
         render={
           <OperandLabel
-            operandLabelledAst={labelledAst}
+            editableAstNode={editableAstNode}
             type="edit"
             borderColor={getBorderColor(operandViewModel)}
             placeholder={t('edit_operand.placeholder')}
@@ -125,7 +135,6 @@ export function OperandEditor({
         <OperandEditorContent
           builder={builder}
           onSave={onSave}
-          labelledAst={labelledAst}
           operandViewModel={operandViewModel}
           searchValue={searchValue}
         />
@@ -137,35 +146,43 @@ export function OperandEditor({
 function OperandEditorContent({
   builder,
   onSave,
-  labelledAst,
   operandViewModel,
   searchValue,
 }: {
   builder: AstBuilder;
   onSave: (astNode: AstNode) => void;
   operandViewModel: OperandViewModel;
-  labelledAst: LabelledAst;
   searchValue: string;
 }) {
   const { t } = useTranslation('scenarios');
   const options = useMemo(() => {
-    const databaseAccessors = builder.input.databaseAccessors.map((node) =>
-      newDatabaseAccessorsLabelledAst({
-        dataModel: builder.input.dataModel,
-        node,
-      }),
+    const databaseAccessors = builder.input.databaseAccessors.map(
+      (node) =>
+        new DatabaseAccessEditableAstNode(node, builder.input.dataModel),
     );
-    const payloadAccessors = builder.input.payloadAccessors.map((node) =>
-      newPayloadAccessorsLabelledAst({
-        triggerObjectTable: builder.input.triggerObjectTable,
-        node,
-      }),
+    const payloadAccessors = builder.input.payloadAccessors.map(
+      (node) =>
+        new PayloadAccessorsEditableAstNode(
+          node,
+          builder.input.triggerObjectTable,
+        ),
     );
-    const customLists = builder.input.customLists.map(newCustomListLabelledAst);
+    const customLists = builder.input.customLists.map(
+      (customList) => new CustomListEditableAstNode(customList),
+    );
     const functions = [
-      ...allAggregators.map(newAggregatorLabelledAst),
-      newTimeAddLabelledAst(),
-      newTimeNowLabelledAst(),
+      ...AggregatorEditableAstNode.allAggregators.map(
+        (aggregator) =>
+          new AggregatorEditableAstNode(
+            t,
+            NewAggregatorAstNode(aggregator),
+            builder.input.dataModel,
+            builder.input.customLists,
+            builder.input.triggerObjectTable,
+          ),
+      ),
+      new TimeAddEditableAstNode(t),
+      new TimeNowEditableAstNode(t),
     ];
 
     const enumOptionValues = getEnumOptionsFromNeighbour({
@@ -173,13 +190,16 @@ function OperandEditorContent({
       dataModel: builder.input.dataModel,
       triggerObjectTable: builder.input.triggerObjectTable,
     });
-    const enumOptions = enumOptionValues?.map((enumValue) => {
-      return newEnumConstantLabelledAst(
-        NewConstantAstNode({
-          constant: enumValue,
-        }),
-      );
-    });
+
+    const enumOptions = enumOptionValues.map(
+      (enumValue) =>
+        new ConstantEditableAstNode(
+          NewConstantAstNode({
+            constant: enumValue,
+          }),
+          enumOptionValues,
+        ),
+    );
 
     return [
       ...payloadAccessors,
@@ -188,13 +208,21 @@ function OperandEditorContent({
       ...functions,
       ...enumOptions,
     ];
-  }, [builder.input, operandViewModel]);
+  }, [
+    builder.input.customLists,
+    builder.input.dataModel,
+    builder.input.databaseAccessors,
+    builder.input.payloadAccessors,
+    builder.input.triggerObjectTable,
+    operandViewModel,
+    t,
+  ]);
 
   const editAggregation = useEditAggregation();
   const editTimeAdd = useEditTimeAdd();
 
-  const handleSelectOption = useCallback(
-    (newSelection: LabelledAst) => {
+  const onClick = useCallback(
+    (newSelection: EditableAstNode) => {
       const editorNodeViewModel = adaptEditorNodeViewModel({
         ast: newSelection.astNode,
       });
@@ -224,17 +252,10 @@ function OperandEditorContent({
   const bottomOptions = useBottomActions({
     operandViewModel,
     onSave,
-    bottomActions: {
-      clear: labelledAst.name !== '',
-      edit: true,
-      copy: labelledAst.name !== '',
-      paste: true,
-    },
   });
 
   const { constantOptions, matchOptions } = useMatchOptions({
     options,
-    onSelect: handleSelectOption,
     searchValue,
   });
 
@@ -255,14 +276,16 @@ function OperandEditorContent({
           <div className="flex flex-col gap-2 p-2">
             {searchValue === '' ? (
               <OperandEditorDiscoveryResults
-                builder={builder}
                 options={options}
-                onSelect={handleSelectOption}
+                searchValue={searchValue}
+                onClick={onClick}
               />
             ) : (
               <OperandEditorSearchResults
+                searchValue={searchValue}
                 constantOptions={constantOptions}
                 matchOptions={matchOptions}
+                onClick={onClick}
               />
             )}
           </div>
@@ -311,74 +334,53 @@ function BottomOptions({ options }: { options: BottomOptionProps[] }) {
 function useBottomActions({
   operandViewModel,
   onSave,
-  bottomActions,
 }: {
   operandViewModel: OperandViewModel;
   onSave: (astNode: AstNode) => void;
-  bottomActions: {
-    /**
-     * If true, show the clear action
-     */
-    clear?: boolean;
-    /**
-     * If true, show the edit action if the operand is editable (e.g. aggregation)
-     */
-    edit?: boolean;
-    /**
-     * If true, show the copy action if a CopyPasteASTContext is present
-     */
-    copy?: boolean;
-    /**
-     * If true, show the paste action if a CopyPasteASTContext is present and a copy has been made
-     */
-    paste?: boolean;
-  };
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
+  const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
   const editAggregation = useEditAggregation();
   const editTimeAdd = useEditTimeAdd();
   const copyPasteAST = useOptionalCopyPasteAST();
 
   const bottomOptions: BottomOptionProps[] = [];
 
-  if (bottomActions.clear) {
+  if (!isUndefinedAstNode(astNode)) {
     bottomOptions.push({
       icon: 'restart-alt',
       label: t('scenarios:edit_operand.clear_operand'),
       onSelect: () => {
-        onSave(newUndefinedLabelledAst().astNode);
+        onSave(NewUndefinedAstNode());
       },
     });
   }
 
-  if (bottomActions.edit) {
-    if (isAggregationEditorNodeViewModel(operandViewModel)) {
-      bottomOptions.push({
-        icon: 'edit',
-        label: t('common:edit'),
-        onSelect: () => {
-          const initialAggregation =
-            adaptAggregationViewModel(operandViewModel);
+  if (isAggregationEditorNodeViewModel(operandViewModel)) {
+    bottomOptions.push({
+      icon: 'edit',
+      label: t('common:edit'),
+      onSelect: () => {
+        const initialAggregation = adaptAggregationViewModel(operandViewModel);
 
-          editAggregation({
-            initialAggregation,
-            onSave,
-          });
-        },
-      });
-    } else if (isTimeAddEditorNodeViewModel(operandViewModel)) {
-      bottomOptions.push({
-        icon: 'edit',
-        label: t('common:edit'),
-        onSelect: () => {
-          const initialValue = adaptTimeAddViewModal(operandViewModel);
-          editTimeAdd({ initialValue, onSave });
-        },
-      });
-    }
+        editAggregation({
+          initialAggregation,
+          onSave,
+        });
+      },
+    });
+  } else if (isTimeAddEditorNodeViewModel(operandViewModel)) {
+    bottomOptions.push({
+      icon: 'edit',
+      label: t('common:edit'),
+      onSelect: () => {
+        const initialValue = adaptTimeAddViewModal(operandViewModel);
+        editTimeAdd({ initialValue, onSave });
+      },
+    });
   }
 
-  if (bottomActions.copy && copyPasteAST) {
+  if (!isUndefinedAstNode(astNode) && copyPasteAST) {
     bottomOptions.push({
       icon: 'copy',
       label: t('common:copy'),
@@ -388,7 +390,7 @@ function useBottomActions({
     });
   }
 
-  if (bottomActions.paste && copyPasteAST) {
+  if (copyPasteAST) {
     const { ast } = copyPasteAST;
     if (ast) {
       bottomOptions.push({
@@ -405,38 +407,23 @@ function useBottomActions({
 }
 
 function useMatchOptions({
-  onSelect,
   options,
   searchValue,
 }: {
-  onSelect: (option: LabelledAst) => void;
-  options: LabelledAst[];
+  options: EditableAstNode[];
   searchValue: string;
 }) {
   const { t } = useTranslation(['common']);
   const constantOptions = useMemo(() => {
-    const constants = coerceToConstantsLabelledAst(searchValue, {
+    return coerceToConstantEditableAstNode(searchValue, {
       booleans: { true: [t('common:true')], false: [t('common:false')] },
     });
-    return constants.map((constant) => ({
-      id: constant.name,
-      dataType: constant.dataType,
-      label: constant.name,
-      onSelect: () => onSelect(constant),
-    }));
-  }, [searchValue, onSelect, t]);
+  }, [searchValue, t]);
   const matchOptions = useMemo(() => {
-    const matches = matchSorter(options, searchValue, {
-      keys: ['name'],
+    return matchSorter(options, searchValue, {
+      keys: ['displayName'],
     });
-    return matches.map((match) => ({
-      id: match.name,
-      dataType: match.dataType,
-      label: <Highlight text={match.name} query={searchValue} />,
-      option: match,
-      onSelect: () => onSelect(match),
-    }));
-  }, [searchValue, onSelect, options]);
+  }, [searchValue, options]);
 
   return { constantOptions, matchOptions };
 }

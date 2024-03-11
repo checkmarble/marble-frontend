@@ -3,7 +3,6 @@ export * from './ast-operators';
 export * from './auth-errors';
 export * from './data-model';
 export * from './http-errors';
-export * from './LabelledAst';
 export * from './marble-session';
 export * from './scenario';
 export * from './scenario-validation';

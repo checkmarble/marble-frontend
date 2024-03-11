@@ -1,11 +1,16 @@
-import { type LabelledAst } from '@app-builder/models';
+import { type DataType } from '@app-builder/models';
+import {
+  type EditableAstNode,
+  type OperandType,
+  UndefinedEditableAstNode,
+} from '@app-builder/models/editable-ast-node';
 import * as Ariakit from '@ariakit/react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-import { OperandDescription, OperandInfos } from './OperandInfos';
+import { OperandInfos } from './OperandInfos';
 import {
   getDataTypeIcon,
   getDataTypeTKey,
@@ -39,24 +44,19 @@ const operandContainerClassnames = cva(
 
 interface OperandLabelProps
   extends VariantProps<typeof operandContainerClassnames> {
-  operandLabelledAst: LabelledAst;
-  tooltipContent?: React.ReactNode;
+  editableAstNode: EditableAstNode;
   placeholder?: string;
 }
 
 export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
   function OperandLabel(
-    {
-      operandLabelledAst,
-      tooltipContent,
-      borderColor,
-      placeholder,
-      type,
-      ...props
-    },
+    { editableAstNode, borderColor, placeholder, type, ...props },
     ref,
   ) {
-    const displayPlaceholder = !operandLabelledAst.name && !!placeholder;
+    const { t } = useTranslation(['scenarios']);
+
+    const displayPlaceholder =
+      editableAstNode instanceof UndefinedEditableAstNode;
 
     return (
       <Ariakit.Role
@@ -74,37 +74,33 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
           <span
             className={selectDisplayText({
               type: 'placeholder',
-              size: placeholder.length > 20 ? 'long' : 'short',
+              size: placeholder && placeholder.length > 20 ? 'long' : 'short',
             })}
           >
-            {placeholder}
+            {placeholder ?? t('scenarios:edit_operand.placeholder')}
           </span>
         ) : (
           <>
             <TypeInfos
               type={type}
-              operandType={operandLabelledAst.operandType}
-              dataType={operandLabelledAst.dataType}
+              operandType={editableAstNode.operandType}
+              dataType={editableAstNode.dataType}
             />
             <span
               className={selectDisplayText({
                 type: 'value',
-                size: operandLabelledAst.name.length > 20 ? 'long' : 'short',
+                size:
+                  editableAstNode.displayName.length > 20 ? 'long' : 'short',
               })}
             >
-              {operandLabelledAst.name}
+              {editableAstNode.displayName}
             </span>
             <OperandInfos
               gutter={16}
               shift={-16}
               className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
-            >
-              {tooltipContent ? (
-                tooltipContent
-              ) : (
-                <OperandDescription option={operandLabelledAst} />
-              )}
-            </OperandInfos>
+              editableAstNode={editableAstNode}
+            />
           </>
         )}
       </Ariakit.Role>
@@ -125,8 +121,8 @@ const typeInfosClassnames = cva(
 );
 
 interface TypeInfosProps extends VariantProps<typeof typeInfosClassnames> {
-  operandType: LabelledAst['operandType'];
-  dataType: LabelledAst['dataType'];
+  operandType: OperandType;
+  dataType: DataType;
 }
 
 export function TypeInfos({ operandType, dataType, type }: TypeInfosProps) {
