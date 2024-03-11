@@ -42,7 +42,8 @@ export function initializeFirebaseClient({
   const clientAuth = getAuth(app);
 
   if (authEmulatorHost && !('emulator' in clientAuth.config)) {
-    connectAuthEmulator(clientAuth, authEmulatorHost);
+    const url = new URL('http://' + authEmulatorHost);
+    connectAuthEmulator(clientAuth, url.toString());
   }
 
   const googleAuthProvider = new GoogleAuthProvider();
