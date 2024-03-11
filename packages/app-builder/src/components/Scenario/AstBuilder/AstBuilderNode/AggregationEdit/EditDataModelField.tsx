@@ -15,6 +15,7 @@ function getDataModelFieldLabel(dataModelField: DataModelField | null) {
     .join('.');
 }
 
+//TODO: replace with new OperandEditor component
 export const EditDataModelField = ({
   placeholder,
   className,

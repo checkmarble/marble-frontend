@@ -1,4 +1,5 @@
-import { type DataType, type LabelledAst } from '@app-builder/models';
+import { type DataType } from '@app-builder/models';
+import { type OperandType } from '@app-builder/models/editable-ast-node';
 import { type ParseKeys } from 'i18next';
 import { type IconName } from 'ui-icons';
 
@@ -37,7 +38,7 @@ export function getDataTypeTKey(
 }
 
 export function getOperatorTypeIcon(
-  operatorType: LabelledAst['operandType'],
+  operatorType: OperandType,
 ): IconName | undefined {
   switch (operatorType) {
     case 'CustomList':
@@ -54,7 +55,7 @@ export function getOperatorTypeIcon(
 }
 
 export function getOperatorTypeTKey(
-  operatorType: LabelledAst['operandType'],
+  operatorType: OperandType,
 ): ParseKeys<'scenarios'> | undefined {
   switch (operatorType) {
     case 'CustomList':

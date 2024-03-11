@@ -1,74 +1,70 @@
-import {
-  type LabelledAst,
-  NewAstNode,
-  NewConstantAstNode,
-} from '@app-builder/models';
+import { NewAstNode, NewConstantAstNode } from '@app-builder/models';
 
 import {
-  coerceToConstantsLabelledAst,
-  type CoerceToConstantsLabelledAstOptions,
-} from './coerceToConstantsLabelledAst';
+  coerceToConstantEditableAstNode,
+  type CoerceToConstantEditableAstNodeOptions,
+} from './coerceToConstantEditableAstNode';
 
-const options: CoerceToConstantsLabelledAstOptions = {
+const options: CoerceToConstantEditableAstNodeOptions = {
   booleans: {
     true: ['true', 'vrai'],
     false: ['false', 'faux'],
   },
 };
 
-describe('coerceToConstantsLabelledAst', () => {
+describe('coerceToConstantEditableAstNode', () => {
   it('returns nothing given empty string', () => {
-    expect(coerceToConstantsLabelledAst('', options)).toHaveLength(0);
-    expect(coerceToConstantsLabelledAst(' ', options)).toHaveLength(0);
+    expect(coerceToConstantEditableAstNode('', options)).toHaveLength(0);
+    expect(coerceToConstantEditableAstNode(' ', options)).toHaveLength(0);
   });
 
   it('return a constant string given a random string', () => {
     const valueToCoerce = 'some string ';
-    const expected: LabelledAst[] = [
+    const expected = [
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantsLabelledAst(valueToCoerce, options)).toStrictEqual(
-      expected,
-    );
+    expect(
+      coerceToConstantEditableAstNode(valueToCoerce, options),
+    ).toMatchObject(expected);
   });
 
   it('returns two contants string and number given a string convertible to a numbers', () => {
     const valueToCoerce = '10';
-    const expected: LabelledAst[] = [
+    const expected = [
       helperConstantOperandOption({ valueToCoerce, dataType: 'Int' }),
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantsLabelledAst(valueToCoerce, options)).toStrictEqual(
-      expected,
-    );
+    expect(
+      coerceToConstantEditableAstNode(valueToCoerce, options),
+    ).toMatchObject(expected);
   });
 
   it('returns constant true true and constant string given "True"', () => {
     const valueToCoerce = 'True';
-    const expected: LabelledAst[] = [
+    const expected = [
       helperConstantOperandOption({ valueToCoerce, dataType: 'Bool' }),
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantsLabelledAst(valueToCoerce, options)).toStrictEqual(
-      expected,
-    );
+    expect(
+      coerceToConstantEditableAstNode(valueToCoerce, options),
+    ).toMatchObject(expected);
   });
 
   it('returns constant false and constant string given "FALSE"', () => {
     const valueToCoerce = 'FALSE';
-    const expected: LabelledAst[] = [
+    const expected = [
       helperConstantOperandOption({ valueToCoerce, dataType: 'Bool' }),
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantsLabelledAst(valueToCoerce, options)).toStrictEqual(
-      expected,
-    );
+    expect(
+      coerceToConstantEditableAstNode(valueToCoerce, options),
+    ).toMatchObject(expected);
   });
 
   describe('return an array given a string convertible to an array', () => {
     it('String[]', () => {
       const valueToCoerce = '["fr" , 13  , null, sp ace]';
-      const expected: LabelledAst[] = [
+      const expected = [
         helperConstantArrayOperandOption({
           constant: ['fr', '13', 'null', 'sp ace'],
           dataType: 'String[]',
@@ -76,13 +72,13 @@ describe('coerceToConstantsLabelledAst', () => {
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
       expect(
-        coerceToConstantsLabelledAst(valueToCoerce, options),
-      ).toStrictEqual(expected);
+        coerceToConstantEditableAstNode(valueToCoerce, options),
+      ).toMatchObject(expected);
     });
 
     it('Int[]', () => {
       const valueToCoerce = '[23, 13  , 1233  ]';
-      const expected: LabelledAst[] = [
+      const expected = [
         helperConstantArrayOperandOption({
           constant: [23, 13, 1233],
           dataType: 'Int[]',
@@ -90,13 +86,13 @@ describe('coerceToConstantsLabelledAst', () => {
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
       expect(
-        coerceToConstantsLabelledAst(valueToCoerce, options),
-      ).toStrictEqual(expected);
+        coerceToConstantEditableAstNode(valueToCoerce, options),
+      ).toMatchObject(expected);
     });
 
     it('Float[]', () => {
       const valueToCoerce = '[23.25, 13  , 1233  ]';
-      const expected: LabelledAst[] = [
+      const expected = [
         helperConstantArrayOperandOption({
           constant: [23.25, 13, 1233],
           dataType: 'Float[]',
@@ -104,8 +100,8 @@ describe('coerceToConstantsLabelledAst', () => {
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
       expect(
-        coerceToConstantsLabelledAst(valueToCoerce, options),
-      ).toStrictEqual(expected);
+        coerceToConstantEditableAstNode(valueToCoerce, options),
+      ).toMatchObject(expected);
     });
   });
 });
@@ -116,11 +112,11 @@ function helperConstantOperandOption({
 }: {
   valueToCoerce: string;
   dataType: 'String' | 'Int' | 'Float' | 'Bool';
-}): LabelledAst {
+}) {
   switch (dataType) {
     case 'String':
       return {
-        name: `"${valueToCoerce}"`,
+        displayName: `"${valueToCoerce}"`,
         operandType: 'Constant',
         dataType: dataType,
         astNode: NewAstNode({
@@ -129,7 +125,7 @@ function helperConstantOperandOption({
       };
     case 'Int':
       return {
-        name: valueToCoerce,
+        displayName: valueToCoerce,
         operandType: 'Constant',
         dataType: dataType,
         astNode: NewAstNode({
@@ -138,7 +134,7 @@ function helperConstantOperandOption({
       };
     case 'Float':
       return {
-        name: valueToCoerce,
+        displayName: valueToCoerce,
         operandType: 'Constant',
         dataType: dataType,
         astNode: NewAstNode({
@@ -147,7 +143,7 @@ function helperConstantOperandOption({
       };
     case 'Bool':
       return {
-        name: valueToCoerce.toLowerCase(),
+        displayName: valueToCoerce.toLowerCase(),
         operandType: 'Constant',
         dataType: dataType,
         astNode: NewAstNode({
@@ -163,9 +159,9 @@ function helperConstantArrayOperandOption({
 }: {
   constant: (string | number | boolean)[];
   dataType: 'String[]' | 'Int[]' | 'Float[]';
-}): LabelledAst {
+}) {
   return {
-    name: `[${constant
+    displayName: `[${constant
       .map((elem) => (typeof elem === 'string' ? `"${elem}"` : elem))
       .join(', ')}]`,
     operandType: 'Constant',

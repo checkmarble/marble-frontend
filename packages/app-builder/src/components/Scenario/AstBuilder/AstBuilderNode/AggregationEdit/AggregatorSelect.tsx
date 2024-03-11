@@ -1,9 +1,10 @@
 import {
-  allAggregators,
   type EvaluationError,
-  useGetAggregatorName,
+  NewAggregatorAstNode,
 } from '@app-builder/models';
+import { AggregatorEditableAstNode } from '@app-builder/models/editable-ast-node';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Select } from 'ui-design-system';
 
 export const AggregatorSelect = ({
@@ -15,17 +16,19 @@ export const AggregatorSelect = ({
   onChange: (value: string) => void;
   errors: EvaluationError[];
 }) => {
-  const getAggregatorName = useGetAggregatorName();
-
+  const { t } = useTranslation(['scenarios']);
   const availableAggregators = useMemo(
     () =>
-      allAggregators.map((aggregator) => {
+      AggregatorEditableAstNode.allAggregators.map((aggregator) => {
         return {
           aggregatorName: aggregator,
-          displayName: getAggregatorName(aggregator),
+          displayName: AggregatorEditableAstNode.getAggregatorDisplayName(
+            t,
+            NewAggregatorAstNode(aggregator),
+          ),
         };
       }),
-    [getAggregatorName],
+    [t],
   );
 
   return (

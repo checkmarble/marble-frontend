@@ -1,9 +1,27 @@
-import { type LabelledAst } from '@app-builder/models';
+import { type DataType } from '@app-builder/models';
+import {
+  adaptEditableAstNode,
+  AggregatorEditableAstNode,
+  ConstantEditableAstNode,
+  CustomListEditableAstNode,
+  DatabaseAccessEditableAstNode,
+  type EditableAstNode,
+  type OperandType,
+  PayloadAccessorsEditableAstNode,
+  TimeAddEditableAstNode,
+  TimeNowEditableAstNode,
+  UndefinedEditableAstNode,
+} from '@app-builder/models/editable-ast-node';
 import * as Ariakit from '@ariakit/react';
-import { Fragment, useMemo } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
+import { assertNever } from 'typescript-utils';
+import { ScrollAreaV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
+import { useGetOperatorName } from '../Operator';
+import { OperandLabel } from './OperandLabel';
 import {
   getDataTypeIcon,
   getDataTypeTKey,
@@ -14,17 +32,17 @@ import {
 const MAX_ENUM_VALUES = 50;
 
 interface OperandInfosProps {
-  children: React.ReactNode;
   className?: string;
   gutter?: number;
   shift?: number;
+  editableAstNode: EditableAstNode;
 }
 
 export function OperandInfos({
-  children,
   className,
   gutter,
   shift,
+  editableAstNode,
 }: OperandInfosProps) {
   return (
     <Ariakit.HovercardProvider
@@ -36,75 +54,37 @@ export function OperandInfos({
         <Icon icon="tip" className={className} />
       </Ariakit.HovercardAnchor>
       <Ariakit.Hovercard
+        unmountOnHide
         gutter={gutter}
         shift={shift}
         portal
         className="bg-grey-00 border-grey-10 flex max-h-[400px] overflow-y-auto overflow-x-hidden rounded border shadow-md"
       >
-        <div className="flex flex-col gap-2 p-4">{children}</div>
+        <ScrollAreaV2>
+          <div className="flex flex-col gap-2 p-4">
+            <div className="flex flex-col gap-1">
+              <TypeInfos
+                operandType={editableAstNode.operandType}
+                dataType={editableAstNode.dataType}
+              />
+              <p className="text-grey-100 text-s text-ellipsis hyphens-auto font-normal">
+                {editableAstNode.displayName}
+              </p>
+            </div>
+            <OperandDescription editableAstNode={editableAstNode} />
+          </div>
+        </ScrollAreaV2>
       </Ariakit.Hovercard>
     </Ariakit.HovercardProvider>
   );
 }
 
-//TODO: change for a polymorphic option with a conditional render on the type
-export const OperandDescription = ({ option }: { option: LabelledAst }) => {
-  const { t } = useTranslation(['scenarios']);
-
-  const values = useMemo(() => {
-    if (!option.values) return null;
-    const sorted = [...option.values].sort();
-    if (sorted.length > MAX_ENUM_VALUES) {
-      const sliced = sorted.slice(0, MAX_ENUM_VALUES);
-      sliced.push('...');
-      return sliced;
-    }
-    return sorted;
-  }, [option.values]);
-
-  return (
-    <Fragment>
-      <div className="flex flex-col gap-1">
-        <TypeInfos
-          operandType={option.operandType}
-          dataType={option.dataType}
-        />
-        <p className="text-grey-100 text-s text-ellipsis hyphens-auto font-normal">
-          {option.name}
-        </p>
-      </div>
-      {option.description ? (
-        <p className="text-grey-50 max-w-[300px] text-xs font-normal first-letter:capitalize">
-          {option.description}
-        </p>
-      ) : null}
-      {values && values.length > 0 ? (
-        <div className="flex max-w-[300px] flex-col gap-1">
-          <p className="text-grey-50 text-s">{t('scenarios:enum_options')}</p>
-          <ul className="flex flex-col">
-            {values.map((value) => {
-              return (
-                <li
-                  key={value}
-                  className="text-grey-50 truncate text-xs font-normal"
-                >
-                  {value}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ) : null}
-    </Fragment>
-  );
-};
-
 function TypeInfos({
   operandType,
   dataType,
 }: {
-  operandType: LabelledAst['operandType'];
-  dataType: LabelledAst['dataType'];
+  operandType: OperandType;
+  dataType: DataType;
 }) {
   const { t } = useTranslation(['scenarios']);
   const typeInfos = [
@@ -131,6 +111,145 @@ function TypeInfos({
             {icon ? <Icon icon={icon} className="size-3" /> : null}
             {t(tKey, { count: 1 })}
           </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function OperandDescription({
+  editableAstNode,
+}: {
+  editableAstNode: EditableAstNode;
+}) {
+  const { t } = useTranslation(['scenarios']);
+
+  if (editableAstNode instanceof AggregatorEditableAstNode) {
+    return <AggregatorDescription editableAstNode={editableAstNode} />;
+  }
+  if (editableAstNode instanceof CustomListEditableAstNode) {
+    const { description } = editableAstNode.customList;
+    return <Description description={description} />;
+  }
+  if (
+    editableAstNode instanceof DatabaseAccessEditableAstNode ||
+    editableAstNode instanceof PayloadAccessorsEditableAstNode
+  ) {
+    return <DataAccessorDescription editableAstNode={editableAstNode} />;
+  }
+  if (editableAstNode instanceof TimeNowEditableAstNode) {
+    return (
+      <Description description={t('scenarios:edit_date.now.description')} />
+    );
+  }
+  if (
+    editableAstNode instanceof ConstantEditableAstNode ||
+    editableAstNode instanceof UndefinedEditableAstNode ||
+    editableAstNode instanceof TimeAddEditableAstNode
+  ) {
+    return null;
+  }
+
+  assertNever('[OperandDescription] unknown editableAstNode:', editableAstNode);
+}
+
+function Description({ description }: { description: string }) {
+  return (
+    <p className="text-grey-50 max-w-[300px] text-xs font-normal first-letter:capitalize">
+      {description}
+    </p>
+  );
+}
+
+function DataAccessorDescription({
+  editableAstNode,
+}: {
+  editableAstNode:
+    | PayloadAccessorsEditableAstNode
+    | DatabaseAccessEditableAstNode;
+}) {
+  const { t } = useTranslation(['scenarios']);
+  const { description, values, isEnum } = editableAstNode.field;
+
+  return (
+    <>
+      <Description description={description} />
+      {isEnum && values && values.length > 0 ? (
+        <div className="flex max-w-[300px] flex-col gap-1">
+          <p className="text-grey-50 text-s">{t('scenarios:enum_options')}</p>
+          <ul className="flex flex-col">
+            {values
+              .slice(0, MAX_ENUM_VALUES)
+              .sort()
+              .map((value) => {
+                return (
+                  <li
+                    key={value}
+                    className="text-grey-50 truncate text-xs font-normal"
+                  >
+                    {value}
+                  </li>
+                );
+              })}
+            {values.length > MAX_ENUM_VALUES ? (
+              <li className="text-grey-50 truncate text-xs font-normal">...</li>
+            ) : null}
+          </ul>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+function AggregatorDescription({
+  editableAstNode,
+}: {
+  editableAstNode: AggregatorEditableAstNode;
+}) {
+  const { t } = useTranslation(['scenarios']);
+  const getOperatorName = useGetOperatorName();
+  const { aggregator, tableName, fieldName, filters } =
+    editableAstNode.astNode.namedChildren;
+  if (
+    !tableName.constant &&
+    !fieldName.constant &&
+    filters.children.length === 0
+  )
+    return null;
+
+  const aggregatedFieldName = `${tableName.constant}.${fieldName.constant}`;
+
+  return (
+    <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
+      <span className="text-center font-bold text-purple-100">
+        {aggregator.constant}
+      </span>
+      <span className="font-bold">{aggregatedFieldName}</span>
+      {filters.children.map((filter, index) => {
+        const { operator, fieldName, value } = filter.namedChildren;
+        const valueEditableAstNode = adaptEditableAstNode(t, value, {
+          dataModel: editableAstNode.dataModel,
+          triggerObjectTable: editableAstNode.triggerObjectTable,
+          customLists: editableAstNode.customLists,
+          enumOptions: [],
+        });
+        if (!valueEditableAstNode) return null;
+        return (
+          <Fragment key={`filter_${index}`}>
+            <LogicalOperatorLabel
+              className="text-grey-50"
+              operator={index === 0 ? 'where' : 'and'}
+            />
+            <div className="flex items-center gap-1">
+              <p className="whitespace-nowrap text-right">
+                {`${fieldName?.constant ?? ''} ${getOperatorName(operator?.constant ?? '')}`}
+              </p>
+              <OperandLabel
+                editableAstNode={valueEditableAstNode}
+                type="view"
+              />
+            </div>
+          </Fragment>
         );
       })}
     </div>

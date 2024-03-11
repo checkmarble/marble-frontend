@@ -3,12 +3,14 @@ import {
   isDatabaseAccess,
   isPayload,
   isTimeNow,
-  type LabelledAst,
-  newDatabaseAccessorsLabelledAst,
-  newPayloadAccessorsLabelledAst,
   NewUndefinedAstNode,
 } from '@app-builder/models';
-import { newTimeNowLabelledAst } from '@app-builder/models/LabelledAst/TimeNow';
+import {
+  DatabaseAccessEditableAstNode,
+  type EditableAstNode,
+  PayloadAccessorsEditableAstNode,
+  TimeNowEditableAstNode,
+} from '@app-builder/models/editable-ast-node';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
@@ -34,34 +36,34 @@ export const TimestampField = ({
   value: EditorNodeViewModel | null;
 }) => {
   const { t } = useTranslation(['scenarios']);
-  const options: LabelledAst[] = useMemo(() => {
-    const databaseAccessors = builder.input.databaseAccessors.map((node) =>
-      newDatabaseAccessorsLabelledAst({
-        dataModel: builder.input.dataModel,
-        node,
-      }),
+  const options = useMemo(() => {
+    const databaseAccessors = builder.input.databaseAccessors.map(
+      (node) =>
+        new DatabaseAccessEditableAstNode(node, builder.input.dataModel),
     );
-    const payloadAccessors = builder.input.payloadAccessors.map((node) =>
-      newPayloadAccessorsLabelledAst({
-        triggerObjectTable: builder.input.triggerObjectTable,
-        node,
-      }),
+    const payloadAccessors = builder.input.payloadAccessors.map(
+      (node) =>
+        new PayloadAccessorsEditableAstNode(
+          node,
+          builder.input.triggerObjectTable,
+        ),
     );
     const timestampFieldOptions = [
       ...payloadAccessors,
       ...databaseAccessors,
-    ].filter((labelledAst) => labelledAst.dataType == 'Timestamp');
+    ].filter(({ dataType }) => dataType == 'Timestamp');
 
-    return [newTimeNowLabelledAst(), ...timestampFieldOptions];
+    return [new TimeNowEditableAstNode(t), ...timestampFieldOptions];
   }, [
     builder.input.dataModel,
     builder.input.databaseAccessors,
     builder.input.payloadAccessors,
     builder.input.triggerObjectTable,
+    t,
   ]);
 
   const onSelect = useCallback(
-    (newSelection: LabelledAst | null) => {
+    (newSelection: EditableAstNode | null) => {
       const newNode = newSelection
         ? newSelection.astNode
         : NewUndefinedAstNode();
@@ -70,22 +72,24 @@ export const TimestampField = ({
     [onChange],
   );
 
-  const node = value && adaptAstNodeFromEditorViewModel(value);
-  let initialValue: LabelledAst | null = null;
-  if (node && isPayload(node)) {
-    initialValue = newPayloadAccessorsLabelledAst({
-      triggerObjectTable: builder.input.triggerObjectTable,
-      node,
-    });
-  }
-  if (node && isDatabaseAccess(node)) {
-    initialValue = newDatabaseAccessorsLabelledAst({
-      dataModel: builder.input.dataModel,
-      node,
-    });
-  }
-
-  if (node && isTimeNow(node)) initialValue = newTimeNowLabelledAst();
+  const initialValue = useMemo(() => {
+    if (!value) return null;
+    const astNode = adaptAstNodeFromEditorViewModel(value);
+    if (isPayload(astNode)) {
+      return new PayloadAccessorsEditableAstNode(
+        astNode,
+        builder.input.triggerObjectTable,
+      );
+    }
+    if (isDatabaseAccess(astNode)) {
+      return new DatabaseAccessEditableAstNode(
+        astNode,
+        builder.input.dataModel,
+      );
+    }
+    if (isTimeNow(astNode)) return new TimeNowEditableAstNode(t);
+    return null;
+  }, [builder.input.dataModel, builder.input.triggerObjectTable, t, value]);
 
   return (
     <TimestampFieldCombobox
@@ -99,6 +103,7 @@ export const TimestampField = ({
   );
 };
 
+//TODO: replace with new OperandEditor component
 const TimestampFieldCombobox = ({
   placeholder,
   className,
@@ -111,21 +116,18 @@ const TimestampFieldCombobox = ({
   placeholder: string;
   className?: string;
   defaultOpen?: boolean;
-  onChange: (value: LabelledAst | null) => void;
-  options: LabelledAst[];
+  onChange: (value: EditableAstNode | null) => void;
+  options: EditableAstNode[];
   errors: EvaluationError[];
-  value: LabelledAst | null;
+  value: EditableAstNode | null;
 }) => {
   const { optionLabels, getOption } = useMemo(() => {
-    const map = new Map(
-      options.map((option) => [getOptionLabel(option), option]),
-    );
+    const map = new Map(options.map((option) => [option.displayName, option]));
     return {
       optionLabels: Array.from(map.keys()),
       getOption: (label: string) => map.get(label) ?? null,
     };
   }, [options]);
-  const selectedValue = useMemo(() => getOptionLabel(value), [value]);
 
   const [searchValue, setSearchValue] = useState('');
   const deferredSearchValue = useDeferredValue(searchValue);
@@ -134,6 +136,7 @@ const TimestampFieldCombobox = ({
     () => matchSorter(optionLabels, deferredSearchValue),
     [optionLabels, deferredSearchValue],
   );
+  const selectedValue = value?.displayName;
 
   return (
     <SelectWithCombobox.Root
@@ -161,7 +164,3 @@ const TimestampFieldCombobox = ({
     </SelectWithCombobox.Root>
   );
 };
-
-function getOptionLabel(option: LabelledAst | null) {
-  return option ? option.name : '';
-}

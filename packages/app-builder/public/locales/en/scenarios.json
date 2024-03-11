@@ -202,6 +202,9 @@
   "edit_date.duration_unit_hours": "hours",
   "edit_date.duration_unit_days": "days",
   "edit_date.select_a_field": "Select a timestamp field...",
+  "edit_date.now": "Now",
+  "edit_date.now.description": "The time when the scenario is run",
+  "edit_date.date": "Date",
   "enum_options": "Options:",
   "nest": "Nest"
 }

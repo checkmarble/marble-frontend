@@ -1,13 +1,12 @@
 import {
-  type DataType,
-  isDatabaseAccess,
-  isPayload,
-  type LabelledAst,
-} from '@app-builder/models';
-import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
+  DatabaseAccessEditableAstNode,
+  type EditableAstNode,
+  type OperandType,
+  PayloadAccessorsEditableAstNode,
+} from '@app-builder/models/editable-ast-node';
 import * as Ariakit from '@ariakit/react';
 import clsx from 'clsx';
-import type * as React from 'react';
+import { type FunctionComponent, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import {
@@ -24,177 +23,162 @@ import { Icon } from 'ui-icons';
 import { getOperatorTypeIcon, getOperatorTypeTKey } from '../utils';
 import { OperandOption } from './OperandMenuItem';
 
+type GroupGetter = FunctionComponent<{
+  operandType: OperandType;
+  options: EditableAstNode[];
+  searchValue: string;
+  onClick: (option: EditableAstNode) => void;
+}>;
+
+/**
+ * Organize the options into groups and subgroups
+ * - Key order is used to determine the order of the groups in the UI
+ * - GroupGetter is used to display the options in each group
+ */
+type OperandEditorDiscoveryResultsConfig = Partial<
+  Record<OperandType, GroupGetter>
+>;
+
 interface OperandEditorDiscoveryResultsProps {
-  builder: AstBuilder;
-  options: LabelledAst[];
-  onSelect: (option: LabelledAst) => void;
-}
-
-interface LeafGroup {
-  id: string;
-  label: React.ReactNode;
-  options: {
-    id: string;
-    label: React.ReactNode;
-    dataType: DataType;
-    option: LabelledAst;
-    onSelect: () => void;
-  }[];
-}
-
-interface NodeGroup {
-  id: string;
-  label: React.ReactNode;
-  subGroups: LeafGroup[];
-}
-
-type Group = LeafGroup | NodeGroup;
-
-export function renderGroup(group: Group) {
-  const isLeafGroup = 'options' in group;
-
-  if (isLeafGroup) {
-    return (
-      <MenuRoot key={group.id}>
-        <MenuButton className="data-[active-item]:bg-purple-05 flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2 outline-none">
-          {group.label}
-          <Icon
-            aria-hidden="true"
-            icon="arrow-right"
-            className="size-5 shrink-0"
-          />
-        </MenuButton>
-        <MenuPopover className="max-h-64 w-64 flex-col" gutter={16}>
-          <MenuContent>
-            <ScrollAreaV2 type="auto">
-              <div className="flex flex-col gap-2 p-2">
-                {group.options.map((option) => (
-                  <OperandOption
-                    key={option.id}
-                    dataType={option.dataType}
-                    label={option.label}
-                    option={option.option}
-                    onSelect={option.onSelect}
-                  />
-                ))}
-              </div>
-            </ScrollAreaV2>
-          </MenuContent>
-        </MenuPopover>
-      </MenuRoot>
-    );
-  }
-
-  return (
-    <MenuGroup key={group.id} className="flex w-full flex-col">
-      {group.label}
-      {group.subGroups.map((subGroup) => renderGroup(subGroup))}
-    </MenuGroup>
-  );
+  options: EditableAstNode[];
+  searchValue: string;
+  onClick: (option: EditableAstNode) => void;
+  discoveryResultsConfig?: OperandEditorDiscoveryResultsConfig;
 }
 
 export function OperandEditorDiscoveryResults({
-  builder,
   options,
-  onSelect,
+  searchValue,
+  onClick,
+  discoveryResultsConfig = defaultDiscoveryResultsConfig,
 }: OperandEditorDiscoveryResultsProps) {
-  const optionsGroups = R.pipe(
-    options,
-    R.groupBy.strict((option) => option.operandType),
-  );
+  const optionsGroups = useMemo(() => {
+    return R.pipe(
+      options,
+      R.groupBy.strict((option) => option.operandType),
+    );
+  }, [options]);
 
-  const groups = R.pipe(
-    defaultDiscoveryResultsConfig,
+  return R.pipe(
+    discoveryResultsConfig,
     R.toPairs.strict(),
-    R.map(([operandType, getter]) => {
-      const options = optionsGroups[operandType] ?? [];
-      return getter(options, {
-        onSelect,
-        triggerObjectTableName: builder.input.triggerObjectTable.name,
-      });
+    R.map(([operandType, Getter]) => {
+      return (
+        <Getter
+          key={operandType}
+          operandType={operandType}
+          options={optionsGroups[operandType] ?? []}
+          searchValue={searchValue}
+          onClick={onClick}
+        />
+      );
     }),
-    R.filter(R.isDefined.strict),
   );
-
-  return groups.map((group) => renderGroup(group));
 }
 
-type GroupGetter = (
-  options: LabelledAst[],
-  config: {
-    onSelect: (option: LabelledAst) => void;
-    triggerObjectTableName: string;
-  },
-) => Group | undefined;
-
-function leafGroupGetter(operandType: LabelledAst['operandType']): GroupGetter {
-  return (options, { onSelect }): LeafGroup | undefined => {
-    const count = options.length;
-
-    if (count === 0) return undefined;
-
-    return {
-      id: operandType,
-      label: <OperandDiscoveryTitle operandType={operandType} count={count} />,
-      options: options.map((option) => ({
-        id: option.name,
-        label: option.name,
-        dataType: option.dataType,
-        option,
-        onSelect: () => onSelect(option),
-      })),
-    };
-  };
-}
-
-const getFieldGroup: GroupGetter = (
+function Submenu({
+  searchValue,
+  children,
   options,
-  { onSelect, triggerObjectTableName },
-) => {
-  const count = options.length;
-  if (count === 0) return undefined;
-
-  const fieldByPathOptions = R.pipe(
-    options,
-    R.groupBy.strict((option) => {
-      const { astNode } = option;
-      if (isPayload(astNode)) {
-        return triggerObjectTableName;
-      }
-      if (isDatabaseAccess(astNode)) {
-        return [
-          astNode.namedChildren.tableName.constant,
-          ...astNode.namedChildren.path.constant,
-        ].join('.');
-      }
-    }),
-    R.mapValues((value) => R.sortBy(value, (o) => o.name)),
-    R.toPairs(),
+  onClick,
+}: {
+  searchValue: string;
+  children: React.ReactNode;
+  options: EditableAstNode[];
+  onClick: (option: EditableAstNode) => void;
+}) {
+  return (
+    <MenuRoot>
+      <MenuButton className="data-[active-item]:bg-purple-05 flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2 outline-none">
+        {children}
+        <Icon
+          aria-hidden="true"
+          icon="arrow-right"
+          className="size-5 shrink-0"
+        />
+      </MenuButton>
+      <MenuPopover className="max-h-64 w-64 flex-col" gutter={16}>
+        <MenuContent>
+          <ScrollAreaV2 type="auto">
+            <div className="flex flex-col gap-2 p-2">
+              {options.map((option) => (
+                <OperandOption
+                  key={option.displayName}
+                  editableAstNode={option}
+                  searchValue={searchValue}
+                  onClick={() => onClick(option)}
+                />
+              ))}
+            </div>
+          </ScrollAreaV2>
+        </MenuContent>
+      </MenuPopover>
+    </MenuRoot>
   );
+}
 
-  return {
-    id: 'Field',
-    label: (
+const FlatGroupGetter: GroupGetter = ({
+  operandType,
+  searchValue,
+  options,
+  onClick,
+}) => {
+  const count = options.length;
+
+  if (count === 0) return null;
+
+  return (
+    <Submenu options={options} onClick={onClick} searchValue={searchValue}>
+      <OperandDiscoveryTitle operandType={operandType} count={count} />
+    </Submenu>
+  );
+};
+
+const FieldGroupGetter: GroupGetter = ({
+  operandType,
+  searchValue,
+  options,
+  onClick,
+}) => {
+  const fieldByPathOptions = useMemo(() => {
+    return R.pipe(
+      options,
+      R.groupBy.strict((option) => {
+        if (
+          option instanceof PayloadAccessorsEditableAstNode ||
+          option instanceof DatabaseAccessEditableAstNode
+        ) {
+          return option.getFieldGroupName();
+        }
+      }),
+      R.mapValues((value) => R.sortBy(value, (o) => o.displayName)),
+      R.toPairs(),
+    );
+  }, [options]);
+
+  const count = options.length;
+  if (count === 0) return null;
+
+  return (
+    <MenuGroup className="flex w-full flex-col">
       <OperandDiscoveryTitle
-        operandType="Field"
+        operandType={operandType}
         count={count}
         className="min-h-10 p-2"
         renderLabel={<MenuGroupLabel />}
       />
-    ),
-    subGroups: fieldByPathOptions.map(([path, options]) => ({
-      id: path,
-      label: <FieldByPathLabel path={path} count={options.length} />,
-      count: options.length,
-      options: options.map((option) => ({
-        id: option.name,
-        label: option.name,
-        dataType: option.dataType,
-        option,
-        onSelect: () => onSelect(option),
-      })),
-    })),
-  };
+      {fieldByPathOptions.map(([path, subOptions]) => (
+        <Submenu
+          key={path}
+          searchValue={searchValue}
+          options={subOptions}
+          onClick={onClick}
+        >
+          <FieldByPathLabel path={path} count={subOptions.length} />
+        </Submenu>
+      ))}
+    </MenuGroup>
+  );
 };
 
 function OperandDiscoveryTitle({
@@ -203,7 +187,7 @@ function OperandDiscoveryTitle({
   className,
   renderLabel,
 }: {
-  operandType: LabelledAst['operandType'];
+  operandType: OperandType;
   count: number;
   className?: string;
   renderLabel?: Ariakit.RoleProps['render'];
@@ -265,19 +249,9 @@ function FieldByPathLabel({ path, count }: { path: string; count: number }) {
   );
 }
 
-/**
- * Organize the options into groups and subgroups
- * - Key order is used to determine the order of the groups in the UI
- * - GroupGetter is used to display the options in each group
- */
-type OperandEditorDiscoveryResultsConfig = Partial<
-  Record<LabelledAst['operandType'], GroupGetter>
->;
-
-export const defaultDiscoveryResultsConfig: OperandEditorDiscoveryResultsConfig =
-  {
-    Enum: leafGroupGetter('Enum'),
-    Field: getFieldGroup,
-    CustomList: leafGroupGetter('CustomList'),
-    Function: leafGroupGetter('Function'),
-  };
+const defaultDiscoveryResultsConfig: OperandEditorDiscoveryResultsConfig = {
+  Enum: FlatGroupGetter,
+  Field: FieldGroupGetter,
+  CustomList: FlatGroupGetter,
+  Function: FlatGroupGetter,
+};
