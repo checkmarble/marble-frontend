@@ -1,10 +1,14 @@
-import { type DataType, type LabelledAst } from '@app-builder/models';
+import { Highlight } from '@app-builder/components/Highlight';
+import {
+  type ConstantEditableAstNode,
+  type EditableAstNode,
+} from '@app-builder/models/editable-ast-node';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { MenuItem } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
-import { OperandDescription, OperandInfos } from '../OperandInfos';
+import { OperandInfos } from '../OperandInfos';
 import { getConstantDataTypeTKey, getDataTypeIcon } from '../utils';
 
 interface OperandMenuItemProps extends React.ComponentProps<typeof MenuItem> {
@@ -52,22 +56,25 @@ function MenuItemLabel({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-export function ConstantOption({
-  label,
-  dataType,
-  onSelect,
+export function CoercedConstantOption({
+  constantEditableAstNode,
+  onClick,
 }: {
-  label: React.ReactNode;
-  dataType: DataType;
-  onSelect: () => void;
+  constantEditableAstNode: ConstantEditableAstNode;
+  onClick: (option: EditableAstNode) => void;
 }) {
   const { t } = useTranslation('scenarios');
-  const dataTypeIcon = getDataTypeIcon(dataType);
-  const constantDataTypeTKey = getConstantDataTypeTKey(dataType);
+  const dataTypeIcon = getDataTypeIcon(constantEditableAstNode.dataType);
+  const constantDataTypeTKey = getConstantDataTypeTKey(
+    constantEditableAstNode.dataType,
+  );
 
   return (
-    <MenuItemContainer onClick={onSelect} leftIcon={dataTypeIcon}>
-      <MenuItemLabel>{label}</MenuItemLabel>
+    <MenuItemContainer
+      onClick={() => onClick(constantEditableAstNode)}
+      leftIcon={dataTypeIcon}
+    >
+      <MenuItemLabel>{constantEditableAstNode.displayName}</MenuItemLabel>
       {constantDataTypeTKey ? (
         <span className="text-s shrink-0 font-semibold text-purple-100">
           {t(constantDataTypeTKey)}
@@ -78,31 +85,31 @@ export function ConstantOption({
 }
 
 export function OperandOption({
-  label,
-  dataType,
-  option,
-  onSelect,
+  searchValue,
+  editableAstNode,
+  onClick,
 }: {
-  label: React.ReactNode;
-  dataType: DataType;
-  option: LabelledAst;
-  onSelect: () => void;
+  searchValue: string;
+  editableAstNode: EditableAstNode;
+  onClick: (option: EditableAstNode) => void;
 }) {
-  const dataTypeIcon = getDataTypeIcon(dataType);
+  const dataTypeIcon = getDataTypeIcon(editableAstNode.dataType);
+
   return (
     <MenuItemContainer
-      onClick={onSelect}
+      onClick={() => onClick(editableAstNode)}
       className="group"
       leftIcon={dataTypeIcon}
     >
-      <MenuItemLabel>{label}</MenuItemLabel>
+      <MenuItemLabel>
+        <Highlight text={editableAstNode.displayName} query={searchValue} />
+      </MenuItemLabel>
       <OperandInfos
         gutter={24}
         shift={-8}
         className="size-5 shrink-0 text-transparent transition-colors group-data-[active-item]:text-purple-50 group-data-[active-item]:hover:text-purple-100"
-      >
-        <OperandDescription option={option} />
-      </OperandInfos>
+        editableAstNode={editableAstNode}
+      />
     </MenuItemContainer>
   );
 }

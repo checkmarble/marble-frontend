@@ -1,29 +1,25 @@
 import { scenarioI18n } from '@app-builder/components';
-import { type DataType, type LabelledAst } from '@app-builder/models';
+import {
+  type ConstantEditableAstNode,
+  type EditableAstNode,
+} from '@app-builder/models/editable-ast-node';
 import { useTranslation } from 'react-i18next';
 import { MenuGroup, MenuGroupLabel } from 'ui-design-system';
 
-import { ConstantOption, OperandOption } from './OperandMenuItem';
+import { CoercedConstantOption, OperandOption } from './OperandMenuItem';
 
 interface OperandEditorSearchResultsProps {
-  constantOptions: {
-    id: string;
-    dataType: DataType;
-    label: React.ReactNode;
-    onSelect: () => void;
-  }[];
-  matchOptions: {
-    id: string;
-    label: React.ReactNode;
-    dataType: DataType;
-    option: LabelledAst;
-    onSelect: () => void;
-  }[];
+  constantOptions: ConstantEditableAstNode[];
+  matchOptions: EditableAstNode[];
+  searchValue: string;
+  onClick: (option: EditableAstNode) => void;
 }
 
 export function OperandEditorSearchResults({
   constantOptions,
   matchOptions,
+  searchValue,
+  onClick,
 }: OperandEditorSearchResultsProps) {
   const { t } = useTranslation(scenarioI18n);
 
@@ -33,11 +29,10 @@ export function OperandEditorSearchResults({
         <MenuGroup className="flex w-full flex-col gap-1">
           <MenuGroupLabel className="sr-only">Constants</MenuGroupLabel>
           {constantOptions.map((constant) => (
-            <ConstantOption
-              key={constant.id}
-              dataType={constant.dataType}
-              label={constant.label}
-              onSelect={constant.onSelect}
+            <CoercedConstantOption
+              key={constant.displayName}
+              constantEditableAstNode={constant}
+              onClick={onClick}
             />
           ))}
         </MenuGroup>
@@ -57,11 +52,10 @@ export function OperandEditorSearchResults({
         </div>
         {matchOptions.map((option) => (
           <OperandOption
-            key={option.id}
-            dataType={option.dataType}
-            label={option.label}
-            option={option.option}
-            onSelect={option.onSelect}
+            key={option.displayName}
+            searchValue={searchValue}
+            editableAstNode={option}
+            onClick={onClick}
           />
         ))}
       </MenuGroup>

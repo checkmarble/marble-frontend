@@ -129,7 +129,22 @@ export interface AggregationAstNode {
     tableName: ConstantAstNode<string>;
     fieldName: ConstantAstNode<string>;
     label: ConstantAstNode<string>;
-    filters: AstNode;
+    filters: {
+      name: 'List';
+      constant: undefined;
+      children: {
+        name: 'Filter';
+        constant: undefined;
+        children: never[];
+        namedChildren: {
+          tableName: ConstantAstNode<string | null>;
+          fieldName: ConstantAstNode<string | null>;
+          operator: ConstantAstNode<string | null>;
+          value: AstNode;
+        };
+      }[];
+      namedChildren: Record<string, never>;
+    };
   };
 }
 
@@ -145,10 +160,12 @@ export function NewAggregatorAstNode(
       tableName: NewConstantAstNode({ constant: '' }),
       fieldName: NewConstantAstNode({ constant: '' }),
       label: NewConstantAstNode({ constant: '' }),
-      filters: NewAstNode({
+      filters: {
         name: 'List',
+        constant: undefined,
         children: [],
-      }),
+        namedChildren: {},
+      },
     },
   };
 }
@@ -162,7 +179,7 @@ export interface PayloadAstNode {
 }
 
 export const customListAccessAstNodeName = 'CustomListAccess';
-interface CustomListAccessAstNode {
+export interface CustomListAccessAstNode {
   name: typeof customListAccessAstNodeName;
   constant: undefined;
   children: [];

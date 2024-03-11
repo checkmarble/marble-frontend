@@ -4,7 +4,6 @@ import {
   type AstNode,
   computeValidationForNamedChildren,
   type EvaluationError,
-  NewAstNode,
   NewConstantAstNode,
 } from '@app-builder/models';
 import {
@@ -120,21 +119,22 @@ const adaptFilterViewModel = (
 export const adaptAggregationAstNode = (
   aggregationViewModel: AggregationViewModel,
 ): AggregationAstNode => {
-  const filters: AstNode[] = aggregationViewModel.filters.map(
-    (filter: FilterViewModel) =>
-      NewAstNode({
-        name: 'Filter',
-        namedChildren: {
-          operator: NewConstantAstNode({ constant: filter.operator }),
-          tableName: NewConstantAstNode({
-            constant: filter.filteredField?.tableName ?? null,
-          }),
-          fieldName: NewConstantAstNode({
-            constant: filter.filteredField?.fieldName ?? null,
-          }),
-          value: adaptAstNodeFromEditorViewModel(filter.value),
-        },
-      }),
+  const filters = aggregationViewModel.filters.map(
+    (filter: FilterViewModel) => ({
+      name: 'Filter' as const,
+      constant: undefined,
+      children: [],
+      namedChildren: {
+        operator: NewConstantAstNode({ constant: filter.operator }),
+        tableName: NewConstantAstNode({
+          constant: filter.filteredField?.tableName ?? null,
+        }),
+        fieldName: NewConstantAstNode({
+          constant: filter.filteredField?.fieldName ?? null,
+        }),
+        value: adaptAstNodeFromEditorViewModel(filter.value),
+      },
+    }),
   );
   return {
     name: aggregationAstNodeName,
@@ -153,7 +153,12 @@ export const adaptAggregationAstNode = (
       fieldName: NewConstantAstNode({
         constant: aggregationViewModel.aggregatedField?.fieldName ?? '',
       }),
-      filters: NewAstNode({ name: 'List', children: filters }),
+      filters: {
+        name: 'List',
+        constant: undefined,
+        children: filters,
+        namedChildren: {},
+      },
     },
   };
 };
