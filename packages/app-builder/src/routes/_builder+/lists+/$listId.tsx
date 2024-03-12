@@ -12,7 +12,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Link, useLoaderData, useRouteError } from '@remix-run/react';
+import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
   createColumnHelper,
@@ -105,9 +105,7 @@ export default function Lists() {
       <Page.Header className="justify-between ">
         <div className="flex w-full flex-row items-center justify-between	gap-4">
           <div className="flex flex-row items-center gap-4">
-            <Link to="./.." className="mr-4">
-              <Page.BackButton />
-            </Link>
+            <Page.BackButton />
             {customList.name}
           </div>
           {canManageList ? (

@@ -1,6 +1,8 @@
+import { useNavigate } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
-import { ScrollAreaV2 } from 'ui-design-system';
+import { useTranslation } from 'react-i18next';
+import { ScrollAreaV2, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 function PageContainer({ className, ...props }: React.ComponentProps<'div'>) {
@@ -57,17 +59,26 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function PageBackButton({ className, ...props }: React.ComponentProps<'div'>) {
+function PageBackButton({
+  className,
+  ...props
+}: React.ComponentProps<'button'>) {
+  const navigate = useNavigate();
+  const { t } = useTranslation(['common']);
   return (
-    <div
-      className={clsx(
-        'border-grey-10 flex items-center justify-center rounded-md border p-2',
-        className,
-      )}
-      {...props}
-    >
-      <Icon icon="arrow-left" className="size-5" />
-    </div>
+    <Tooltip.Default content={t('common:go_back')}>
+      <button
+        className={clsx(
+          'border-grey-10 hover:bg-grey-02 flex items-center justify-center rounded-md border p-2',
+          className,
+        )}
+        onClick={() => navigate(-1)}
+        {...props}
+      >
+        <Icon icon="arrow-left" className="size-5" aria-hidden />
+        <span className="sr-only">{t('common:go_back')}</span>
+      </button>
+    </Tooltip.Default>
   );
 }
 

@@ -25,7 +25,7 @@ import {
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Link, Outlet, useLoaderData } from '@remix-run/react';
+import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
@@ -103,9 +103,7 @@ export default function ScenarioEditLayout() {
     <Page.Container>
       <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
-          <Link to={getRoute('/scenarios/')}>
-            <Page.BackButton />
-          </Link>
+          <Page.BackButton />
           <UpdateScenario
             defaultValue={{
               name: currentScenario.name,
