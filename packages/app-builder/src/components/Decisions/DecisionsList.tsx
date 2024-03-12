@@ -2,7 +2,7 @@ import { CaseStatus, decisionsI18n, Outcome } from '@app-builder/components';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { Link, useNavigate } from '@remix-run/react';
+import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type DecisionDetail } from 'marble-api';
@@ -14,7 +14,7 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, Table, useVirtualTable } from 'ui-design-system';
+import { Checkbox, rowLink, Table, useVirtualTable } from 'ui-design-system';
 
 import { Score } from './Score';
 
@@ -72,10 +72,20 @@ export function DecisionsList({
 }: DecisionsListProps) {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
-  const navigate = useNavigate();
 
   const columns = useMemo(() => {
     const columns = [
+      columnHelper.display({
+        ...rowLink.columnProps,
+        cell: ({ row }) => (
+          <Link
+            to={getRoute('/decisions/:decisionId', {
+              decisionId: fromUUID(row.original.id),
+            })}
+            className={rowLink.className}
+          />
+        ),
+      }),
       columnHelper.accessor((row) => row.created_at, {
         id: 'created_at',
         header: t('decisions:created_at'),
@@ -207,15 +217,8 @@ export function DecisionsList({
             <Table.Row
               key={row.id}
               tabIndex={0}
-              className={clsx('hover:bg-grey-02 cursor-pointer')}
+              className={clsx('hover:bg-grey-02 relative cursor-pointer')}
               row={row}
-              onClick={() => {
-                navigate(
-                  getRoute('/decisions/:decisionId', {
-                    decisionId: fromUUID(row.original.id),
-                  }),
-                );
-              }}
             />
           );
         })}

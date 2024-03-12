@@ -123,7 +123,7 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(
         {orientation !== 'vertical' ? (
           <Scrollbar
             orientation="horizontal"
-            className="hover:bg-grey-10 m-px flex h-1 touch-none select-none flex-col rounded-full transition"
+            className="hover:bg-grey-10 z-50 m-px flex h-1 touch-none select-none flex-col rounded-full transition"
           >
             <Thumb className="bg-grey-25 hover:bg-grey-50 relative flex-1 rounded-full transition-colors" />
           </Scrollbar>
@@ -132,7 +132,7 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(
         {orientation !== 'horizontal' ? (
           <Scrollbar
             orientation="vertical"
-            className="hover:bg-grey-10 m-px flex w-1 touch-none select-none flex-row rounded-full transition"
+            className="hover:bg-grey-10 z-50 m-px flex w-1 touch-none select-none flex-row rounded-full transition"
           >
             <Thumb className="bg-grey-25 hover:bg-grey-50 relative flex-1 rounded-full transition-colors" />
           </Scrollbar>

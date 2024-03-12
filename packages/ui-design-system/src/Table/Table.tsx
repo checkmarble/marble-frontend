@@ -32,7 +32,7 @@ function TableContainer({
       type="auto"
     >
       <table
-        className="w-full table-fixed border-separate border-spacing-0"
+        className="isolate w-full table-fixed border-separate border-spacing-0"
         {...props}
       />
     </ScrollAreaV2>
@@ -64,25 +64,42 @@ function TableTH<TData extends RowData, TValue>({
   );
 }
 
+const internalRowLink = '__internal-row-link';
+export const rowLink = {
+  columnProps: {
+    id: internalRowLink,
+    header: '',
+  },
+  className:
+    "block size-0 overflow-hidden after:absolute after:inset-0 after:content-['']",
+};
+
 function Header<TData extends RowData>({
   headerGroups,
 }: {
   headerGroups: HeaderGroup<TData>[];
 }) {
   return (
-    <thead className="sticky top-0">
+    <thead className="sticky top-0 z-10">
       {headerGroups.map((headerGroup) => (
         <tr key={headerGroup.id}>
           {headerGroup.headers.map((header, index) => {
+            const context = header.getContext();
+            if (header.id === internalRowLink) {
+              return (
+                <th
+                  colSpan={header.colSpan}
+                  key={header.id}
+                  className="bg-grey-02 border-grey-10 w-0 border-b"
+                ></th>
+              );
+            }
             return (
               <Table.TH header={header} key={header.id}>
                 {header.isPlaceholder ? null : (
                   <div className="text-s text-grey-100 flex flex-row items-center font-semibold">
                     <p className="flex flex-1">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      {flexRender(header.column.columnDef.header, context)}
                     </p>
                     {{
                       asc: <Icon icon="arrow-2-up" className="size-6" />,
@@ -204,14 +221,25 @@ function Row<TData extends RowData>({
   ...props
 }: Omit<React.ComponentProps<'tr'>, 'children'> & { row: Row<TData> }) {
   return (
-    <tr className={clsx('group h-16', className)} {...props}>
+    <tr className={clsx('group relative h-16', className)} {...props}>
       {row.getVisibleCells().map((cell) => {
+        const context = cell.getContext();
+        if (context.column.id === internalRowLink) {
+          return (
+            <td
+              key={cell.id}
+              className="border-grey-10 border-b group-last:border-b-0"
+            >
+              {flexRender(cell.column.columnDef.cell, context)}
+            </td>
+          );
+        }
         return (
           <td
             key={cell.id}
             className="border-grey-10 text-s w-full border-b px-4 font-normal group-last:border-b-0"
           >
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            {flexRender(cell.column.columnDef.cell, context)}
           </td>
         );
       })}
