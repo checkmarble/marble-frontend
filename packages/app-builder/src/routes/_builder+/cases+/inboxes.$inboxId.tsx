@@ -136,7 +136,7 @@ export default function Cases() {
                 </CaseRightPanel.Trigger>
               </div>
               <CasesFiltersBar />
-              <CasesList cases={cases} className="max-h-[70dvh]" />
+              <CasesList cases={cases} className="max-h-[60dvh]" />
               <PaginationButtons
                 items={cases}
                 onPaginationChange={(paginationParams: PaginationParams) =>
