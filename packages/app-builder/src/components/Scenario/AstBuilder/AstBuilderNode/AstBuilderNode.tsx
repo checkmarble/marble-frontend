@@ -8,7 +8,7 @@ import { Operand } from './Operand';
 import {
   adaptTwoOperandsLineViewModel,
   TwoOperandsLine,
-} from './TwoOperandsLine/TwoOperandsLine';
+} from './TwoOperandsLine';
 
 interface AstBuilderNodeProps {
   builder: AstBuilder;

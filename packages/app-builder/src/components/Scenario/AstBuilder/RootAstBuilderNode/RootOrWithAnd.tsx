@@ -11,17 +11,12 @@ import {
   findArgumentIndexErrorsFromParent,
   hasArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
-import {
-  adaptEvaluationErrorViewModels,
-  useGetNodeEvaluationErrorMessage,
-  useGetOrAndNodeEvaluationErrorMessage,
-} from '@app-builder/services/validation';
 import clsx from 'clsx';
 import React from 'react';
 
-import { ScenarioValidationError } from '../../ScenarioValidationError';
+import { EvaluationErrors } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
-import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine/TwoOperandsLine';
+import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
@@ -79,18 +74,12 @@ export function RootOrWithAnd({
   rootOrWithAndViewModel: RootOrWithAndViewModel;
   viewOnly?: boolean;
 }) {
-  const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   function appendOrChild() {
     builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
   }
 
   const { nodeErrors: orNodeErrors } = separateChildrenErrors(
     rootOrWithAndViewModel.orErrors,
-  );
-
-  const rootOrErrorMessages = adaptEvaluationErrorViewModels(orNodeErrors).map(
-    getEvaluationErrorMessage,
   );
 
   return (
@@ -100,10 +89,6 @@ export function RootOrWithAnd({
         const { nodeErrors: andNodeErrors } = separateChildrenErrors(
           andChild.errors,
         );
-
-        const andErrorMessages = adaptEvaluationErrorViewModels(
-          andNodeErrors,
-        ).map(getEvaluationErrorMessage);
 
         function appendAndChild() {
           builder.appendChild(andChild.nodeId, NewAndChild());
@@ -132,10 +117,6 @@ export function RootOrWithAnd({
               </div>
             ) : null}
             {andChild.children.map((child, childIndex) => {
-              const errorMessages = adaptEvaluationErrorViewModels([
-                ...computeLineErrors(child),
-                ...findArgumentIndexErrorsFromParent(child),
-              ]).map((error) => getNodeEvaluationErrorMessage(error));
               return (
                 <div
                   key={child.nodeId}
@@ -166,13 +147,13 @@ export function RootOrWithAnd({
                       />
                     </div>
                   ) : null}
-                  <div className="col-start-2 flex flex-row flex-wrap gap-2">
-                    {errorMessages.map((error) => (
-                      <ScenarioValidationError key={error}>
-                        {error}
-                      </ScenarioValidationError>
-                    ))}
-                  </div>
+                  <EvaluationErrors
+                    className="col-start-2"
+                    evaluationErrors={[
+                      ...computeLineErrors(child),
+                      ...findArgumentIndexErrorsFromParent(child),
+                    ]}
+                  />
                 </div>
               );
             })}
@@ -186,12 +167,7 @@ export function RootOrWithAnd({
                   />
                 </div>
               ) : null}
-
-              {andErrorMessages.map((error) => (
-                <ScenarioValidationError key={error}>
-                  {error}
-                </ScenarioValidationError>
-              ))}
+              <EvaluationErrors evaluationErrors={andNodeErrors} />
             </div>
           </React.Fragment>
         );
@@ -201,10 +177,7 @@ export function RootOrWithAnd({
         {!viewOnly ? (
           <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
         ) : null}
-
-        {rootOrErrorMessages.map((error) => (
-          <ScenarioValidationError key={error}>{error}</ScenarioValidationError>
-        ))}
+        <EvaluationErrors evaluationErrors={orNodeErrors} />
       </div>
     </div>
   );

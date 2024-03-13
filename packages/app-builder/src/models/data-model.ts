@@ -1,3 +1,4 @@
+import { type ParseKeys } from 'i18next';
 import {
   type CreateTableFieldDto,
   type DataModelDto,
@@ -6,6 +7,7 @@ import {
   type UpdateTableFieldDto,
 } from 'marble-api';
 import * as R from 'remeda';
+import { type IconName } from 'ui-icons';
 
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
@@ -178,4 +180,61 @@ export function findDataModelField({
   }
 
   return field;
+}
+
+export function getDataTypeIcon(dataType?: DataType): IconName | undefined {
+  switch (dataType) {
+    case 'Timestamp':
+      return 'schedule';
+    case 'String':
+      return 'string';
+    case 'Int':
+    case 'Float':
+      return 'number';
+    case 'Bool':
+      return 'boolean';
+    default:
+      return undefined;
+  }
+}
+
+export function getDataTypeTKey(
+  dataType?: DataType,
+): ParseKeys<'scenarios'> | undefined {
+  switch (dataType) {
+    case 'String':
+      return 'edit_operand.data_type.string';
+    case 'Int':
+    case 'Float':
+      return 'edit_operand.data_type.number';
+    case 'Bool':
+      return 'edit_operand.data_type.boolean';
+    case 'Timestamp':
+      return 'edit_operand.data_type.timestamp';
+    default:
+      return undefined;
+  }
+}
+
+export function getConstantDataTypeTKey(
+  dataType?: DataType,
+): ParseKeys<'scenarios'> | undefined {
+  switch (dataType) {
+    case 'String':
+      return 'edit_operand.constant.use_data_type.string';
+    case 'Int':
+    case 'Float':
+      return 'edit_operand.constant.use_data_type.number';
+    case 'Bool':
+      return 'edit_operand.constant.use_data_type.boolean';
+    case 'String[]':
+      return 'edit_operand.constant.use_data_type.string[]';
+    case 'Int[]':
+    case 'Float[]':
+      return 'edit_operand.constant.use_data_type.number[]';
+    case 'Bool[]':
+      return 'edit_operand.constant.use_data_type.boolean[]';
+    default:
+      return undefined;
+  }
 }

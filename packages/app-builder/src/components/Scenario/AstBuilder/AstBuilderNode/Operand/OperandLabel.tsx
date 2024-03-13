@@ -1,6 +1,12 @@
-import { type DataType } from '@app-builder/models';
+import {
+  type DataType,
+  getDataTypeIcon,
+  getDataTypeTKey,
+} from '@app-builder/models';
 import {
   type EditableAstNode,
+  getOperandTypeIcon,
+  getOperandTypeTKey,
   type OperandType,
   UndefinedEditableAstNode,
 } from '@app-builder/models/editable-ast-node';
@@ -11,12 +17,6 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 import { OperandInfos } from './OperandInfos';
-import {
-  getDataTypeIcon,
-  getDataTypeTKey,
-  getOperatorTypeIcon,
-  getOperatorTypeTKey,
-} from './utils';
 
 const operandContainerClassnames = cva(
   [
@@ -129,8 +129,8 @@ export function TypeInfos({ operandType, dataType, type }: TypeInfosProps) {
   const { t } = useTranslation('scenarios');
   const typeInfos = [
     {
-      icon: getOperatorTypeIcon(operandType),
-      tKey: getOperatorTypeTKey(operandType),
+      icon: getOperandTypeIcon(operandType),
+      tKey: getOperandTypeTKey(operandType),
     },
     {
       icon: getDataTypeIcon(dataType),

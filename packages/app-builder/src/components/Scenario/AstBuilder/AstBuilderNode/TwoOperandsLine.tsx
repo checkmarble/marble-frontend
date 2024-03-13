@@ -6,24 +6,29 @@ import {
   separateChildrenErrors,
 } from '@app-builder/models';
 import {
+  isTwoLineOperandOperatorFunctions,
+  type TwoLineOperandOperatorFunctions,
+} from '@app-builder/models/editable-operators';
+import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch } from 'ui-design-system';
 
-import { AstBuilderNode } from '../AstBuilderNode';
-import { type OperandViewModel } from '../Operand';
-import {
-  adaptOperatorViewModel,
-  Operator,
-  type OperatorViewModel,
-} from '../Operator';
+import { AstBuilderNode } from './AstBuilderNode';
+import { type OperandViewModel } from './Operand';
+import { Operator } from './Operator';
 
 interface TwoOperandsLineViewModel {
   left: OperandViewModel;
-  operator: OperatorViewModel;
+  operator: {
+    nodeId: string;
+    funcName: TwoLineOperandOperatorFunctions;
+    errors: EvaluationError[];
+  };
   right: OperandViewModel;
 }
 
@@ -58,6 +63,10 @@ export function TwoOperandsLine({
       adaptAstNodeFromEditorViewModel(child.children[0]),
     );
   }
+  const operators = useMemo(
+    () => builder.input.operators.filter(isTwoLineOperandOperatorFunctions),
+    [builder.input.operators],
+  );
 
   return (
     <div className="flex justify-between">
@@ -72,12 +81,13 @@ export function TwoOperandsLine({
           viewOnly={viewOnly}
         />
         <Operator
-          builder={builder}
-          operatorViewModel={twoOperandsViewModel.operator}
-          onSave={(operator) => {
+          value={twoOperandsViewModel.operator.funcName}
+          setValue={(operator) => {
             builder.setOperator(twoOperandsViewModel.operator.nodeId, operator);
           }}
+          errors={twoOperandsViewModel.operator.errors}
           viewOnly={viewOnly}
+          operators={operators}
         />
         <AstBuilderNode
           builder={builder}
@@ -114,15 +124,18 @@ export function adaptTwoOperandsLineViewModel(
 ): TwoOperandsLineViewModel | null {
   if (vm.children.length !== 2) return null;
   if (Object.keys(vm.namedChildren).length > 0) return null;
-
-  const operatorVm = adaptOperatorViewModel(vm);
-  if (operatorVm == null) return null;
+  if (vm.funcName == null || !isTwoLineOperandOperatorFunctions(vm.funcName))
+    return null;
 
   const left = vm.children[0];
   const right = vm.children[1];
   return {
     left,
-    operator: operatorVm,
+    operator: {
+      nodeId: vm.nodeId,
+      funcName: vm.funcName,
+      errors: vm.errors,
+    },
     right,
   };
 }

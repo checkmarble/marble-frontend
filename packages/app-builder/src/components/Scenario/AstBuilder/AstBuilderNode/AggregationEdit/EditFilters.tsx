@@ -1,24 +1,26 @@
 import { Callout } from '@app-builder/components';
 import { scenarioI18n } from '@app-builder/components/Scenario';
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { NewUndefinedAstNode } from '@app-builder/models';
+import {
+  filterOperators,
+  isFilterOperator,
+} from '@app-builder/models/editable-operators';
 import {
   adaptEditorNodeViewModel,
   type AstBuilder,
 } from '@app-builder/services/editor/ast-editor';
-import {
-  adaptEvaluationErrorViewModels,
-  useGetNodeEvaluationErrorMessage,
-} from '@app-builder/services/validation';
+import clsx from 'clsx';
+import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { ErrorMessage } from '../../ErrorMessage';
 import { RemoveButton } from '../../RemoveButton';
+import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
 import { Operand } from '../Operand';
+import { Operator } from '../Operator';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
-import { FilterOperatorSelect } from './FilterOperatorSelect';
 import { type FilterViewModel } from './Modal';
 
 const newFilterValidation = () => ({
@@ -42,7 +44,6 @@ export const EditFilters = ({
   value: FilterViewModel[];
 }) => {
   const { t } = useTranslation(scenarioI18n);
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
 
   const filteredDataModalFieldOptions = aggregatedField?.tableName
     ? dataModelFieldOptions.filter(
@@ -85,21 +86,36 @@ export const EditFilters = ({
 
   return (
     <div>
-      <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-[8px_16px_max-content_1fr_max-content]">
         {value.map((filter, filterIndex) => {
-          const valueErrorMessages = adaptEvaluationErrorViewModels(
-            filter.value.errors,
-          ).map((error) => getNodeEvaluationErrorMessage(error));
+          const isFirstCondition = filterIndex === 0;
+          const isLastCondition = filterIndex === value.length - 1;
           return (
-            <div key={filterIndex}>
-              <div className="flex flex-row items-center gap-2">
-                <span className="text-grey-50 text-xs">
-                  {t('scenarios:edit_aggregation.filter_and')}
-                </span>
-                <div className="flex flex-1 flex-row items-center gap-2">
+            <Fragment key={filterIndex}>
+              {/* Row 1 */}
+              <div
+                className={clsx(
+                  'border-grey-10 col-span-5 w-2 border-r',
+                  isFirstCondition ? 'h-4' : 'h-2',
+                )}
+              />
+
+              {/* Row 2 */}
+              <div
+                className={clsx(
+                  'border-grey-10 col-start-1 border-r',
+                  isLastCondition && 'h-5',
+                )}
+              />
+              <div className="border-grey-10 col-start-2 h-5 border-b" />
+              <LogicalOperatorLabel
+                operator={isFirstCondition ? 'where' : 'and'}
+                className="bg-grey-02 border-grey-02 text-grey-25 border p-2"
+              />
+              <div className="col-start-4 flex flex-col gap-2 px-2">
+                <div className="flex flex-row items-center gap-2">
                   <EditDataModelField
                     placeholder={t('scenarios:edit_aggregation.select_a_field')}
-                    defaultOpen
                     value={filter.filteredField}
                     options={filteredDataModalFieldOptions}
                     onChange={(filteredField) =>
@@ -107,13 +123,17 @@ export const EditFilters = ({
                     }
                     errors={filter.errors.filteredField}
                   />
-
-                  <FilterOperatorSelect
-                    value={filter.operator}
-                    onChange={(operator) =>
+                  <Operator
+                    value={
+                      filter.operator && isFilterOperator(filter.operator)
+                        ? filter.operator
+                        : undefined
+                    }
+                    setValue={(operator) =>
                       onFilterChange({ operator }, filterIndex)
                     }
                     errors={filter.errors.operator}
+                    operators={filterOperators}
                   />
                   <Operand
                     builder={builder}
@@ -126,23 +146,21 @@ export const EditFilters = ({
                     }
                   />
                 </div>
+                <EvaluationErrors
+                  evaluationErrors={[
+                    ...filter.errors.filter,
+                    ...filter.errors.value,
+                  ]}
+                />
+              </div>
+              <div className="col-start-5 flex h-10 flex-col items-center justify-center">
                 <RemoveButton onClick={() => removeFilter(filterIndex)} />
               </div>
-              {filter.errors.filter.length > 0 ? (
-                <ErrorMessage errors={filter.errors.filter} />
-              ) : null}
-              <div className="mt-2 flex flex-row flex-wrap gap-2">
-                {valueErrorMessages.map((error) => (
-                  <ScenarioValidationError key={error}>
-                    {error}
-                  </ScenarioValidationError>
-                ))}
-              </div>
-            </div>
+            </Fragment>
           );
         })}
       </div>
-      <div className="my-2 flex flex-row justify-start gap-2">
+      <div className="my-4 flex flex-row justify-start gap-2">
         <Button className="h-fit" onClick={addNewFilter}>
           <Icon icon="plus" className="size-6" />
           {t('scenarios:edit_aggregation.add_filter')}

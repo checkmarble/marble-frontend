@@ -1,8 +1,8 @@
-import { type TFunction } from 'i18next';
+import { type ParseKeys, type TFunction } from 'i18next';
 import { type CustomList } from 'marble-api';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
-import { assertNever } from 'typescript-utils';
+import { type IconName } from 'ui-icons';
 
 import {
   type AggregationAstNode,
@@ -36,6 +36,7 @@ import {
   findDataModelTable,
   type TableModel,
 } from './data-model';
+import { getOperatorName, isAggregatorOperator } from './editable-operators';
 
 export type OperandType =
   | 'Constant'
@@ -45,6 +46,40 @@ export type OperandType =
   | 'Function'
   | 'Undefined'
   | 'unknown';
+
+export function getOperandTypeIcon(
+  operandType: OperandType,
+): IconName | undefined {
+  switch (operandType) {
+    case 'CustomList':
+      return 'list';
+    case 'Field':
+      return 'field';
+    case 'Function':
+      return 'function';
+    case 'Enum':
+      return 'enum';
+    default:
+      return undefined;
+  }
+}
+
+export function getOperandTypeTKey(
+  operandType: OperandType,
+): ParseKeys<'scenarios'> | undefined {
+  switch (operandType) {
+    case 'CustomList':
+      return 'edit_operand.operator_type.list';
+    case 'Field':
+      return 'edit_operand.operator_type.field';
+    case 'Function':
+      return 'edit_operand.operator_type.function';
+    case 'Enum':
+      return 'edit_operand.operator_type.enum';
+    default:
+      return undefined;
+  }
+}
 
 interface EditableAstNodeBase {
   astNode: AstNode;
@@ -173,47 +208,14 @@ export class AggregatorEditableAstNode implements EditableAstNodeBase {
       return label?.constant;
     }
     const aggregatorName = aggregator.constant;
-    if (AggregatorEditableAstNode.isKnownAggregator(aggregatorName)) {
-      switch (aggregatorName) {
-        case 'AVG':
-          return t('scenarios:aggregator.average');
-        case 'COUNT':
-          return t('scenarios:aggregator.count');
-        case 'COUNT_DISTINCT':
-          return t('scenarios:aggregator.count_distinct');
-        case 'MAX':
-          return t('scenarios:aggregator.max');
-        case 'MIN':
-          return t('scenarios:aggregator.min');
-        case 'SUM':
-          return t('scenarios:aggregator.sum');
-        default:
-          assertNever('Unhandled aggregator', aggregatorName);
-      }
+    if (isAggregatorOperator(aggregatorName)) {
+      return getOperatorName(t, aggregatorName);
     }
     // eslint-disable-next-line no-restricted-properties
     if (process.env.NODE_ENV === 'development') {
       console.warn('Unhandled aggregator', aggregatorName);
     }
     return aggregatorName;
-  }
-
-  static allAggregators = [
-    'AVG',
-    'COUNT',
-    'COUNT_DISTINCT',
-    'MAX',
-    'MIN',
-    'SUM',
-  ] as const;
-
-  static isKnownAggregator(
-    this: void,
-    aggregator: string,
-  ): aggregator is (typeof AggregatorEditableAstNode.allAggregators)[number] {
-    return (
-      AggregatorEditableAstNode.allAggregators as readonly string[]
-    ).includes(aggregator);
   }
 }
 
