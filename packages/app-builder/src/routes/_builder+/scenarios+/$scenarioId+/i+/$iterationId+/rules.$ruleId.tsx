@@ -41,7 +41,7 @@ import {
   json,
   type LoaderFunctionArgs,
 } from '@remix-run/node';
-import {  useFetcher, useLoaderData } from '@remix-run/react';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
