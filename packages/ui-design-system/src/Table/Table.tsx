@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
-import { useRef } from 'react';
+import { cloneElement, useMemo, useRef } from 'react';
 import { Icon } from 'ui-icons';
 
 import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
@@ -65,14 +65,6 @@ function TableTH<TData extends RowData, TValue>({
 }
 
 const internalRowLink = '__internal-row-link';
-export const rowLink = {
-  columnProps: {
-    id: internalRowLink,
-    header: '',
-  },
-  className:
-    "block size-0 overflow-hidden after:absolute after:inset-0 after:content-['']",
-};
 
 function Header<TData extends RowData>({
   headerGroups,
@@ -132,10 +124,50 @@ function Header<TData extends RowData>({
   );
 }
 
+interface TableProps<TData extends RowData> extends TableOptions<TData> {
+  /**
+   * Transform the row into a link.
+   *
+   * Be aware you need to use 'isolate' class on other interactable cell elements to avoid z-index issues.
+   *
+   * @example
+   *  rowLink={(row) => <Link to={`/row/${row.id}`}>{row.name}</Link>}
+   *  ...
+   *   columnHelper.accessor({
+   *     ...
+   *     cell: ({ getValue }) => <Checkbox className="isolate">{getValue()}</Checkbox>,
+   *    }),
+   */
+  rowLink?: (row: TData) => JSX.Element;
+}
+
+function useCoreTable<TData extends RowData>({
+  columns,
+  rowLink,
+  ...options
+}: TableProps<TData>) {
+  const _columns = useMemo(() => {
+    if (!rowLink) return columns;
+
+    columns.unshift({
+      id: internalRowLink,
+      header: '',
+      cell: ({ row }) =>
+        cloneElement(rowLink(row.original), {
+          className:
+            "block size-0 overflow-hidden after:absolute after:inset-0 after:content-['']",
+        }),
+    });
+    return columns;
+  }, [columns, rowLink]);
+
+  return useReactTable({ columns: _columns, ...options });
+}
+
 export function useVirtualTable<TData extends RowData>(
-  options: TableOptions<TData>,
+  options: TableProps<TData>,
 ) {
-  const table = useReactTable(options);
+  const table = useCoreTable(options);
 
   const scrollElementRef = useRef<HTMLTableElement>(null);
 
@@ -170,8 +202,8 @@ export function useVirtualTable<TData extends RowData>(
   };
 }
 
-export function useTable<TData extends RowData>(options: TableOptions<TData>) {
-  const table = useReactTable(options);
+export function useTable<TData extends RowData>(options: TableProps<TData>) {
+  const table = useCoreTable(options);
 
   const scrollElementRef = useRef<HTMLTableElement>(null);
 
