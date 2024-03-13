@@ -16,11 +16,10 @@ import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-stat
 import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
-  Link,
   useLoaderData,
   useNavigate,
   useRouteError,
@@ -66,13 +65,7 @@ export default function CasePage() {
     <Page.Container>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
-          <Link
-            to={getRoute('/cases/inboxes/:inboxId', {
-              inboxId: fromUUID(caseDetail.inbox_id),
-            })}
-          >
-            <Page.BackButton />
-          </Link>
+          <Page.BackButton />
           {caseDetail.name}
           <CopyToClipboardButton toCopy={caseDetail.id}>
             <span className="text-s font-normal">

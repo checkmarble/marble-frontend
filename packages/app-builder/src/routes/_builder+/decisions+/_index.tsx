@@ -156,7 +156,7 @@ export default function Decisions() {
               </div>
               <DecisionFiltersBar />
               <DecisionsList
-                className="max-h-[70dvh]"
+                className="max-h-[60dvh]"
                 decisions={decisions}
                 selectable
                 selectionProps={selectionProps}

@@ -21,7 +21,6 @@ import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
-  Link,
   useLoaderData,
   useNavigate,
   useRouteError,
@@ -67,14 +66,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function DecisionPage() {
   const { decision } = useLoaderData<typeof loader>();
   const { t } = useTranslation(decisionsI18n);
+
   return (
     <DecisionRightPanel.Root>
       <Page.Container>
         <Page.Header className="justify-between">
           <div className="flex flex-row items-center gap-4">
-            <Link to="./..">
-              <Page.BackButton />
-            </Link>
+            <Page.BackButton />
             {t('decisions:decision')}
             <CopyToClipboardButton toCopy={decision.id}>
               <span className="text-s font-normal">

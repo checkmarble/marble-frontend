@@ -41,7 +41,7 @@ import {
   json,
   type LoaderFunctionArgs,
 } from '@remix-run/node';
-import { Link, useFetcher, useLoaderData } from '@remix-run/react';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
@@ -219,9 +219,7 @@ export default function RuleEdit() {
     <Page.Container>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
-          <Link to="./..">
-            <Page.BackButton />
-          </Link>
+          <Page.BackButton />
           {rule.name ?? fromUUID(ruleId)}
           {editorMode === 'edit' ? (
             <Tag size="big" border="square">
