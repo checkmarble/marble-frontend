@@ -6,26 +6,14 @@ import {
   isDatabaseAccess,
   isPayload,
   isUndefinedAstNode,
-  NewAggregatorAstNode,
-  NewConstantAstNode,
   NewUndefinedAstNode,
   type TableModel,
 } from '@app-builder/models';
-import {
-  AggregatorEditableAstNode,
-  ConstantEditableAstNode,
-  CustomListEditableAstNode,
-  DatabaseAccessEditableAstNode,
-  type EditableAstNode,
-  PayloadAccessorsEditableAstNode,
-  TimeAddEditableAstNode,
-  TimeNowEditableAstNode,
-} from '@app-builder/models/editable-ast-node';
+import { type EditableAstNode } from '@app-builder/models/editable-ast-node';
 import { coerceToConstantEditableAstNode } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
-  type AstBuilder,
   getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
 import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
@@ -106,12 +94,12 @@ export function getEnumOptionsFromNeighbour({
 }
 
 export function OperandEditor({
-  builder,
+  options,
   operandViewModel,
   editableAstNode,
   onSave,
 }: {
-  builder: AstBuilder;
+  options: EditableAstNode[];
   operandViewModel: OperandViewModel;
   editableAstNode: EditableAstNode;
   onSave: (astNode: AstNode) => void;
@@ -133,7 +121,7 @@ export function OperandEditor({
       />
       <MenuPopover className="w-80 flex-col">
         <OperandEditorContent
-          builder={builder}
+          options={options}
           onSave={onSave}
           operandViewModel={operandViewModel}
           searchValue={searchValue}
@@ -144,79 +132,17 @@ export function OperandEditor({
 }
 
 function OperandEditorContent({
-  builder,
+  options,
   onSave,
   operandViewModel,
   searchValue,
 }: {
-  builder: AstBuilder;
+  options: EditableAstNode[];
   onSave: (astNode: AstNode) => void;
   operandViewModel: OperandViewModel;
   searchValue: string;
 }) {
   const { t } = useTranslation('scenarios');
-  const options = useMemo(() => {
-    const databaseAccessors = builder.input.databaseAccessors.map(
-      (node) =>
-        new DatabaseAccessEditableAstNode(node, builder.input.dataModel),
-    );
-    const payloadAccessors = builder.input.payloadAccessors.map(
-      (node) =>
-        new PayloadAccessorsEditableAstNode(
-          node,
-          builder.input.triggerObjectTable,
-        ),
-    );
-    const customLists = builder.input.customLists.map(
-      (customList) => new CustomListEditableAstNode(customList),
-    );
-    const functions = [
-      ...AggregatorEditableAstNode.allAggregators.map(
-        (aggregator) =>
-          new AggregatorEditableAstNode(
-            t,
-            NewAggregatorAstNode(aggregator),
-            builder.input.dataModel,
-            builder.input.customLists,
-            builder.input.triggerObjectTable,
-          ),
-      ),
-      new TimeAddEditableAstNode(t),
-      new TimeNowEditableAstNode(t),
-    ];
-
-    const enumOptionValues = getEnumOptionsFromNeighbour({
-      viewModel: operandViewModel,
-      dataModel: builder.input.dataModel,
-      triggerObjectTable: builder.input.triggerObjectTable,
-    });
-
-    const enumOptions = enumOptionValues.map(
-      (enumValue) =>
-        new ConstantEditableAstNode(
-          NewConstantAstNode({
-            constant: enumValue,
-          }),
-          enumOptionValues,
-        ),
-    );
-
-    return [
-      ...payloadAccessors,
-      ...databaseAccessors,
-      ...customLists,
-      ...functions,
-      ...enumOptions,
-    ];
-  }, [
-    builder.input.customLists,
-    builder.input.dataModel,
-    builder.input.databaseAccessors,
-    builder.input.payloadAccessors,
-    builder.input.triggerObjectTable,
-    operandViewModel,
-    t,
-  ]);
 
   const editAggregation = useEditAggregation();
   const editTimeAdd = useEditTimeAdd();

@@ -1,4 +1,8 @@
-import { type DataType } from '@app-builder/models';
+import {
+  type DataType,
+  getDataTypeIcon,
+  getDataTypeTKey,
+} from '@app-builder/models';
 import {
   adaptEditableAstNode,
   AggregatorEditableAstNode,
@@ -6,12 +10,15 @@ import {
   CustomListEditableAstNode,
   DatabaseAccessEditableAstNode,
   type EditableAstNode,
+  getOperandTypeIcon,
+  getOperandTypeTKey,
   type OperandType,
   PayloadAccessorsEditableAstNode,
   TimeAddEditableAstNode,
   TimeNowEditableAstNode,
   UndefinedEditableAstNode,
 } from '@app-builder/models/editable-ast-node';
+import { type OperatorFunctions } from '@app-builder/models/editable-operators';
 import * as Ariakit from '@ariakit/react';
 import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
@@ -20,14 +27,8 @@ import { ScrollAreaV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
-import { useGetOperatorName } from '../Operator';
+import { Operator } from '../Operator';
 import { OperandLabel } from './OperandLabel';
-import {
-  getDataTypeIcon,
-  getDataTypeTKey,
-  getOperatorTypeIcon,
-  getOperatorTypeTKey,
-} from './utils';
 
 const MAX_ENUM_VALUES = 50;
 
@@ -89,8 +90,8 @@ function TypeInfos({
   const { t } = useTranslation(['scenarios']);
   const typeInfos = [
     {
-      icon: getOperatorTypeIcon(operandType),
-      tKey: getOperatorTypeTKey(operandType),
+      icon: getOperandTypeIcon(operandType),
+      tKey: getOperandTypeTKey(operandType),
     },
     {
       icon: getDataTypeIcon(dataType),
@@ -207,7 +208,6 @@ function AggregatorDescription({
   editableAstNode: AggregatorEditableAstNode;
 }) {
   const { t } = useTranslation(['scenarios']);
-  const getOperatorName = useGetOperatorName();
   const { aggregator, tableName, fieldName, filters } =
     editableAstNode.astNode.namedChildren;
   if (
@@ -241,9 +241,16 @@ function AggregatorDescription({
               operator={index === 0 ? 'where' : 'and'}
             />
             <div className="flex items-center gap-1">
-              <p className="whitespace-nowrap text-right">
-                {`${fieldName?.constant ?? ''} ${getOperatorName(operator?.constant ?? '')}`}
+              {/* TODO: replace with OperandLable for consistency */}
+              <p className="bg-grey-02 whitespace-nowrap p-2 text-right">
+                {fieldName?.constant ?? '...'}
               </p>
+              <Operator
+                value={operator?.constant as OperatorFunctions}
+                setValue={() => {}}
+                operators={[operator?.constant as OperatorFunctions]}
+                viewOnly
+              />
               <OperandLabel
                 editableAstNode={valueEditableAstNode}
                 type="view"

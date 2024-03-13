@@ -76,7 +76,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     databaseAccessors: (await accessorsPromise).databaseAccessors,
     payloadAccessors: (await accessorsPromise).payloadAccessors,
-    operators: await operatorsPromise,
+    astOperators: await operatorsPromise,
     dataModel: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
   });
@@ -159,7 +159,7 @@ export default function RuleEdit() {
   const {
     databaseAccessors,
     payloadAccessors,
-    operators,
+    astOperators,
     dataModel,
     customLists,
   } = useLoaderData<typeof loader>();
@@ -188,7 +188,7 @@ export default function RuleEdit() {
     localValidation,
     databaseAccessors,
     payloadAccessors,
-    operators,
+    astOperators,
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,

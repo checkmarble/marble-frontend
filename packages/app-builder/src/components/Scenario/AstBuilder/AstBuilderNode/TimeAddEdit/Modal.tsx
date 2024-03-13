@@ -1,3 +1,4 @@
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
   computeValidationForNamedChildren,
@@ -10,6 +11,11 @@ import {
   type TimestampFieldAstNode,
 } from '@app-builder/models';
 import {
+  isTimeAddOperator,
+  type TimeAddOperator,
+  timeAddOperators,
+} from '@app-builder/models/editable-operators';
+import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
@@ -21,19 +27,14 @@ import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Button, Input, Modal } from 'ui-design-system';
 
-import { ErrorMessage } from '../../ErrorMessage';
+import { Operator } from '../Operator';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
-import {
-  isPlusOrMinus,
-  PlusMinusSelect,
-  type PlusOrMinus,
-} from './PlusMinusSelect';
 import { TimestampField } from './TimestampField';
 
 export interface TimeAddViewModal {
   nodeId: string;
   timestampField: EditorNodeViewModel | null;
-  sign: PlusOrMinus;
+  sign: TimeAddOperator;
   duration: string;
   durationUnit: DurationUnit;
   errors: {
@@ -72,7 +73,7 @@ export const adaptTimeAddViewModal = (
   const { duration, durationUnit } =
     adaptDurationAndUnitFromTemporalDuration(temporalDuration);
 
-  const sign = isPlusOrMinus(vm.namedChildren['sign']?.constant)
+  const sign = isTimeAddOperator(vm.namedChildren['sign']?.constant)
     ? vm.namedChildren['sign']?.constant
     : '+';
 
@@ -200,9 +201,10 @@ const TimeAddEditModalContent = ({
               errors={value.errors.timestampField}
               className="grow"
             />
-            <PlusMinusSelect
+            <Operator
+              operators={timeAddOperators}
               value={value.sign}
-              onChange={(sign) =>
+              setValue={(sign) =>
                 setValue({
                   ...value,
                   sign,
@@ -239,15 +241,13 @@ const TimeAddEditModalContent = ({
               onChange={(durationUnit) => setValue({ ...value, durationUnit })}
             />
           </div>
-          {value.errors.timestampField.length > 0 ? (
-            <ErrorMessage errors={value.errors.timestampField} />
-          ) : null}
-          {value.errors.sign.length > 0 ? (
-            <ErrorMessage errors={value.errors.sign} />
-          ) : null}
-          {value.errors.duration.length > 0 ? (
-            <ErrorMessage errors={value.errors.duration} />
-          ) : null}
+          <EvaluationErrors
+            evaluationErrors={[
+              ...value.errors.timestampField,
+              ...value.errors.sign,
+              ...value.errors.duration,
+            ]}
+          />
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>

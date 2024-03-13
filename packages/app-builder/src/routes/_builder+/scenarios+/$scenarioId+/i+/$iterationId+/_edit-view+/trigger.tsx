@@ -60,7 +60,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
 
   const [
-    operators,
+    astOperators,
     accessors,
     dataModel,
     customLists,
@@ -84,7 +84,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
-    operators,
+    astOperators,
     dataModel: adaptDataModelDto(dataModel.data_model),
     customLists: customLists.custom_lists,
     organization: currentOrganization,
@@ -161,7 +161,7 @@ export default function Trigger() {
   const {
     databaseAccessors,
     payloadAccessors,
-    operators,
+    astOperators,
     dataModel,
     customLists,
     organization,
@@ -188,7 +188,7 @@ export default function Trigger() {
     localValidation,
     databaseAccessors,
     payloadAccessors,
-    operators,
+    astOperators,
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,

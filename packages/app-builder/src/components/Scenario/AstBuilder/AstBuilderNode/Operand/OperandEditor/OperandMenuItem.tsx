@@ -1,4 +1,5 @@
 import { Highlight } from '@app-builder/components/Highlight';
+import { getConstantDataTypeTKey, getDataTypeIcon } from '@app-builder/models';
 import {
   type ConstantEditableAstNode,
   type EditableAstNode,
@@ -9,7 +10,6 @@ import { MenuItem } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 import { OperandInfos } from '../OperandInfos';
-import { getConstantDataTypeTKey, getDataTypeIcon } from '../utils';
 
 interface OperandMenuItemProps extends React.ComponentProps<typeof MenuItem> {
   leftIcon?: IconName;
