@@ -14,7 +14,7 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, rowLink, Table, useVirtualTable } from 'ui-design-system';
+import { Checkbox, Table, useVirtualTable } from 'ui-design-system';
 
 import { Score } from './Score';
 
@@ -75,17 +75,6 @@ export function DecisionsList({
 
   const columns = useMemo(() => {
     const columns = [
-      columnHelper.display({
-        ...rowLink.columnProps,
-        cell: ({ row }) => (
-          <Link
-            to={getRoute('/decisions/:decisionId', {
-              decisionId: fromUUID(row.original.id),
-            })}
-            className={rowLink.className}
-          />
-        ),
-      }),
       columnHelper.accessor((row) => row.created_at, {
         id: 'created_at',
         header: t('decisions:created_at'),
@@ -125,7 +114,7 @@ export function DecisionsList({
                   caseId: fromUUID(row.original.case.id),
                 })}
                 onClick={(e) => e.stopPropagation()}
-                className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+                className="hover:text-purple-120 focus:text-purple-120 isolate font-semibold capitalize text-purple-100 hover:underline focus:underline"
               >
                 {getValue()}
               </Link>
@@ -170,6 +159,7 @@ export function DecisionsList({
           ),
           cell: ({ row }) => (
             <Checkbox
+              className="isolate"
               checked={row.getIsSelected()}
               onClick={(e) => {
                 e.stopPropagation();
@@ -198,6 +188,13 @@ export function DecisionsList({
     enableRowSelection: selectable,
     enableSorting: false,
     onRowSelectionChange: selectionProps?.setRowSelection,
+    rowLink: (decision) => (
+      <Link
+        to={getRoute('/decisions/:decisionId', {
+          decisionId: fromUUID(decision.id),
+        })}
+      />
+    ),
   });
 
   useImperativeHandle(
