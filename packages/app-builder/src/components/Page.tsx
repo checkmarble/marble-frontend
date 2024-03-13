@@ -1,4 +1,4 @@
-import { useNavigate } from '@remix-run/react';
+import { Link, useNavigate } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -59,6 +59,9 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+const style =
+  'border-grey-10 hover:bg-grey-02 flex items-center justify-center rounded-md border p-2';
+
 function PageBackButton({
   className,
   ...props
@@ -68,10 +71,7 @@ function PageBackButton({
   return (
     <Tooltip.Default content={t('common:go_back')}>
       <button
-        className={clsx(
-          'border-grey-10 hover:bg-grey-02 flex items-center justify-center rounded-md border p-2',
-          className,
-        )}
+        className={clsx(style, className)}
         onClick={() => navigate(-1)}
         {...props}
       >
@@ -82,9 +82,21 @@ function PageBackButton({
   );
 }
 
+function PageBackLink({
+  className,
+  ...props
+}: React.ComponentProps<typeof Link>) {
+  return (
+    <Link className={clsx(style, className)} {...props}>
+      <Icon icon="arrow-left" className="size-5" aria-hidden />
+    </Link>
+  );
+}
+
 export const Page = {
   Container: PageContainer,
   Header: PageHeader,
   BackButton: PageBackButton,
+  BackLink: PageBackLink,
   Content: PageContent,
 };

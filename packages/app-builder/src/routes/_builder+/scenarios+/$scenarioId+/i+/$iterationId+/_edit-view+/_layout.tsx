@@ -103,7 +103,7 @@ export default function ScenarioEditLayout() {
     <Page.Container>
       <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
-          <Page.BackButton />
+          <Page.BackLink to={getRoute('/scenarios/')} />
           <UpdateScenario
             defaultValue={{
               name: currentScenario.name,
