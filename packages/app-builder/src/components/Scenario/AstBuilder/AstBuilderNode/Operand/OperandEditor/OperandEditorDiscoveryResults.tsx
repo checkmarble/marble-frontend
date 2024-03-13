@@ -1,6 +1,8 @@
 import {
   DatabaseAccessEditableAstNode,
   type EditableAstNode,
+  getOperandTypeIcon,
+  getOperandTypeTKey,
   type OperandType,
   PayloadAccessorsEditableAstNode,
 } from '@app-builder/models/editable-ast-node';
@@ -20,7 +22,6 @@ import {
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { getOperatorTypeIcon, getOperatorTypeTKey } from '../utils';
 import { OperandOption } from './OperandMenuItem';
 
 type GroupGetter = FunctionComponent<{
@@ -193,8 +194,8 @@ function OperandDiscoveryTitle({
   renderLabel?: Ariakit.RoleProps['render'];
 }) {
   const { t } = useTranslation('scenarios');
-  const icon = getOperatorTypeIcon(operandType);
-  const tKey = getOperatorTypeTKey(operandType);
+  const icon = getOperandTypeIcon(operandType);
+  const tKey = getOperandTypeTKey(operandType);
 
   return (
     <div
