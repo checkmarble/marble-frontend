@@ -1,11 +1,11 @@
 import { CaseStatus, decisionsI18n, Outcome } from '@app-builder/components';
+import { type DecisionDetail } from '@app-builder/models/decision';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type DecisionDetail } from 'marble-api';
 import {
   useCallback,
   useImperativeHandle,
@@ -75,7 +75,7 @@ export function DecisionsList({
 
   const columns = useMemo(() => {
     const columns = [
-      columnHelper.accessor((row) => row.created_at, {
+      columnHelper.accessor((row) => row.createdAt, {
         id: 'created_at',
         header: t('decisions:created_at'),
         size: 100,
@@ -93,7 +93,7 @@ export function DecisionsList({
         header: t('decisions:scenario.name'),
         size: 200,
       }),
-      columnHelper.accessor((row) => row.trigger_object_type, {
+      columnHelper.accessor((row) => row.triggerObjectType, {
         id: 'trigger_object_type',
         header: t('decisions:trigger_object.type'),
         size: 200,

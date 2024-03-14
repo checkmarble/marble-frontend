@@ -1,11 +1,17 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
+  adaptDecision,
+  adaptDecisionDetail,
+  type Decision,
+  type DecisionDetail,
+} from '@app-builder/models/decision';
+import {
   adaptPagination,
   type FiltersWithPagination,
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
-import { type Decision, type Outcome } from 'marble-api';
+import { type Outcome } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
 
 export type DecisionFilters = {
@@ -32,6 +38,7 @@ export interface DecisionRepository {
   listDecisions(
     args: DecisionFiltersWithPagination,
   ): Promise<PaginatedResponse<Decision>>;
+  getDecisionById(id: string): Promise<DecisionDetail>;
 }
 
 export function getDecisionRepository() {
@@ -55,9 +62,13 @@ export function getDecisionRepository() {
       });
 
       return {
-        items,
+        items: items.map(adaptDecision),
         ...adaptPagination(pagination),
       };
+    },
+    getDecisionById: async (id) => {
+      const decisionDetailDto = await marbleApiClient.getDecision(id);
+      return adaptDecisionDetail(decisionDetailDto);
     },
   });
 }

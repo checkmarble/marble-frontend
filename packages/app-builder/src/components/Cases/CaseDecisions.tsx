@@ -1,4 +1,4 @@
-import { type Decision } from 'marble-api';
+import { type Decision } from '@app-builder/models/decision';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 

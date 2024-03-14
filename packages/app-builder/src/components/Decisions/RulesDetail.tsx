@@ -1,116 +1,152 @@
-import { decisionsI18n } from '@app-builder/components';
+import { Callout, decisionsI18n, Paper } from '@app-builder/components';
 import { Score } from '@app-builder/components/Decisions/Score';
-import { type ParseKeys } from 'i18next';
-import { type Decision } from 'marble-api';
-import { useTranslation } from 'react-i18next';
-import { Accordion, Collapsible, Tag, type TagProps } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import {
+  type AstNode,
+  type AstOperator,
+  type DatabaseAccessAstNode,
+  type PayloadAstNode,
+  type TableModel,
+} from '@app-builder/models';
+import { type RuleExecutionWithFormula } from '@app-builder/models/decision';
+import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
+import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import { type CustomList } from 'marble-api';
+import { Trans, useTranslation } from 'react-i18next';
+import { Accordion, Collapsible, Tag } from 'ui-design-system';
 
-export const RulesDetail = ({ rules }: { rules: Decision['rules'] }) => {
+import { AstBuilder } from '../Scenario/AstBuilder';
+
+export function RulesDetail({
+  rules,
+  triggerObjectType,
+  databaseAccessors,
+  payloadAccessors,
+  astOperators,
+  dataModel,
+  customLists,
+}: {
+  rules: RuleExecutionWithFormula[];
+  triggerObjectType: string;
+  databaseAccessors: DatabaseAccessAstNode[];
+  payloadAccessors: PayloadAstNode[];
+  astOperators: AstOperator[];
+  dataModel: TableModel[];
+  customLists: CustomList[];
+}) {
   const { t } = useTranslation(decisionsI18n);
+  const language = useFormatLanguage();
+
   return (
     <Collapsible.Container className="bg-grey-00">
       <Collapsible.Title>{t('decisions:rules.title')}</Collapsible.Title>
       <Collapsible.Content>
         <Accordion.Container>
-          {rules.map((rule, index) => (
-            <RuleSection
-              key={`rule_${index}`}
-              value={`rule_${index}`}
-              rule={rule}
-            />
-          ))}
+          {rules.map((rule, index) => {
+            const isTriggered = rule.status === 'triggered';
+
+            const title = (
+              <div className="flex grow items-center justify-between">
+                <div className="text-s flex items-center gap-2 font-semibold">
+                  {rule.name}
+                  {isTriggered ? <Score score={rule.scoreModifier} /> : null}
+                </div>
+                {rule.status ? (
+                  <Tag
+                    border="square"
+                    size="big"
+                    color={isTriggered ? 'green' : 'red'}
+                    className="capitalize"
+                  >
+                    {t(`decisions:rules.status.${rule.status}`)}
+                  </Tag>
+                ) : null}
+              </div>
+            );
+
+            return (
+              <Accordion.Item
+                key={`rule_${index}`}
+                value={`rule_${index}`}
+                className="border-grey-10 overflow-hidden rounded border"
+              >
+                <Accordion.Title className="flex flex-1 items-center justify-between gap-4 p-4">
+                  {title}
+                  <Accordion.Arrow />
+                </Accordion.Title>
+                <Accordion.Content className="bg-purple-02 border-grey-10 border-t">
+                  <div className="flex flex-col gap-4 p-4">
+                    {rule.description ? (
+                      <Callout variant="outlined">{rule.description}</Callout>
+                    ) : null}
+                    <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
+                      <Trans
+                        t={t}
+                        i18nKey="scenarios:rules.consequence.score_modifier"
+                        components={{
+                          Score: <span className="font-semibold" />,
+                        }}
+                        values={{
+                          score: formatNumber(rule.scoreModifier, {
+                            language,
+                            signDisplay: 'always',
+                          }),
+                        }}
+                      />
+                    </div>
+                    {rule.formula ? (
+                      <RuleFormula
+                        formula={rule.formula}
+                        databaseAccessors={databaseAccessors}
+                        payloadAccessors={payloadAccessors}
+                        astOperators={astOperators}
+                        dataModel={dataModel}
+                        customLists={customLists}
+                        triggerObjectType={triggerObjectType}
+                      />
+                    ) : null}
+                  </div>
+                </Accordion.Content>
+              </Accordion.Item>
+            );
+          })}
         </Accordion.Container>
       </Collapsible.Content>
     </Collapsible.Container>
   );
-};
+}
 
-const RuleSection = ({
-  rule,
-  value,
+function RuleFormula({
+  formula,
+  databaseAccessors,
+  payloadAccessors,
+  astOperators,
+  dataModel,
+  customLists,
+  triggerObjectType,
 }: {
-  rule: Decision['rules'][0];
-  value: string;
-}) => {
-  const status = rule.result ? 'triggered' : rule.error ? 'error' : undefined;
-
-  if (rule.description) {
-    return <RuleWithDescription rule={rule} status={status} value={value} />;
-  }
-
-  return <RuleDetail rule={rule} status={status} />;
-};
-
-const RuleWithDescription = ({
-  rule,
-  status,
-  value,
-}: {
-  rule: Decision['rules'][0];
-  status?: RuleStatus;
-  value: string;
-}) => {
-  const { t } = useTranslation(decisionsI18n);
+  formula: AstNode;
+  databaseAccessors: DatabaseAccessAstNode[];
+  payloadAccessors: PayloadAstNode[];
+  astOperators: AstOperator[];
+  dataModel: TableModel[];
+  customLists: CustomList[];
+  triggerObjectType: string;
+}) {
+  const astEditor = useAstBuilder({
+    backendAst: formula,
+    localValidation: null,
+    databaseAccessors,
+    payloadAccessors,
+    astOperators,
+    dataModel,
+    customLists,
+    triggerObjectType,
+    onValidate: () => {},
+  });
 
   return (
-    <Accordion.Item value={value}>
-      <Accordion.Title className="flex flex-1 items-center justify-between gap-4">
-        <RuleDetail rule={rule} status={status} />
-        <Accordion.Arrow />
-      </Accordion.Title>
-      <Accordion.Content>
-        <div className="bg-purple-10 mt-4 flex gap-2 rounded p-4 text-purple-100">
-          <Icon icon="tip" className="size-5" />
-          <div className="flex flex-col gap-2">
-            <div className="font-semibold">
-              {t('decisions:rules.description')}
-            </div>
-            <div>{rule.description}</div>
-          </div>
-        </div>
-      </Accordion.Content>
-    </Accordion.Item>
+    <Paper.Container scrollable={false} className="bg-grey-00">
+      <AstBuilder builder={astEditor} viewOnly={true} />
+    </Paper.Container>
   );
-};
-
-const RuleDetail = ({
-  rule,
-  status,
-}: {
-  rule: Decision['rules'][0];
-  status?: RuleStatus;
-}) => {
-  const { t } = useTranslation(decisionsI18n);
-  return (
-    <div className="flex grow items-center justify-between">
-      <div className="text-s flex items-center gap-2 font-semibold">
-        {rule.name}
-        {rule.result ? <Score score={rule.score_modifier} /> : null}
-      </div>
-      {status ? (
-        <Tag
-          border="square"
-          size="big"
-          color={ruleStatusMapping[status].color}
-          className="capitalize"
-        >
-          {t(ruleStatusMapping[status].tKey)}
-        </Tag>
-      ) : null}
-    </div>
-  );
-};
-
-type RuleStatus = 'triggered' | 'error' | 'unknown';
-const ruleStatusMapping: Record<
-  RuleStatus,
-  {
-    color: TagProps['color'];
-    tKey: ParseKeys<['decisions']>;
-  }
-> = {
-  triggered: { color: 'green', tKey: 'decisions:rules.status.triggered' },
-  error: { color: 'red', tKey: 'decisions:rules.status.error' },
-  unknown: { color: 'grey', tKey: 'decisions:rules.status.unknown' },
-};
+}

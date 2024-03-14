@@ -196,7 +196,7 @@ export function useAstBuilder({
   onValidate,
 }: {
   backendAst: AstNode;
-  backendValidation: NodeEvaluation;
+  backendValidation?: NodeEvaluation;
   localValidation: NodeEvaluation | null;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
