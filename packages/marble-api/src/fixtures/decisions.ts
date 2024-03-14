@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker/locale/en';
 
 import {
-  type Decision,
+  type DecisionDto,
   type getDecision,
   type listDecisions,
 } from '../generated/marble-api';
 
-const fakeDecisions: Decision[] = Array.from({
+const fakeDecisions: DecisionDto[] = Array.from({
   length: Number(faker.number.int(100)),
 }).map(() => ({
   id: faker.string.uuid(),

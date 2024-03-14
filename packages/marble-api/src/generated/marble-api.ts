@@ -46,7 +46,7 @@ export type Error = {
     code: number;
     message: string;
 };
-export type Decision = {
+export type DecisionWithoutRuleDto = {
     id: string;
     created_at: string;
     trigger_object: {
@@ -60,13 +60,6 @@ export type Decision = {
         description: string;
         version: number;
     };
-    rules: {
-        name: string;
-        description: string;
-        score_modifier: number;
-        result: boolean;
-        error?: Error;
-    }[];
     score: number;
     error?: Error;
 };
@@ -93,13 +86,38 @@ export type Case = {
     contributors: CaseContributor[];
     tags: CaseTag[];
 };
-export type DecisionDetail = Decision & {
+export type RuleExecutionDto = {
+    name: string;
+    description: string;
+    score_modifier: number;
+    result: boolean;
+    error?: Error;
+};
+export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
+    [key: string]: ConstantDto;
+} | null)) | null;
+export type NodeDto = {
+    name?: string;
+    constant?: ConstantDto;
+    children?: NodeDto[];
+    named_children?: {
+        [key: string]: NodeDto;
+    };
+};
+export type RuleExecutionWithAstDto = RuleExecutionDto & {
+    formula_ast_expression?: (NodeDto) | null;
+};
+export type DecisionDetailDto = DecisionWithoutRuleDto & {
     "case"?: Case;
+    rules: RuleExecutionWithAstDto[];
 };
 export type CreateDecisionBody = {
     scenario_id: string;
     trigger_object: object;
     object_type: string;
+};
+export type DecisionDto = DecisionWithoutRuleDto & {
+    rules: RuleExecutionDto[];
 };
 export type CreateCaseBody = {
     name: string;
@@ -167,7 +185,7 @@ export type CaseFile = {
     file_name: string;
 };
 export type CaseDetailDto = Case & {
-    decisions: Decision[];
+    decisions: DecisionDto[];
     events: CaseEventDto[];
     files: CaseFile[];
 };
@@ -253,17 +271,6 @@ export type ScenarioIterationDto = {
     version: number | null;
     createdAt: string;
     updatedAt: string;
-};
-export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
-    [key: string]: ConstantDto;
-} | null)) | null;
-export type NodeDto = {
-    name?: string;
-    constant?: ConstantDto;
-    children?: NodeDto[];
-    named_children?: {
-        [key: string]: NodeDto;
-    };
 };
 export type CreateScenarioIterationRuleBody = {
     scenarioIterationId: string;
@@ -573,7 +580,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Pagination & {
-            items: DecisionDetail[];
+            items: DecisionDetailDto[];
         };
     } | {
         status: 401;
@@ -604,7 +611,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
 export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Decision;
+        data: DecisionDto;
     } | {
         status: 401;
         data: string;
@@ -941,7 +948,7 @@ export function listScheduledExecutions({ scenarioId }: {
 export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: DecisionDetail;
+        data: DecisionDetailDto;
     } | {
         status: 401;
         data: string;

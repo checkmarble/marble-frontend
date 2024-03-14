@@ -11,6 +11,8 @@ import {
   type NameUpdatedEvent,
 } from 'marble-api';
 
+import { adaptDecision, type Decision } from './decision';
+
 interface CaseTagsUpdatedEvent
   extends Omit<CaseTagsUpdatedEventDto, 'new_value'> {
   tagIds: string[];
@@ -56,16 +58,20 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
   }
 }
 
-export interface CaseDetail extends Omit<CaseDetailDto, 'events'> {
+export interface CaseDetail
+  extends Omit<CaseDetailDto, 'events' | 'decisions'> {
+  decisions: Decision[];
   events: CaseEvent[];
 }
 
 export function adaptCaseDetailDto({
   events,
+  decisions,
   ...rest
 }: CaseDetailDto): CaseDetail {
   return {
     ...rest,
+    decisions: decisions.map(adaptDecision),
     events: events.map(adaptCaseEventDto),
   };
 }
