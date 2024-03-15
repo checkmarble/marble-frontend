@@ -20,6 +20,7 @@ interface DecisionWithoutRule {
     id: string;
     name: string;
     description: string;
+    scenarioIterationId: string;
     version: number;
   };
   score: number;
@@ -39,7 +40,10 @@ export interface Decision extends DecisionWithoutRule {
 }
 
 export interface RuleExecutionWithFormula extends RuleExecution {
-  formula?: AstNode | null;
+  ruleDetail: {
+    scoreModifier: number;
+    formula?: AstNode | null;
+  };
 }
 
 export interface DecisionDetail extends DecisionWithoutRule {
@@ -60,6 +64,7 @@ function adaptDecisionWithoutRule(
       id: dto.scenario.id,
       name: dto.scenario.name,
       description: dto.scenario.description,
+      scenarioIterationId: dto.scenario.scenario_iteration_id,
       version: dto.scenario.version,
     },
     score: dto.score,
@@ -91,9 +96,12 @@ export function adaptDecisionDetail(dto: DecisionDetailDto): DecisionDetail {
     case: dto.case,
     rules: dto.rules.map((rule) => ({
       ...adaptRuleExecutionDto(rule),
-      formula: rule.formula_ast_expression
-        ? adaptAstNode(rule.formula_ast_expression)
-        : null,
+      ruleDetail: {
+        scoreModifier: rule.rule_detail.score_modifier,
+        formula: rule.rule_detail.formula_ast_expression
+          ? adaptAstNode(rule.rule_detail.formula_ast_expression)
+          : null,
+      },
     })),
   };
 }

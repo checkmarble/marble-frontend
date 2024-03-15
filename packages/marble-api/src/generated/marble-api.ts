@@ -58,6 +58,7 @@ export type DecisionWithoutRuleDto = {
         id: string;
         name: string;
         description: string;
+        scenario_iteration_id: string;
         version: number;
     };
     score: number;
@@ -104,12 +105,15 @@ export type NodeDto = {
         [key: string]: NodeDto;
     };
 };
-export type RuleExecutionWithAstDto = RuleExecutionDto & {
-    formula_ast_expression?: (NodeDto) | null;
+export type RuleExecutionWithDetailDto = RuleExecutionDto & {
+    rule_detail: {
+        score_modifier: number;
+        formula_ast_expression?: (NodeDto) | null;
+    };
 };
 export type DecisionDetailDto = DecisionWithoutRuleDto & {
     "case"?: Case;
-    rules: RuleExecutionWithAstDto[];
+    rules: RuleExecutionWithDetailDto[];
 };
 export type CreateDecisionBody = {
     scenario_id: string;
