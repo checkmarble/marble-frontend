@@ -10,6 +10,10 @@ import {
   adaptEditorNodeViewModel,
   type AstBuilder,
 } from '@app-builder/services/editor/ast-editor';
+import {
+  adaptEvaluationErrorViewModels,
+  useGetNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import clsx from 'clsx';
 import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
@@ -84,6 +88,8 @@ export const EditFilters = ({
     onChange(value.filter((_, index) => index !== filterIndex));
   };
 
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+
   return (
     <div>
       <div className="grid grid-cols-[8px_16px_max-content_1fr_max-content]">
@@ -147,10 +153,10 @@ export const EditFilters = ({
                   />
                 </div>
                 <EvaluationErrors
-                  evaluationErrors={[
+                  errors={adaptEvaluationErrorViewModels([
                     ...filter.errors.filter,
                     ...filter.errors.value,
-                  ]}
+                  ]).map(getNodeEvaluationErrorMessage)}
                 />
               </div>
               <div className="col-start-5 flex h-10 flex-col items-center justify-center">

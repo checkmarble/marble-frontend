@@ -13,7 +13,7 @@ import {
   FormLabel,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   useCurrentScenarioIteration,
   useEditorMode,
@@ -29,12 +29,12 @@ import { fromParams } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useSubmit } from '@remix-run/react';
-import clsx from 'clsx';
 import { type Namespace, type TFunction } from 'i18next';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { Button, Input } from 'ui-design-system';
 import * as z from 'zod';
 
@@ -184,6 +184,15 @@ export default function Decision() {
   ]);
 
   const thresholdsError = errors.thresholds?.root?.message;
+  const serverErrors = R.pipe(
+    scenarioValidation.decision.errors,
+    R.filter((error) => !conflictingWithSchemaValidationErrors.includes(error)),
+    R.map(getScenarioErrorMessage),
+  );
+  const evaluationErrors = R.pipe(
+    [thresholdsError, ...serverErrors],
+    R.filter(R.isString),
+  );
 
   return (
     <Paper.Container className="bg-grey-00 max-w-3xl">
@@ -270,35 +279,15 @@ export default function Decision() {
               )}
             />
           </div>
-          <div className="flex flex-row items-center justify-between">
-            <div className="flex min-h-[40px] flex-row flex-wrap gap-1">
-              {thresholdsError ? (
-                <p
-                  className={clsx(
-                    'text-s text-left font-medium text-red-100 transition-opacity duration-200 ease-in-out',
-                    style.errorMessage,
-                  )}
-                >
-                  {thresholdsError}
-                </p>
-              ) : null}
-              {scenarioValidation.decision.errors
-                .filter(
-                  (error) =>
-                    !conflictingWithSchemaValidationErrors.includes(error),
-                )
-                .map((error) => (
-                  <ScenarioValidationError key={error}>
-                    {getScenarioErrorMessage(error)}
-                  </ScenarioValidationError>
-                ))}
+
+          {editorMode === 'edit' ? (
+            <div className="flex flex-row-reverse items-center justify-between gap-2">
+              <Button type="submit">{t('common:save')}</Button>
+              <EvaluationErrors errors={evaluationErrors} />
             </div>
-            <span>
-              {editorMode === 'edit' ? (
-                <Button type="submit">{t('common:save')}</Button>
-              ) : null}
-            </span>
-          </div>
+          ) : (
+            <EvaluationErrors errors={evaluationErrors} />
+          )}
         </FormProvider>
       </Form>
     </Paper.Container>
