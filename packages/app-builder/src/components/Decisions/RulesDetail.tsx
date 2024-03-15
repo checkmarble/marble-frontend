@@ -86,16 +86,16 @@ export function RulesDetail({
                           Score: <span className="font-semibold" />,
                         }}
                         values={{
-                          score: formatNumber(rule.scoreModifier, {
+                          score: formatNumber(rule.ruleDetail.scoreModifier, {
                             language,
                             signDisplay: 'always',
                           }),
                         }}
                       />
                     </div>
-                    {rule.formula ? (
+                    {rule.ruleDetail.formula ? (
                       <RuleFormula
-                        formula={rule.formula}
+                        formula={rule.ruleDetail.formula}
                         databaseAccessors={databaseAccessors}
                         payloadAccessors={payloadAccessors}
                         astOperators={astOperators}

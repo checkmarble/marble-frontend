@@ -3272,15 +3272,24 @@ components:
           type: boolean
         error:
           $ref: '#/components/schemas/Error'
-    RuleExecutionWithAstDto:
+    RuleExecutionWithDetailDto:
       allOf:
         - $ref: '#/components/schemas/RuleExecutionDto'
         - type: object
+          required:
+            - rule_detail
           properties:
-            formula_ast_expression:
-              nullable: true
-              oneOf:
-                - $ref: '#/components/schemas/NodeDto'
+            rule_detail:
+              type: object
+              required:
+                - score_modifier
+              properties:
+                score_modifier:
+                  type: integer
+                formula_ast_expression:
+                  nullable: true
+                  oneOf:
+                    - $ref: '#/components/schemas/NodeDto'
     DecisionWithoutRuleDto:
       type: object
       required:
@@ -3310,6 +3319,7 @@ components:
             - id
             - name
             - description
+            - scenario_iteration_id
             - version
           properties:
             id:
@@ -3319,6 +3329,9 @@ components:
               type: string
             description:
               type: string
+            scenario_iteration_id:
+              type: string
+              format: uuid
             version:
               type: integer
         score:
@@ -3348,7 +3361,7 @@ components:
             rules:
               type: array
               items:
-                $ref: '#/components/schemas/RuleExecutionWithAstDto'
+                $ref: '#/components/schemas/RuleExecutionWithDetailDto'
     CaseStatus:
       type: string
       enum: ['open', 'investigating', 'discarded', 'resolved']
