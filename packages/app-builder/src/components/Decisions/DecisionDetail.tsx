@@ -19,11 +19,12 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
         {t('decisions:decision_detail.title')}
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-[max-content_1fr] grid-rows-4 items-center gap-x-10 gap-y-2">
+        <div className="grid grid-cols-[max-content_1fr] grid-rows-5 items-center gap-x-10 gap-y-2">
           <DetailLabel>{t('decisions:created_at')}</DetailLabel>
           <time dateTime={createdAt}>
             {formatDateTime(createdAt, { language })}
           </time>
+
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
           <Link
             to={getRoute('/scenarios/:scenarioId', {
@@ -33,8 +34,21 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
           >
             {scenario.name}
           </Link>
+
+          <DetailLabel>{t('decisions:scenario.version')}</DetailLabel>
+          <Link
+            to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
+              scenarioId: fromUUID(scenario.id),
+              iterationId: fromUUID(scenario.scenarioIterationId),
+            })}
+            className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+          >
+            {`V${scenario.version}`}
+          </Link>
+
           <DetailLabel>{t('decisions:object_type')}</DetailLabel>
           <div className="capitalize">{triggerObjectType}</div>
+
           <DetailLabel>{t('decisions:case')}</DetailLabel>
           {caseDetail ? (
             <div className="flex w-fit flex-row items-center justify-center gap-1">
