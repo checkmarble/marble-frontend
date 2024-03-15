@@ -17,6 +17,10 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
+import {
+  adaptEvaluationErrorViewModels,
+  useGetNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type Namespace } from 'i18next';
 import {
@@ -257,6 +261,8 @@ const AggregationEditModalContent = ({
     onSave(adaptAggregationAstNode(aggregation));
   };
 
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+
   return (
     <>
       <ModalV2.Title>
@@ -295,7 +301,11 @@ const AggregationEditModalContent = ({
                 aggregation.errors.label.length > 0 ? 'red-100' : 'grey-10'
               }
             />
-            <EvaluationErrors evaluationErrors={aggregation.errors.label} />
+            <EvaluationErrors
+              errors={adaptEvaluationErrorViewModels(
+                aggregation.errors.label,
+              ).map(getNodeEvaluationErrorMessage)}
+            />
           </div>
           <div className="flex flex-col gap-2">
             {t('scenarios:edit_aggregation.function_title')}
@@ -317,7 +327,9 @@ const AggregationEditModalContent = ({
                   operators={aggregatorOperators}
                 />
                 <EvaluationErrors
-                  evaluationErrors={aggregation.errors.aggregator}
+                  errors={adaptEvaluationErrorViewModels(
+                    aggregation.errors.aggregator,
+                  ).map(getNodeEvaluationErrorMessage)}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -338,7 +350,9 @@ const AggregationEditModalContent = ({
                   errors={aggregation.errors.aggregatedField}
                 />
                 <EvaluationErrors
-                  evaluationErrors={aggregation.errors.aggregatedField}
+                  errors={adaptEvaluationErrorViewModels(
+                    aggregation.errors.aggregatedField,
+                  ).map(getNodeEvaluationErrorMessage)}
                 />
               </div>
             </div>

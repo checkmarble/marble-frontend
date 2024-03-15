@@ -1,5 +1,5 @@
 import { Ping } from '@app-builder/components/Ping';
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
@@ -131,20 +131,21 @@ export default function Rules() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-row items-center justify-between gap-2">
-        <div className="flex flex-row flex-wrap gap-1">
-          {scenarioValidation.rules.errors.map((error) => (
-            <ScenarioValidationError key={error}>
-              {getScenarioErrorMessage(error)}
-            </ScenarioValidationError>
-          ))}
+      {editorMode === 'edit' ? (
+        <div className="flex flex-row-reverse items-center justify-between gap-2">
+          <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
+          <EvaluationErrors
+            errors={scenarioValidation.rules.errors.map(
+              getScenarioErrorMessage,
+            )}
+          />
         </div>
-        <span>
-          {editorMode === 'edit' ? (
-            <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
-          ) : null}
-        </span>
-      </div>
+      ) : (
+        <EvaluationErrors
+          errors={scenarioValidation.rules.errors.map(getScenarioErrorMessage)}
+        />
+      )}
+
       <Table.Container {...getContainerProps()} className="bg-grey-00 max-h-96">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>

@@ -8,7 +8,7 @@ import {
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
   NewEmptyRuleAstNode,
@@ -400,17 +400,11 @@ function RuleEditContent({
       <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
         <AstBuilder builder={builder} />
 
-        {ruleValidation.errors ? (
-          <div className="flex flex-row flex-wrap gap-1">
-            {ruleValidation.errors
-              .filter((error) => error != 'RULE_FORMULA_REQUIRED')
-              .map((error) => (
-                <ScenarioValidationError key={error}>
-                  {getScenarioErrorMessage(error)}
-                </ScenarioValidationError>
-              ))}
-          </div>
-        ) : null}
+        <EvaluationErrors
+          errors={ruleValidation.errors
+            .filter((error) => error != 'RULE_FORMULA_REQUIRED')
+            .map(getScenarioErrorMessage)}
+        />
       </Paper.Container>
 
       <DeleteRule

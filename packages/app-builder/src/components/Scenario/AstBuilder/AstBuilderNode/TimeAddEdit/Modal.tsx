@@ -21,6 +21,10 @@ import {
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
+import {
+  adaptEvaluationErrorViewModels,
+  useGetNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type PropsWithChildren, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -174,11 +178,13 @@ const TimeAddEditModalContent = ({
   onSave: (astNode: AstNode) => void;
 }) => {
   const { t } = useTranslation(['scenarios', 'common']);
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   const [value, setValue] = useState<TimeAddViewModal>(() => initialValue);
 
   const handleSave = () => {
     onSave(adaptTimeAddAstNode(value));
   };
+
   return (
     <>
       <Modal.Title>{t('scenarios:edit_date.title')}</Modal.Title>
@@ -242,11 +248,11 @@ const TimeAddEditModalContent = ({
             />
           </div>
           <EvaluationErrors
-            evaluationErrors={[
+            errors={adaptEvaluationErrorViewModels([
               ...value.errors.timestampField,
               ...value.errors.sign,
               ...value.errors.duration,
-            ]}
+            ]).map(getNodeEvaluationErrorMessage)}
           />
         </div>
         <div className="flex flex-1 flex-row gap-2">
