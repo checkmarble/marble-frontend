@@ -6,7 +6,7 @@ import {
 } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
 import {
   adaptDataModelDto,
@@ -249,24 +249,24 @@ export default function Trigger() {
 
       <AstBuilder builder={astEditor} viewOnly={editorMode === 'view'} />
 
-      <div className="flex flex-row items-end justify-between gap-2">
-        <div className="flex min-h-[40px] flex-row flex-wrap gap-1">
-          {scenarioValidation.trigger.errors
-            .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
-            .map((error) => (
-              <ScenarioValidationError key={error}>
-                {getScenarioErrorMessage(error)}
-              </ScenarioValidationError>
-            ))}
+      {editorMode === 'edit' ? (
+        <div className="flex flex-row-reverse items-center justify-between gap-2">
+          <Button type="submit" onClick={handleSave}>
+            {t('common:save')}
+          </Button>
+          <EvaluationErrors
+            errors={scenarioValidation.trigger.errors
+              .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
+              .map(getScenarioErrorMessage)}
+          />
         </div>
-        <span>
-          {editorMode === 'edit' ? (
-            <Button type="submit" onClick={handleSave}>
-              {t('common:save')}
-            </Button>
-          ) : null}
-        </span>
-      </div>
+      ) : (
+        <EvaluationErrors
+          errors={scenarioValidation.trigger.errors
+            .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
+            .map(getScenarioErrorMessage)}
+        />
+      )}
     </Paper.Container>
   );
 }
