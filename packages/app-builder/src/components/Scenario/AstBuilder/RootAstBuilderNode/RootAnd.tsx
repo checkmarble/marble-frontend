@@ -10,6 +10,11 @@ import {
   findArgumentIndexErrorsFromParent,
   hasArgumentIndexErrorsFromParent,
 } from '@app-builder/services/editor/ast-editor';
+import {
+  adaptEvaluationErrorViewModels,
+  useGetNodeEvaluationErrorMessage,
+  useGetOrAndNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
@@ -56,8 +61,16 @@ export function RootAnd({
   rootAndViewModel: RootAndViewModel;
   viewOnly?: boolean;
 }) {
+  const getOrAndNodeEvaluationErrorMessage =
+    useGetOrAndNodeEvaluationErrorMessage();
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+
   const { nodeErrors: andNodeErrors } = separateChildrenErrors(
     rootAndViewModel.errors,
+  );
+
+  const andErrorMessages = adaptEvaluationErrorViewModels(andNodeErrors).map(
+    getOrAndNodeEvaluationErrorMessage,
   );
 
   function appendAndChild() {
@@ -90,6 +103,11 @@ export function RootAnd({
           const isLastCondition =
             childIndex === rootAndViewModel.children.length - 1;
 
+          const errorMessages = adaptEvaluationErrorViewModels([
+            ...computeLineErrors(child),
+            ...findArgumentIndexErrorsFromParent(child),
+          ]).map((error) => getNodeEvaluationErrorMessage(error));
+
           return (
             <Fragment key={`condition_${child.nodeId}`}>
               {/* Row 1 */}
@@ -118,19 +136,19 @@ export function RootAnd({
                 )}
               />
 
-              <div className="col-start-4 flex flex-col gap-2 px-2">
+              <div
+                className={clsx(
+                  'col-start-4 flex flex-col gap-2 px-2',
+                  viewOnly ? 'col-span-2' : 'col-span-1',
+                )}
+              >
                 <AstBuilderNode
                   builder={builder}
                   editorNodeViewModel={child}
                   viewOnly={viewOnly}
                   root
                 />
-                <EvaluationErrors
-                  evaluationErrors={[
-                    ...computeLineErrors(child),
-                    ...findArgumentIndexErrorsFromParent(child),
-                  ]}
-                />
+                <EvaluationErrors errors={errorMessages} />
               </div>
               {!viewOnly ? (
                 <div className="col-start-5 flex h-10 flex-col items-center justify-center">
@@ -146,13 +164,14 @@ export function RootAnd({
         })}
       </div>
 
-      <div className="flex flex-row flex-wrap gap-2">
-        {!viewOnly ? (
+      {viewOnly ? (
+        <EvaluationErrors errors={andErrorMessages} />
+      ) : (
+        <div className="flex flex-row flex-wrap gap-2">
           <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
-        ) : null}
-
-        <EvaluationErrors evaluationErrors={andNodeErrors} />
-      </div>
+          <EvaluationErrors errors={andErrorMessages} />
+        </div>
+      )}
     </>
   );
 }
