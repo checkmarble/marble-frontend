@@ -92,6 +92,34 @@ export function DecisionsList({
         id: 'scenario_name',
         header: t('decisions:scenario.name'),
         size: 200,
+        cell: ({ getValue, row }) => (
+          <Link
+            to={getRoute('/scenarios/:scenarioId', {
+              scenarioId: fromUUID(row.original.scenario.id),
+            })}
+            onClick={(e) => e.stopPropagation()}
+            className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+          >
+            {getValue()}
+          </Link>
+        ),
+      }),
+      columnHelper.accessor((row) => row.scenario.version, {
+        id: 'scenario_version',
+        header: 'Vi',
+        size: 20,
+        cell: ({ getValue, row }) => (
+          <Link
+            to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
+              scenarioId: fromUUID(row.original.scenario.id),
+              iterationId: fromUUID(row.original.scenario.scenarioIterationId),
+            })}
+            onClick={(e) => e.stopPropagation()}
+            className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+          >
+            {`V${getValue()}`}
+          </Link>
+        ),
       }),
       columnHelper.accessor((row) => row.triggerObjectType, {
         id: 'trigger_object_type',
