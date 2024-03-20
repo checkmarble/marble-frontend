@@ -11,14 +11,14 @@ import {
 } from '@app-builder/components';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { TriggerObjectDetail } from '@app-builder/components/Decisions/TriggerObjectDetail';
-import { adaptDataModelDto, isNotFoundHttpError } from '@app-builder/models';
+import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   useLoaderData,
@@ -38,7 +38,7 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { decision, editor, apiClient, scenario } =
+  const { decision, editor, apiClient, scenario, dataModelRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -54,29 +54,38 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   try {
     const currentDecision = await decision.getDecisionById(decisionId);
 
-    const scenarioIterationPromise = scenario.getScenarioIteration({
-      iterationId: currentDecision.scenario.scenarioIterationId,
-    });
+    const astRuleData = Promise.all([
+      scenario.getScenarioIteration({
+        iterationId: currentDecision.scenario.scenarioIterationId,
+      }),
+      editor.listOperators({
+        scenarioId: currentDecision.scenario.id,
+      }),
+      editor.listAccessors({
+        scenarioId: currentDecision.scenario.id,
+      }),
+      dataModelRepository.getDataModel(),
+      apiClient.listCustomLists(),
+    ]).then(
+      ([
+        scenarioIteration,
+        astOperators,
+        accessors,
+        dataModel,
+        { custom_lists },
+      ]) => ({
+        rules: scenarioIteration.rules,
+        databaseAccessors: accessors.databaseAccessors,
+        payloadAccessors: accessors.payloadAccessors,
+        astOperators,
+        dataModel,
+        customLists: custom_lists,
+      }),
+    );
 
-    const operatorsPromise = editor.listOperators({
-      scenarioId: currentDecision.scenario.id,
-    });
-
-    const accessorsPromise = editor.listAccessors({
-      scenarioId: currentDecision.scenario.id,
-    });
-
-    const dataModelPromise = apiClient.getDataModel();
-    const { custom_lists } = await apiClient.listCustomLists();
-
-    return json({
+    return defer({
       decision: currentDecision,
-      rules: (await scenarioIterationPromise).rules,
-      databaseAccessors: (await accessorsPromise).databaseAccessors,
-      payloadAccessors: (await accessorsPromise).payloadAccessors,
-      astOperators: await operatorsPromise,
-      dataModel: adaptDataModelDto((await dataModelPromise).data_model),
-      customLists: custom_lists,
+      astRuleData,
     });
   } catch (error) {
     if (isNotFoundHttpError(error)) {
@@ -88,15 +97,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function DecisionPage() {
-  const {
-    decision,
-    rules,
-    databaseAccessors,
-    payloadAccessors,
-    astOperators,
-    dataModel,
-    customLists,
-  } = useLoaderData<typeof loader>();
+  const { decision, astRuleData } = useLoaderData<typeof loader>();
   const { t } = useTranslation(decisionsI18n);
 
   return (
@@ -120,13 +121,8 @@ export default function DecisionPage() {
               <DecisionDetail decision={decision} />
               <RulesDetail
                 ruleExecutions={decision.rules}
-                rules={rules}
                 triggerObjectType={decision.triggerObjectType}
-                databaseAccessors={databaseAccessors}
-                payloadAccessors={payloadAccessors}
-                astOperators={astOperators}
-                dataModel={dataModel}
-                customLists={customLists}
+                astRuleData={astRuleData}
               />
             </div>
             <div className="flex flex-col gap-4 lg:gap-6">
