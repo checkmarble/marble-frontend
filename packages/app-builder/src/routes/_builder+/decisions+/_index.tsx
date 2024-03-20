@@ -15,7 +15,6 @@ import {
 } from '@app-builder/components';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
-import { type DecisionDetail } from '@app-builder/models/decision';
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { type DecisionFiltersWithPagination } from '@app-builder/repositories/DecisionRepository';
 import { serverServices } from '@app-builder/services/init.server';
