@@ -1,5 +1,4 @@
 import { CaseStatus, decisionsI18n, Outcome } from '@app-builder/components';
-import { type DecisionDetail } from '@app-builder/models/decision';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';

@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker/locale/en';
 
 import {
-  type DecisionDto,
+  type DecisionDetailDto,
   type getDecision,
   type listDecisions,
 } from '../generated/marble-api';
 
-const fakeDecisions: DecisionDto[] = Array.from({
+const fakeDecisions: DecisionDetailDto[] = Array.from({
   length: Number(faker.number.int(100)),
 }).map(() => ({
   id: faker.string.uuid(),
@@ -27,8 +27,10 @@ const fakeDecisions: DecisionDto[] = Array.from({
     name: faker.word.noun(),
     description: faker.lorem.sentence(),
     version: Number(faker.number.int(10)),
+    scenario_iteration_id: faker.string.uuid(),
   },
   rules: Array.from({ length: Number(faker.number.int(500)) }).map(() => ({
+    rule_id: faker.string.uuid(),
     name: faker.word.noun(),
     description: faker.lorem.sentence(),
     score_modifier: Number(faker.number.int(100)),
