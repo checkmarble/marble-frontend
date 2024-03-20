@@ -39,12 +39,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { decision, editor, apiClient } = await authService.isAuthenticated(
-    request,
-    {
+  const { decision, editor, apiClient, scenario } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    },
-  );
+    });
   const parsedParam = await parseParamsSafe(
     params,
     z.object({ decisionId: shortUUIDSchema }),
@@ -56,14 +54,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   try {
     const currentDecision = await decision.getDecisionById(decisionId);
-    const scenarioId = currentDecision.scenario.id;
+
+    const scenarioIterationPromise = scenario.getScenarioIteration({
+      iterationId: currentDecision.scenario.scenarioIterationId,
+    });
 
     const operatorsPromise = editor.listOperators({
-      scenarioId,
+      scenarioId: currentDecision.scenario.id,
     });
 
     const accessorsPromise = editor.listAccessors({
-      scenarioId,
+      scenarioId: currentDecision.scenario.id,
     });
 
     const dataModelPromise = apiClient.getDataModel();
@@ -71,6 +72,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
     return json({
       decision: currentDecision,
+      rules: (await scenarioIterationPromise).rules,
       databaseAccessors: (await accessorsPromise).databaseAccessors,
       payloadAccessors: (await accessorsPromise).payloadAccessors,
       astOperators: await operatorsPromise,
@@ -89,6 +91,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function DecisionPage() {
   const {
     decision,
+    rules,
     databaseAccessors,
     payloadAccessors,
     astOperators,
@@ -118,7 +121,8 @@ export default function DecisionPage() {
             <div className="flex flex-col gap-4 lg:gap-6">
               <DecisionDetail decision={decision} />
               <RulesDetail
-                rules={decision.rules}
+                ruleExecutions={decision.rules}
+                rules={rules}
                 triggerObjectType={decision.triggerObjectType}
                 databaseAccessors={databaseAccessors}
                 payloadAccessors={payloadAccessors}

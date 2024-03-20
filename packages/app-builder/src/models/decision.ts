@@ -2,15 +2,12 @@ import {
   type Case,
   type DecisionDetailDto,
   type DecisionDto,
-  type DecisionWithoutRuleDto,
   type Error,
   type Outcome,
   type RuleExecutionDto,
 } from 'marble-api';
 
-import { adaptAstNode, type AstNode } from './ast-node';
-
-interface DecisionWithoutRule {
+export interface Decision {
   id: string;
   createdAt: string;
   triggerObject: Record<string, unknown>;
@@ -25,6 +22,7 @@ interface DecisionWithoutRule {
   };
   score: number;
   error?: Error;
+  case?: Case;
 }
 
 export interface RuleExecution {
@@ -33,27 +31,14 @@ export interface RuleExecution {
   scoreModifier: number;
   status?: 'triggered' | 'error';
   error?: Error;
+  ruleId: string;
 }
 
-export interface Decision extends DecisionWithoutRule {
+export interface DecisionDetail extends Decision {
   rules: RuleExecution[];
 }
 
-export interface RuleExecutionWithFormula extends RuleExecution {
-  ruleDetail: {
-    scoreModifier: number;
-    formula?: AstNode | null;
-  };
-}
-
-export interface DecisionDetail extends DecisionWithoutRule {
-  case?: Case;
-  rules: RuleExecutionWithFormula[];
-}
-
-function adaptDecisionWithoutRule(
-  dto: DecisionWithoutRuleDto,
-): DecisionWithoutRule {
+export function adaptDecision(dto: DecisionDto): Decision {
   return {
     id: dto.id,
     createdAt: dto.created_at,
@@ -68,6 +53,7 @@ function adaptDecisionWithoutRule(
       version: dto.scenario.version,
     },
     score: dto.score,
+    case: dto.case,
   };
 }
 
@@ -80,28 +66,13 @@ function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
     scoreModifier: dto.score_modifier,
     status,
     error: dto.error,
-  };
-}
-
-export function adaptDecision(dto: DecisionDto): Decision {
-  return {
-    ...adaptDecisionWithoutRule(dto),
-    rules: dto.rules.map(adaptRuleExecutionDto),
+    ruleId: dto.rule_id,
   };
 }
 
 export function adaptDecisionDetail(dto: DecisionDetailDto): DecisionDetail {
   return {
-    ...adaptDecisionWithoutRule(dto),
-    case: dto.case,
-    rules: dto.rules.map((rule) => ({
-      ...adaptRuleExecutionDto(rule),
-      ruleDetail: {
-        scoreModifier: rule.rule_detail.score_modifier,
-        formula: rule.rule_detail.formula_ast_expression
-          ? adaptAstNode(rule.rule_detail.formula_ast_expression)
-          : null,
-      },
-    })),
+    ...adaptDecision(dto),
+    rules: dto.rules.map(adaptRuleExecutionDto),
   };
 }

@@ -42,28 +42,6 @@ export type Pagination = {
     end_index: number;
     total_count: PaginationCount;
 };
-export type Error = {
-    code: number;
-    message: string;
-};
-export type DecisionWithoutRuleDto = {
-    id: string;
-    created_at: string;
-    trigger_object: {
-        [key: string]: any;
-    };
-    trigger_object_type: string;
-    outcome: Outcome;
-    scenario: {
-        id: string;
-        name: string;
-        description: string;
-        scenario_iteration_id: string;
-        version: number;
-    };
-    score: number;
-    error?: Error;
-};
 export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
 export type CaseContributor = {
     id: string;
@@ -87,40 +65,43 @@ export type Case = {
     contributors: CaseContributor[];
     tags: CaseTag[];
 };
-export type RuleExecutionDto = {
-    name: string;
-    description: string;
-    score_modifier: number;
-    result: boolean;
-    error?: Error;
+export type Error = {
+    code: number;
+    message: string;
 };
-export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
-    [key: string]: ConstantDto;
-} | null)) | null;
-export type NodeDto = {
-    name?: string;
-    constant?: ConstantDto;
-    children?: NodeDto[];
-    named_children?: {
-        [key: string]: NodeDto;
+export type DecisionDto = {
+    id: string;
+    created_at: string;
+    trigger_object: {
+        [key: string]: any;
     };
-};
-export type RuleExecutionWithDetailDto = RuleExecutionDto & {
-    rule_detail: {
-        score_modifier: number;
-        formula_ast_expression?: (NodeDto) | null;
+    trigger_object_type: string;
+    outcome: Outcome;
+    scenario: {
+        id: string;
+        name: string;
+        description: string;
+        scenario_iteration_id: string;
+        version: number;
     };
-};
-export type DecisionDetailDto = DecisionWithoutRuleDto & {
+    score: number;
     "case"?: Case;
-    rules: RuleExecutionWithDetailDto[];
+    error?: Error;
 };
 export type CreateDecisionBody = {
     scenario_id: string;
     trigger_object: object;
     object_type: string;
 };
-export type DecisionDto = DecisionWithoutRuleDto & {
+export type RuleExecutionDto = {
+    name: string;
+    description: string;
+    score_modifier: number;
+    result: boolean;
+    error?: Error;
+    rule_id: string;
+};
+export type DecisionDetailDto = DecisionDto & {
     rules: RuleExecutionDto[];
 };
 export type CreateCaseBody = {
@@ -189,7 +170,24 @@ export type CaseFile = {
     file_name: string;
 };
 export type CaseDetailDto = Case & {
-    decisions: DecisionDto[];
+    decisions: {
+        id: string;
+        created_at: string;
+        trigger_object: {
+            [key: string]: any;
+        };
+        trigger_object_type: string;
+        outcome: Outcome;
+        scenario: {
+            id: string;
+            name: string;
+            description: string;
+            scenario_iteration_id: string;
+            version: number;
+        };
+        score: number;
+        error?: Error;
+    }[];
     events: CaseEventDto[];
     files: CaseFile[];
 };
@@ -275,6 +273,17 @@ export type ScenarioIterationDto = {
     version: number | null;
     createdAt: string;
     updatedAt: string;
+};
+export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
+    [key: string]: ConstantDto;
+} | null)) | null;
+export type NodeDto = {
+    name?: string;
+    constant?: ConstantDto;
+    children?: NodeDto[];
+    named_children?: {
+        [key: string]: NodeDto;
+    };
 };
 export type CreateScenarioIterationRuleBody = {
     scenarioIterationId: string;
@@ -584,7 +593,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Pagination & {
-            items: DecisionDetailDto[];
+            items: DecisionDto[];
         };
     } | {
         status: 401;
@@ -615,7 +624,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
 export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: DecisionDto;
+        data: DecisionDetailDto;
     } | {
         status: 401;
         data: string;

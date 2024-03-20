@@ -6,12 +6,12 @@ import {
   type CaseTagsUpdatedEventDto,
   type CommentAddedEvent,
   type DecisionAddedEvent,
+  type Error,
   type FileAddedEvent,
   type InboxChangedEvent,
   type NameUpdatedEvent,
+  type Outcome,
 } from 'marble-api';
-
-import { adaptDecision, type Decision } from './decision';
 
 interface CaseTagsUpdatedEvent
   extends Omit<CaseTagsUpdatedEventDto, 'new_value'> {
@@ -60,7 +60,22 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
 
 export interface CaseDetail
   extends Omit<CaseDetailDto, 'events' | 'decisions'> {
-  decisions: Decision[];
+  decisions: {
+    id: string;
+    createdAt: string;
+    triggerObject: Record<string, unknown>;
+    triggerObjectType: string;
+    outcome: Outcome;
+    scenario: {
+      id: string;
+      name: string;
+      description: string;
+      scenarioIterationId: string;
+      version: number;
+    };
+    score: number;
+    error?: Error;
+  }[];
   events: CaseEvent[];
 }
 
@@ -71,7 +86,21 @@ export function adaptCaseDetailDto({
 }: CaseDetailDto): CaseDetail {
   return {
     ...rest,
-    decisions: decisions.map(adaptDecision),
+    decisions: decisions.map((decisionDto) => ({
+      id: decisionDto.id,
+      createdAt: decisionDto.created_at,
+      triggerObject: decisionDto.trigger_object,
+      triggerObjectType: decisionDto.trigger_object_type,
+      outcome: decisionDto.outcome,
+      scenario: {
+        id: decisionDto.scenario.id,
+        name: decisionDto.scenario.name,
+        description: decisionDto.scenario.description,
+        scenarioIterationId: decisionDto.scenario.scenario_iteration_id,
+        version: decisionDto.scenario.version,
+      },
+      score: decisionDto.score,
+    })),
     events: events.map(adaptCaseEventDto),
   };
 }
