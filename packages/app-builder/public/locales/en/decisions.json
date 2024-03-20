@@ -33,5 +33,6 @@
   "rules.status.triggered": "triggered",
   "rules.status.error": "error",
   "rules.status.unknown": "unknown",
-  "rules.description": "Description"
+  "rules.description": "Description",
+  "rules.error.not_found": "The associated rule info could not be found. Please try again or contact your admin."
 }

@@ -11,7 +11,9 @@ import {
 import { type RuleExecution } from '@app-builder/models/decision';
 import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import { Await } from '@remix-run/react';
 import { type CustomList } from 'marble-api';
+import { Suspense, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Accordion, Collapsible, Tag } from 'ui-design-system';
 
@@ -19,25 +21,21 @@ import { AstBuilder } from '../Scenario/AstBuilder';
 
 export function RulesDetail({
   ruleExecutions,
-  rules,
   triggerObjectType,
-  databaseAccessors,
-  payloadAccessors,
-  astOperators,
-  dataModel,
-  customLists,
+  astRuleData,
 }: {
   ruleExecutions: RuleExecution[];
-  rules: ScenarioIterationRule[];
   triggerObjectType: string;
-  databaseAccessors: DatabaseAccessAstNode[];
-  payloadAccessors: PayloadAstNode[];
-  astOperators: AstOperator[];
-  dataModel: TableModel[];
-  customLists: CustomList[];
+  astRuleData: Promise<{
+    rules: ScenarioIterationRule[];
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    astOperators: AstOperator[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+  }>;
 }) {
   const { t } = useTranslation(decisionsI18n);
-  const language = useFormatLanguage();
 
   return (
     <Collapsible.Container className="bg-grey-00">
@@ -68,10 +66,6 @@ export function RulesDetail({
               </div>
             );
 
-            const currentRule = rules.find(
-              (rule) => rule.id === ruleExecution.ruleId,
-            );
-
             return (
               <Accordion.Item
                 key={ruleExecution.ruleId}
@@ -90,35 +84,17 @@ export function RulesDetail({
                       </Callout>
                     ) : null}
 
-                    {currentRule?.scoreModifier ? (
-                      <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
-                        <Trans
-                          t={t}
-                          i18nKey="scenarios:rules.consequence.score_modifier"
-                          components={{
-                            Score: <span className="font-semibold" />,
-                          }}
-                          values={{
-                            score: formatNumber(currentRule?.scoreModifier, {
-                              language,
-                              signDisplay: 'always',
-                            }),
-                          }}
-                        />
-                      </div>
-                    ) : null}
-
-                    {currentRule?.formula ? (
-                      <RuleFormula
-                        formula={currentRule?.formula}
-                        databaseAccessors={databaseAccessors}
-                        payloadAccessors={payloadAccessors}
-                        astOperators={astOperators}
-                        dataModel={dataModel}
-                        customLists={customLists}
-                        triggerObjectType={triggerObjectType}
-                      />
-                    ) : null}
+                    <Suspense fallback={t('common:loading')}>
+                      <Await resolve={astRuleData}>
+                        {(astRuleData) => (
+                          <RuleExecutionDetail
+                            ruleExecution={ruleExecution}
+                            triggerObjectType={triggerObjectType}
+                            astRuleData={astRuleData}
+                          />
+                        )}
+                      </Await>
+                    </Suspense>
                   </div>
                 </Accordion.Content>
               </Accordion.Item>
@@ -127,6 +103,68 @@ export function RulesDetail({
         </Accordion.Container>
       </Collapsible.Content>
     </Collapsible.Container>
+  );
+}
+
+function RuleExecutionDetail({
+  ruleExecution,
+  triggerObjectType,
+  astRuleData,
+}: {
+  ruleExecution: RuleExecution;
+  triggerObjectType: string;
+  astRuleData: {
+    rules: ScenarioIterationRule[];
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    astOperators: AstOperator[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+  };
+}) {
+  const { t } = useTranslation(decisionsI18n);
+  const language = useFormatLanguage();
+  const currentRule = useMemo(
+    () => astRuleData.rules.find((rule) => rule.id === ruleExecution.ruleId),
+    [astRuleData.rules, ruleExecution.ruleId],
+  );
+
+  if (!currentRule || !currentRule.formula) {
+    return (
+      <p className="bg-red-05 text-s flex h-8 items-center justify-center rounded px-2 py-1 font-medium text-red-100">
+        {t('decisions:rules.error.not_found')}
+      </p>
+    );
+  }
+
+  return (
+    <>
+      <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
+        <Trans
+          t={t}
+          i18nKey="scenarios:rules.consequence.score_modifier"
+          components={{
+            Score: <span className="font-semibold" />,
+          }}
+          values={{
+            score: formatNumber(currentRule?.scoreModifier, {
+              language,
+              signDisplay: 'always',
+            }),
+          }}
+        />
+      </div>
+
+      <RuleFormula
+        formula={currentRule.formula}
+        databaseAccessors={astRuleData.databaseAccessors}
+        payloadAccessors={astRuleData.payloadAccessors}
+        astOperators={astRuleData.astOperators}
+        dataModel={astRuleData.dataModel}
+        customLists={astRuleData.customLists}
+        triggerObjectType={triggerObjectType}
+      />
+    </>
   );
 }
 
