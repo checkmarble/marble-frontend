@@ -181,7 +181,7 @@ function AddToCase({
   getSelectedDecisions,
 }: {
   hasSelection: boolean;
-  getSelectedDecisions: () => DecisionDetail[];
+  getSelectedDecisions: () => { id: string; case?: object }[];
 }) {
   const { t } = useTranslation(handle.i18n);
   const { onTriggerClick } = useDecisionRightPanelContext();

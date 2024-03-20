@@ -7,6 +7,10 @@ import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import {
+  type CaseStatus as TCaseStatus,
+  type Outcome as TOutcome,
+} from 'marble-api';
+import {
   useCallback,
   useImperativeHandle,
   useMemo,
@@ -26,9 +30,28 @@ type Column =
   | 'score'
   | 'outcome';
 
+interface DecisionVM {
+  id: string;
+  createdAt: string;
+  scenario: {
+    id: string;
+    name: string;
+    version: number;
+    scenarioIterationId: string;
+  };
+  triggerObjectType: string;
+  case?: {
+    id: string;
+    name: string;
+    status: TCaseStatus;
+  };
+  score: number;
+  outcome: TOutcome;
+}
+
 type DecisionsListProps = {
   className?: string;
-  decisions: DecisionDetail[];
+  decisions: DecisionVM[];
   columnVisibility?: Partial<Record<Column, boolean>>;
 } & (WithSelectable | WithoutSelectable);
 
@@ -44,7 +67,7 @@ type WithoutSelectable = {
 
 export function useSelectedDecisionIds() {
   const [rowSelection, setRowSelection] = useState({});
-  const getSelectedDecisionsRef = useRef<() => DecisionDetail[]>(() => []);
+  const getSelectedDecisionsRef = useRef<() => DecisionVM[]>(() => []);
   const getSelectedDecisions = useCallback(
     () => getSelectedDecisionsRef.current(),
     [],
@@ -61,7 +84,7 @@ export function useSelectedDecisionIds() {
   };
 }
 
-const columnHelper = createColumnHelper<DecisionDetail>();
+const columnHelper = createColumnHelper<DecisionVM>();
 
 export function DecisionsList({
   className,
