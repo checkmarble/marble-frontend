@@ -180,6 +180,13 @@ export function getEventTitle(
         );
       }
     }
+    case 'comment_added': {
+      return (
+        <span className="text-s text-grey-100 font-semibold">
+          {t('cases:case_detail.history.event_title.comment_added')}
+        </span>
+      );
+    }
     case 'decision_added': {
       //TODO(events): aggregate decision_added events to show the count
       const decisionCount = 1;
