@@ -120,7 +120,7 @@ export function DecisionsList({
               scenarioId: fromUUID(row.original.scenario.id),
             })}
             onClick={(e) => e.stopPropagation()}
-            className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-120 focus:text-purple-120 isolate font-semibold capitalize text-purple-100 hover:underline focus:underline"
           >
             {getValue()}
           </Link>
@@ -137,7 +137,7 @@ export function DecisionsList({
               iterationId: fromUUID(row.original.scenario.scenarioIterationId),
             })}
             onClick={(e) => e.stopPropagation()}
-            className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-120 focus:text-purple-120 isolate font-semibold capitalize text-purple-100 hover:underline focus:underline"
           >
             {`V${getValue()}`}
           </Link>
