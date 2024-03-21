@@ -29,7 +29,7 @@ type Column =
   | 'score'
   | 'outcome';
 
-interface DecisionVM {
+interface DecisionViewModel {
   id: string;
   createdAt: string;
   scenario: {
@@ -50,7 +50,7 @@ interface DecisionVM {
 
 type DecisionsListProps = {
   className?: string;
-  decisions: DecisionVM[];
+  decisions: DecisionViewModel[];
   columnVisibility?: Partial<Record<Column, boolean>>;
 } & (WithSelectable | WithoutSelectable);
 
@@ -66,7 +66,7 @@ type WithoutSelectable = {
 
 export function useSelectedDecisionIds() {
   const [rowSelection, setRowSelection] = useState({});
-  const getSelectedDecisionsRef = useRef<() => DecisionVM[]>(() => []);
+  const getSelectedDecisionsRef = useRef<() => DecisionViewModel[]>(() => []);
   const getSelectedDecisions = useCallback(
     () => getSelectedDecisionsRef.current(),
     [],
@@ -83,7 +83,7 @@ export function useSelectedDecisionIds() {
   };
 }
 
-const columnHelper = createColumnHelper<DecisionVM>();
+const columnHelper = createColumnHelper<DecisionViewModel>();
 
 export function DecisionsList({
   className,
