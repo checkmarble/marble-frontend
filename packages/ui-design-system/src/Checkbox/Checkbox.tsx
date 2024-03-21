@@ -4,7 +4,11 @@ import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
 const checkbox = cva(
-  'disabled:bg-grey-10 bg-grey-00 hover:bg-purple-05 radix-state-checked:border-none radix-state-checked:bg-purple-100 flex size-6 shrink-0 items-center justify-center rounded border outline-none',
+  [
+    'flex size-6 shrink-0 items-center justify-center rounded border outline-none',
+    'bg-grey-00 hover:bg-purple-05 enabled:radix-state-checked:border-none enabled:radix-state-checked:bg-purple-100',
+    'disabled:bg-grey-10 disabled:border-grey-25 disabled:radix-state-checked:border disabled:radix-state-checked:bg-grey-10 disabled:cursor-not-allowed',
+  ],
   {
     variants: {
       color: {
@@ -24,17 +28,26 @@ export const Checkbox = forwardRef<
   return (
     <Root
       ref={ref}
-      className={checkbox({ color, className })}
+      className={checkbox({ color, className: `group ${className}` })}
       checked={checked}
       {...props}
     >
       <Indicator className="size-6" asChild>
         {checked === undefined ? (
-          <Icon icon="tick" className="text-grey-00" />
+          <Icon
+            icon="tick"
+            className="text-grey-00 group-disabled:text-grey-50"
+          />
         ) : checked === true ? (
-          <Icon icon="tick" className="text-grey-00" />
+          <Icon
+            icon="tick"
+            className="text-grey-00 group-disabled:text-grey-50"
+          />
         ) : checked === 'indeterminate' ? (
-          <Icon icon="check-indeterminate-small" className="text-purple-100" />
+          <Icon
+            icon="check-indeterminate-small"
+            className="group-disabled:text-grey-50 text-purple-100"
+          />
         ) : null}
       </Indicator>
     </Root>
