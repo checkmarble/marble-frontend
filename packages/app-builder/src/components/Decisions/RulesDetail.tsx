@@ -8,10 +8,15 @@ import {
   type ScenarioIterationRule,
   type TableModel,
 } from '@app-builder/models';
-import { type RuleExecution } from '@app-builder/models/decision';
+import {
+  isRuleExecutionError,
+  isRuleExecutionHit,
+  type RuleExecution,
+} from '@app-builder/models/decision';
 import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { Await } from '@remix-run/react';
+import { type TFunction } from 'i18next';
 import { type CustomList } from 'marble-api';
 import { Suspense, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -43,26 +48,22 @@ export function RulesDetail({
       <Collapsible.Content>
         <Accordion.Container>
           {ruleExecutions.map((ruleExecution) => {
-            const isTriggered = ruleExecution.status === 'triggered';
+            const isHit = isRuleExecutionHit(ruleExecution);
 
             const title = (
               <div className="flex grow items-center justify-between">
                 <div className="text-s flex items-center gap-2 font-semibold">
                   {ruleExecution.name}
-                  {isTriggered ? (
-                    <Score score={ruleExecution.scoreModifier} />
-                  ) : null}
+                  {isHit ? <Score score={ruleExecution.scoreModifier} /> : null}
                 </div>
-                {ruleExecution.status ? (
-                  <Tag
-                    border="square"
-                    size="big"
-                    color={isTriggered ? 'green' : 'red'}
-                    className="capitalize"
-                  >
-                    {t(`decisions:rules.status.${ruleExecution.status}`)}
-                  </Tag>
-                ) : null}
+                <Tag
+                  border="square"
+                  size="big"
+                  color={getRuleExecutionStatusColor(ruleExecution)}
+                  className="capitalize"
+                >
+                  {getRuleExecutionStatusLabel(t, ruleExecution)}
+                </Tag>
               </div>
             );
 
@@ -147,7 +148,7 @@ function RuleExecutionDetail({
             Score: <span className="font-semibold" />,
           }}
           values={{
-            score: formatNumber(currentRule?.scoreModifier, {
+            score: formatNumber(currentRule.scoreModifier, {
               language,
               signDisplay: 'always',
             }),
@@ -202,4 +203,27 @@ function RuleFormula({
       <AstBuilder builder={astEditor} viewOnly={true} />
     </Paper.Container>
   );
+}
+
+function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
+  if (isRuleExecutionHit(ruleExecution)) {
+    return 'green';
+  }
+  if (isRuleExecutionError(ruleExecution)) {
+    return 'red';
+  }
+  return 'grey';
+}
+
+function getRuleExecutionStatusLabel(
+  t: TFunction<typeof decisionsI18n>,
+  ruleExecution: RuleExecution,
+) {
+  if (isRuleExecutionHit(ruleExecution)) {
+    return t('decisions:rules.status.hit');
+  }
+  if (isRuleExecutionError(ruleExecution)) {
+    return t('decisions:rules.status.error');
+  }
+  return t('decisions:rules.status.no_hit');
 }

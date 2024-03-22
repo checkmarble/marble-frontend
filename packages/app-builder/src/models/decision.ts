@@ -25,14 +25,48 @@ export interface Decision {
   case?: Case;
 }
 
-export interface RuleExecution {
+interface RuleExecutionCore {
   name: string;
   description?: string;
-  scoreModifier: number;
-  status?: 'triggered' | 'error';
-  error?: Error;
   ruleId: string;
 }
+
+export interface RuleExecutionNoHit extends RuleExecutionCore {
+  status: 'no_hit';
+}
+
+export function isRuleExecutionNoHit(
+  ruleExecution: RuleExecution,
+): ruleExecution is RuleExecutionNoHit {
+  return ruleExecution.status === 'no_hit';
+}
+
+export interface RuleExecutionHit extends RuleExecutionCore {
+  status: 'hit';
+  scoreModifier: number;
+}
+
+export function isRuleExecutionHit(
+  ruleExecution: RuleExecution,
+): ruleExecution is RuleExecutionHit {
+  return ruleExecution.status === 'hit';
+}
+
+export interface RuleExecutionError extends RuleExecutionCore {
+  status: 'error';
+  error: Error;
+}
+
+export function isRuleExecutionError(
+  ruleExecution: RuleExecution,
+): ruleExecution is RuleExecutionError {
+  return ruleExecution.status === 'error';
+}
+
+export type RuleExecution =
+  | RuleExecutionNoHit
+  | RuleExecutionHit
+  | RuleExecutionError;
 
 export interface DecisionDetail extends Decision {
   rules: RuleExecution[];
@@ -58,15 +92,28 @@ export function adaptDecision(dto: DecisionDto): Decision {
 }
 
 function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
-  const status = dto.result ? 'triggered' : dto.error ? 'error' : undefined;
-
-  return {
+  const ruleExecution: RuleExecutionCore = {
     name: dto.name,
-    description: dto.description || undefined,
-    scoreModifier: dto.score_modifier,
-    status,
-    error: dto.error,
     ruleId: dto.rule_id,
+    description: dto.description || undefined,
+  };
+  if (dto.result) {
+    return {
+      ...ruleExecution,
+      status: 'hit',
+      scoreModifier: dto.score_modifier,
+    };
+  }
+  if (dto.error) {
+    return {
+      ...ruleExecution,
+      status: 'error',
+      error: dto.error,
+    };
+  }
+  return {
+    ...ruleExecution,
+    status: 'no_hit',
   };
 }
 
