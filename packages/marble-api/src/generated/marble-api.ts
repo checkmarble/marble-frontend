@@ -442,11 +442,13 @@ export type AnalyticsDto = {
 };
 export type ApiKeyDto = {
     id: string;
-    organization_id: string;
     description: string;
+    organization_id: string;
+    /** 3 first characters of the API key */
+    prefix: string;
     role: string;
 };
-export type CreateApiKey = {
+export type CreateApiKeyBody = {
     description: string;
     role: string;
 };
@@ -1834,7 +1836,7 @@ export function listApiKeys(opts?: Oazapfts.RequestOpts) {
 /**
  * Create an api key
  */
-export function createApiKey(createApiKey: CreateApiKey, opts?: Oazapfts.RequestOpts) {
+export function createApiKey(createApiKeyBody: CreateApiKeyBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -1852,7 +1854,7 @@ export function createApiKey(createApiKey: CreateApiKey, opts?: Oazapfts.Request
     }>("/apikeys", oazapfts.json({
         ...opts,
         method: "POST",
-        body: createApiKey
+        body: createApiKeyBody
     })));
 }
 /**

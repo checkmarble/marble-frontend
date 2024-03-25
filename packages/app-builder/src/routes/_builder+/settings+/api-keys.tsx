@@ -55,6 +55,11 @@ export default function ApiKeys() {
 
   const columns = useMemo(() => {
     return [
+      columnHelper.accessor((row) => row.prefix, {
+        id: 'prefix',
+        header: t('settings:api_keys.value'),
+        size: 100,
+      }),
       columnHelper.accessor((row) => row.description, {
         id: 'description',
         header: t('settings:api_keys.description'),
