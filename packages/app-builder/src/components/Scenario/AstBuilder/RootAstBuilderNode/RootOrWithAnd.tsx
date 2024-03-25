@@ -196,9 +196,9 @@ export function RootOrWithAnd({
 
       {/* [+ Group] row */}
       {viewOnly ? (
-        <EvaluationErrors errors={orErrorMessages} />
+        <EvaluationErrors errors={orErrorMessages} className="col-span-3" />
       ) : (
-        <div className="flex flex-row flex-wrap gap-2">
+        <div className="col-span-3 flex flex-row flex-wrap gap-2">
           <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
           <EvaluationErrors errors={orErrorMessages} />
         </div>
