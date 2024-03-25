@@ -2000,7 +2000,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateApiKey'
+              $ref: '#/components/schemas/CreateApiKeyBody'
         required: true
       responses:
         '200':
@@ -2992,20 +2992,24 @@ components:
       type: object
       required:
         - id
-        - organization_id
         - description
+        - organization_id
+        - prefix
         - role
       properties:
         id:
           type: string
+        description:
+          type: string
         organization_id:
           type: string
           format: uuid
-        description:
+        prefix:
           type: string
+          description: 3 first characters of the API key
         role:
           type: string
-    CreateApiKey:
+    CreateApiKeyBody:
       type: object
       required:
         - description

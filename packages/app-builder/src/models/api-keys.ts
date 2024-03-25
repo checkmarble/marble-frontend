@@ -10,16 +10,18 @@ function isApiKeyRole(role: string): role is ApiKeyRole {
 
 export interface ApiKey {
   id: string;
-  organizationId: string;
   description: string;
+  organizationId: string;
+  prefix: string;
   role: ApiKeyRole | 'UNKNWON';
 }
 
 export function adaptApiKey(apiKeyDto: ApiKeyDto): ApiKey {
   const apiKey: ApiKey = {
     id: apiKeyDto.id,
-    organizationId: apiKeyDto.organization_id,
     description: apiKeyDto.description,
+    organizationId: apiKeyDto.organization_id,
+    prefix: apiKeyDto.prefix + '*************',
     role: 'UNKNWON',
   };
   if (isApiKeyRole(apiKeyDto.role)) {

@@ -27,6 +27,7 @@
   "api_keys.copy_api_key": "Make sure to copy it now and store it in a secure place as you will not be able to see this again.",
   "api_keys.description": "Description",
   "api_keys.role": "API key role",
+  "api_keys.value": "Value",
   "api_keys.role.api_client": "API_CLIENT",
   "api_keys.role.unknown": "UNKNOWN",
   "api_keys.create": "Create new API Key",
