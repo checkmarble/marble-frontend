@@ -59,6 +59,9 @@ export default function ApiKeys() {
         id: 'prefix',
         header: t('settings:api_keys.value'),
         size: 100,
+        cell: ({ getValue }) => {
+          return <span>{`${getValue()}*************`}</span>;
+        },
       }),
       columnHelper.accessor((row) => row.description, {
         id: 'description',

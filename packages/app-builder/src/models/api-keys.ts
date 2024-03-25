@@ -21,7 +21,7 @@ export function adaptApiKey(apiKeyDto: ApiKeyDto): ApiKey {
     id: apiKeyDto.id,
     description: apiKeyDto.description,
     organizationId: apiKeyDto.organization_id,
-    prefix: apiKeyDto.prefix + '*************',
+    prefix: apiKeyDto.prefix,
     role: 'UNKNWON',
   };
   if (isApiKeyRole(apiKeyDto.role)) {
