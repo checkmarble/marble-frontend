@@ -1,10 +1,9 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
+import { NewAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   type EvaluationError,
-  NewAstNode,
-  NewUndefinedAstNode,
   separateChildrenErrors,
-} from '@app-builder/models';
+} from '@app-builder/models/node-evaluation';
 import {
   type AstBuilder,
   type EditorNodeViewModel,

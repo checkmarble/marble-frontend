@@ -27,17 +27,54 @@ const operandContainerClassnames = cva(
   {
     variants: {
       type: {
-        view: 'bg-grey-02',
-        edit: 'bg-grey-00 aria-expanded:bg-purple-05 aria-expanded:border-purple-100',
+        viewer: 'bg-grey-02',
+        editor:
+          'bg-grey-00 aria-expanded:bg-purple-05 aria-expanded:border-purple-100',
       },
-      borderColor: {
-        'grey-10':
+      validationStatus: {
+        valid: '',
+        error: '',
+        'light-error': '',
+      },
+    },
+    compoundVariants: [
+      {
+        type: 'editor',
+        validationStatus: 'valid',
+        className:
           'border enabled:aria-[expanded=false]:border-grey-10 enabled:aria-[expanded=false]:focus:border-purple-100',
-        'red-100':
+      },
+      {
+        type: 'editor',
+        validationStatus: 'error',
+        className:
           'border enabled:aria-[expanded=false]:border-red-100 enabled:aria-[expanded=false]:focus:border-purple-100',
-        'red-25':
+      },
+      {
+        type: 'editor',
+        validationStatus: 'light-error',
+        className:
           'border enabled:aria-[expanded=false]:border-red-25 enabled:aria-[expanded=false]:focus:border-purple-100',
       },
+      {
+        type: 'viewer',
+        validationStatus: 'valid',
+        className: 'border border-grey-02',
+      },
+      {
+        type: 'viewer',
+        validationStatus: 'error',
+        className: 'border border-red-100',
+      },
+      {
+        type: 'viewer',
+        validationStatus: 'light-error',
+        className: 'border border-red-25',
+      },
+    ],
+    defaultVariants: {
+      type: 'viewer',
+      validationStatus: 'valid',
     },
   },
 );
@@ -50,7 +87,7 @@ interface OperandLabelProps
 
 export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
   function OperandLabel(
-    { editableAstNode, borderColor, placeholder, type, ...props },
+    { editableAstNode, validationStatus, placeholder, type, ...props },
     ref,
   ) {
     const { t } = useTranslation(['scenarios']);
@@ -64,11 +101,9 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
         {...props}
         className={operandContainerClassnames({
           type,
-          borderColor,
+          validationStatus,
         })}
-        render={(props) =>
-          type === 'edit' ? <button {...props} /> : <div {...props} />
-        }
+        render={type === 'editor' ? <button /> : <div />}
       >
         {displayPlaceholder ? (
           <span
@@ -113,8 +148,9 @@ const typeInfosClassnames = cva(
   {
     variants: {
       type: {
-        view: 'bg-grey-10',
-        edit: 'bg-grey-02 group-aria-expanded:bg-purple-10 group-aria-expanded:text-purple-100',
+        viewer: 'bg-grey-10',
+        editor:
+          'bg-grey-02 group-aria-expanded:bg-purple-10 group-aria-expanded:text-purple-100',
       },
     },
   },

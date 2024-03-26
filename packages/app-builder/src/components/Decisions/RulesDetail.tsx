@@ -13,6 +13,7 @@ import {
   isRuleExecutionHit,
   type RuleExecution,
 } from '@app-builder/models/decision';
+import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { Await } from '@remix-run/react';
@@ -158,6 +159,7 @@ function RuleExecutionDetail({
 
       <RuleFormula
         formula={currentRule.formula}
+        evaluation={ruleExecution.evaluation}
         databaseAccessors={astRuleData.databaseAccessors}
         payloadAccessors={astRuleData.payloadAccessors}
         astOperators={astRuleData.astOperators}
@@ -172,6 +174,7 @@ function RuleExecutionDetail({
 function RuleFormula({
   formula,
   databaseAccessors,
+  evaluation,
   payloadAccessors,
   astOperators,
   dataModel,
@@ -179,6 +182,7 @@ function RuleFormula({
   triggerObjectType,
 }: {
   formula: AstNode;
+  evaluation?: NodeEvaluation;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
   astOperators: AstOperator[];
@@ -188,6 +192,7 @@ function RuleFormula({
 }) {
   const astEditor = useAstBuilder({
     backendAst: formula,
+    backendValidation: evaluation,
     localValidation: null,
     databaseAccessors,
     payloadAccessors,

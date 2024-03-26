@@ -7,6 +7,8 @@ import {
   type RuleExecutionDto,
 } from 'marble-api';
 
+import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
+
 export interface Decision {
   id: string;
   createdAt: string;
@@ -29,6 +31,7 @@ interface RuleExecutionCore {
   name: string;
   description?: string;
   ruleId: string;
+  evaluation?: NodeEvaluation;
 }
 
 export interface RuleExecutionNoHit extends RuleExecutionCore {
@@ -96,6 +99,9 @@ function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
     name: dto.name,
     ruleId: dto.rule_id,
     description: dto.description || undefined,
+    evaluation: dto.rule_evaluation
+      ? adaptNodeEvaluation(dto.rule_evaluation)
+      : undefined,
   };
   if (dto.result) {
     return {

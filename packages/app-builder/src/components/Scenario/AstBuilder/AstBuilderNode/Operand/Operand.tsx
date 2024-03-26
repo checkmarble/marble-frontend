@@ -18,6 +18,7 @@ import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
+  getValidationStatus,
 } from '@app-builder/services/editor/ast-editor';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -116,11 +117,24 @@ export function Operand({
   ]);
 
   if (!editableAstNode) {
-    return <Default editorNodeViewModel={operandViewModel} builder={builder} />;
+    return (
+      <Default
+        editorNodeViewModel={operandViewModel}
+        builder={builder}
+        type={viewOnly ? 'viewer' : 'editor'}
+        validationStatus={getValidationStatus(operandViewModel)}
+      />
+    );
   }
 
   if (viewOnly || !onSave) {
-    return <OperandLabel editableAstNode={editableAstNode} type="view" />;
+    return (
+      <OperandLabel
+        editableAstNode={editableAstNode}
+        validationStatus={getValidationStatus(operandViewModel)}
+        type="viewer"
+      />
+    );
   }
 
   return (

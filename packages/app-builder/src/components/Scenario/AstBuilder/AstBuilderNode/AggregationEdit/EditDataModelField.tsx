@@ -1,4 +1,4 @@
-import { type EvaluationError } from '@app-builder/models';
+import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { cva } from 'class-variance-authority';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
