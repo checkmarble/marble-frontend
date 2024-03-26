@@ -165,7 +165,7 @@ paths:
                       items:
                         type: array
                         items:
-                          $ref: '#/components/schemas/DecisionDetail'
+                          $ref: '#/components/schemas/DecisionDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -190,7 +190,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Decision'
+                $ref: '#/components/schemas/DecisionDetailDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -740,7 +740,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DecisionDetail'
+                $ref: '#/components/schemas/DecisionDetailDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -3258,7 +3258,29 @@ components:
     Outcome:
       type: string
       enum: ['approve', 'review', 'decline', 'null', 'unknown']
-    Decision:
+    RuleExecutionDto:
+      type: object
+      required:
+        - name
+        - description
+        - score_modifier
+        - result
+        - rule_id
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        score_modifier:
+          type: integer
+        result:
+          type: boolean
+        error:
+          $ref: '#/components/schemas/Error'
+        rule_id:
+          type: string
+          format: uuid
+    DecisionDto:
       type: object
       required:
         - id
@@ -3267,7 +3289,6 @@ components:
         - trigger_object_type
         - outcome
         - scenario
-        - rules
         - score
       properties:
         id:
@@ -3288,6 +3309,7 @@ components:
             - id
             - name
             - description
+            - scenario_iteration_id
             - version
           properties:
             id:
@@ -3297,39 +3319,28 @@ components:
               type: string
             description:
               type: string
+            scenario_iteration_id:
+              type: string
+              format: uuid
             version:
               type: integer
-        rules:
-          type: array
-          items:
-            type: object
-            required:
-              - name
-              - description
-              - score_modifier
-              - result
-            properties:
-              name:
-                type: string
-              description:
-                type: string
-              score_modifier:
-                type: integer
-              result:
-                type: boolean
-              error:
-                $ref: '#/components/schemas/Error'
         score:
           type: integer
+        case:
+          $ref: '#/components/schemas/Case'
         error:
           $ref: '#/components/schemas/Error'
-    DecisionDetail:
+    DecisionDetailDto:
       allOf:
-        - $ref: '#/components/schemas/Decision'
+        - $ref: '#/components/schemas/DecisionDto'
         - type: object
+          required:
+            - rules
           properties:
-            case:
-              $ref: '#/components/schemas/Case'
+            rules:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleExecutionDto'
     CaseStatus:
       type: string
       enum: ['open', 'investigating', 'discarded', 'resolved']
@@ -3380,7 +3391,53 @@ components:
             decisions:
               type: array
               items:
-                $ref: '#/components/schemas/Decision'
+                type: object
+                required:
+                  - id
+                  - created_at
+                  - trigger_object
+                  - trigger_object_type
+                  - outcome
+                  - scenario
+                  - score
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  created_at:
+                    type: string
+                    format: date-time
+                  trigger_object:
+                    additionalProperties: true
+                  trigger_object_type:
+                    type: string
+                  outcome:
+                    $ref: '#/components/schemas/Outcome'
+                  scenario:
+                    type: object
+                    required:
+                      - id
+                      - name
+                      - description
+                      - scenario_iteration_id
+                      - version
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      scenario_iteration_id:
+                        type: string
+                        format: uuid
+                      version:
+                        type: integer
+                  score:
+                    type: integer
+                  error:
+                    $ref: '#/components/schemas/Error'
             events:
               type: array
               items:

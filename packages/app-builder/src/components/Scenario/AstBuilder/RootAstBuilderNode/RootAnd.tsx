@@ -18,9 +18,9 @@ import {
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
-import { ScenarioValidationError } from '../../ScenarioValidationError';
+import { EvaluationErrors } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
-import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine/TwoOperandsLine';
+import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
@@ -61,14 +61,16 @@ export function RootAnd({
   rootAndViewModel: RootAndViewModel;
   viewOnly?: boolean;
 }) {
-  const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
+  const getOrAndNodeEvaluationErrorMessage =
+    useGetOrAndNodeEvaluationErrorMessage();
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+
   const { nodeErrors: andNodeErrors } = separateChildrenErrors(
     rootAndViewModel.errors,
   );
 
   const andErrorMessages = adaptEvaluationErrorViewModels(andNodeErrors).map(
-    getEvaluationErrorMessage,
+    getOrAndNodeEvaluationErrorMessage,
   );
 
   function appendAndChild() {
@@ -93,7 +95,7 @@ export function RootAnd({
   return (
     <>
       <div className="text-s grid grid-cols-[8px_16px_max-content_1fr_max-content]">
-        <div className="text-s bg-grey-02 col-span-4 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
+        <div className="text-s bg-grey-02 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
           {builder.input.triggerObjectTable.name}
         </div>
         {rootAndViewModel.children.map((child, childIndex) => {
@@ -119,58 +121,57 @@ export function RootAnd({
               {/* Row 2 */}
               <div
                 className={clsx(
-                  'border-grey-10  border-r',
+                  'border-grey-10 col-start-1 border-r',
                   isLastCondition && 'h-5',
                 )}
               />
-              <div className="border-grey-10  h-5 border-b" />
+              <div className="border-grey-10 col-start-2 h-5 border-b" />
               <LogicalOperatorLabel
                 operator={isFirstCondition ? 'where' : 'and'}
                 className={clsx(
-                  'bg-grey-02 border p-2',
+                  'bg-grey-02 col-start-3 border p-2',
                   hasArgumentIndexErrorsFromParent(child)
                     ? ' border-red-100 text-red-100'
                     : 'border-grey-02 text-grey-25',
                 )}
               />
 
-              <div className="grid grid-cols-[1fr_30px] gap-2 pl-2">
+              <div
+                className={clsx(
+                  'col-start-4 flex flex-col gap-2 px-2',
+                  viewOnly ? 'col-span-2' : 'col-span-1',
+                )}
+              >
                 <AstBuilderNode
                   builder={builder}
                   editorNodeViewModel={child}
                   viewOnly={viewOnly}
                   root
                 />
-                {!viewOnly ? (
-                  <div className="flex h-10 flex-col items-center justify-center">
-                    <RemoveButton
-                      onClick={() => {
-                        builder.remove(child.nodeId);
-                      }}
-                    />
-                  </div>
-                ) : null}
-                <div className="flex flex-row flex-wrap gap-2">
-                  {errorMessages.map((error) => (
-                    <ScenarioValidationError key={error}>
-                      {error}
-                    </ScenarioValidationError>
-                  ))}
-                </div>
+                <EvaluationErrors errors={errorMessages} />
               </div>
+              {!viewOnly ? (
+                <div className="col-start-5 flex h-10 flex-col items-center justify-center">
+                  <RemoveButton
+                    onClick={() => {
+                      builder.remove(child.nodeId);
+                    }}
+                  />
+                </div>
+              ) : null}
             </Fragment>
           );
         })}
       </div>
 
-      <div className="flex flex-row flex-wrap gap-2">
-        {!viewOnly ? (
+      {viewOnly ? (
+        <EvaluationErrors errors={andErrorMessages} />
+      ) : (
+        <div className="flex flex-row flex-wrap gap-2">
           <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
-        ) : null}
-        {andErrorMessages.map((error) => (
-          <ScenarioValidationError key={error}>{error}</ScenarioValidationError>
-        ))}
-      </div>
+          <EvaluationErrors errors={andErrorMessages} />
+        </div>
+      )}
     </>
   );
 }

@@ -42,34 +42,6 @@ export type Pagination = {
     end_index: number;
     total_count: PaginationCount;
 };
-export type Error = {
-    code: number;
-    message: string;
-};
-export type Decision = {
-    id: string;
-    created_at: string;
-    trigger_object: {
-        [key: string]: any;
-    };
-    trigger_object_type: string;
-    outcome: Outcome;
-    scenario: {
-        id: string;
-        name: string;
-        description: string;
-        version: number;
-    };
-    rules: {
-        name: string;
-        description: string;
-        score_modifier: number;
-        result: boolean;
-        error?: Error;
-    }[];
-    score: number;
-    error?: Error;
-};
 export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
 export type CaseContributor = {
     id: string;
@@ -93,13 +65,44 @@ export type Case = {
     contributors: CaseContributor[];
     tags: CaseTag[];
 };
-export type DecisionDetail = Decision & {
+export type Error = {
+    code: number;
+    message: string;
+};
+export type DecisionDto = {
+    id: string;
+    created_at: string;
+    trigger_object: {
+        [key: string]: any;
+    };
+    trigger_object_type: string;
+    outcome: Outcome;
+    scenario: {
+        id: string;
+        name: string;
+        description: string;
+        scenario_iteration_id: string;
+        version: number;
+    };
+    score: number;
     "case"?: Case;
+    error?: Error;
 };
 export type CreateDecisionBody = {
     scenario_id: string;
     trigger_object: object;
     object_type: string;
+};
+export type RuleExecutionDto = {
+    name: string;
+    description: string;
+    score_modifier: number;
+    result: boolean;
+    error?: Error;
+    rule_id: string;
+};
+export type DecisionDetailDto = DecisionDto & {
+    rules: RuleExecutionDto[];
 };
 export type CreateCaseBody = {
     name: string;
@@ -167,7 +170,24 @@ export type CaseFile = {
     file_name: string;
 };
 export type CaseDetailDto = Case & {
-    decisions: Decision[];
+    decisions: {
+        id: string;
+        created_at: string;
+        trigger_object: {
+            [key: string]: any;
+        };
+        trigger_object_type: string;
+        outcome: Outcome;
+        scenario: {
+            id: string;
+            name: string;
+            description: string;
+            scenario_iteration_id: string;
+            version: number;
+        };
+        score: number;
+        error?: Error;
+    }[];
     events: CaseEventDto[];
     files: CaseFile[];
 };
@@ -575,7 +595,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Pagination & {
-            items: DecisionDetail[];
+            items: DecisionDto[];
         };
     } | {
         status: 401;
@@ -606,7 +626,7 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
 export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Decision;
+        data: DecisionDetailDto;
     } | {
         status: 401;
         data: string;
@@ -943,7 +963,7 @@ export function listScheduledExecutions({ scenarioId }: {
 export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: DecisionDetail;
+        data: DecisionDetailDto;
     } | {
         status: 401;
         data: string;

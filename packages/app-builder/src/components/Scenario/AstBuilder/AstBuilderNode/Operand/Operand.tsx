@@ -1,55 +1,47 @@
 import {
-  adaptLabelledAst,
   type AstNode,
-  isAggregation,
-  isConstant,
-  isCustomListAccess,
-  isDatabaseAccess,
-  isPayload,
-  isTimeAdd,
-  isTimeNow,
-  isUndefinedAstNode,
+  NewAggregatorAstNode,
+  NewConstantAstNode,
 } from '@app-builder/models';
+import {
+  adaptEditableAstNode,
+  AggregatorEditableAstNode,
+  ConstantEditableAstNode,
+  CustomListEditableAstNode,
+  DatabaseAccessEditableAstNode,
+  PayloadAccessorsEditableAstNode,
+  TimeAddEditableAstNode,
+  TimeNowEditableAstNode,
+} from '@app-builder/models/editable-ast-node';
+import { aggregatorOperators } from '@app-builder/models/editable-operators';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Default } from '../Default';
 import { getEnumOptionsFromNeighbour, OperandEditor } from './OperandEditor';
-import { OperandViewer } from './OperandViewer';
+import { OperandLabel } from './OperandLabel';
 
 export type OperandViewModel = EditorNodeViewModel;
-
-export function isEditableOperand(node: AstNode): boolean {
-  return (
-    isConstant(node) ||
-    isCustomListAccess(node) ||
-    isDatabaseAccess(node) ||
-    isPayload(node) ||
-    isAggregation(node) ||
-    isTimeAdd(node) ||
-    isTimeNow(node) ||
-    isUndefinedAstNode(node)
-  );
-}
 
 export function Operand({
   builder,
   operandViewModel,
   onSave,
   viewOnly,
-  ariaLabel,
 }: {
   builder: AstBuilder;
   operandViewModel: OperandViewModel;
   onSave?: (astNode: AstNode) => void;
   viewOnly?: boolean;
-  ariaLabel?: string;
 }) {
+  const { t } = useTranslation(['scenarios']);
   const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
-  const labelledAst = adaptLabelledAst(astNode, {
+  const editableAstNode = adaptEditableAstNode(t, astNode, {
     dataModel: builder.input.dataModel,
     triggerObjectTable: builder.input.triggerObjectTable,
     customLists: builder.input.customLists,
@@ -59,35 +51,83 @@ export function Operand({
       dataModel: builder.input.dataModel,
     }),
   });
-  const isEditable = !!labelledAst && isEditableOperand(astNode);
 
-  if (!isEditable) {
-    return (
-      <Default
-        ariaLabel={ariaLabel}
-        editorNodeViewModel={operandViewModel}
-        builder={builder}
-      />
+  const options = useMemo(() => {
+    const databaseAccessors = builder.input.databaseAccessors.map(
+      (node) =>
+        new DatabaseAccessEditableAstNode(node, builder.input.dataModel),
     );
+    const payloadAccessors = builder.input.payloadAccessors.map(
+      (node) =>
+        new PayloadAccessorsEditableAstNode(
+          node,
+          builder.input.triggerObjectTable,
+        ),
+    );
+    const customLists = builder.input.customLists.map(
+      (customList) => new CustomListEditableAstNode(customList),
+    );
+    const functions = [
+      ...aggregatorOperators.map(
+        (aggregator) =>
+          new AggregatorEditableAstNode(
+            t,
+            NewAggregatorAstNode(aggregator),
+            builder.input.dataModel,
+            builder.input.customLists,
+            builder.input.triggerObjectTable,
+          ),
+      ),
+      new TimeAddEditableAstNode(t),
+      new TimeNowEditableAstNode(t),
+    ];
+
+    const enumOptionValues = getEnumOptionsFromNeighbour({
+      viewModel: operandViewModel,
+      dataModel: builder.input.dataModel,
+      triggerObjectTable: builder.input.triggerObjectTable,
+    });
+
+    const enumOptions = enumOptionValues.map(
+      (enumValue) =>
+        new ConstantEditableAstNode(
+          NewConstantAstNode({
+            constant: enumValue,
+          }),
+          enumOptionValues,
+        ),
+    );
+
+    return [
+      ...payloadAccessors,
+      ...databaseAccessors,
+      ...customLists,
+      ...functions,
+      ...enumOptions,
+    ];
+  }, [
+    builder.input.customLists,
+    builder.input.dataModel,
+    builder.input.databaseAccessors,
+    builder.input.payloadAccessors,
+    builder.input.triggerObjectTable,
+    operandViewModel,
+    t,
+  ]);
+
+  if (!editableAstNode) {
+    return <Default editorNodeViewModel={operandViewModel} builder={builder} />;
   }
 
   if (viewOnly || !onSave) {
-    return (
-      <OperandViewer
-        ariaLabel={ariaLabel}
-        labelledAst={labelledAst}
-        operandViewModel={operandViewModel}
-        builder={builder}
-      />
-    );
+    return <OperandLabel editableAstNode={editableAstNode} type="view" />;
   }
 
   return (
     <OperandEditor
-      ariaLabel={ariaLabel}
-      builder={builder}
+      options={options}
       operandViewModel={operandViewModel}
-      labelledAst={labelledAst}
+      editableAstNode={editableAstNode}
       onSave={onSave}
     />
   );

@@ -30,7 +30,6 @@ import {
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { type DecisionDetail } from 'marble-api';
 import qs from 'qs';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -181,7 +180,7 @@ function AddToCase({
   getSelectedDecisions,
 }: {
   hasSelection: boolean;
-  getSelectedDecisions: () => DecisionDetail[];
+  getSelectedDecisions: () => { id: string; case?: object }[];
 }) {
   const { t } = useTranslation(handle.i18n);
   const { onTriggerClick } = useDecisionRightPanelContext();

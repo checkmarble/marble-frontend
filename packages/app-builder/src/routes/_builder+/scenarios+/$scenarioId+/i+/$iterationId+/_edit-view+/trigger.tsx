@@ -6,7 +6,7 @@ import {
 } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
 import {
   adaptDataModelDto,
@@ -60,8 +60,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
 
   const [
-    operators,
-    identifiers,
+    astOperators,
+    accessors,
     dataModel,
     customLists,
     currentOrganization,
@@ -70,7 +70,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     editor.listOperators({
       scenarioId,
     }),
-    editor.listIdentifiers({
+    editor.listAccessors({
       scenarioId,
     }),
     apiClient.getDataModel(),
@@ -82,8 +82,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   return json({
-    identifiers,
-    operators,
+    databaseAccessors: accessors.databaseAccessors,
+    payloadAccessors: accessors.payloadAccessors,
+    astOperators,
     dataModel: adaptDataModelDto(dataModel.data_model),
     customLists: customLists.custom_lists,
     organization: currentOrganization,
@@ -158,8 +159,9 @@ export default function Trigger() {
   const scenarioValidation = useCurrentScenarioValidation();
 
   const {
-    identifiers,
-    operators,
+    databaseAccessors,
+    payloadAccessors,
+    astOperators,
     dataModel,
     customLists,
     organization,
@@ -184,8 +186,9 @@ export default function Trigger() {
     backendAst: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),
     backendValidation: scenarioValidation.trigger.triggerEvaluation,
     localValidation,
-    identifiers,
-    operators,
+    databaseAccessors,
+    payloadAccessors,
+    astOperators,
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
@@ -246,24 +249,24 @@ export default function Trigger() {
 
       <AstBuilder builder={astEditor} viewOnly={editorMode === 'view'} />
 
-      <div className="flex flex-row items-end justify-between gap-2">
-        <div className="flex min-h-[40px] flex-row flex-wrap gap-1">
-          {scenarioValidation.trigger.errors
-            .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
-            .map((error) => (
-              <ScenarioValidationError key={error}>
-                {getScenarioErrorMessage(error)}
-              </ScenarioValidationError>
-            ))}
+      {editorMode === 'edit' ? (
+        <div className="flex flex-row-reverse items-center justify-between gap-2">
+          <Button type="submit" onClick={handleSave}>
+            {t('common:save')}
+          </Button>
+          <EvaluationErrors
+            errors={scenarioValidation.trigger.errors
+              .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
+              .map(getScenarioErrorMessage)}
+          />
         </div>
-        <span>
-          {editorMode === 'edit' ? (
-            <Button type="submit" onClick={handleSave}>
-              {t('common:save')}
-            </Button>
-          ) : null}
-        </span>
-      </div>
+      ) : (
+        <EvaluationErrors
+          errors={scenarioValidation.trigger.errors
+            .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
+            .map(getScenarioErrorMessage)}
+        />
+      )}
     </Paper.Container>
   );
 }

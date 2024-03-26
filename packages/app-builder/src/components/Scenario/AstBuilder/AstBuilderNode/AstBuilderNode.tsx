@@ -8,14 +8,13 @@ import { Operand } from './Operand';
 import {
   adaptTwoOperandsLineViewModel,
   TwoOperandsLine,
-} from './TwoOperandsLine/TwoOperandsLine';
+} from './TwoOperandsLine';
 
 interface AstBuilderNodeProps {
   builder: AstBuilder;
   editorNodeViewModel: EditorNodeViewModel;
   viewOnly?: boolean;
   onSave?: (astNode: AstNode) => void;
-  ariaLabel?: string;
   root?: boolean;
 }
 
@@ -24,7 +23,6 @@ export function AstBuilderNode({
   builder,
   viewOnly,
   onSave,
-  ariaLabel,
   root = false,
 }: AstBuilderNodeProps) {
   const twoOperandsViewModel =
@@ -49,7 +47,6 @@ export function AstBuilderNode({
       operandViewModel={editorNodeViewModel}
       viewOnly={viewOnly}
       onSave={onSave}
-      ariaLabel={ariaLabel}
     />
   );
 }

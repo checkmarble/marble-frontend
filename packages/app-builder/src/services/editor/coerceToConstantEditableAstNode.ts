@@ -1,22 +1,19 @@
-import {
-  type LabelledAst,
-  NewConstantAstNode,
-  newConstantLabelledAst,
-} from '@app-builder/models';
+import { NewConstantAstNode } from '@app-builder/models';
+import { ConstantEditableAstNode } from '@app-builder/models/editable-ast-node';
 import * as R from 'remeda';
 
-export interface CoerceToConstantsLabelledAstOptions {
+export interface CoerceToConstantEditableAstNodeOptions {
   booleans: { true: string[]; false: string[] };
 }
 
-export function coerceToConstantsLabelledAst(
+export function coerceToConstantEditableAstNode(
   search: string,
-  options: CoerceToConstantsLabelledAstOptions,
-): LabelledAst[] {
+  options: CoerceToConstantEditableAstNodeOptions,
+): ConstantEditableAstNode[] {
   const { isCoerceableToBoolean, coerceToBoolean } = getBooleanCoercionLogic(
     options.booleans,
   );
-  const results: LabelledAst[] = [];
+  const results: ConstantEditableAstNode[] = [];
 
   const searchLowerCase = search.trim().toLocaleLowerCase();
   if (searchLowerCase.length === 0) {
@@ -29,14 +26,14 @@ export function coerceToConstantsLabelledAst(
     const astNode = NewConstantAstNode({
       constant: parsedNumber,
     });
-    results.push(newConstantLabelledAst(astNode));
+    results.push(new ConstantEditableAstNode(astNode, []));
   }
 
   if (isCoerceableToBoolean(searchLowerCase)) {
     const astNode = NewConstantAstNode({
       constant: coerceToBoolean(searchLowerCase),
     });
-    results.push(newConstantLabelledAst(astNode));
+    results.push(new ConstantEditableAstNode(astNode, []));
   }
 
   results.push(...coerceToConstantArray(search));
@@ -44,7 +41,7 @@ export function coerceToConstantsLabelledAst(
   const astNode = NewConstantAstNode({
     constant: search,
   });
-  results.push(newConstantLabelledAst(astNode));
+  results.push(new ConstantEditableAstNode(astNode, []));
 
   return results;
 }
@@ -55,7 +52,7 @@ const isStringArray = /^\[(\s*"?(\w+)"?\s*,?)*(\s*|\])$/;
 const captureNumbers = /(?:\s*(?<numbers>\d+(\.\d+)?)\s*,?)/g;
 const captureStrings = /(?:\s*"?(?<strings>\w(\w|\s)*\w)"?\s*,?)/g;
 
-function coerceToConstantArray(search: string): LabelledAst[] {
+function coerceToConstantArray(search: string): ConstantEditableAstNode[] {
   const trimSearch = search.trim();
 
   if (isNumberArray.test(trimSearch)) {
@@ -69,7 +66,7 @@ function coerceToConstantArray(search: string): LabelledAst[] {
           constant,
         }),
     );
-    return [newConstantLabelledAst(astNode)];
+    return [new ConstantEditableAstNode(astNode, [])];
   }
 
   if (isStringArray.test(trimSearch)) {
@@ -82,14 +79,14 @@ function coerceToConstantArray(search: string): LabelledAst[] {
           constant,
         }),
     );
-    return [newConstantLabelledAst(astNode)];
+    return [new ConstantEditableAstNode(astNode, [])];
   }
 
   return [];
 }
 
 function getBooleanCoercionLogic(
-  options: CoerceToConstantsLabelledAstOptions['booleans'],
+  options: CoerceToConstantEditableAstNodeOptions['booleans'],
 ) {
   const sanitizedOptions = {
     true: options.true.map((value) => value.trim().toLocaleLowerCase()),

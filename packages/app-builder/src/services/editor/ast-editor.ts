@@ -2,17 +2,22 @@ import {
   type AstNode,
   type AstOperator,
   type ConstantType,
-  type EditorIdentifiersByType,
+  type DatabaseAccessAstNode,
   type EvaluationError,
   findDataModelTableByName,
   functionNodeNames,
   type NodeEvaluation,
+  type PayloadAstNode,
   separateChildrenErrors,
   type TableModel,
 } from '@app-builder/models';
+import {
+  isOperatorFunctions,
+  type OperatorFunctions,
+} from '@app-builder/models/editable-operators';
 import { type CustomList } from 'marble-api';
 import { nanoid } from 'nanoid';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as R from 'remeda';
 
 import { findAndReplaceNode } from './FindAndReplaceNode';
@@ -169,8 +174,9 @@ export interface AstBuilder {
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
   input: {
-    identifiers: EditorIdentifiersByType;
-    operators: AstOperator[];
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    operators: OperatorFunctions[];
     dataModel: TableModel[];
     customLists: CustomList[];
     triggerObjectTable: TableModel;
@@ -181,18 +187,20 @@ export function useAstBuilder({
   backendAst,
   backendValidation,
   localValidation,
-  identifiers,
-  operators,
+  databaseAccessors,
+  payloadAccessors,
+  astOperators,
   dataModel,
   customLists,
   triggerObjectType,
   onValidate,
 }: {
   backendAst: AstNode;
-  backendValidation: NodeEvaluation;
+  backendValidation?: NodeEvaluation;
   localValidation: NodeEvaluation | null;
-  identifiers: EditorIdentifiersByType;
-  operators: AstOperator[];
+  databaseAccessors: DatabaseAccessAstNode[];
+  payloadAccessors: PayloadAstNode[];
+  astOperators: AstOperator[];
   dataModel: TableModel[];
   customLists: CustomList[];
   triggerObjectType: string;
@@ -306,6 +314,16 @@ export function useAstBuilder({
     });
   }, [localValidation]);
 
+  const operators = useMemo(
+    () =>
+      R.pipe(
+        astOperators,
+        R.map((op) => op.name),
+        R.filter(isOperatorFunctions),
+      ),
+    [astOperators],
+  );
+
   return {
     editorNodeViewModel,
     setConstant,
@@ -314,8 +332,9 @@ export function useAstBuilder({
     appendChild,
     remove,
     input: {
-      identifiers,
-      operators,
+      databaseAccessors,
+      payloadAccessors,
+      operators: operators,
       dataModel,
       customLists,
       triggerObjectTable: findDataModelTableByName({

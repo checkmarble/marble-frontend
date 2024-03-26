@@ -1,5 +1,6 @@
 {
   "scenario.name": "Scenario",
+  "scenario.version": "Version",
   "search.placeholder": "Search by id",
   "detail.scenario_name_runs_on": "<ScenarioName>{{scenarioName}}</ScenarioName> (runs on <TriggerObjectType>{{triggerObjectType}}</TriggerObjectType>)",
   "detail.error": "An error as occured. Make sure the provided decision id is valid.",
@@ -29,8 +30,9 @@
   "object_type": "Object Type",
   "case": "Case",
   "rules.title": "Rules",
-  "rules.status.triggered": "triggered",
+  "rules.status.hit": "hit",
   "rules.status.error": "error",
-  "rules.status.unknown": "unknown",
-  "rules.description": "Description"
+  "rules.status.no_hit": "no hit",
+  "rules.description": "Description",
+  "rules.error.not_found": "The associated rule info could not be found. Please try again or contact your admin."
 }

@@ -172,7 +172,6 @@
   "aggregator.max": "Max",
   "aggregator.min": "Min",
   "aggregator.sum": "Sum",
-  "view_aggregation.tooltip": "Click to view details",
   "edit_operand.search.placeholder": "Select or create an operand",
   "edit_operand.clear_operand": "Clear",
   "edit_operand.result_one": "Result",
@@ -203,6 +202,9 @@
   "edit_date.duration_unit_hours": "hours",
   "edit_date.duration_unit_days": "days",
   "edit_date.select_a_field": "Select a timestamp field...",
+  "edit_date.now": "Now",
+  "edit_date.now.description": "The time when the scenario is run",
+  "edit_date.date": "Date",
   "enum_options": "Options:",
   "nest": "Nest"
 }

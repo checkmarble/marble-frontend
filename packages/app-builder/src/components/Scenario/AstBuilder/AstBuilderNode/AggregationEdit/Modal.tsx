@@ -1,27 +1,40 @@
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AggregationAstNode,
   aggregationAstNodeName,
   type AstNode,
   computeValidationForNamedChildren,
   type EvaluationError,
-  NewAstNode,
   NewConstantAstNode,
 } from '@app-builder/models';
+import {
+  type AggregatorOperator,
+  aggregatorOperators,
+} from '@app-builder/models/editable-operators';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
+import {
+  adaptEvaluationErrorViewModels,
+  useGetNodeEvaluationErrorMessage,
+} from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type Namespace } from 'i18next';
-import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import {
+  type PropsWithChildren,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Modal } from 'ui-design-system';
+import { Button, Input, ModalV2 } from 'ui-design-system';
 import { Logo } from 'ui-icons';
 
-import { ErrorMessage } from '../../ErrorMessage';
-import { AggregatorSelect } from './AggregatorSelect';
+import { Operator } from '../Operator';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
 
@@ -32,7 +45,7 @@ export const handle = {
 export interface AggregationViewModel {
   nodeId: string;
   label: string;
-  aggregator: string;
+  aggregator: AggregatorOperator;
   aggregatedField: DataModelField | null;
   filters: FilterViewModel[];
   errors: {
@@ -83,7 +96,8 @@ export const adaptAggregationViewModel = (
   return {
     nodeId: vm.nodeId,
     label: vm.namedChildren['label']?.constant,
-    aggregator: vm.namedChildren['aggregator']?.constant,
+    // No guard here: we prefer to display an unhandled operator to a default one
+    aggregator: vm.namedChildren['aggregator'].constant as AggregatorOperator,
     aggregatedField,
     filters,
     errors: {
@@ -120,21 +134,22 @@ const adaptFilterViewModel = (
 export const adaptAggregationAstNode = (
   aggregationViewModel: AggregationViewModel,
 ): AggregationAstNode => {
-  const filters: AstNode[] = aggregationViewModel.filters.map(
-    (filter: FilterViewModel) =>
-      NewAstNode({
-        name: 'Filter',
-        namedChildren: {
-          operator: NewConstantAstNode({ constant: filter.operator }),
-          tableName: NewConstantAstNode({
-            constant: filter.filteredField?.tableName ?? null,
-          }),
-          fieldName: NewConstantAstNode({
-            constant: filter.filteredField?.fieldName ?? null,
-          }),
-          value: adaptAstNodeFromEditorViewModel(filter.value),
-        },
-      }),
+  const filters = aggregationViewModel.filters.map(
+    (filter: FilterViewModel) => ({
+      name: 'Filter' as const,
+      constant: undefined,
+      children: [],
+      namedChildren: {
+        operator: NewConstantAstNode({ constant: filter.operator }),
+        tableName: NewConstantAstNode({
+          constant: filter.filteredField?.tableName ?? null,
+        }),
+        fieldName: NewConstantAstNode({
+          constant: filter.filteredField?.fieldName ?? null,
+        }),
+        value: adaptAstNodeFromEditorViewModel(filter.value),
+      },
+    }),
   );
   return {
     name: aggregationAstNodeName,
@@ -153,7 +168,12 @@ export const adaptAggregationAstNode = (
       fieldName: NewConstantAstNode({
         constant: aggregationViewModel.aggregatedField?.fieldName ?? '',
       }),
-      filters: NewAstNode({ name: 'List', children: filters }),
+      filters: {
+        name: 'List',
+        constant: undefined,
+        children: filters,
+        namedChildren: {},
+      },
     },
   };
 };
@@ -176,50 +196,52 @@ export const AggregationEditModal = ({
   builder: AstBuilder;
 }>) => {
   const [open, onOpenChange] = useState<boolean>(false);
-  const [aggregationEditModalProps, setAggregationEditModalProps] =
-    useState<AggregationEditModalProps>();
+  const [aggregation, setAggregation] = useState<AggregationViewModel>();
+  const onSaveRef = useRef<(astNode: AstNode) => void>();
 
   const editAgregation = useCallback(
     (aggregationProps: AggregationEditModalProps) => {
-      setAggregationEditModalProps(aggregationProps);
+      setAggregation(aggregationProps.initialAggregation);
+      onSaveRef.current = aggregationProps.onSave;
       onOpenChange(true);
     },
     [],
   );
 
   return (
-    <Modal.Root open={open} onOpenChange={onOpenChange}>
+    <ModalV2.Root open={open} setOpen={onOpenChange}>
       <AggregationEditModalContext.Provider value={editAgregation}>
         {children}
-        <Modal.Content size="large">
+        <ModalV2.Content size="large">
           {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
           <CopyPasteASTContextProvider>
-            {aggregationEditModalProps ? (
+            {aggregation ? (
               <AggregationEditModalContent
                 builder={builder}
-                initialAggregation={
-                  aggregationEditModalProps.initialAggregation
-                }
+                aggregation={aggregation}
+                setAggregation={setAggregation}
                 onSave={(astNode) => {
-                  aggregationEditModalProps.onSave(astNode);
+                  onSaveRef.current?.(astNode);
                   onOpenChange(false);
                 }}
               />
             ) : null}
           </CopyPasteASTContextProvider>
-        </Modal.Content>
+        </ModalV2.Content>
       </AggregationEditModalContext.Provider>
-    </Modal.Root>
+    </ModalV2.Root>
   );
 };
 
 const AggregationEditModalContent = ({
   builder,
-  initialAggregation,
+  aggregation,
+  setAggregation,
   onSave,
 }: {
   builder: AstBuilder;
-  initialAggregation: AggregationViewModel;
+  aggregation: AggregationViewModel;
+  setAggregation: (aggregation: AggregationViewModel) => void;
   onSave: (astNode: AstNode) => void;
 }) => {
   const { t } = useTranslation(handle.i18n);
@@ -235,17 +257,15 @@ const AggregationEditModalContent = ({
     [builder.input.dataModel],
   );
 
-  const [aggregation, setAggregation] = useState<AggregationViewModel>(
-    () => initialAggregation,
-  );
-
   const handleSave = () => {
     onSave(adaptAggregationAstNode(aggregation));
   };
 
+  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+
   return (
     <>
-      <Modal.Title>
+      <ModalV2.Title>
         <div className="flex flex-row items-center justify-center gap-3">
           {t('scenarios:edit_aggregation.title')}
           <div className="flex flex-row items-center justify-center gap-1">
@@ -255,7 +275,7 @@ const AggregationEditModalContent = ({
             </span>
           </div>
         </div>
-      </Modal.Title>
+      </ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-col gap-2">
@@ -281,54 +301,59 @@ const AggregationEditModalContent = ({
                 aggregation.errors.label.length > 0 ? 'red-100' : 'grey-10'
               }
             />
-            {aggregation.errors.label.length > 0 ? (
-              <ErrorMessage errors={aggregation.errors.label} />
-            ) : null}
+            <EvaluationErrors
+              errors={adaptEvaluationErrorViewModels(
+                aggregation.errors.label,
+              ).map(getNodeEvaluationErrorMessage)}
+            />
           </div>
           <div className="flex flex-col gap-2">
             {t('scenarios:edit_aggregation.function_title')}
             <div className="grid grid-cols-[150px_1fr] gap-2">
-              <AggregatorSelect
-                value={aggregation.aggregator}
-                onChange={(aggregator) =>
-                  setAggregation({
-                    ...aggregation,
-                    aggregator,
-                    errors: {
-                      ...aggregation.errors,
-                      aggregator: [],
-                    },
-                  })
-                }
-                errors={aggregation.errors.aggregator}
-              />
-
-              <EditDataModelField
-                placeholder={t('scenarios:edit_aggregation.select_a_field')}
-                value={aggregation.aggregatedField}
-                options={dataModelFieldOptions}
-                onChange={(aggregatedField) =>
-                  setAggregation({
-                    ...aggregation,
-                    aggregatedField,
-                    errors: {
-                      ...aggregation.errors,
-                      aggregatedField: [],
-                    },
-                  })
-                }
-                errors={aggregation.errors.aggregatedField}
-              />
-
-              <div>
-                {aggregation.errors.aggregator.length > 0 ? (
-                  <ErrorMessage errors={aggregation.errors.aggregator} />
-                ) : null}
+              <div className="flex flex-col gap-2">
+                <Operator
+                  value={aggregation.aggregator}
+                  setValue={(aggregator) =>
+                    setAggregation({
+                      ...aggregation,
+                      aggregator,
+                      errors: {
+                        ...aggregation.errors,
+                        aggregator: [],
+                      },
+                    })
+                  }
+                  errors={aggregation.errors.aggregator}
+                  operators={aggregatorOperators}
+                />
+                <EvaluationErrors
+                  errors={adaptEvaluationErrorViewModels(
+                    aggregation.errors.aggregator,
+                  ).map(getNodeEvaluationErrorMessage)}
+                />
               </div>
-              <div>
-                {aggregation.errors.aggregatedField.length > 0 ? (
-                  <ErrorMessage errors={aggregation.errors.aggregatedField} />
-                ) : null}
+              <div className="flex flex-col gap-2">
+                <EditDataModelField
+                  placeholder={t('scenarios:edit_aggregation.select_a_field')}
+                  value={aggregation.aggregatedField}
+                  options={dataModelFieldOptions}
+                  onChange={(aggregatedField) =>
+                    setAggregation({
+                      ...aggregation,
+                      aggregatedField,
+                      errors: {
+                        ...aggregation.errors,
+                        aggregatedField: [],
+                      },
+                    })
+                  }
+                  errors={aggregation.errors.aggregatedField}
+                />
+                <EvaluationErrors
+                  errors={adaptEvaluationErrorViewModels(
+                    aggregation.errors.aggregatedField,
+                  ).map(getNodeEvaluationErrorMessage)}
+                />
               </div>
             </div>
             <EditFilters
@@ -343,11 +368,13 @@ const AggregationEditModalContent = ({
           </div>
         </div>
         <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
+          <ModalV2.Close
+            render={
+              <Button className="flex-1" variant="secondary" name="cancel" />
+            }
+          >
+            {t('common:cancel')}
+          </ModalV2.Close>
           <Button
             className="flex-1"
             variant="primary"

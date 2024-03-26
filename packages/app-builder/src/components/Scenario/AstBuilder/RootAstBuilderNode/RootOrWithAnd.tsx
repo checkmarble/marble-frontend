@@ -17,11 +17,11 @@ import {
   useGetOrAndNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import clsx from 'clsx';
-import React from 'react';
+import { Fragment } from 'react';
 
-import { ScenarioValidationError } from '../../ScenarioValidationError';
+import { EvaluationErrors } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
-import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine/TwoOperandsLine';
+import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
 
@@ -79,7 +79,8 @@ export function RootOrWithAnd({
   rootOrWithAndViewModel: RootOrWithAndViewModel;
   viewOnly?: boolean;
 }) {
-  const getEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
+  const getOrAndNodeEvaluationErrorMessage =
+    useGetOrAndNodeEvaluationErrorMessage();
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   function appendOrChild() {
     builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
@@ -88,13 +89,12 @@ export function RootOrWithAnd({
   const { nodeErrors: orNodeErrors } = separateChildrenErrors(
     rootOrWithAndViewModel.orErrors,
   );
-
-  const rootOrErrorMessages = adaptEvaluationErrorViewModels(orNodeErrors).map(
-    getEvaluationErrorMessage,
+  const orErrorMessages = adaptEvaluationErrorViewModels(orNodeErrors).map(
+    getOrAndNodeEvaluationErrorMessage,
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="grid grid-cols-[40px_1fr_30px] gap-2">
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
         const { nodeErrors: andNodeErrors } = separateChildrenErrors(
@@ -103,7 +103,7 @@ export function RootOrWithAnd({
 
         const andErrorMessages = adaptEvaluationErrorViewModels(
           andNodeErrors,
-        ).map(getEvaluationErrorMessage);
+        ).map(getOrAndNodeEvaluationErrorMessage);
 
         function appendAndChild() {
           builder.appendChild(andChild.nodeId, NewAndChild());
@@ -116,31 +116,30 @@ export function RootOrWithAnd({
           );
         }
 
-        const isFirstAndChild = isFirstChild && andChild.children.length === 0;
-
         return (
-          <React.Fragment key={andChild.nodeId}>
+          <Fragment key={andChild.nodeId}>
+            {/* OR separator row */}
             {!isFirstChild ? (
-              <div className="flex flex-row gap-1">
+              <>
                 <LogicalOperatorLabel
                   operator="or"
                   className="bg-grey-02 text-grey-25 uppercase"
                 />
-                <div className="flex flex-1 items-center">
+                <div className="col-span-2 flex flex-1 items-center">
                   <div className="bg-grey-10 h-px w-full" />
                 </div>
-              </div>
+              </>
             ) : null}
+
             {andChild.children.map((child, childIndex) => {
               const errorMessages = adaptEvaluationErrorViewModels([
                 ...computeLineErrors(child),
                 ...findArgumentIndexErrorsFromParent(child),
-              ]).map((error) => getNodeEvaluationErrorMessage(error));
+              ]).map(getNodeEvaluationErrorMessage);
+
               return (
-                <div
-                  key={child.nodeId}
-                  className="grid grid-cols-[40px_1fr_30px] gap-2"
-                >
+                // AND operand row
+                <Fragment key={child.nodeId}>
                   <LogicalOperatorLabel
                     operator={childIndex === 0 ? 'if' : 'and'}
                     className={
@@ -149,13 +148,19 @@ export function RootOrWithAnd({
                         : 'text-grey-25 border border-transparent'
                     }
                   />
-                  <div className="flex flex-1">
+                  <div
+                    className={clsx(
+                      'flex flex-col gap-2',
+                      viewOnly ? 'col-span-2' : 'col-span-1',
+                    )}
+                  >
                     <AstBuilderNode
                       builder={builder}
                       editorNodeViewModel={child}
                       viewOnly={viewOnly}
                       root
                     />
+                    <EvaluationErrors errors={errorMessages} />
                   </div>
                   {!viewOnly ? (
                     <div className="flex h-10 flex-col items-center justify-center">
@@ -166,46 +171,38 @@ export function RootOrWithAnd({
                       />
                     </div>
                   ) : null}
-                  <div className="col-start-2 flex flex-row flex-wrap gap-2">
-                    {errorMessages.map((error) => (
-                      <ScenarioValidationError key={error}>
-                        {error}
-                      </ScenarioValidationError>
-                    ))}
-                  </div>
-                </div>
+                </Fragment>
               );
             })}
 
-            <div className="flex flex-row flex-wrap gap-2">
-              {!viewOnly ? (
-                <div className={clsx('my-1', !isFirstAndChild && 'ml-[50px]')}>
-                  <AddLogicalOperatorButton
-                    onClick={appendAndChild}
-                    operator="and"
-                  />
-                </div>
-              ) : null}
-
-              {andErrorMessages.map((error) => (
-                <ScenarioValidationError key={error}>
-                  {error}
-                </ScenarioValidationError>
-              ))}
-            </div>
-          </React.Fragment>
+            {/* [+ Condition] row */}
+            {viewOnly ? (
+              <EvaluationErrors
+                errors={andErrorMessages}
+                className="col-span-2 col-start-2"
+              />
+            ) : (
+              <div className="col-span-2 col-start-2 flex flex-row flex-wrap gap-2">
+                <AddLogicalOperatorButton
+                  onClick={appendAndChild}
+                  operator="and"
+                />
+                <EvaluationErrors errors={andErrorMessages} />
+              </div>
+            )}
+          </Fragment>
         );
       })}
 
-      <div className="flex flex-row flex-wrap gap-2">
-        {!viewOnly ? (
+      {/* [+ Group] row */}
+      {viewOnly ? (
+        <EvaluationErrors errors={orErrorMessages} className="col-span-3" />
+      ) : (
+        <div className="col-span-3 flex flex-row flex-wrap gap-2">
           <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
-        ) : null}
-
-        {rootOrErrorMessages.map((error) => (
-          <ScenarioValidationError key={error}>{error}</ScenarioValidationError>
-        ))}
-      </div>
+          <EvaluationErrors errors={orErrorMessages} />
+        </div>
+      )}
     </div>
   );
 }

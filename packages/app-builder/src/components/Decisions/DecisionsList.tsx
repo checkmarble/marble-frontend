@@ -5,7 +5,10 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type DecisionDetail } from 'marble-api';
+import {
+  type CaseStatus as TCaseStatus,
+  type Outcome as TOutcome,
+} from 'marble-api';
 import {
   useCallback,
   useImperativeHandle,
@@ -26,9 +29,28 @@ type Column =
   | 'score'
   | 'outcome';
 
+interface DecisionViewModel {
+  id: string;
+  createdAt: string;
+  scenario: {
+    id: string;
+    name: string;
+    version: number;
+    scenarioIterationId: string;
+  };
+  triggerObjectType: string;
+  case?: {
+    id: string;
+    name: string;
+    status: TCaseStatus;
+  };
+  score: number;
+  outcome: TOutcome;
+}
+
 type DecisionsListProps = {
   className?: string;
-  decisions: DecisionDetail[];
+  decisions: DecisionViewModel[];
   columnVisibility?: Partial<Record<Column, boolean>>;
 } & (WithSelectable | WithoutSelectable);
 
@@ -44,7 +66,7 @@ type WithoutSelectable = {
 
 export function useSelectedDecisionIds() {
   const [rowSelection, setRowSelection] = useState({});
-  const getSelectedDecisionsRef = useRef<() => DecisionDetail[]>(() => []);
+  const getSelectedDecisionsRef = useRef<() => DecisionViewModel[]>(() => []);
   const getSelectedDecisions = useCallback(
     () => getSelectedDecisionsRef.current(),
     [],
@@ -61,7 +83,7 @@ export function useSelectedDecisionIds() {
   };
 }
 
-const columnHelper = createColumnHelper<DecisionDetail>();
+const columnHelper = createColumnHelper<DecisionViewModel>();
 
 export function DecisionsList({
   className,
@@ -75,7 +97,7 @@ export function DecisionsList({
 
   const columns = useMemo(() => {
     const columns = [
-      columnHelper.accessor((row) => row.created_at, {
+      columnHelper.accessor((row) => row.createdAt, {
         id: 'created_at',
         header: t('decisions:created_at'),
         size: 100,
@@ -92,8 +114,36 @@ export function DecisionsList({
         id: 'scenario_name',
         header: t('decisions:scenario.name'),
         size: 200,
+        cell: ({ getValue, row }) => (
+          <Link
+            to={getRoute('/scenarios/:scenarioId', {
+              scenarioId: fromUUID(row.original.scenario.id),
+            })}
+            onClick={(e) => e.stopPropagation()}
+            className="hover:text-purple-120 focus:text-purple-120 isolate font-semibold capitalize text-purple-100 hover:underline focus:underline"
+          >
+            {getValue()}
+          </Link>
+        ),
       }),
-      columnHelper.accessor((row) => row.trigger_object_type, {
+      columnHelper.accessor((row) => row.scenario.version, {
+        id: 'scenario_version',
+        header: 'Vi',
+        size: 20,
+        cell: ({ getValue, row }) => (
+          <Link
+            to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
+              scenarioId: fromUUID(row.original.scenario.id),
+              iterationId: fromUUID(row.original.scenario.scenarioIterationId),
+            })}
+            onClick={(e) => e.stopPropagation()}
+            className="hover:text-purple-120 focus:text-purple-120 isolate font-semibold capitalize text-purple-100 hover:underline focus:underline"
+          >
+            {`V${getValue()}`}
+          </Link>
+        ),
+      }),
+      columnHelper.accessor((row) => row.triggerObjectType, {
         id: 'trigger_object_type',
         header: t('decisions:trigger_object.type'),
         size: 200,

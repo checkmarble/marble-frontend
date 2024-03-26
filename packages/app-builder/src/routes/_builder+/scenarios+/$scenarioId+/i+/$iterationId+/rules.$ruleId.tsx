@@ -8,7 +8,7 @@ import {
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { ScenarioValidationError } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
   NewEmptyRuleAstNode,
@@ -66,7 +66,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenarioId,
   });
 
-  const identifiersPromise = editor.listIdentifiers({
+  const accessorsPromise = editor.listAccessors({
     scenarioId,
   });
 
@@ -74,8 +74,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { custom_lists } = await apiClient.listCustomLists();
 
   return json({
-    identifiers: await identifiersPromise,
-    operators: await operatorsPromise,
+    databaseAccessors: (await accessorsPromise).databaseAccessors,
+    payloadAccessors: (await accessorsPromise).payloadAccessors,
+    astOperators: await operatorsPromise,
     dataModel: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
   });
@@ -155,8 +156,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function RuleEdit() {
   const { t } = useTranslation(handle.i18n);
 
-  const { identifiers, operators, dataModel, customLists } =
-    useLoaderData<typeof loader>();
+  const {
+    databaseAccessors,
+    payloadAccessors,
+    astOperators,
+    dataModel,
+    customLists,
+  } = useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -180,8 +186,9 @@ export default function RuleEdit() {
     backendAst: initialAst,
     backendValidation: ruleValidation.ruleEvaluation,
     localValidation,
-    identifiers,
-    operators,
+    databaseAccessors,
+    payloadAccessors,
+    astOperators,
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
@@ -391,17 +398,11 @@ function RuleEditContent({
       <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
         <AstBuilder builder={builder} />
 
-        {ruleValidation.errors ? (
-          <div className="flex flex-row flex-wrap gap-1">
-            {ruleValidation.errors
-              .filter((error) => error != 'RULE_FORMULA_REQUIRED')
-              .map((error) => (
-                <ScenarioValidationError key={error}>
-                  {getScenarioErrorMessage(error)}
-                </ScenarioValidationError>
-              ))}
-          </div>
-        ) : null}
+        <EvaluationErrors
+          errors={ruleValidation.errors
+            .filter((error) => error != 'RULE_FORMULA_REQUIRED')
+            .map(getScenarioErrorMessage)}
+        />
       </Paper.Container>
 
       <DeleteRule

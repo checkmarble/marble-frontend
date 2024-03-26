@@ -1,3 +1,4 @@
+import { stringifyAstNode } from '@app-builder/models/editable-ast-node';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
@@ -5,27 +6,37 @@ import {
   getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
 import clsx from 'clsx';
-
-import { stringifyAstNode } from '../utils';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function Default({
   builder,
   editorNodeViewModel,
   displayErrors,
-  ariaLabel,
 }: {
   builder: AstBuilder;
   editorNodeViewModel: EditorNodeViewModel;
   displayErrors?: boolean;
-  ariaLabel?: string;
 }) {
-  const stringifiedAstNode = stringifyAstNode(
-    adaptAstNodeFromEditorViewModel(editorNodeViewModel),
-    builder,
-  );
+  const { t } = useTranslation(['scenarios']);
+  const stringifiedAstNode = useMemo(() => {
+    const astNode = adaptAstNodeFromEditorViewModel(editorNodeViewModel);
+    return stringifyAstNode(t, astNode, {
+      dataModel: builder.input.dataModel,
+      triggerObjectTable: builder.input.triggerObjectTable,
+      customLists: builder.input.customLists,
+      enumOptions: [],
+    });
+  }, [
+    builder.input.customLists,
+    builder.input.dataModel,
+    builder.input.triggerObjectTable,
+    editorNodeViewModel,
+    t,
+  ]);
+
   return (
     <div
-      aria-label={ariaLabel}
       data-border-color={
         displayErrors ? getBorderColor(editorNodeViewModel) : 'grey-10'
       }

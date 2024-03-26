@@ -18,7 +18,7 @@ import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   useLoaderData,
@@ -38,9 +38,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { decision, editor, apiClient, scenario, dataModelRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
   const parsedParam = await parseParamsSafe(
     params,
     z.object({ decisionId: shortUUIDSchema }),
@@ -51,9 +52,41 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { decisionId } = parsedParam.data;
 
   try {
-    const decision = await apiClient.getDecision(decisionId);
+    const currentDecision = await decision.getDecisionById(decisionId);
 
-    return json({ decision });
+    const astRuleData = Promise.all([
+      scenario.getScenarioIteration({
+        iterationId: currentDecision.scenario.scenarioIterationId,
+      }),
+      editor.listOperators({
+        scenarioId: currentDecision.scenario.id,
+      }),
+      editor.listAccessors({
+        scenarioId: currentDecision.scenario.id,
+      }),
+      dataModelRepository.getDataModel(),
+      apiClient.listCustomLists(),
+    ]).then(
+      ([
+        scenarioIteration,
+        astOperators,
+        accessors,
+        dataModel,
+        { custom_lists },
+      ]) => ({
+        rules: scenarioIteration.rules,
+        databaseAccessors: accessors.databaseAccessors,
+        payloadAccessors: accessors.payloadAccessors,
+        astOperators,
+        dataModel,
+        customLists: custom_lists,
+      }),
+    );
+
+    return defer({
+      decision: currentDecision,
+      astRuleData,
+    });
   } catch (error) {
     if (isNotFoundHttpError(error)) {
       return notFound(null);
@@ -64,7 +97,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function DecisionPage() {
-  const { decision } = useLoaderData<typeof loader>();
+  const { decision, astRuleData } = useLoaderData<typeof loader>();
   const { t } = useTranslation(decisionsI18n);
 
   return (
@@ -86,14 +119,18 @@ export default function DecisionPage() {
           <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-6">
             <div className="flex flex-col gap-4 lg:gap-6">
               <DecisionDetail decision={decision} />
-              <RulesDetail rules={decision.rules} />
+              <RulesDetail
+                ruleExecutions={decision.rules}
+                triggerObjectType={decision.triggerObjectType}
+                astRuleData={astRuleData}
+              />
             </div>
             <div className="flex flex-col gap-4 lg:gap-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
                 <ScorePanel score={decision.score} />
                 <OutcomePanel outcome={decision.outcome} />
               </div>
-              <TriggerObjectDetail triggerObject={decision.trigger_object} />
+              <TriggerObjectDetail triggerObject={decision.triggerObject} />
             </div>
           </div>
         </Page.Content>
