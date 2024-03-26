@@ -42,8 +42,8 @@ export function adaptEditorNodeViewModel({
   validation?: NodeEvaluation;
   parent?: EditorNodeViewModel;
 }): EditorNodeViewModel {
-  const evaluation = validation ?? {
-    returnValue: null,
+  const evaluation: NodeEvaluation = validation ?? {
+    returnValue: { isOmitted: true },
     errors: [],
     children: [],
     namedChildren: {},

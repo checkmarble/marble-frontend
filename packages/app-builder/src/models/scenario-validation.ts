@@ -31,7 +31,14 @@ export function isUndefinedFunctionError(evaluationError: {
 }
 
 export interface NodeEvaluation {
-  returnValue: ConstantType;
+  returnValue:
+    | {
+        value: ConstantType;
+        isOmitted: false;
+      }
+    | {
+        isOmitted: true;
+      };
   errors: EvaluationError[];
   children: NodeEvaluation[];
   namedChildren: Record<string, NodeEvaluation>;
@@ -66,8 +73,12 @@ function adaptEvaluationError(dto: EvaluationErrorDto): EvaluationError {
 }
 
 function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
+  const returnValue = dto.return_value.is_omitted
+    ? { isOmitted: true as const }
+    : { isOmitted: false as const, value: dto.return_value.value ?? null };
+
   return {
-    returnValue: dto.return_value,
+    returnValue,
     errors: dto.errors ? dto.errors.map(adaptEvaluationError) : [],
     children: dto.children ? dto.children.map(adaptNodeEvaluation) : [],
     namedChildren: dto.named_children

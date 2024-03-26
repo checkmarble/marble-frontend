@@ -9,7 +9,7 @@ import { assertNever } from 'typescript-utils';
 // Edit this type to handle contextual data for each error code
 export type EvaluationErrorViewModel =
   | {
-      error: 'UNEXPECTED_ERROR';
+      error: 'UNEXPECTED_ERROR' | 'RUNTIME_EXPRESSION_ERROR';
       message: string;
     }
   | {
@@ -28,7 +28,11 @@ export type EvaluationErrorViewModel =
         | 'ARGUMENT_INVALID_TYPE'
         | 'LIST_NOT_FOUND'
         | 'FIELD_NOT_FOUND'
-        | 'ARGUMENT_REQUIRED';
+        | 'ARGUMENT_REQUIRED'
+        | 'NULL_FIELD_READ'
+        | 'NO_ROWS_READ'
+        | 'DIVISION_BY_ZERO'
+        | 'PAYLOAD_FIELD_NOT_FOUND';
       count: number;
     }
   | {
@@ -40,6 +44,7 @@ export function adaptEvaluationErrorViewModels(
 ): EvaluationErrorViewModel[] {
   const {
     UNEXPECTED_ERROR,
+    RUNTIME_EXPRESSION_ERROR,
     WRONG_NUMBER_OF_ARGUMENTS,
     DATABASE_ACCESS_NOT_FOUND,
     PAYLOAD_FIELD_NOT_FOUND,
@@ -58,6 +63,18 @@ export function adaptEvaluationErrorViewModels(
     );
 
     evaluationErrorVMs.push(...unexpectedErrorVMs);
+  }
+
+  if (RUNTIME_EXPRESSION_ERROR) {
+    const runtimeExpressionErrorVMs = R.pipe(
+      RUNTIME_EXPRESSION_ERROR,
+      R.map((error) => ({
+        error: 'RUNTIME_EXPRESSION_ERROR' as const,
+        message: error.message,
+      })),
+    );
+
+    evaluationErrorVMs.push(...runtimeExpressionErrorVMs);
   }
 
   if (WRONG_NUMBER_OF_ARGUMENTS) {
@@ -212,6 +229,26 @@ const commonErrorMessages =
         return t('scenarios:validation.evaluation_error.field_not_found', {
           count: evaluationError.count,
         });
+      case 'NULL_FIELD_READ':
+        return t('scenarios:validation.evaluation_error.null_field_read', {
+          count: evaluationError.count,
+        });
+      case 'NO_ROWS_READ':
+        return t('scenarios:validation.evaluation_error.no_rows_read', {
+          count: evaluationError.count,
+        });
+      case 'DIVISION_BY_ZERO':
+        return t('scenarios:validation.evaluation_error.division_by_zero', {
+          count: evaluationError.count,
+        });
+      case 'PAYLOAD_FIELD_NOT_FOUND':
+        return t(
+          'scenarios:validation.evaluation_error.payload_field_not_found',
+          {
+            count: evaluationError.count,
+          },
+        );
+      case 'RUNTIME_EXPRESSION_ERROR':
       case 'UNEXPECTED_ERROR':
         return evaluationError.message;
       default:

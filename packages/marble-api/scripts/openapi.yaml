@@ -3261,25 +3261,27 @@ components:
     RuleExecutionDto:
       type: object
       required:
-        - name
         - description
-        - score_modifier
+        - name
         - result
         - rule_id
+        - score_modifier
       properties:
-        name:
-          type: string
-        description:
-          type: string
-        score_modifier:
-          type: integer
-        result:
-          type: boolean
         error:
           $ref: '#/components/schemas/Error'
+        description:
+          type: string
+        name:
+          type: string
+        result:
+          type: boolean
         rule_id:
           type: string
           format: uuid
+        score_modifier:
+          type: integer
+        rule_evaluation:
+          $ref: '#/components/schemas/NodeEvaluationDto'
     DecisionDto:
       type: object
       required:
@@ -4161,7 +4163,14 @@ components:
         - errors
       properties:
         return_value:
-          $ref: '#/components/schemas/ConstantDto'
+          type: object
+          required:
+            - is_omitted
+          properties:
+            value:
+              $ref: '#/components/schemas/ConstantDto'
+            is_omitted:
+              type: boolean
         errors:
           type: array
           nullable: true
@@ -4229,6 +4238,11 @@ components:
         - LIST_NOT_FOUND
         - DATABASE_ACCESS_NOT_FOUND
         - PAYLOAD_FIELD_NOT_FOUND
+        - NULL_FIELD_READ
+        - NO_ROWS_READ
+        - DIVISION_BY_ZERO
+        - PAYLOAD_FIELD_NOT_FOUND
+        - RUNTIME_EXPRESSION_ERROR
     FuncAttributes:
       type: object
       required:
