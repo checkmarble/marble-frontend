@@ -1,5 +1,4 @@
 import {
-  type EvaluationError,
   isDatabaseAccess,
   isPayload,
   isTimeNow,
@@ -11,6 +10,7 @@ import {
   PayloadAccessorsEditableAstNode,
   TimeNowEditableAstNode,
 } from '@app-builder/models/editable-ast-node';
+import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,

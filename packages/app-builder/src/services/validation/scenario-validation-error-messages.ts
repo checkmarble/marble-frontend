@@ -1,4 +1,4 @@
-import { type EvaluationError } from '@app-builder/models';
+import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { type TFunction } from 'i18next';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import { useCallback } from 'react';

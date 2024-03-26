@@ -3,21 +3,55 @@ import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
   type EditorNodeViewModel,
-  getBorderColor,
 } from '@app-builder/services/editor/ast-editor';
-import clsx from 'clsx';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+const defaultClassnames = cva(
+  'bg-grey-02 flex size-fit min-h-[40px] min-w-[40px] items-center justify-between rounded px-2 outline-none',
+  {
+    variants: {
+      type: {
+        editor: '',
+        viewer: '',
+      },
+      validationStatus: {
+        valid: '',
+        error: 'border border-red-100',
+        'light-error': 'border border-red-25',
+      },
+    },
+    compoundVariants: [
+      {
+        type: 'editor',
+        validationStatus: 'valid',
+        className: 'border border-grey-02',
+      },
+      {
+        type: 'viewer',
+        validationStatus: 'valid',
+        className: 'border border-grey-02',
+      },
+    ],
+    defaultVariants: {
+      type: 'viewer',
+      validationStatus: 'valid',
+    },
+  },
+);
+
+interface DefaultProps extends VariantProps<typeof defaultClassnames> {
+  builder: AstBuilder;
+  editorNodeViewModel: EditorNodeViewModel;
+}
 
 export function Default({
   builder,
   editorNodeViewModel,
-  displayErrors,
-}: {
-  builder: AstBuilder;
-  editorNodeViewModel: EditorNodeViewModel;
-  displayErrors?: boolean;
-}) {
+  validationStatus,
+  type,
+}: DefaultProps) {
   const { t } = useTranslation(['scenarios']);
   const stringifiedAstNode = useMemo(() => {
     const astNode = adaptAstNodeFromEditorViewModel(editorNodeViewModel);
@@ -36,18 +70,7 @@ export function Default({
   ]);
 
   return (
-    <div
-      data-border-color={
-        displayErrors ? getBorderColor(editorNodeViewModel) : 'grey-10'
-      }
-      className={clsx(
-        'bg-grey-02 border-grey-02 flex size-fit min-h-[40px] min-w-[40px] items-center justify-between rounded border px-2 outline-none',
-        // Border color variants
-        'data-[border-color=grey-10]:border-grey-10',
-        'data-[border-color=red-100]:border-red-100',
-        'data-[border-color=red-25]:border-red-25',
-      )}
-    >
+    <div className={defaultClassnames({ type, validationStatus })}>
       {stringifiedAstNode}
     </div>
   );

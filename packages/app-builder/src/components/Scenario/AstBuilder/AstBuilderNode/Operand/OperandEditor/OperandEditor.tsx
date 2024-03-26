@@ -14,7 +14,7 @@ import { coerceToConstantEditableAstNode } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
-  getBorderColor,
+  getValidationStatus,
 } from '@app-builder/services/editor/ast-editor';
 import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
 import { matchSorter } from 'match-sorter';
@@ -113,8 +113,8 @@ export function OperandEditor({
         render={
           <OperandLabel
             editableAstNode={editableAstNode}
-            type="edit"
-            borderColor={getBorderColor(operandViewModel)}
+            type="editor"
+            validationStatus={getValidationStatus(operandViewModel)}
             placeholder={t('edit_operand.placeholder')}
           />
         }

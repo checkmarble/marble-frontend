@@ -3,18 +3,20 @@ import {
   type AstOperator,
   type ConstantType,
   type DatabaseAccessAstNode,
-  type EvaluationError,
   findDataModelTableByName,
   functionNodeNames,
-  type NodeEvaluation,
   type PayloadAstNode,
-  separateChildrenErrors,
   type TableModel,
 } from '@app-builder/models';
 import {
   isOperatorFunctions,
   type OperatorFunctions,
 } from '@app-builder/models/editable-operators';
+import {
+  type EvaluationError,
+  type NodeEvaluation,
+  separateChildrenErrors,
+} from '@app-builder/models/node-evaluation';
 import { type CustomList } from 'marble-api';
 import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -139,16 +141,18 @@ export function findArgumentNameErrorsFromParent<
   );
 }
 
-export function getBorderColor<VM extends ValidationViewModel>(viewModel: VM) {
-  if (viewModel.errors.length > 0) return 'red-100';
+export function getValidationStatus<VM extends ValidationViewModel>(
+  viewModel: VM,
+) {
+  if (viewModel.errors.length > 0) return 'error';
 
   if (
     hasArgumentIndexErrorsFromParent(viewModel) ||
     hasArgumentNameErrorsFromParent(viewModel)
   )
-    return 'red-25';
+    return 'light-error';
 
-  return 'grey-10';
+  return 'valid';
 }
 
 // adapt ast node from editor view model

@@ -3,14 +3,16 @@ import {
   type AggregationAstNode,
   aggregationAstNodeName,
   type AstNode,
-  computeValidationForNamedChildren,
-  type EvaluationError,
   NewConstantAstNode,
 } from '@app-builder/models';
 import {
   type AggregatorOperator,
   aggregatorOperators,
 } from '@app-builder/models/editable-operators';
+import {
+  computeValidationForNamedChildren,
+  type EvaluationError,
+} from '@app-builder/models/node-evaluation';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,

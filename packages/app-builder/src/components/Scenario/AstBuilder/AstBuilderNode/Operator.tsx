@@ -1,11 +1,9 @@
-import {
-  type EvaluationError,
-  undefinedAstNodeName,
-} from '@app-builder/models';
+import { undefinedAstNodeName } from '@app-builder/models';
 import {
   getOperatorName,
   type OperatorFunctions,
 } from '@app-builder/models/editable-operators';
+import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { Trigger, Value } from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';

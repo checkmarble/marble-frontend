@@ -1,14 +1,16 @@
 import {
   type AstNode,
-  type EvaluationError,
   functionNodeNames,
   NewUndefinedAstNode,
-  separateChildrenErrors,
 } from '@app-builder/models';
 import {
   isTwoLineOperandOperatorFunctions,
   type TwoLineOperandOperatorFunctions,
 } from '@app-builder/models/editable-operators';
+import {
+  type EvaluationError,
+  separateChildrenErrors,
+} from '@app-builder/models/node-evaluation';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,

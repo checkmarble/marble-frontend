@@ -253,7 +253,7 @@ function AggregatorDescription({
               />
               <OperandLabel
                 editableAstNode={valueEditableAstNode}
-                type="view"
+                type="viewer"
               />
             </div>
           </Fragment>

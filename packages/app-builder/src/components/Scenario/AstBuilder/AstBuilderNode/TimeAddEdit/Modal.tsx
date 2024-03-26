@@ -1,8 +1,6 @@
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
-  computeValidationForNamedChildren,
-  type EvaluationError,
   NewConstantAstNode,
   NewTimeAddAstNode,
   NewUndefinedAstNode,
@@ -15,6 +13,10 @@ import {
   type TimeAddOperator,
   timeAddOperators,
 } from '@app-builder/models/editable-operators';
+import {
+  computeValidationForNamedChildren,
+  type EvaluationError,
+} from '@app-builder/models/node-evaluation';
 import {
   adaptAstNodeFromEditorViewModel,
   type AstBuilder,
