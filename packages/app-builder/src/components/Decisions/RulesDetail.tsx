@@ -2,7 +2,6 @@ import { Callout, decisionsI18n, Paper } from '@app-builder/components';
 import { Score } from '@app-builder/components/Decisions/Score';
 import {
   type AstNode,
-  type AstOperator,
   type DatabaseAccessAstNode,
   type PayloadAstNode,
   type ScenarioIterationRule,
@@ -13,6 +12,7 @@ import {
   isRuleExecutionHit,
   type RuleExecution,
 } from '@app-builder/models/decision';
+import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
@@ -36,7 +36,7 @@ export function RulesDetail({
     rules: ScenarioIterationRule[];
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    astOperators: AstOperator[];
+    operators: OperatorFunction[];
     dataModel: TableModel[];
     customLists: CustomList[];
   }>;
@@ -119,7 +119,7 @@ function RuleExecutionDetail({
     rules: ScenarioIterationRule[];
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    astOperators: AstOperator[];
+    operators: OperatorFunction[];
     dataModel: TableModel[];
     customLists: CustomList[];
   };
@@ -162,7 +162,7 @@ function RuleExecutionDetail({
         evaluation={ruleExecution.evaluation}
         databaseAccessors={astRuleData.databaseAccessors}
         payloadAccessors={astRuleData.payloadAccessors}
-        astOperators={astRuleData.astOperators}
+        operators={astRuleData.operators}
         dataModel={astRuleData.dataModel}
         customLists={astRuleData.customLists}
         triggerObjectType={triggerObjectType}
@@ -176,7 +176,7 @@ function RuleFormula({
   databaseAccessors,
   evaluation,
   payloadAccessors,
-  astOperators,
+  operators,
   dataModel,
   customLists,
   triggerObjectType,
@@ -185,7 +185,7 @@ function RuleFormula({
   evaluation?: NodeEvaluation;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
-  astOperators: AstOperator[];
+  operators: OperatorFunction[];
   dataModel: TableModel[];
   customLists: CustomList[];
   triggerObjectType: string;
@@ -194,19 +194,20 @@ function RuleFormula({
     backendAst: formula,
     backendEvaluation: evaluation,
     localEvaluation: null,
-    databaseAccessors,
-    payloadAccessors,
-    astOperators,
-    dataModel,
-    customLists,
-    triggerObjectType,
     onValidate: () => {},
   });
 
   return (
     <Paper.Container scrollable={false} className="bg-grey-00">
       <AstBuilder
-        input={astEditor.input}
+        options={{
+          databaseAccessors,
+          payloadAccessors,
+          operators,
+          dataModel,
+          customLists,
+          triggerObjectType,
+        }}
         setOperand={astEditor.setOperand}
         setOperator={astEditor.setOperator}
         appendChild={astEditor.appendChild}

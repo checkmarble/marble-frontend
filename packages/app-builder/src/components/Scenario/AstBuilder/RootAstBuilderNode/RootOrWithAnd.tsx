@@ -1,13 +1,9 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
   type AstNode,
-  type DatabaseAccessAstNode,
   NewAstNode,
   NewUndefinedAstNode,
-  type PayloadAstNode,
-  type TableModel,
 } from '@app-builder/models';
-import { type OperatorFunctions } from '@app-builder/models/editable-operators';
 import {
   type EvaluationError,
   separateChildrenErrors,
@@ -23,7 +19,6 @@ import {
   useGetOrAndNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import clsx from 'clsx';
-import { type CustomList } from 'marble-api';
 import { Fragment } from 'react';
 
 import { EvaluationErrors } from '../../ScenarioValidationError';
@@ -78,7 +73,6 @@ function NewOrChild() {
 }
 
 export function RootOrWithAnd({
-  input,
   setOperand,
   setOperator,
   appendChild,
@@ -86,14 +80,6 @@ export function RootOrWithAnd({
   rootOrWithAndViewModel,
   viewOnly,
 }: {
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    customLists: CustomList[];
-    triggerObjectTable: TableModel;
-    operators: OperatorFunctions[];
-  };
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
@@ -176,7 +162,6 @@ export function RootOrWithAnd({
                     )}
                   >
                     <AstBuilderNode
-                      input={input}
                       setOperand={setOperand}
                       setOperator={setOperator}
                       editorNodeViewModel={child}

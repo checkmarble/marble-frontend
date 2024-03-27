@@ -1,12 +1,9 @@
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
-  type DatabaseAccessAstNode,
   NewConstantAstNode,
   NewTimeAddAstNode,
   NewUndefinedAstNode,
-  type PayloadAstNode,
-  type TableModel,
   type TimeAddAstNode,
   timeAddAstNodeName,
   type TimestampFieldAstNode,
@@ -30,7 +27,7 @@ import {
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type PropsWithChildren, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Button, Input, Modal } from 'ui-design-system';
@@ -135,17 +132,7 @@ const TimeAddEditModalContext =
 
 export const useEditTimeAdd = TimeAddEditModalContext.useValue;
 
-export const TimeAddEditModal = ({
-  input,
-  children,
-}: PropsWithChildren<{
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    triggerObjectTable: TableModel;
-  };
-}>) => {
+export function TimeAddEditModal({ children }: { children: React.ReactNode }) {
   const [open, onOpenChange] = useState<boolean>(false);
   const [timeAddEditModalProps, setValueEditModalProps] =
     useState<TimeAddEditModalProps>();
@@ -164,7 +151,6 @@ export const TimeAddEditModal = ({
           <CopyPasteASTContextProvider>
             {timeAddEditModalProps ? (
               <TimeAddEditModalContent
-                input={input}
                 initialValue={timeAddEditModalProps.initialValue}
                 onSave={(astNode: AstNode) => {
                   timeAddEditModalProps.onSave(astNode);
@@ -177,22 +163,15 @@ export const TimeAddEditModal = ({
       </TimeAddEditModalContext.Provider>
     </Modal.Root>
   );
-};
+}
 
-const TimeAddEditModalContent = ({
-  input,
+function TimeAddEditModalContent({
   initialValue,
   onSave,
 }: {
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    triggerObjectTable: TableModel;
-  };
   initialValue: TimeAddViewModal;
   onSave: (astNode: AstNode) => void;
-}) => {
+}) {
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   const [value, setValue] = useState<TimeAddViewModal>(() => initialValue);
@@ -208,7 +187,6 @@ const TimeAddEditModalContent = ({
         <div>
           <div className="flex gap-2 pb-2">
             <TimestampField
-              input={input}
               value={value.timestampField}
               onChange={(timestampField) =>
                 setValue({
@@ -289,7 +267,7 @@ const TimeAddEditModalContent = ({
       </div>
     </>
   );
-};
+}
 
 const adaptDurationAndUnitFromTemporalDuration = (
   temporalDuration: Temporal.Duration,

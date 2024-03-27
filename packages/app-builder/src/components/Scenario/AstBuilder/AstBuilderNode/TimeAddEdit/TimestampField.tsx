@@ -1,11 +1,8 @@
 import {
-  type DatabaseAccessAstNode,
   isDatabaseAccess,
   isPayload,
   isTimeNow,
   NewUndefinedAstNode,
-  type PayloadAstNode,
-  type TableModel,
 } from '@app-builder/models';
 import {
   DatabaseAccessEditableAstNode,
@@ -14,6 +11,11 @@ import {
   TimeNowEditableAstNode,
 } from '@app-builder/models/editable-ast-node';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
+import {
+  useDataModel,
+  useTimestampFieldOptions,
+  useTriggerObjectTable,
+} from '@app-builder/services/ast-node/options';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
@@ -25,45 +27,20 @@ import { useTranslation } from 'react-i18next';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
 export const TimestampField = ({
-  input,
   className,
   onChange,
   errors,
   value,
 }: {
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    triggerObjectTable: TableModel;
-  };
   className?: string;
   onChange: (value: EditorNodeViewModel | null) => void;
   errors: EvaluationError[];
   value: EditorNodeViewModel | null;
 }) => {
   const { t } = useTranslation(['scenarios']);
-  const options = useMemo(() => {
-    const databaseAccessors = input.databaseAccessors.map(
-      (node) => new DatabaseAccessEditableAstNode(node, input.dataModel),
-    );
-    const payloadAccessors = input.payloadAccessors.map(
-      (node) =>
-        new PayloadAccessorsEditableAstNode(node, input.triggerObjectTable),
-    );
-    const timestampFieldOptions = [
-      ...payloadAccessors,
-      ...databaseAccessors,
-    ].filter(({ dataType }) => dataType == 'Timestamp');
-
-    return [new TimeNowEditableAstNode(t), ...timestampFieldOptions];
-  }, [
-    input.dataModel,
-    input.databaseAccessors,
-    input.payloadAccessors,
-    input.triggerObjectTable,
-    t,
-  ]);
+  const dataModel = useDataModel();
+  const triggerObjectTable = useTriggerObjectTable();
+  const options = useTimestampFieldOptions();
 
   const onSelect = useCallback(
     (newSelection: EditableAstNode | null) => {
@@ -79,17 +56,14 @@ export const TimestampField = ({
     if (!value) return null;
     const astNode = adaptAstNodeFromEditorViewModel(value);
     if (isPayload(astNode)) {
-      return new PayloadAccessorsEditableAstNode(
-        astNode,
-        input.triggerObjectTable,
-      );
+      return new PayloadAccessorsEditableAstNode(astNode, triggerObjectTable);
     }
     if (isDatabaseAccess(astNode)) {
-      return new DatabaseAccessEditableAstNode(astNode, input.dataModel);
+      return new DatabaseAccessEditableAstNode(astNode, dataModel);
     }
     if (isTimeNow(astNode)) return new TimeNowEditableAstNode(t);
     return null;
-  }, [input.dataModel, input.triggerObjectTable, t, value]);
+  }, [dataModel, triggerObjectTable, t, value]);
 
   return (
     <TimestampFieldCombobox

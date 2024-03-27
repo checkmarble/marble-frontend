@@ -60,7 +60,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
 
   const [
-    astOperators,
+    operators,
     accessors,
     dataModel,
     customLists,
@@ -84,7 +84,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
-    astOperators,
+    operators,
     dataModel: adaptDataModelDto(dataModel.data_model),
     customLists: customLists.custom_lists,
     organization: currentOrganization,
@@ -161,7 +161,7 @@ export default function Trigger() {
   const {
     databaseAccessors,
     payloadAccessors,
-    astOperators,
+    operators,
     dataModel,
     customLists,
     organization,
@@ -186,12 +186,6 @@ export default function Trigger() {
     backendAst: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),
     backendEvaluation: scenarioValidation.trigger.triggerEvaluation,
     localEvaluation: localValidation,
-    databaseAccessors,
-    payloadAccessors,
-    astOperators,
-    dataModel,
-    customLists,
-    triggerObjectType: scenario.triggerObjectType,
     onValidate: validate,
   });
 
@@ -248,7 +242,14 @@ export default function Trigger() {
       </div>
 
       <AstBuilder
-        input={astEditor.input}
+        options={{
+          databaseAccessors,
+          payloadAccessors,
+          operators,
+          dataModel,
+          customLists,
+          triggerObjectType: scenario.triggerObjectType,
+        }}
         setOperand={astEditor.setOperand}
         setOperator={astEditor.setOperator}
         appendChild={astEditor.appendChild}

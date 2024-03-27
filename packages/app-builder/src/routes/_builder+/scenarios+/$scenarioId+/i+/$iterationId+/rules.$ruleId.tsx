@@ -20,7 +20,7 @@ import {
   adaptDataModelDto,
   type TableModel,
 } from '@app-builder/models/data-model';
-import { type OperatorFunctions } from '@app-builder/models/editable-operators';
+import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
@@ -83,7 +83,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     databaseAccessors: (await accessorsPromise).databaseAccessors,
     payloadAccessors: (await accessorsPromise).payloadAccessors,
-    astOperators: await operatorsPromise,
+    operators: await operatorsPromise,
     dataModel: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
   });
@@ -166,7 +166,7 @@ export default function RuleEdit() {
   const {
     databaseAccessors,
     payloadAccessors,
-    astOperators,
+    operators,
     dataModel,
     customLists,
   } = useLoaderData<typeof loader>();
@@ -193,12 +193,6 @@ export default function RuleEdit() {
     backendAst: initialAst,
     backendEvaluation: ruleValidation.ruleEvaluation,
     localEvaluation: localValidation,
-    databaseAccessors,
-    payloadAccessors,
-    astOperators,
-    dataModel,
-    customLists,
-    triggerObjectType: scenario.triggerObjectType,
     onValidate: validate,
   });
   const getCurrentAstNode = () =>
@@ -228,6 +222,15 @@ export default function RuleEdit() {
       });
     });
   }, [errors, setError]);
+
+  const options = {
+    databaseAccessors,
+    payloadAccessors,
+    operators,
+    dataModel,
+    customLists,
+    triggerObjectType: scenario.triggerObjectType,
+  };
 
   return (
     <Page.Container>
@@ -271,7 +274,7 @@ export default function RuleEdit() {
 
       {editorMode === 'view' ? (
         <RuleViewContent
-          input={astEditor.input}
+          options={options}
           setOperand={astEditor.setOperand}
           setOperator={astEditor.setOperator}
           appendChild={astEditor.appendChild}
@@ -281,7 +284,7 @@ export default function RuleEdit() {
         />
       ) : (
         <RuleEditContent
-          input={astEditor.input}
+          options={options}
           setOperand={astEditor.setOperand}
           setOperator={astEditor.setOperator}
           appendChild={astEditor.appendChild}
@@ -298,7 +301,7 @@ export default function RuleEdit() {
 }
 
 function RuleViewContent({
-  input,
+  options,
   setOperand,
   setOperator,
   appendChild,
@@ -306,13 +309,13 @@ function RuleViewContent({
   editorNodeViewModel,
   rule,
 }: {
-  input: {
+  options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunctions[];
+    operators: OperatorFunction[];
     dataModel: TableModel[];
     customLists: CustomList[];
-    triggerObjectTable: TableModel;
+    triggerObjectType: string;
   };
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
@@ -348,7 +351,7 @@ function RuleViewContent({
         </div>
         <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
           <AstBuilder
-            input={input}
+            options={options}
             setOperand={setOperand}
             setOperator={setOperator}
             appendChild={appendChild}
@@ -363,7 +366,7 @@ function RuleViewContent({
 }
 
 function RuleEditContent({
-  input,
+  options,
   setOperand,
   setOperator,
   appendChild,
@@ -374,13 +377,13 @@ function RuleEditContent({
   scenarioId,
   formMethods,
 }: {
-  input: {
+  options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunctions[];
+    operators: OperatorFunction[];
     dataModel: TableModel[];
     customLists: CustomList[];
-    triggerObjectTable: TableModel;
+    triggerObjectType: string;
   };
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
@@ -459,7 +462,7 @@ function RuleEditContent({
 
       <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
         <AstBuilder
-          input={input}
+          options={options}
           setOperand={setOperand}
           setOperator={setOperator}
           appendChild={appendChild}

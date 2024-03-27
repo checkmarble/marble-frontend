@@ -3,10 +3,7 @@ import {
   type AggregationAstNode,
   aggregationAstNodeName,
   type AstNode,
-  type DatabaseAccessAstNode,
   NewConstantAstNode,
-  type PayloadAstNode,
-  type TableModel,
 } from '@app-builder/models';
 import {
   type AggregatorOperator,
@@ -16,6 +13,7 @@ import {
   computeValidationForNamedChildren,
   type EvaluationError,
 } from '@app-builder/models/node-evaluation';
+import { useDataModel } from '@app-builder/services/ast-node/options';
 import {
   adaptAstNodeFromEditorViewModel,
   type EditorNodeViewModel,
@@ -27,14 +25,7 @@ import {
 } from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type Namespace } from 'i18next';
-import { type CustomList } from 'marble-api';
-import {
-  type PropsWithChildren,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 import { Logo } from 'ui-icons';
@@ -194,18 +185,11 @@ const AggregationEditModalContext = createSimpleContext<
 
 export const useEditAggregation = AggregationEditModalContext.useValue;
 
-export const AggregationEditModal = ({
-  input,
+export function AggregationEditModal({
   children,
-}: PropsWithChildren<{
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    customLists: CustomList[];
-    triggerObjectTable: TableModel;
-  };
-}>) => {
+}: {
+  children: React.ReactNode;
+}) {
   const [open, onOpenChange] = useState<boolean>(false);
   const [aggregation, setAggregation] = useState<AggregationViewModel>();
   const onSaveRef = useRef<(astNode: AstNode) => void>();
@@ -228,7 +212,6 @@ export const AggregationEditModal = ({
           <CopyPasteASTContextProvider>
             {aggregation ? (
               <AggregationEditModalContent
-                input={input}
                 aggregation={aggregation}
                 setAggregation={setAggregation}
                 onSave={(astNode) => {
@@ -242,36 +225,29 @@ export const AggregationEditModal = ({
       </AggregationEditModalContext.Provider>
     </ModalV2.Root>
   );
-};
+}
 
-const AggregationEditModalContent = ({
-  input,
+function AggregationEditModalContent({
   aggregation,
   setAggregation,
   onSave,
 }: {
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    customLists: CustomList[];
-    triggerObjectTable: TableModel;
-  };
   aggregation: AggregationViewModel;
   setAggregation: (aggregation: AggregationViewModel) => void;
   onSave: (astNode: AstNode) => void;
-}) => {
+}) {
   const { t } = useTranslation(handle.i18n);
 
+  const dataModel = useDataModel();
   const dataModelFieldOptions = useMemo(
     () =>
-      input.dataModel.flatMap((table) =>
+      dataModel.flatMap((table) =>
         table.fields.map((field) => ({
           tableName: table.name,
           fieldName: field.name,
         })),
       ),
-    [input.dataModel],
+    [dataModel],
   );
 
   const handleSave = () => {
@@ -375,7 +351,6 @@ const AggregationEditModalContent = ({
             </div>
             <EditFilters
               aggregatedField={aggregation.aggregatedField}
-              input={input}
               value={aggregation.filters}
               dataModelFieldOptions={dataModelFieldOptions}
               onChange={(filters) =>
@@ -404,4 +379,4 @@ const AggregationEditModalContent = ({
       </div>
     </>
   );
-};
+}

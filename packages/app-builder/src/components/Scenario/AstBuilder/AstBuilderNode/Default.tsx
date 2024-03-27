@@ -1,11 +1,14 @@
-import { type TableModel } from '@app-builder/models';
 import { stringifyAstNode } from '@app-builder/models/editable-ast-node';
+import {
+  useCustomLists,
+  useDataModel,
+  useTriggerObjectTable,
+} from '@app-builder/services/ast-node/options';
 import {
   adaptAstNodeFromEditorViewModel,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type CustomList } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -43,36 +46,29 @@ const defaultClassnames = cva(
 );
 
 interface DefaultProps extends VariantProps<typeof defaultClassnames> {
-  input: {
-    dataModel: TableModel[];
-    customLists: CustomList[];
-    triggerObjectTable: TableModel;
-  };
   editorNodeViewModel: EditorNodeViewModel;
 }
 
 export function Default({
-  input,
   editorNodeViewModel,
   validationStatus,
   type,
 }: DefaultProps) {
   const { t } = useTranslation(['scenarios']);
+
+  const customLists = useCustomLists();
+  const dataModel = useDataModel();
+  const triggerObjectTable = useTriggerObjectTable();
+
   const stringifiedAstNode = useMemo(() => {
     const astNode = adaptAstNodeFromEditorViewModel(editorNodeViewModel);
     return stringifyAstNode(t, astNode, {
-      dataModel: input.dataModel,
-      triggerObjectTable: input.triggerObjectTable,
-      customLists: input.customLists,
+      dataModel: dataModel,
+      triggerObjectTable: triggerObjectTable,
+      customLists: customLists,
       enumOptions: [],
     });
-  }, [
-    input.customLists,
-    input.dataModel,
-    input.triggerObjectTable,
-    editorNodeViewModel,
-    t,
-  ]);
+  }, [customLists, dataModel, triggerObjectTable, editorNodeViewModel, t]);
 
   return (
     <div className={defaultClassnames({ type, validationStatus })}>

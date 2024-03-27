@@ -1,16 +1,10 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
-import {
-  type AstNode,
-  type DatabaseAccessAstNode,
-  NewUndefinedAstNode,
-  type PayloadAstNode,
-  type TableModel,
-} from '@app-builder/models';
-import { type OperatorFunctions } from '@app-builder/models/editable-operators';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   type EvaluationError,
   separateChildrenErrors,
 } from '@app-builder/models/node-evaluation';
+import { useTriggerObjectTable } from '@app-builder/services/ast-node/options';
 import {
   type EditorNodeViewModel,
   findArgumentIndexErrorsFromParent,
@@ -22,7 +16,6 @@ import {
   useGetOrAndNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import clsx from 'clsx';
-import { type CustomList } from 'marble-api';
 import { Fragment } from 'react';
 
 import { EvaluationErrors } from '../../ScenarioValidationError';
@@ -60,7 +53,6 @@ function NewAndChild() {
  * Design is opinionated: it assumes a RootAnd is used for trigger condition.
  */
 export function RootAnd({
-  input,
   setOperand,
   setOperator,
   appendChild,
@@ -68,14 +60,6 @@ export function RootAnd({
   rootAndViewModel,
   viewOnly,
 }: {
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    customLists: CustomList[];
-    triggerObjectTable: TableModel;
-    operators: OperatorFunctions[];
-  };
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
@@ -83,6 +67,8 @@ export function RootAnd({
   rootAndViewModel: RootAndViewModel;
   viewOnly?: boolean;
 }) {
+  const triggerObjectTable = useTriggerObjectTable();
+
   const getOrAndNodeEvaluationErrorMessage =
     useGetOrAndNodeEvaluationErrorMessage();
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
@@ -118,7 +104,7 @@ export function RootAnd({
     <>
       <div className="text-s grid grid-cols-[8px_16px_max-content_1fr_max-content]">
         <div className="text-s bg-grey-02 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
-          {input.triggerObjectTable.name}
+          {triggerObjectTable.name}
         </div>
         {rootAndViewModel.children.map((child, childIndex) => {
           const isFirstCondition = childIndex === 0;
@@ -165,7 +151,6 @@ export function RootAnd({
                 )}
               >
                 <AstBuilderNode
-                  input={input}
                   setOperand={setOperand}
                   setOperator={setOperator}
                   editorNodeViewModel={child}

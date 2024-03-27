@@ -1,26 +1,11 @@
-import {
-  type AstNode,
-  type DatabaseAccessAstNode,
-  type PayloadAstNode,
-  type TableModel,
-} from '@app-builder/models';
-import { type OperatorFunctions } from '@app-builder/models/editable-operators';
+import { type AstNode } from '@app-builder/models';
 import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
-import { type CustomList } from 'marble-api';
 
 import { AstBuilderNode } from '../AstBuilderNode';
 import { adaptRootAndViewModel, RootAnd } from './RootAnd';
 import { adaptRootOrWithAndViewModel, RootOrWithAnd } from './RootOrWithAnd';
 
 interface RootAstBuilderNodeProps {
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    customLists: CustomList[];
-    triggerObjectTable: TableModel;
-    operators: OperatorFunctions[];
-  };
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
@@ -35,7 +20,6 @@ interface RootAstBuilderNodeProps {
  * This is necessary to avoid the recursive call of AstBuilderNode that could trigger a root specific layout for any child node.
  */
 export function RootAstBuilderNode({
-  input,
   setOperand,
   setOperator,
   appendChild,
@@ -48,7 +32,6 @@ export function RootAstBuilderNode({
   if (rootOrWithAndViewModel) {
     return (
       <RootOrWithAnd
-        input={input}
         setOperand={setOperand}
         setOperator={setOperator}
         appendChild={appendChild}
@@ -63,7 +46,6 @@ export function RootAstBuilderNode({
   if (rootAndViewModel) {
     return (
       <RootAnd
-        input={input}
         setOperand={setOperand}
         setOperator={setOperator}
         appendChild={appendChild}
@@ -78,7 +60,6 @@ export function RootAstBuilderNode({
   return (
     <AstBuilderNode
       editorNodeViewModel={editorNodeViewModel}
-      input={input}
       setOperand={setOperand}
       setOperator={setOperator}
       viewOnly={viewOnly}

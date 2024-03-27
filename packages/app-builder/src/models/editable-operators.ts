@@ -22,12 +22,12 @@ const twoLineOperandOperatorFunctions = [
   'ContainsAnyOf',
   'ContainsNoneOf',
 ] as const;
-export type TwoLineOperandOperatorFunctions =
+export type TwoLineOperandOperatorFunction =
   (typeof twoLineOperandOperatorFunctions)[number];
 
-export function isTwoLineOperandOperatorFunctions(
+export function isTwoLineOperandOperatorFunction(
   value: string,
-): value is TwoLineOperandOperatorFunctions {
+): value is TwoLineOperandOperatorFunction {
   return (twoLineOperandOperatorFunctions as ReadonlyArray<string>).includes(
     value,
   );
@@ -72,14 +72,14 @@ export function isAggregatorOperator(
   return (aggregatorOperators as ReadonlyArray<string>).includes(value);
 }
 
-export type OperatorFunctions =
-  | TwoLineOperandOperatorFunctions
+export type OperatorFunction =
+  | TwoLineOperandOperatorFunction
   | FilterOperator
   | TimeAddOperator
   | AggregatorOperator;
-export function isOperatorFunctions(value: string): value is OperatorFunctions {
+export function isOperatorFunction(value: string): value is OperatorFunction {
   return (
-    isTwoLineOperandOperatorFunctions(value) ||
+    isTwoLineOperandOperatorFunction(value) ||
     isFilterOperator(value) ||
     isTimeAddOperator(value) ||
     isAggregatorOperator(value)
@@ -90,7 +90,7 @@ export function getOperatorName(
   t: TFunction<['scenarios'], undefined>,
   operatorName: string,
 ) {
-  if (isOperatorFunctions(operatorName)) {
+  if (isOperatorFunction(operatorName)) {
     switch (operatorName) {
       case '+':
         return '+';

@@ -1,15 +1,10 @@
 import {
   type AstNode,
-  type EnumValue,
-  findDataModelField,
-  findDataModelTable,
-  isDatabaseAccess,
-  isPayload,
   isUndefinedAstNode,
   NewUndefinedAstNode,
-  type TableModel,
 } from '@app-builder/models';
 import { type EditableAstNode } from '@app-builder/models/editable-ast-node';
+import { useOperandOptions } from '@app-builder/services/ast-node/options';
 import { coerceToConstantEditableAstNode } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -48,58 +43,11 @@ import { OperandLabel } from '../OperandLabel';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
 import { OperandEditorSearchResults } from './OperandEditorSearchResults';
 
-export function getEnumOptionsFromNeighbour({
-  viewModel,
-  triggerObjectTable,
-  dataModel,
-}: {
-  viewModel: OperandViewModel;
-  triggerObjectTable: TableModel;
-  dataModel: TableModel[];
-}): EnumValue[] {
-  if (!viewModel.parent) {
-    return [];
-  }
-  if (viewModel.parent.funcName !== '=') {
-    return [];
-  }
-  const neighbourNodeViewModel = viewModel.parent.children.find(
-    (child) => child.nodeId !== viewModel.nodeId,
-  );
-  if (!neighbourNodeViewModel) {
-    return [];
-  }
-  const neighbourNode = adaptAstNodeFromEditorViewModel(neighbourNodeViewModel);
-  if (isPayload(neighbourNode)) {
-    const field = findDataModelField({
-      table: triggerObjectTable,
-      fieldName: neighbourNode.children[0].constant,
-    });
-    return field.isEnum ? field.values ?? [] : [];
-  }
-
-  if (isDatabaseAccess(neighbourNode)) {
-    const table = findDataModelTable({
-      dataModel,
-      tableName: neighbourNode.namedChildren.tableName.constant,
-      path: neighbourNode.namedChildren.path.constant,
-    });
-    const field = findDataModelField({
-      table: table,
-      fieldName: neighbourNode.namedChildren.fieldName.constant,
-    });
-    return field.isEnum ? field.values ?? [] : [];
-  }
-  return [];
-}
-
 export function OperandEditor({
-  options,
   operandViewModel,
   editableAstNode,
   onSave,
 }: {
-  options: EditableAstNode[];
   operandViewModel: OperandViewModel;
   editableAstNode: EditableAstNode;
   onSave: (astNode: AstNode) => void;
@@ -121,7 +69,6 @@ export function OperandEditor({
       />
       <MenuPopover className="w-80 flex-col">
         <OperandEditorContent
-          options={options}
           onSave={onSave}
           operandViewModel={operandViewModel}
           searchValue={searchValue}
@@ -132,17 +79,17 @@ export function OperandEditor({
 }
 
 function OperandEditorContent({
-  options,
   onSave,
   operandViewModel,
   searchValue,
 }: {
-  options: EditableAstNode[];
   onSave: (astNode: AstNode) => void;
   operandViewModel: OperandViewModel;
   searchValue: string;
 }) {
   const { t } = useTranslation('scenarios');
+
+  const options = useOperandOptions({ operandViewModel });
 
   const editAggregation = useEditAggregation();
   const editTimeAdd = useEditTimeAdd();

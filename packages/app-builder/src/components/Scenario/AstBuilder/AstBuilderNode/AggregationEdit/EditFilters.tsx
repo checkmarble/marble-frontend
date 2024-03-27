@@ -1,12 +1,7 @@
 import { Callout } from '@app-builder/components';
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import {
-  type DatabaseAccessAstNode,
-  NewUndefinedAstNode,
-  type PayloadAstNode,
-  type TableModel,
-} from '@app-builder/models';
+import { NewUndefinedAstNode } from '@app-builder/models';
 import {
   filterOperators,
   isFilterOperator,
@@ -17,7 +12,6 @@ import {
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import clsx from 'clsx';
-import { type CustomList } from 'marble-api';
 import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -37,25 +31,17 @@ const newFilterValidation = () => ({
   value: [],
 });
 
-export const EditFilters = ({
+export function EditFilters({
   aggregatedField,
-  input,
   dataModelFieldOptions,
   onChange,
   value,
 }: {
   aggregatedField: DataModelField | null;
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    customLists: CustomList[];
-    triggerObjectTable: TableModel;
-  };
   dataModelFieldOptions: DataModelField[];
   onChange: (value: FilterViewModel[]) => void;
   value: FilterViewModel[];
-}) => {
+}) {
   const { t } = useTranslation(scenarioI18n);
 
   const filteredDataModalFieldOptions = aggregatedField?.tableName
@@ -151,7 +137,6 @@ export const EditFilters = ({
                     operators={filterOperators}
                   />
                   <Operand
-                    input={input}
                     operandViewModel={filter.value}
                     onSave={(astNode) =>
                       onFilterChange(
@@ -184,4 +169,4 @@ export const EditFilters = ({
       </div>
     </div>
   );
-};
+}

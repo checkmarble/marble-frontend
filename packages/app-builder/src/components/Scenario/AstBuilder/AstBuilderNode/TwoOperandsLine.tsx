@@ -1,26 +1,21 @@
 import {
   type AstNode,
-  type DatabaseAccessAstNode,
   functionNodeNames,
   NewUndefinedAstNode,
-  type PayloadAstNode,
-  type TableModel,
 } from '@app-builder/models';
 import {
-  isTwoLineOperandOperatorFunctions,
-  type OperatorFunctions,
-  type TwoLineOperandOperatorFunctions,
+  isTwoLineOperandOperatorFunction,
+  type TwoLineOperandOperatorFunction,
 } from '@app-builder/models/editable-operators';
 import {
   type EvaluationError,
   separateChildrenErrors,
 } from '@app-builder/models/node-evaluation';
+import { useTwoLineOperandOperatorFunctions } from '@app-builder/services/ast-node/options';
 import {
   adaptAstNodeFromEditorViewModel,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
-import { type CustomList } from 'marble-api';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch } from 'ui-design-system';
 
@@ -32,7 +27,7 @@ interface TwoOperandsLineViewModel {
   left: OperandViewModel;
   operator: {
     nodeId: string;
-    funcName: TwoLineOperandOperatorFunctions;
+    funcName: TwoLineOperandOperatorFunction;
     errors: EvaluationError[];
   };
   right: OperandViewModel;
@@ -45,21 +40,12 @@ function NewNestedChild(node: AstNode) {
 }
 
 export function TwoOperandsLine({
-  input,
   setOperand,
   setOperator,
   twoOperandsViewModel,
   viewOnly,
   root,
 }: {
-  input: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: TableModel[];
-    customLists: CustomList[];
-    triggerObjectTable: TableModel;
-    operators: OperatorFunctions[];
-  };
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
   twoOperandsViewModel: TwoOperandsLineViewModel;
@@ -81,17 +67,13 @@ export function TwoOperandsLine({
     );
   }
 
-  const operators = useMemo(
-    () => input.operators.filter(isTwoLineOperandOperatorFunctions),
-    [input.operators],
-  );
+  const operators = useTwoLineOperandOperatorFunctions();
 
   return (
     <div className="flex justify-between">
       <div className="flex flex-row flex-wrap items-center gap-2">
         {!root ? <span className="text-grey-25">(</span> : null}
         <AstBuilderNode
-          input={input}
           setOperand={setOperand}
           setOperator={setOperator}
           editorNodeViewModel={twoOperandsViewModel.left}
@@ -110,7 +92,6 @@ export function TwoOperandsLine({
           operators={operators}
         />
         <AstBuilderNode
-          input={input}
           setOperand={setOperand}
           setOperator={setOperator}
           editorNodeViewModel={twoOperandsViewModel.right}
@@ -146,7 +127,7 @@ export function adaptTwoOperandsLineViewModel(
 ): TwoOperandsLineViewModel | null {
   if (vm.children.length !== 2) return null;
   if (Object.keys(vm.namedChildren).length > 0) return null;
-  if (vm.funcName == null || !isTwoLineOperandOperatorFunctions(vm.funcName))
+  if (vm.funcName == null || !isTwoLineOperandOperatorFunction(vm.funcName))
     return null;
 
   const left = vm.children[0];

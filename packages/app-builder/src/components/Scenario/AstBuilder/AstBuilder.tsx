@@ -4,7 +4,8 @@ import {
   type PayloadAstNode,
   type TableModel,
 } from '@app-builder/models';
-import { type OperatorFunctions } from '@app-builder/models/editable-operators';
+import { type OperatorFunction } from '@app-builder/models/editable-operators';
+import { OptionsProvider } from '@app-builder/services/ast-node/options';
 import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import { type CustomList } from 'marble-api';
@@ -14,13 +15,13 @@ import { TimeAddEditModal } from './AstBuilderNode/TimeAddEdit/Modal';
 import { RootAstBuilderNode } from './RootAstBuilderNode';
 
 interface AstBuilderProps {
-  input: {
+  options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunctions[];
+    operators: OperatorFunction[];
     dataModel: TableModel[];
     customLists: CustomList[];
-    triggerObjectTable: TableModel;
+    triggerObjectType: string;
   };
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
@@ -31,7 +32,7 @@ interface AstBuilderProps {
 }
 
 export function AstBuilder({
-  input,
+  options,
   setOperand,
   setOperator,
   appendChild,
@@ -40,35 +41,21 @@ export function AstBuilder({
   viewOnly,
 }: AstBuilderProps) {
   return (
-    <CopyPasteASTContextProvider>
-      <TimeAddEditModal
-        input={{
-          databaseAccessors: input.databaseAccessors,
-          payloadAccessors: input.payloadAccessors,
-          dataModel: input.dataModel,
-          triggerObjectTable: input.triggerObjectTable,
-        }}
-      >
-        <AggregationEditModal
-          input={{
-            databaseAccessors: input.databaseAccessors,
-            payloadAccessors: input.payloadAccessors,
-            dataModel: input.dataModel,
-            customLists: input.customLists,
-            triggerObjectTable: input.triggerObjectTable,
-          }}
-        >
-          <RootAstBuilderNode
-            input={input}
-            setOperand={setOperand}
-            setOperator={setOperator}
-            appendChild={appendChild}
-            remove={remove}
-            editorNodeViewModel={editorNodeViewModel}
-            viewOnly={viewOnly}
-          />
-        </AggregationEditModal>
-      </TimeAddEditModal>
-    </CopyPasteASTContextProvider>
+    <OptionsProvider {...options}>
+      <CopyPasteASTContextProvider>
+        <TimeAddEditModal>
+          <AggregationEditModal>
+            <RootAstBuilderNode
+              setOperand={setOperand}
+              setOperator={setOperator}
+              appendChild={appendChild}
+              remove={remove}
+              editorNodeViewModel={editorNodeViewModel}
+              viewOnly={viewOnly}
+            />
+          </AggregationEditModal>
+        </TimeAddEditModal>
+      </CopyPasteASTContextProvider>
+    </OptionsProvider>
   );
 }
