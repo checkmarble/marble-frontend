@@ -155,6 +155,7 @@ function OperandDescription({
 }
 
 function Description({ description }: { description: string }) {
+  if (!description) return null;
   return (
     <p className="text-grey-50 max-w-[300px] text-xs font-normal first-letter:capitalize">
       {description}

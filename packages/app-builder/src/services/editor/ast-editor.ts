@@ -13,6 +13,7 @@ import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useState } from 'react';
 import * as R from 'remeda';
 
+import { formatReturnValue } from '../ast-node/return-value';
 import { findAndReplaceNode } from './FindAndReplaceNode';
 
 export interface EditorNodeViewModel {
@@ -23,6 +24,7 @@ export interface EditorNodeViewModel {
   children: EditorNodeViewModel[];
   namedChildren: Record<string, EditorNodeViewModel>;
   parent: EditorNodeViewModel | null;
+  returnValue?: string;
 }
 
 export function adaptEditorNodeViewModel({
@@ -42,6 +44,7 @@ export function adaptEditorNodeViewModel({
     errors: computeEvaluationErrors(ast.name, evaluation),
     children: [],
     namedChildren: {},
+    returnValue: formatReturnValue(evaluation.returnValue),
   };
 
   currentNode.children = ast.children.map((child, i) =>
