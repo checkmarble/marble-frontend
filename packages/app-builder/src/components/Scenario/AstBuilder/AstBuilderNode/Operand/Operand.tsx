@@ -1,7 +1,10 @@
 import {
   type AstNode,
+  type DatabaseAccessAstNode,
   NewAggregatorAstNode,
   NewConstantAstNode,
+  type PayloadAstNode,
+  type TableModel,
 } from '@app-builder/models';
 import {
   adaptEditableAstNode,
@@ -16,10 +19,10 @@ import {
 import { aggregatorOperators } from '@app-builder/models/editable-operators';
 import {
   adaptAstNodeFromEditorViewModel,
-  type AstBuilder,
   type EditorNodeViewModel,
   getValidationStatus,
 } from '@app-builder/services/editor/ast-editor';
+import { type CustomList } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -30,12 +33,18 @@ import { OperandLabel } from './OperandLabel';
 export type OperandViewModel = EditorNodeViewModel;
 
 export function Operand({
-  builder,
+  input,
   operandViewModel,
   onSave,
   viewOnly,
 }: {
-  builder: AstBuilder;
+  input: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectTable: TableModel;
+  };
   operandViewModel: OperandViewModel;
   onSave?: (astNode: AstNode) => void;
   viewOnly?: boolean;
@@ -43,29 +52,25 @@ export function Operand({
   const { t } = useTranslation(['scenarios']);
   const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
   const editableAstNode = adaptEditableAstNode(t, astNode, {
-    dataModel: builder.input.dataModel,
-    triggerObjectTable: builder.input.triggerObjectTable,
-    customLists: builder.input.customLists,
+    dataModel: input.dataModel,
+    triggerObjectTable: input.triggerObjectTable,
+    customLists: input.customLists,
     enumOptions: getEnumOptionsFromNeighbour({
       viewModel: operandViewModel,
-      triggerObjectTable: builder.input.triggerObjectTable,
-      dataModel: builder.input.dataModel,
+      triggerObjectTable: input.triggerObjectTable,
+      dataModel: input.dataModel,
     }),
   });
 
   const options = useMemo(() => {
-    const databaseAccessors = builder.input.databaseAccessors.map(
-      (node) =>
-        new DatabaseAccessEditableAstNode(node, builder.input.dataModel),
+    const databaseAccessors = input.databaseAccessors.map(
+      (node) => new DatabaseAccessEditableAstNode(node, input.dataModel),
     );
-    const payloadAccessors = builder.input.payloadAccessors.map(
+    const payloadAccessors = input.payloadAccessors.map(
       (node) =>
-        new PayloadAccessorsEditableAstNode(
-          node,
-          builder.input.triggerObjectTable,
-        ),
+        new PayloadAccessorsEditableAstNode(node, input.triggerObjectTable),
     );
-    const customLists = builder.input.customLists.map(
+    const customLists = input.customLists.map(
       (customList) => new CustomListEditableAstNode(customList),
     );
     const functions = [
@@ -74,9 +79,9 @@ export function Operand({
           new AggregatorEditableAstNode(
             t,
             NewAggregatorAstNode(aggregator),
-            builder.input.dataModel,
-            builder.input.customLists,
-            builder.input.triggerObjectTable,
+            input.dataModel,
+            input.customLists,
+            input.triggerObjectTable,
           ),
       ),
       new TimeAddEditableAstNode(t),
@@ -85,8 +90,8 @@ export function Operand({
 
     const enumOptionValues = getEnumOptionsFromNeighbour({
       viewModel: operandViewModel,
-      dataModel: builder.input.dataModel,
-      triggerObjectTable: builder.input.triggerObjectTable,
+      dataModel: input.dataModel,
+      triggerObjectTable: input.triggerObjectTable,
     });
 
     const enumOptions = enumOptionValues.map(
@@ -107,11 +112,11 @@ export function Operand({
       ...enumOptions,
     ];
   }, [
-    builder.input.customLists,
-    builder.input.dataModel,
-    builder.input.databaseAccessors,
-    builder.input.payloadAccessors,
-    builder.input.triggerObjectTable,
+    input.customLists,
+    input.dataModel,
+    input.databaseAccessors,
+    input.payloadAccessors,
+    input.triggerObjectTable,
     operandViewModel,
     t,
   ]);
@@ -120,7 +125,7 @@ export function Operand({
     return (
       <Default
         editorNodeViewModel={operandViewModel}
-        builder={builder}
+        input={input}
         type={viewOnly ? 'viewer' : 'editor'}
         validationStatus={getValidationStatus(operandViewModel)}
       />

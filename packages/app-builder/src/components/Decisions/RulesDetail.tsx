@@ -192,8 +192,8 @@ function RuleFormula({
 }) {
   const astEditor = useAstBuilder({
     backendAst: formula,
-    backendValidation: evaluation,
-    localValidation: null,
+    backendEvaluation: evaluation,
+    localEvaluation: null,
     databaseAccessors,
     payloadAccessors,
     astOperators,
@@ -205,7 +205,15 @@ function RuleFormula({
 
   return (
     <Paper.Container scrollable={false} className="bg-grey-00">
-      <AstBuilder builder={astEditor} viewOnly={true} />
+      <AstBuilder
+        input={astEditor.input}
+        setOperand={astEditor.setOperand}
+        setOperator={astEditor.setOperator}
+        appendChild={astEditor.appendChild}
+        remove={astEditor.remove}
+        editorNodeViewModel={astEditor.editorNodeViewModel}
+        viewOnly={true}
+      />
     </Paper.Container>
   );
 }

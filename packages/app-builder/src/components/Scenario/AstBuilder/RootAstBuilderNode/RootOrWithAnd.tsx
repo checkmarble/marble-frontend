@@ -1,11 +1,18 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
-import { NewAstNode, NewUndefinedAstNode } from '@app-builder/models';
+import {
+  type AstNode,
+  type DatabaseAccessAstNode,
+  NewAstNode,
+  NewUndefinedAstNode,
+  type PayloadAstNode,
+  type TableModel,
+} from '@app-builder/models';
+import { type OperatorFunctions } from '@app-builder/models/editable-operators';
 import {
   type EvaluationError,
   separateChildrenErrors,
 } from '@app-builder/models/node-evaluation';
 import {
-  type AstBuilder,
   type EditorNodeViewModel,
   findArgumentIndexErrorsFromParent,
   hasArgumentIndexErrorsFromParent,
@@ -16,6 +23,7 @@ import {
   useGetOrAndNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import clsx from 'clsx';
+import { type CustomList } from 'marble-api';
 import { Fragment } from 'react';
 
 import { EvaluationErrors } from '../../ScenarioValidationError';
@@ -70,19 +78,35 @@ function NewOrChild() {
 }
 
 export function RootOrWithAnd({
-  builder,
+  input,
+  setOperand,
+  setOperator,
+  appendChild,
+  remove,
   rootOrWithAndViewModel,
   viewOnly,
 }: {
-  builder: AstBuilder;
+  input: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectTable: TableModel;
+    operators: OperatorFunctions[];
+  };
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
+  appendChild: (nodeId: string, childAst: AstNode) => void;
+  remove: (nodeId: string) => void;
   rootOrWithAndViewModel: RootOrWithAndViewModel;
   viewOnly?: boolean;
 }) {
   const getOrAndNodeEvaluationErrorMessage =
     useGetOrAndNodeEvaluationErrorMessage();
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+
   function appendOrChild() {
-    builder.appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
+    appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
   }
 
   const { nodeErrors: orNodeErrors } = separateChildrenErrors(
@@ -105,14 +129,12 @@ export function RootOrWithAnd({
         ).map(getOrAndNodeEvaluationErrorMessage);
 
         function appendAndChild() {
-          builder.appendChild(andChild.nodeId, NewAndChild());
+          appendChild(andChild.nodeId, NewAndChild());
         }
 
         // if this is the last and child, remove the and from or operands
-        function remove(nodeId: string) {
-          builder.remove(
-            andChild.children.length > 1 ? nodeId : andChild.nodeId,
-          );
+        function removeAndChild(nodeId: string) {
+          remove(andChild.children.length > 1 ? nodeId : andChild.nodeId);
         }
 
         return (
@@ -154,7 +176,9 @@ export function RootOrWithAnd({
                     )}
                   >
                     <AstBuilderNode
-                      builder={builder}
+                      input={input}
+                      setOperand={setOperand}
+                      setOperator={setOperator}
                       editorNodeViewModel={child}
                       viewOnly={viewOnly}
                       root
@@ -165,7 +189,7 @@ export function RootOrWithAnd({
                     <div className="flex h-10 flex-col items-center justify-center">
                       <RemoveButton
                         onClick={() => {
-                          remove(child.nodeId);
+                          removeAndChild(child.nodeId);
                         }}
                       />
                     </div>

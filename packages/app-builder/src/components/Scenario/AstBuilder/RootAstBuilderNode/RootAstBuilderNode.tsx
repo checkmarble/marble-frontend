@@ -1,14 +1,30 @@
 import {
-  type AstBuilder,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
+  type AstNode,
+  type DatabaseAccessAstNode,
+  type PayloadAstNode,
+  type TableModel,
+} from '@app-builder/models';
+import { type OperatorFunctions } from '@app-builder/models/editable-operators';
+import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
+import { type CustomList } from 'marble-api';
 
 import { AstBuilderNode } from '../AstBuilderNode';
 import { adaptRootAndViewModel, RootAnd } from './RootAnd';
 import { adaptRootOrWithAndViewModel, RootOrWithAnd } from './RootOrWithAnd';
 
 interface RootAstBuilderNodeProps {
-  builder: AstBuilder;
+  input: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectTable: TableModel;
+    operators: OperatorFunctions[];
+  };
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
+  appendChild: (nodeId: string, childAst: AstNode) => void;
+  remove: (nodeId: string) => void;
   editorNodeViewModel: EditorNodeViewModel;
   viewOnly?: boolean;
 }
@@ -19,8 +35,12 @@ interface RootAstBuilderNodeProps {
  * This is necessary to avoid the recursive call of AstBuilderNode that could trigger a root specific layout for any child node.
  */
 export function RootAstBuilderNode({
+  input,
+  setOperand,
+  setOperator,
+  appendChild,
+  remove,
   editorNodeViewModel,
-  builder,
   viewOnly,
 }: RootAstBuilderNodeProps) {
   const rootOrWithAndViewModel =
@@ -28,7 +48,11 @@ export function RootAstBuilderNode({
   if (rootOrWithAndViewModel) {
     return (
       <RootOrWithAnd
-        builder={builder}
+        input={input}
+        setOperand={setOperand}
+        setOperator={setOperator}
+        appendChild={appendChild}
+        remove={remove}
         rootOrWithAndViewModel={rootOrWithAndViewModel}
         viewOnly={viewOnly}
       />
@@ -39,7 +63,11 @@ export function RootAstBuilderNode({
   if (rootAndViewModel) {
     return (
       <RootAnd
-        builder={builder}
+        input={input}
+        setOperand={setOperand}
+        setOperator={setOperator}
+        appendChild={appendChild}
+        remove={remove}
         rootAndViewModel={rootAndViewModel}
         viewOnly={viewOnly}
       />
@@ -50,7 +78,9 @@ export function RootAstBuilderNode({
   return (
     <AstBuilderNode
       editorNodeViewModel={editorNodeViewModel}
-      builder={builder}
+      input={input}
+      setOperand={setOperand}
+      setOperator={setOperator}
       viewOnly={viewOnly}
       root
     />

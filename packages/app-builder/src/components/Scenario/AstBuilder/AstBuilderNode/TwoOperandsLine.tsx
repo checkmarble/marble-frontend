@@ -1,10 +1,14 @@
 import {
   type AstNode,
+  type DatabaseAccessAstNode,
   functionNodeNames,
   NewUndefinedAstNode,
+  type PayloadAstNode,
+  type TableModel,
 } from '@app-builder/models';
 import {
   isTwoLineOperandOperatorFunctions,
+  type OperatorFunctions,
   type TwoLineOperandOperatorFunctions,
 } from '@app-builder/models/editable-operators';
 import {
@@ -13,9 +17,9 @@ import {
 } from '@app-builder/models/node-evaluation';
 import {
   adaptAstNodeFromEditorViewModel,
-  type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { type CustomList } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch } from 'ui-design-system';
@@ -41,33 +45,45 @@ function NewNestedChild(node: AstNode) {
 }
 
 export function TwoOperandsLine({
-  builder,
+  input,
+  setOperand,
+  setOperator,
   twoOperandsViewModel,
   viewOnly,
   root,
 }: {
-  builder: AstBuilder;
+  input: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectTable: TableModel;
+    operators: OperatorFunctions[];
+  };
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
   twoOperandsViewModel: TwoOperandsLineViewModel;
   viewOnly?: boolean;
   root?: boolean;
 }) {
   const { t } = useTranslation(['scenarios']);
   function addNestedChild(child: EditorNodeViewModel) {
-    builder.setOperand(
+    setOperand(
       child.nodeId,
       NewNestedChild(adaptAstNodeFromEditorViewModel(child)),
     );
   }
 
   function removeNestedChild(child: EditorNodeViewModel) {
-    builder.setOperand(
+    setOperand(
       child.nodeId,
       adaptAstNodeFromEditorViewModel(child.children[0]),
     );
   }
+
   const operators = useMemo(
-    () => builder.input.operators.filter(isTwoLineOperandOperatorFunctions),
-    [builder.input.operators],
+    () => input.operators.filter(isTwoLineOperandOperatorFunctions),
+    [input.operators],
   );
 
   return (
@@ -75,27 +91,31 @@ export function TwoOperandsLine({
       <div className="flex flex-row flex-wrap items-center gap-2">
         {!root ? <span className="text-grey-25">(</span> : null}
         <AstBuilderNode
-          builder={builder}
+          input={input}
+          setOperand={setOperand}
+          setOperator={setOperator}
           editorNodeViewModel={twoOperandsViewModel.left}
           onSave={(astNode) => {
-            builder.setOperand(twoOperandsViewModel.left.nodeId, astNode);
+            setOperand(twoOperandsViewModel.left.nodeId, astNode);
           }}
           viewOnly={viewOnly}
         />
         <Operator
           value={twoOperandsViewModel.operator.funcName}
           setValue={(operator) => {
-            builder.setOperator(twoOperandsViewModel.operator.nodeId, operator);
+            setOperator(twoOperandsViewModel.operator.nodeId, operator);
           }}
           errors={twoOperandsViewModel.operator.errors}
           viewOnly={viewOnly}
           operators={operators}
         />
         <AstBuilderNode
-          builder={builder}
+          input={input}
+          setOperand={setOperand}
+          setOperator={setOperator}
           editorNodeViewModel={twoOperandsViewModel.right}
           onSave={(astNode) => {
-            builder.setOperand(twoOperandsViewModel.right.nodeId, astNode);
+            setOperand(twoOperandsViewModel.right.nodeId, astNode);
           }}
           viewOnly={viewOnly}
         />

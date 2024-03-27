@@ -1,8 +1,12 @@
-import { type AstNode } from '@app-builder/models';
 import {
-  type AstBuilder,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
+  type AstNode,
+  type DatabaseAccessAstNode,
+  type PayloadAstNode,
+  type TableModel,
+} from '@app-builder/models';
+import { type OperatorFunctions } from '@app-builder/models/editable-operators';
+import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
+import { type CustomList } from 'marble-api';
 
 import { Operand } from './Operand';
 import {
@@ -11,7 +15,16 @@ import {
 } from './TwoOperandsLine';
 
 interface AstBuilderNodeProps {
-  builder: AstBuilder;
+  input: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectTable: TableModel;
+    operators: OperatorFunctions[];
+  };
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
   editorNodeViewModel: EditorNodeViewModel;
   viewOnly?: boolean;
   onSave?: (astNode: AstNode) => void;
@@ -20,7 +33,9 @@ interface AstBuilderNodeProps {
 
 export function AstBuilderNode({
   editorNodeViewModel,
-  builder,
+  input,
+  setOperand,
+  setOperator,
   viewOnly,
   onSave,
   root = false,
@@ -32,7 +47,9 @@ export function AstBuilderNode({
     return (
       <div className="flex w-full flex-col gap-2">
         <TwoOperandsLine
-          builder={builder}
+          input={input}
+          setOperand={setOperand}
+          setOperator={setOperator}
           twoOperandsViewModel={twoOperandsViewModel}
           viewOnly={viewOnly}
           root={root}
@@ -43,7 +60,7 @@ export function AstBuilderNode({
 
   return (
     <Operand
-      builder={builder}
+      input={input}
       operandViewModel={editorNodeViewModel}
       viewOnly={viewOnly}
       onSave={onSave}

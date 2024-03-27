@@ -14,6 +14,7 @@ import {
 } from '@app-builder/models/editable-operators';
 import {
   type EvaluationError,
+  NewNodeEvaluation,
   type NodeEvaluation,
   separateChildrenErrors,
 } from '@app-builder/models/node-evaluation';
@@ -24,7 +25,6 @@ import * as R from 'remeda';
 
 import { findAndReplaceNode } from './FindAndReplaceNode';
 
-// TODO: trancher entre Builder vs Editor
 export interface EditorNodeViewModel {
   nodeId: string;
   funcName: string | null;
@@ -37,20 +37,13 @@ export interface EditorNodeViewModel {
 
 export function adaptEditorNodeViewModel({
   ast,
-  validation,
+  evaluation = NewNodeEvaluation(),
   parent,
 }: {
   ast: AstNode;
-  validation?: NodeEvaluation;
+  evaluation?: NodeEvaluation;
   parent?: EditorNodeViewModel;
 }): EditorNodeViewModel {
-  const evaluation: NodeEvaluation = validation ?? {
-    returnValue: { isOmitted: true },
-    errors: [],
-    children: [],
-    namedChildren: {},
-  };
-
   const currentNode: EditorNodeViewModel = {
     nodeId: nanoid(),
     parent: parent ?? null,
@@ -64,7 +57,7 @@ export function adaptEditorNodeViewModel({
   currentNode.children = ast.children.map((child, i) =>
     adaptEditorNodeViewModel({
       ast: child,
-      validation: evaluation.children[i],
+      evaluation: evaluation.children[i],
       parent: currentNode,
     }),
   );
@@ -73,7 +66,7 @@ export function adaptEditorNodeViewModel({
     (child, namedKey) =>
       adaptEditorNodeViewModel({
         ast: child,
-        validation: evaluation.namedChildren[namedKey],
+        evaluation: evaluation.namedChildren[namedKey],
         parent: currentNode,
       }),
   );
@@ -189,8 +182,8 @@ export interface AstBuilder {
 
 export function useAstBuilder({
   backendAst,
-  backendValidation,
-  localValidation,
+  backendEvaluation,
+  localEvaluation,
   databaseAccessors,
   payloadAccessors,
   astOperators,
@@ -200,8 +193,8 @@ export function useAstBuilder({
   onValidate,
 }: {
   backendAst: AstNode;
-  backendValidation?: NodeEvaluation;
-  localValidation: NodeEvaluation | null;
+  backendEvaluation?: NodeEvaluation;
+  localEvaluation: NodeEvaluation | null;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
   astOperators: AstOperator[];
@@ -214,7 +207,7 @@ export function useAstBuilder({
     useState<EditorNodeViewModel>(() => {
       return adaptEditorNodeViewModel({
         ast: backendAst,
-        validation: backendValidation,
+        evaluation: backendEvaluation,
       });
     });
 
@@ -306,17 +299,17 @@ export function useAstBuilder({
   );
 
   useEffect(() => {
-    if (localValidation === null) {
+    if (localEvaluation === null) {
       return;
     }
 
     setEditorNodeViewModel((vm) => {
-      return updateValidation({
+      return updateEvaluation({
         editorNodeViewModel: vm,
-        validation: localValidation,
+        evaluation: localEvaluation,
       });
     });
-  }, [localValidation]);
+  }, [localEvaluation]);
 
   const operators = useMemo(
     () =>
@@ -349,40 +342,40 @@ export function useAstBuilder({
   };
 }
 
-function updateValidation({
+function updateEvaluation({
   editorNodeViewModel,
-  validation,
+  evaluation,
   parent,
 }: {
   editorNodeViewModel: EditorNodeViewModel;
-  validation: NodeEvaluation;
+  evaluation: NodeEvaluation;
   parent?: EditorNodeViewModel;
 }): EditorNodeViewModel {
   // Ensure validation is consistent with view model (due to children, namedChildren recursion)
-  if (!validation) {
+  if (!evaluation) {
     throw new Error('validation is required');
   }
 
   const currentNode: EditorNodeViewModel = {
     ...editorNodeViewModel,
-    errors: computeEvaluationErrors(editorNodeViewModel.funcName, validation),
+    errors: computeEvaluationErrors(editorNodeViewModel.funcName, evaluation),
     parent: parent ?? null,
     children: [],
     namedChildren: {},
   };
   currentNode.children = editorNodeViewModel.children.map((child, i) =>
-    updateValidation({
+    updateEvaluation({
       editorNodeViewModel: child,
-      validation: validation.children[i],
+      evaluation: evaluation.children[i],
       parent: currentNode,
     }),
   );
   currentNode.namedChildren = R.mapValues(
     editorNodeViewModel.namedChildren,
     (child, namedKey) =>
-      updateValidation({
+      updateEvaluation({
         editorNodeViewModel: child,
-        validation: validation.namedChildren[namedKey],
+        evaluation: evaluation.namedChildren[namedKey],
         parent: currentNode,
       }),
   );
@@ -392,16 +385,16 @@ function updateValidation({
 
 function computeEvaluationErrors(
   funcName: EditorNodeViewModel['funcName'],
-  validation: NodeEvaluation,
+  evaluation: NodeEvaluation,
 ): EvaluationError[] {
   const errors: EvaluationError[] = [];
-  if (validation.errors) {
-    errors.push(...validation.errors);
+  if (evaluation.errors) {
+    errors.push(...evaluation.errors);
   }
   if (
     funcName &&
     functionNodeNames.includes(funcName) &&
-    hasNestedErrors(validation)
+    hasNestedErrors(evaluation)
   ) {
     errors.push({ error: 'FUNCTION_ERROR', message: 'function has error' });
   }
@@ -423,15 +416,15 @@ function computeEvaluationErrors(
  * - ✅ { errors: [], children: { errors: [{...}]} }
  * - ✅ { errors: [], namedChildren: { errors: [{...}] } }
  */
-function hasNestedErrors(validation: NodeEvaluation, root = true): boolean {
+function hasNestedErrors(evaluation: NodeEvaluation, root = true): boolean {
   let errors: EvaluationError[];
   if (root) {
     const { namedChildrenErrors, nodeErrors } = separateChildrenErrors(
-      validation.errors,
+      evaluation.errors,
     );
     errors = [...namedChildrenErrors, ...nodeErrors];
   } else {
-    errors = validation.errors;
+    errors = evaluation.errors;
   }
 
   if (errors.length > 0) {
@@ -439,8 +432,8 @@ function hasNestedErrors(validation: NodeEvaluation, root = true): boolean {
   }
 
   const children = [
-    ...validation.children,
-    ...Object.values(validation.namedChildren),
+    ...evaluation.children,
+    ...Object.values(evaluation.namedChildren),
   ];
   if (
     children.some((childValidation) => hasNestedErrors(childValidation, false))

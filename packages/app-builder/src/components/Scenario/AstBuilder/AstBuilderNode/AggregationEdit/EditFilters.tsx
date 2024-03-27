@@ -1,20 +1,23 @@
 import { Callout } from '@app-builder/components';
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { NewUndefinedAstNode } from '@app-builder/models';
+import {
+  type DatabaseAccessAstNode,
+  NewUndefinedAstNode,
+  type PayloadAstNode,
+  type TableModel,
+} from '@app-builder/models';
 import {
   filterOperators,
   isFilterOperator,
 } from '@app-builder/models/editable-operators';
-import {
-  adaptEditorNodeViewModel,
-  type AstBuilder,
-} from '@app-builder/services/editor/ast-editor';
+import { adaptEditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import clsx from 'clsx';
+import { type CustomList } from 'marble-api';
 import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -36,13 +39,19 @@ const newFilterValidation = () => ({
 
 export const EditFilters = ({
   aggregatedField,
-  builder,
+  input,
   dataModelFieldOptions,
   onChange,
   value,
 }: {
   aggregatedField: DataModelField | null;
-  builder: AstBuilder;
+  input: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectTable: TableModel;
+  };
   dataModelFieldOptions: DataModelField[];
   onChange: (value: FilterViewModel[]) => void;
   value: FilterViewModel[];
@@ -142,7 +151,7 @@ export const EditFilters = ({
                     operators={filterOperators}
                   />
                   <Operand
-                    builder={builder}
+                    input={input}
                     operandViewModel={filter.value}
                     onSave={(astNode) =>
                       onFilterChange(

@@ -42,6 +42,15 @@ export interface NodeEvaluation {
   namedChildren: Record<string, NodeEvaluation>;
 }
 
+export function NewNodeEvaluation(): NodeEvaluation {
+  return {
+    returnValue: { isOmitted: true },
+    errors: [],
+    children: [],
+    namedChildren: {},
+  };
+}
+
 function adaptEvaluationError(dto: EvaluationErrorDto): EvaluationError {
   return {
     error: dto.error,

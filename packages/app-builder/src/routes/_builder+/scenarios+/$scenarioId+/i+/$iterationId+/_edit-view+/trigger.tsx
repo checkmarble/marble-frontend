@@ -184,8 +184,8 @@ export default function Trigger() {
 
   const astEditor = useAstBuilder({
     backendAst: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),
-    backendValidation: scenarioValidation.trigger.triggerEvaluation,
-    localValidation,
+    backendEvaluation: scenarioValidation.trigger.triggerEvaluation,
+    localEvaluation: localValidation,
     databaseAccessors,
     payloadAccessors,
     astOperators,
@@ -247,7 +247,15 @@ export default function Trigger() {
         </Callout>
       </div>
 
-      <AstBuilder builder={astEditor} viewOnly={editorMode === 'view'} />
+      <AstBuilder
+        input={astEditor.input}
+        setOperand={astEditor.setOperand}
+        setOperator={astEditor.setOperator}
+        appendChild={astEditor.appendChild}
+        remove={astEditor.remove}
+        editorNodeViewModel={astEditor.editorNodeViewModel}
+        viewOnly={editorMode === 'view'}
+      />
 
       {editorMode === 'edit' ? (
         <div className="flex flex-row-reverse items-center justify-between gap-2">

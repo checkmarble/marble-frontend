@@ -1,9 +1,12 @@
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
+  type DatabaseAccessAstNode,
   NewConstantAstNode,
   NewTimeAddAstNode,
   NewUndefinedAstNode,
+  type PayloadAstNode,
+  type TableModel,
   type TimeAddAstNode,
   timeAddAstNodeName,
   type TimestampFieldAstNode,
@@ -19,7 +22,6 @@ import {
 } from '@app-builder/models/node-evaluation';
 import {
   adaptAstNodeFromEditorViewModel,
-  type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
@@ -134,9 +136,16 @@ const TimeAddEditModalContext =
 export const useEditTimeAdd = TimeAddEditModalContext.useValue;
 
 export const TimeAddEditModal = ({
-  builder,
+  input,
   children,
-}: PropsWithChildren<{ builder: AstBuilder }>) => {
+}: PropsWithChildren<{
+  input: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    dataModel: TableModel[];
+    triggerObjectTable: TableModel;
+  };
+}>) => {
   const [open, onOpenChange] = useState<boolean>(false);
   const [timeAddEditModalProps, setValueEditModalProps] =
     useState<TimeAddEditModalProps>();
@@ -155,7 +164,7 @@ export const TimeAddEditModal = ({
           <CopyPasteASTContextProvider>
             {timeAddEditModalProps ? (
               <TimeAddEditModalContent
-                builder={builder}
+                input={input}
                 initialValue={timeAddEditModalProps.initialValue}
                 onSave={(astNode: AstNode) => {
                   timeAddEditModalProps.onSave(astNode);
@@ -171,11 +180,16 @@ export const TimeAddEditModal = ({
 };
 
 const TimeAddEditModalContent = ({
-  builder,
+  input,
   initialValue,
   onSave,
 }: {
-  builder: AstBuilder;
+  input: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    dataModel: TableModel[];
+    triggerObjectTable: TableModel;
+  };
   initialValue: TimeAddViewModal;
   onSave: (astNode: AstNode) => void;
 }) => {
@@ -194,7 +208,7 @@ const TimeAddEditModalContent = ({
         <div>
           <div className="flex gap-2 pb-2">
             <TimestampField
-              builder={builder}
+              input={input}
               value={value.timestampField}
               onChange={(timestampField) =>
                 setValue({
