@@ -136,12 +136,11 @@ export function RootAnd({
               <div className="border-grey-10 col-start-2 h-5 border-b" />
               <LogicalOperatorLabel
                 operator={isFirstCondition ? 'where' : 'and'}
-                className={clsx(
-                  'bg-grey-02 col-start-3 border p-2',
-                  hasArgumentIndexErrorsFromParent(child)
-                    ? ' border-red-100 text-red-100'
-                    : 'border-grey-02 text-grey-25',
-                )}
+                className="col-start-3"
+                type="contained"
+                validationStatus={
+                  hasArgumentIndexErrorsFromParent(child) ? 'error' : 'valid'
+                }
               />
 
               <div

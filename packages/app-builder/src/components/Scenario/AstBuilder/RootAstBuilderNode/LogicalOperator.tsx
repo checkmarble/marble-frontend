@@ -1,27 +1,59 @@
-import clsx from 'clsx';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { useTranslation } from 'react-i18next';
 
 import { scenarioI18n } from '../../scenario-i18n';
 
+const logicalOperatorClassnames = cva(
+  'flex h-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 border',
+  {
+    variants: {
+      type: {
+        text: '',
+        contained: 'bg-grey-02',
+      },
+      validationStatus: {
+        valid: 'text-grey-25',
+        error: 'text-red-100 border-red-100',
+      },
+    },
+    compoundVariants: [
+      {
+        type: 'text',
+        validationStatus: 'valid',
+        className: 'border-transparent',
+      },
+      {
+        type: 'contained',
+        validationStatus: 'valid',
+        className: 'border-grey-02',
+      },
+    ],
+  },
+);
+
 export type LogicalOperatorType = 'if' | 'and' | 'or' | 'where';
 
-interface LogicalOperatorLabelProps {
+interface LogicalOperatorLabelProps
+  extends VariantProps<typeof logicalOperatorClassnames> {
   operator: LogicalOperatorType;
   className?: string;
 }
 
 export function LogicalOperatorLabel({
   operator,
+  type = 'text',
+  validationStatus = 'valid',
   className,
 }: LogicalOperatorLabelProps) {
   const { t } = useTranslation(scenarioI18n);
 
   return (
     <div
-      className={clsx(
-        'flex h-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded',
+      className={logicalOperatorClassnames({
+        type,
+        validationStatus,
         className,
-      )}
+      })}
     >
       <span className="text-s w-full text-center font-semibold">
         {t(`scenarios:logical_operator.${operator}`)}

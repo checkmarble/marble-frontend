@@ -340,6 +340,8 @@ function computeEvaluationErrors(
   if (evaluation.errors) {
     errors.push(...evaluation.errors);
   }
+
+  //TODO(validation): refactor to move this on a "getError(nodeId)" function (this is a internal business logic specificity of the editor)
   if (
     funcName &&
     functionNodeNames.includes(funcName) &&

@@ -237,8 +237,8 @@ function AggregatorDescription({
         return (
           <Fragment key={`filter_${index}`}>
             <LogicalOperatorLabel
-              className="text-grey-50"
               operator={index === 0 ? 'where' : 'and'}
+              type="text"
             />
             <div className="flex items-center gap-1">
               {/* TODO: replace with OperandLable for consistency */}

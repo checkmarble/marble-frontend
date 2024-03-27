@@ -130,7 +130,8 @@ export function RootOrWithAnd({
               <>
                 <LogicalOperatorLabel
                   operator="or"
-                  className="bg-grey-02 text-grey-25 uppercase"
+                  className="uppercase"
+                  type="contained"
                 />
                 <div className="col-span-2 flex flex-1 items-center">
                   <div className="bg-grey-10 h-px w-full" />
@@ -149,10 +150,11 @@ export function RootOrWithAnd({
                 <Fragment key={child.nodeId}>
                   <LogicalOperatorLabel
                     operator={childIndex === 0 ? 'if' : 'and'}
-                    className={
+                    type="text"
+                    validationStatus={
                       hasArgumentIndexErrorsFromParent(child)
-                        ? 'border border-red-100 text-red-100'
-                        : 'text-grey-25 border border-transparent'
+                        ? 'error'
+                        : 'valid'
                     }
                   />
                   <div
