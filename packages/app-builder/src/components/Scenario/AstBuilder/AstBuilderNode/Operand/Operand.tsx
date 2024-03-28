@@ -39,6 +39,7 @@ export function Operand({
         editableAstNode={editableAstNode}
         validationStatus={getValidationStatus(operandViewModel)}
         type="viewer"
+        returnValue={operandViewModel.returnValue}
       />
     );
   }

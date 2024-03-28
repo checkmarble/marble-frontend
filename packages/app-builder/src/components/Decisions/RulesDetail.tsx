@@ -14,6 +14,10 @@ import {
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
+import {
+  DisplayReturnValuesProvider,
+  useDisplayReturnValues,
+} from '@app-builder/services/ast-node/return-value';
 import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { Await } from '@remix-run/react';
@@ -21,7 +25,7 @@ import { type TFunction } from 'i18next';
 import { type CustomList } from 'marble-api';
 import { Suspense, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Accordion, Collapsible, Tag } from 'ui-design-system';
+import { Accordion, Collapsible, Switch, Tag } from 'ui-design-system';
 
 import { AstBuilder } from '../Scenario/AstBuilder';
 
@@ -140,21 +144,24 @@ function RuleExecutionDetail({
   }
 
   return (
-    <>
-      <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
-        <Trans
-          t={t}
-          i18nKey="scenarios:rules.consequence.score_modifier"
-          components={{
-            Score: <span className="font-semibold" />,
-          }}
-          values={{
-            score: formatNumber(currentRule.scoreModifier, {
-              language,
-              signDisplay: 'always',
-            }),
-          }}
-        />
+    <DisplayReturnValuesProvider>
+      <div className="flex w-full items-center justify-between gap-2">
+        <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
+          <Trans
+            t={t}
+            i18nKey="scenarios:rules.consequence.score_modifier"
+            components={{
+              Score: <span className="font-semibold" />,
+            }}
+            values={{
+              score: formatNumber(currentRule.scoreModifier, {
+                language,
+                signDisplay: 'always',
+              }),
+            }}
+          />
+        </div>
+        <DisplayReturnValuesSwitch />
       </div>
 
       <RuleFormula
@@ -167,7 +174,25 @@ function RuleExecutionDetail({
         customLists={astRuleData.customLists}
         triggerObjectType={triggerObjectType}
       />
-    </>
+    </DisplayReturnValuesProvider>
+  );
+}
+
+function DisplayReturnValuesSwitch() {
+  const { t } = useTranslation(decisionsI18n);
+  const [displayReturnValues, setDisplayReturnValues] =
+    useDisplayReturnValues();
+  return (
+    <div className="flex flex-row justify-between gap-2">
+      <label htmlFor="displayReturnValues" className="select-none">
+        {t('decisions:rules.show_contextual_values')}
+      </label>
+      <Switch
+        id="displayReturnValues"
+        checked={displayReturnValues}
+        onCheckedChange={setDisplayReturnValues}
+      />
+    </div>
   );
 }
 

@@ -111,7 +111,7 @@ export function EditFilters({
               <div className="border-grey-10 col-start-2 h-5 border-b" />
               <LogicalOperatorLabel
                 operator={isFirstCondition ? 'where' : 'and'}
-                className="bg-grey-02 border-grey-02 text-grey-25 border p-2"
+                type="contained"
               />
               <div className="col-start-4 flex flex-col gap-2 px-2">
                 <div className="flex flex-row items-center gap-2">

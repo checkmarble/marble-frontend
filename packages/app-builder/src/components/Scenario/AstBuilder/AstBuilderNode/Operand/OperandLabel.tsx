@@ -10,6 +10,7 @@ import {
   type OperandType,
   UndefinedEditableAstNode,
 } from '@app-builder/models/editable-ast-node';
+import { useDisplayReturnValues } from '@app-builder/services/ast-node/return-value';
 import * as Ariakit from '@ariakit/react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
@@ -83,17 +84,85 @@ interface OperandLabelProps
   extends VariantProps<typeof operandContainerClassnames> {
   editableAstNode: EditableAstNode;
   placeholder?: string;
+  returnValue?: string;
 }
 
 export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
   function OperandLabel(
-    { editableAstNode, validationStatus, placeholder, type, ...props },
+    {
+      editableAstNode,
+      validationStatus,
+      placeholder,
+      type,
+      returnValue,
+      ...props
+    },
     ref,
   ) {
     const { t } = useTranslation(['scenarios']);
 
-    const displayPlaceholder =
+    const shouldDisplayPlaceholder =
       editableAstNode instanceof UndefinedEditableAstNode;
+    const [displayReturnValues] = useDisplayReturnValues();
+    const shouldDisplayReturnValue =
+      displayReturnValues && returnValue !== undefined;
+
+    let children;
+    if (shouldDisplayPlaceholder) {
+      children = (
+        <span
+          className={selectDisplayText({
+            type: 'placeholder',
+            size: placeholder && placeholder.length > 20 ? 'long' : 'short',
+          })}
+        >
+          {placeholder ?? t('scenarios:edit_operand.placeholder')}
+        </span>
+      );
+    } else if (shouldDisplayReturnValue) {
+      children = (
+        <>
+          <span
+            className={selectDisplayText({
+              type: 'value',
+              size: returnValue.length > 20 ? 'long' : 'short',
+            })}
+          >
+            {returnValue}
+          </span>
+          <OperandInfos
+            gutter={16}
+            shift={-16}
+            className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
+            editableAstNode={editableAstNode}
+          />
+        </>
+      );
+    } else {
+      children = (
+        <>
+          <TypeInfos
+            type={type}
+            operandType={editableAstNode.operandType}
+            dataType={editableAstNode.dataType}
+          />
+          <span
+            className={selectDisplayText({
+              type: 'value',
+              size: editableAstNode.displayName.length > 20 ? 'long' : 'short',
+            })}
+          >
+            {editableAstNode.displayName}
+          </span>
+          <OperandInfos
+            gutter={16}
+            shift={-16}
+            className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
+            editableAstNode={editableAstNode}
+          />
+        </>
+      );
+    }
 
     return (
       <Ariakit.Role
@@ -105,39 +174,7 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
         })}
         render={type === 'editor' ? <button /> : <div />}
       >
-        {displayPlaceholder ? (
-          <span
-            className={selectDisplayText({
-              type: 'placeholder',
-              size: placeholder && placeholder.length > 20 ? 'long' : 'short',
-            })}
-          >
-            {placeholder ?? t('scenarios:edit_operand.placeholder')}
-          </span>
-        ) : (
-          <>
-            <TypeInfos
-              type={type}
-              operandType={editableAstNode.operandType}
-              dataType={editableAstNode.dataType}
-            />
-            <span
-              className={selectDisplayText({
-                type: 'value',
-                size:
-                  editableAstNode.displayName.length > 20 ? 'long' : 'short',
-              })}
-            >
-              {editableAstNode.displayName}
-            </span>
-            <OperandInfos
-              gutter={16}
-              shift={-16}
-              className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
-              editableAstNode={editableAstNode}
-            />
-          </>
-        )}
+        {children}
       </Ariakit.Role>
     );
   },

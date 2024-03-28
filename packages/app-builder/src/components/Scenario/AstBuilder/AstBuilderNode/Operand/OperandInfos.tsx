@@ -155,6 +155,7 @@ function OperandDescription({
 }
 
 function Description({ description }: { description: string }) {
+  if (!description) return null;
   return (
     <p className="text-grey-50 max-w-[300px] text-xs font-normal first-letter:capitalize">
       {description}
@@ -237,8 +238,8 @@ function AggregatorDescription({
         return (
           <Fragment key={`filter_${index}`}>
             <LogicalOperatorLabel
-              className="text-grey-50"
               operator={index === 0 ? 'where' : 'and'}
+              type="text"
             />
             <div className="flex items-center gap-1">
               {/* TODO: replace with OperandLable for consistency */}
