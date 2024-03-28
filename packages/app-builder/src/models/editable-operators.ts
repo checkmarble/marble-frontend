@@ -87,7 +87,7 @@ export function isOperatorFunction(value: string): value is OperatorFunction {
 }
 
 export function getOperatorName(
-  t: TFunction<['scenarios'], undefined>,
+  t: TFunction<['common', 'scenarios'], undefined>,
   operatorName: string,
 ) {
   if (isOperatorFunction(operatorName)) {

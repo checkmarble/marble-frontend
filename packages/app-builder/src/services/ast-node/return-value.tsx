@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from 'react';
 import * as R from 'remeda';
 import { noop } from 'typescript-utils';
 
-type ReturnValue =
+export type ReturnValue =
   | {
       value: ConstantType;
       isOmitted: false;
@@ -64,4 +64,15 @@ export function DisplayReturnValuesProvider({
 
 export function useDisplayReturnValues() {
   return useContext(DisplayReturnValues);
+}
+
+export function adaptBooleanReturnValue(returnValue?: ReturnValue) {
+  if (
+    returnValue !== undefined &&
+    returnValue.isOmitted === false &&
+    typeof returnValue.value === 'boolean'
+  ) {
+    return { value: returnValue.value };
+  }
+  return undefined;
 }

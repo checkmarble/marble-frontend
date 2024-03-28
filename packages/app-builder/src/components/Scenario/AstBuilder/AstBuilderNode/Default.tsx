@@ -54,7 +54,7 @@ export function Default({
   validationStatus,
   type,
 }: DefaultProps) {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation(['common', 'scenarios']);
 
   const customLists = useCustomLists();
   const dataModel = useDataModel();

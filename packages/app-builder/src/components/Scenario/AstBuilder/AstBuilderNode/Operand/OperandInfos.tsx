@@ -208,7 +208,7 @@ function AggregatorDescription({
 }: {
   editableAstNode: AggregatorEditableAstNode;
 }) {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation(['common', 'scenarios']);
   const { aggregator, tableName, fieldName, filters } =
     editableAstNode.astNode.namedChildren;
   if (

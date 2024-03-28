@@ -9,6 +9,10 @@ import {
   separateChildrenErrors,
 } from '@app-builder/models/node-evaluation';
 import {
+  adaptBooleanReturnValue,
+  useDisplayReturnValues,
+} from '@app-builder/services/ast-node/return-value';
+import {
   type EditorNodeViewModel,
   findArgumentIndexErrorsFromParent,
   hasArgumentIndexErrorsFromParent,
@@ -20,6 +24,8 @@ import {
 } from '@app-builder/services/validation';
 import clsx from 'clsx';
 import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Tag } from 'ui-design-system';
 
 import { EvaluationErrors } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
@@ -48,6 +54,7 @@ export function adaptRootOrWithAndViewModel(
       return null;
     }
   }
+
   return {
     orNodeId: viewModel.nodeId,
     orErrors: viewModel.errors,
@@ -87,6 +94,7 @@ export function RootOrWithAnd({
   rootOrWithAndViewModel: RootOrWithAndViewModel;
   viewOnly?: boolean;
 }) {
+  const { t } = useTranslation(['common']);
   const getOrAndNodeEvaluationErrorMessage =
     useGetOrAndNodeEvaluationErrorMessage();
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
@@ -102,8 +110,10 @@ export function RootOrWithAnd({
     getOrAndNodeEvaluationErrorMessage,
   );
 
+  const [displayReturnValues] = useDisplayReturnValues();
+
   return (
-    <div className="grid grid-cols-[40px_1fr_30px] gap-2">
+    <div className="grid grid-cols-[40px_1fr_max-content] gap-2">
       {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
         const { nodeErrors: andNodeErrors } = separateChildrenErrors(
@@ -145,6 +155,35 @@ export function RootOrWithAnd({
                 ...findArgumentIndexErrorsFromParent(child),
               ]).map(getNodeEvaluationErrorMessage);
 
+              const childBooleanReturnValue = adaptBooleanReturnValue(
+                child.returnValue,
+              );
+
+              let rightComponent = null;
+              if (!viewOnly) {
+                rightComponent = (
+                  <div className="flex h-10 items-center justify-center">
+                    <RemoveButton
+                      onClick={() => {
+                        removeAndChild(child.nodeId);
+                      }}
+                    />
+                  </div>
+                );
+              } else if (displayReturnValues && childBooleanReturnValue) {
+                rightComponent = (
+                  <div className="flex h-10 items-center justify-center">
+                    <Tag
+                      border="square"
+                      className="w-full"
+                      color={childBooleanReturnValue.value ? 'green' : 'red'}
+                    >
+                      {t(`common:${childBooleanReturnValue.value}`)}
+                    </Tag>
+                  </div>
+                );
+              }
+
               return (
                 // AND operand row
                 <Fragment key={child.nodeId}>
@@ -160,7 +199,7 @@ export function RootOrWithAnd({
                   <div
                     className={clsx(
                       'flex flex-col gap-2',
-                      viewOnly ? 'col-span-2' : 'col-span-1',
+                      rightComponent === null && 'col-span-2',
                     )}
                   >
                     <AstBuilderNode
@@ -172,15 +211,7 @@ export function RootOrWithAnd({
                     />
                     <EvaluationErrors errors={errorMessages} />
                   </div>
-                  {!viewOnly ? (
-                    <div className="flex h-10 flex-col items-center justify-center">
-                      <RemoveButton
-                        onClick={() => {
-                          removeAndChild(child.nodeId);
-                        }}
-                      />
-                    </div>
-                  ) : null}
+                  {rightComponent}
                 </Fragment>
               );
             })}

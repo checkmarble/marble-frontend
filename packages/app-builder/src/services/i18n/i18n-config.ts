@@ -11,6 +11,9 @@ export const supportedLngs = ['en'] as const;
 const fallbackLng = 'en';
 
 export const i18nConfig = {
+  interpolation: {
+    escapeValue: false, // not needed for react
+  },
   defaultNS,
   // This is the list of languages your application supports
   supportedLngs: [...supportedLngs],

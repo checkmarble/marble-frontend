@@ -1,5 +1,6 @@
 import { NewConstantAstNode } from '@app-builder/models';
 import { ConstantEditableAstNode } from '@app-builder/models/editable-ast-node';
+import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 
 export interface CoerceToConstantEditableAstNodeOptions {
@@ -7,6 +8,7 @@ export interface CoerceToConstantEditableAstNodeOptions {
 }
 
 export function coerceToConstantEditableAstNode(
+  t: TFunction<['common']>,
   search: string,
   options: CoerceToConstantEditableAstNodeOptions,
 ): ConstantEditableAstNode[] {
@@ -26,22 +28,22 @@ export function coerceToConstantEditableAstNode(
     const astNode = NewConstantAstNode({
       constant: parsedNumber,
     });
-    results.push(new ConstantEditableAstNode(astNode, []));
+    results.push(new ConstantEditableAstNode(t, astNode, []));
   }
 
   if (isCoerceableToBoolean(searchLowerCase)) {
     const astNode = NewConstantAstNode({
       constant: coerceToBoolean(searchLowerCase),
     });
-    results.push(new ConstantEditableAstNode(astNode, []));
+    results.push(new ConstantEditableAstNode(t, astNode, []));
   }
 
-  results.push(...coerceToConstantArray(search));
+  results.push(...coerceToConstantArray(t, search));
 
   const astNode = NewConstantAstNode({
     constant: search,
   });
-  results.push(new ConstantEditableAstNode(astNode, []));
+  results.push(new ConstantEditableAstNode(t, astNode, []));
 
   return results;
 }
@@ -52,7 +54,10 @@ const isStringArray = /^\[(\s*"?(\w+)"?\s*,?)*(\s*|\])$/;
 const captureNumbers = /(?:\s*(?<numbers>\d+(\.\d+)?)\s*,?)/g;
 const captureStrings = /(?:\s*"?(?<strings>\w(\w|\s)*\w)"?\s*,?)/g;
 
-function coerceToConstantArray(search: string): ConstantEditableAstNode[] {
+function coerceToConstantArray(
+  t: TFunction<['common']>,
+  search: string,
+): ConstantEditableAstNode[] {
   const trimSearch = search.trim();
 
   if (isNumberArray.test(trimSearch)) {
@@ -66,7 +71,7 @@ function coerceToConstantArray(search: string): ConstantEditableAstNode[] {
           constant,
         }),
     );
-    return [new ConstantEditableAstNode(astNode, [])];
+    return [new ConstantEditableAstNode(t, astNode, [])];
   }
 
   if (isStringArray.test(trimSearch)) {
@@ -79,7 +84,7 @@ function coerceToConstantArray(search: string): ConstantEditableAstNode[] {
           constant,
         }),
     );
-    return [new ConstantEditableAstNode(astNode, [])];
+    return [new ConstantEditableAstNode(t, astNode, [])];
   }
 
   return [];
