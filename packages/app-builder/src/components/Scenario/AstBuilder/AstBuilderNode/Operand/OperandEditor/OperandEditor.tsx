@@ -288,8 +288,13 @@ function useMatchOptions({
 }) {
   const { t } = useTranslation(['common']);
   const constantOptions = useMemo(() => {
-    return coerceToConstantEditableAstNode(searchValue, {
-      booleans: { true: [t('common:true')], false: [t('common:false')] },
+    return coerceToConstantEditableAstNode(t, searchValue, {
+      // Accept english and localized values for booleans
+      // They will be coerced to the localized value
+      booleans: {
+        true: ['true', t('common:true')],
+        false: ['false', t('common:false')],
+      },
     });
   }, [searchValue, t]);
   const matchOptions = useMemo(() => {

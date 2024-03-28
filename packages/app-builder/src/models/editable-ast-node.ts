@@ -88,13 +88,19 @@ interface EditableAstNodeBase {
   displayName: string;
 }
 
+type TFunctionDisplayName = TFunction<['common', 'scenarios'], undefined>;
+
 export class ConstantEditableAstNode implements EditableAstNodeBase {
   astNode: ConstantAstNode;
   operandType: OperandType;
   dataType: DataType;
   displayName: string;
 
-  constructor(astNode: ConstantAstNode, enumOptions: EnumValue[]) {
+  constructor(
+    t: TFunctionDisplayName,
+    astNode: ConstantAstNode,
+    enumOptions: EnumValue[],
+  ) {
     this.astNode = astNode;
     this.operandType = ConstantEditableAstNode.getOperandType(
       astNode.constant,
@@ -102,6 +108,7 @@ export class ConstantEditableAstNode implements EditableAstNodeBase {
     );
     this.dataType = ConstantEditableAstNode.getDataType(astNode.constant);
     this.displayName = ConstantEditableAstNode.getConstantDisplayName(
+      t,
       astNode.constant,
     );
   }
@@ -147,12 +154,13 @@ export class ConstantEditableAstNode implements EditableAstNodeBase {
 
   private static getConstantDisplayName(
     this: void,
+    t: TFunctionDisplayName,
     constant: ConstantType,
   ): string {
     if (R.isNil(constant)) return '';
 
     if (R.isArray(constant)) {
-      return `[${constant.map(ConstantEditableAstNode.getConstantDisplayName).join(', ')}]`;
+      return `[${constant.map((constant) => ConstantEditableAstNode.getConstantDisplayName(t, constant)).join(', ')}]`;
     }
 
     if (R.isString(constant)) {
@@ -160,13 +168,19 @@ export class ConstantEditableAstNode implements EditableAstNodeBase {
       return `"${constant.toString()}"`;
     }
 
-    if (R.isNumber(constant) || R.isBoolean(constant)) {
+    if (R.isNumber(constant)) {
       return constant.toString();
+    }
+
+    if (R.isBoolean(constant)) {
+      return t(`common:${constant}`);
     }
 
     // Handle other cases when needed
     return JSON.stringify(
-      R.mapValues(constant, ConstantEditableAstNode.getConstantDisplayName),
+      R.mapValues(constant, (constant) =>
+        ConstantEditableAstNode.getConstantDisplayName(t, constant),
+      ),
     );
   }
 }
@@ -182,7 +196,7 @@ export class AggregatorEditableAstNode implements EditableAstNodeBase {
   triggerObjectTable: TableModel;
 
   constructor(
-    t: TFunction<['scenarios'], undefined>,
+    t: TFunctionDisplayName,
     astNode: AggregationAstNode,
     dataModel: TableModel[],
     customLists: CustomList[],
@@ -200,7 +214,7 @@ export class AggregatorEditableAstNode implements EditableAstNodeBase {
 
   static getAggregatorDisplayName(
     this: void,
-    t: TFunction<['scenarios'], undefined>,
+    t: TFunctionDisplayName,
     astNode: AggregationAstNode,
   ) {
     const { aggregator, label } = astNode.namedChildren;
@@ -312,7 +326,7 @@ export class TimeAddEditableAstNode implements EditableAstNodeBase {
   displayName: string;
 
   constructor(
-    t: TFunction<['scenarios'], undefined>,
+    t: TFunctionDisplayName,
     astNode: TimeAddAstNode = NewTimeAddAstNode(),
   ) {
     this.astNode = astNode;
@@ -320,7 +334,7 @@ export class TimeAddEditableAstNode implements EditableAstNodeBase {
   }
 
   private static getTimeAddName(
-    t: TFunction<['scenarios'], undefined>,
+    t: TFunctionDisplayName,
     astNode: TimeAddAstNode,
   ) {
     const sign = astNode.namedChildren['sign']?.constant ?? '';
@@ -405,7 +419,7 @@ export class TimeNowEditableAstNode implements EditableAstNodeBase {
   displayName: string;
 
   constructor(
-    t: TFunction<['scenarios'], undefined>,
+    t: TFunctionDisplayName,
     astNode: TimeNowAstNode = NewTimeNowAstNode(),
   ) {
     this.astNode = astNode;
@@ -435,7 +449,7 @@ export type EditableAstNode =
   | UndefinedEditableAstNode;
 
 export function adaptEditableAstNode(
-  t: TFunction<['scenarios'], undefined>,
+  t: TFunctionDisplayName,
   node: AstNode,
   {
     triggerObjectTable,
@@ -450,7 +464,7 @@ export function adaptEditableAstNode(
   },
 ): EditableAstNode | undefined {
   if (isConstant(node)) {
-    return new ConstantEditableAstNode(node, enumOptions);
+    return new ConstantEditableAstNode(t, node, enumOptions);
   }
 
   if (isCustomListAccess(node)) {
@@ -499,7 +513,7 @@ export function adaptEditableAstNode(
  * - Else, return a default string representation
  */
 export function stringifyAstNode(
-  t: TFunction<['scenarios'], undefined>,
+  t: TFunctionDisplayName,
   astNode: AstNode,
   config: {
     triggerObjectTable: TableModel;

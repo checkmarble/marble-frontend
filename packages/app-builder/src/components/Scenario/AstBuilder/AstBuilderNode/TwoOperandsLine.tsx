@@ -84,7 +84,7 @@ export function TwoOperandsLine({
         />
         <Operator
           value={twoOperandsViewModel.operator.funcName}
-          setValue={(operator) => {
+          setValue={(operator: (typeof operators)[number]) => {
             setOperator(twoOperandsViewModel.operator.nodeId, operator);
           }}
           errors={twoOperandsViewModel.operator.errors}

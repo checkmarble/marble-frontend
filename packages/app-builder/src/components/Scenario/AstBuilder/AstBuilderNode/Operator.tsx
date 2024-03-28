@@ -68,7 +68,7 @@ export function Operator<T extends OperatorFunction>({
   errors?: EvaluationError[];
   viewOnly?: boolean;
 }) {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation(['common', 'scenarios']);
 
   // We treat undefinedAstNodeName as "no value"
   const _value = value !== undefinedAstNodeName ? value : undefined;

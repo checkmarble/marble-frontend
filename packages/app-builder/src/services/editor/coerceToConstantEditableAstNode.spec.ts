@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { NewAstNode, NewConstantAstNode } from '@app-builder/models';
+import { i18nextTest as t } from '@app-builder/tests/setup/i18next';
 
 import {
   coerceToConstantEditableAstNode,
@@ -14,8 +16,9 @@ const options: CoerceToConstantEditableAstNodeOptions = {
 
 describe('coerceToConstantEditableAstNode', () => {
   it('returns nothing given empty string', () => {
-    expect(coerceToConstantEditableAstNode('', options)).toHaveLength(0);
-    expect(coerceToConstantEditableAstNode(' ', options)).toHaveLength(0);
+    expect(coerceToConstantEditableAstNode(t, '', options)).toHaveLength(0);
+    expect(coerceToConstantEditableAstNode(t, ' ', options)).toHaveLength(0);
+    t('common:true');
   });
 
   it('return a constant string given a random string', () => {
@@ -24,7 +27,7 @@ describe('coerceToConstantEditableAstNode', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
     expect(
-      coerceToConstantEditableAstNode(valueToCoerce, options),
+      coerceToConstantEditableAstNode(t, valueToCoerce, options),
     ).toMatchObject(expected);
   });
 
@@ -35,7 +38,7 @@ describe('coerceToConstantEditableAstNode', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
     expect(
-      coerceToConstantEditableAstNode(valueToCoerce, options),
+      coerceToConstantEditableAstNode(t, valueToCoerce, options),
     ).toMatchObject(expected);
   });
 
@@ -46,7 +49,7 @@ describe('coerceToConstantEditableAstNode', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
     expect(
-      coerceToConstantEditableAstNode(valueToCoerce, options),
+      coerceToConstantEditableAstNode(t, valueToCoerce, options),
     ).toMatchObject(expected);
   });
 
@@ -57,7 +60,7 @@ describe('coerceToConstantEditableAstNode', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
     expect(
-      coerceToConstantEditableAstNode(valueToCoerce, options),
+      coerceToConstantEditableAstNode(t, valueToCoerce, options),
     ).toMatchObject(expected);
   });
 
@@ -72,7 +75,7 @@ describe('coerceToConstantEditableAstNode', () => {
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
       expect(
-        coerceToConstantEditableAstNode(valueToCoerce, options),
+        coerceToConstantEditableAstNode(t, valueToCoerce, options),
       ).toMatchObject(expected);
     });
 
@@ -86,7 +89,7 @@ describe('coerceToConstantEditableAstNode', () => {
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
       expect(
-        coerceToConstantEditableAstNode(valueToCoerce, options),
+        coerceToConstantEditableAstNode(t, valueToCoerce, options),
       ).toMatchObject(expected);
     });
 
@@ -100,7 +103,7 @@ describe('coerceToConstantEditableAstNode', () => {
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
       expect(
-        coerceToConstantEditableAstNode(valueToCoerce, options),
+        coerceToConstantEditableAstNode(t, valueToCoerce, options),
       ).toMatchObject(expected);
     });
   });
@@ -141,15 +144,17 @@ function helperConstantOperandOption({
           constant: parseFloat(valueToCoerce),
         }),
       };
-    case 'Bool':
+    case 'Bool': {
+      const constant = valueToCoerce.toLowerCase() === 'true';
       return {
-        displayName: valueToCoerce.toLowerCase(),
+        displayName: t(`common:${constant}`),
         operandType: 'Constant',
         dataType: dataType,
         astNode: NewAstNode({
-          constant: valueToCoerce.toLowerCase() === 'true',
+          constant,
         }),
       };
+    }
   }
 }
 

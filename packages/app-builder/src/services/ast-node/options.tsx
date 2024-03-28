@@ -103,7 +103,7 @@ export function OptionsProvider({
 }
 
 export function useTimestampFieldOptions() {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation(['common', 'scenarios']);
 
   const databaseAccessors = useDatabaseAccessors();
   const payloadAccessors = usePayloadAccessors();
@@ -131,7 +131,7 @@ export function useOperandOptions({
 }: {
   operandViewModel: OperandViewModel;
 }) {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation(['common', 'scenarios']);
 
   const databaseAccessors = useDatabaseAccessors();
   const payloadAccessors = usePayloadAccessors();
@@ -173,6 +173,7 @@ export function useOperandOptions({
     const enumOptions = enumOptionValues.map(
       (enumValue) =>
         new ConstantEditableAstNode(
+          t,
           NewConstantAstNode({
             constant: enumValue,
           }),
@@ -244,7 +245,7 @@ function getEnumOptionsFromNeighbour({
 }
 
 export function useAdaptEditableAstNode() {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation(['common', 'scenarios']);
 
   const customLists = useCustomLists();
   const dataModel = useDataModel();

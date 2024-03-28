@@ -37,7 +37,7 @@ export const TimestampField = ({
   errors: EvaluationError[];
   value: EditorNodeViewModel | null;
 }) => {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation(['common', 'scenarios']);
   const dataModel = useDataModel();
   const triggerObjectTable = useTriggerObjectTable();
   const options = useTimestampFieldOptions();
