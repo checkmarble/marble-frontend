@@ -60,7 +60,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
 
   const [
-    astOperators,
+    operators,
     accessors,
     dataModel,
     customLists,
@@ -84,7 +84,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
-    astOperators,
+    operators,
     dataModel: adaptDataModelDto(dataModel.data_model),
     customLists: customLists.custom_lists,
     organization: currentOrganization,
@@ -161,7 +161,7 @@ export default function Trigger() {
   const {
     databaseAccessors,
     payloadAccessors,
-    astOperators,
+    operators,
     dataModel,
     customLists,
     organization,
@@ -184,14 +184,8 @@ export default function Trigger() {
 
   const astEditor = useAstBuilder({
     backendAst: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),
-    backendValidation: scenarioValidation.trigger.triggerEvaluation,
-    localValidation,
-    databaseAccessors,
-    payloadAccessors,
-    astOperators,
-    dataModel,
-    customLists,
-    triggerObjectType: scenario.triggerObjectType,
+    backendEvaluation: scenarioValidation.trigger.triggerEvaluation,
+    localEvaluation: localValidation,
     onValidate: validate,
   });
 
@@ -247,7 +241,22 @@ export default function Trigger() {
         </Callout>
       </div>
 
-      <AstBuilder builder={astEditor} viewOnly={editorMode === 'view'} />
+      <AstBuilder
+        options={{
+          databaseAccessors,
+          payloadAccessors,
+          operators,
+          dataModel,
+          customLists,
+          triggerObjectType: scenario.triggerObjectType,
+        }}
+        setOperand={astEditor.setOperand}
+        setOperator={astEditor.setOperator}
+        appendChild={astEditor.appendChild}
+        remove={astEditor.remove}
+        editorNodeViewModel={astEditor.editorNodeViewModel}
+        viewOnly={editorMode === 'view'}
+      />
 
       {editorMode === 'edit' ? (
         <div className="flex flex-row-reverse items-center justify-between gap-2">

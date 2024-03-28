@@ -1,28 +1,61 @@
-import { type AstBuilder } from '@app-builder/services/editor/ast-editor';
+import {
+  type AstNode,
+  type DatabaseAccessAstNode,
+  type PayloadAstNode,
+  type TableModel,
+} from '@app-builder/models';
+import { type OperatorFunction } from '@app-builder/models/editable-operators';
+import { OptionsProvider } from '@app-builder/services/ast-node/options';
+import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
+import { type CustomList } from 'marble-api';
 
 import { AggregationEditModal } from './AstBuilderNode/AggregationEdit';
 import { TimeAddEditModal } from './AstBuilderNode/TimeAddEdit/Modal';
 import { RootAstBuilderNode } from './RootAstBuilderNode';
 
-export function AstBuilder({
-  builder,
-  viewOnly,
-}: {
-  builder: AstBuilder;
+interface AstBuilderProps {
+  options: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    operators: OperatorFunction[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectType: string;
+  };
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
+  appendChild: (nodeId: string, childAst: AstNode) => void;
+  remove: (nodeId: string) => void;
+  editorNodeViewModel: EditorNodeViewModel;
   viewOnly?: boolean;
-}) {
+}
+
+export function AstBuilder({
+  options,
+  setOperand,
+  setOperator,
+  appendChild,
+  remove,
+  editorNodeViewModel,
+  viewOnly,
+}: AstBuilderProps) {
   return (
-    <CopyPasteASTContextProvider>
-      <TimeAddEditModal builder={builder}>
-        <AggregationEditModal builder={builder}>
-          <RootAstBuilderNode
-            builder={builder}
-            editorNodeViewModel={builder.editorNodeViewModel}
-            viewOnly={viewOnly}
-          />
-        </AggregationEditModal>
-      </TimeAddEditModal>
-    </CopyPasteASTContextProvider>
+    <OptionsProvider {...options}>
+      <CopyPasteASTContextProvider>
+        <TimeAddEditModal>
+          <AggregationEditModal>
+            <RootAstBuilderNode
+              setOperand={setOperand}
+              setOperator={setOperator}
+              appendChild={appendChild}
+              remove={remove}
+              editorNodeViewModel={editorNodeViewModel}
+              viewOnly={viewOnly}
+            />
+          </AggregationEditModal>
+        </TimeAddEditModal>
+      </CopyPasteASTContextProvider>
+    </OptionsProvider>
   );
 }

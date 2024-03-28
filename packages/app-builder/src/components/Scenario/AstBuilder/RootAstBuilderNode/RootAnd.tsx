@@ -1,11 +1,11 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
-import { NewUndefinedAstNode } from '@app-builder/models';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   type EvaluationError,
   separateChildrenErrors,
 } from '@app-builder/models/node-evaluation';
+import { useTriggerObjectTable } from '@app-builder/services/ast-node/options';
 import {
-  type AstBuilder,
   type EditorNodeViewModel,
   findArgumentIndexErrorsFromParent,
   hasArgumentIndexErrorsFromParent,
@@ -53,14 +53,22 @@ function NewAndChild() {
  * Design is opinionated: it assumes a RootAnd is used for trigger condition.
  */
 export function RootAnd({
-  builder,
+  setOperand,
+  setOperator,
+  appendChild,
+  remove,
   rootAndViewModel,
   viewOnly,
 }: {
-  builder: AstBuilder;
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
+  appendChild: (nodeId: string, childAst: AstNode) => void;
+  remove: (nodeId: string) => void;
   rootAndViewModel: RootAndViewModel;
   viewOnly?: boolean;
 }) {
+  const triggerObjectTable = useTriggerObjectTable();
+
   const getOrAndNodeEvaluationErrorMessage =
     useGetOrAndNodeEvaluationErrorMessage();
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
@@ -74,7 +82,7 @@ export function RootAnd({
   );
 
   function appendAndChild() {
-    builder.appendChild(rootAndViewModel.nodeId, NewAndChild());
+    appendChild(rootAndViewModel.nodeId, NewAndChild());
   }
 
   /**
@@ -96,7 +104,7 @@ export function RootAnd({
     <>
       <div className="text-s grid grid-cols-[8px_16px_max-content_1fr_max-content]">
         <div className="text-s bg-grey-02 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
-          {builder.input.triggerObjectTable.name}
+          {triggerObjectTable.name}
         </div>
         {rootAndViewModel.children.map((child, childIndex) => {
           const isFirstCondition = childIndex === 0;
@@ -143,7 +151,8 @@ export function RootAnd({
                 )}
               >
                 <AstBuilderNode
-                  builder={builder}
+                  setOperand={setOperand}
+                  setOperator={setOperator}
                   editorNodeViewModel={child}
                   viewOnly={viewOnly}
                   root
@@ -154,7 +163,7 @@ export function RootAnd({
                 <div className="col-start-5 flex h-10 flex-col items-center justify-center">
                   <RemoveButton
                     onClick={() => {
-                      builder.remove(child.nodeId);
+                      remove(child.nodeId);
                     }}
                   />
                 </div>

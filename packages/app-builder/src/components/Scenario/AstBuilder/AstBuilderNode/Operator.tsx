@@ -1,7 +1,7 @@
 import { undefinedAstNodeName } from '@app-builder/models';
 import {
   getOperatorName,
-  type OperatorFunctions,
+  type OperatorFunction,
 } from '@app-builder/models/editable-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { Trigger, Value } from '@radix-ui/react-select';
@@ -55,7 +55,7 @@ const OperatorLabel = forwardRef<HTMLButtonElement, OperatorLabelProps>(
  *
  * For now, this is not possible due to the Radix Select component not allowing for a custom label component
  */
-export function Operator<T extends OperatorFunctions>({
+export function Operator<T extends OperatorFunction>({
   value,
   setValue,
   operators,

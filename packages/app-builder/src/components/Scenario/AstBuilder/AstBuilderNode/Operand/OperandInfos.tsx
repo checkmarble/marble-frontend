@@ -18,7 +18,7 @@ import {
   TimeNowEditableAstNode,
   UndefinedEditableAstNode,
 } from '@app-builder/models/editable-ast-node';
-import { type OperatorFunctions } from '@app-builder/models/editable-operators';
+import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import * as Ariakit from '@ariakit/react';
 import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
@@ -246,9 +246,9 @@ function AggregatorDescription({
                 {fieldName?.constant ?? '...'}
               </p>
               <Operator
-                value={operator?.constant as OperatorFunctions}
+                value={operator?.constant as OperatorFunction}
                 setValue={() => {}}
-                operators={[operator?.constant as OperatorFunctions]}
+                operators={[operator?.constant as OperatorFunction]}
                 viewOnly
               />
               <OperandLabel

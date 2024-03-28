@@ -19,7 +19,6 @@ import {
 } from '@app-builder/models/node-evaluation';
 import {
   adaptAstNodeFromEditorViewModel,
-  type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
@@ -28,7 +27,7 @@ import {
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type PropsWithChildren, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Button, Input, Modal } from 'ui-design-system';
@@ -133,10 +132,7 @@ const TimeAddEditModalContext =
 
 export const useEditTimeAdd = TimeAddEditModalContext.useValue;
 
-export const TimeAddEditModal = ({
-  builder,
-  children,
-}: PropsWithChildren<{ builder: AstBuilder }>) => {
+export function TimeAddEditModal({ children }: { children: React.ReactNode }) {
   const [open, onOpenChange] = useState<boolean>(false);
   const [timeAddEditModalProps, setValueEditModalProps] =
     useState<TimeAddEditModalProps>();
@@ -155,7 +151,6 @@ export const TimeAddEditModal = ({
           <CopyPasteASTContextProvider>
             {timeAddEditModalProps ? (
               <TimeAddEditModalContent
-                builder={builder}
                 initialValue={timeAddEditModalProps.initialValue}
                 onSave={(astNode: AstNode) => {
                   timeAddEditModalProps.onSave(astNode);
@@ -168,17 +163,15 @@ export const TimeAddEditModal = ({
       </TimeAddEditModalContext.Provider>
     </Modal.Root>
   );
-};
+}
 
-const TimeAddEditModalContent = ({
-  builder,
+function TimeAddEditModalContent({
   initialValue,
   onSave,
 }: {
-  builder: AstBuilder;
   initialValue: TimeAddViewModal;
   onSave: (astNode: AstNode) => void;
-}) => {
+}) {
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   const [value, setValue] = useState<TimeAddViewModal>(() => initialValue);
@@ -194,7 +187,6 @@ const TimeAddEditModalContent = ({
         <div>
           <div className="flex gap-2 pb-2">
             <TimestampField
-              builder={builder}
               value={value.timestampField}
               onChange={(timestampField) =>
                 setValue({
@@ -275,7 +267,7 @@ const TimeAddEditModalContent = ({
       </div>
     </>
   );
-};
+}
 
 const adaptDurationAndUnitFromTemporalDuration = (
   temporalDuration: Temporal.Duration,

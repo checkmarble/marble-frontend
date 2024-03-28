@@ -13,9 +13,9 @@ import {
   computeValidationForNamedChildren,
   type EvaluationError,
 } from '@app-builder/models/node-evaluation';
+import { useDataModel } from '@app-builder/services/ast-node/options';
 import {
   adaptAstNodeFromEditorViewModel,
-  type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
@@ -25,13 +25,7 @@ import {
 } from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type Namespace } from 'i18next';
-import {
-  type PropsWithChildren,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 import { Logo } from 'ui-icons';
@@ -191,12 +185,11 @@ const AggregationEditModalContext = createSimpleContext<
 
 export const useEditAggregation = AggregationEditModalContext.useValue;
 
-export const AggregationEditModal = ({
-  builder,
+export function AggregationEditModal({
   children,
-}: PropsWithChildren<{
-  builder: AstBuilder;
-}>) => {
+}: {
+  children: React.ReactNode;
+}) {
   const [open, onOpenChange] = useState<boolean>(false);
   const [aggregation, setAggregation] = useState<AggregationViewModel>();
   const onSaveRef = useRef<(astNode: AstNode) => void>();
@@ -219,7 +212,6 @@ export const AggregationEditModal = ({
           <CopyPasteASTContextProvider>
             {aggregation ? (
               <AggregationEditModalContent
-                builder={builder}
                 aggregation={aggregation}
                 setAggregation={setAggregation}
                 onSave={(astNode) => {
@@ -233,30 +225,29 @@ export const AggregationEditModal = ({
       </AggregationEditModalContext.Provider>
     </ModalV2.Root>
   );
-};
+}
 
-const AggregationEditModalContent = ({
-  builder,
+function AggregationEditModalContent({
   aggregation,
   setAggregation,
   onSave,
 }: {
-  builder: AstBuilder;
   aggregation: AggregationViewModel;
   setAggregation: (aggregation: AggregationViewModel) => void;
   onSave: (astNode: AstNode) => void;
-}) => {
+}) {
   const { t } = useTranslation(handle.i18n);
 
+  const dataModel = useDataModel();
   const dataModelFieldOptions = useMemo(
     () =>
-      builder.input.dataModel.flatMap((table) =>
+      dataModel.flatMap((table) =>
         table.fields.map((field) => ({
           tableName: table.name,
           fieldName: field.name,
         })),
       ),
-    [builder.input.dataModel],
+    [dataModel],
   );
 
   const handleSave = () => {
@@ -360,7 +351,6 @@ const AggregationEditModalContent = ({
             </div>
             <EditFilters
               aggregatedField={aggregation.aggregatedField}
-              builder={builder}
               value={aggregation.filters}
               dataModelFieldOptions={dataModelFieldOptions}
               onChange={(filters) =>
@@ -389,4 +379,4 @@ const AggregationEditModalContent = ({
       </div>
     </>
   );
-};
+}

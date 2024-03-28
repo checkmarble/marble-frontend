@@ -9,16 +9,17 @@ import {
   type PayloadAstNode,
 } from '@app-builder/models';
 import {
-  adaptAstOperatorDto,
-  type AstOperator,
-} from '@app-builder/models/ast-operators';
+  isOperatorFunction,
+  type OperatorFunction,
+} from '@app-builder/models/editable-operators';
+import * as R from 'remeda';
 
 export interface EditorRepository {
   listAccessors(args: { scenarioId: string }): Promise<{
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
   }>;
-  listOperators(args: { scenarioId: string }): Promise<AstOperator[]>;
+  listOperators(args: { scenarioId: string }): Promise<OperatorFunction[]>;
   saveRule(args: {
     ruleId: string;
     astNode: AstNode;
@@ -59,9 +60,14 @@ export function getEditorRepository() {
     listOperators: async ({ scenarioId }) => {
       const { operators_accessors } =
         await marbleApiClient.listOperators(scenarioId);
-      const operatorsAccessors = operators_accessors.map(adaptAstOperatorDto);
 
-      return operatorsAccessors;
+      const operatorFunctions = R.pipe(
+        operators_accessors,
+        R.map(({ name }) => name),
+        R.filter(isOperatorFunction),
+      );
+
+      return operatorFunctions;
     },
     saveRule: async ({
       ruleId,

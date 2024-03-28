@@ -1,7 +1,11 @@
 import { stringifyAstNode } from '@app-builder/models/editable-ast-node';
 import {
+  useCustomLists,
+  useDataModel,
+  useTriggerObjectTable,
+} from '@app-builder/services/ast-node/options';
+import {
   adaptAstNodeFromEditorViewModel,
-  type AstBuilder,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -42,32 +46,29 @@ const defaultClassnames = cva(
 );
 
 interface DefaultProps extends VariantProps<typeof defaultClassnames> {
-  builder: AstBuilder;
   editorNodeViewModel: EditorNodeViewModel;
 }
 
 export function Default({
-  builder,
   editorNodeViewModel,
   validationStatus,
   type,
 }: DefaultProps) {
   const { t } = useTranslation(['scenarios']);
+
+  const customLists = useCustomLists();
+  const dataModel = useDataModel();
+  const triggerObjectTable = useTriggerObjectTable();
+
   const stringifiedAstNode = useMemo(() => {
     const astNode = adaptAstNodeFromEditorViewModel(editorNodeViewModel);
     return stringifyAstNode(t, astNode, {
-      dataModel: builder.input.dataModel,
-      triggerObjectTable: builder.input.triggerObjectTable,
-      customLists: builder.input.customLists,
+      dataModel: dataModel,
+      triggerObjectTable: triggerObjectTable,
+      customLists: customLists,
       enumOptions: [],
     });
-  }, [
-    builder.input.customLists,
-    builder.input.dataModel,
-    builder.input.triggerObjectTable,
-    editorNodeViewModel,
-    t,
-  ]);
+  }, [customLists, dataModel, triggerObjectTable, editorNodeViewModel, t]);
 
   return (
     <div className={defaultClassnames({ type, validationStatus })}>

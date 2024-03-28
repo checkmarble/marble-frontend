@@ -1,8 +1,5 @@
 import { type AstNode } from '@app-builder/models';
-import {
-  type AstBuilder,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
+import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 
 import { Operand } from './Operand';
 import {
@@ -11,7 +8,8 @@ import {
 } from './TwoOperandsLine';
 
 interface AstBuilderNodeProps {
-  builder: AstBuilder;
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
   editorNodeViewModel: EditorNodeViewModel;
   viewOnly?: boolean;
   onSave?: (astNode: AstNode) => void;
@@ -20,7 +18,8 @@ interface AstBuilderNodeProps {
 
 export function AstBuilderNode({
   editorNodeViewModel,
-  builder,
+  setOperand,
+  setOperator,
   viewOnly,
   onSave,
   root = false,
@@ -32,7 +31,8 @@ export function AstBuilderNode({
     return (
       <div className="flex w-full flex-col gap-2">
         <TwoOperandsLine
-          builder={builder}
+          setOperand={setOperand}
+          setOperator={setOperator}
           twoOperandsViewModel={twoOperandsViewModel}
           viewOnly={viewOnly}
           root={root}
@@ -43,7 +43,6 @@ export function AstBuilderNode({
 
   return (
     <Operand
-      builder={builder}
       operandViewModel={editorNodeViewModel}
       viewOnly={viewOnly}
       onSave={onSave}

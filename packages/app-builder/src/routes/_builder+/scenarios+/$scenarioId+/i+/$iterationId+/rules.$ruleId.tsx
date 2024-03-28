@@ -11,10 +11,16 @@ import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
+  type DatabaseAccessAstNode,
   NewEmptyRuleAstNode,
+  type PayloadAstNode,
   type ScenarioIterationRule,
 } from '@app-builder/models';
-import { adaptDataModelDto } from '@app-builder/models/data-model';
+import {
+  adaptDataModelDto,
+  type TableModel,
+} from '@app-builder/models/data-model';
+import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
@@ -25,7 +31,7 @@ import {
 } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
-  type AstBuilder as AstBuilderType,
+  type EditorNodeViewModel,
   useAstBuilder,
 } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
@@ -43,6 +49,7 @@ import {
 } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
+import { type CustomList } from 'marble-api';
 import { useEffect } from 'react';
 import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -76,7 +83,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     databaseAccessors: (await accessorsPromise).databaseAccessors,
     payloadAccessors: (await accessorsPromise).payloadAccessors,
-    astOperators: await operatorsPromise,
+    operators: await operatorsPromise,
     dataModel: adaptDataModelDto((await dataModelPromise).data_model),
     customLists: custom_lists,
   });
@@ -159,7 +166,7 @@ export default function RuleEdit() {
   const {
     databaseAccessors,
     payloadAccessors,
-    astOperators,
+    operators,
     dataModel,
     customLists,
   } = useLoaderData<typeof loader>();
@@ -184,14 +191,8 @@ export default function RuleEdit() {
   const initialAst = rule.formula ?? NewEmptyRuleAstNode();
   const astEditor = useAstBuilder({
     backendAst: initialAst,
-    backendValidation: ruleValidation.ruleEvaluation,
-    localValidation,
-    databaseAccessors,
-    payloadAccessors,
-    astOperators,
-    dataModel,
-    customLists,
-    triggerObjectType: scenario.triggerObjectType,
+    backendEvaluation: ruleValidation.ruleEvaluation,
+    localEvaluation: localValidation,
     onValidate: validate,
   });
   const getCurrentAstNode = () =>
@@ -221,6 +222,15 @@ export default function RuleEdit() {
       });
     });
   }, [errors, setError]);
+
+  const options = {
+    databaseAccessors,
+    payloadAccessors,
+    operators,
+    dataModel,
+    customLists,
+    triggerObjectType: scenario.triggerObjectType,
+  };
 
   return (
     <Page.Container>
@@ -263,10 +273,23 @@ export default function RuleEdit() {
       </Page.Header>
 
       {editorMode === 'view' ? (
-        <RuleViewContent builder={astEditor} rule={rule} />
+        <RuleViewContent
+          options={options}
+          setOperand={astEditor.setOperand}
+          setOperator={astEditor.setOperator}
+          appendChild={astEditor.appendChild}
+          remove={astEditor.remove}
+          editorNodeViewModel={astEditor.editorNodeViewModel}
+          rule={rule}
+        />
       ) : (
         <RuleEditContent
-          builder={astEditor}
+          options={options}
+          setOperand={astEditor.setOperand}
+          setOperator={astEditor.setOperator}
+          appendChild={astEditor.appendChild}
+          remove={astEditor.remove}
+          editorNodeViewModel={astEditor.editorNodeViewModel}
           iterationId={iterationId}
           scenarioId={scenarioId}
           ruleId={ruleId}
@@ -278,10 +301,27 @@ export default function RuleEdit() {
 }
 
 function RuleViewContent({
-  builder,
+  options,
+  setOperand,
+  setOperator,
+  appendChild,
+  remove,
+  editorNodeViewModel,
   rule,
 }: {
-  builder: AstBuilderType;
+  options: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    operators: OperatorFunction[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectType: string;
+  };
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
+  appendChild: (nodeId: string, childAst: AstNode) => void;
+  remove: (nodeId: string) => void;
+  editorNodeViewModel: EditorNodeViewModel;
   rule: ScenarioIterationRule;
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -310,7 +350,15 @@ function RuleViewContent({
           />
         </div>
         <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
-          <AstBuilder builder={builder} viewOnly={true} />
+          <AstBuilder
+            options={options}
+            setOperand={setOperand}
+            setOperator={setOperator}
+            appendChild={appendChild}
+            remove={remove}
+            editorNodeViewModel={editorNodeViewModel}
+            viewOnly={true}
+          />
         </Paper.Container>
       </div>
     </Page.Content>
@@ -318,13 +366,30 @@ function RuleViewContent({
 }
 
 function RuleEditContent({
+  options,
+  setOperand,
+  setOperator,
+  appendChild,
+  remove,
+  editorNodeViewModel,
   ruleId,
   iterationId,
   scenarioId,
-  builder,
   formMethods,
 }: {
-  builder: AstBuilderType;
+  options: {
+    databaseAccessors: DatabaseAccessAstNode[];
+    payloadAccessors: PayloadAstNode[];
+    operators: OperatorFunction[];
+    dataModel: TableModel[];
+    customLists: CustomList[];
+    triggerObjectType: string;
+  };
+  setOperand: (nodeId: string, operandAst: AstNode) => void;
+  setOperator: (nodeId: string, name: string) => void;
+  appendChild: (nodeId: string, childAst: AstNode) => void;
+  remove: (nodeId: string) => void;
+  editorNodeViewModel: EditorNodeViewModel;
   ruleId: string;
   scenarioId: string;
   iterationId: string;
@@ -396,7 +461,14 @@ function RuleEditContent({
       </Paper.Container>
 
       <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
-        <AstBuilder builder={builder} />
+        <AstBuilder
+          options={options}
+          setOperand={setOperand}
+          setOperator={setOperator}
+          appendChild={appendChild}
+          remove={remove}
+          editorNodeViewModel={editorNodeViewModel}
+        />
 
         <EvaluationErrors
           errors={ruleValidation.errors

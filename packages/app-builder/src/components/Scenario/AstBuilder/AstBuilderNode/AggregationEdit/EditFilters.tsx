@@ -6,10 +6,7 @@ import {
   filterOperators,
   isFilterOperator,
 } from '@app-builder/models/editable-operators';
-import {
-  adaptEditorNodeViewModel,
-  type AstBuilder,
-} from '@app-builder/services/editor/ast-editor';
+import { adaptEditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
@@ -34,19 +31,17 @@ const newFilterValidation = () => ({
   value: [],
 });
 
-export const EditFilters = ({
+export function EditFilters({
   aggregatedField,
-  builder,
   dataModelFieldOptions,
   onChange,
   value,
 }: {
   aggregatedField: DataModelField | null;
-  builder: AstBuilder;
   dataModelFieldOptions: DataModelField[];
   onChange: (value: FilterViewModel[]) => void;
   value: FilterViewModel[];
-}) => {
+}) {
   const { t } = useTranslation(scenarioI18n);
 
   const filteredDataModalFieldOptions = aggregatedField?.tableName
@@ -142,7 +137,6 @@ export const EditFilters = ({
                     operators={filterOperators}
                   />
                   <Operand
-                    builder={builder}
                     operandViewModel={filter.value}
                     onSave={(astNode) =>
                       onFilterChange(
@@ -175,4 +169,4 @@ export const EditFilters = ({
       </div>
     </div>
   );
-};
+}

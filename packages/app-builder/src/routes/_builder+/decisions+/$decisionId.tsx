@@ -69,7 +69,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     ]).then(
       ([
         scenarioIteration,
-        astOperators,
+        operators,
         accessors,
         dataModel,
         { custom_lists },
@@ -77,7 +77,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         rules: scenarioIteration.rules,
         databaseAccessors: accessors.databaseAccessors,
         payloadAccessors: accessors.payloadAccessors,
-        astOperators,
+        operators,
         dataModel,
         customLists: custom_lists,
       }),
