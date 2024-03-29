@@ -1,7 +1,7 @@
-import { undefinedAstNodeName } from '@app-builder/models';
 import {
   getOperatorName,
   type OperatorFunction,
+  undefinedAstNodeName,
 } from '@app-builder/models/editable-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { Trigger, Value } from '@radix-ui/react-select';
