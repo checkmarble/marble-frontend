@@ -10,6 +10,7 @@ import {
   CustomListEditableAstNode,
   DatabaseAccessEditableAstNode,
   type EditableAstNode,
+  FuzzyMatchComparatorEditableAstNode,
   getOperandTypeIcon,
   getOperandTypeTKey,
   type OperandType,
@@ -146,7 +147,9 @@ function OperandDescription({
   if (
     editableAstNode instanceof ConstantEditableAstNode ||
     editableAstNode instanceof UndefinedEditableAstNode ||
-    editableAstNode instanceof TimeAddEditableAstNode
+    editableAstNode instanceof TimeAddEditableAstNode ||
+    // TODO: implement description like AggregatorDescription
+    editableAstNode instanceof FuzzyMatchComparatorEditableAstNode
   ) {
     return null;
   }

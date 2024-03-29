@@ -1,6 +1,6 @@
 import {
   type AstNode,
-  functionNodeNames,
+  isFunctionAstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
 import {
@@ -70,7 +70,7 @@ export function TwoOperandsLine({
   const operators = useTwoLineOperandOperatorFunctions();
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between gap-2">
       <div className="flex flex-row flex-wrap items-center gap-2">
         {!root ? <span className="text-grey-25">(</span> : null}
         <AstBuilderNode
@@ -125,6 +125,8 @@ export function TwoOperandsLine({
 export function adaptTwoOperandsLineViewModel(
   vm: EditorNodeViewModel,
 ): TwoOperandsLineViewModel | null {
+  if (isFunctionAstNode(adaptAstNodeFromEditorViewModel(vm))) return null;
+
   if (vm.children.length !== 2) return null;
   if (Object.keys(vm.namedChildren).length > 0) return null;
   if (vm.funcName == null || !isTwoLineOperandOperatorFunction(vm.funcName))
@@ -146,7 +148,8 @@ export function adaptTwoOperandsLineViewModel(
 export const computeLineErrors = (
   viewModel: EditorNodeViewModel,
 ): EvaluationError[] => {
-  if (viewModel.funcName && functionNodeNames.includes(viewModel.funcName)) {
+  const astNode = adaptAstNodeFromEditorViewModel(viewModel);
+  if (isFunctionAstNode(astNode)) {
     const { nodeErrors } = separateChildrenErrors(viewModel.errors);
     return nodeErrors;
   } else {
