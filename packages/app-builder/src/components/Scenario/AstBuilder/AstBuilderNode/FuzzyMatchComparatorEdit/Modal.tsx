@@ -5,7 +5,10 @@ import {
   fuzzyMatchAlgorithms,
 } from '@app-builder/models/editable-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
-import { useOperandOptions } from '@app-builder/services/ast-node/options';
+import {
+  useAdaptEditableAstNode,
+  useOperandOptions,
+} from '@app-builder/services/ast-node/options';
 import {
   adaptAstNodeFromEditorViewModel,
   adaptEditorNodeViewModel,
@@ -155,10 +158,22 @@ function FuzzyMatchComparatorEditModalContent({
   };
 
   const options = useOperandOptions({ operandViewModel: value.children[0] });
-  const stringOptions = useMemo(
+  const leftOptions = useMemo(
     () => options.filter((option) => option.dataType === 'String'),
     [options],
   );
+  const rightOptions = useMemo(
+    () =>
+      options.filter(
+        (option) =>
+          option.operandType === 'CustomList' ||
+          option.dataType === 'String[]' ||
+          option.dataType === 'String',
+      ),
+    [options],
+  );
+
+  const adaptEditableAstNode = useAdaptEditableAstNode();
 
   return (
     <>
@@ -180,26 +195,33 @@ function FuzzyMatchComparatorEditModalContent({
                   ],
                 })
               }
-              options={stringOptions}
+              options={leftOptions}
             />
             <div className="border-grey-10 bg-grey-02 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
               <span className="text-s text-grey-100 font-medium">~</span>
             </div>
             <Operand
               operandViewModel={value.children[1]}
-              onSave={(ast) =>
+              onSave={(ast) => {
+                const nextChild = adaptEditorNodeViewModel({
+                  ast,
+                  parent: value,
+                });
+
                 setValue({
                   ...value,
+                  funcName:
+                    // With lack of context, we assume that any non string operand is a list of strings (ex: we don't have dataType on CustomList)
+                    adaptEditableAstNode(nextChild)?.dataType === 'String'
+                      ? 'FuzzyMatch'
+                      : 'FuzzyMatchAnyOf',
                   errors: value.errors.filter(
                     (error) => error.argumentIndex !== 1,
                   ),
-                  children: [
-                    value.children[0],
-                    adaptEditorNodeViewModel({ ast, parent: value }),
-                  ],
-                })
-              }
-              options={stringOptions}
+                  children: [value.children[0], nextChild],
+                });
+              }}
+              options={rightOptions}
             />
           </div>
           <EvaluationErrors
