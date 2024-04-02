@@ -259,7 +259,7 @@ export function NewTimeNowAstNode(): TimeNowAstNode {
   };
 }
 
-const fuzzyMatchAstNodeName = 'FuzzyMatch';
+export const fuzzyMatchAstNodeName = 'FuzzyMatch';
 export interface FuzzyMatchAstNode {
   name: typeof fuzzyMatchAstNodeName;
   constant?: undefined;

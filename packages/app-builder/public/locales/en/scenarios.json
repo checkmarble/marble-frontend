@@ -214,5 +214,7 @@
   "edit_date.now.description": "The time when the scenario is run",
   "edit_date.date": "Date",
   "enum_options": "Options:",
-  "nest": "Nest"
+  "nest": "Nest",
+  "edit_fuzzy_match.title": "Create a text match",
+  "edit_fuzzy_match.algorithm.label": "Similarity algorithm"
 }

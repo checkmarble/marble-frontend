@@ -61,12 +61,14 @@ export function Operator<T extends OperatorFunction>({
   operators,
   errors,
   viewOnly,
+  ...rest
 }: {
   value?: T;
   setValue: (operator: T) => void;
   operators: readonly T[];
   errors?: EvaluationError[];
   viewOnly?: boolean;
+  'aria-labelledby'?: string;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
 
@@ -74,7 +76,12 @@ export function Operator<T extends OperatorFunction>({
   const _value = value !== undefinedAstNodeName ? value : undefined;
 
   return (
-    <Select.Root value={_value} onValueChange={setValue} disabled={viewOnly}>
+    <Select.Root
+      value={_value}
+      onValueChange={setValue}
+      disabled={viewOnly}
+      {...rest}
+    >
       <OperatorLabel
         borderColor={errors && errors.length > 0 ? 'red-100' : 'grey-10'}
       />
