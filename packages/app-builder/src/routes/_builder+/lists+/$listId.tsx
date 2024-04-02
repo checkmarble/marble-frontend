@@ -42,12 +42,12 @@ export const handle = {
   i18n: ['lists', 'common'] satisfies Namespace,
 };
 
-type ListValues = {
+type CustomListValue = {
   id: string;
   value: string;
 };
 
-const columnHelper = createColumnHelper<ListValues>();
+const columnHelper = createColumnHelper<CustomListValue>();
 
 export default function Lists() {
   const customList = useLoaderData<typeof loader>();
@@ -63,16 +63,15 @@ export default function Lists() {
         size: 500,
         sortingFn: 'text',
         enableSorting: true,
-        cell: ({ getValue }) => {
+        cell: ({ getValue, row }) => {
           const value = getValue();
           return (
             <div className="group flex items-center justify-between">
               <p className="text-grey-100 text-s font-medium">{value}</p>
-
               {canManageListItem ? (
                 <DeleteListValue
                   listId={customList.id}
-                  listValueId={value}
+                  listValueId={row.original.id}
                   value={value}
                 >
                   <button
