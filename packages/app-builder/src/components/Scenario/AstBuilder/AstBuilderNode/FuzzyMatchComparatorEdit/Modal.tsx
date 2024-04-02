@@ -116,7 +116,7 @@ export function FuzzyMatchComparatorEditModal({
           <CopyPasteASTContextProvider>
             {fuzzyMatchComparatorEditModalProps ? (
               <FuzzyMatchComparatorEditModalContent
-                initialValue={
+                initialFuzzyMatchEditorNodeViewModel={
                   fuzzyMatchComparatorEditModalProps.initialValue.children[0]
                 }
                 onSave={(vm: FuzzyMatchEditorNodeViewModel) => {
@@ -141,23 +141,26 @@ export function FuzzyMatchComparatorEditModal({
 }
 
 function FuzzyMatchComparatorEditModalContent({
-  initialValue,
+  initialFuzzyMatchEditorNodeViewModel,
   onSave,
 }: {
-  initialValue: FuzzyMatchEditorNodeViewModel;
+  initialFuzzyMatchEditorNodeViewModel: FuzzyMatchEditorNodeViewModel;
   onSave: (vm: FuzzyMatchEditorNodeViewModel) => void;
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
-  const [value, setValue] = useState<FuzzyMatchEditorNodeViewModel>(
-    () => initialValue,
-  );
+  const [fuzzyMatchEditorNodeViewModel, setFuzzyMatchEditorNodeViewModel] =
+    useState<FuzzyMatchEditorNodeViewModel>(
+      () => initialFuzzyMatchEditorNodeViewModel,
+    );
 
   const handleSave = () => {
-    onSave(value);
+    onSave(fuzzyMatchEditorNodeViewModel);
   };
 
-  const options = useOperandOptions({ operandViewModel: value.children[0] });
+  const options = useOperandOptions({
+    operandViewModel: fuzzyMatchEditorNodeViewModel.children[0],
+  });
   const leftOptions = useMemo(
     () => options.filter((option) => option.dataType === 'String'),
     [options],
@@ -182,43 +185,51 @@ function FuzzyMatchComparatorEditModalContent({
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
             <Operand
-              operandViewModel={value.children[0]}
-              onSave={(ast) =>
-                setValue({
-                  ...value,
-                  errors: value.errors.filter(
+              operandViewModel={fuzzyMatchEditorNodeViewModel.children[0]}
+              onSave={(ast) => {
+                const newLeftChild = adaptEditorNodeViewModel({
+                  ast,
+                  parent: fuzzyMatchEditorNodeViewModel,
+                });
+
+                setFuzzyMatchEditorNodeViewModel({
+                  ...fuzzyMatchEditorNodeViewModel,
+                  errors: fuzzyMatchEditorNodeViewModel.errors.filter(
                     (error) => error.argumentIndex !== 0,
                   ),
                   children: [
-                    adaptEditorNodeViewModel({ ast, parent: value }),
-                    value.children[1],
+                    newLeftChild,
+                    fuzzyMatchEditorNodeViewModel.children[1],
                   ],
-                })
-              }
+                });
+              }}
               options={leftOptions}
             />
             <div className="border-grey-10 bg-grey-02 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
               <span className="text-s text-grey-100 font-medium">~</span>
             </div>
             <Operand
-              operandViewModel={value.children[1]}
+              operandViewModel={fuzzyMatchEditorNodeViewModel.children[1]}
               onSave={(ast) => {
-                const nextChild = adaptEditorNodeViewModel({
+                const newRightChild = adaptEditorNodeViewModel({
                   ast,
-                  parent: value,
+                  parent: fuzzyMatchEditorNodeViewModel,
                 });
 
-                setValue({
-                  ...value,
+                setFuzzyMatchEditorNodeViewModel({
+                  ...fuzzyMatchEditorNodeViewModel,
                   funcName:
                     // With lack of context, we assume that any non string operand is a list of strings (ex: we don't have dataType on CustomList)
-                    adaptEditableAstNode(nextChild)?.dataType === 'String'
+                    adaptEditableAstNode(newRightChild)?.dataType === 'String'
                       ? 'FuzzyMatch'
                       : 'FuzzyMatchAnyOf',
-                  errors: value.errors.filter(
+                  errors: fuzzyMatchEditorNodeViewModel.errors.filter(
                     (error) => error.argumentIndex !== 1,
                   ),
-                  children: [value.children[0], nextChild],
+                  children: [
+                    fuzzyMatchEditorNodeViewModel.children[0],
+                    newRightChild,
+                  ],
                 });
               }}
               options={rightOptions}
@@ -226,8 +237,10 @@ function FuzzyMatchComparatorEditModalContent({
           </div>
           <EvaluationErrors
             errors={adaptEvaluationErrorViewModels([
-              ...value.errors,
-              ...value.children.flatMap((child) => child.errors),
+              ...fuzzyMatchEditorNodeViewModel.errors,
+              ...fuzzyMatchEditorNodeViewModel.children.flatMap(
+                (child) => child.errors,
+              ),
             ]).map(getNodeEvaluationErrorMessage)}
           />
         </div>
@@ -239,26 +252,30 @@ function FuzzyMatchComparatorEditModalContent({
             <Operator
               aria-labelledby="algorithm"
               operators={fuzzyMatchAlgorithms}
-              value={value.namedChildren.algorithm.constant}
+              value={
+                fuzzyMatchEditorNodeViewModel.namedChildren.algorithm.constant
+              }
               setValue={(fuzzyMatchAlgorithm) =>
-                setValue({
-                  ...value,
+                setFuzzyMatchEditorNodeViewModel({
+                  ...fuzzyMatchEditorNodeViewModel,
                   namedChildren: {
-                    ...value.namedChildren,
+                    ...fuzzyMatchEditorNodeViewModel.namedChildren,
                     algorithm: {
-                      ...value.namedChildren.algorithm,
+                      ...fuzzyMatchEditorNodeViewModel.namedChildren.algorithm,
                       constant: fuzzyMatchAlgorithm,
                       errors: [],
                     },
                   },
                 })
               }
-              errors={value.namedChildren.algorithm.errors}
+              errors={
+                fuzzyMatchEditorNodeViewModel.namedChildren.algorithm.errors
+              }
             />
           </div>
           <EvaluationErrors
             errors={adaptEvaluationErrorViewModels(
-              value.namedChildren.algorithm.errors,
+              fuzzyMatchEditorNodeViewModel.namedChildren.algorithm.errors,
             ).map(getNodeEvaluationErrorMessage)}
           />
         </div>
