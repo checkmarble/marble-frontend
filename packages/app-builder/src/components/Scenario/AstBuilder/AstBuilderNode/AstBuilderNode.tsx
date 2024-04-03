@@ -1,4 +1,5 @@
 import { type AstNode } from '@app-builder/models';
+import { useOperandOptions } from '@app-builder/services/ast-node/options';
 import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 
 import { Operand } from './Operand';
@@ -26,6 +27,7 @@ export function AstBuilderNode({
 }: AstBuilderNodeProps) {
   const twoOperandsViewModel =
     adaptTwoOperandsLineViewModel(editorNodeViewModel);
+  const options = useOperandOptions({ operandViewModel: editorNodeViewModel });
 
   if (twoOperandsViewModel) {
     return (
@@ -46,6 +48,7 @@ export function AstBuilderNode({
       operandViewModel={editorNodeViewModel}
       viewOnly={viewOnly}
       onSave={onSave}
+      options={options}
     />
   );
 }

@@ -5,6 +5,8 @@ import {
   isPayload,
   NewAggregatorAstNode,
   NewConstantAstNode,
+  NewFuzzyMatchAstNode,
+  NewFuzzyMatchComparatorAstNode,
   type PayloadAstNode,
 } from '@app-builder/models/ast-node';
 import {
@@ -20,6 +22,7 @@ import {
   ConstantEditableAstNode,
   CustomListEditableAstNode,
   DatabaseAccessEditableAstNode,
+  FuzzyMatchComparatorEditableAstNode,
   PayloadAccessorsEditableAstNode,
   TimeAddEditableAstNode,
   TimeNowEditableAstNode,
@@ -159,6 +162,13 @@ export function useOperandOptions({
             customLists,
             triggerObjectTable,
           ),
+      ),
+      new FuzzyMatchComparatorEditableAstNode(
+        t,
+        NewFuzzyMatchComparatorAstNode({
+          fuzzyMatch: NewFuzzyMatchAstNode({}),
+        }),
+        { triggerObjectTable, dataModel, customLists, enumOptions: [] },
       ),
       new TimeAddEditableAstNode(t),
       new TimeNowEditableAstNode(t),

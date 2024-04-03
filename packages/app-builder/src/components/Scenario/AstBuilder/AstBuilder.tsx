@@ -11,6 +11,7 @@ import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-p
 import { type CustomList } from 'marble-api';
 
 import { AggregationEditModal } from './AstBuilderNode/AggregationEdit';
+import { FuzzyMatchComparatorEditModal } from './AstBuilderNode/FuzzyMatchComparatorEdit/Modal';
 import { TimeAddEditModal } from './AstBuilderNode/TimeAddEdit/Modal';
 import { RootAstBuilderNode } from './RootAstBuilderNode';
 
@@ -45,14 +46,16 @@ export function AstBuilder({
       <CopyPasteASTContextProvider>
         <TimeAddEditModal>
           <AggregationEditModal>
-            <RootAstBuilderNode
-              setOperand={setOperand}
-              setOperator={setOperator}
-              appendChild={appendChild}
-              remove={remove}
-              editorNodeViewModel={editorNodeViewModel}
-              viewOnly={viewOnly}
-            />
+            <FuzzyMatchComparatorEditModal>
+              <RootAstBuilderNode
+                setOperand={setOperand}
+                setOperator={setOperator}
+                appendChild={appendChild}
+                remove={remove}
+                editorNodeViewModel={editorNodeViewModel}
+                viewOnly={viewOnly}
+              />
+            </FuzzyMatchComparatorEditModal>
           </AggregationEditModal>
         </TimeAddEditModal>
       </CopyPasteASTContextProvider>

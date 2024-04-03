@@ -1,11 +1,12 @@
 import { Callout } from '@app-builder/components';
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { NewUndefinedAstNode } from '@app-builder/models';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   filterOperators,
   isFilterOperator,
 } from '@app-builder/models/editable-operators';
+import { useOperandOptions } from '@app-builder/services/ast-node/options';
 import { adaptEditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 import {
   adaptEvaluationErrorViewModels,
@@ -19,7 +20,7 @@ import { Icon } from 'ui-icons';
 
 import { RemoveButton } from '../../RemoveButton';
 import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
-import { Operand } from '../Operand';
+import { Operand, type OperandViewModel } from '../Operand';
 import { Operator } from '../Operator';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { type FilterViewModel } from './Modal';
@@ -136,8 +137,8 @@ export function EditFilters({
                     errors={filter.errors.operator}
                     operators={filterOperators}
                   />
-                  <Operand
-                    operandViewModel={filter.value}
+                  <FilterValue
+                    filterValue={filter.value}
                     onSave={(astNode) =>
                       onFilterChange(
                         { value: adaptEditorNodeViewModel({ ast: astNode }) },
@@ -168,5 +169,22 @@ export function EditFilters({
         <Callout>{t('scenarios:edit_aggregation.add_filter.callout')}</Callout>
       </div>
     </div>
+  );
+}
+
+function FilterValue({
+  filterValue,
+  onSave,
+}: {
+  filterValue: OperandViewModel;
+  onSave: (astNode: AstNode) => void;
+}) {
+  const filterOptions = useOperandOptions({ operandViewModel: filterValue });
+  return (
+    <Operand
+      operandViewModel={filterValue}
+      onSave={onSave}
+      options={filterOptions}
+    />
   );
 }

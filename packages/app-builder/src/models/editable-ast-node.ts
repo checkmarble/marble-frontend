@@ -467,7 +467,7 @@ export class FuzzyMatchComparatorEditableAstNode
     },
   ) {
     const fuzzyMatch = astNode.children[0];
-    return `${stringifyAstNode(t, fuzzyMatch.children[0], config)} ~ ${stringifyAstNode(t, fuzzyMatch.children[1], config)}`;
+    return `${stringifyAstNode(t, fuzzyMatch.children[0], config) || '?'} ~ ${stringifyAstNode(t, fuzzyMatch.children[1], config) || '?'}`;
   }
 }
 

@@ -85,7 +85,7 @@ export type FuzzyMatchAlgorithm = (typeof fuzzyMatchAlgorithms)[number];
 export function isFuzzyMatchAlgorithm(
   value: string,
 ): value is AggregatorOperator {
-  return (aggregatorOperators as ReadonlyArray<string>).includes(value);
+  return (fuzzyMatchAlgorithms as ReadonlyArray<string>).includes(value);
 }
 
 export type OperatorFunction =

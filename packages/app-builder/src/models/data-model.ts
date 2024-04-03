@@ -187,9 +187,12 @@ export function getDataTypeIcon(dataType?: DataType): IconName | undefined {
     case 'Timestamp':
       return 'schedule';
     case 'String':
+    case 'String[]':
       return 'string';
     case 'Int':
+    case 'Int[]':
     case 'Float':
+    case 'Float[]':
       return 'number';
     case 'Bool':
       return 'boolean';
@@ -204,9 +207,14 @@ export function getDataTypeTKey(
   switch (dataType) {
     case 'String':
       return 'edit_operand.data_type.string';
+    case 'String[]':
+      return 'edit_operand.data_type.string[]';
     case 'Int':
     case 'Float':
       return 'edit_operand.data_type.number';
+    case 'Int[]':
+    case 'Float[]':
+      return 'edit_operand.data_type.number[]';
     case 'Bool':
       return 'edit_operand.data_type.boolean';
     case 'Timestamp':

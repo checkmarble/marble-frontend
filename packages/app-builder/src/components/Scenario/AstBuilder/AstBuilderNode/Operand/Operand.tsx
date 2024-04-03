@@ -1,4 +1,5 @@
 import { type AstNode } from '@app-builder/models';
+import { type EditableAstNode } from '@app-builder/models/editable-ast-node';
 import { useAdaptEditableAstNode } from '@app-builder/services/ast-node/options';
 import { formatReturnValue } from '@app-builder/services/ast-node/return-value';
 import {
@@ -16,10 +17,12 @@ export function Operand({
   operandViewModel,
   onSave,
   viewOnly,
+  options,
 }: {
   operandViewModel: OperandViewModel;
   onSave?: (astNode: AstNode) => void;
   viewOnly?: boolean;
+  options: EditableAstNode[];
 }) {
   const adaptEditableAstNode = useAdaptEditableAstNode();
   const editableAstNode = adaptEditableAstNode(operandViewModel);
@@ -50,6 +53,7 @@ export function Operand({
       operandViewModel={operandViewModel}
       editableAstNode={editableAstNode}
       onSave={onSave}
+      options={options}
     />
   );
 }
