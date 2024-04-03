@@ -1,77 +1,39 @@
 import { Callout } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { type AstNode, isFuzzyMatchComparator } from '@app-builder/models';
-import { type FuzzyMatchAlgorithm } from '@app-builder/models/editable-operators';
-import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import {
-  useAdaptEditableAstNode,
-  useOperandOptions,
-} from '@app-builder/services/ast-node/options';
+  type AstNode,
+  NewFuzzyMatchComparatorAstNode,
+} from '@app-builder/models';
 import {
-  adaptAstNodeFromEditorViewModel,
-  adaptEditorNodeViewModel,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
+  type FuzzyMatchAlgorithm,
+  isEditableFuzzyMatchAlgorithm,
+} from '@app-builder/models/fuzzy-match';
+import { adaptAstNodeFromEditorViewModel } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { useCallback, useMemo, useState } from 'react';
+import { type ParseKeys } from 'i18next';
+import { useCallback, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
 
 import { Operand } from '../Operand';
-import { Operator } from '../Operator';
-
-export interface FuzzyMatchComparatorEditorNodeViewModel {
-  nodeId: string;
-  funcName: '>';
-  constant?: undefined;
-  errors: EvaluationError[];
-  children: [
-    FuzzyMatchEditorNodeViewModel,
-    {
-      nodeId: string;
-      funcName: null;
-      constant?: number;
-      errors: EvaluationError[];
-      children: [];
-      namedChildren: Record<string, never>;
-      parent: FuzzyMatchComparatorEditorNodeViewModel;
-    },
-  ];
-  namedChildren: Record<string, never>;
-  parent: EditorNodeViewModel;
-}
-export interface FuzzyMatchEditorNodeViewModel {
-  nodeId: string;
-  funcName: 'FuzzyMatch' | 'FuzzyMatchAnyOf';
-  constant?: undefined;
-  errors: EvaluationError[];
-  children: [EditorNodeViewModel, EditorNodeViewModel];
-  namedChildren: {
-    algorithm: {
-      nodeId: string;
-      funcName: null;
-      constant?: FuzzyMatchAlgorithm;
-      errors: EvaluationError[];
-      children: [];
-      namedChildren: Record<string, never>;
-      parent: null;
-    };
-  };
-  parent: FuzzyMatchComparatorEditorNodeViewModel;
-}
-
-export const isFuzzyMatchComparatorEditorNodeViewModel = (
-  vm: EditorNodeViewModel,
-): vm is FuzzyMatchComparatorEditorNodeViewModel => {
-  const astNode = adaptAstNodeFromEditorViewModel(vm);
-  return isFuzzyMatchComparator(astNode);
-};
+import { EditAlgorithm } from './EditAlgorithm';
+import { EditLevel } from './EditLevel';
+import { EditThreshold } from './EditThreshold';
+import {
+  useFuzzyMatchComparatorEditState,
+  useLeftOptions,
+  useRightOptions,
+} from './FuzzyMatchComparatorEdit.hook';
+import {
+  type FuzzyMatchComparatorEditorNodeViewModel,
+  type FuzzyMatchEditorNodeViewModel,
+} from './FuzzyMatchComparatorEdit.types';
 
 export interface FuzzyMatchComparatorEditModalProps {
   initialValue: FuzzyMatchComparatorEditorNodeViewModel;
@@ -115,18 +77,10 @@ export function FuzzyMatchComparatorEditModal({
           <CopyPasteASTContextProvider>
             {fuzzyMatchComparatorEditModalProps ? (
               <FuzzyMatchComparatorEditModalContent
-                initialFuzzyMatchEditorNodeViewModel={
-                  fuzzyMatchComparatorEditModalProps.initialValue.children[0]
+                initialFuzzyMatchComparatorEditorNodeViewModel={
+                  fuzzyMatchComparatorEditModalProps.initialValue
                 }
-                onSave={(vm: FuzzyMatchEditorNodeViewModel) => {
-                  const astNode = adaptAstNodeFromEditorViewModel({
-                    ...fuzzyMatchComparatorEditModalProps.initialValue,
-                    children: [
-                      vm,
-                      fuzzyMatchComparatorEditModalProps.initialValue
-                        .children[1],
-                    ],
-                  });
+                onSave={(astNode: AstNode) => {
                   fuzzyMatchComparatorEditModalProps.onSave(astNode);
                   onOpenChange(false);
                 }}
@@ -139,55 +93,56 @@ export function FuzzyMatchComparatorEditModal({
   );
 }
 
-const allowedFuzzyMatchAlgorithms = [
-  'ratio',
-  'token_set_ratio',
-] satisfies FuzzyMatchAlgorithm[];
-
 function FuzzyMatchComparatorEditModalContent({
-  initialFuzzyMatchEditorNodeViewModel,
+  initialFuzzyMatchComparatorEditorNodeViewModel,
   onSave,
 }: {
-  initialFuzzyMatchEditorNodeViewModel: FuzzyMatchEditorNodeViewModel;
-  onSave: (vm: FuzzyMatchEditorNodeViewModel) => void;
+  initialFuzzyMatchComparatorEditorNodeViewModel: FuzzyMatchComparatorEditorNodeViewModel;
+  onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
-  const [fuzzyMatchEditorNodeViewModel, setFuzzyMatchEditorNodeViewModel] =
-    useState<FuzzyMatchEditorNodeViewModel>(
-      () => initialFuzzyMatchEditorNodeViewModel,
-    );
+
+  const {
+    algorithm,
+    setAlgorithm,
+    threshold,
+    left,
+    setLevel,
+    setThreshold,
+    setLeft,
+    right,
+    setRight,
+    funcName,
+    errors,
+  } = useFuzzyMatchComparatorEditState(
+    initialFuzzyMatchComparatorEditorNodeViewModel,
+  );
+
+  const leftOptions = useLeftOptions(
+    initialFuzzyMatchComparatorEditorNodeViewModel,
+  );
+  const rightOptions = useRightOptions(
+    initialFuzzyMatchComparatorEditorNodeViewModel,
+  );
 
   const handleSave = () => {
-    onSave(fuzzyMatchEditorNodeViewModel);
+    const fuzzyMatchComparatorAstNode = NewFuzzyMatchComparatorAstNode({
+      funcName,
+      left: adaptAstNodeFromEditorViewModel(left),
+      right: adaptAstNodeFromEditorViewModel(right),
+      algorithm: algorithm.value,
+      threshold: threshold.value,
+    });
+    onSave(fuzzyMatchComparatorAstNode);
   };
-
-  const options = useOperandOptions({
-    operandViewModel: fuzzyMatchEditorNodeViewModel.children[0],
-  });
-  const leftOptions = useMemo(
-    () => options.filter((option) => option.dataType === 'String'),
-    [options],
-  );
-  const rightOptions = useMemo(
-    () =>
-      options.filter(
-        (option) =>
-          option.operandType === 'CustomList' ||
-          option.dataType === 'String[]' ||
-          option.dataType === 'String',
-      ),
-    [options],
-  );
-
-  const adaptEditableAstNode = useAdaptEditableAstNode();
 
   return (
     <>
       <ModalV2.Title>{t('scenarios:edit_fuzzy_match.title')}</ModalV2.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <ModalV2.Description render={<Callout variant="outlined" />}>
-          <span className="">
+      <div className="flex flex-col gap-9 p-6">
+        <Callout variant="outlined">
+          <ModalV2.Description>
             <Trans
               t={t}
               i18nKey="scenarios:edit_fuzzy_match.description"
@@ -197,103 +152,56 @@ function FuzzyMatchComparatorEditModalContent({
                 ),
               }}
             />
-          </span>
-        </ModalV2.Description>
+          </ModalV2.Description>
+        </Callout>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-row gap-4">
+            <EditAlgorithm
+              algorithm={algorithm.value}
+              setAlgorithm={setAlgorithm}
+              errors={algorithm.errors}
+            />
+            {threshold.mode === 'level' ? (
+              <EditLevel
+                level={threshold.level}
+                setLevel={setLevel}
+                errors={threshold.errors}
+              />
+            ) : (
+              <EditThreshold
+                threshold={threshold.value}
+                setThreshold={setThreshold}
+                errors={threshold.errors}
+              />
+            )}
+          </div>
+          <Examples algorithm={algorithm.value} threshold={threshold.value} />
+        </div>
         <div className="flex flex-col gap-2">
+          <p id="level" className="text-m text-grey-100 font-normal">
+            {t('scenarios:edit_fuzzy_match.operands.label')}
+          </p>
           <div className="flex gap-2">
             <Operand
-              operandViewModel={fuzzyMatchEditorNodeViewModel.children[0]}
-              onSave={(ast) => {
-                const newLeftChild = adaptEditorNodeViewModel({
-                  ast,
-                  parent: fuzzyMatchEditorNodeViewModel,
-                });
-
-                setFuzzyMatchEditorNodeViewModel({
-                  ...fuzzyMatchEditorNodeViewModel,
-                  errors: fuzzyMatchEditorNodeViewModel.errors.filter(
-                    (error) => error.argumentIndex !== 0,
-                  ),
-                  children: [
-                    newLeftChild,
-                    fuzzyMatchEditorNodeViewModel.children[1],
-                  ],
-                });
-              }}
+              operandViewModel={left}
+              onSave={setLeft}
               options={leftOptions}
             />
             <div className="border-grey-10 bg-grey-02 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
-              <span className="text-s text-grey-100 font-medium">~</span>
+              <span className="text-s text-grey-100 font-medium">
+                {t(funcNameTKeys[funcName])}
+              </span>
             </div>
             <Operand
-              operandViewModel={fuzzyMatchEditorNodeViewModel.children[1]}
-              onSave={(ast) => {
-                const newRightChild = adaptEditorNodeViewModel({
-                  ast,
-                  parent: fuzzyMatchEditorNodeViewModel,
-                });
-
-                setFuzzyMatchEditorNodeViewModel({
-                  ...fuzzyMatchEditorNodeViewModel,
-                  funcName:
-                    // With lack of context, we assume that any non string operand is a list of strings (ex: we don't have dataType on CustomList)
-                    adaptEditableAstNode(newRightChild)?.dataType === 'String'
-                      ? 'FuzzyMatch'
-                      : 'FuzzyMatchAnyOf',
-                  errors: fuzzyMatchEditorNodeViewModel.errors.filter(
-                    (error) => error.argumentIndex !== 1,
-                  ),
-                  children: [
-                    fuzzyMatchEditorNodeViewModel.children[0],
-                    newRightChild,
-                  ],
-                });
-              }}
+              operandViewModel={right}
+              onSave={setRight}
               options={rightOptions}
             />
           </div>
           <EvaluationErrors
-            errors={adaptEvaluationErrorViewModels([
-              ...fuzzyMatchEditorNodeViewModel.errors,
-              ...fuzzyMatchEditorNodeViewModel.children.flatMap(
-                (child) => child.errors,
-              ),
-            ]).map(getNodeEvaluationErrorMessage)}
-          />
-        </div>
-        <div className="flex flex-row items-center gap-2">
-          <label id="algorithm" className="text-s text-grey-100 font-normal">
-            {t('scenarios:edit_fuzzy_match.algorithm.label')}
-          </label>
-          <div className="w-fit">
-            <Operator
-              aria-labelledby="algorithm"
-              operators={allowedFuzzyMatchAlgorithms}
-              value={
-                fuzzyMatchEditorNodeViewModel.namedChildren.algorithm.constant
-              }
-              setValue={(fuzzyMatchAlgorithm) =>
-                setFuzzyMatchEditorNodeViewModel({
-                  ...fuzzyMatchEditorNodeViewModel,
-                  namedChildren: {
-                    ...fuzzyMatchEditorNodeViewModel.namedChildren,
-                    algorithm: {
-                      ...fuzzyMatchEditorNodeViewModel.namedChildren.algorithm,
-                      constant: fuzzyMatchAlgorithm,
-                      errors: [],
-                    },
-                  },
-                })
-              }
-              errors={
-                fuzzyMatchEditorNodeViewModel.namedChildren.algorithm.errors
-              }
-            />
-          </div>
-          <EvaluationErrors
-            errors={adaptEvaluationErrorViewModels(
-              fuzzyMatchEditorNodeViewModel.namedChildren.algorithm.errors,
-            ).map(getNodeEvaluationErrorMessage)}
+            errors={adaptEvaluationErrorViewModels(errors).map(
+              getNodeEvaluationErrorMessage,
+            )}
           />
         </div>
         <div className="flex flex-1 flex-row gap-2">
@@ -315,5 +223,77 @@ function FuzzyMatchComparatorEditModalContent({
         </div>
       </div>
     </>
+  );
+}
+
+const funcNameTKeys = {
+  FuzzyMatch: 'scenarios:edit_fuzzy_match.fuzzy_match',
+  FuzzyMatchAnyOf: 'scenarios:edit_fuzzy_match.fuzzy_match_any_of',
+} satisfies Record<
+  FuzzyMatchEditorNodeViewModel['funcName'],
+  ParseKeys<['scenarios']>
+>;
+
+function Examples({
+  algorithm,
+  threshold,
+}: {
+  algorithm: FuzzyMatchAlgorithm;
+  threshold: number;
+}) {
+  const { t } = useTranslation(['common', 'scenarios']);
+  if (!isEditableFuzzyMatchAlgorithm(algorithm)) return null;
+
+  return (
+    <table className="border-grey-10 table-auto border-collapse border">
+      <caption className="sr-only">
+        {t('scenarios:edit_fuzzy_match.examples.caption')}
+      </caption>
+      <thead>
+        <tr>
+          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-left text-xs font-normal capitalize">
+            {t('scenarios:edit_fuzzy_match.examples.left')}
+          </th>
+          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-left text-xs font-normal capitalize">
+            {t('scenarios:edit_fuzzy_match.examples.right')}
+          </th>
+          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-left text-xs font-normal capitalize">
+            {t('scenarios:edit_fuzzy_match.examples.result')}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {[
+          {
+            left: 'Mr Mrs John Jane OR Doe Smith',
+            right: 'John Doe',
+            score: {
+              ratio: 43,
+              token_set_ratio: 100,
+            },
+          },
+          {
+            left: 'the dog was walking on the sidewalk',
+            right: "the d og as walkin' on the side alk",
+            score: {
+              ratio: 91,
+              token_set_ratio: 72,
+            },
+          },
+        ].map(({ left, right, score }) => (
+          <tr key={`${left}-${right}`}>
+            <td className="text-grey-100 border-grey-10 border px-2 text-xs font-normal">
+              {left}
+            </td>
+            <td className="text-grey-100 border-grey-10 border px-2 text-xs font-normal">
+              {right}
+            </td>
+            <td className="text-grey-100 border-grey-10 border px-2 text-xs font-normal">
+              {t(`common:${score[algorithm] > threshold}`)}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

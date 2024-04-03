@@ -217,7 +217,21 @@
   "edit_date.date": "Date",
   "enum_options": "Options:",
   "nest": "Nest",
+  "edit_fuzzy_match.string_similarity": "String similarity",
+  "edit_fuzzy_match.fuzzy_match": "match",
+  "edit_fuzzy_match.fuzzy_match_any_of": "match any of",
   "edit_fuzzy_match.title": "Create a text match",
   "edit_fuzzy_match.description": "Match a text field against a list of values. You can find more information in our documentation <DocLink>here</DocLink>.",
-  "edit_fuzzy_match.algorithm.label": "Similarity algorithm"
+  "edit_fuzzy_match.algorithm.label": "Similarity algorithm",
+  "edit_fuzzy_match.algorithm.description.ratio": "Compare strings that are expected to be nearly equal",
+  "edit_fuzzy_match.algorithm.description.token_set_ratio": "Compare strings that are composed of the same words",
+  "edit_fuzzy_match.threshold.label": "Matching threshold",
+  "edit_fuzzy_match.level.label": "Matching level",
+  "edit_fuzzy_match.level.medium": "medium",
+  "edit_fuzzy_match.level.high": "high",
+  "edit_fuzzy_match.examples.caption": "examples",
+  "edit_fuzzy_match.examples.left": "left string",
+  "edit_fuzzy_match.examples.right": "right string",
+  "edit_fuzzy_match.examples.result": "result",
+  "edit_fuzzy_match.operands.label": "Text to match"
 }
