@@ -1,9 +1,8 @@
+import { Callout } from '@app-builder/components';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type AstNode, isFuzzyMatchComparator } from '@app-builder/models';
-import {
-  type FuzzyMatchAlgorithm,
-  fuzzyMatchAlgorithms,
-} from '@app-builder/models/editable-operators';
+import { type FuzzyMatchAlgorithm } from '@app-builder/models/editable-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import {
   useAdaptEditableAstNode,
@@ -21,7 +20,7 @@ import {
 } from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
 
 import { Operand } from '../Operand';
@@ -140,6 +139,11 @@ export function FuzzyMatchComparatorEditModal({
   );
 }
 
+const allowedFuzzyMatchAlgorithms = [
+  'ratio',
+  'token_set_ratio',
+] satisfies FuzzyMatchAlgorithm[];
+
 function FuzzyMatchComparatorEditModalContent({
   initialFuzzyMatchEditorNodeViewModel,
   onSave,
@@ -182,6 +186,19 @@ function FuzzyMatchComparatorEditModalContent({
     <>
       <ModalV2.Title>{t('scenarios:edit_fuzzy_match.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
+        <ModalV2.Description render={<Callout variant="outlined" />}>
+          <span className="">
+            <Trans
+              t={t}
+              i18nKey="scenarios:edit_fuzzy_match.description"
+              components={{
+                DocLink: (
+                  <ExternalLink href="https://docs.checkmarble.com/docs/fuzzy-matching" />
+                ),
+              }}
+            />
+          </span>
+        </ModalV2.Description>
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
             <Operand
@@ -251,7 +268,7 @@ function FuzzyMatchComparatorEditModalContent({
           <div className="w-fit">
             <Operator
               aria-labelledby="algorithm"
-              operators={fuzzyMatchAlgorithms}
+              operators={allowedFuzzyMatchAlgorithms}
               value={
                 fuzzyMatchEditorNodeViewModel.namedChildren.algorithm.constant
               }

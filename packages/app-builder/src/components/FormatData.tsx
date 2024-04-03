@@ -1,24 +1,6 @@
 import { formatDateTime, formatNumber } from '@app-builder/utils/format';
-import type React from 'react';
 
-export function ExternalLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <a
-      className="hover:text-purple-120 focus:text-purple-120 font-semibold lowercase text-purple-100 hover:underline focus:underline"
-      target="_blank"
-      rel="noreferrer"
-      href={href}
-    >
-      {children}
-    </a>
-  );
-}
+import { ExternalLink } from './ExternalLink';
 
 type Data =
   | {
