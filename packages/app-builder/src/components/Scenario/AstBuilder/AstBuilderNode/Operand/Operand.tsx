@@ -1,6 +1,6 @@
 import { type AstNode } from '@app-builder/models';
 import { useAdaptEditableAstNode } from '@app-builder/services/ast-node/options';
-import { formatReturnValue } from '@app-builder/services/ast-node/return-value';
+import { useFormatReturnValue } from '@app-builder/services/ast-node/return-value';
 import {
   type EditorNodeViewModel,
   getValidationStatus,
@@ -23,6 +23,7 @@ export function Operand({
 }) {
   const adaptEditableAstNode = useAdaptEditableAstNode();
   const editableAstNode = adaptEditableAstNode(operandViewModel);
+  const formatReturnValue = useFormatReturnValue();
 
   if (!editableAstNode) {
     return (
