@@ -24,7 +24,7 @@ export function getFuzzyMatchAlgorithmName(
   if (isFuzzyMatchAlgorithm(fuzzyMatchAlgorithm)) {
     switch (fuzzyMatchAlgorithm) {
       case 'ratio':
-        return 'ratio';
+        return t('scenarios:edit_fuzzy_match.algorithm.ratio');
       case 'partial_ratio':
         return 'partial_ratio';
       case 'token_sort_ratio':
@@ -32,7 +32,7 @@ export function getFuzzyMatchAlgorithmName(
       case 'partial_token_sort_ratio':
         return 'partial_token_sort_ratio';
       case 'token_set_ratio':
-        return 'token_set_ratio';
+        return t('scenarios:edit_fuzzy_match.algorithm.token_set_ratio');
       case 'partial_token_set_ratio':
         return 'partial_token_set_ratio';
       default:

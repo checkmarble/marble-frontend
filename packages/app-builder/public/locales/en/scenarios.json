@@ -223,6 +223,8 @@
   "edit_fuzzy_match.title": "Create a text match",
   "edit_fuzzy_match.description": "Match a text field against a list of values. You can find more information in our documentation <DocLink>here</DocLink>.",
   "edit_fuzzy_match.algorithm.label": "Similarity algorithm",
+  "edit_fuzzy_match.algorithm.ratio": "full string similarity",
+  "edit_fuzzy_match.algorithm.token_set_ratio": "bag of words similarity",
   "edit_fuzzy_match.algorithm.description.ratio": "Compare strings that are expected to be nearly equal",
   "edit_fuzzy_match.algorithm.description.token_set_ratio": "Compare strings that are composed of the same words",
   "edit_fuzzy_match.threshold.label": "Matching threshold",
