@@ -8,6 +8,7 @@
   "success_message": "{{linesProcessed}} {{objectType}} will be added to your data",
   "failure_message": "We found an error:",
   "failure_additional_message": "No {{objectType}} were added to your data",
+  "errors.request_timeout": "The request timed out. Please try again, or try to cut your file into smaller parts.",
   "results": "Results",
   "past_uploads": "Past uploads",
   "upload_status": "Status",

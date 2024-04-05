@@ -4,6 +4,7 @@ import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useRevalidator } from '@remix-run/react';
@@ -129,13 +130,17 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         },
       );
       if (!response.ok) {
-        const errorMessage = await response.text();
         setIsModalOpen(true);
+        let errorMessage: string | undefined;
+        if (response.status === REQUEST_TIMEOUT) {
+          errorMessage = t('upload:errors.request_timeout');
+        } else {
+          errorMessage = (await response.text()).trim();
+        }
+
         computeModalMessage({
           success: false,
-          errorMessage: !errorMessage.trim()
-            ? t('common:global_error')
-            : errorMessage.trim(),
+          errorMessage: errorMessage ?? t('common:global_error'),
         });
         return;
       }
