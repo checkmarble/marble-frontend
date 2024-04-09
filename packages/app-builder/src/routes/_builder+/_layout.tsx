@@ -1,10 +1,11 @@
 import {
+  ErrorComponent,
   navigationI18n,
   PermissionsProvider,
   SidebarButton,
   SidebarLink,
 } from '@app-builder/components';
-import { isAdmin } from '@app-builder/models';
+import { isAdmin, isMarbleAdmin } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import { LanguagePicker } from '@app-builder/routes/ressources+/user+/language';
 import { ChatlioWidget } from '@app-builder/services/chatlio/ChatlioWidget';
@@ -18,10 +19,19 @@ import {
 } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
 import { getClientEnv } from '@app-builder/utils/environment';
+import { conflict } from '@app-builder/utils/http/http-responses';
+import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import * as Popover from '@radix-ui/react-popover';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Form, Outlet, useLoaderData } from '@remix-run/react';
+import {
+  Form,
+  isRouteErrorResponse,
+  Outlet,
+  useLoaderData,
+  useRouteError,
+} from '@remix-run/react';
+import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
@@ -34,6 +44,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { user, organization } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
+
+  if (isMarbleAdmin(user)) {
+    throw conflict("Marble Admins can't access the app builder.");
+  }
 
   const [organizationDetail, orgUsers, orgTags] = await Promise.all([
     organization.getCurrentOrganization(),
@@ -274,4 +288,42 @@ export default function Builder() {
       </OrganizationUsersContextProvider>
     </PermissionsProvider>
   );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  const { t } = useTranslation(handle.i18n);
+
+  // Handle Marble Admins, do not capture error in Sentry
+  if (isRouteErrorResponse(error) && error.status === CONFLICT) {
+    return (
+      <div className="bg-purple-05 flex size-full items-center justify-center">
+        <div className="bg-grey-00 flex max-w-md flex-col items-center gap-4 rounded-2xl p-10 text-center shadow-md">
+          <h1 className="text-l text-purple-110 font-semibold">
+            {t('common:error_boundary.marble_admin.title')}
+          </h1>
+          <p className="text-s mb-6">
+            {t('common:error_boundary.marble_admin.subtitle')}
+          </p>
+          <div className="mb-1">
+            <Form action={getRoute('/ressources/auth/logout')} method="POST">
+              <Button
+                type="submit"
+                onClick={() => {
+                  void segment.reset();
+                }}
+              >
+                <Icon icon="logout" className="size-5" />
+                {t('common:auth.logout')}
+              </Button>
+            </Form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  captureRemixErrorBoundaryError(error);
+
+  return <ErrorComponent error={error} />;
 }
