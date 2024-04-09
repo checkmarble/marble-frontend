@@ -125,7 +125,7 @@ paths:
             items:
               type: string
         - name: has_case
-          description: 'Optional filter: the decision is attached to a case'
+          description: Filter decisions that have a case associated with them or not (true or false, default returns all)
           in: query
           required: false
           schema:
