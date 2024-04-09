@@ -44,7 +44,7 @@ export interface CaseRepository {
 
 export function getCaseRepository() {
   return (marbleApiClient: MarbleApi): CaseRepository => ({
-    listCases: async ({ dateRange, ...rest }: CaseFilters) => {
+    listCases: async ({ dateRange, inboxIds, statuses }: CaseFilters) => {
       let startDate, endDate: string | undefined;
       if (dateRange?.type === 'static') {
         startDate = dateRange?.startDate;
@@ -57,9 +57,10 @@ export function getCaseRepository() {
       }
 
       const { items, ...pagination } = await marbleApiClient.listCases({
-        ...rest,
         startDate,
         endDate,
+        inboxId: inboxIds,
+        status: statuses,
       });
 
       return {

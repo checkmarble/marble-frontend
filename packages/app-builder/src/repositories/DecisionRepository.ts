@@ -43,7 +43,13 @@ export interface DecisionRepository {
 
 export function getDecisionRepository() {
   return (marbleApiClient: MarbleApi): DecisionRepository => ({
-    listDecisions: async ({ dateRange, ...rest }) => {
+    listDecisions: async ({
+      dateRange,
+      outcome,
+      triggerObject,
+      scenarioId,
+      hasCase,
+    }) => {
       let startDate, endDate: string | undefined;
       if (dateRange?.type === 'static') {
         startDate = dateRange?.startDate;
@@ -56,7 +62,10 @@ export function getDecisionRepository() {
       }
 
       const { items, ...pagination } = await marbleApiClient.listDecisions({
-        ...rest,
+        outcome,
+        triggerObject,
+        scenarioId,
+        hasCase,
         startDate,
         endDate,
       });

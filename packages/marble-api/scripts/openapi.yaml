@@ -107,7 +107,7 @@ paths:
             type: array
             items:
               $ref: '#/components/schemas/Outcome'
-        - name: scenarioId[]
+        - name: scenario_id[]
           description: scenario IDs used to filter the list
           in: query
           required: false
@@ -116,7 +116,7 @@ paths:
             items:
               type: string
               format: uuid
-        - name: triggerObject[]
+        - name: trigger_object[]
           description: trigger objects used to filter the list
           in: query
           required: false
@@ -124,32 +124,36 @@ paths:
             type: array
             items:
               type: string
-        - name: startDate
-          description: start date used to filter the list
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: endDate
-          description: end date used to filter the list
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date-time
         - name: has_case
           description: 'Optional filter: the decision is attached to a case'
           in: query
           required: false
           schema:
             type: boolean
-        - $ref: '#/components/parameters/offsetId'
+        - name: scheduled_execution_id[]
+          description: scheduled execution IDs used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+        - name: sorting
+          description: the field used to sort the items
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - created_at
+        - $ref: '#/components/parameters/offset_id'
         - $ref: '#/components/parameters/previous'
         - $ref: '#/components/parameters/next'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/sorting'
       responses:
         '200':
           description: List of corresponding decisions
@@ -204,7 +208,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: statuses[]
+        - name: status[]
           description: case statuses used to filter the list
           in: query
           required: false
@@ -212,7 +216,7 @@ paths:
             type: array
             items:
               $ref: '#/components/schemas/CaseStatus'
-        - name: inbox_ids[]
+        - name: inbox_id[]
           description: inbox IDs used to filter the list
           in: query
           required: false
@@ -221,26 +225,21 @@ paths:
             items:
               type: string
               format: uuid
-        - name: startDate
-          description: start date used to filter the list
+        - $ref: '#/components/parameters/start_date'
+        - $ref: '#/components/parameters/end_date'
+        - name: sorting
+          description: the field used to sort the items
           in: query
           required: false
           schema:
             type: string
-            format: date-time
-        - name: endDate
-          description: end date used to filter the list
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - $ref: '#/components/parameters/offsetId'
+            enum:
+              - created_at
+        - $ref: '#/components/parameters/offset_id'
         - $ref: '#/components/parameters/previous'
         - $ref: '#/components/parameters/next'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/sorting'
       responses:
         '200':
           description: List of corresponding cases
@@ -2836,9 +2835,25 @@ paths:
           $ref: '#/components/responses/403'
 components:
   parameters:
-    offsetId:
+    start_date:
       in: query
-      name: offsetId
+      name: start_date
+      description: start date used to filter the list
+      required: false
+      schema:
+        type: string
+        format: date-time
+    end_date:
+      in: query
+      name: end_date
+      description: end date used to filter the list
+      required: false
+      schema:
+        type: string
+        format: date-time
+    offset_id:
+      in: query
+      name: offset_id
       description: the item from which to paginate
       required: false
       schema:
@@ -2877,15 +2892,6 @@ components:
         enum:
           - ASC
           - DESC
-    sorting:
-      in: query
-      name: sorting
-      description: the field used to sort the items
-      required: false
-      schema:
-        type: string
-        enum:
-          - created_at
   schemas:
     OrganizationDto:
       type: object
@@ -3686,38 +3692,42 @@ components:
     ScheduledExecution:
       type: object
       required:
-        - id
-        - scenario_iteration_id
-        - status
-        - started_at
         - finished_at
+        - id
+        - manual
         - number_of_created_decisions
         - scenario_id
+        - scenario_iteration_id
         - scenario_name
         - scenario_trigger_object_type
+        - started_at
+        - status
       properties:
-        id:
-          type: string
-          format: uuid
-        scenario_iteration_id:
-          type: string
-          format: uuid
-        status:
-          type: string
-        started_at:
-          type: string
         finished_at:
-          type: string
           format: date-time
           nullable: true
+          type: string
+        id:
+          format: uuid
+          type: string
+        manual:
+          description: Whether the execution was manual or not
+          type: boolean
         number_of_created_decisions:
           type: number
         scenario_id:
-          type: string
           format: uuid
+          type: string
+        scenario_iteration_id:
+          format: uuid
+          type: string
         scenario_name:
           type: string
         scenario_trigger_object_type:
+          type: string
+        started_at:
+          type: string
+        status:
           type: string
     CreateDecisionBody:
       type: object
