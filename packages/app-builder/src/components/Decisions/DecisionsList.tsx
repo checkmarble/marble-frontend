@@ -95,8 +95,40 @@ export function DecisionsList({
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
 
-  const columns = useMemo(() => {
-    const columns = [
+  const columns = useMemo(
+    () => [
+      ...(selectable
+        ? [
+            columnHelper.display({
+              id: 'select',
+              header: ({ table }) => (
+                <Checkbox
+                  checked={
+                    table.getIsAllPageRowsSelected()
+                      ? true
+                      : table.getIsSomeRowsSelected()
+                        ? 'indeterminate'
+                        : false
+                  }
+                  onClick={table.getToggleAllRowsSelectedHandler()}
+                />
+              ),
+              cell: ({ row }) => (
+                <Checkbox
+                  className="isolate"
+                  checked={row.getIsSelected()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    row.getToggleSelectedHandler()(e);
+                  }}
+                />
+              ),
+              size: 58,
+              enableResizing: false,
+            }),
+          ]
+        : []),
+
       columnHelper.accessor((row) => row.createdAt, {
         id: 'created_at',
         header: t('decisions:created_at'),
@@ -189,42 +221,9 @@ export function DecisionsList({
           <Outcome border="square" size="big" outcome={getValue()} />
         ),
       }),
-    ];
-
-    if (selectable) {
-      columns.unshift(
-        columnHelper.display({
-          id: 'select',
-          header: ({ table }) => (
-            <Checkbox
-              checked={
-                table.getIsAllPageRowsSelected()
-                  ? true
-                  : table.getIsSomeRowsSelected()
-                    ? 'indeterminate'
-                    : false
-              }
-              onClick={table.getToggleAllRowsSelectedHandler()}
-            />
-          ),
-          cell: ({ row }) => (
-            <Checkbox
-              className="isolate"
-              checked={row.getIsSelected()}
-              onClick={(e) => {
-                e.stopPropagation();
-                row.getToggleSelectedHandler()(e);
-              }}
-            />
-          ),
-          size: 58,
-          enableResizing: false,
-        }),
-      );
-    }
-
-    return columns;
-  }, [t, selectable, language]);
+    ],
+    [t, selectable, language],
+  );
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: decisions,

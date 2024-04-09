@@ -96,7 +96,7 @@ export function adaptEvaluationErrorViewModels(
 
   const expectedErrorVMs = R.pipe(
     expectedErrors,
-    R.toPairs.strict(),
+    R.entries.strict(),
     R.map(([error, evaluationErrors]) => ({
       error,
       count: evaluationErrors.length,

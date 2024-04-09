@@ -107,7 +107,7 @@ const Popover = forwardRef<HTMLDivElement, Ariakit.SelectPopoverProps>(
         fitViewport
         gutter={8}
         className={clsx(
-          'animate-slideUpAndFade bg-grey-00 border-grey-10 max-h-[min(var(--popover-available-height),_300px)] rounded border shadow-md will-change-[transform,opacity]',
+          'bg-grey-00 border-grey-10 max-h-[min(var(--popover-available-height),_300px)] -translate-y-1 rounded border opacity-0 shadow-md transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
           className,
         )}
         {...props}

@@ -22,7 +22,7 @@ export function findAndReplaceNode(
   );
 
   const namedChildren = R.pipe(
-    R.toPairs(node.namedChildren),
+    R.entries(node.namedChildren),
     R.map(([key, child]) => {
       const newChild = findAndReplaceNode(nodeIdToReplace, fn, child, node);
       return newChild === null ? null : ([key, newChild] as const);

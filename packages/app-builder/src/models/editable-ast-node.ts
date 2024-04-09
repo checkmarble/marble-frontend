@@ -599,7 +599,7 @@ export function stringifyAstNode(
   );
 
   const namedChildrenArgs = R.pipe(
-    R.toPairs(astNode.namedChildren),
+    R.entries(astNode.namedChildren),
     R.map(([name, child]) => `${name}: ${stringifyAstNode(t, child, config)}`),
     R.join(', '),
   );

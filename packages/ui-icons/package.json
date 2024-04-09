@@ -11,13 +11,13 @@
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
-    "@types/node": "20.11.21",
-    "@types/react": "18.2.60",
-    "@types/svg-sprite": "^0.0.38",
+    "@types/node": "20.12.7",
+    "@types/react": "18.2.75",
+    "@types/svg-sprite": "^0.0.39",
     "ora": "^8.0.1",
     "react": "18.2.0",
-    "svg-sprite": "^2.0.2",
-    "tsx": "^4.7.1"
+    "svg-sprite": "^2.0.4",
+    "tsx": "^4.7.2"
   },
   "author": "",
   "license": "ISC",

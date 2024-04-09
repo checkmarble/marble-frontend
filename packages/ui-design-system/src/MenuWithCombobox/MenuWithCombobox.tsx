@@ -105,7 +105,7 @@ export const MenuPopover = React.forwardRef<HTMLDivElement, MenuProps>(
           gutter={8}
           {...props}
           className={clsx(
-            'animate-slideUpAndFade bg-grey-00 border-grey-10 flex max-h-[min(var(--popover-available-height),_300px)] overflow-hidden rounded border shadow-md outline-none will-change-[transform,opacity]',
+            'bg-grey-00 border-grey-10 flex max-h-[min(var(--popover-available-height),_300px)] -translate-y-1 overflow-hidden rounded border opacity-0 shadow-md outline-none transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
             props.className,
           )}
         />
@@ -120,7 +120,7 @@ export const MenuCombobox = React.forwardRef<
   HTMLInputElement,
   MenuComboboxProps
 >(function MenuCombobox(props, ref) {
-  return <Ariakit.Combobox ref={ref} autoSelect {...props} />;
+  return <Ariakit.Combobox ref={ref} autoSelect="always" {...props} />;
 });
 
 export interface MenuContentProps {

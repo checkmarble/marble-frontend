@@ -104,7 +104,7 @@ export function hasArgumentNameErrorsFromParent<VM extends ValidationViewModel>(
 ): boolean {
   if (!viewModel.parent) return false;
   const namedChild = R.pipe(
-    R.toPairs(viewModel.parent.namedChildren),
+    R.entries(viewModel.parent.namedChildren),
     R.find(([_, child]) => child.nodeId == viewModel.nodeId),
   );
   if (!namedChild) return false;
@@ -118,7 +118,7 @@ export function findArgumentNameErrorsFromParent<
 >(viewModel: VM): EvaluationError[] {
   if (!viewModel.parent) return [];
   const namedChild = R.pipe(
-    R.toPairs(viewModel.parent.namedChildren),
+    R.entries(viewModel.parent.namedChildren),
     R.find(([_, child]) => child.nodeId == viewModel.nodeId),
   );
   if (!namedChild) return [];
