@@ -227,15 +227,17 @@ export type Tag = {
     cases_count?: number;
 };
 export type ScheduledExecution = {
-    id: string;
-    scenario_iteration_id: string;
-    status: string;
-    started_at: string;
     finished_at: string | null;
+    id: string;
+    /** Whether the execution was manual or not */
+    manual: boolean;
     number_of_created_decisions: number;
     scenario_id: string;
+    scenario_iteration_id: string;
     scenario_name: string;
     scenario_trigger_object_type: string;
+    started_at: string;
+    status: string;
 };
 export type UploadLog = {
     started_at: string;
@@ -582,19 +584,20 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
 /**
  * List decisions
  */
-export function listDecisions({ outcome, scenarioId, triggerObject, startDate, endDate, hasCase, offsetId, previous, next, limit, order, sorting }: {
+export function listDecisions({ outcome, scenarioId, triggerObject, hasCase, scheduledExecutionId, startDate, endDate, sorting, offsetId, previous, next, limit, order }: {
     outcome?: Outcome[];
     scenarioId?: string[];
     triggerObject?: string[];
+    hasCase?: boolean;
+    scheduledExecutionId?: string[];
     startDate?: string;
     endDate?: string;
-    hasCase?: boolean;
+    sorting?: "created_at";
     offsetId?: string;
     previous?: boolean;
     next?: boolean;
     limit?: number;
     order?: "ASC" | "DESC";
-    sorting?: "created_at";
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -609,17 +612,18 @@ export function listDecisions({ outcome, scenarioId, triggerObject, startDate, e
         data: string;
     }>(`/decisions${QS.query(QS.explode({
         "outcome[]": outcome,
-        "scenarioId[]": scenarioId,
-        "triggerObject[]": triggerObject,
-        startDate,
-        endDate,
+        "scenario_id[]": scenarioId,
+        "trigger_object[]": triggerObject,
         has_case: hasCase,
-        offsetId,
+        "scheduled_execution_id[]": scheduledExecutionId,
+        start_date: startDate,
+        end_date: endDate,
+        sorting,
+        offset_id: offsetId,
         previous,
         next,
         limit,
-        order,
-        sorting
+        order
     }))}`, {
         ...opts
     }));
@@ -646,17 +650,17 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases({ statuses, inboxIds, startDate, endDate, offsetId, previous, next, limit, order, sorting }: {
-    statuses?: CaseStatus[];
-    inboxIds?: string[];
+export function listCases({ status, inboxId, startDate, endDate, sorting, offsetId, previous, next, limit, order }: {
+    status?: CaseStatus[];
+    inboxId?: string[];
     startDate?: string;
     endDate?: string;
+    sorting?: "created_at";
     offsetId?: string;
     previous?: boolean;
     next?: boolean;
     limit?: number;
     order?: "ASC" | "DESC";
-    sorting?: "created_at";
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -670,16 +674,16 @@ export function listCases({ statuses, inboxIds, startDate, endDate, offsetId, pr
         status: 403;
         data: string;
     }>(`/cases${QS.query(QS.explode({
-        "statuses[]": statuses,
-        "inbox_ids[]": inboxIds,
-        startDate,
-        endDate,
-        offsetId,
+        "status[]": status,
+        "inbox_id[]": inboxId,
+        start_date: startDate,
+        end_date: endDate,
+        sorting,
+        offset_id: offsetId,
         previous,
         next,
         limit,
-        order,
-        sorting
+        order
     }))}`, {
         ...opts
     }));
