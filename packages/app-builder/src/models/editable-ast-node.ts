@@ -467,7 +467,14 @@ export class FuzzyMatchComparatorEditableAstNode
     },
   ) {
     const fuzzyMatch = astNode.children[0];
-    return `${stringifyAstNode(t, fuzzyMatch.children[0], config) || '?'} ~ ${stringifyAstNode(t, fuzzyMatch.children[1], config) || '?'}`;
+    const left = fuzzyMatch.children[0];
+    const right = fuzzyMatch.children[1];
+    if (isUndefinedAstNode(left) && isUndefinedAstNode(right)) {
+      return t('scenarios:edit_fuzzy_match.string_similarity');
+    }
+    const formatLeft = stringifyAstNode(t, left, config) || '?';
+    const formatRight = stringifyAstNode(t, right, config) || '?';
+    return `${formatLeft} ≈ ${formatRight}`;
   }
 }
 

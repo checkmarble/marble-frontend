@@ -5,7 +5,6 @@ import {
   isPayload,
   NewAggregatorAstNode,
   NewConstantAstNode,
-  NewFuzzyMatchAstNode,
   NewFuzzyMatchComparatorAstNode,
   type PayloadAstNode,
 } from '@app-builder/models/ast-node';
@@ -166,7 +165,7 @@ export function useOperandOptions({
       new FuzzyMatchComparatorEditableAstNode(
         t,
         NewFuzzyMatchComparatorAstNode({
-          fuzzyMatch: NewFuzzyMatchAstNode({}),
+          funcName: 'FuzzyMatch',
         }),
         { triggerObjectTable, dataModel, customLists, enumOptions: [] },
       ),

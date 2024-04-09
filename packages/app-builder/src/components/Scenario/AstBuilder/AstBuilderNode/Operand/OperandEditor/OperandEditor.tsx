@@ -32,10 +32,8 @@ import {
   isAggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../../AggregationEdit';
-import {
-  isFuzzyMatchComparatorEditorNodeViewModel,
-  useFuzzyMatchComparatorEdit,
-} from '../../FuzzyMatchComparatorEdit/Modal';
+import { isFuzzyMatchComparatorEditorNodeViewModel } from '../../FuzzyMatchComparatorEdit/FuzzyMatchComparatorEdit.types';
+import { useFuzzyMatchComparatorEdit } from '../../FuzzyMatchComparatorEdit/Modal';
 import {
   adaptTimeAddViewModal,
   isTimeAddEditorNodeViewModel,

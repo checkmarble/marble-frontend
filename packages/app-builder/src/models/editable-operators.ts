@@ -72,35 +72,17 @@ export function isAggregatorOperator(
   return (aggregatorOperators as ReadonlyArray<string>).includes(value);
 }
 
-export const fuzzyMatchAlgorithms = [
-  'ratio',
-  'partial_ratio',
-  'token_sort_ratio',
-  'partial_token_sort_ratio',
-  'token_set_ratio',
-  'partial_token_set_ratio',
-] as const;
-export type FuzzyMatchAlgorithm = (typeof fuzzyMatchAlgorithms)[number];
-
-export function isFuzzyMatchAlgorithm(
-  value: string,
-): value is AggregatorOperator {
-  return (fuzzyMatchAlgorithms as ReadonlyArray<string>).includes(value);
-}
-
 export type OperatorFunction =
   | TwoLineOperandOperatorFunction
   | FilterOperator
   | TimeAddOperator
-  | AggregatorOperator
-  | FuzzyMatchAlgorithm;
+  | AggregatorOperator;
 export function isOperatorFunction(value: string): value is OperatorFunction {
   return (
     isTwoLineOperandOperatorFunction(value) ||
     isFilterOperator(value) ||
     isTimeAddOperator(value) ||
-    isAggregatorOperator(value) ||
-    isFuzzyMatchAlgorithm(value)
+    isAggregatorOperator(value)
   );
 }
 
@@ -155,18 +137,6 @@ export function getOperatorName(
         return t('scenarios:aggregator.min');
       case 'SUM':
         return t('scenarios:aggregator.sum');
-      case 'ratio':
-        return 'ratio';
-      case 'partial_ratio':
-        return 'partial_ratio';
-      case 'token_sort_ratio':
-        return 'token_sort_ratio';
-      case 'partial_token_sort_ratio':
-        return 'partial_token_sort_ratio';
-      case 'token_set_ratio':
-        return 'token_set_ratio';
-      case 'partial_token_set_ratio':
-        return 'partial_token_set_ratio';
       case undefinedAstNodeName:
         return '...';
       default:

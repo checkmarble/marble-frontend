@@ -1,10 +1,12 @@
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 
+import { undefinedAstNodeName } from './editable-operators';
 import {
+  defaultEditableFuzzyMatchAlgorithm,
+  defaultFuzzyMatchComparatorThreshold,
   type FuzzyMatchAlgorithm,
-  undefinedAstNodeName,
-} from './editable-operators';
+} from './fuzzy-match';
 
 export type AstNode = {
   name: string | null;
@@ -272,7 +274,7 @@ export interface FuzzyMatchAstNode {
 export function NewFuzzyMatchAstNode({
   left = NewUndefinedAstNode(),
   right = NewUndefinedAstNode(),
-  algorithm = 'partial_ratio',
+  algorithm = defaultEditableFuzzyMatchAlgorithm,
 }: {
   left?: AstNode;
   right?: AstNode;
@@ -301,7 +303,7 @@ export interface FuzzyMatchAnyOfAstNode {
 export function NewFuzzyMatchAnyOfAstNode({
   left = NewUndefinedAstNode(),
   right = NewUndefinedAstNode(),
-  algorithm = 'partial_ratio',
+  algorithm = defaultEditableFuzzyMatchAlgorithm,
 }: {
   left?: AstNode;
   right?: AstNode;
@@ -328,12 +330,31 @@ export interface FuzzyMatchComparatorAstNode {
 }
 
 export function NewFuzzyMatchComparatorAstNode({
-  fuzzyMatch,
-  threshold = 0,
+  funcName,
+  left,
+  right,
+  algorithm,
+  threshold = defaultFuzzyMatchComparatorThreshold,
 }: {
-  fuzzyMatch: FuzzyMatchAstNode | FuzzyMatchAnyOfAstNode;
+  funcName: typeof fuzzyMatchAnyOfAstNodeName | typeof fuzzyMatchAstNodeName;
+  left?: AstNode;
+  right?: AstNode;
+  algorithm?: FuzzyMatchAlgorithm;
   threshold?: number;
 }): FuzzyMatchComparatorAstNode {
+  const fuzzyMatch =
+    funcName === fuzzyMatchAstNodeName
+      ? NewFuzzyMatchAstNode({
+          left,
+          right,
+          algorithm,
+        })
+      : NewFuzzyMatchAnyOfAstNode({
+          left,
+          right,
+          algorithm,
+        });
+
   return {
     name: '>',
     constant: undefined,

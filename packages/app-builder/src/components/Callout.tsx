@@ -23,21 +23,21 @@ const callout = cva(
   },
 );
 
-interface CalloutProps extends VariantProps<typeof callout> {
-  children: React.ReactNode;
-  className?: string;
-}
+interface CalloutProps
+  extends VariantProps<typeof callout>,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {}
 
 export function Callout({
   children,
   className,
   color = 'purple',
   variant = 'soft',
+  ...otherProps
 }: CalloutProps) {
   if (!children) return null;
 
   return (
-    <div className={callout({ color, variant, className })}>
+    <div className={callout({ color, variant, className })} {...otherProps}>
       <Icon icon="lightbulb" className="size-6 shrink-0" />
       {children}
     </div>
