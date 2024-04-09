@@ -49,6 +49,7 @@ export function getDecisionRepository() {
       triggerObject,
       scenarioId,
       hasCase,
+      ...rest
     }) => {
       let startDate, endDate: string | undefined;
       if (dateRange?.type === 'static') {
@@ -68,6 +69,7 @@ export function getDecisionRepository() {
         hasCase,
         startDate,
         endDate,
+        ...rest,
       });
 
       return {
