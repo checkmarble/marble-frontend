@@ -4,7 +4,6 @@ import {
   NewUndefinedAstNode,
 } from '@app-builder/models';
 import { type EditableAstNode } from '@app-builder/models/editable-ast-node';
-import { useOperandOptions } from '@app-builder/services/ast-node/options';
 import { coerceToConstantEditableAstNode } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -33,6 +32,8 @@ import {
   isAggregationEditorNodeViewModel,
   useEditAggregation,
 } from '../../AggregationEdit';
+import { isFuzzyMatchComparatorEditorNodeViewModel } from '../../FuzzyMatchComparatorEdit/FuzzyMatchComparatorEdit.types';
+import { useFuzzyMatchComparatorEdit } from '../../FuzzyMatchComparatorEdit/Modal';
 import {
   adaptTimeAddViewModal,
   isTimeAddEditorNodeViewModel,
@@ -47,10 +48,12 @@ export function OperandEditor({
   operandViewModel,
   editableAstNode,
   onSave,
+  options,
 }: {
   operandViewModel: OperandViewModel;
   editableAstNode: EditableAstNode;
   onSave: (astNode: AstNode) => void;
+  options: EditableAstNode[];
 }) {
   const { t } = useTranslation('scenarios');
   const [searchValue, setSearchValue] = useState('');
@@ -72,6 +75,7 @@ export function OperandEditor({
           onSave={onSave}
           operandViewModel={operandViewModel}
           searchValue={searchValue}
+          options={options}
         />
       </MenuPopover>
     </MenuRoot>
@@ -82,17 +86,18 @@ function OperandEditorContent({
   onSave,
   operandViewModel,
   searchValue,
+  options,
 }: {
   onSave: (astNode: AstNode) => void;
   operandViewModel: OperandViewModel;
   searchValue: string;
+  options: EditableAstNode[];
 }) {
   const { t } = useTranslation('scenarios');
 
-  const options = useOperandOptions({ operandViewModel });
-
   const editAggregation = useEditAggregation();
   const editTimeAdd = useEditTimeAdd();
+  const fuzzyMatchComparatorEdit = useFuzzyMatchComparatorEdit();
 
   const onClick = useCallback(
     (newSelection: EditableAstNode) => {
@@ -115,11 +120,24 @@ function OperandEditorContent({
           }),
           onSave,
         });
+      } else if (
+        isFuzzyMatchComparatorEditorNodeViewModel(editorNodeViewModel)
+      ) {
+        fuzzyMatchComparatorEdit({
+          initialValue: editorNodeViewModel,
+          onSave,
+        });
       } else {
         onSave(newSelection.astNode);
       }
     },
-    [editAggregation, editTimeAdd, onSave, operandViewModel.nodeId],
+    [
+      editAggregation,
+      editTimeAdd,
+      fuzzyMatchComparatorEdit,
+      onSave,
+      operandViewModel.nodeId,
+    ],
   );
 
   const bottomOptions = useBottomActions({
@@ -215,6 +233,7 @@ function useBottomActions({
   const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
   const editAggregation = useEditAggregation();
   const editTimeAdd = useEditTimeAdd();
+  const fuzzyMatchComparatorEdit = useFuzzyMatchComparatorEdit();
   const copyPasteAST = useOptionalCopyPasteAST();
 
   const bottomOptions: BottomOptionProps[] = [];
@@ -249,6 +268,17 @@ function useBottomActions({
       onSelect: () => {
         const initialValue = adaptTimeAddViewModal(operandViewModel);
         editTimeAdd({ initialValue, onSave });
+      },
+    });
+  } else if (isFuzzyMatchComparatorEditorNodeViewModel(operandViewModel)) {
+    bottomOptions.push({
+      icon: 'edit',
+      label: t('common:edit'),
+      onSelect: () => {
+        fuzzyMatchComparatorEdit({
+          initialValue: operandViewModel,
+          onSave,
+        });
       },
     });
   }

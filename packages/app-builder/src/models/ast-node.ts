@@ -1,14 +1,19 @@
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 
+import { undefinedAstNodeName } from './editable-operators';
+import {
+  defaultEditableFuzzyMatchAlgorithm,
+  defaultFuzzyMatchComparatorThreshold,
+  type FuzzyMatchAlgorithm,
+} from './fuzzy-match';
+
 export type AstNode = {
   name: string | null;
   constant?: ConstantType;
   children: AstNode[];
   namedChildren: Record<string, AstNode>;
 };
-
-export const undefinedAstNodeName = 'Undefined';
 
 export type ConstantType =
   | number
@@ -256,11 +261,107 @@ export function NewTimeNowAstNode(): TimeNowAstNode {
   };
 }
 
-export const functionNodeNames = [
-  aggregationAstNodeName,
-  timeAddAstNodeName,
-  timeNowAstNodeName,
-];
+export const fuzzyMatchAstNodeName = 'FuzzyMatch';
+export interface FuzzyMatchAstNode {
+  name: typeof fuzzyMatchAstNodeName;
+  constant?: undefined;
+  children: [AstNode, AstNode];
+  namedChildren: {
+    algorithm: ConstantAstNode<FuzzyMatchAlgorithm>;
+  };
+}
+
+export function NewFuzzyMatchAstNode({
+  left = NewUndefinedAstNode(),
+  right = NewUndefinedAstNode(),
+  algorithm = defaultEditableFuzzyMatchAlgorithm,
+}: {
+  left?: AstNode;
+  right?: AstNode;
+  algorithm?: FuzzyMatchAlgorithm;
+}): FuzzyMatchAstNode {
+  return {
+    name: fuzzyMatchAstNodeName,
+    constant: undefined,
+    children: [left, right],
+    namedChildren: {
+      algorithm: NewConstantAstNode({ constant: algorithm }),
+    },
+  };
+}
+
+const fuzzyMatchAnyOfAstNodeName = 'FuzzyMatchAnyOf';
+export interface FuzzyMatchAnyOfAstNode {
+  name: typeof fuzzyMatchAnyOfAstNodeName;
+  constant?: undefined;
+  children: [AstNode, AstNode];
+  namedChildren: {
+    algorithm: ConstantAstNode<FuzzyMatchAlgorithm>;
+  };
+}
+
+export function NewFuzzyMatchAnyOfAstNode({
+  left = NewUndefinedAstNode(),
+  right = NewUndefinedAstNode(),
+  algorithm = defaultEditableFuzzyMatchAlgorithm,
+}: {
+  left?: AstNode;
+  right?: AstNode;
+  algorithm?: FuzzyMatchAlgorithm;
+}): FuzzyMatchAnyOfAstNode {
+  return {
+    name: fuzzyMatchAnyOfAstNodeName,
+    constant: undefined,
+    children: [left, right],
+    namedChildren: {
+      algorithm: NewConstantAstNode({ constant: algorithm }),
+    },
+  };
+}
+
+export interface FuzzyMatchComparatorAstNode {
+  name: '>';
+  constant?: undefined;
+  children: [
+    FuzzyMatchAstNode | FuzzyMatchAnyOfAstNode,
+    ConstantAstNode<number>,
+  ];
+  namedChildren: Record<string, never>;
+}
+
+export function NewFuzzyMatchComparatorAstNode({
+  funcName,
+  left,
+  right,
+  algorithm,
+  threshold = defaultFuzzyMatchComparatorThreshold,
+}: {
+  funcName: typeof fuzzyMatchAnyOfAstNodeName | typeof fuzzyMatchAstNodeName;
+  left?: AstNode;
+  right?: AstNode;
+  algorithm?: FuzzyMatchAlgorithm;
+  threshold?: number;
+}): FuzzyMatchComparatorAstNode {
+  const fuzzyMatch =
+    funcName === fuzzyMatchAstNodeName
+      ? NewFuzzyMatchAstNode({
+          left,
+          right,
+          algorithm,
+        })
+      : NewFuzzyMatchAnyOfAstNode({
+          left,
+          right,
+          algorithm,
+        });
+
+  return {
+    name: '>',
+    constant: undefined,
+    children: [fuzzyMatch, NewConstantAstNode({ constant: threshold })],
+    namedChildren: {},
+  };
+}
 
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === databaseAccessAstNodeName;
@@ -286,6 +387,46 @@ export function isTimeAdd(node: AstNode): node is TimeAddAstNode {
 
 export function isTimeNow(node: AstNode): node is TimeNowAstNode {
   return node.name === timeNowAstNodeName;
+}
+
+export function isFuzzyMatch(node: AstNode): node is FuzzyMatchAstNode {
+  return node.name === fuzzyMatchAstNodeName;
+}
+
+export function isFuzzyMatchAnyOf(
+  node: AstNode,
+): node is FuzzyMatchAnyOfAstNode {
+  return node.name === fuzzyMatchAnyOfAstNodeName;
+}
+
+export function isFuzzyMatchComparator(
+  node: AstNode,
+): node is FuzzyMatchComparatorAstNode {
+  if (node.name !== '>') {
+    return false;
+  }
+  if (node.children.length !== 2) {
+    return false;
+  }
+  const firstChild = node.children[0];
+  return isFuzzyMatch(firstChild) || isFuzzyMatchAnyOf(firstChild);
+}
+
+type FunctionAstNode =
+  | AggregationAstNode
+  | TimeAddAstNode
+  | TimeNowAstNode
+  | FuzzyMatchComparatorAstNode;
+
+// TODO(EditableAstNode): heavy link to EditableAstNode operandType = 'Function'
+// Function is considered a special type of operand which require modal to edit
+export function isFunctionAstNode(node: AstNode): node is FunctionAstNode {
+  return (
+    isAggregation(node) ||
+    isTimeAdd(node) ||
+    isTimeNow(node) ||
+    isFuzzyMatchComparator(node)
+  );
 }
 
 export interface OrAndGroupAstNode {

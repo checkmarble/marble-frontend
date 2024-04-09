@@ -1,7 +1,7 @@
 import {
   type AstNode,
   type ConstantType,
-  functionNodeNames,
+  isFunctionAstNode,
 } from '@app-builder/models';
 import {
   type EvaluationError,
@@ -41,7 +41,7 @@ export function adaptEditorNodeViewModel({
     parent: parent ?? null,
     funcName: ast.name,
     constant: ast.constant,
-    errors: computeEvaluationErrors(ast.name, evaluation),
+    errors: computeEvaluationErrors(evaluation, isFunctionAstNode(ast)),
     children: [],
     namedChildren: {},
     returnValue: evaluation.returnValue,
@@ -310,7 +310,10 @@ function updateEvaluation({
 
   const currentNode: EditorNodeViewModel = {
     ...editorNodeViewModel,
-    errors: computeEvaluationErrors(editorNodeViewModel.funcName, evaluation),
+    errors: computeEvaluationErrors(
+      evaluation,
+      isFunctionAstNode(adaptAstNodeFromEditorViewModel(editorNodeViewModel)),
+    ),
     parent: parent ?? null,
     children: [],
     namedChildren: {},
@@ -336,8 +339,8 @@ function updateEvaluation({
 }
 
 function computeEvaluationErrors(
-  funcName: EditorNodeViewModel['funcName'],
   evaluation: NodeEvaluation,
+  isFunction: boolean = false,
 ): EvaluationError[] {
   const errors: EvaluationError[] = [];
   if (evaluation.errors) {
@@ -345,11 +348,7 @@ function computeEvaluationErrors(
   }
 
   //TODO(validation): refactor to move this on a "getError(nodeId)" function (this is a internal business logic specificity of the editor)
-  if (
-    funcName &&
-    functionNodeNames.includes(funcName) &&
-    hasNestedErrors(evaluation)
-  ) {
+  if (isFunction && hasNestedErrors(evaluation)) {
     errors.push({ error: 'FUNCTION_ERROR', message: 'function has error' });
   }
 

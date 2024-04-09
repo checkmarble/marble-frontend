@@ -11,10 +11,12 @@ import {
   type ConstantType,
   type CustomListAccessAstNode,
   type DatabaseAccessAstNode,
+  type FuzzyMatchComparatorAstNode,
   isAggregation,
   isConstant,
   isCustomListAccess,
   isDatabaseAccess,
+  isFuzzyMatchComparator,
   isPayload,
   isTimeAdd,
   isTimeNow,
@@ -427,6 +429,55 @@ export class TimeNowEditableAstNode implements EditableAstNodeBase {
   }
 }
 
+export class FuzzyMatchComparatorEditableAstNode
+  implements EditableAstNodeBase
+{
+  astNode: FuzzyMatchComparatorAstNode;
+  operandType: OperandType = 'Function' as const;
+  dataType: DataType = 'Bool' as const;
+  displayName: string;
+
+  constructor(
+    t: TFunctionDisplayName,
+    astNode: FuzzyMatchComparatorAstNode,
+    config: {
+      triggerObjectTable: TableModel;
+      dataModel: TableModel[];
+      customLists: CustomList[];
+      enumOptions: EnumValue[];
+    },
+  ) {
+    this.astNode = astNode;
+    this.displayName =
+      FuzzyMatchComparatorEditableAstNode.getFuzzyMatchComparatorName(
+        t,
+        astNode,
+        config,
+      );
+  }
+
+  private static getFuzzyMatchComparatorName(
+    t: TFunctionDisplayName,
+    astNode: FuzzyMatchComparatorAstNode,
+    config: {
+      triggerObjectTable: TableModel;
+      dataModel: TableModel[];
+      customLists: CustomList[];
+      enumOptions: EnumValue[];
+    },
+  ) {
+    const fuzzyMatch = astNode.children[0];
+    const left = fuzzyMatch.children[0];
+    const right = fuzzyMatch.children[1];
+    if (isUndefinedAstNode(left) && isUndefinedAstNode(right)) {
+      return t('scenarios:edit_fuzzy_match.string_similarity');
+    }
+    const formatLeft = stringifyAstNode(t, left, config) || '?';
+    const formatRight = stringifyAstNode(t, right, config) || '?';
+    return `${formatLeft} ≈ ${formatRight}`;
+  }
+}
+
 export class UndefinedEditableAstNode implements EditableAstNodeBase {
   astNode: UndefinedAstNode;
   operandType: OperandType = 'Undefined' as const;
@@ -446,6 +497,7 @@ export type EditableAstNode =
   | PayloadAccessorsEditableAstNode
   | TimeAddEditableAstNode
   | TimeNowEditableAstNode
+  | FuzzyMatchComparatorEditableAstNode
   | UndefinedEditableAstNode;
 
 export function adaptEditableAstNode(
@@ -500,6 +552,15 @@ export function adaptEditableAstNode(
 
   if (isTimeNow(node)) {
     return new TimeNowEditableAstNode(t, node);
+  }
+
+  if (isFuzzyMatchComparator(node)) {
+    return new FuzzyMatchComparatorEditableAstNode(t, node, {
+      triggerObjectTable,
+      dataModel,
+      customLists,
+      enumOptions,
+    });
   }
 
   if (isUndefinedAstNode(node)) {

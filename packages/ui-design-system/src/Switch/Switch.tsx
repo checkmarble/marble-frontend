@@ -11,6 +11,7 @@ export const Switch = forwardRef<
       ref={ref}
       className={clsx(
         'bg-grey-10 radix-state-checked:bg-purple-100 relative h-6 w-10 rounded-full outline-none transition-all focus:border-purple-100',
+        'focus:ring-2 focus:ring-purple-100',
         'disabled:bg-grey-10',
         className,
       )}
