@@ -37,6 +37,8 @@
   "go_back": "Go back",
   "error_boundary.default.title": "Did you lose your marbles?",
   "error_boundary.default.subtitle": "It looks like something went wrong.",
+  "error_boundary.marble_admin.title": "You are a Marble Admin",
+  "error_boundary.marble_admin.subtitle": "The current application is not available for Marble Admins. Please sign in with a different account.",
   "or": "or",
   "loading": "Loading...",
   "understand": "I understand",

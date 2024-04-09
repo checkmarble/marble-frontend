@@ -78,3 +78,6 @@ export function adaptUser(user: UserDto): User {
 }
 
 export const isAdmin = (user: CurrentUser) => user.role === 'ADMIN';
+
+export const isMarbleAdmin = (user: CurrentUser) =>
+  user.role === 'MARBLE_ADMIN';
