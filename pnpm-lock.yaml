@@ -430,9 +430,6 @@ importers:
       '@tanstack/react-virtual':
         specifier: 3.2.0
         version: 3.2.0(react-dom@18.2.0)(react@18.2.0)
-      '@testing-library/dom':
-        specifier: v9
-        version: 9.3.4
       '@testing-library/user-event':
         specifier: ^14.5.2
         version: 14.5.2(@testing-library/dom@9.3.4)
