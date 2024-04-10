@@ -1,5 +1,5 @@
 import { mkdir, rm, writeFile } from 'fs/promises';
-import { generateSource } from 'oazapfts/lib/codegen/index';
+import * as Oazapfts from 'oazapfts';
 import ora from 'ora';
 
 import {
@@ -12,7 +12,7 @@ import {
 async function openapiGenerator() {
   const spinner = ora('Start to generate OpenAPI client...').start();
   try {
-    const code = await generateSource(OPENAPI_SPEC, OPENAPI_OPTIONS);
+    const code = await Oazapfts.generateSource(OPENAPI_SPEC, OPENAPI_OPTIONS);
 
     await writeFile(GENERATED_API, code);
 

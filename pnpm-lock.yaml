@@ -56,6 +56,9 @@ importers:
       '@lottiefiles/react-lottie-player':
         specifier: ^3.5.3
         version: 3.5.3(react@18.2.0)
+      '@oazapfts/runtime':
+        specifier: ^1.0.2
+        version: 1.0.2
       '@radix-ui/react-accordion':
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.24)(@types/react@18.2.75)(react-dom@18.2.0)(react@18.2.0)
@@ -170,9 +173,6 @@ importers:
       nanoid:
         specifier: ^5.0.7
         version: 5.0.7
-      oazapfts:
-        specifier: ^5.0.1
-        version: 5.0.1(openapi-types@12.1.3)
       qs:
         specifier: ^6.12.0
         version: 6.12.0
@@ -339,9 +339,12 @@ importers:
       '@faker-js/faker':
         specifier: ^8.4.1
         version: 8.4.1
+      '@oazapfts/runtime':
+        specifier: ^1.0.2
+        version: 1.0.2
       oazapfts:
-        specifier: ^5.0.1
-        version: 5.0.1(openapi-types@12.1.3)
+        specifier: ^6.0.4
+        version: 6.0.4(@oazapfts/runtime@1.0.2)(openapi-types@12.1.3)
     devDependencies:
       '@marble/eslint-config':
         specifier: workspace:*
@@ -3413,6 +3416,10 @@ packages:
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
       which: 3.0.1
+
+  /@oazapfts/runtime@1.0.2:
+    resolution: {integrity: sha512-V33FjR6V+AkGRWYQW3XPm5BLn2loGl2ujSeja1TzdjjEn2zjGgl3ve0dcFf/jEwPZEOqQZl6YwIgIB/clXVqWw==}
+    dev: false
 
   /@pkgjs/parseargs@0.11.0:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -13038,11 +13045,14 @@ packages:
       yaml: 1.10.2
     dev: false
 
-  /oazapfts@5.0.1(openapi-types@12.1.3):
-    resolution: {integrity: sha512-OXJvfj+AK1RC5P+TvIkXkPeNjIaiOt95a+rWZIG/+zaR49088bAZtHKSjOvlgeiTKKYF7oevtZ9DlsGn8PfDWg==}
+  /oazapfts@6.0.4(@oazapfts/runtime@1.0.2)(openapi-types@12.1.3):
+    resolution: {integrity: sha512-6kUz6SDeTrog5do7miI3xMgj22DpBmfrau7mUwuUPp8wfMJFFY5mv37uLm8afm3yFQtl1X9kb61ugtH2V0b+vw==}
     hasBin: true
+    peerDependencies:
+      '@oazapfts/runtime': '*'
     dependencies:
       '@apidevtools/swagger-parser': 10.1.0(openapi-types@12.1.3)
+      '@oazapfts/runtime': 1.0.2
       lodash: 4.17.21
       minimist: 1.2.8
       swagger2openapi: 7.0.8

@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
-    "oazapfts": "^5.0.1"
+    "@oazapfts/runtime": "^1.0.2",
+    "oazapfts": "^6.0.4"
   },
   "author": "",
   "license": "ISC"
