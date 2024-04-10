@@ -12,10 +12,10 @@
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
-    "@types/node": "20.11.21",
+    "@types/node": "20.12.7",
     "ora": "^8.0.1",
     "tailwind-preset": "^1.0.8",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.2"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",

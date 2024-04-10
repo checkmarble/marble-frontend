@@ -134,7 +134,7 @@ export function EditCaseTags({
           setCaseTagIds(selectedValues);
         }}
         onOpenChange={(open) => {
-          if (!open && !R.equals(defaultCaseTagIds, caseTagIds))
+          if (!open && !R.isDeepEqual(defaultCaseTagIds, caseTagIds))
             form.ref.current?.requestSubmit();
         }}
       >

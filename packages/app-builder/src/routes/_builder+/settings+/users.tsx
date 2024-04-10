@@ -34,7 +34,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         value,
         R.groupBy((v) => v.role),
         R.mapValues((v) => v.length),
-        R.toPairs(),
+        R.entries(),
       ),
     ),
   );

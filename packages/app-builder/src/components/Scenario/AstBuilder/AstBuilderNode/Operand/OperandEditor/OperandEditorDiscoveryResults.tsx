@@ -62,7 +62,7 @@ export function OperandEditorDiscoveryResults({
 
   return R.pipe(
     discoveryResultsConfig,
-    R.toPairs.strict(),
+    R.entries.strict(),
     R.map(([operandType, Getter]) => {
       return (
         <Getter
@@ -153,7 +153,7 @@ const FieldGroupGetter: GroupGetter = ({
         }
       }),
       R.mapValues((value) => R.sortBy(value, (o) => o.displayName)),
-      R.toPairs(),
+      R.entries(),
     );
   }, [options]);
 

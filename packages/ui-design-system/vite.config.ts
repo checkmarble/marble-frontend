@@ -1,7 +1,8 @@
+/// <reference types="vitest" />
+import { defineConfig } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
-import { defineProject } from 'vitest/config';
 
-export default defineProject({
+export default defineConfig({
   plugins: [viteTsConfigPaths()],
   test: {
     globals: true,

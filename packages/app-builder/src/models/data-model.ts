@@ -87,7 +87,7 @@ function adaptFieldDto(dataModelFieldsDto: {
   [key: string]: DataModelFieldDto;
 }): DataModelField[] {
   return R.pipe(
-    R.toPairs(dataModelFieldsDto),
+    R.entries(dataModelFieldsDto),
     R.map(([name, field]) => ({
       id: field.id || '', // temp hack until we have ids in all the datamodels
       name: name,
@@ -105,7 +105,7 @@ function adaptLinkToSingleDto(linksToSingleDto: {
   [key: string]: LinkToSingleDto;
 }): LinksToSingle[] {
   return R.pipe(
-    R.toPairs(linksToSingleDto),
+    R.entries(linksToSingleDto),
     R.map(([linkName, linkToSingleDto]) => ({
       linkName,
       linkedTableName: linkToSingleDto.linked_table_name,
@@ -117,7 +117,7 @@ function adaptLinkToSingleDto(linksToSingleDto: {
 
 export function adaptDataModelDto(dataModelDto: DataModelDto): TableModel[] {
   return R.pipe(
-    R.toPairs(dataModelDto.tables),
+    R.entries(dataModelDto.tables),
     R.map(([tableName, tableDto]) => ({
       id: tableDto.id || '', // temp hack until we have ids in all the datamodels
       name: tableName,

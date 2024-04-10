@@ -1,10 +1,11 @@
 import * as Ariakit from '@ariakit/react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
+import clsx from 'clsx';
 import { forwardRef } from 'react';
 
 const modalContentClassnames = cva(
-  'bg-grey-00 fixed left-[50%] top-[50%] flex h-fit w-full translate-x-[-50%] translate-y-[-50%] flex-col rounded-lg drop-shadow-xl',
+  'bg-grey-00 fixed left-1/2 top-1/2 flex h-fit w-full -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg drop-shadow-xl overflow-hidden',
   {
     variants: {
       size: {
@@ -62,10 +63,17 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
     return (
       <Ariakit.Dialog
         ref={ref}
-        className={modalContentClassnames({ size, className })}
+        className={modalContentClassnames({
+          size,
+          className: clsx(
+            'scale-95 opacity-0 transition-all data-[enter]:scale-100 data-[enter]:opacity-100',
+            className,
+          ),
+        })}
         backdrop={
-          <div className="animate-overlayShow bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4" />
+          <div className="bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-sm transition-all data-[enter]:opacity-100" />
         }
+        unmountOnHide
         {...props}
       />
     );
