@@ -13,7 +13,7 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
-} from './MenuWithCombobox';
+} from './Menu';
 
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple', 'pear'];
 const vegetables = ['carrot', 'cucumber', 'lettuce', 'onion'];
@@ -99,6 +99,15 @@ export default Story;
 
 export const Default: StoryFn = () => <MenuWithCombobox items={groceries} />;
 
+export const WithoutCombobox: StoryFn = () => (
+  <MenuRoot>
+    <MenuButton render={<Button />}>Open</MenuButton>
+    <MenuPopover className="flex flex-col gap-2 p-2">
+      <ScrollAreaV2 type="auto">{renderItems(groceries)}</ScrollAreaV2>
+    </MenuPopover>
+  </MenuRoot>
+);
+
 function renderNestedItems(items: typeof groceries, group?: string) {
   return items.map((item) => {
     const key = typeof item === 'string' ? item : item.label;
@@ -115,7 +124,7 @@ function renderNestedItems(items: typeof groceries, group?: string) {
         <Fragment>
           <MenuSeparator className="my-2" />
           <MenuRoot>
-            <MenuButton className="flex flex-row justify-between">
+            <MenuButton className="data-[active-item]:bg-purple-05 flex flex-row justify-between gap-2 rounded p-2 outline-none">
               <span>{item.label}</span>
               <span>{'>'}</span>
             </MenuButton>
@@ -187,4 +196,13 @@ function NestedMenuWithCombobox({ items }: { items: typeof groceries }) {
 
 export const Nested: StoryFn = () => (
   <NestedMenuWithCombobox items={groceries} />
+);
+
+export const NestedWithoutCombobox: StoryFn = () => (
+  <MenuRoot>
+    <MenuButton render={<Button />}>Open</MenuButton>
+    <MenuPopover className="flex flex-col gap-2 p-2">
+      <ScrollAreaV2 type="auto">{renderNestedItems(groceries)}</ScrollAreaV2>
+    </MenuPopover>
+  </MenuRoot>
 );

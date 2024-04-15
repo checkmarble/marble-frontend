@@ -11,11 +11,45 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
-} from './MenuWithCombobox';
+} from './Menu';
 
 mockResizeObserver();
 
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple'];
+
+function Menu() {
+  return (
+    <MenuRoot>
+      <MenuButton>Open</MenuButton>
+      <MenuPopover className="flex flex-col gap-2 p-2">
+        {fruits.map((item) => (
+          <MenuItem key={item}>{item}</MenuItem>
+        ))}
+      </MenuPopover>
+    </MenuRoot>
+  );
+}
+
+describe('Menu', () => {
+  it('should select element on click', async () => {
+    render(<Menu />);
+
+    await userEvent.click(screen.getByText('Open'));
+
+    const fruitMenuitems = screen.getAllByRole('menuitem');
+    fruitMenuitems.forEach((fruitMenuitem) =>
+      expect(fruitMenuitem).toBeInTheDocument(),
+    );
+
+    // Click on an option
+    await userEvent.click(fruitMenuitems[0]);
+
+    // Menu should be closed and the content should not be visible
+    fruitMenuitems.forEach((fruitMenuitem) =>
+      expect(fruitMenuitem).not.toBeInTheDocument(),
+    );
+  });
+});
 
 function MenuWithCombobox() {
   const [searchValue, setSearchValue] = useState('');
@@ -45,7 +79,7 @@ function MenuWithCombobox() {
   );
 }
 
-describe('MenuWithCombobox', () => {
+describe('Menu with combobox', () => {
   it('should select element on click', async () => {
     render(<MenuWithCombobox />);
 
