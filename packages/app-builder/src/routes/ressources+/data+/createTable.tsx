@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Modal } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -87,7 +86,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function CreateTable() {
+export function CreateTable({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
@@ -110,12 +109,7 @@ export function CreateTable() {
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Modal.Trigger asChild>
-        <Button className="w-fit">
-          <Icon icon="plus" className="size-6" />
-          {t('data:create_table.title')}
-        </Button>
-      </Modal.Trigger>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
         <Form
           control={control}

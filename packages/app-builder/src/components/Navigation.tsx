@@ -66,13 +66,13 @@ export function SidebarButton({
   );
 }
 
-export interface ScenariosLinkProps {
+export interface TabLinkProps {
   Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
   labelTKey: ParseKeys<['navigation']>;
   to: string;
 }
 
-export function ScenariosLink({ Icon, labelTKey, to }: SidebarLinkProps) {
+export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
   const { t } = useTranslation(navigationI18n);
 
   return (
@@ -88,7 +88,7 @@ export function ScenariosLink({ Icon, labelTKey, to }: SidebarLinkProps) {
       to={to}
     >
       <Icon className="size-6 shrink-0" />
-      {t(labelTKey)}
+      <span className="capitalize">{t(labelTKey)}</span>
     </NavLink>
   );
 }

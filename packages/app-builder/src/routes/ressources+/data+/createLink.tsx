@@ -100,9 +100,11 @@ export async function action({ request }: ActionFunctionArgs) {
 export function CreateLink({
   thisTable,
   otherTables,
+  children,
 }: {
   otherTables: TableModel[];
   thisTable: TableModel;
+  children: React.ReactNode;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -141,12 +143,7 @@ export function CreateLink({
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Modal.Trigger asChild>
-        <Button className="w-48" variant="secondary">
-          <Icon icon="plus" className="size-6" />
-          {t('data:create_link.title')}
-        </Button>
-      </Modal.Trigger>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
         <Form
           control={control}
