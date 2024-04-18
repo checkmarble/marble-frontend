@@ -59,8 +59,11 @@ export default function getPageviewNameAndProps(thisPage: UIMatch) {
       const listId = toUUIDifDefined(thisPage.params['listId']);
       return { name: 'List', properties: { list_id: listId } };
     }
-    case 'routes/_builder+/data': {
+    case 'routes/_builder+/data+/list': {
       return { name: 'Your data', properties: undefined };
+    }
+    case 'routes/_builder+/data+/schema': {
+      return { name: 'Your data (schema)', properties: undefined };
     }
     case 'routes/_builder+/api': {
       return { name: 'Marble API', properties: undefined };
