@@ -48,11 +48,11 @@ export function coerceToConstantEditableAstNode(
   return results;
 }
 
-const isNumberArray = /^\[(\s*(\d+(.\d+)?)\s*,?)*(\s*|\])$/;
+const isNumberArray = /^\[(\s*(\d+(\.\d+)?)\s*,?)*(\s*|\])$/;
 const isStringArray = /^\[(\s*"?(\w+)"?\s*,?)*(\s*|\])$/;
 
 const captureNumbers = /(?:\s*(?<numbers>\d+(\.\d+)?)\s*,?)/g;
-const captureStrings = /(?:\s*"?(?<strings>\w(\w|\s)*\w)"?\s*,?)/g;
+const captureStrings = /(?:\s*"?(?<strings>(\w|\s)*\w)"?\s*,?)/g;
 
 function coerceToConstantArray(
   t: TFunction<['common']>,

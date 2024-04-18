@@ -66,10 +66,10 @@ describe('coerceToConstantEditableAstNode', () => {
 
   describe('return an array given a string convertible to an array', () => {
     it('String[]', () => {
-      const valueToCoerce = '["fr" , 13  , null, sp ace]';
+      const valueToCoerce = '[a, "fr" , 13  , null, sp ace]';
       const expected = [
         helperConstantArrayOperandOption({
-          constant: ['fr', '13', 'null', 'sp ace'],
+          constant: ['a', 'fr', '13', 'null', 'sp ace'],
           dataType: 'String[]',
         }),
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
@@ -80,10 +80,10 @@ describe('coerceToConstantEditableAstNode', () => {
     });
 
     it('Int[]', () => {
-      const valueToCoerce = '[23, 13  , 1233  ]';
+      const valueToCoerce = '[1, 23, 13  , 1233  ]';
       const expected = [
         helperConstantArrayOperandOption({
-          constant: [23, 13, 1233],
+          constant: [1, 23, 13, 1233],
           dataType: 'Int[]',
         }),
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
