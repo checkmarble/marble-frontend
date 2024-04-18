@@ -47,14 +47,16 @@ export function AstBuilder({
         <TimeAddEditModal>
           <AggregationEditModal>
             <FuzzyMatchComparatorEditModal>
-              <RootAstBuilderNode
-                setOperand={setOperand}
-                setOperator={setOperator}
-                appendChild={appendChild}
-                remove={remove}
-                editorNodeViewModel={editorNodeViewModel}
-                viewOnly={viewOnly}
-              />
+              <AggregationEditModal>
+                <RootAstBuilderNode
+                  setOperand={setOperand}
+                  setOperator={setOperator}
+                  appendChild={appendChild}
+                  remove={remove}
+                  editorNodeViewModel={editorNodeViewModel}
+                  viewOnly={viewOnly}
+                />
+              </AggregationEditModal>
             </FuzzyMatchComparatorEditModal>
           </AggregationEditModal>
         </TimeAddEditModal>
