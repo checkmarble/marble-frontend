@@ -168,9 +168,7 @@ export function CreateField({
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Modal.Trigger asChild>
-        {children}
-      </Modal.Trigger>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
         <Form
           control={control}
