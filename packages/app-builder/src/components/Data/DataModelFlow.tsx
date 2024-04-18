@@ -147,6 +147,7 @@ function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
       edges={edges}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
+      minZoom={0.3}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       defaultEdgeOptions={defaultDataModelEdgeOptions}
