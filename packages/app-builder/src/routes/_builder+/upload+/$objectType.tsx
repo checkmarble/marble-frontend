@@ -362,7 +362,7 @@ export default function Upload() {
   return (
     <Page.Container>
       <Page.Header>
-        <Icon icon="help" className="mr-2 size-6" />
+        <Icon icon="upload" className="mr-2 size-6" />
         {t('upload:upload_cta', { replace: { objectType } })}
       </Page.Header>
       <Page.Content>
@@ -383,7 +383,7 @@ export default function Upload() {
                   'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100',
                 )}
               >
-                <Icon icon="help" className="mr-2 size-6" />
+                <Icon icon="download" className="mr-2 size-6" />
                 {t('upload:download_template_cta')}
               </a>
             )}

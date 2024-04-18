@@ -13,7 +13,7 @@ type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
 export const EnumDataTypes = ['Float', 'Int', 'String'];
 export const UniqueDataTypes = ['Float', 'Int', 'String'];
-type UnicityConstraintType =
+export type UnicityConstraintType =
   | 'no_unicity_constraint'
   | 'pending_unique_constraint'
   | 'active_unique_constraint';
@@ -30,7 +30,7 @@ export interface DataModelField {
   values?: EnumValue[];
 }
 
-export interface LinksToSingle {
+export interface LinkToSingle {
   linkName: string;
   linkedTableName: string;
   parentFieldName: string;
@@ -41,7 +41,7 @@ export interface TableModel {
   id: string;
   name: string;
   fields: DataModelField[];
-  linksToSingle: LinksToSingle[];
+  linksToSingle: LinkToSingle[];
   description?: string;
 }
 
@@ -103,7 +103,7 @@ function adaptFieldDto(dataModelFieldsDto: {
 
 function adaptLinkToSingleDto(linksToSingleDto: {
   [key: string]: LinkToSingleDto;
-}): LinksToSingle[] {
+}): LinkToSingle[] {
   return R.pipe(
     R.entries(linksToSingleDto),
     R.map(([linkName, linkToSingleDto]) => ({

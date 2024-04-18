@@ -29,7 +29,6 @@ import {
   Modal,
   Select,
 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -130,7 +129,13 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function CreateField({ tableId }: { tableId: string }) {
+export function CreateField({
+  tableId,
+  children,
+}: {
+  tableId: string;
+  children: React.ReactNode;
+}) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
@@ -163,12 +168,7 @@ export function CreateField({ tableId }: { tableId: string }) {
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Modal.Trigger asChild>
-        <Button>
-          <Icon icon="plus" className="size-6" />
-          {t('data:create_field.title')}
-        </Button>
-      </Modal.Trigger>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
         <Form
           control={control}

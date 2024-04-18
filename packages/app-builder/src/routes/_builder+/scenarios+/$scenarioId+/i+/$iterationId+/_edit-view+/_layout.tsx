@@ -1,7 +1,7 @@
 import {
   navigationI18n,
   Page,
-  ScenariosLink,
+  TabLink,
   usePermissionsContext,
 } from '@app-builder/components';
 import { CornerPing } from '@app-builder/components/Ping';
@@ -160,7 +160,7 @@ export default function ScenarioEditLayout() {
         <nav>
           <ul className="flex flex-row gap-2">
             <li>
-              <ScenariosLink
+              <TabLink
                 aria-invalid={hasTriggerErrors(scenarioValidation)}
                 labelTKey="navigation:scenario.trigger"
                 to="./trigger"
@@ -174,7 +174,7 @@ export default function ScenarioEditLayout() {
               />
             </li>
             <li>
-              <ScenariosLink
+              <TabLink
                 aria-invalid={hasRulesErrors(scenarioValidation)}
                 labelTKey="navigation:scenario.rules"
                 to="./rules"
@@ -188,7 +188,7 @@ export default function ScenarioEditLayout() {
               />
             </li>
             <li>
-              <ScenariosLink
+              <TabLink
                 aria-invalid={hasDecisionErrors(scenarioValidation)}
                 labelTKey="navigation:scenario.decision"
                 to="./decision"

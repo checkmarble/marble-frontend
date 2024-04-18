@@ -9,7 +9,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import {
   type DataModelField,
   EnumDataTypes,
-  type LinksToSingle,
+  type LinkToSingle,
   UniqueDataTypes,
 } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
@@ -91,7 +91,7 @@ function disableEditUnique({
   selectedEnum,
 }: {
   field: DataModelField;
-  linksToThisTable: LinksToSingle[];
+  linksToThisTable: LinkToSingle[];
   selectedEnum: boolean;
 }) {
   if (
@@ -140,7 +140,7 @@ export function EditField({
   children,
 }: {
   field: DataModelField;
-  linksToThisTable: LinksToSingle[];
+  linksToThisTable: LinkToSingle[];
   children: React.ReactNode;
 }) {
   const { t } = useTranslation(handle.i18n);

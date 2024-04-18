@@ -9,6 +9,8 @@
   "scenario.rules": "Rules",
   "scenario.decision": "Decision",
   "data": "Your Data",
+  "data.list": "Data Model List",
+  "data.schema": "Data Model Schema",
   "expanded": "Expanded",
   "collapsed": "Collapsed",
   "api": "Marble API",

@@ -73,9 +73,21 @@ export const routes = [
             ]
           },
           {
-            "id": "routes/_builder+/data",
+            "id": "routes/_builder+/data+/_layout",
             "path": "data",
-            "file": "routes/_builder+/data.tsx"
+            "file": "routes/_builder+/data+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/data+/list",
+                "path": "list",
+                "file": "routes/_builder+/data+/list.tsx"
+              },
+              {
+                "id": "routes/_builder+/data+/schema",
+                "path": "schema",
+                "file": "routes/_builder+/data+/schema.tsx"
+              }
+            ]
           },
           {
             "id": "routes/_builder+/decisions+/$decisionId",

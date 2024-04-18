@@ -23,7 +23,8 @@ export interface MenuRootProps {
 }
 
 /**
- * A menu component.
+ * A menu component with or without a combobox.
+ * Provides `searchValue` and `onSearch` props to enable a combobox menu.
  *
  * @example
  *  <MenuRoot>
