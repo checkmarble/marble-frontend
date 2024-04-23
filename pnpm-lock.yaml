@@ -45,8 +45,8 @@ importers:
         specifier: ^0.9.1
         version: 0.9.1(react@18.2.0)
       '@conform-to/zod':
-        specifier: ^0.9.1
-        version: 0.9.1(@conform-to/dom@0.9.1)(zod@3.22.4)
+        specifier: ^1.1.1
+        version: 1.1.1(zod@3.22.4)
       '@dagrejs/dagre':
         specifier: ^1.1.2
         version: 1.1.2
@@ -1926,6 +1926,10 @@ packages:
     resolution: {integrity: sha512-+T6QgpLDPZ29j4y5nWW61WMe8qj0cQBymyzbi5sq1f3CcBO3wBbR0VPI7mbm+rLoErHWM3ghhdNlIkw0UPoLLA==}
     dev: false
 
+  /@conform-to/dom@1.1.1:
+    resolution: {integrity: sha512-6IiHuHjW12cZZ6DICiewZEYW8R3Kif90RDa5GOdyifvNF5ISQvy+sXakZlVoliPR3xRYMdOq8TCuwBwBca1+DQ==}
+    dev: false
+
   /@conform-to/react@0.9.1(react@18.2.0):
     resolution: {integrity: sha512-SibYHk86IFh60LRPk4aJHJOgyLTgb3JYphKvG4vcemyuntdOwncd5YM/GDoccVzeCTmJi4Os/fDtOOAaDcSa9w==}
     peerDependencies:
@@ -1935,13 +1939,12 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@conform-to/zod@0.9.1(@conform-to/dom@0.9.1)(zod@3.22.4):
-    resolution: {integrity: sha512-4hWBGzRpSd4RrlBFRXjS6QQ2MWFpMZDbDwz8H/xiq38Xl5yaL1RSZMhOJ4pmsmy8CIKghs78qvaD8ltTFlrNvQ==}
+  /@conform-to/zod@1.1.1(zod@3.22.4):
+    resolution: {integrity: sha512-IvGNKmpxsdJC2oHTpQxknJqLSPpTSruL8we+9fti1AQX2XPki7dugVcaudrtTpErxzik6naOcohAAzGp/3Q80w==}
     peerDependencies:
-      '@conform-to/dom': 0.9.1
       zod: ^3.21.0
     dependencies:
-      '@conform-to/dom': 0.9.1
+      '@conform-to/dom': 1.1.1
       zod: 3.22.4
     dev: false
 

@@ -37,7 +37,7 @@
   "dependencies": {
     "@ariakit/react": "^0.4.5",
     "@conform-to/react": "^0.9.1",
-    "@conform-to/zod": "^0.9.1",
+    "@conform-to/zod": "^1.1.2",
     "@dagrejs/dagre": "^1.1.2",
     "@hookform/devtools": "^4.3.1",
     "@hookform/resolvers": "^3.3.4",
