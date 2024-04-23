@@ -125,7 +125,7 @@ const TimestampFieldCombobox = ({
       >
         {selectedValue || <span className="text-grey-25">{placeholder}</span>}
       </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2">
+      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2" portal>
         <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} />
         <SelectWithCombobox.ComboboxList>
           {matches.map((label) => (

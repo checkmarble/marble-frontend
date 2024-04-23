@@ -72,7 +72,7 @@ export const EditDataModelField = ({
       >
         {displayValue}
       </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2">
+      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2" portal>
         <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} />
         <SelectWithCombobox.ComboboxList>
           {matches.map((label) => (

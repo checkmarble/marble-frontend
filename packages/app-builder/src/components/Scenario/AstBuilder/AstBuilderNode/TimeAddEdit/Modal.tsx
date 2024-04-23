@@ -30,7 +30,7 @@ import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
-import { Button, Input, Modal } from 'ui-design-system';
+import { Button, Input, ModalV2 } from 'ui-design-system';
 
 import { Operator } from '../Operator';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
@@ -133,20 +133,20 @@ const TimeAddEditModalContext =
 export const useEditTimeAdd = TimeAddEditModalContext.useValue;
 
 export function TimeAddEditModal({ children }: { children: React.ReactNode }) {
-  const [open, onOpenChange] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const [timeAddEditModalProps, setValueEditModalProps] =
     useState<TimeAddEditModalProps>();
 
   const editTimeAdd = useCallback((dateProps: TimeAddEditModalProps) => {
     setValueEditModalProps(dateProps);
-    onOpenChange(true);
+    setOpen(true);
   }, []);
 
   return (
-    <Modal.Root open={open} onOpenChange={onOpenChange}>
+    <ModalV2.Root open={open} setOpen={setOpen}>
       <TimeAddEditModalContext.Provider value={editTimeAdd}>
         {children}
-        <Modal.Content>
+        <ModalV2.Content>
           {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
           <CopyPasteASTContextProvider>
             {timeAddEditModalProps ? (
@@ -154,14 +154,14 @@ export function TimeAddEditModal({ children }: { children: React.ReactNode }) {
                 initialValue={timeAddEditModalProps.initialValue}
                 onSave={(astNode: AstNode) => {
                   timeAddEditModalProps.onSave(astNode);
-                  onOpenChange(false);
+                  setOpen(false);
                 }}
               />
             ) : null}
           </CopyPasteASTContextProvider>
-        </Modal.Content>
+        </ModalV2.Content>
       </TimeAddEditModalContext.Provider>
-    </Modal.Root>
+    </ModalV2.Root>
   );
 }
 
@@ -182,7 +182,7 @@ function TimeAddEditModalContent({
 
   return (
     <>
-      <Modal.Title>{t('scenarios:edit_date.title')}</Modal.Title>
+      <ModalV2.Title>{t('scenarios:edit_date.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <div>
           <div className="flex gap-2 pb-2">
@@ -250,11 +250,13 @@ function TimeAddEditModalContent({
           />
         </div>
         <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
+          <ModalV2.Close
+            render={
+              <Button className="flex-1" variant="secondary" name="cancel" />
+            }
+          >
+            {t('common:cancel')}
+          </ModalV2.Close>
           <Button
             className="flex-1"
             variant="primary"
