@@ -16,10 +16,7 @@ import {
   type PayloadAstNode,
   type ScenarioIterationRule,
 } from '@app-builder/models';
-import {
-  adaptDataModelDto,
-  type TableModel,
-} from '@app-builder/models/data-model';
+import { type DataModel } from '@app-builder/models/data-model';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
@@ -63,9 +60,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient, editor } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { apiClient, editor, dataModelRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
@@ -77,14 +75,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenarioId,
   });
 
-  const dataModelPromise = apiClient.getDataModel();
+  const dataModelPromise = dataModelRepository.getDataModel();
   const { custom_lists } = await apiClient.listCustomLists();
 
   return json({
     databaseAccessors: (await accessorsPromise).databaseAccessors,
     payloadAccessors: (await accessorsPromise).payloadAccessors,
     operators: await operatorsPromise,
-    dataModel: adaptDataModelDto((await dataModelPromise).data_model),
+    dataModel: await dataModelPromise,
     customLists: custom_lists,
   });
 }
@@ -313,7 +311,7 @@ function RuleViewContent({
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
     operators: OperatorFunction[];
-    dataModel: TableModel[];
+    dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;
   };
@@ -381,7 +379,7 @@ function RuleEditContent({
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
     operators: OperatorFunction[];
-    dataModel: TableModel[];
+    dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;
   };

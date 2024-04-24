@@ -31,11 +31,11 @@ export function adaptDataModelEdges(
 ): Edge<LinkToSingleData> {
   return {
     ...defaultDataModelEdgeOptions,
-    id: tableModel.id + linkToSingle.linkName,
+    id: tableModel.id + linkToSingle.name,
     type: 'link_to_single_edge',
     source: tableModel.name,
     sourceHandle: linkToSingle.childFieldName,
-    target: linkToSingle.linkedTableName,
+    target: linkToSingle.parentTableName,
     targetHandle: linkToSingle.parentFieldName,
     data: { original: linkToSingle },
   };
@@ -81,7 +81,7 @@ export function LinkToSingleEdge({
       markerEnd={markerEnd}
       style={style}
       interactionWidth={interactionWidth}
-      label={label ?? data?.original.linkName}
+      label={label ?? data?.original.name}
       labelStyle={labelStyle}
       labelShowBg={labelShowBg}
       labelBgStyle={labelBgStyle}

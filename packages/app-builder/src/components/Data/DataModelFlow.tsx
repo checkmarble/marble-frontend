@@ -1,4 +1,4 @@
-import { type TableModel } from '@app-builder/models/data-model';
+import { type DataModel } from '@app-builder/models/data-model';
 import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
 import Dagre from '@dagrejs/dagre';
 import * as React from 'react';
@@ -57,7 +57,7 @@ const useDataModelReactFlow = useReactFlow<
 >;
 
 interface DataModelFlowProps {
-  dataModel: TableModel[];
+  dataModel: DataModel;
   children?: React.ReactNode;
 }
 

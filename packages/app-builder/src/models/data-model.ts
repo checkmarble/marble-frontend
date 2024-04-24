@@ -2,8 +2,9 @@ import { type ParseKeys } from 'i18next';
 import {
   type CreateTableFieldDto,
   type DataModelDto,
-  type DataModelFieldDto,
+  type FieldDto,
   type LinkToSingleDto,
+  type TableDto,
   type UpdateTableFieldDto,
 } from 'marble-api';
 import * as R from 'remeda';
@@ -21,28 +22,85 @@ export type UnicityConstraintType =
 export type EnumValue = string | number;
 export interface DataModelField {
   id: string;
-  name: string;
   dataType: DataType;
   description: string;
-  nullable: boolean;
   isEnum: boolean;
-  unicityConstraint: UnicityConstraintType;
+  name: string;
+  nullable: boolean;
+  tableId: string;
   values?: EnumValue[];
+  unicityConstraint: UnicityConstraintType;
+}
+
+function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
+  return {
+    id: dataModelFieldDto.id,
+    dataType: dataModelFieldDto.data_type,
+    description: dataModelFieldDto.description,
+    isEnum: dataModelFieldDto.is_enum,
+    name: dataModelFieldDto.name,
+    nullable: dataModelFieldDto.nullable,
+    tableId: dataModelFieldDto.table_id,
+    values: dataModelFieldDto.values,
+    unicityConstraint: dataModelFieldDto.unicity_constraint,
+  };
 }
 
 export interface LinkToSingle {
-  linkName: string;
-  linkedTableName: string;
+  name: string;
+  parentTableName: string;
+  parentTableId: string;
   parentFieldName: string;
+  parentFieldId: string;
+  childTableName: string;
+  childTableId: string;
   childFieldName: string;
+  childFieldId: string;
+}
+
+function adaptLinkToSingle(
+  linkName: string,
+  linksToSingleDto: LinkToSingleDto,
+): LinkToSingle {
+  return {
+    name: linkName,
+    parentTableName: linksToSingleDto.parent_table_name,
+    parentTableId: linksToSingleDto.parent_table_id,
+    parentFieldName: linksToSingleDto.parent_field_name,
+    parentFieldId: linksToSingleDto.parent_field_id,
+    childTableName: linksToSingleDto.child_table_name,
+    childTableId: linksToSingleDto.child_table_id,
+    childFieldName: linksToSingleDto.child_field_name,
+    childFieldId: linksToSingleDto.child_field_id,
+  };
 }
 
 export interface TableModel {
   id: string;
   name: string;
+  description: string;
   fields: DataModelField[];
   linksToSingle: LinkToSingle[];
-  description?: string;
+}
+
+function adaptTableModel(tableDto: TableDto): TableModel {
+  return {
+    id: tableDto.id,
+    name: tableDto.name,
+    description: tableDto.description,
+    fields: R.pipe(tableDto.fields, R.values, R.map(adaptDataModelField)),
+    linksToSingle: R.pipe(
+      tableDto.links_to_single ?? {},
+      R.entries(),
+      R.map(([linkName, linkDto]) => adaptLinkToSingle(linkName, linkDto)),
+    ),
+  };
+}
+
+export type DataModel = TableModel[];
+
+export function adaptDataModel(dataModelDto: DataModelDto): DataModel {
+  return R.pipe(dataModelDto.tables, R.values, R.map(adaptTableModel));
 }
 
 export interface CreateFieldInput {
@@ -83,56 +141,11 @@ export function adaptUpdateFieldDto(
   };
 }
 
-function adaptFieldDto(dataModelFieldsDto: {
-  [key: string]: DataModelFieldDto;
-}): DataModelField[] {
-  return R.pipe(
-    R.entries(dataModelFieldsDto),
-    R.map(([name, field]) => ({
-      id: field.id || '', // temp hack until we have ids in all the datamodels
-      name: name,
-      dataType: field.data_type,
-      description: field.description,
-      nullable: field.nullable,
-      isEnum: field.is_enum,
-      unicityConstraint: field.unicity_constraint,
-      values: field.values,
-    })),
-  );
-}
-
-function adaptLinkToSingleDto(linksToSingleDto: {
-  [key: string]: LinkToSingleDto;
-}): LinkToSingle[] {
-  return R.pipe(
-    R.entries(linksToSingleDto),
-    R.map(([linkName, linkToSingleDto]) => ({
-      linkName,
-      linkedTableName: linkToSingleDto.linked_table_name,
-      parentFieldName: linkToSingleDto.parent_field_name,
-      childFieldName: linkToSingleDto.child_field_name,
-    })),
-  );
-}
-
-export function adaptDataModelDto(dataModelDto: DataModelDto): TableModel[] {
-  return R.pipe(
-    R.entries(dataModelDto.tables),
-    R.map(([tableName, tableDto]) => ({
-      id: tableDto.id || '', // temp hack until we have ids in all the datamodels
-      name: tableName,
-      fields: adaptFieldDto(tableDto.fields),
-      linksToSingle: adaptLinkToSingleDto(tableDto.links_to_single ?? {}),
-      description: tableDto.description,
-    })),
-  );
-}
-
 export function findDataModelTableByName({
   dataModel,
   tableName,
 }: {
-  dataModel: TableModel[];
+  dataModel: DataModel;
   tableName: string;
 }): TableModel {
   const table = dataModel.find((t) => t.name == tableName);
@@ -147,20 +160,20 @@ export function findDataModelTable({
   tableName,
   path,
 }: {
-  dataModel: TableModel[];
+  dataModel: DataModel;
   tableName: string;
   path: string[];
 }): TableModel {
   let table = findDataModelTableByName({ dataModel, tableName });
 
   for (const linkName of path) {
-    const link = table.linksToSingle.find((link) => link.linkName === linkName);
+    const link = table.linksToSingle.find((link) => link.name === linkName);
     if (!link) {
       throw Error(`can't find link '${linkName}'' in table '${table.name}''`);
     }
     table = findDataModelTableByName({
       dataModel,
-      tableName: link.linkedTableName,
+      tableName: link.parentTableName,
     });
   }
 

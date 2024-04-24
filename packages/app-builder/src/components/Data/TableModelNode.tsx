@@ -1,4 +1,5 @@
 import {
+  type DataModel,
   type DataType,
   type LinkToSingle,
   type TableModel,
@@ -43,13 +44,14 @@ export interface TableModelNodeData extends Omit<TableModel, 'fields'> {
     displayType: string;
     nullable: boolean;
     isEnum: boolean;
+    tableId: string;
     unicityConstraint: UnicityConstraintType;
   }[];
 }
 
 export function adaptTableModelNode(
   tableModel: TableModel,
-  dataModel: TableModel[],
+  dataModel: DataModel,
 ): Node<TableModelNodeData> {
   const { fields, ...rest } = tableModel;
 
@@ -59,7 +61,7 @@ export function adaptTableModelNode(
       .filter((table) => table.id !== tableModel.id)
       .flatMap((table) =>
         table.linksToSingle.filter(
-          (link) => link.linkedTableName === tableModel.name,
+          (link) => link.parentTableName === tableModel.name,
         ),
       ),
     otherTablesWithUnique: dataModel
@@ -78,6 +80,7 @@ export function adaptTableModelNode(
       displayType: field.isEnum ? `${field.dataType} (enum)` : field.dataType,
       nullable: field.nullable,
       isEnum: field.isEnum,
+      tableId: field.tableId,
       unicityConstraint: field.unicityConstraint,
     })),
   };

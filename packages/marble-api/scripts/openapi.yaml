@@ -3036,40 +3036,61 @@ components:
               type: string
     LinkToSingleDto:
       type: object
-      required:
-        - linked_table_name
-        - parent_field_name
-        - child_field_name
       properties:
-        linked_table_name:
+        parent_table_name:
           type: string
+        parent_table_id:
+          type: string
+          format: uuid
         parent_field_name:
           type: string
+        parent_field_id:
+          type: string
+          format: uuid
+        child_table_name:
+          type: string
+        child_table_id:
+          type: string
+          format: uuid
         child_field_name:
           type: string
-    DataModelFieldDto:
-      type: object
+        child_field_id:
+          type: string
+          format: uuid
       required:
-        - name
-        - nullable
-        - data_type
-        - description
-        - is_enum
-        - unicity_constraint
+        - parent_table_name
+        - parent_table_id
+        - parent_field_name
+        - parent_field_id
+        - child_table_name
+        - child_table_id
+        - child_field_name
+        - child_field_id
+    FieldDto:
+      type: object
       properties:
         id:
-          type: string
-        name:
           type: string
         data_type:
           type: string
           enum: [Bool, Int, Float, String, Timestamp, unknown]
-        nullable:
-          type: boolean
         description:
           type: string
         is_enum:
           type: boolean
+        name:
+          type: string
+        nullable:
+          type: boolean
+        table_id:
+          type: string
+          format: uuid
+        values:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: number
         unicity_constraint:
           type: string
           enum:
@@ -3078,42 +3099,48 @@ components:
               pending_unique_constraint,
               active_unique_constraint,
             ]
-        values:
-          type: array
-          items:
-            oneOf:
-              - type: string
-              - type: number
+      required:
+        - id
+        - data_type
+        - description
+        - is_enum
+        - name
+        - nullable
+        - table_id
+        - unicity_constraint
+    TableDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: object
+            $ref: '#/components/schemas/FieldDto'
+        links_to_single:
+          type: object
+          additionalProperties:
+            type: object
+            $ref: '#/components/schemas/LinkToSingleDto'
+      required:
+        - id
+        - name
+        - description
+        - fields
     DataModelDto:
       type: object
-      required:
-        - tables
       properties:
         tables:
           type: object
           additionalProperties:
-            type: object
-            required:
-              - name
-              - fields
-              - description
-            properties:
-              id:
-                type: string
-              name:
-                type: string
-              fields:
-                type: object
-                additionalProperties:
-                  type: object
-                  $ref: '#/components/schemas/DataModelFieldDto'
-              links_to_single:
-                type: object
-                additionalProperties:
-                  type: object
-                  $ref: '#/components/schemas/LinkToSingleDto'
-              description:
-                type: string
+            $ref: '#/components/schemas/TableDto'
+      required:
+        - tables
     CreateTableBody:
       type: object
       required:

@@ -105,6 +105,33 @@ export function CreateLink({
   thisTable: TableModel;
   children: React.ReactNode;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
+      <Modal.Content>
+        <CreateLinkContent
+          thisTable={thisTable}
+          otherTables={otherTables}
+          closeModal={() => {
+            setIsOpen(false);
+          }}
+        />
+      </Modal.Content>
+    </Modal.Root>
+  );
+}
+
+function CreateLinkContent({
+  thisTable,
+  otherTables,
+  closeModal,
+}: {
+  otherTables: TableModel[];
+  thisTable: TableModel;
+  closeModal: () => void;
+}) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
   const [selectedParentTable, setSelectedParentTable] = useState(
@@ -127,198 +154,183 @@ export function CreateLink({
       childFieldId: thisTable.fields[0].id,
     },
   });
-  const { control, reset, setValue } = formMethods;
-  const [isOpen, setIsOpen] = useState(false);
+  const { control, setValue } = formMethods;
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
-      setIsOpen(false);
-      reset();
+      closeModal();
     }
-  }, [fetcher.data?.success, fetcher.state, reset]);
+  }, [closeModal, fetcher.data?.success, fetcher.state]);
   useEffect(() => {
     setValue('parentFieldId', selectedParentTableFields[0].id);
   }, [setValue, selectedParentTableFields]);
 
   return (
-    <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Modal.Trigger asChild>{children}</Modal.Trigger>
-      <Modal.Content>
-        <Form
-          control={control}
-          onSubmit={({ formData }) => {
-            fetcher.submit(formData, {
-              method: 'POST',
-              action: getRoute('/ressources/data/createLink'),
-            });
-          }}
-        >
-          <FormProvider {...formMethods}>
-            <Modal.Title>{t('data:create_link.title')}</Modal.Title>
-            <div className="flex flex-col gap-6 p-6">
-              <div className="flex flex-1 flex-col gap-4">
-                <FormField
-                  name="name"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('data:link_name')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t('data:create_link.name_placeholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
+    <Form
+      control={control}
+      onSubmit={({ formData }) => {
+        fetcher.submit(formData, {
+          method: 'POST',
+          action: getRoute('/ressources/data/createLink'),
+        });
+      }}
+    >
+      <FormProvider {...formMethods}>
+        <Modal.Title>{t('data:create_link.title')}</Modal.Title>
+        <div className="flex flex-col gap-6 p-6">
+          <div className="flex flex-1 flex-col gap-4">
+            <FormField
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel>{t('data:link_name')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder={t('data:create_link.name_placeholder')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormError />
+                </FormItem>
+              )}
+            />
 
-                <div className="flex flex-row justify-around gap-2">
-                  <FormField
-                    name="childTableId"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>
-                          {t('data:create_link.child_table')}
-                        </FormLabel>
-                        <FormControl>
-                          <Select.Default
-                            disabled={true}
-                            onValueChange={(type) => {
-                              field.onChange(type);
-                            }}
-                            value={field.value}
-                          >
-                            {[thisTable].map(({ id, name }) => {
-                              return (
-                                <Select.DefaultItem key={id} value={id}>
-                                  {name}
-                                </Select.DefaultItem>
-                              );
-                            })}
-                          </Select.Default>
-                        </FormControl>
-                        <FormError />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    name="childFieldId"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>
-                          {t('data:create_link.child_field')}
-                        </FormLabel>
-                        <FormControl>
-                          <Select.Default
-                            onValueChange={(type) => {
-                              field.onChange(type);
-                            }}
-                            value={field.value}
-                          >
-                            {thisTable.fields.map(({ id, name }) => {
-                              return (
-                                <Select.DefaultItem key={id} value={id}>
-                                  {name}
-                                </Select.DefaultItem>
-                              );
-                            })}
-                          </Select.Default>
-                        </FormControl>
-                        <FormError />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex flex-row justify-around gap-2">
-                  <FormField
-                    name="parentTableId"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>
-                          {t('data:create_link.parent_table')}
-                        </FormLabel>
-                        <FormControl>
-                          <Select.Default
-                            onValueChange={(id) => {
-                              field.onChange(id);
-                              const newTable =
-                                otherTables.find(
-                                  ({ id: tableId }) => tableId === id,
-                                ) ?? otherTables[0];
-                              setSelectedParentTable(newTable);
-                            }}
-                            value={field.value}
-                          >
-                            {otherTables.map(({ id, name }) => {
-                              return (
-                                <Select.DefaultItem key={id} value={id}>
-                                  {name}
-                                </Select.DefaultItem>
-                              );
-                            })}
-                          </Select.Default>
-                        </FormControl>
-                        <FormError />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    name="parentFieldId"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>
-                          {t('data:create_link.parent_field')}
-                        </FormLabel>
-                        <FormControl>
-                          <Select.Default
-                            defaultValue={selectedParentTableFields[0].id}
-                            onValueChange={(type) => {
-                              field.onChange(type);
-                            }}
-                            value={field.value}
-                          >
-                            {selectedParentTableFields.map(({ id, name }) => {
-                              return (
-                                <Select.DefaultItem key={id} value={id}>
-                                  {name}
-                                </Select.DefaultItem>
-                              );
-                            })}
-                          </Select.Default>
-                        </FormControl>
-                        <FormError />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <p>{t('data:create_link.must_point_to_unique_field')}</p>
-              </div>
-              <div className="flex flex-1 flex-row gap-2">
-                <Modal.Close asChild>
-                  <Button className="flex-1" variant="secondary">
-                    {t('common:cancel')}
-                  </Button>
-                </Modal.Close>
-                <Button
-                  className="flex-1"
-                  variant="primary"
-                  type="submit"
-                  name="create"
-                >
-                  {t('data:create_field.button_accept')}
-                </Button>
-              </div>
+            <div className="flex flex-row justify-around gap-2">
+              <FormField
+                name="childTableId"
+                control={control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-1 flex-col gap-2">
+                    <FormLabel>{t('data:create_link.child_table')}</FormLabel>
+                    <FormControl>
+                      <Select.Default
+                        disabled={true}
+                        onValueChange={(type) => {
+                          field.onChange(type);
+                        }}
+                        value={field.value}
+                      >
+                        {[thisTable].map(({ id, name }) => {
+                          return (
+                            <Select.DefaultItem key={id} value={id}>
+                              {name}
+                            </Select.DefaultItem>
+                          );
+                        })}
+                      </Select.Default>
+                    </FormControl>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="childFieldId"
+                control={control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-1 flex-col gap-2">
+                    <FormLabel>{t('data:create_link.child_field')}</FormLabel>
+                    <FormControl>
+                      <Select.Default
+                        onValueChange={(type) => {
+                          field.onChange(type);
+                        }}
+                        value={field.value}
+                      >
+                        {thisTable.fields.map(({ id, name }) => {
+                          return (
+                            <Select.DefaultItem key={id} value={id}>
+                              {name}
+                            </Select.DefaultItem>
+                          );
+                        })}
+                      </Select.Default>
+                    </FormControl>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
             </div>
-          </FormProvider>
-        </Form>
-      </Modal.Content>
-    </Modal.Root>
+            <div className="flex flex-row justify-around gap-2">
+              <FormField
+                name="parentTableId"
+                control={control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-1 flex-col gap-2">
+                    <FormLabel>{t('data:create_link.parent_table')}</FormLabel>
+                    <FormControl>
+                      <Select.Default
+                        onValueChange={(id) => {
+                          field.onChange(id);
+                          const newTable =
+                            otherTables.find(
+                              ({ id: tableId }) => tableId === id,
+                            ) ?? otherTables[0];
+                          setSelectedParentTable(newTable);
+                        }}
+                        value={field.value}
+                      >
+                        {otherTables.map(({ id, name }) => {
+                          return (
+                            <Select.DefaultItem key={id} value={id}>
+                              {name}
+                            </Select.DefaultItem>
+                          );
+                        })}
+                      </Select.Default>
+                    </FormControl>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="parentFieldId"
+                control={control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-1 flex-col gap-2">
+                    <FormLabel>{t('data:create_link.parent_field')}</FormLabel>
+                    <FormControl>
+                      <Select.Default
+                        defaultValue={selectedParentTableFields[0].id}
+                        onValueChange={(type) => {
+                          field.onChange(type);
+                        }}
+                        value={field.value}
+                      >
+                        {selectedParentTableFields.map(({ id, name }) => {
+                          return (
+                            <Select.DefaultItem key={id} value={id}>
+                              {name}
+                            </Select.DefaultItem>
+                          );
+                        })}
+                      </Select.Default>
+                    </FormControl>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <p>{t('data:create_link.must_point_to_unique_field')}</p>
+          </div>
+          <div className="flex flex-1 flex-row gap-2">
+            <Modal.Close asChild>
+              <Button className="flex-1" variant="secondary">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button
+              className="flex-1"
+              variant="primary"
+              type="submit"
+              name="create"
+            >
+              {t('data:create_field.button_accept')}
+            </Button>
+          </div>
+        </div>
+      </FormProvider>
+    </Form>
   );
 }
