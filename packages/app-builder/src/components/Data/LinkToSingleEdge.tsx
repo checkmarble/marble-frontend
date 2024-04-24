@@ -1,8 +1,7 @@
-import { type LinkToSingle, type TableModel } from '@app-builder/models';
+import { type LinkToSingle } from '@app-builder/models';
 import {
   BaseEdge,
   type DefaultEdgeOptions,
-  type Edge,
   type EdgeProps,
   getBezierPath,
   MarkerType,
@@ -10,6 +9,14 @@ import {
 
 export interface LinkToSingleData {
   original: LinkToSingle;
+}
+
+export function adaptLinkToSingleData(
+  linkToSingle: LinkToSingle,
+): LinkToSingleData {
+  return {
+    original: linkToSingle,
+  };
 }
 
 export const defaultDataModelEdgeOptions: DefaultEdgeOptions = {
@@ -25,19 +32,18 @@ export const defaultDataModelEdgeOptions: DefaultEdgeOptions = {
   },
 };
 
-export function adaptDataModelEdges(
-  tableModel: TableModel,
-  linkToSingle: LinkToSingle,
-): Edge<LinkToSingleData> {
+export function getLinkToSingleDataEdgeId(linkToSingleData: LinkToSingleData) {
+  const { original } = linkToSingleData;
+  return original.childTableId + original.name;
+}
+
+export function getLinkToSingleDataEdge(linkToSingleData: LinkToSingleData) {
+  const { original } = linkToSingleData;
   return {
-    ...defaultDataModelEdgeOptions,
-    id: tableModel.id + linkToSingle.name,
-    type: 'link_to_single_edge',
-    source: tableModel.name,
-    sourceHandle: linkToSingle.childFieldName,
-    target: linkToSingle.parentTableName,
-    targetHandle: linkToSingle.parentFieldName,
-    data: { original: linkToSingle },
+    source: original.childTableName,
+    sourceHandle: original.childFieldName,
+    target: original.parentTableName,
+    targetHandle: original.parentFieldName,
   };
 }
 
