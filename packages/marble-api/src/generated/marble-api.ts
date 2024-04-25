@@ -408,6 +408,7 @@ export type FieldDto = {
     unicity_constraint: "no_unicity_constraint" | "pending_unique_constraint" | "active_unique_constraint";
 };
 export type LinkToSingleDto = {
+    id: string;
     parent_table_name: string;
     parent_table_id: string;
     parent_field_name: string;

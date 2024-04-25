@@ -3037,6 +3037,9 @@ components:
     LinkToSingleDto:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
         parent_table_name:
           type: string
         parent_table_id:
@@ -3058,6 +3061,7 @@ components:
           type: string
           format: uuid
       required:
+        - id
         - parent_table_name
         - parent_table_id
         - parent_field_name

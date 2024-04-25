@@ -47,6 +47,7 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
 }
 
 export interface LinkToSingle {
+  id: string;
   name: string;
   parentTableName: string;
   parentTableId: string;
@@ -63,6 +64,7 @@ function adaptLinkToSingle(
   linksToSingleDto: LinkToSingleDto,
 ): LinkToSingle {
   return {
+    id: linksToSingleDto.id,
     name: linkName,
     parentTableName: linksToSingleDto.parent_table_name,
     parentTableId: linksToSingleDto.parent_table_id,
