@@ -9,6 +9,7 @@ import {
   type PayloadAstNode,
 } from '@app-builder/models/ast-node';
 import {
+  type DataModel,
   type EnumValue,
   findDataModelField,
   findDataModelTable,
@@ -44,7 +45,7 @@ const DatabaseAccessors =
 const PayloadAccessors =
   createSimpleContext<PayloadAstNode[]>('PayloadAccessors');
 
-const DataModel = createSimpleContext<TableModel[]>('DataModel');
+const DataModelContext = createSimpleContext<DataModel>('DataModel');
 
 const CustomLists = createSimpleContext<CustomList[]>('CustomLists');
 
@@ -56,7 +57,7 @@ const TriggerObjectTable =
 
 export const useDatabaseAccessors = DatabaseAccessors.useValue;
 export const usePayloadAccessors = PayloadAccessors.useValue;
-export const useDataModel = DataModel.useValue;
+export const useDataModel = DataModelContext.useValue;
 export const useCustomLists = CustomLists.useValue;
 export const useOperatorFunctions = OperatorFunctions.useValue;
 export const useTriggerObjectTable = TriggerObjectTable.useValue;
@@ -74,7 +75,7 @@ export function OptionsProvider({
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
   operators: OperatorFunction[];
-  dataModel: TableModel[];
+  dataModel: DataModel;
   customLists: CustomList[];
   triggerObjectType: string;
 }) {
@@ -90,7 +91,7 @@ export function OptionsProvider({
   return (
     <DatabaseAccessors.Provider value={databaseAccessors}>
       <PayloadAccessors.Provider value={payloadAccessors}>
-        <DataModel.Provider value={dataModel}>
+        <DataModelContext.Provider value={dataModel}>
           <CustomLists.Provider value={customLists}>
             <OperatorFunctions.Provider value={operators}>
               <TriggerObjectTable.Provider value={triggerObjectTable}>
@@ -98,7 +99,7 @@ export function OptionsProvider({
               </TriggerObjectTable.Provider>
             </OperatorFunctions.Provider>
           </CustomLists.Provider>
-        </DataModel.Provider>
+        </DataModelContext.Provider>
       </PayloadAccessors.Provider>
     </DatabaseAccessors.Provider>
   );
@@ -215,7 +216,7 @@ function getEnumOptionsFromNeighbour({
 }: {
   viewModel: OperandViewModel;
   triggerObjectTable: TableModel;
-  dataModel: TableModel[];
+  dataModel: DataModel;
 }): EnumValue[] {
   if (!viewModel.parent) {
     return [];

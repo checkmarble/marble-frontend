@@ -3,9 +3,9 @@ import { Score } from '@app-builder/components/Decisions/Score';
 import {
   type AstNode,
   type DatabaseAccessAstNode,
+  type DataModel,
   type PayloadAstNode,
   type ScenarioIterationRule,
-  type TableModel,
 } from '@app-builder/models';
 import {
   isRuleExecutionError,
@@ -41,7 +41,7 @@ export function RulesDetail({
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
     operators: OperatorFunction[];
-    dataModel: TableModel[];
+    dataModel: DataModel;
     customLists: CustomList[];
   }>;
 }) {
@@ -124,7 +124,7 @@ function RuleExecutionDetail({
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
     operators: OperatorFunction[];
-    dataModel: TableModel[];
+    dataModel: DataModel;
     customLists: CustomList[];
   };
 }) {
@@ -211,7 +211,7 @@ function RuleFormula({
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
   operators: OperatorFunction[];
-  dataModel: TableModel[];
+  dataModel: DataModel;
   customLists: CustomList[];
   triggerObjectType: string;
 }) {

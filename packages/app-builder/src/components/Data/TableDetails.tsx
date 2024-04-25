@@ -3,6 +3,7 @@ import {
   usePermissionsContext,
 } from '@app-builder/components';
 import {
+  type DataModel,
   type DataType,
   type TableModel,
   type UnicityConstraintType,
@@ -28,7 +29,7 @@ import { dataI18n } from './data-i18n';
 
 interface TableDetailsProps {
   tableModel: TableModel;
-  dataModel: TableModel[];
+  dataModel: DataModel;
 }
 
 export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
@@ -58,6 +59,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
         displayType: field.isEnum ? `${field.dataType} (enum)` : field.dataType,
         nullable: field.nullable,
         isEnum: field.isEnum,
+        tableId: field.tableId,
         unicityConstraint: field.unicityConstraint,
       })),
     [tableModel.fields],
@@ -68,9 +70,9 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
     () =>
       tableModel.linksToSingle.map((link) => ({
         foreignKey: link.childFieldName,
-        parentTable: link.linkedTableName,
+        parentTable: link.parentFieldName,
         parentFieldName: link.parentFieldName,
-        exampleUsage: `${tableModel.name}.${link.linkName}.${link.parentFieldName} = ${tableModel.name}.${link.childFieldName}`,
+        exampleUsage: `${tableModel.name}.${link.name}.${link.parentFieldName} = ${tableModel.name}.${link.childFieldName}`,
       })),
     [tableModel.linksToSingle, tableModel.name],
   );
@@ -79,18 +81,22 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
     <CollapsiblePaper.Container defaultOpen={false}>
       <CollapsiblePaper.Title>
         <span className="flex flex-1">{tableModel.name}</span>
+
         {canEditDataModel ? (
-          <CreateField tableId={tableModel.id}>
-            <Button
-              onClick={(e) => {
-                //necessary to prevent the click on the button to trigger the collapsible
-                e.stopPropagation();
-              }}
-            >
-              <Icon icon="plus" className="size-6" />
-              {t('data:create_field.title')}
-            </Button>
-          </CreateField>
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+          <div
+            onClick={(e) => {
+              //necessary to prevent clicks on modal interactible to trigger the collapsible
+              e.stopPropagation();
+            }}
+          >
+            <CreateField tableId={tableModel.id}>
+              <Button>
+                <Icon icon="plus" className="size-6" />
+                {t('data:create_field.title')}
+              </Button>
+            </CreateField>
+          </div>
         ) : null}
         {canIngestData ? (
           <NavLink
@@ -178,10 +184,11 @@ interface TableDetailColumnsProps {
     displayType: string;
     nullable: boolean;
     isEnum: boolean;
+    tableId: string;
     unicityConstraint: UnicityConstraintType;
   }[];
   tableModel: TableModel;
-  dataModel: TableModel[];
+  dataModel: DataModel;
   permissions: {
     canEditDataModel: boolean;
   };
@@ -204,7 +211,7 @@ function TableDetailFields({
         .filter((table) => table.id !== tableModel.id)
         .flatMap((table) =>
           table.linksToSingle.filter(
-            (link) => link.linkedTableName === tableModel.name,
+            (link) => link.parentTableName === tableModel.name,
           ),
         ),
     [dataModel, tableModel],

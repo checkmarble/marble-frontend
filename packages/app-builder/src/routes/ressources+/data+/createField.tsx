@@ -136,6 +136,30 @@ export function CreateField({
   tableId: string;
   children: React.ReactNode;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
+      <Modal.Content>
+        <CreateFieldContent
+          tableId={tableId}
+          closeModal={() => {
+            setIsOpen(false);
+          }}
+        />
+      </Modal.Content>
+    </Modal.Root>
+  );
+}
+
+function CreateFieldContent({
+  tableId,
+  closeModal,
+}: {
+  tableId: string;
+  closeModal: () => void;
+}) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
@@ -152,211 +176,204 @@ export function CreateField({
       isUnique: false,
     },
   });
-  const { control, register, reset } = formMethods;
+  const { control, register } = formMethods;
 
   const selectedType = useWatch({ control, name: 'type' });
   const selectedEnum = useWatch({ control, name: 'isEnum' });
   const selectedUnique = useWatch({ control, name: 'isUnique' });
 
-  const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
-      setIsOpen(false);
-      reset();
+      closeModal();
     }
-  }, [fetcher.data?.success, fetcher.state, reset]);
+  }, [closeModal, fetcher.data?.success, fetcher.state]);
 
   return (
-    <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Modal.Trigger asChild>{children}</Modal.Trigger>
-      <Modal.Content>
-        <Form
-          control={control}
-          onSubmit={({ formDataJson }) => {
-            fetcher.submit(formDataJson, {
-              method: 'POST',
-              action: getRoute('/ressources/data/createField'),
-              encType: 'application/json',
-            });
-          }}
-        >
-          <FormProvider {...formMethods}>
-            <HiddenInputs tableId={'dummy value'} />
-            <Modal.Title>{t('data:create_field.title')}</Modal.Title>
-            <div className="flex flex-col gap-6 p-6">
-              <div className="flex flex-1 flex-col gap-4">
-                <input hidden {...register('tableId')} />
-                <FormField
-                  name="name"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('data:field_name')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t('data:create_field.name_placeholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('data:description')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t(
-                            'data:create_field.description_placeholder',
-                          )}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex flex-row justify-around gap-2">
-                  <FormField
-                    name="required"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{t('data:create_field.required')}</FormLabel>
-                        <FormControl>
-                          <Select.Default
-                            className="w-full overflow-hidden"
-                            onValueChange={(type) => {
-                              field.onChange(type);
-                            }}
-                            value={field.value}
-                          >
-                            {REQUIRED_OPTIONS.map(({ value, display }) => {
-                              return (
-                                <Select.DefaultItem key={value} value={value}>
-                                  {t(display)}
-                                </Select.DefaultItem>
-                              );
-                            })}
-                          </Select.Default>
-                        </FormControl>
-                        <FormError />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    name="type"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-1 flex-col gap-2">
-                        <FormLabel>{t('data:create_field.type')}</FormLabel>
-                        <FormControl>
-                          <Select.Default
-                            className="w-full"
-                            onValueChange={(type) => {
-                              field.onChange(type);
-                            }}
-                            value={field.value}
-                          >
-                            {VALUE_TYPES.map(({ value, display }) => {
-                              return (
-                                <Select.DefaultItem key={value} value={value}>
-                                  {t(display)}
-                                </Select.DefaultItem>
-                              );
-                            })}
-                          </Select.Default>
-                        </FormControl>
-                        <FormError />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                {EnumDataTypes.includes(selectedType) ? (
-                  <FormField
-                    name="isEnum"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center gap-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            disabled={selectedUnique}
-                            onCheckedChange={(checked) => {
-                              field.onChange(checked);
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel>
-                          <p>{t('data:create_field.is_enum.title')}</p>
-                          <p className="text-xs">
-                            {t('data:create_field.is_enum.subtitle')}
-                          </p>
-                        </FormLabel>
-                        <FormError />
-                      </FormItem>
-                    )}
-                  />
-                ) : null}
-                {UniqueDataTypes.includes(selectedType) ? (
-                  <FormField
-                    name="isUnique"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center gap-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            disabled={selectedEnum}
-                            onCheckedChange={(checked) => {
-                              field.onChange(checked);
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel>
-                          <p>{t('data:edit_field.is_unique.title')}</p>
-                          <p className="text-xs">
-                            {t('data:edit_field.is_unique.toggle')}
-                          </p>
-                          {field.value ? (
-                            <p className="text-xs text-red-100">
-                              {t(
-                                'data:edit_field.is_unique.warning_creation_asynchronous',
-                              )}
-                            </p>
-                          ) : null}
-                        </FormLabel>
-                        <FormError />
-                      </FormItem>
-                    )}
-                  />
-                ) : null}
-              </div>
-              <div className="flex flex-1 flex-row gap-2">
-                <Modal.Close asChild>
-                  <Button className="flex-1" variant="secondary">
-                    {t('common:cancel')}
-                  </Button>
-                </Modal.Close>
-                <Button
-                  className="flex-1"
-                  variant="primary"
-                  type="submit"
-                  name="create"
-                >
-                  {t('data:create_field.button_accept')}
-                </Button>
-              </div>
+    <Form
+      control={control}
+      onSubmit={({ formDataJson }) => {
+        fetcher.submit(formDataJson, {
+          method: 'POST',
+          action: getRoute('/ressources/data/createField'),
+          encType: 'application/json',
+        });
+      }}
+    >
+      <FormProvider {...formMethods}>
+        <HiddenInputs tableId={'dummy value'} />
+        <Modal.Title>{t('data:create_field.title')}</Modal.Title>
+        <div className="flex flex-col gap-6 p-6">
+          <div className="flex flex-1 flex-col gap-4">
+            <input hidden {...register('tableId')} />
+            <FormField
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel>{t('data:field_name')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder={t('data:create_field.name_placeholder')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormError />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel>{t('data:description')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder={t(
+                        'data:create_field.description_placeholder',
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormError />
+                </FormItem>
+              )}
+            />
+            <div className="flex flex-row justify-around gap-2">
+              <FormField
+                name="required"
+                control={control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-1 flex-col gap-2">
+                    <FormLabel>{t('data:create_field.required')}</FormLabel>
+                    <FormControl>
+                      <Select.Default
+                        className="w-full overflow-hidden"
+                        onValueChange={(type) => {
+                          field.onChange(type);
+                        }}
+                        value={field.value}
+                      >
+                        {REQUIRED_OPTIONS.map(({ value, display }) => {
+                          return (
+                            <Select.DefaultItem key={value} value={value}>
+                              {t(display)}
+                            </Select.DefaultItem>
+                          );
+                        })}
+                      </Select.Default>
+                    </FormControl>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="type"
+                control={control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-1 flex-col gap-2">
+                    <FormLabel>{t('data:create_field.type')}</FormLabel>
+                    <FormControl>
+                      <Select.Default
+                        className="w-full"
+                        onValueChange={(type) => {
+                          field.onChange(type);
+                        }}
+                        value={field.value}
+                      >
+                        {VALUE_TYPES.map(({ value, display }) => {
+                          return (
+                            <Select.DefaultItem key={value} value={value}>
+                              {t(display)}
+                            </Select.DefaultItem>
+                          );
+                        })}
+                      </Select.Default>
+                    </FormControl>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
             </div>
-          </FormProvider>
-        </Form>
-      </Modal.Content>
-    </Modal.Root>
+            {EnumDataTypes.includes(selectedType) ? (
+              <FormField
+                name="isEnum"
+                control={control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center gap-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        disabled={selectedUnique}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel>
+                      <p>{t('data:create_field.is_enum.title')}</p>
+                      <p className="text-xs">
+                        {t('data:create_field.is_enum.subtitle')}
+                      </p>
+                    </FormLabel>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
+            ) : null}
+            {UniqueDataTypes.includes(selectedType) ? (
+              <FormField
+                name="isUnique"
+                control={control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center gap-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        disabled={selectedEnum}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel>
+                      <p>{t('data:edit_field.is_unique.title')}</p>
+                      <p className="text-xs">
+                        {t('data:edit_field.is_unique.toggle')}
+                      </p>
+                      {field.value ? (
+                        <p className="text-xs text-red-100">
+                          {t(
+                            'data:edit_field.is_unique.warning_creation_asynchronous',
+                          )}
+                        </p>
+                      ) : null}
+                    </FormLabel>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
+            ) : null}
+          </div>
+          <div className="flex flex-1 flex-row gap-2">
+            <Modal.Close asChild>
+              <Button className="flex-1" variant="secondary">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button
+              className="flex-1"
+              variant="primary"
+              type="submit"
+              name="create"
+            >
+              {t('data:create_field.button_accept')}
+            </Button>
+          </div>
+        </div>
+      </FormProvider>
+    </Form>
   );
 }

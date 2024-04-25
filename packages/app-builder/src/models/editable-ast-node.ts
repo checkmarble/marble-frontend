@@ -31,6 +31,7 @@ import {
   type UndefinedAstNode,
 } from './ast-node';
 import {
+  type DataModel,
   type DataModelField,
   type DataType,
   type EnumValue,
@@ -193,14 +194,14 @@ export class AggregatorEditableAstNode implements EditableAstNodeBase {
   dataType: DataType = 'unknown' as const;
   displayName: string;
 
-  dataModel: TableModel[];
+  dataModel: DataModel;
   customLists: CustomList[];
   triggerObjectTable: TableModel;
 
   constructor(
     t: TFunctionDisplayName,
     astNode: AggregationAstNode,
-    dataModel: TableModel[],
+    dataModel: DataModel,
     customLists: CustomList[],
     triggerObjectTable: TableModel,
   ) {
@@ -442,7 +443,7 @@ export class FuzzyMatchComparatorEditableAstNode
     astNode: FuzzyMatchComparatorAstNode,
     config: {
       triggerObjectTable: TableModel;
-      dataModel: TableModel[];
+      dataModel: DataModel;
       customLists: CustomList[];
       enumOptions: EnumValue[];
     },
@@ -461,7 +462,7 @@ export class FuzzyMatchComparatorEditableAstNode
     astNode: FuzzyMatchComparatorAstNode,
     config: {
       triggerObjectTable: TableModel;
-      dataModel: TableModel[];
+      dataModel: DataModel;
       customLists: CustomList[];
       enumOptions: EnumValue[];
     },
@@ -510,7 +511,7 @@ export function adaptEditableAstNode(
     enumOptions,
   }: {
     triggerObjectTable: TableModel;
-    dataModel: TableModel[];
+    dataModel: DataModel;
     customLists: CustomList[];
     enumOptions: EnumValue[];
   },
@@ -578,7 +579,7 @@ export function stringifyAstNode(
   astNode: AstNode,
   config: {
     triggerObjectTable: TableModel;
-    dataModel: TableModel[];
+    dataModel: DataModel;
     customLists: CustomList[];
     enumOptions: EnumValue[];
   },

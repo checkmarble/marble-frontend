@@ -396,34 +396,41 @@ export type ScenarioPublicationStatusDto = {
     preparation_status: "required" | "ready_to_activate";
     preparation_service_status: "available" | "occupied";
 };
-export type DataModelFieldDto = {
-    id?: string;
-    name: string;
+export type FieldDto = {
+    id: string;
     data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
-    nullable: boolean;
     description: string;
     is_enum: boolean;
-    unicity_constraint: "no_unicity_constraint" | "pending_unique_constraint" | "active_unique_constraint";
+    name: string;
+    nullable: boolean;
+    table_id: string;
     values?: (string | number)[];
+    unicity_constraint: "no_unicity_constraint" | "pending_unique_constraint" | "active_unique_constraint";
 };
 export type LinkToSingleDto = {
-    linked_table_name: string;
+    parent_table_name: string;
+    parent_table_id: string;
     parent_field_name: string;
+    parent_field_id: string;
+    child_table_name: string;
+    child_table_id: string;
     child_field_name: string;
+    child_field_id: string;
+};
+export type TableDto = {
+    id: string;
+    name: string;
+    description: string;
+    fields: {
+        [key: string]: FieldDto;
+    };
+    links_to_single?: {
+        [key: string]: LinkToSingleDto;
+    };
 };
 export type DataModelDto = {
     tables: {
-        [key: string]: {
-            id?: string;
-            name: string;
-            fields: {
-                [key: string]: DataModelFieldDto;
-            };
-            links_to_single?: {
-                [key: string]: LinkToSingleDto;
-            };
-            description: string;
-        };
+        [key: string]: TableDto;
     };
 };
 export type CreateTableBody = {

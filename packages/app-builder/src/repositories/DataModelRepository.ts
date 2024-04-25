@@ -1,16 +1,16 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
   adaptCreateTableFieldDto,
-  adaptDataModelDto,
+  adaptDataModel,
   adaptUpdateFieldDto,
   type CreateFieldInput,
-  type TableModel,
+  type DataModel,
   type UpdateFieldInput,
 } from '@app-builder/models';
 import { type OpenApiSpec } from 'marble-api';
 
 export interface DataModelRepository {
-  getDataModel(): Promise<TableModel[]>;
+  getDataModel(): Promise<DataModel>;
   getOpenApiSpec(): Promise<OpenApiSpec>;
   postDataModelTableField(
     tableId: string,
@@ -27,7 +27,7 @@ export function getDataModelRepository() {
     getDataModel: async () => {
       const { data_model } = await marbleApiClient.getDataModel();
 
-      return adaptDataModelDto(data_model);
+      return adaptDataModel(data_model);
     },
     getOpenApiSpec: async () => {
       return marbleApiClient.getDataModelOpenApi();

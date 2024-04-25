@@ -9,7 +9,6 @@ import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
 import {
-  adaptDataModelDto,
   adaptNodeDto,
   type AstNode,
   NewEmptyTriggerAstNode,
@@ -50,12 +49,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient, editor, organization } = await authService.isAuthenticated(
-    request,
-    {
+  const { apiClient, editor, organization, dataModelRepository } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    },
-  );
+    });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
@@ -73,7 +70,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     editor.listAccessors({
       scenarioId,
     }),
-    apiClient.getDataModel(),
+    dataModelRepository.getDataModel(),
     apiClient.listCustomLists(),
     organization.getCurrentOrganization(),
     apiClient.listScheduledExecutions({
@@ -85,7 +82,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
     operators,
-    dataModel: adaptDataModelDto(dataModel.data_model),
+    dataModel,
     customLists: customLists.custom_lists,
     organization: currentOrganization,
     scheduledExecutions: scheduledExecutions.scheduled_executions,
