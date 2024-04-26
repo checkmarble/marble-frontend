@@ -5,6 +5,7 @@ import {
   type TableModel,
   type UnicityConstraintType,
 } from '@app-builder/models/data-model';
+import { CreatePivot } from '@app-builder/routes/ressources+/data+/create-pivot';
 import { CreateField } from '@app-builder/routes/ressources+/data+/createField';
 import { CreateLink } from '@app-builder/routes/ressources+/data+/createLink';
 import { EditField } from '@app-builder/routes/ressources+/data+/editField';
@@ -34,6 +35,7 @@ import { dataI18n } from './data-i18n';
 
 export interface TableModelNodeData {
   original: TableModel;
+  dataModel: DataModel;
   linksToThisTable: LinkToSingle[];
   otherTablesWithUnique: TableModel[];
   id: string;
@@ -58,6 +60,7 @@ export function adaptTableModelNodeData(
 ): TableModelNodeData {
   return {
     original: tableModel,
+    dataModel,
     linksToThisTable: dataModel
       .filter((table) => table.id !== tableModel.id)
       .flatMap((table) =>
@@ -321,6 +324,21 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
           {t('data:create_link.title')}
         </SchemaMenuMenuItem>
       </CreateLink>,
+    );
+  }
+  if (canEditDataModel) {
+    // TODO: display "view pivot" if a pivot exists
+    menuItems.push(
+      <CreatePivot
+        key="create-pivot"
+        tableModel={data.original}
+        dataModel={data.dataModel}
+      >
+        <SchemaMenuMenuItem>
+          <Icon icon="plus" className="size-6" />
+          {t('data:create_pivot.title')}
+        </SchemaMenuMenuItem>
+      </CreatePivot>,
     );
   }
   if (menuItems.length === 0) {
