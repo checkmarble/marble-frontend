@@ -1,10 +1,14 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
+  adaptCreatePivotInputDto,
   adaptCreateTableFieldDto,
   adaptDataModel,
+  adaptPivot,
   adaptUpdateFieldDto,
   type CreateFieldInput,
+  type CreatePivotInput,
   type DataModel,
+  type Pivot,
   type UpdateFieldInput,
 } from '@app-builder/models';
 import { type OpenApiSpec } from 'marble-api';
@@ -20,6 +24,8 @@ export interface DataModelRepository {
     tableId: string,
     updateFieldInput: UpdateFieldInput,
   ): Promise<void>;
+  listPivots(args: { tableId?: string }): Promise<Pivot[]>;
+  createPivot(pivot: CreatePivotInput): Promise<Pivot>;
 }
 
 export function getDataModelRepository() {
@@ -43,6 +49,18 @@ export function getDataModelRepository() {
         tableId,
         adaptUpdateFieldDto(updateFieldInput),
       );
+    },
+    listPivots: async ({ tableId }) => {
+      const { pivots } = await marbleApiClient.listDataModelPivots({ tableId });
+
+      return pivots.map(adaptPivot);
+    },
+    createPivot: async (pivotInput) => {
+      const { pivot } = await marbleApiClient.createDataModelPivot(
+        adaptCreatePivotInputDto(pivotInput),
+      );
+
+      return adaptPivot(pivot);
     },
   });
 }

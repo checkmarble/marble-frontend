@@ -471,6 +471,23 @@ export type OpenApiSpec = {
         securitySchemes?: object;
     };
 };
+export type PivotDto = {
+    id: string;
+    created_at: string;
+    base_table: string;
+    base_table_id: string;
+    pivot_table: string;
+    pivot_table_id: string;
+    field: string;
+    field_id: string;
+    path_links: string[];
+    path_link_ids: string[];
+};
+export type CreatePivotInputDto = {
+    base_table_id: string;
+    field_id?: string;
+    path_link_ids?: string[];
+};
 export type AnalyticsDto = {
     embedding_type: "global_dashboard" | "unknown_embedding_type";
     signed_embedding_url: string;
@@ -1825,6 +1842,50 @@ export function getDataModelOpenApi(opts?: Oazapfts.RequestOpts) {
     }>("/data-model/openapi", {
         ...opts
     }));
+}
+/**
+ * Get the pivots associated with the current organization (can be filtered by table_id)
+ */
+export function listDataModelPivots({ tableId }: {
+    tableId?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            pivots: PivotDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/data-model/pivots${QS.query(QS.explode({
+        table_id: tableId
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Create a pivot
+ */
+export function createDataModelPivot(createPivotInputDto: CreatePivotInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            pivot: PivotDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/data-model/pivots", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createPivotInputDto
+    })));
 }
 /**
  * List analytics associated with the current organization (present in the JWT)

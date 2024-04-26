@@ -1931,6 +1931,69 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /data-model/pivots:
+    get:
+      tags:
+        - Data Model
+      summary: Get the pivots associated with the current organization (can be filtered by table_id)
+      operationId: listDataModelPivots
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: table_id
+          description: ID of the table to get the pivots from
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The pivots corresponding to the current organization (and table_id if provided)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pivots:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PivotDto'
+                required:
+                  - pivots
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      tags:
+        - Data Model
+      summary: Create a pivot
+      operationId: createDataModelPivot
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Describe the pivot to create'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePivotInputDto'
+        required: true
+      responses:
+        '200':
+          description: The created pivot
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pivot:
+                    $ref: '#/components/schemas/PivotDto'
+                required:
+                  - pivot
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /analytics:
     get:
       tags:
@@ -3233,7 +3296,66 @@ components:
               type: object
             securitySchemes:
               type: object
-
+    PivotDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        base_table:
+          type: string
+        base_table_id:
+          type: string
+          format: uuid
+        pivot_table:
+          type: string
+        pivot_table_id:
+          type: string
+          format: uuid
+        field:
+          type: string
+        field_id:
+          type: string
+          format: uuid
+        path_links:
+          type: array
+          items:
+            type: string
+        path_link_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - id
+        - created_at
+        - base_table
+        - base_table_id
+        - pivot_table
+        - pivot_table_id
+        - field
+        - field_id
+        - path_links
+        - path_link_ids
+    CreatePivotInputDto:
+      type: object
+      properties:
+        base_table_id:
+          type: string
+          format: uuid
+        field_id:
+          type: string
+          format: uuid
+        path_link_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - base_table_id
     Token:
       type: object
       required:
