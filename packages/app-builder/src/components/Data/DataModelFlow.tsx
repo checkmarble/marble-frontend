@@ -35,6 +35,7 @@ import {
   type LinkToSingleData,
   LinkToSingleEdge,
 } from './LinkToSingleEdge';
+import { SelectedPivotPanel, SelectedPivotProvider } from './SelectedPivot';
 import {
   adaptTableModelNodeData,
   getTableModelNodeDataId,
@@ -79,9 +80,11 @@ export function DataModelFlow({
 }: DataModelFlowProps) {
   return (
     <ReactFlowProvider>
-      <DataModelFlowImpl dataModel={dataModel} pivots={pivots}>
-        {children}
-      </DataModelFlowImpl>
+      <SelectedPivotProvider dataModel={dataModel}>
+        <DataModelFlowImpl dataModel={dataModel} pivots={pivots}>
+          {children}
+        </DataModelFlowImpl>
+      </SelectedPivotProvider>
     </ReactFlowProvider>
   );
 }
@@ -256,6 +259,7 @@ function DataModelFlowImpl({
       <Controls position="bottom-left">
         <CustomControls />
       </Controls>
+      <SelectedPivotPanel />
       <Panel position="bottom-right">
         <CreateTable>
           <Button className="w-fit">

@@ -107,21 +107,44 @@ export function adaptDataModel(dataModelDto: DataModelDto): DataModel {
   return R.pipe(dataModelDto.tables, R.values, R.map(adaptTableModel));
 }
 
-export interface Pivot {
-  id: string;
-  createdAt: string;
-  baseTable: string;
-  baseTableId: string;
-  pivotTable: string;
-  pivotTableId: string;
-  field: string;
-  fieldId: string;
-  pathLinks: string[];
-  pathLinkIds: string[];
-}
+export type Pivot =
+  | {
+      type: 'field';
+      id: string;
+      createdAt: string;
+      baseTable: string;
+      baseTableId: string;
+      field: string;
+      fieldId: string;
+    }
+  | {
+      type: 'link';
+      id: string;
+      createdAt: string;
+      baseTable: string;
+      baseTableId: string;
+      pivotTable: string;
+      pivotTableId: string;
+      field: string;
+      fieldId: string;
+      pathLinks: string[];
+      pathLinkIds: string[];
+    };
 
 export function adaptPivot(pivotDto: PivotDto): Pivot {
+  if (pivotDto.path_link_ids.length === 0) {
+    return {
+      type: 'field',
+      id: pivotDto.id,
+      createdAt: pivotDto.created_at,
+      baseTable: pivotDto.base_table,
+      baseTableId: pivotDto.base_table_id,
+      field: pivotDto.field,
+      fieldId: pivotDto.field_id,
+    };
+  }
   return {
+    type: 'link',
     id: pivotDto.id,
     createdAt: pivotDto.created_at,
     baseTable: pivotDto.base_table,

@@ -33,6 +33,7 @@ import {
   SchemaMenuRoot,
 } from '../Schema/SchemaMenu';
 import { dataI18n } from './data-i18n';
+import { useSelectedPivot } from './SelectedPivot';
 
 export interface TableModelNodeData {
   original: TableModel;
@@ -106,6 +107,8 @@ const columnHelper =
 export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   const { t } = useTranslation(dataI18n);
   const { canEditDataModel } = usePermissionsContext();
+  const { displayPivot, isFieldPartOfPivot, isTablePartOfPivot } =
+    useSelectedPivot();
 
   const columns = React.useMemo(
     () => [
@@ -191,7 +194,12 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   });
 
   return (
-    <table className="bg-grey-00 border-grey-50 isolate table-auto border-collapse rounded-xl border">
+    <table
+      className={clsx(
+        'bg-grey-00 border-grey-50 isolate table-auto border-collapse rounded-xl border',
+        displayPivot && !isTablePartOfPivot(data.original.id) && 'opacity-20',
+      )}
+    >
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
@@ -215,6 +223,12 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               className={clsx(
                 'border-grey-50 relative border',
                 canEditDataModel && 'hover:bg-purple-10 group',
+                displayPivot &&
+                  isFieldPartOfPivot(row.original.id) &&
+                  'bg-purple-10',
+                displayPivot &&
+                  !isFieldPartOfPivot(row.original.id) &&
+                  'opacity-20',
               )}
             >
               {visibleCells.map((cell, index) => {
@@ -277,7 +291,10 @@ function FormatDescription({ description }: { description: string }) {
 
 function MoreMenu({ data }: { data: TableModelNodeData }) {
   const { t } = useTranslation(dataI18n);
+
   const { canEditDataModel, canIngestData } = usePermissionsContext();
+  const { setSelectedPivot } = useSelectedPivot();
+
   const menuItems = [];
   if (canEditDataModel) {
     menuItems.push(
@@ -330,20 +347,34 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </CreateLink>,
     );
   }
-  if (canEditDataModel && !data.pivot) {
-    // TODO: display "view pivot" if a pivot exists
-    menuItems.push(
-      <CreatePivot
-        key="create-pivot"
-        tableModel={data.original}
-        dataModel={data.dataModel}
-      >
-        <SchemaMenuMenuItem>
-          <Icon icon="plus" className="size-6" />
-          {t('data:create_pivot.title')}
-        </SchemaMenuMenuItem>
-      </CreatePivot>,
-    );
+  if (canEditDataModel) {
+    const { pivot } = data;
+    if (pivot) {
+      menuItems.push(
+        <SchemaMenuMenuItem
+          key="view-pivot"
+          onClick={() => {
+            setSelectedPivot(pivot);
+          }}
+        >
+          <Icon icon="center-focus" className="size-6" />
+          {t('data:view_pivot.button')}
+        </SchemaMenuMenuItem>,
+      );
+    } else {
+      menuItems.push(
+        <CreatePivot
+          key="create-pivot"
+          tableModel={data.original}
+          dataModel={data.dataModel}
+        >
+          <SchemaMenuMenuItem>
+            <Icon icon="plus" className="size-6" />
+            {t('data:create_pivot.title')}
+          </SchemaMenuMenuItem>
+        </CreatePivot>,
+      );
+    }
   }
   if (menuItems.length === 0) {
     return null;

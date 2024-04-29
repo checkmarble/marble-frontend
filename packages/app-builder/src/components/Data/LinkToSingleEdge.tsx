@@ -7,6 +7,8 @@ import {
   MarkerType,
 } from 'reactflow';
 
+import { useSelectedPivot } from './SelectedPivot';
+
 export interface LinkToSingleData {
   original: LinkToSingle;
 }
@@ -67,6 +69,9 @@ export function LinkToSingleEdge({
   labelBgBorderRadius,
   data,
 }: EdgeProps<LinkToSingleData>) {
+  const { displayPivot, isLinkPartOfPivot } = useSelectedPivot();
+  if (!data) return null;
+
   const [path, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -77,6 +82,9 @@ export function LinkToSingleEdge({
     curvature: 0.75,
   });
 
+  const opacity =
+    displayPivot && !isLinkPartOfPivot(data?.original.id) ? 0.2 : 1;
+
   return (
     <BaseEdge
       id={id}
@@ -85,10 +93,10 @@ export function LinkToSingleEdge({
       labelY={labelY}
       markerStart={markerStart}
       markerEnd={markerEnd}
-      style={style}
+      style={{ ...style, opacity }}
       interactionWidth={interactionWidth}
       label={label ?? data?.original.name}
-      labelStyle={labelStyle}
+      labelStyle={{ ...labelStyle, opacity }}
       labelShowBg={labelShowBg}
       labelBgStyle={labelBgStyle}
       labelBgPadding={labelBgPadding}
