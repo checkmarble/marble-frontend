@@ -20,7 +20,7 @@ import {
 import clsx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Handle, type Node, type NodeProps, Position } from 'reactflow';
+import { Handle, type NodeProps, Position } from 'reactflow';
 import { Icon } from 'ui-icons';
 
 import { usePermissionsContext } from '../PermissionsContext';
@@ -32,10 +32,13 @@ import {
 } from '../Schema/SchemaMenu';
 import { dataI18n } from './data-i18n';
 
-export interface TableModelNodeData extends Omit<TableModel, 'fields'> {
+export interface TableModelNodeData {
   original: TableModel;
   linksToThisTable: LinkToSingle[];
   otherTablesWithUnique: TableModel[];
+  id: string;
+  name: string;
+  description?: string;
   columns: {
     id: string;
     name: string;
@@ -49,13 +52,11 @@ export interface TableModelNodeData extends Omit<TableModel, 'fields'> {
   }[];
 }
 
-export function adaptTableModelNode(
+export function adaptTableModelNodeData(
   tableModel: TableModel,
   dataModel: DataModel,
-): Node<TableModelNodeData> {
-  const { fields, ...rest } = tableModel;
-
-  const tableModelNode: TableModelNodeData = {
+): TableModelNodeData {
+  return {
     original: tableModel,
     linksToThisTable: dataModel
       .filter((table) => table.id !== tableModel.id)
@@ -71,8 +72,10 @@ export function adaptTableModelNode(
           (field) => field.unicityConstraint === 'active_unique_constraint',
         ),
       ),
-    ...rest,
-    columns: fields.map((field) => ({
+    id: tableModel.id,
+    name: tableModel.name,
+    description: tableModel.description,
+    columns: tableModel.fields.map((field) => ({
       id: field.id,
       name: field.name,
       description: field.description,
@@ -84,13 +87,10 @@ export function adaptTableModelNode(
       unicityConstraint: field.unicityConstraint,
     })),
   };
+}
 
-  return {
-    id: tableModelNode.name,
-    type: 'table_model',
-    data: tableModelNode,
-    position: { x: 0, y: 0 },
-  } satisfies Node<TableModelNodeData>;
+export function getTableModelNodeDataId(data: TableModelNodeData): string {
+  return data.name;
 }
 
 const columnHelper =

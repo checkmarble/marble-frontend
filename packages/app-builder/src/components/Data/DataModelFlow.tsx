@@ -28,24 +28,32 @@ import {
 } from '../Schema/SchemaMenu';
 import { dataI18n } from './data-i18n';
 import {
-  adaptDataModelEdges,
+  adaptLinkToSingleData,
   defaultDataModelEdgeOptions,
+  getLinkToSingleDataEdge,
+  getLinkToSingleDataEdgeId,
   type LinkToSingleData,
   LinkToSingleEdge,
 } from './LinkToSingleEdge';
 import {
-  adaptTableModelNode,
+  adaptTableModelNodeData,
+  getTableModelNodeDataId,
   TableModelNode,
   type TableModelNodeData,
 } from './TableModelNode';
 
-type DataModelNodeData = TableModelNodeData;
+type CommonData<T extends string, D> = D & {
+  type: T;
+  state: 'initialized' | 'laid_out' | 'visible';
+};
+
+type DataModelNodeData = CommonData<'table_model', TableModelNodeData>;
 
 const nodeTypes = {
   table_model: TableModelNode,
 };
 
-type DataModelEdgeData = LinkToSingleData;
+type DataModelEdgeData = CommonData<'link_to_single_edge', LinkToSingleData>;
 
 const edgeTypes = {
   link_to_single_edge: LinkToSingleEdge,
@@ -90,56 +98,135 @@ function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
     setNodes((currentNodes) =>
       R.pipe(
         dataModel,
-        R.map((tableModel) => adaptTableModelNode(tableModel, dataModel)),
-        R.map((newNode) => {
-          const existingNode = currentNodes.find((nd) => nd.id === newNode.id);
-          if (!existingNode) {
-            newNode.style = { ...newNode.style, opacity: 0 };
-            return newNode;
+        R.map((tableModel) => adaptTableModelNodeData(tableModel, dataModel)),
+        R.map((tableModelNodeData) => {
+          const nodeId = getTableModelNodeDataId(tableModelNodeData);
+          const existingNode = currentNodes.find((nd) => nd.id === nodeId);
+          if (existingNode) {
+            existingNode.data = { ...existingNode.data, ...tableModelNodeData };
+            return existingNode;
           }
-          // Only update data
-          return { ...existingNode, data: newNode.data };
+          return {
+            id: nodeId,
+            type: 'table_model',
+            position: { x: 0, y: 0 },
+            data: {
+              ...tableModelNodeData,
+              type: 'table_model',
+              state: 'initialized',
+            },
+            style: { opacity: 0 },
+          };
         }),
       ),
     );
     setEdges((currentEdges) =>
       R.pipe(
         dataModel,
-        R.flatMap((tableModel) =>
-          tableModel.linksToSingle.map((link) =>
-            adaptDataModelEdges(tableModel, link),
-          ),
-        ),
-        R.map((newEdge) => {
-          const existingEdge = currentEdges.find((ed) => ed.id === newEdge.id);
-          if (!existingEdge) {
-            newEdge.style = { ...newEdge.style, opacity: 0 };
-            return newEdge;
+        R.flatMap((tableModel) => tableModel.linksToSingle),
+        R.map(adaptLinkToSingleData),
+        R.map((linkToSingleData) => {
+          const edgeId = getLinkToSingleDataEdgeId(linkToSingleData);
+          const existingEdge = currentEdges.find((ed) => ed.id === edgeId);
+          if (existingEdge) {
+            if (existingEdge.data === undefined) return existingEdge;
+            existingEdge.data = {
+              ...existingEdge.data,
+              ...linkToSingleData,
+            };
+            return existingEdge;
           }
-          // Only update data
-          return { ...existingEdge, data: newEdge.data };
+          return {
+            id: edgeId,
+            type: 'link_to_single_edge',
+            ...getLinkToSingleDataEdge(linkToSingleData),
+            data: {
+              ...linkToSingleData,
+              type: 'link_to_single_edge',
+              state: 'initialized',
+            },
+            hidden: true,
+          };
         }),
       ),
     );
   }, [dataModel]);
 
-  const { fitView } = useDataModelReactFlow();
   React.useEffect(() => {
     // Wait first render of each node to have dynamic width before layouting
     if (nodes.some((nd) => nd.width === undefined)) return;
 
     if (
-      nodes.some((nd) => nd.style?.opacity === 0) ||
-      edges.some((ed) => ed.style?.opacity === 0)
+      nodes.some((nd) => nd.data.state === 'initialized') ||
+      edges.some((ed) => ed.data?.state === 'initialized')
     ) {
-      const layouted = getLayoutedElements(nodes, edges);
-      setNodes(layouted.nodes);
-      setEdges(layouted.edges);
-      window.requestAnimationFrame(() => {
-        fitView();
-      });
+      const layout = layoutElements(nodes, edges);
+      setNodes(
+        R.pipe(
+          layout.nodes,
+          R.map((nd) => {
+            if (nd.data.state !== 'initialized') return nd;
+            return {
+              ...nd,
+              data: { ...nd.data, state: 'laid_out' },
+            };
+          }),
+        ),
+      );
+      setEdges(
+        R.pipe(
+          layout.edges,
+          R.map((ed) => {
+            if (ed.data?.state !== 'initialized') return ed;
+            return {
+              ...ed,
+              data: { ...ed.data, state: 'laid_out' },
+            };
+          }),
+        ),
+      );
     }
-  }, [fitView, edges, nodes]);
+  }, [edges, nodes]);
+
+  const { fitView } = useDataModelReactFlow();
+  React.useEffect(() => {
+    const hasLaidOutNode = nodes.some((nd) => nd.data.state === 'laid_out');
+    const hasLaidOutEdge = edges.some((ed) => ed.data?.state === 'laid_out');
+    if (!hasLaidOutNode && !hasLaidOutEdge) return;
+
+    if (hasLaidOutNode)
+      setNodes(
+        R.pipe(
+          nodes,
+          R.map((nd) => {
+            if (nd.data.state !== 'laid_out') return nd;
+            return {
+              ...nd,
+              data: { ...nd.data, state: 'visible' },
+              style: { ...nd.style, opacity: 1 },
+            };
+          }),
+        ),
+      );
+    if (hasLaidOutEdge)
+      setEdges(
+        R.pipe(
+          edges,
+          R.map((ed) => {
+            if (ed.data?.state !== 'laid_out') return ed;
+            return {
+              ...ed,
+              data: { ...ed.data, state: 'visible' },
+              hidden: false,
+            };
+          }),
+        ),
+      );
+
+    window.requestAnimationFrame(() => {
+      fitView();
+    });
+  }, [edges, fitView, nodes]);
 
   return (
     <ReactFlow
@@ -147,6 +234,7 @@ function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
       edges={edges}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
+      minZoom={0.3}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       defaultEdgeOptions={defaultDataModelEdgeOptions}
@@ -203,8 +291,8 @@ function CustomControls() {
         title="Automatic layout"
         onClick={() => {
           // Layout without fitting view
-          const layouted = getLayoutedElements(getNodes(), getEdges());
-          setNodes(layouted.nodes);
+          const layout = layoutElements(getNodes(), getEdges());
+          setNodes(layout.nodes);
         }}
       >
         <Icon icon="tree-schema" />
@@ -213,7 +301,7 @@ function CustomControls() {
   );
 }
 
-function getLayoutedElements(
+function layoutElements(
   nodes: Array<Node<DataModelNodeData>>,
   edges: Array<Edge<DataModelEdgeData>>,
 ) {
@@ -245,25 +333,15 @@ function getLayoutedElements(
         y: y - (nd.height ?? 0) / 2,
       };
 
-      if (
-        position.x === nd.position.x &&
-        position.y === nd.position.y &&
-        nd.style?.opacity === 1
-      ) {
+      if (position.x === nd.position.x && position.y === nd.position.y) {
         return nd;
       }
 
       return {
         ...nd,
         position,
-        style: { ...nd.style, opacity: 1 },
       } satisfies Node<DataModelNodeData>;
     }),
-    edges: edges.map((ed) => {
-      return {
-        ...ed,
-        style: { ...ed.style, opacity: 1 },
-      } satisfies Edge<DataModelEdgeData>;
-    }),
+    edges: edges,
   };
 }
