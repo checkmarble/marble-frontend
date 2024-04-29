@@ -2,6 +2,7 @@ import {
   type DataModel,
   type DataType,
   type LinkToSingle,
+  type Pivot,
   type TableModel,
   type UnicityConstraintType,
 } from '@app-builder/models/data-model';
@@ -36,6 +37,7 @@ import { dataI18n } from './data-i18n';
 export interface TableModelNodeData {
   original: TableModel;
   dataModel: DataModel;
+  pivot?: Pivot;
   linksToThisTable: LinkToSingle[];
   otherTablesWithUnique: TableModel[];
   id: string;
@@ -57,10 +59,12 @@ export interface TableModelNodeData {
 export function adaptTableModelNodeData(
   tableModel: TableModel,
   dataModel: DataModel,
+  pivots: Pivot[],
 ): TableModelNodeData {
   return {
     original: tableModel,
     dataModel,
+    pivot: pivots.find((pivot) => pivot.baseTableId === tableModel.id),
     linksToThisTable: dataModel
       .filter((table) => table.id !== tableModel.id)
       .flatMap((table) =>
@@ -326,7 +330,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </CreateLink>,
     );
   }
-  if (canEditDataModel) {
+  if (canEditDataModel && !data.pivot) {
     // TODO: display "view pivot" if a pivot exists
     menuItems.push(
       <CreatePivot
