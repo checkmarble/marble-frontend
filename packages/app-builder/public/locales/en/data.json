@@ -35,6 +35,7 @@
   "create_pivot.select.label": "Select a pivot",
   "create_pivot.select.empty_matches": "No pivot matches your search",
   "create_pivot.button_accept": "Create pivot",
+  "create_pivot.errors.data.duplicate_pivot_value": "A pivot value already exist for this table. Contact Marble to change it.",
   "create_field.option_optional": "Optional",
   "create_field.option_required": "Required",
   "create_field.type_string": "String",

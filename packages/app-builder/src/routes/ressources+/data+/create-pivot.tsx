@@ -7,7 +7,11 @@ import {
 } from '@app-builder/components/Form';
 import { Highlight } from '@app-builder/components/Highlight';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { type DataModel, type TableModel } from '@app-builder/models';
+import {
+  type DataModel,
+  isStatusConflictHttpError,
+  type TableModel,
+} from '@app-builder/models';
 import { getPivotOptions } from '@app-builder/services/data/pivot';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -42,7 +46,7 @@ const createPivotFormSchema = z.object({
 });
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService, toastSessionService } = serverServices;
+  const { authService } = serverServices;
   const { dataModelRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -70,10 +74,19 @@ export async function action({ request }: ActionFunctionArgs) {
       error: null,
     });
   } catch (error) {
-    const toastSession = await toastSessionService.getSession(request);
+    const {
+      i18nextService: { getFixedT },
+      toastSessionService: { getSession, commitSession },
+    } = serverServices;
+    const t = await getFixedT(request, ['common', 'data']);
+    let message = t('common:errors.unknown');
+    if (isStatusConflictHttpError(error)) {
+      message = t('data:create_pivot.errors.data.duplicate_pivot_value');
+    }
+    const toastSession = await getSession(request);
     setToastMessage(toastSession, {
       type: 'error',
-      messageKey: 'common:errors.unknown',
+      message,
     });
     return json(
       {
@@ -83,7 +96,7 @@ export async function action({ request }: ActionFunctionArgs) {
       },
       {
         headers: {
-          'Set-Cookie': await toastSessionService.commitSession(toastSession),
+          'Set-Cookie': await commitSession(toastSession),
         },
       },
     );
