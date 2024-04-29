@@ -44,7 +44,7 @@ import {
 
 type CommonData<T extends string, D> = D & {
   type: T;
-  state: 'initialized' | 'layouted' | 'visible';
+  state: 'initialized' | 'laid_out' | 'visible';
 };
 
 type DataModelNodeData = CommonData<'table_model', TableModelNodeData>;
@@ -160,27 +160,27 @@ function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
       nodes.some((nd) => nd.data.state === 'initialized') ||
       edges.some((ed) => ed.data?.state === 'initialized')
     ) {
-      const layouted = getLayoutedElements(nodes, edges);
+      const layout = layoutElements(nodes, edges);
       setNodes(
         R.pipe(
-          layouted.nodes,
+          layout.nodes,
           R.map((nd) => {
             if (nd.data.state !== 'initialized') return nd;
             return {
               ...nd,
-              data: { ...nd.data, state: 'layouted' },
+              data: { ...nd.data, state: 'laid_out' },
             };
           }),
         ),
       );
       setEdges(
         R.pipe(
-          layouted.edges,
+          layout.edges,
           R.map((ed) => {
             if (ed.data?.state !== 'initialized') return ed;
             return {
               ...ed,
-              data: { ...ed.data, state: 'layouted' },
+              data: { ...ed.data, state: 'laid_out' },
             };
           }),
         ),
@@ -190,16 +190,16 @@ function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
 
   const { fitView } = useDataModelReactFlow();
   React.useEffect(() => {
-    const hasLayoutedNode = nodes.some((nd) => nd.data.state === 'layouted');
-    const hasLayoutedEdge = edges.some((ed) => ed.data?.state === 'layouted');
-    if (!hasLayoutedNode && !hasLayoutedEdge) return;
+    const hasLaidOutNode = nodes.some((nd) => nd.data.state === 'laid_out');
+    const hasLaidOutEdge = edges.some((ed) => ed.data?.state === 'laid_out');
+    if (!hasLaidOutNode && !hasLaidOutEdge) return;
 
-    if (hasLayoutedNode)
+    if (hasLaidOutNode)
       setNodes(
         R.pipe(
           nodes,
           R.map((nd) => {
-            if (nd.data.state !== 'layouted') return nd;
+            if (nd.data.state !== 'laid_out') return nd;
             return {
               ...nd,
               data: { ...nd.data, state: 'visible' },
@@ -208,12 +208,12 @@ function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
           }),
         ),
       );
-    if (hasLayoutedEdge)
+    if (hasLaidOutEdge)
       setEdges(
         R.pipe(
           edges,
           R.map((ed) => {
-            if (ed.data?.state !== 'layouted') return ed;
+            if (ed.data?.state !== 'laid_out') return ed;
             return {
               ...ed,
               data: { ...ed.data, state: 'visible' },
@@ -291,8 +291,8 @@ function CustomControls() {
         title="Automatic layout"
         onClick={() => {
           // Layout without fitting view
-          const layouted = getLayoutedElements(getNodes(), getEdges());
-          setNodes(layouted.nodes);
+          const layout = layoutElements(getNodes(), getEdges());
+          setNodes(layout.nodes);
         }}
       >
         <Icon icon="tree-schema" />
@@ -301,7 +301,7 @@ function CustomControls() {
   );
 }
 
-function getLayoutedElements(
+function layoutElements(
   nodes: Array<Node<DataModelNodeData>>,
   edges: Array<Edge<DataModelEdgeData>>,
 ) {
