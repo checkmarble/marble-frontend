@@ -4,6 +4,7 @@ import {
   type LinkToSingle,
   type TableModel,
 } from '@app-builder/models';
+import * as R from 'remeda';
 
 interface FieldPivot {
   type: 'field';
@@ -11,6 +12,22 @@ interface FieldPivot {
   fieldId: string;
   id: string;
   displayValue: string;
+}
+
+function adaptFieldPivot({
+  baseTableId,
+  field,
+}: {
+  baseTableId: string;
+  field: DataModelField;
+}): FieldPivot {
+  return {
+    type: 'field',
+    baseTableId,
+    fieldId: field.id,
+    id: field.id,
+    displayValue: field.name,
+  };
 }
 
 interface LinkPivot {
@@ -21,71 +38,106 @@ interface LinkPivot {
   displayValue: string;
 }
 
+function adaptLinkPivot({
+  baseTableId,
+  pathLinks,
+}: {
+  baseTableId: string;
+  pathLinks: LinkToSingle[];
+}): LinkPivot {
+  const pathLinkIds = pathLinks.map((link) => link.id);
+  return {
+    type: 'link',
+    baseTableId,
+    pathLinkIds,
+    id: pathLinkIds.join('.'),
+    displayValue: pathLinks.map((link) => link.name).join('.'),
+  };
+}
+
 export type Pivot = FieldPivot | LinkPivot;
 
 export function getPivotOptions(
   tableModel: TableModel,
   dataModel: DataModel,
 ): Pivot[] {
-  const pivots: Pivot[] = [];
-
-  tableModel.fields
-    // Only allow pivots on string fields
-    .filter((field) => field.dataType === 'String')
-    .map((field: DataModelField) => {
-      pivots.push({
-        type: 'field',
-        baseTableId: tableModel.id,
-        fieldId: field.id,
-        id: field.id,
-        displayValue: field.name,
-      });
-    });
+  const fieldsPivots = getFieldPivotOptions(tableModel);
 
   const tablesMap = new Map(dataModel.map((table) => [table.id, table]));
 
-  function recursiveLinkedPivot(
-    linksToSingle: LinkToSingle[],
-    previousPivot?: LinkPivot,
-    depth = 0,
-  ): void {
-    if (depth > 10) {
-      return;
-    }
-    for (const link of linksToSingle) {
+  const linkedPivots = getLinkPivotOptions(tableModel.linksToSingle, {
+    baseTableId: tableModel.id,
+    tablesMap,
+  });
+
+  return [...fieldsPivots, ...linkedPivots];
+}
+
+function getFieldPivotOptions(tableModel: TableModel): FieldPivot[] {
+  return R.pipe(
+    tableModel.fields,
+    // Only allow pivots on string fields
+    R.filter((field) => field.dataType === 'String'),
+    R.map((field) => adaptFieldPivot({ baseTableId: tableModel.id, field })),
+  );
+}
+
+function getLinkPivotOptions(
+  linksToSingle: LinkToSingle[],
+  config: {
+    baseTableId: string;
+    tablesMap: Map<string, TableModel>;
+  },
+  previousPathLinks: LinkToSingle[] = [],
+  depth = 0,
+): LinkPivot[] {
+  if (depth > 10) {
+    return [];
+  }
+
+  return R.pipe(
+    linksToSingle,
+    R.filter((link) => {
       // Skip links that are already in the path, to avoid infinite recursion (based on the backend logic)
       // This may remove some allowed loops, but it's better than infinite recursion
-      if (previousPivot?.pathLinkIds.includes(link.id)) {
-        break;
-      }
-
-      const parentTable = tablesMap.get(link.parentTableId);
-      if (!parentTable) break;
+      return previousPathLinks.find(({ id }) => id === link.id) === undefined;
+    }),
+    R.map((link) => {
+      const parentTable = config.tablesMap.get(link.parentTableId);
+      if (!parentTable) return null;
       const parentField = parentTable.fields.find(
         (field) => field.id === link.parentFieldId,
       );
-      if (!parentField) break;
-
-      const pathLinkIds = (previousPivot?.pathLinkIds ?? []).concat(link.id);
-      const pivot: LinkPivot = {
-        type: 'link',
-        baseTableId: tableModel.id,
-        pathLinkIds,
-        id: pathLinkIds.join('.'),
-        displayValue: previousPivot?.displayValue
-          ? `${previousPivot?.displayValue}.${link.name}`
-          : link.name,
+      if (!parentField) return null;
+      return {
+        parentTable,
+        parentField,
+        link,
       };
+    }),
+    R.filter(R.isDefined),
+    R.flatMap(({ parentTable, parentField, link }) => {
+      const pathLinks = previousPathLinks.concat(link);
+      const pivot: LinkPivot = adaptLinkPivot({
+        baseTableId: config.baseTableId,
+        pathLinks,
+      });
+
+      const pivots: LinkPivot[] = [];
 
       // Only allow pivots on string fields
       if (parentField.dataType === 'String') {
         pivots.push(pivot);
       }
 
-      recursiveLinkedPivot(parentTable.linksToSingle, pivot, depth + 1);
-    }
-  }
-  recursiveLinkedPivot(tableModel.linksToSingle);
-
-  return pivots;
+      return pivots.concat(
+        getLinkPivotOptions(
+          parentTable.linksToSingle,
+          config,
+          pathLinks,
+          depth + 1,
+        ),
+      );
+    }),
+  );
 }
