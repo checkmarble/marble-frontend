@@ -22,6 +22,7 @@ const fakeDecisions: DecisionDetailDto[] = Array.from({
     'null',
     'unknown',
   ]),
+  pivot_values: [],
   scenario: {
     id: faker.string.uuid(),
     name: faker.word.noun(),
