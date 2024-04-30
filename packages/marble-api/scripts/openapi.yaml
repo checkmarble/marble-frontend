@@ -99,6 +99,23 @@ paths:
       security:
         - bearerAuth: []
       parameters:
+        # Filtering parameters
+        - name: case_id[]
+          description: decision case_ids used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - $ref: '#/components/parameters/end_date'
+        - name: has_case
+          description: Filter decisions that have a case associated with them or not (true or false, default returns all)
+          in: query
+          required: false
+          schema:
+            type: boolean
         - name: outcome[]
           description: decision outcomes used to filter the list
           in: query
@@ -107,6 +124,12 @@ paths:
             type: array
             items:
               $ref: '#/components/schemas/Outcome'
+        - name: pivot_value
+          description: decision pivot value used to filter the list
+          in: query
+          required: false
+          schema:
+            type: string
         - name: scenario_id[]
           description: scenario IDs used to filter the list
           in: query
@@ -116,20 +139,6 @@ paths:
             items:
               type: string
               format: uuid
-        - name: trigger_object[]
-          description: trigger objects used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-        - name: has_case
-          description: Filter decisions that have a case associated with them or not (true or false, default returns all)
-          in: query
-          required: false
-          schema:
-            type: boolean
         - name: scheduled_execution_id[]
           description: scheduled execution IDs used to filter the list
           in: query
@@ -140,7 +149,20 @@ paths:
               type: string
               format: uuid
         - $ref: '#/components/parameters/start_date'
-        - $ref: '#/components/parameters/end_date'
+        - name: trigger_object[]
+          description: trigger objects used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        # Pagination and sorting parameters
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/next'
+        - $ref: '#/components/parameters/offset_id'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/previous'
         - name: sorting
           description: the field used to sort the items
           in: query
@@ -149,11 +171,6 @@ paths:
             type: string
             enum:
               - created_at
-        - $ref: '#/components/parameters/offset_id'
-        - $ref: '#/components/parameters/previous'
-        - $ref: '#/components/parameters/next'
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/order'
       responses:
         '200':
           description: List of corresponding decisions
