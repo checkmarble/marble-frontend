@@ -3357,6 +3357,19 @@ components:
         - field_id
         - path_links
         - path_link_ids
+    PivotValueDto:
+      type: object
+      properties:
+        pivot_id:
+          type: string
+          format: uuid
+          nullable: true
+        pivot_value:
+          type: string
+          nullable: true
+      required:
+        - pivot_id
+        - pivot_value
     CreatePivotInputDto:
       type: object
       properties:
@@ -3460,54 +3473,59 @@ components:
           $ref: '#/components/schemas/NodeEvaluationDto'
     DecisionDto:
       type: object
-      required:
-        - id
-        - created_at
-        - trigger_object
-        - trigger_object_type
-        - outcome
-        - scenario
-        - score
       properties:
         id:
           type: string
           format: uuid
+        case:
+          $ref: '#/components/schemas/Case'
         created_at:
           type: string
           format: date-time
-        trigger_object:
-          additionalProperties: true
-        trigger_object_type:
-          type: string
+        error:
+          $ref: '#/components/schemas/Error'
         outcome:
           $ref: '#/components/schemas/Outcome'
+        pivot_values:
+          type: array
+          items:
+            $ref: '#/components/schemas/PivotValueDto'
         scenario:
           type: object
-          required:
-            - id
-            - name
-            - description
-            - scenario_iteration_id
-            - version
           properties:
             id:
               type: string
               format: uuid
-            name:
-              type: string
             description:
+              type: string
+            name:
               type: string
             scenario_iteration_id:
               type: string
               format: uuid
             version:
               type: integer
+          required:
+            - id
+            - description
+            - name
+            - scenario_iteration_id
+            - version
         score:
           type: integer
-        case:
-          $ref: '#/components/schemas/Case'
-        error:
-          $ref: '#/components/schemas/Error'
+        trigger_object:
+          additionalProperties: true
+        trigger_object_type:
+          type: string
+      required:
+        - id
+        - created_at
+        - outcome
+        - pivot_values
+        - scenario
+        - score
+        - trigger_object
+        - trigger_object_type
     DecisionDetailDto:
       allOf:
         - $ref: '#/components/schemas/DecisionDto'

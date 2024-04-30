@@ -10,11 +10,15 @@ import {
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
 
 export interface Decision {
-  id: string;
+  case?: Case;
   createdAt: string;
-  triggerObject: Record<string, unknown>;
-  triggerObjectType: string;
+  error?: Error;
+  id: string;
   outcome: Outcome;
+  pivotValues: {
+    id?: string;
+    value?: string;
+  }[];
   scenario: {
     id: string;
     name: string;
@@ -23,8 +27,8 @@ export interface Decision {
     version: number;
   };
   score: number;
-  error?: Error;
-  case?: Case;
+  triggerObject: Record<string, unknown>;
+  triggerObjectType: string;
 }
 
 interface RuleExecutionCore {
@@ -81,6 +85,10 @@ export function adaptDecision(dto: DecisionDto): Decision {
     createdAt: dto.created_at,
     triggerObject: dto.trigger_object,
     triggerObjectType: dto.trigger_object_type,
+    pivotValues: dto.pivot_values.map(({ pivot_id, pivot_value }) => ({
+      id: pivot_id ?? undefined,
+      value: pivot_value ?? undefined,
+    })),
     outcome: dto.outcome,
     scenario: {
       id: dto.scenario.id,

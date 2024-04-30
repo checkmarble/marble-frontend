@@ -70,24 +70,29 @@ export type Error = {
     code: number;
     message: string;
 };
+export type PivotValueDto = {
+    pivot_id: string | null;
+    pivot_value: string | null;
+};
 export type DecisionDto = {
     id: string;
+    "case"?: Case;
     created_at: string;
-    trigger_object: {
-        [key: string]: any;
-    };
-    trigger_object_type: string;
+    error?: Error;
     outcome: Outcome;
+    pivot_values: PivotValueDto[];
     scenario: {
         id: string;
-        name: string;
         description: string;
+        name: string;
         scenario_iteration_id: string;
         version: number;
     };
     score: number;
-    "case"?: Case;
-    error?: Error;
+    trigger_object: {
+        [key: string]: any;
+    };
+    trigger_object_type: string;
 };
 export type CreateDecisionBody = {
     scenario_id: string;
