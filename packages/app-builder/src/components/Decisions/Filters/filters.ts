@@ -7,6 +7,7 @@ export const decisionFilterNames = [
   'outcome',
   'triggerObject',
   'hasCase',
+  'pivotValue',
 ] as const;
 
 export type DecisionFilterName = (typeof decisionFilterNames)[number];
@@ -23,6 +24,8 @@ export function getFilterIcon(filterName: DecisionFilterName): IconName {
       return 'alt-route';
     case 'hasCase':
       return 'case-manager';
+    case 'pivotValue':
+      return 'tree-schema';
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
   }
@@ -40,6 +43,8 @@ export function getFilterTKey(filterName: DecisionFilterName) {
       return 'decisions:trigger_object.type';
     case 'hasCase':
       return 'decisions:filters.has_case';
+    case 'pivotValue':
+      return 'decisions:filters.pivot_value';
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
   }
