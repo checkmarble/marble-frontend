@@ -78,6 +78,11 @@ export const routes = [
             "file": "routes/_builder+/data+/_layout.tsx",
             "children": [
               {
+                "id": "routes/_builder+/data+/_index",
+                "index": true,
+                "file": "routes/_builder+/data+/_index.tsx"
+              },
+              {
                 "id": "routes/_builder+/data+/list",
                 "path": "list",
                 "file": "routes/_builder+/data+/list.tsx"
@@ -276,6 +281,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/upload-file",
         "path": "ressources/cases/upload-file",
         "file": "routes/ressources+/cases+/upload-file.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/create-pivot",
+        "path": "ressources/data/create-pivot",
+        "file": "routes/ressources+/data+/create-pivot.tsx"
       },
       {
         "id": "routes/ressources+/data+/createField",

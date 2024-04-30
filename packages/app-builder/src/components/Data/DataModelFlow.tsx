@@ -1,4 +1,4 @@
-import { type DataModel } from '@app-builder/models/data-model';
+import { type DataModel, type Pivot } from '@app-builder/models/data-model';
 import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
 import Dagre from '@dagrejs/dagre';
 import * as React from 'react';
@@ -35,6 +35,7 @@ import {
   type LinkToSingleData,
   LinkToSingleEdge,
 } from './LinkToSingleEdge';
+import { SelectedPivotPanel, SelectedPivotProvider } from './SelectedPivot';
 import {
   adaptTableModelNodeData,
   getTableModelNodeDataId,
@@ -66,20 +67,33 @@ const useDataModelReactFlow = useReactFlow<
 
 interface DataModelFlowProps {
   dataModel: DataModel;
+  pivots: Pivot[];
   children?: React.ReactNode;
 }
 
 export const dataModelFlowStyles = reactflowStyles;
 
-export function DataModelFlow({ dataModel, children }: DataModelFlowProps) {
+export function DataModelFlow({
+  dataModel,
+  pivots,
+  children,
+}: DataModelFlowProps) {
   return (
     <ReactFlowProvider>
-      <DataModelFlowImpl dataModel={dataModel}>{children}</DataModelFlowImpl>
+      <SelectedPivotProvider dataModel={dataModel}>
+        <DataModelFlowImpl dataModel={dataModel} pivots={pivots}>
+          {children}
+        </DataModelFlowImpl>
+      </SelectedPivotProvider>
     </ReactFlowProvider>
   );
 }
 
-function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
+function DataModelFlowImpl({
+  dataModel,
+  pivots,
+  children,
+}: DataModelFlowProps) {
   const { t } = useTranslation(dataI18n);
   const [nodes, setNodes] = React.useState<Array<Node<DataModelNodeData>>>([]);
   const [edges, setEdges] = React.useState<Array<Edge<DataModelEdgeData>>>([]);
@@ -98,7 +112,9 @@ function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
     setNodes((currentNodes) =>
       R.pipe(
         dataModel,
-        R.map((tableModel) => adaptTableModelNodeData(tableModel, dataModel)),
+        R.map((tableModel) =>
+          adaptTableModelNodeData(tableModel, dataModel, pivots),
+        ),
         R.map((tableModelNodeData) => {
           const nodeId = getTableModelNodeDataId(tableModelNodeData);
           const existingNode = currentNodes.find((nd) => nd.id === nodeId);
@@ -150,7 +166,7 @@ function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
         }),
       ),
     );
-  }, [dataModel]);
+  }, [dataModel, pivots]);
 
   React.useEffect(() => {
     // Wait first render of each node to have dynamic width before layouting
@@ -243,6 +259,7 @@ function DataModelFlowImpl({ dataModel, children }: DataModelFlowProps) {
       <Controls position="bottom-left">
         <CustomControls />
       </Controls>
+      <SelectedPivotPanel />
       <Panel position="bottom-right">
         <CreateTable>
           <Button className="w-fit">

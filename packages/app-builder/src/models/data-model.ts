@@ -1,9 +1,11 @@
 import { type ParseKeys } from 'i18next';
 import {
+  type CreatePivotInputDto,
   type CreateTableFieldDto,
   type DataModelDto,
   type FieldDto,
   type LinkToSingleDto,
+  type PivotDto,
   type TableDto,
   type UpdateTableFieldDto,
 } from 'marble-api';
@@ -47,6 +49,7 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
 }
 
 export interface LinkToSingle {
+  id: string;
   name: string;
   parentTableName: string;
   parentTableId: string;
@@ -63,6 +66,7 @@ function adaptLinkToSingle(
   linksToSingleDto: LinkToSingleDto,
 ): LinkToSingle {
   return {
+    id: linksToSingleDto.id,
     name: linkName,
     parentTableName: linksToSingleDto.parent_table_name,
     parentTableId: linksToSingleDto.parent_table_id,
@@ -101,6 +105,83 @@ export type DataModel = TableModel[];
 
 export function adaptDataModel(dataModelDto: DataModelDto): DataModel {
   return R.pipe(dataModelDto.tables, R.values, R.map(adaptTableModel));
+}
+
+export type Pivot =
+  | {
+      type: 'field';
+      id: string;
+      createdAt: string;
+      baseTable: string;
+      baseTableId: string;
+      field: string;
+      fieldId: string;
+    }
+  | {
+      type: 'link';
+      id: string;
+      createdAt: string;
+      baseTable: string;
+      baseTableId: string;
+      pivotTable: string;
+      pivotTableId: string;
+      field: string;
+      fieldId: string;
+      pathLinks: string[];
+      pathLinkIds: string[];
+    };
+
+export function adaptPivot(pivotDto: PivotDto): Pivot {
+  if (pivotDto.path_link_ids.length === 0) {
+    return {
+      type: 'field',
+      id: pivotDto.id,
+      createdAt: pivotDto.created_at,
+      baseTable: pivotDto.base_table,
+      baseTableId: pivotDto.base_table_id,
+      field: pivotDto.field,
+      fieldId: pivotDto.field_id,
+    };
+  }
+  return {
+    type: 'link',
+    id: pivotDto.id,
+    createdAt: pivotDto.created_at,
+    baseTable: pivotDto.base_table,
+    baseTableId: pivotDto.base_table_id,
+    pivotTable: pivotDto.pivot_table,
+    pivotTableId: pivotDto.pivot_table_id,
+    field: pivotDto.field,
+    fieldId: pivotDto.field_id,
+    pathLinks: pivotDto.path_links,
+    pathLinkIds: pivotDto.path_link_ids,
+  };
+}
+
+export type CreatePivotInput =
+  | {
+      baseTableId: string;
+      fieldId: string;
+    }
+  | {
+      baseTableId: string;
+      pathLinkIds: string[];
+    };
+
+export function adaptCreatePivotInputDto(
+  createPivotInput: CreatePivotInput,
+): CreatePivotInputDto {
+  if ('fieldId' in createPivotInput) {
+    return {
+      base_table_id: createPivotInput.baseTableId,
+      field_id: createPivotInput.fieldId,
+    };
+  } else {
+    return {
+      base_table_id: createPivotInput.baseTableId,
+      path_link_ids: createPivotInput.pathLinkIds,
+    };
+  }
 }
 
 export interface CreateFieldInput {
