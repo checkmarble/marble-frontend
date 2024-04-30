@@ -105,6 +105,7 @@ export default function Decisions() {
                       fromNow: decisionFilters.dateRange.fromNow,
                     }
                 : {},
+              pivotValue: decisionFilters.pivotValue || null,
               scenarioId: decisionFilters.scenarioId ?? [],
               hasCase: decisionFilters?.hasCase ?? null,
               offsetId: pagination?.offsetId || null,

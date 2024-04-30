@@ -610,20 +610,22 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
 /**
  * List decisions
  */
-export function listDecisions({ outcome, scenarioId, triggerObject, hasCase, scheduledExecutionId, startDate, endDate, sorting, offsetId, previous, next, limit, order }: {
-    outcome?: Outcome[];
-    scenarioId?: string[];
-    triggerObject?: string[];
+export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, scenarioId, scheduledExecutionId, startDate, triggerObject, limit, next, offsetId, order, previous, sorting }: {
+    caseId?: string[];
+    endDate?: string;
     hasCase?: boolean;
+    outcome?: Outcome[];
+    pivotValue?: string;
+    scenarioId?: string[];
     scheduledExecutionId?: string[];
     startDate?: string;
-    endDate?: string;
-    sorting?: "created_at";
-    offsetId?: string;
-    previous?: boolean;
-    next?: boolean;
+    triggerObject?: string[];
     limit?: number;
+    next?: boolean;
+    offsetId?: string;
     order?: "ASC" | "DESC";
+    previous?: boolean;
+    sorting?: "created_at";
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -637,19 +639,21 @@ export function listDecisions({ outcome, scenarioId, triggerObject, hasCase, sch
         status: 403;
         data: string;
     }>(`/decisions${QS.query(QS.explode({
-        "outcome[]": outcome,
-        "scenario_id[]": scenarioId,
-        "trigger_object[]": triggerObject,
+        "case_id[]": caseId,
+        end_date: endDate,
         has_case: hasCase,
+        "outcome[]": outcome,
+        pivot_value: pivotValue,
+        "scenario_id[]": scenarioId,
         "scheduled_execution_id[]": scheduledExecutionId,
         start_date: startDate,
-        end_date: endDate,
-        sorting,
-        offset_id: offsetId,
-        previous,
-        next,
+        "trigger_object[]": triggerObject,
         limit,
-        order
+        next,
+        offset_id: offsetId,
+        order,
+        previous,
+        sorting
     }))}`, {
         ...opts
     }));

@@ -6,6 +6,7 @@
   "detail.error": "An error as occured. Make sure the provided decision id is valid.",
   "trigger_object.type": "Trigger object",
   "filters.has_case": "Presence of a case",
+  "filters.pivot_value": "Pivot value",
   "filters.date_range.title": "creation date is:",
   "score": "Score",
   "outcome": "Outcome",

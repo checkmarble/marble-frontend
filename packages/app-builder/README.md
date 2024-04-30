@@ -53,7 +53,11 @@ If the component is part of the marble design system, you need to create it insi
 
 You may need to update the marble-api client. To do so, look at the marble-api package README.
 
-Then, it depends on the use case. For simple cases, you can directly consume the endpoint in a loader/action using the `apiClient` returned by the authenticator like so:
+Then, it depends on the use case :
+
+**Recommended:** create adapters/use cases using the `models/` `repositoris/` `services/` folders. Look at existing ones to see how to structure your code and/or help you decide what feats your needs.
+
+**For quick & dirty integration:**: you can directly consume the endpoint in a loader/action using the `apiClient` returned by the authenticator like so:
 
 ```typescript
 const { apiClient } = await authenticator.isAuthenticated(request, {
@@ -62,5 +66,3 @@ const { apiClient } = await authenticator.isAuthenticated(request, {
 
 const decisions = await apiClient.listDecisions();
 ```
-
-For more complex cases, you may need to create adapters/use cases using the `models/` `repositoris/` `services/` folders. Look at existing ones to see how to structure your code and/or help you decide what feats your needs.

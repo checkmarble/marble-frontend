@@ -18,14 +18,15 @@ import * as z from 'zod';
 import { type DecisionFilterName, decisionFilterNames } from './filters';
 
 export const decisionFiltersSchema = z.object({
+  dateRange: dateRangeSchema.optional(),
   hasCase: z
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
     .optional(),
   outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
-  triggerObject: z.array(z.string()).optional(),
-  dateRange: dateRangeSchema.optional(),
+  pivotValue: z.string().optional(),
   scenarioId: z.array(z.string()).optional(),
+  triggerObject: z.array(z.string()).optional(),
 });
 
 export type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
@@ -42,18 +43,20 @@ const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
 );
 
 export type DecisionFiltersForm = {
-  outcome: Exclude<Outcome, 'null' | 'unknown'>[];
-  hasCase: boolean | null;
-  triggerObject: string[];
   dateRange: DateRangeFilterForm;
+  hasCase: boolean | null;
+  outcome: Exclude<Outcome, 'null' | 'unknown'>[];
+  pivotValue: string | null;
   scenarioId: string[];
+  triggerObject: string[];
 };
 const emptyDecisionFilters: DecisionFiltersForm = {
+  dateRange: null,
   hasCase: null,
   outcome: [],
-  triggerObject: [],
-  dateRange: null,
+  pivotValue: null,
   scenarioId: [],
+  triggerObject: [],
 };
 
 function adaptFilterValues({
@@ -100,8 +103,9 @@ export function DecisionFiltersProvider({
     const formValues = formMethods.getValues();
     _submitDecisionFilters({
       ...formValues,
-      hasCase: formValues.hasCase ?? undefined,
       dateRange: formValues.dateRange ?? undefined,
+      hasCase: formValues.hasCase ?? undefined,
+      pivotValue: formValues.pivotValue ?? undefined,
     });
   });
   const onDecisionFilterClose = useCallbackRef(() => {
@@ -130,13 +134,13 @@ export function DecisionFiltersProvider({
 
 export const useDecisionFiltersContext = DecisionFiltersContext.useValue;
 
-export function useOutcomeFilter() {
-  const { field } = useController<DecisionFiltersForm, 'outcome'>({
-    name: 'outcome',
+export function useDateRangeFilter() {
+  const { field } = useController<DecisionFiltersForm, 'dateRange'>({
+    name: 'dateRange',
   });
-  const selectedOutcomes = field.value;
-  const setSelectedOutcomes = field.onChange;
-  return { selectedOutcomes, setSelectedOutcomes };
+  const dateRange = field.value;
+  const setDateRange = field.onChange;
+  return { dateRange, setDateRange };
 }
 
 export function useHasCaseFilter() {
@@ -148,13 +152,22 @@ export function useHasCaseFilter() {
   return { selectedHasCase, setSelectedHasCase };
 }
 
-export function useDateRangeFilter() {
-  const { field } = useController<DecisionFiltersForm, 'dateRange'>({
-    name: 'dateRange',
+export function useOutcomeFilter() {
+  const { field } = useController<DecisionFiltersForm, 'outcome'>({
+    name: 'outcome',
   });
-  const dateRange = field.value;
-  const setDateRange = field.onChange;
-  return { dateRange, setDateRange };
+  const selectedOutcomes = field.value;
+  const setSelectedOutcomes = field.onChange;
+  return { selectedOutcomes, setSelectedOutcomes };
+}
+
+export function usePivotValueFilter() {
+  const { field } = useController<DecisionFiltersForm, 'pivotValue'>({
+    name: 'pivotValue',
+  });
+  const selectedPivotValue = field.value;
+  const setSelectedPivotValue = field.onChange;
+  return { selectedPivotValue, setSelectedPivotValue };
 }
 
 export function useScenarioFilter() {
@@ -177,7 +190,7 @@ export function useTriggerObjectFilter() {
       R.pipe(
         scenarios,
         R.map((scenario) => scenario.triggerObjectType),
-        R.uniq(),
+        R.unique(),
       ),
     [scenarios],
   );
@@ -199,8 +212,8 @@ export function useDecisionFiltersPartition() {
     R.partition((filterName) => {
       const value = filterValues[filterName];
       if (R.isArray(value)) return value.length === 0;
-      if (R.isObject(value)) return R.isEmpty(value);
-      return R.isNil(value);
+      if (R.isPlainObject(value)) return R.isEmpty(value);
+      return R.isNullish(value);
     }),
   );
   return {

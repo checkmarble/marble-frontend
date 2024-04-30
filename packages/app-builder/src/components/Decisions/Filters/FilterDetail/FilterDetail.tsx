@@ -4,6 +4,7 @@ import { type DecisionFilterName } from '../filters';
 import { DecisionsDateRangeFilter } from './DecisionsDateRangeFilter';
 import { HasCaseFilter } from './HasCaseFilter';
 import { OutcomeFilter } from './OutcomeFilter';
+import { PivotValueFilter } from './PivotValueFilter';
 import { ScenarioFilter } from './ScenarioFilter';
 import { TriggerObjectFilter } from './TriggerObjectFilter';
 
@@ -23,6 +24,8 @@ export function FilterDetail({
       return <TriggerObjectFilter />;
     case 'hasCase':
       return <HasCaseFilter />;
+    case 'pivotValue':
+      return <PivotValueFilter />;
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
   }

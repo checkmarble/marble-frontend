@@ -15,8 +15,7 @@ import { type Outcome } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
 
 export type DecisionFilters = {
-  outcome?: Outcome[];
-  triggerObject?: string[];
+  caseId?: string[];
   dateRange?:
     | {
         type: 'static';
@@ -27,8 +26,12 @@ export type DecisionFilters = {
         type: 'dynamic';
         fromNow: string;
       };
-  scenarioId?: string[];
   hasCase?: boolean;
+  outcome?: Outcome[];
+  pivotValue?: string;
+  scenarioId?: string[];
+  scheduledExecutionId?: string[];
+  triggerObject?: string[];
 };
 
 export type DecisionFiltersWithPagination =
@@ -44,11 +47,14 @@ export interface DecisionRepository {
 export function getDecisionRepository() {
   return (marbleApiClient: MarbleApi): DecisionRepository => ({
     listDecisions: async ({
+      caseId,
       dateRange,
-      outcome,
-      triggerObject,
-      scenarioId,
       hasCase,
+      outcome,
+      pivotValue,
+      scenarioId,
+      scheduledExecutionId,
+      triggerObject,
       ...rest
     }) => {
       let startDate, endDate: string | undefined;
@@ -58,17 +64,20 @@ export function getDecisionRepository() {
       }
       if (dateRange?.type === 'dynamic') {
         const fromNowDuration = Temporal.Duration.from(dateRange?.fromNow);
-        //TODO(timezone): until we get user TZ, timezone is the server one here (should not be a real issue regarding the use case)
+        //TODO(timezone): until we get user TZ, timezone is the server one here since the endpoint is called from action/loader (should not be a real issue regarding the use case)
         startDate = add(new Date(), fromNowDuration).toISOString();
       }
 
       const { items, ...pagination } = await marbleApiClient.listDecisions({
-        outcome,
-        triggerObject,
-        scenarioId,
-        hasCase,
-        startDate,
+        caseId,
         endDate,
+        hasCase,
+        outcome,
+        pivotValue,
+        scenarioId,
+        scheduledExecutionId,
+        triggerObject,
+        startDate,
         ...rest,
       });
 
