@@ -55,7 +55,7 @@ You may need to update the marble-api client. To do so, look at the marble-api p
 
 Then, it depends on the use case :
 
-**Recommanded:** create adapters/use cases using the `models/` `repositoris/` `services/` folders. Look at existing ones to see how to structure your code and/or help you decide what feats your needs.
+**Recommended:** create adapters/use cases using the `models/` `repositoris/` `services/` folders. Look at existing ones to see how to structure your code and/or help you decide what feats your needs.
 
 **For quick & dirty integration:**: you can directly consume the endpoint in a loader/action using the `apiClient` returned by the authenticator like so:
 
