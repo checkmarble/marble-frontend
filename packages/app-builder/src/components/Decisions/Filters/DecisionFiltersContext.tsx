@@ -32,6 +32,7 @@ export const decisionFiltersSchema = z.object({
 export type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
 
 interface DecisionFiltersContextValue {
+  hasPivots: boolean;
   filterValues: DecisionFilters;
   scenarios: Scenario[];
   submitDecisionFilters: () => void;
@@ -84,11 +85,13 @@ function adaptFilterValues({
 }
 
 export function DecisionFiltersProvider({
+  hasPivots,
   filterValues,
   scenarios,
   submitDecisionFilters: _submitDecisionFilters,
   children,
 }: {
+  hasPivots: boolean;
   filterValues: DecisionFilters;
   scenarios: Scenario[];
   submitDecisionFilters: (filterValues: DecisionFilters) => void;
@@ -120,8 +123,15 @@ export function DecisionFiltersProvider({
       onDecisionFilterClose,
       filterValues,
       scenarios,
+      hasPivots,
     }),
-    [filterValues, onDecisionFilterClose, scenarios, submitDecisionFilters],
+    [
+      filterValues,
+      hasPivots,
+      onDecisionFilterClose,
+      scenarios,
+      submitDecisionFilters,
+    ],
   );
   return (
     <FormProvider {...formMethods}>
@@ -162,12 +172,13 @@ export function useOutcomeFilter() {
 }
 
 export function usePivotValueFilter() {
+  const { hasPivots } = useDecisionFiltersContext();
   const { field } = useController<DecisionFiltersForm, 'pivotValue'>({
     name: 'pivotValue',
   });
   const selectedPivotValue = field.value;
   const setSelectedPivotValue = field.onChange;
-  return { selectedPivotValue, setSelectedPivotValue };
+  return { hasPivots, selectedPivotValue, setSelectedPivotValue };
 }
 
 export function useScenarioFilter() {
