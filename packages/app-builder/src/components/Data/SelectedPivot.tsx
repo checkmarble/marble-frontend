@@ -192,7 +192,6 @@ export function PivotType({ type }: { type: 'field' | 'link' }) {
   );
 }
 
-// TODO(documenation): add link to the doc when it's ready
 export const PivotDocLink = (
-  <ExternalLink href="https://docs.checkmarble.com/reference/get_decisions" />
+  <ExternalLink href="https://docs.checkmarble.com/docs/pivot-values" />
 );
