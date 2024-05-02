@@ -466,6 +466,34 @@ export const routes = [
         "id": "routes/ressources+/user+/language",
         "path": "ressources/user/language",
         "file": "routes/ressources+/user+/language.tsx"
+      },
+      {
+        "id": "routes/transfercheck+/_layout",
+        "path": "transfercheck",
+        "file": "routes/transfercheck+/_layout.tsx",
+        "children": [
+          {
+            "id": "routes/transfercheck+/$",
+            "path": "*",
+            "file": "routes/transfercheck+/$.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/_index",
+            "index": true,
+            "file": "routes/transfercheck+/_index.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/transfers+/$transferId",
+            "path": "transfers/:transferId",
+            "file": "routes/transfercheck+/transfers+/$transferId.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/transfers+/_index",
+            "index": true,
+            "path": "transfers/",
+            "file": "routes/transfercheck+/transfers+/_index.tsx"
+          }
+        ]
       }
     ]
   }

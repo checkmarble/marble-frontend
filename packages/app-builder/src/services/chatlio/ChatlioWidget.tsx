@@ -1,5 +1,5 @@
 import { SidebarButton } from '@app-builder/components';
-import { type CurrentUser } from '@app-builder/models';
+import { type CurrentUser, type MarbleProduct } from '@app-builder/models';
 import { type Organization } from '@app-builder/models/organization';
 import { Icon } from 'ui-icons';
 
@@ -9,10 +9,12 @@ export function ChatlioWidget({
   user,
   organization,
   widgetid,
+  marbleProduct,
 }: {
   user: CurrentUser;
   organization: Organization;
   widgetid: string;
+  marbleProduct: MarbleProduct;
 }) {
   return (
     <>
@@ -29,6 +31,7 @@ export function ChatlioWidget({
               name: getFullName(user.actorIdentity),
               email: user.actorIdentity.email,
               organization: organization.name,
+              marbleProduct,
             },
           );
           window._chatlio?.showOrHide?.();

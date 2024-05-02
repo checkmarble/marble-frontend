@@ -80,7 +80,11 @@ export type RoutePath =
   | '/ressources/settings/users/create'
   | '/ressources/settings/users/delete'
   | '/ressources/settings/users/update'
-  | '/ressources/user/language';
+  | '/ressources/user/language'
+  | '/transfercheck'
+  | '/transfercheck/*'
+  | '/transfercheck/transfers/:transferId'
+  | '/transfercheck/transfers/';
 
 export type RouteID =
   | 'root'
@@ -172,4 +176,9 @@ export type RouteID =
   | 'routes/ressources+/settings+/users+/create'
   | 'routes/ressources+/settings+/users+/delete'
   | 'routes/ressources+/settings+/users+/update'
-  | 'routes/ressources+/user+/language';
+  | 'routes/ressources+/user+/language'
+  | 'routes/transfercheck+/_layout'
+  | 'routes/transfercheck+/$'
+  | 'routes/transfercheck+/_index'
+  | 'routes/transfercheck+/transfers+/$transferId'
+  | 'routes/transfercheck+/transfers+/_index';
