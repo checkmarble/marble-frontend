@@ -13,7 +13,7 @@ export const handle = {
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   await authService.isAuthenticated(request, {
-    successRedirect: getRoute('/scenarios/'),
+    successRedirect: getRoute('/app-rooter'),
   });
   return null;
 }

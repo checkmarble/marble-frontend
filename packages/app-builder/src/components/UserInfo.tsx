@@ -13,7 +13,7 @@ interface UserInfoProps {
   firstName?: string;
   lastName?: string;
   role: string;
-  organization: { name: string };
+  orgOrPartnerName: string;
 }
 
 export function UserInfo({
@@ -21,7 +21,7 @@ export function UserInfo({
   firstName,
   lastName,
   role,
-  organization,
+  orgOrPartnerName,
 }: UserInfoProps) {
   const fullName = getFullName({ firstName, lastName });
   return (
@@ -68,7 +68,7 @@ export function UserInfo({
             <p className="text-s mb-2 font-normal">{email}</p>
             <Tag border="square">{role}</Tag>
             <p className="text-grey-50 m-2 text-xs font-normal">
-              {organization.name}
+              {orgOrPartnerName}
             </p>
             <LanguagePicker />
           </div>

@@ -9,7 +9,7 @@ import {
   ToggleHeader,
 } from '@app-builder/components/Layout/MainLayout';
 import { UserInfo } from '@app-builder/components/UserInfo';
-import { isMarbleAdmin } from '@app-builder/models';
+import { isMarbleAdmin, isTransferCheckUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import { ChatlioWidget } from '@app-builder/services/chatlio/ChatlioWidget';
 import { chatlioScript } from '@app-builder/services/chatlio/script';
@@ -18,8 +18,9 @@ import {
   segment,
   useSegmentIdentification,
 } from '@app-builder/services/segment';
+import { getFullName } from '@app-builder/services/user';
 import { getClientEnv } from '@app-builder/utils/environment';
-import { conflict } from '@app-builder/utils/http/http-responses';
+import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -38,7 +39,7 @@ import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { user, organization } = await authService.isAuthenticated(request, {
+  const { user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -46,22 +47,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw conflict("Marble Admins can't access the app builder.");
   }
 
-  const [organizationDetail] = await Promise.all([
-    organization.getCurrentOrganization(),
-  ]);
+  if (!isTransferCheckUser(user)) {
+    throw forbidden('Only TransferCheck users can access TransferCheck.');
+  }
 
-  return json({ user, organization: organizationDetail });
+  return json({ user });
 }
 
 export const handle = {
-  i18n: ['common', ...navigationI18n] satisfies Namespace,
+  i18n: ['common', 'transfercheck', ...navigationI18n] satisfies Namespace,
   scripts: () => [
     ...(getClientEnv('CHATLIO_WIDGET_ID') ? [chatlioScript] : []),
   ],
 };
 
 export default function Builder() {
-  const { user, organization } = useLoaderData<typeof loader>();
+  const { user } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
 
   // Refresh is done in the JSX because it needs to be done in the browser
@@ -80,7 +81,7 @@ export default function Builder() {
               firstName={user.actorIdentity.firstName}
               lastName={user.actorIdentity.lastName}
               role={user.role}
-              organization={organization}
+              orgOrPartnerName="TODO"
             />
           </div>
           <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
@@ -108,8 +109,14 @@ export default function Builder() {
               {chatlioWidgetId ? (
                 <li>
                   <ChatlioWidget
-                    user={user}
-                    organization={organization}
+                    user={{
+                      id: user.actorIdentity.userId,
+                      email: user.actorIdentity.email,
+                      name: getFullName(user.actorIdentity),
+                    }}
+                    partner={{
+                      id: user.partnerId,
+                    }}
                     widgetid={chatlioWidgetId}
                     marbleProduct="transfercheck"
                   />
@@ -132,9 +139,10 @@ export function ErrorBoundary() {
   const error = useRouteError();
   const { t } = useTranslation(handle.i18n);
 
+  let errorComponent;
   // Handle Marble Admins, do not capture error in Sentry
   if (isRouteErrorResponse(error) && error.status === CONFLICT) {
-    return (
+    errorComponent = (
       <div className="bg-purple-05 flex size-full items-center justify-center">
         <div className="bg-grey-00 flex max-w-md flex-col items-center gap-4 rounded-2xl p-10 text-center shadow-md">
           <h1 className="text-l text-purple-110 font-semibold">
@@ -159,9 +167,17 @@ export function ErrorBoundary() {
         </div>
       </div>
     );
+  } else {
+    captureRemixErrorBoundaryError(error);
+
+    errorComponent = <ErrorComponent error={error} />;
   }
 
-  captureRemixErrorBoundaryError(error);
-
-  return <ErrorComponent error={error} />;
+  return (
+    <div className="bg-purple-05 flex size-full items-center justify-center">
+      <div className="bg-grey-00 flex max-w-md rounded-2xl p-10 shadow-md">
+        {errorComponent}
+      </div>
+    </div>
+  );
 }

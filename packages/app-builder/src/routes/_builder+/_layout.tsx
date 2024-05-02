@@ -9,7 +9,7 @@ import {
   ToggleHeader,
 } from '@app-builder/components/Layout/MainLayout';
 import { UserInfo } from '@app-builder/components/UserInfo';
-import { isAdmin, isMarbleAdmin } from '@app-builder/models';
+import { isAdmin, isMarbleAdmin, isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import { ChatlioWidget } from '@app-builder/services/chatlio/ChatlioWidget';
 import { chatlioScript } from '@app-builder/services/chatlio/script';
@@ -20,8 +20,9 @@ import {
   segment,
   useSegmentIdentification,
 } from '@app-builder/services/segment';
+import { getFullName } from '@app-builder/services/user';
 import { getClientEnv } from '@app-builder/utils/environment';
-import { conflict } from '@app-builder/utils/http/http-responses';
+import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -46,6 +47,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (isMarbleAdmin(user)) {
     throw conflict("Marble Admins can't access the app builder.");
+  }
+
+  if (!isMarbleCoreUser(user)) {
+    throw forbidden('Only TransferCheck users can access TransferCheck.');
   }
 
   const [organizationDetail, orgUsers, orgTags] = await Promise.all([
@@ -87,7 +92,7 @@ export default function Builder() {
                   firstName={user.actorIdentity.firstName}
                   lastName={user.actorIdentity.lastName}
                   role={user.role}
-                  organization={organization}
+                  orgOrPartnerName={organization.name}
                 />
               </div>
               <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
@@ -179,8 +184,15 @@ export default function Builder() {
                   {chatlioWidgetId ? (
                     <li>
                       <ChatlioWidget
-                        user={user}
-                        organization={organization}
+                        user={{
+                          id: user.actorIdentity.userId,
+                          email: user.actorIdentity.email,
+                          name: getFullName(user.actorIdentity),
+                        }}
+                        organization={{
+                          id: organization.id,
+                          name: organization.name,
+                        }}
                         widgetid={chatlioWidgetId}
                         marbleProduct="marble-core"
                       />
@@ -205,9 +217,10 @@ export function ErrorBoundary() {
   const error = useRouteError();
   const { t } = useTranslation(handle.i18n);
 
+  let errorComponent;
   // Handle Marble Admins, do not capture error in Sentry
   if (isRouteErrorResponse(error) && error.status === CONFLICT) {
-    return (
+    errorComponent = (
       <div className="bg-purple-05 flex size-full items-center justify-center">
         <div className="bg-grey-00 flex max-w-md flex-col items-center gap-4 rounded-2xl p-10 text-center shadow-md">
           <h1 className="text-l text-purple-110 font-semibold">
@@ -232,9 +245,17 @@ export function ErrorBoundary() {
         </div>
       </div>
     );
+  } else {
+    captureRemixErrorBoundaryError(error);
+
+    errorComponent = <ErrorComponent error={error} />;
   }
 
-  captureRemixErrorBoundaryError(error);
-
-  return <ErrorComponent error={error} />;
+  return (
+    <div className="bg-purple-05 flex size-full items-center justify-center">
+      <div className="bg-grey-00 flex max-w-md rounded-2xl p-10 shadow-md">
+        {errorComponent}
+      </div>
+    </div>
+  );
 }

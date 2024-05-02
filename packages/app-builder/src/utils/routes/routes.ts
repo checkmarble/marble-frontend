@@ -5,6 +5,11 @@ export const routes = [
     "file": "root.tsx",
     "children": [
       {
+        "id": "routes/$",
+        "path": "*",
+        "file": "routes/$.tsx"
+      },
+      {
         "id": "routes/_auth+/_layout",
         "file": "routes/_auth+/_layout.tsx",
         "children": [
@@ -34,11 +39,6 @@ export const routes = [
         "id": "routes/_builder+/_layout",
         "file": "routes/_builder+/_layout.tsx",
         "children": [
-          {
-            "id": "routes/_builder+/$",
-            "path": "*",
-            "file": "routes/_builder+/$.tsx"
-          },
           {
             "id": "routes/_builder+/analytics",
             "path": "analytics",
@@ -226,6 +226,11 @@ export const routes = [
         "id": "routes/_index",
         "index": true,
         "file": "routes/_index.tsx"
+      },
+      {
+        "id": "routes/app-rooter",
+        "path": "app-rooter",
+        "file": "routes/app-rooter.tsx"
       },
       {
         "id": "routes/healthcheck",
