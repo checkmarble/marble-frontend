@@ -108,7 +108,7 @@ export default function Inbox() {
             />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
-            <div className="grid grid-cols-[max-content_1fr] grid-rows-2 items-center gap-x-10 gap-y-4">
+            <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-4">
               <span className="font-bold">{t('settings:inboxes.name')}</span>
               {inbox.name}
 

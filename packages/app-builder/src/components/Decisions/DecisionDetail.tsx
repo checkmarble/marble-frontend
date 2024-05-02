@@ -19,7 +19,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
         {t('decisions:decision_detail.title')}
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-[max-content_1fr] grid-rows-5 items-center gap-x-10 gap-y-2">
+        <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-2">
           <DetailLabel>{t('decisions:created_at')}</DetailLabel>
           <time dateTime={createdAt}>
             {formatDateTime(createdAt, { language })}

@@ -1,19 +1,19 @@
 import { type DataModel, type Pivot } from '@app-builder/models/data-model';
+import { getLinksToSingleMap } from '@app-builder/services/data/data-model';
+import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'reactflow';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { Button, Tag } from 'ui-design-system';
 
+import { ExternalLink } from '../ExternalLink';
 import { dataI18n } from './data-i18n';
 
 interface SelectedPivotContextValue {
   displayPivot: boolean;
-  selectedPivotInfo?: {
-    tableName: string;
-    displayedPath: string;
-  };
+  selectedPivot?: Pivot;
   setSelectedPivot: (pivot?: Pivot) => void;
   isLinkPartOfPivot: (linkId: string) => boolean;
   isFieldPartOfPivot: (fieldId: string) => boolean;
@@ -36,12 +36,7 @@ export function SelectedPivotProvider({
   children: React.ReactNode;
 }) {
   const linksToSingleMap = React.useMemo(
-    () =>
-      new Map(
-        dataModel
-          .flatMap((table) => table.linksToSingle)
-          .map((link) => [link.id, link]),
-      ),
+    () => getLinksToSingleMap(dataModel),
     [dataModel],
   );
 
@@ -102,21 +97,11 @@ export function SelectedPivotProvider({
     [selectedPivot, selectedPathLinks],
   );
 
-  const selectedPivotInfo = selectedPivot
-    ? {
-        tableName: selectedPivot.baseTable,
-        displayedPath:
-          selectedPathLinks.length > 0
-            ? selectedPathLinks.map((link) => link.name).join('.')
-            : selectedPivot.field,
-      }
-    : undefined;
-
   return (
     <SelectedPivotContext.Provider
       value={{
         displayPivot,
-        selectedPivotInfo,
+        selectedPivot,
         setSelectedPivot,
         isLinkPartOfPivot,
         isFieldPartOfPivot,
@@ -130,9 +115,48 @@ export function SelectedPivotProvider({
 
 export function SelectedPivotPanel() {
   const { t } = useTranslation(dataI18n);
-  const { displayPivot, selectedPivotInfo, setSelectedPivot } =
-    useSelectedPivot();
+  const { displayPivot, selectedPivot, setSelectedPivot } = useSelectedPivot();
   if (!displayPivot) return null;
+
+  let pivotInfo = null;
+  if (selectedPivot?.type === 'field') {
+    pivotInfo = (
+      <div className="grid grid-cols-[max-content_max-content] items-center gap-x-6 gap-y-4">
+        <span className="text-grey-50 text-s">{t('data:view_pivot.type')}</span>
+        <PivotType type="field" />
+
+        <span className="text-grey-50 text-s">
+          {t('data:view_pivot.table')}
+        </span>
+        <span className="text-m text-grey-100">{selectedPivot?.baseTable}</span>
+
+        <span className="text-grey-50 text-s">
+          {t('data:view_pivot.definition')}
+        </span>
+        <span>{getPivotDisplayValue(selectedPivot)}</span>
+      </div>
+    );
+  }
+  if (selectedPivot?.type === 'link') {
+    pivotInfo = (
+      <div className="grid grid-cols-[max-content_max-content] items-center gap-x-6 gap-y-4">
+        <span className="text-grey-50 text-s">{t('data:view_pivot.type')}</span>
+        <PivotType type="link" />
+
+        <span className="text-grey-50 text-s">
+          {t('data:view_pivot.table')}
+        </span>
+        <span className="text-m text-grey-100">
+          {selectedPivot?.baseTable}→{selectedPivot?.pivotTable}
+        </span>
+
+        <span className="text-grey-50 text-s">
+          {t('data:view_pivot.definition')}
+        </span>
+        <span>{getPivotDisplayValue(selectedPivot)}</span>
+      </div>
+    );
+  }
 
   return (
     <Panel position="bottom-center">
@@ -142,23 +166,7 @@ export function SelectedPivotPanel() {
         </p>
 
         <div className="flex flex-col gap-4 rounded p-4">
-          {selectedPivotInfo ? (
-            <div className="grid grid-cols-[max-content_max-content] items-center gap-x-3 gap-y-1">
-              <span className="text-grey-50 text-s">
-                {t('data:view_pivot.table')}:
-              </span>
-              <span className="text-m text-grey-100">
-                {selectedPivotInfo.tableName}
-              </span>
-
-              <span className="text-grey-50 text-s">
-                {t('data:view_pivot.value')}:
-              </span>
-              <span className="text-m text-grey-100">
-                {selectedPivotInfo.displayedPath}
-              </span>
-            </div>
-          ) : null}
+          {pivotInfo}
 
           <div className="flex flex-row-reverse">
             <Button onClick={() => setSelectedPivot(undefined)}>
@@ -170,3 +178,20 @@ export function SelectedPivotPanel() {
     </Panel>
   );
 }
+
+export function PivotType({ type }: { type: 'field' | 'link' }) {
+  return (
+    <Tag
+      size="small"
+      border="square"
+      color={type === 'field' ? 'grey' : 'purple'}
+      className="w-fit"
+    >
+      {type}
+    </Tag>
+  );
+}
+
+export const PivotDocLink = (
+  <ExternalLink href="https://docs.checkmarble.com/docs/pivot-values" />
+);

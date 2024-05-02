@@ -1,11 +1,14 @@
-import { type Decision } from '@app-builder/models/decision';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 
-import { DecisionsList } from '../Decisions';
+import { DecisionsList, type DecisionViewModel } from '../Decisions';
 import { casesI18n } from './cases-i18n';
 
-export function CaseDecisions({ decisions }: { decisions: Decision[] }) {
+export function CaseDecisions({
+  decisions,
+}: {
+  decisions: DecisionViewModel[];
+}) {
   const { t } = useTranslation(casesI18n);
 
   return (

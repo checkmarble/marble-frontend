@@ -1,3 +1,4 @@
+import { PivotType } from '@app-builder/components/Data/SelectedPivot';
 import {
   FormControl,
   FormError,
@@ -221,11 +222,13 @@ function CreatePivotContent({
                           <SelectWithCombobox.ComboboxItem
                             key={pivot.id}
                             value={pivot.id}
+                            className="flex items-center justify-between"
                           >
                             <Highlight
                               text={pivot.displayValue}
                               query={searchValue}
                             />
+                            <PivotType type={pivot.type} />
                           </SelectWithCombobox.ComboboxItem>
                         ))}
                         {matches.length === 0 ? (

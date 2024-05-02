@@ -43,9 +43,10 @@ export const handle = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { decision, scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { decision, scenario, dataModelRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const parsedFilterQuery = await parseQuerySafe(
     request,
@@ -57,18 +58,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/decisions/'));
   }
 
-  const [decisionsData, scenarios] = await Promise.all([
+  const [decisionsData, scenarios, pivots] = await Promise.all([
     decision.listDecisions({
       ...parsedFilterQuery.data,
       ...parsedPaginationQuery.data,
     }),
     scenario.listScenarios(),
+    dataModelRepository.listPivots({}),
   ]);
 
   return json({
     decisionsData,
     scenarios,
     filters: parsedFilterQuery.data,
+    hasPivots: pivots.length > 0,
   });
 }
 
@@ -78,6 +81,7 @@ export default function Decisions() {
     decisionsData: { items: decisions, ...pagination },
     filters,
     scenarios,
+    hasPivots,
   } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
@@ -141,6 +145,7 @@ export default function Decisions() {
               scenarios={scenarios}
               submitDecisionFilters={navigateDecisionList}
               filterValues={filters}
+              hasPivots={hasPivots}
             >
               <div className="flex justify-between gap-4">
                 <SearchById />

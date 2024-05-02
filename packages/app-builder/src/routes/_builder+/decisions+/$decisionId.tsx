@@ -9,6 +9,7 @@ import {
   RulesDetail,
   useDecisionRightPanelContext,
 } from '@app-builder/components';
+import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { TriggerObjectDetail } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { isNotFoundHttpError } from '@app-builder/models';
@@ -28,6 +29,7 @@ import {
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import * as z from 'zod';
@@ -53,6 +55,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   try {
     const currentDecision = await decision.getDecisionById(decisionId);
+
+    const pivotsPromise = dataModelRepository.listPivots({});
 
     const astRuleData = Promise.all([
       scenario.getScenarioIteration({
@@ -85,6 +89,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
     return defer({
       decision: currentDecision,
+      pivots: await pivotsPromise,
       astRuleData,
     });
   } catch (error) {
@@ -97,8 +102,26 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function DecisionPage() {
-  const { decision, astRuleData } = useLoaderData<typeof loader>();
+  const { decision, pivots, astRuleData } = useLoaderData<typeof loader>();
   const { t } = useTranslation(decisionsI18n);
+
+  const pivotValues = R.pipe(
+    decision.pivotValues,
+    R.map(({ id, value }) => {
+      if (!id || !value) return null;
+      const pivot = pivots.find((p) => p.id === id);
+      if (!pivot) return null;
+      return {
+        pivot,
+        value,
+      };
+    }),
+    R.filter(R.isDefined),
+  );
+
+  const existingPivotDefinition = pivots.some(
+    (pivot) => pivot.baseTable === decision.triggerObjectType,
+  );
 
   return (
     <DecisionRightPanel.Root>
@@ -119,6 +142,10 @@ export default function DecisionPage() {
           <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-6">
             <div className="flex flex-col gap-4 lg:gap-6">
               <DecisionDetail decision={decision} />
+              <PivotDetail
+                pivotValues={pivotValues}
+                existingPivotDefinition={existingPivotDefinition}
+              />
               <RulesDetail
                 ruleExecutions={decision.rules}
                 triggerObjectType={decision.triggerObjectType}

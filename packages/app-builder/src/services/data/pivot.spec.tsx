@@ -5,7 +5,7 @@ import {
   type TableModel,
 } from '@app-builder/models';
 
-import { getPivotOptions, type Pivot } from './pivot';
+import { getPivotOptions, type PivotOption } from './pivot';
 
 describe('getPivotOptions', () => {
   it('should only keep String field', () => {
@@ -24,7 +24,7 @@ describe('getPivotOptions', () => {
     });
     const dataModel: DataModel = [tableModel];
 
-    const expected: Pivot[] = [
+    const expected: PivotOption[] = [
       {
         baseTableId: '1',
         displayValue: 'field1',
@@ -66,7 +66,7 @@ describe('getPivotOptions', () => {
       }),
     ];
 
-    const expected: Pivot[] = [
+    const expected: PivotOption[] = [
       {
         baseTableId: '1',
         displayValue: 'link1',
@@ -108,7 +108,7 @@ describe('getPivotOptions', () => {
       }),
     ];
 
-    const expected: Pivot[] = [];
+    const expected: PivotOption[] = [];
 
     const pivotOptions = getPivotOptions(tableModel, dataModel);
     expect(pivotOptions).toMatchObject(expected);
@@ -160,7 +160,7 @@ describe('getPivotOptions', () => {
       }),
     ];
 
-    const expected: Pivot[] = [
+    const expected: PivotOption[] = [
       {
         baseTableId: '1',
         displayValue: 'link1.link2',
@@ -232,7 +232,7 @@ describe('getPivotOptions', () => {
       }),
     ];
 
-    const expected: Pivot[] = [
+    const expected: PivotOption[] = [
       {
         baseTableId: '1',
         displayValue: 'link1.link2',

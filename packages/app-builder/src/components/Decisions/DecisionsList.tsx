@@ -29,7 +29,7 @@ type Column =
   | 'score'
   | 'outcome';
 
-interface DecisionViewModel {
+export interface DecisionViewModel {
   id: string;
   createdAt: string;
   scenario: {
