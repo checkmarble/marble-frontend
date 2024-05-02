@@ -573,6 +573,30 @@ export type AddInboxUserBodyDto = {
     user_id: string;
     role: InboxUserRole;
 };
+export type TransferDataDto = {
+    beneficiary_bic: string;
+    beneficiary_iban: string;
+    beneficiary_name: string;
+    created_at: string;
+    currency: string;
+    label: string;
+    sender_account_id: string;
+    sender_bic: string;
+    sender_device: string;
+    sender_ip: string;
+    status: string;
+    timezone: string;
+    transfer_id: string;
+    transfer_requested_at: string;
+    updated_at: string;
+    value: number;
+};
+export type TransferDto = {
+    id: string;
+    last_scored_at?: string | null;
+    score?: number | null;
+    transfer_data: TransferDataDto;
+};
 /**
  * Get an access token
  */
@@ -2485,5 +2509,51 @@ export function deleteInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts
     }>(`/inbox_users/${encodeURIComponent(inboxUserId)}`, {
         ...opts,
         method: "DELETE"
+    }));
+}
+/**
+ * List transfers
+ */
+export function listTransfers(transferId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            transfers: TransferDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/transfers${QS.query(QS.explode({
+        transfer_id: transferId
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Get a transfer by id
+ */
+export function getTransfer(transferId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            transfer: TransferDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/transfers/${encodeURIComponent(transferId)}`, {
+        ...opts
     }));
 }

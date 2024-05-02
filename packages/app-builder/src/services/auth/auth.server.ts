@@ -15,6 +15,7 @@ import { type InboxRepository } from '@app-builder/repositories/InboxRepository'
 import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
+import { type TransferRepository } from '@app-builder/repositories/TransferRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
@@ -36,6 +37,7 @@ interface AuthenticatedInfo {
   dataModelRepository: DataModelRepository;
   apiKey: ApiKeyRepository;
   analytics: AnalyticsRepository;
+  transferRepository: TransferRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   user: CurrentUser;
@@ -98,6 +100,7 @@ export function makeAuthenticationServerService(
   dataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository,
   apiKeysRepository: (marbleApiClient: MarbleApi) => ApiKeyRepository,
   analyticsRepository: (marbleApiClient: MarbleApi) => AnalyticsRepository,
+  transferRepository: (marbleApiClient: MarbleApi) => TransferRepository,
   authSessionService: SessionService<AuthData, AuthFlashData>,
   csrfService: CSRF,
 ) {
@@ -257,6 +260,7 @@ export function makeAuthenticationServerService(
       dataModelRepository: dataModelRepository(apiClient),
       apiKey: apiKeysRepository(apiClient),
       analytics: analyticsRepository(apiClient),
+      transferRepository: transferRepository(apiClient),
       user,
       inbox: inboxRepository(apiClient),
     };
