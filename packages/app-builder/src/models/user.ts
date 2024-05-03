@@ -3,6 +3,7 @@ import * as R from 'remeda';
 
 export interface CurrentUser {
   organizationId: string;
+  partnerId?: string;
   role: string;
   actorIdentity: {
     userId?: string;
@@ -41,6 +42,7 @@ export function adaptCurrentUser(
 ): CurrentUser {
   return {
     organizationId: credentials.organization_id,
+    partnerId: credentials.partner_id,
     role: credentials.role,
     actorIdentity: {
       userId: credentials.actor_identity.user_id,
@@ -81,3 +83,11 @@ export const isAdmin = (user: CurrentUser) => user.role === 'ADMIN';
 
 export const isMarbleAdmin = (user: CurrentUser) =>
   user.role === 'MARBLE_ADMIN';
+
+export const isTransferCheckUser = (user: CurrentUser) =>
+  ['TRANSFER_CHECK_USER'].includes(user.role);
+
+export const isMarbleCoreUser = (user: CurrentUser) =>
+  ['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'].includes(user.role);
+
+export type MarbleProduct = 'marble-core' | 'transfercheck';

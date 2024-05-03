@@ -1,10 +1,10 @@
 export type RoutePath =
   | '/'
+  | '/*'
   | '/email-verification'
   | '/forgot-password'
   | '/sign-in'
   | '/sign-up'
-  | '/*'
   | '/analytics'
   | '/api'
   | '/cases/:caseId'
@@ -33,6 +33,7 @@ export type RoutePath =
   | '/settings/tags'
   | '/settings/users'
   | '/upload/:objectType'
+  | '/app-router'
   | '/healthcheck'
   | '/ressources/auth/logout'
   | '/ressources/auth/refresh'
@@ -80,17 +81,21 @@ export type RoutePath =
   | '/ressources/settings/users/create'
   | '/ressources/settings/users/delete'
   | '/ressources/settings/users/update'
-  | '/ressources/user/language';
+  | '/ressources/user/language'
+  | '/transfercheck'
+  | '/transfercheck/*'
+  | '/transfercheck/transfers/:transferId'
+  | '/transfercheck/transfers/';
 
 export type RouteID =
   | 'root'
+  | 'routes/$'
   | 'routes/_auth+/_layout'
   | 'routes/_auth+/email-verification'
   | 'routes/_auth+/forgot-password'
   | 'routes/_auth+/sign-in'
   | 'routes/_auth+/sign-up'
   | 'routes/_builder+/_layout'
-  | 'routes/_builder+/$'
   | 'routes/_builder+/analytics'
   | 'routes/_builder+/api'
   | 'routes/_builder+/cases+/$caseId'
@@ -125,6 +130,7 @@ export type RouteID =
   | 'routes/_builder+/settings+/users'
   | 'routes/_builder+/upload+/$objectType'
   | 'routes/_index'
+  | 'routes/app-router'
   | 'routes/healthcheck'
   | 'routes/ressources+/auth+/logout'
   | 'routes/ressources+/auth+/refresh'
@@ -172,4 +178,9 @@ export type RouteID =
   | 'routes/ressources+/settings+/users+/create'
   | 'routes/ressources+/settings+/users+/delete'
   | 'routes/ressources+/settings+/users+/update'
-  | 'routes/ressources+/user+/language';
+  | 'routes/ressources+/user+/language'
+  | 'routes/transfercheck+/_layout'
+  | 'routes/transfercheck+/$'
+  | 'routes/transfercheck+/_index'
+  | 'routes/transfercheck+/transfers+/$transferId'
+  | 'routes/transfercheck+/transfers+/_index';

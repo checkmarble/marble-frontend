@@ -59,6 +59,9 @@ export default function getPageviewNameAndProps(thisPage: UIMatch) {
       const listId = toUUIDifDefined(thisPage.params['listId']);
       return { name: 'List', properties: { list_id: listId } };
     }
+    case 'routes/_builder+/analytics': {
+      return { name: 'Analytics', properties: undefined };
+    }
     case 'routes/_builder+/data+/list': {
       return { name: 'Your data', properties: undefined };
     }
@@ -67,6 +70,15 @@ export default function getPageviewNameAndProps(thisPage: UIMatch) {
     }
     case 'routes/_builder+/api': {
       return { name: 'Marble API', properties: undefined };
+    }
+
+    // Transfercheck
+    case 'routes/transfercheck+/transfers+/_index': {
+      return { name: 'Transfers', properties: undefined };
+    }
+    case 'routes/transfercheck+/transfers+/$transferId': {
+      const transfer_id = toUUIDifDefined(thisPage.params['transferId']);
+      return { name: 'Transfer', properties: { transfer_id } };
     }
     default:
       return null;

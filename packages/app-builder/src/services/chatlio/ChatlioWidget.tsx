@@ -1,19 +1,60 @@
 import { SidebarButton } from '@app-builder/components';
-import { type CurrentUser } from '@app-builder/models';
-import { type Organization } from '@app-builder/models/organization';
 import { Icon } from 'ui-icons';
 
-import { getFullName } from '../user';
+type ChatlioWidget =
+  | {
+      user: {
+        id?: string;
+        name?: string;
+        email?: string;
+      };
+      partner: {
+        // TODO: add more fields when available
+        id?: string;
+      };
+      widgetid: string;
+      marbleProduct: 'transfercheck';
+    }
+  | {
+      user: {
+        id?: string;
+        name?: string;
+        email?: string;
+      };
+      organization: {
+        id: string;
+        name: string;
+      };
+      widgetid: string;
+      marbleProduct: 'marble-core';
+    };
 
-export function ChatlioWidget({
-  user,
-  organization,
-  widgetid,
-}: {
-  user: CurrentUser;
-  organization: Organization;
-  widgetid: string;
-}) {
+export function ChatlioWidget(props: ChatlioWidget) {
+  let id;
+  let customData;
+  if (props.marbleProduct === 'transfercheck') {
+    const { user, partner } = props;
+    id = user.id ?? `PartnerID:${partner.id}`;
+    customData = {
+      name: user.name,
+      email: user.email,
+      partnerId: partner.id,
+      marbleProduct: 'transfercheck',
+    };
+  } else if (props.marbleProduct === 'marble-core') {
+    const { user, organization } = props;
+    id = user.id ?? `OrgID:${organization.id}`;
+    customData = {
+      name: user.name,
+      email: user.email,
+      organizationId: organization.id,
+      organizationName: organization.name,
+      marbleProduct: 'marble-core',
+    };
+  } else {
+    return null;
+  }
+
   return (
     <>
       <SidebarButton
@@ -23,20 +64,16 @@ export function ChatlioWidget({
           window._chatlio?.configure?.({
             collapsedMode: 'hidden',
           });
-          window._chatlio?.identify?.(
-            user.actorIdentity.userId ?? `OrgID:${user.organizationId}`,
-            {
-              name: getFullName(user.actorIdentity),
-              email: user.actorIdentity.email,
-              organization: organization.name,
-            },
-          );
+          window._chatlio?.identify?.(id, customData);
           window._chatlio?.showOrHide?.();
         }}
         data-chatlio-widget-button
       />
       <div className="absolute">
-        <chatlio-widget widgetid={widgetid} data-start-hidden></chatlio-widget>
+        <chatlio-widget
+          widgetid={props.widgetid}
+          data-start-hidden
+        ></chatlio-widget>
       </div>
     </>
   );
