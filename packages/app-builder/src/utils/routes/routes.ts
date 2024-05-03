@@ -228,9 +228,9 @@ export const routes = [
         "file": "routes/_index.tsx"
       },
       {
-        "id": "routes/app-rooter",
-        "path": "app-rooter",
-        "file": "routes/app-rooter.tsx"
+        "id": "routes/app-router",
+        "path": "app-router",
+        "file": "routes/app-router.tsx"
       },
       {
         "id": "routes/healthcheck",

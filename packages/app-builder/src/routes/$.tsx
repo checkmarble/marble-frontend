@@ -5,7 +5,7 @@ import { type LoaderFunctionArgs } from '@remix-run/node';
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   await authService.isAuthenticated(request, {
-    successRedirect: getRoute('/app-rooter'),
+    successRedirect: getRoute('/app-router'),
     failureRedirect: getRoute('/sign-in'),
   });
 }
