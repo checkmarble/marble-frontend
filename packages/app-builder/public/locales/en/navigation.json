@@ -22,5 +22,6 @@
   "settings.api_keys": "API Keys",
   "settings.case_manager": "Case Manager",
   "settings.inboxes": "Inboxes",
-  "settings.tags": "Tags"
+  "settings.tags": "Tags",
+  "transfercheck.transfers": "Transfers"
 }

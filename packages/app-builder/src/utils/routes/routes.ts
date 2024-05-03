@@ -5,6 +5,11 @@ export const routes = [
     "file": "root.tsx",
     "children": [
       {
+        "id": "routes/$",
+        "path": "*",
+        "file": "routes/$.tsx"
+      },
+      {
         "id": "routes/_auth+/_layout",
         "file": "routes/_auth+/_layout.tsx",
         "children": [
@@ -34,11 +39,6 @@ export const routes = [
         "id": "routes/_builder+/_layout",
         "file": "routes/_builder+/_layout.tsx",
         "children": [
-          {
-            "id": "routes/_builder+/$",
-            "path": "*",
-            "file": "routes/_builder+/$.tsx"
-          },
           {
             "id": "routes/_builder+/analytics",
             "path": "analytics",
@@ -226,6 +226,11 @@ export const routes = [
         "id": "routes/_index",
         "index": true,
         "file": "routes/_index.tsx"
+      },
+      {
+        "id": "routes/app-router",
+        "path": "app-router",
+        "file": "routes/app-router.tsx"
       },
       {
         "id": "routes/healthcheck",
@@ -466,6 +471,34 @@ export const routes = [
         "id": "routes/ressources+/user+/language",
         "path": "ressources/user/language",
         "file": "routes/ressources+/user+/language.tsx"
+      },
+      {
+        "id": "routes/transfercheck+/_layout",
+        "path": "transfercheck",
+        "file": "routes/transfercheck+/_layout.tsx",
+        "children": [
+          {
+            "id": "routes/transfercheck+/$",
+            "path": "*",
+            "file": "routes/transfercheck+/$.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/_index",
+            "index": true,
+            "file": "routes/transfercheck+/_index.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/transfers+/$transferId",
+            "path": "transfers/:transferId",
+            "file": "routes/transfercheck+/transfers+/$transferId.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/transfers+/_index",
+            "index": true,
+            "path": "transfers/",
+            "file": "routes/transfercheck+/transfers+/_index.tsx"
+          }
+        ]
       }
     ]
   }
