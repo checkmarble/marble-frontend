@@ -30,7 +30,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { transferId } = parsedParam.data;
 
   const transfer = await transferRepository.getTransfer({
-    marbleTransferId: transferId,
+    transferId: transferId,
   });
 
   return json({
