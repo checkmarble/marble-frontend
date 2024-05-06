@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "sideEffect": false,
+  "packageManager": "pnpm@9.1.0",
   "scripts": {
     "format:write": "prettier --write .",
     "format:check": "prettier --check .",
