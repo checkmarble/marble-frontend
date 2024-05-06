@@ -2985,6 +2985,46 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+    patch:
+      tags:
+        - Transfers
+      summary: Update a transfer
+      description: Update a transfer by Marble database ID (not the Partner database ID)
+      operationId: updateTransfer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: transferId
+          description: ID of the transfer in the Marble database (not the Partner database)
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Describe the modifications to make to the transfer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferUpdateBodyDto'
+        required: true
+      responses:
+        '200':
+          description: Transfer corresponding to the provided `transferId`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transfer:
+                    $ref: '#/components/schemas/TransferDto'
+                required:
+                  - transfer
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
 components:
   parameters:
     start_date:
@@ -3045,6 +3085,14 @@ components:
           - ASC
           - DESC
   schemas:
+    TransferUpdateBodyDto:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [neutral, suspected_fraud, confirmed_fraud]
+      required:
+        - status
     TransferDto:
       type: object
       properties:
@@ -3089,6 +3137,7 @@ components:
           type: string
         status:
           type: string
+          enum: [neutral, suspected_fraud, confirmed_fraud]
         timezone:
           type: string
         transfer_id:

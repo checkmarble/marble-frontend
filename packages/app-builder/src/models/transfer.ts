@@ -1,4 +1,8 @@
-import { type TransferDataDto, type TransferDto } from 'marble-api';
+import {
+  type TransferDataDto,
+  type TransferDto,
+  type TransferUpdateBodyDto,
+} from 'marble-api';
 
 export interface TransferData {
   beneficiaryBic: string;
@@ -11,7 +15,7 @@ export interface TransferData {
   senderBic: string;
   senderDevice: string;
   senderIp: string;
-  status: string;
+  status: 'neutral' | 'suspected_fraud' | 'confirmed_fraud';
   timezone: string;
   partnerTransferId: string;
   transferRequestedAt: string;
@@ -56,4 +60,8 @@ export function adaptTransfer(transferDto: TransferDto): Transfer {
     score: transferDto.score ?? undefined,
     data: adaptTransferData(transferDto.transfer_data),
   };
+}
+
+export interface TransferUpdateBody {
+  status: 'neutral' | 'suspected_fraud' | 'confirmed_fraud';
 }
