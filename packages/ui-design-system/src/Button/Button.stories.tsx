@@ -47,8 +47,8 @@ const primaryArgss = {
 } as const;
 const primaryArgTypes = {
   color: {
-    control: { type: 'select' },
-    options: variantColors['primary'],
+    control: { type: 'select' as const },
+    options: variantColors['primary'].slice(),
     defaultValue: variantColors['primary'][0],
   },
 };
@@ -66,8 +66,8 @@ const secondaryArgs = {
 } as const;
 const secondaryArgTypes = {
   color: {
-    control: { type: 'select' },
-    options: variantColors['secondary'],
+    control: { type: 'select' as const },
+    options: variantColors['secondary'].slice(),
     defaultValue: variantColors['secondary'][0],
   },
 };

@@ -20,15 +20,15 @@ const Story: Meta<StoryProps> = {
     },
     color: {
       control: { type: 'select' },
-      options: tagColors,
+      options: tagColors.slice(),
     },
     border: {
       control: { type: 'select' },
-      options: tagBorder,
+      options: tagBorder.slice(),
     },
     size: {
       control: { type: 'select' },
-      options: tagSize,
+      options: tagSize.slice(),
     },
   },
 };

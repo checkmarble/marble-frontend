@@ -22,11 +22,11 @@ const Story: Meta<StoryProps> = {
     disabled: { type: 'boolean' },
     border: {
       control: { type: 'radio' },
-      options: selectBorder,
+      options: selectBorder.slice(),
     },
     borderColor: {
       control: { type: 'radio' },
-      options: selectBorderColor,
+      options: selectBorderColor.slice(),
     },
   },
 };
