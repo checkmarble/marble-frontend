@@ -1,3 +1,7 @@
 {
-  "transfer_detail": "Transfer details"
+  "transfer.search.placeholder": "Search transfer by id",
+  "transfer.search.empty": "No transfer found",
+  "transfer_detail.title": "Transfer details",
+  "transfer_detail.transfer_data.title": "Transfer data",
+  "transfer_detail.transfer_data.description": "Here is the transfer id associated to the source information system <TransferIdLabel>transfer_id</TransferIdLabel>: <TransferIdValue>{{transferId}}</TransferIdValue>"
 }
