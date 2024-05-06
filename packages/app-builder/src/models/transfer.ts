@@ -1,8 +1,4 @@
-import {
-  type TransferDataDto,
-  type TransferDto,
-  type TransferUpdateBodyDto,
-} from 'marble-api';
+import { type TransferDataDto, type TransferDto } from 'marble-api';
 
 export interface TransferData {
   beneficiaryBic: string;
