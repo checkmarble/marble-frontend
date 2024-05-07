@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
-    "@types/node": "20.12.9",
+    "@types/node": "20.12.10",
     "oazapfts": "^6.1.0",
     "ora": "^8.0.1",
     "tailwind-preset": "^1.0.8",
