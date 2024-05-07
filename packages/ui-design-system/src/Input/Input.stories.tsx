@@ -12,16 +12,16 @@ const Story: Meta<typeof Input> = {
     disabled: { control: 'boolean' },
     borderColor: {
       control: { type: 'radio' },
-      options: inputBorderColor,
+      options: inputBorderColor.slice(),
     },
     startAdornment: {
-      options: iconNames,
+      options: iconNames.slice(),
       control: {
         type: 'select',
       },
     },
     endAdornment: {
-      options: iconNames,
+      options: iconNames.slice(),
       control: {
         type: 'select',
       },

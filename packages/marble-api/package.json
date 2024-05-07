@@ -12,15 +12,15 @@
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
-    "@types/node": "20.12.7",
+    "@types/node": "20.12.10",
+    "oazapfts": "^6.1.0",
     "ora": "^8.0.1",
     "tailwind-preset": "^1.0.8",
-    "tsx": "^4.7.2"
+    "tsx": "^4.9.3"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
-    "@oazapfts/runtime": "^1.0.2",
-    "oazapfts": "^6.0.4"
+    "@oazapfts/runtime": "^1.0.3"
   },
   "author": "",
   "license": "ISC"
