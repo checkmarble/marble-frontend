@@ -13,14 +13,14 @@
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
     "@types/node": "20.12.9",
+    "oazapfts": "^6.1.0",
     "ora": "^8.0.1",
     "tailwind-preset": "^1.0.8",
     "tsx": "^4.9.3"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
-    "@oazapfts/runtime": "^1.0.3",
-    "oazapfts": "^6.1.0"
+    "@oazapfts/runtime": "^1.0.3"
   },
   "author": "",
   "license": "ISC"
