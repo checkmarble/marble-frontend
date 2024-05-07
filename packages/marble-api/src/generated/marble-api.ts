@@ -585,7 +585,7 @@ export type TransferDataDto = {
     sender_bic: string;
     sender_device: string;
     sender_ip: string;
-    status: string;
+    status: "neutral" | "suspected_fraud" | "confirmed_fraud";
     timezone: string;
     transfer_id: string;
     transfer_requested_at: string;
@@ -597,6 +597,9 @@ export type TransferDto = {
     last_scored_at?: string | null;
     score?: number | null;
     transfer_data: TransferDataDto;
+};
+export type TransferUpdateBodyDto = {
+    status: "neutral" | "suspected_fraud" | "confirmed_fraud";
 };
 /**
  * Get an access token
@@ -2557,4 +2560,28 @@ export function getTransfer(transferId: string, opts?: Oazapfts.RequestOpts) {
     }>(`/transfers/${encodeURIComponent(transferId)}`, {
         ...opts
     }));
+}
+/**
+ * Update a transfer
+ */
+export function updateTransfer(transferId: string, transferUpdateBodyDto: TransferUpdateBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            transfer: TransferDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/transfers/${encodeURIComponent(transferId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: transferUpdateBodyDto
+    })));
 }

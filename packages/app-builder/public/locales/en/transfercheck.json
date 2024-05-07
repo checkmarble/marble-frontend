@@ -1,6 +1,10 @@
 {
   "transfer.search.placeholder": "Search transfer by id",
   "transfer.search.empty": "No transfer found",
+  "transfer_detail.status.title": "Transfer status",
+  "transfer_detail.status.neutral": "Neutral",
+  "transfer_detail.status.suspected_fraud": "Suspected fraud",
+  "transfer_detail.status.confirmed_fraud": "Confirmed fraud",
   "transfer_detail.title": "Transfer details",
   "transfer_detail.transfer_data.title": "Transfer data",
   "transfer_detail.transfer_data.description": "Here is the transfer id associated to the source information system <TransferIdLabel>transfer_id</TransferIdLabel>: <TransferIdValue>{{transferId}}</TransferIdValue>"
