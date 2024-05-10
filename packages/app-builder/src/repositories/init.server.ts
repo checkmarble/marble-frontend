@@ -16,6 +16,7 @@ import {
   getToastStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepositories';
+import { getTransferRepository } from './TransferRepository';
 import { getUserRepository } from './UserRepository';
 
 export function makeServerRepositories({
@@ -44,6 +45,7 @@ export function makeServerRepositories({
     dataModelRepository: getDataModelRepository(),
     apiKeyRepository: getApiKeyRepository(),
     analyticsRepository: getAnalyticsRepository(),
+    transferRepository: getTransferRepository(),
   };
 }
 

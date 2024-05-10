@@ -2,12 +2,15 @@ import {
   ErrorComponent,
   navigationI18n,
   PermissionsProvider,
-  SidebarButton,
   SidebarLink,
 } from '@app-builder/components';
-import { isAdmin, isMarbleAdmin } from '@app-builder/models';
+import {
+  Header,
+  ToggleHeader,
+} from '@app-builder/components/Layout/MainLayout';
+import { UserInfo } from '@app-builder/components/UserInfo';
+import { isAdmin, isMarbleAdmin, isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { LanguagePicker } from '@app-builder/routes/ressources+/user+/language';
 import { ChatlioWidget } from '@app-builder/services/chatlio/ChatlioWidget';
 import { chatlioScript } from '@app-builder/services/chatlio/script';
 import { serverServices } from '@app-builder/services/init.server';
@@ -19,10 +22,9 @@ import {
 } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
 import { getClientEnv } from '@app-builder/utils/environment';
-import { conflict } from '@app-builder/utils/http/http-responses';
+import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
-import * as Popover from '@radix-ui/react-popover';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   Form,
@@ -32,12 +34,10 @@ import {
   useRouteError,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, ScrollArea, Tag } from 'ui-design-system';
-import { Icon, Logo } from 'ui-icons';
+import { Button, ScrollArea } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
@@ -47,6 +47,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (isMarbleAdmin(user)) {
     throw conflict("Marble Admins can't access the app builder.");
+  }
+
+  if (!isMarbleCoreUser(user)) {
+    throw forbidden('Only TransferCheck users can access TransferCheck.');
   }
 
   const [organizationDetail, orgUsers, orgTags] = await Promise.all([
@@ -66,7 +70,6 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { t } = useTranslation(handle.i18n);
   const { user, orgUsers, organization, orgTags } =
     useLoaderData<typeof loader>();
   useSegmentIdentification(user);
@@ -75,7 +78,6 @@ export default function Builder() {
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
   useRefreshToken();
 
-  const [expanded, setExpanded] = useState(true);
   const chatlioWidgetId = getClientEnv('CHATLIO_WIDGET_ID');
 
   return (
@@ -83,83 +85,15 @@ export default function Builder() {
       <OrganizationUsersContextProvider orgUsers={orgUsers}>
         <OrganizationTagsContextProvider orgTags={orgTags}>
           <div className="flex h-full flex-1 flex-row overflow-hidden">
-            <header
-              aria-expanded={expanded}
-              className="bg-grey-00 border-r-grey-10 group/nav flex max-h-screen w-14 shrink-0 flex-col border-r transition-all aria-expanded:w-[235px]"
-            >
+            <Header>
               <div className="h-24 px-2 pt-3">
-                <Popover.Root>
-                  <Popover.Trigger asChild>
-                    <button className="hover:bg-grey-05 active:bg-grey-10 group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
-                      <div className="inline-flex items-center gap-5">
-                        <Logo
-                          logo="logo"
-                          aria-labelledby="marble logo"
-                          className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12"
-                        />
-                        <Logo
-                          logo="marble"
-                          aria-labelledby="marble"
-                          className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
-                        />
-                      </div>
-                      <Icon
-                        icon="arrow-2-down"
-                        className="group-radix-state-open:rotate-180 size-6 shrink-0 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
-                      />
-                    </button>
-                  </Popover.Trigger>
-                  <Popover.Portal>
-                    <Popover.Content
-                      className="bg-grey-00 border-grey-10 animate-slideUpAndFade w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto"
-                      side="bottom"
-                      align="start"
-                      sideOffset={4}
-                    >
-                      <div className="flex flex-col items-center">
-                        {/* TODO(user): add more information when available */}
-                        <Avatar
-                          className="mb-2"
-                          size="xl"
-                          firstName={user.actorIdentity.firstName}
-                          lastName={user.actorIdentity.lastName}
-                          // src={user.profilePictureUrl}
-                        />
-                        {getFullName(user.actorIdentity) ? (
-                          <p className="text-m mb-1 font-semibold capitalize">
-                            {getFullName(user.actorIdentity)}
-                          </p>
-                        ) : null}
-                        <p className="text-s mb-2 font-normal">
-                          {user.actorIdentity.email}
-                        </p>
-                        <Tag border="square">{user.role}</Tag>
-                        <p className="text-grey-50 m-2 text-xs font-normal">
-                          {organization.name}
-                        </p>
-                        <LanguagePicker />
-                      </div>
-
-                      <div className="mt-6 flex flex-col items-center">
-                        <Form
-                          action={getRoute('/ressources/auth/logout')}
-                          method="POST"
-                        >
-                          <Button
-                            variant="secondary"
-                            type="submit"
-                            onClick={() => {
-                              void segment.reset();
-                            }}
-                          >
-                            <Icon icon="logout" className="size-5" />
-                            {t('common:auth.logout')}
-                          </Button>
-                        </Form>
-                      </div>
-                    </Popover.Content>
-                  </Popover.Portal>
-                </Popover.Root>
+                <UserInfo
+                  email={user.actorIdentity.email}
+                  firstName={user.actorIdentity.firstName}
+                  lastName={user.actorIdentity.lastName}
+                  role={user.role}
+                  orgOrPartnerName={organization.name}
+                />
               </div>
               <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
                 <ScrollArea.Viewport>
@@ -250,37 +184,26 @@ export default function Builder() {
                   {chatlioWidgetId ? (
                     <li>
                       <ChatlioWidget
-                        user={user}
-                        organization={organization}
+                        user={{
+                          id: user.actorIdentity.userId,
+                          email: user.actorIdentity.email,
+                          name: getFullName(user.actorIdentity),
+                        }}
+                        organization={{
+                          id: organization.id,
+                          name: organization.name,
+                        }}
                         widgetid={chatlioWidgetId}
+                        marbleProduct="marble-core"
                       />
                     </li>
                   ) : null}
                   <li>
-                    <SidebarButton
-                      onClick={() => {
-                        setExpanded((expanded) => !expanded);
-                      }}
-                      labelTKey={
-                        expanded
-                          ? 'navigation:collapsed'
-                          : 'navigation:expanded'
-                      }
-                      Icon={({ className, ...props }) => (
-                        <Icon
-                          icon="arrow-right"
-                          className={clsx(
-                            'transition-transform group-aria-expanded/nav:rotate-180',
-                            className,
-                          )}
-                          {...props}
-                        />
-                      )}
-                    />
+                    <ToggleHeader />
                   </li>
                 </ul>
               </nav>
-            </header>
+            </Header>
 
             <Outlet />
           </div>
@@ -294,9 +217,10 @@ export function ErrorBoundary() {
   const error = useRouteError();
   const { t } = useTranslation(handle.i18n);
 
+  let errorComponent;
   // Handle Marble Admins, do not capture error in Sentry
   if (isRouteErrorResponse(error) && error.status === CONFLICT) {
-    return (
+    errorComponent = (
       <div className="bg-purple-05 flex size-full items-center justify-center">
         <div className="bg-grey-00 flex max-w-md flex-col items-center gap-4 rounded-2xl p-10 text-center shadow-md">
           <h1 className="text-l text-purple-110 font-semibold">
@@ -321,9 +245,17 @@ export function ErrorBoundary() {
         </div>
       </div>
     );
+  } else {
+    captureRemixErrorBoundaryError(error);
+
+    errorComponent = <ErrorComponent error={error} />;
   }
 
-  captureRemixErrorBoundaryError(error);
-
-  return <ErrorComponent error={error} />;
+  return (
+    <div className="bg-purple-05 flex size-full items-center justify-center">
+      <div className="bg-grey-00 flex max-w-md rounded-2xl p-10 shadow-md">
+        {errorComponent}
+      </div>
+    </div>
+  );
 }

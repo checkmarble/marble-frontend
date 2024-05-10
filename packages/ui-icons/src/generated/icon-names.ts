@@ -5,6 +5,7 @@ export const iconNames = [
   'arrow-2-up',
   'arrow-left',
   'arrow-right',
+  'arrows-right-left',
   'attachment',
   'backtest',
   'boolean',

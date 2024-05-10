@@ -7,6 +7,8 @@
   "error_other": "{{count}} errors",
   "validation_error_one": "{{count}} validation error",
   "validation_error_other": "{{count}} validation errors",
+  "errors.forbidden.title": "Forbidden",
+  "errors.forbidden.subtitle": "You don't have permission to access this page",
   "errors.unknown": "An unknown error as occured",
   "errors.account_exists_with_different_credential": "An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.",
   "errors.popup_blocked_by_client": "The popup has been blocked. Please <EnablePopup>enable popups</EnablePopup> and try again.",

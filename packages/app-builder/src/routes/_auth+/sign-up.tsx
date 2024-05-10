@@ -18,7 +18,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     authSessionService: { getSession },
   } = serverServices;
   await authService.isAuthenticated(request, {
-    successRedirect: getRoute('/scenarios/'),
+    successRedirect: getRoute('/app-router'),
   });
   const session = await getSession(request);
   const error = session.get('authError');
