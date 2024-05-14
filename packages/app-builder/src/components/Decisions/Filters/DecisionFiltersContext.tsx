@@ -1,10 +1,11 @@
+import { type Scenario } from '@app-builder/models/scenario';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import {
   type DateRangeFilterForm,
   dateRangeSchema,
 } from '@app-builder/utils/schema/filterSchema';
-import { type Outcome, type Scenario } from 'marble-api';
+import { type Outcome } from 'marble-api';
 import { useCallback, useMemo } from 'react';
 import {
   FormProvider,

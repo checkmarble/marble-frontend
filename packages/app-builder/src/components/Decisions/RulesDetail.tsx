@@ -5,7 +5,6 @@ import {
   type DatabaseAccessAstNode,
   type DataModel,
   type PayloadAstNode,
-  type ScenarioIterationRule,
 } from '@app-builder/models';
 import {
   isRuleExecutionError,
@@ -14,6 +13,7 @@ import {
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
+import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration';
 import {
   DisplayReturnValuesProvider,
   useDisplayReturnValues,
