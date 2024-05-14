@@ -1,4 +1,4 @@
-import { type ScenarioIteration } from '@app-builder/models';
+import { type ScenarioIteration } from '@app-builder/models/scenario-iteration';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useParam } from '@app-builder/utils/short-uuid';
 import invariant from 'tiny-invariant';
