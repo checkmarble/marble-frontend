@@ -79,6 +79,13 @@ function getFieldPivotOptions(tableModel: TableModel): FieldPivotOption[] {
     tableModel.fields,
     // Only allow pivots on string fields
     R.filter((field) => field.dataType === 'String'),
+    // Exclude fields that are already links
+    R.filter(
+      (field) =>
+        tableModel.linksToSingle.find(
+          (link) => link.childFieldId === field.id,
+        ) === undefined,
+    ),
     R.map((field) =>
       adaptFieldPivotOption({ baseTableId: tableModel.id, field }),
     ),
