@@ -14,10 +14,10 @@ import {
   type DatabaseAccessAstNode,
   NewEmptyRuleAstNode,
   type PayloadAstNode,
-  type ScenarioIterationRule,
 } from '@app-builder/models';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
+import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';

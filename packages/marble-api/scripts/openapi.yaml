@@ -1076,7 +1076,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Scenario'
+                  $ref: '#/components/schemas/ScenarioDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1093,7 +1093,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateScenarioBody'
+              $ref: '#/components/schemas/ScenarioCreateInputDto'
         required: true
       responses:
         '200':
@@ -1101,7 +1101,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Scenario'
+                $ref: '#/components/schemas/ScenarioDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1130,7 +1130,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Scenario'
+                $ref: '#/components/schemas/ScenarioDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1157,7 +1157,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateScenarioBody'
+              $ref: '#/components/schemas/ScenarioUpdateInputDto'
         required: true
       responses:
         '200':
@@ -1165,7 +1165,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Scenario'
+                $ref: '#/components/schemas/ScenarioDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -4196,15 +4196,8 @@ components:
       properties:
         value:
           type: string
-    Scenario:
+    ScenarioDto:
       type: object
-      required:
-        - id
-        - createdAt
-        - decision_to_case_outcomes
-        - description
-        - name
-        - triggerObjectType
       properties:
         id:
           type: string
@@ -4219,6 +4212,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Outcome'
+        decision_to_case_workflow_type:
+          type: string
+          enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
         description:
           type: string
         liveVersionId:
@@ -4226,22 +4222,34 @@ components:
           format: uuid
         name:
           type: string
+        organization_id:
+          type: string
+          format: uuid
         triggerObjectType:
           type: string
-    CreateScenarioBody:
-      type: object
       required:
-        - name
+        - id
+        - createdAt
+        - decision_to_case_outcomes
+        - decision_to_case_workflow_type
         - description
+        - name
+        - organization_id
         - triggerObjectType
+    ScenarioCreateInputDto:
+      type: object
       properties:
-        name:
-          type: string
         description:
           type: string
+        name:
+          type: string
         triggerObjectType:
           type: string
-    UpdateScenarioBody:
+      required:
+        - description
+        - name
+        - triggerObjectType
+    ScenarioUpdateInputDto:
       type: object
       properties:
         decision_to_case_inbox_id:
@@ -4251,6 +4259,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Outcome'
+        decision_to_case_workflow_type:
+          type: string
+          enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
         description:
           type: string
         name:

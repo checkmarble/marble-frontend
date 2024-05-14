@@ -277,24 +277,27 @@ export type UpdateCustomListBody = {
 export type CreateCustomListValueBody = {
     value: string;
 };
-export type Scenario = {
+export type ScenarioDto = {
     id: string;
     createdAt: string;
     decision_to_case_inbox_id?: string;
     decision_to_case_outcomes: Outcome[];
+    decision_to_case_workflow_type: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
     description: string;
     liveVersionId?: string;
     name: string;
+    organization_id: string;
     triggerObjectType: string;
 };
-export type CreateScenarioBody = {
-    name: string;
+export type ScenarioCreateInputDto = {
     description: string;
+    name: string;
     triggerObjectType: string;
 };
-export type UpdateScenarioBody = {
+export type ScenarioUpdateInputDto = {
     decision_to_case_inbox_id?: string;
     decision_to_case_outcomes?: Outcome[];
+    decision_to_case_workflow_type?: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
     description?: string;
     name?: string;
 };
@@ -1251,7 +1254,7 @@ export function deleteCustomListValue(customListId: string, customListValueId: s
 export function listScenarios(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Scenario[];
+        data: ScenarioDto[];
     } | {
         status: 401;
         data: string;
@@ -1265,10 +1268,10 @@ export function listScenarios(opts?: Oazapfts.RequestOpts) {
 /**
  * Create a scenario
  */
-export function createScenario(createScenarioBody: CreateScenarioBody, opts?: Oazapfts.RequestOpts) {
+export function createScenario(scenarioCreateInputDto: ScenarioCreateInputDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Scenario;
+        data: ScenarioDto;
     } | {
         status: 401;
         data: string;
@@ -1281,7 +1284,7 @@ export function createScenario(createScenarioBody: CreateScenarioBody, opts?: Oa
     }>("/scenarios", oazapfts.json({
         ...opts,
         method: "POST",
-        body: createScenarioBody
+        body: scenarioCreateInputDto
     })));
 }
 /**
@@ -1290,7 +1293,7 @@ export function createScenario(createScenarioBody: CreateScenarioBody, opts?: Oa
 export function getScenario(scenarioId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Scenario;
+        data: ScenarioDto;
     } | {
         status: 401;
         data: string;
@@ -1307,10 +1310,10 @@ export function getScenario(scenarioId: string, opts?: Oazapfts.RequestOpts) {
 /**
  * Update a scenario
  */
-export function updateScenario(scenarioId: string, updateScenarioBody: UpdateScenarioBody, opts?: Oazapfts.RequestOpts) {
+export function updateScenario(scenarioId: string, scenarioUpdateInputDto: ScenarioUpdateInputDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Scenario;
+        data: ScenarioDto;
     } | {
         status: 401;
         data: string;
@@ -1323,7 +1326,7 @@ export function updateScenario(scenarioId: string, updateScenarioBody: UpdateSce
     }>(`/scenarios/${encodeURIComponent(scenarioId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: updateScenarioBody
+        body: scenarioUpdateInputDto
     })));
 }
 /**
