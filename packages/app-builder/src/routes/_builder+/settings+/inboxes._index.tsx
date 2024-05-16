@@ -1,5 +1,6 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { isAdmin } from '@app-builder/models';
+import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -8,7 +9,6 @@ import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type InboxDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -16,19 +16,19 @@ import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient, user } = await authService.isAuthenticated(request, {
+  const { inbox, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   if (!isAdmin(user)) {
     return redirect(getRoute('/'));
   }
 
-  const { inboxes } = await apiClient.listInboxes({ withCaseCount: true });
+  const inboxes = await inbox.listInboxesWithCaseCount();
 
   return json({ inboxes });
 }
 
-const columnHelper = createColumnHelper<InboxDto>();
+const columnHelper = createColumnHelper<InboxWithCasesCount>();
 
 export default function Inboxes() {
   const { t } = useTranslation(['settings']);
@@ -62,7 +62,7 @@ export default function Inboxes() {
             .join(', ');
         },
       }),
-      columnHelper.accessor((row) => row.cases_count, {
+      columnHelper.accessor((row) => row.casesCount, {
         id: 'cases',
         header: t('settings:inboxes.cases'),
         size: 100,
