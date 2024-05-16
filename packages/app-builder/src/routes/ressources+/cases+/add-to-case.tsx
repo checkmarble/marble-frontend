@@ -7,6 +7,7 @@ import {
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusBadRequestHttpError } from '@app-builder/models';
+import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -19,7 +20,6 @@ import {
 } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { type InboxDto } from 'marble-api';
 import { useEffect } from 'react';
 import {
   type Control,
@@ -53,12 +53,12 @@ const addToCaseFormSchema = z.discriminatedUnion('newCase', [
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  const inboxes = await apiClient.listInboxes({ withCaseCount: false });
+  const inboxes = await inbox.listInboxes();
 
-  return json(inboxes);
+  return json({ inboxes });
 }
 
 type AddToCaseForm = z.infer<typeof addToCaseFormSchema>;
@@ -171,7 +171,7 @@ export function AddToCase() {
   return (
     <FormProvider {...formMethods}>
       <Form
-        onSubmit={({ formDataJson }) => {
+        onSubmit={({ formDataJson }): void => {
           fetcher.submit(formDataJson, {
             method: 'POST',
             action: getRoute('/ressources/cases/add-to-case'),
@@ -215,7 +215,7 @@ const NewCaseFields = ({
   inboxes,
 }: {
   control: Control<AddToCaseForm>;
-  inboxes: InboxDto[];
+  inboxes: Inbox[];
 }) => {
   const { t } = useTranslation(handle.i18n);
   return (

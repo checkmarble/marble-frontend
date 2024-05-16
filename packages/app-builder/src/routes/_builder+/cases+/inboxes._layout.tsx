@@ -18,11 +18,11 @@ export const handle = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const { inboxes } = await apiClient.listInboxes({ withCaseCount: false });
+  const inboxes = await inbox.listInboxes();
 
   return json({ inboxes });
 }
