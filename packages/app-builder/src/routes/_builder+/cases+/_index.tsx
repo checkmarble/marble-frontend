@@ -9,11 +9,11 @@ import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const { inboxes } = await apiClient.listInboxes({ withCaseCount: false });
+  const inboxes = await inbox.listInboxes();
 
   if (inboxes.length > 0) {
     return redirect(
