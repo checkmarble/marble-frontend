@@ -1,42 +1,26 @@
 import { Callout } from '@app-builder/components/Callout';
 import { Highlight } from '@app-builder/components/Highlight';
 import { type Inbox } from '@app-builder/models/inbox';
-import { Await } from '@remix-run/react';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
 import { type CreateCaseAction } from '../models/node-data';
-import { useWorkflowActions } from '../store';
 import { workflowI18n } from '../workflow-i18n';
-import { useWorkflowData } from '../WorkflowData';
+import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
 import { defaultCaseName } from './shared';
 
-export function CreateCaseNode(props: { id: string; data: CreateCaseAction }) {
-  const { t } = useTranslation(workflowI18n);
-  const { inboxes } = useWorkflowData();
-
-  return (
-    <React.Suspense fallback={t('common:loading')}>
-      <Await resolve={inboxes}>
-        {(inboxes) => <CreateCaseNodeImpl inboxes={inboxes} {...props} />}
-      </Await>
-    </React.Suspense>
-  );
-}
-
-function CreateCaseNodeImpl({
+export function CreateCaseNode({
   id,
   data,
-  inboxes,
 }: {
   id: string;
   data: CreateCaseAction;
-  inboxes: Inbox[];
 }) {
   const { t } = useTranslation(workflowI18n);
   const { updateNode } = useWorkflowActions();
+  const { inboxes } = useWorkflowData();
 
   return (
     <>

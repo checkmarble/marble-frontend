@@ -1,3 +1,4 @@
+import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { type DataModel, type Pivot } from '@app-builder/models/data-model';
 import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
 import Dagre from '@dagrejs/dagre';
@@ -6,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
-  ControlButton,
   Controls,
   type Edge,
   type EdgeChange,
@@ -274,7 +274,7 @@ function DataModelFlowImpl({
 }
 
 function CustomControls() {
-  const { getNodes, getEdges, setNodes, fitView } = useDataModelReactFlow();
+  const { getNodes, fitView } = useDataModelReactFlow();
 
   return (
     <>
@@ -304,16 +304,7 @@ function CustomControls() {
         </SchemaMenuMenuPopover>
       </SchemaMenuRoot>
 
-      <ControlButton
-        title="Automatic layout"
-        onClick={() => {
-          // Layout without fitting view
-          const layout = layoutElements(getNodes(), getEdges());
-          setNodes(layout.nodes);
-        }}
-      >
-        <Icon icon="tree-schema" />
-      </ControlButton>
+      <AutoLayoutControlButton layoutElements={layoutElements} />
     </>
   );
 }

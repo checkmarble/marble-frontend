@@ -12,12 +12,12 @@ import {
   type TriggerData,
   useTitleInfo,
 } from '../models/node-data';
+import { workflowI18n } from '../workflow-i18n';
 import {
   useCreateNodeType,
   useSelectedNodes,
   useWorkflowActions,
-} from '../store';
-import { workflowI18n } from '../workflow-i18n';
+} from '../WorkflowProvider';
 import { AddToCaseIfPossibleNode } from './AddToCaseIfPossibleNode';
 import { CreateCaseNode } from './CreateCaseNode';
 import { DecisionCreatedNode } from './DecisionCreatedNode';

@@ -1,16 +1,33 @@
+import {
+  AutoLayoutControlButton,
+  useLayoutInitializedNodes,
+} from '@app-builder/components/ReactFlow';
+import Dagre from '@dagrejs/dagre';
+import type * as React from 'react';
 import ReactFlow, {
   Background,
+  Controls,
   type DefaultEdgeOptions,
+  type Edge,
   MarkerType,
+  type Node,
+  type NodeOrigin,
   type NodeProps,
+  ReactFlowProvider,
 } from 'reactflow';
 import reactflowStyles from 'reactflow/dist/style.css';
 
+import { type NodeData } from './models/node-data';
 import { type NodeType } from './models/node-types';
 import { Action } from './Nodes/Action';
 import { EmptyNode } from './Nodes/EmptyNode';
 import { Trigger } from './Nodes/Trigger';
-import { useEdges, useNodes, useWorkflowActions } from './store';
+import {
+  nodesep,
+  useEdges,
+  useNodes,
+  useWorkflowActions,
+} from './WorkflowProvider';
 
 export const workflowFlowStyles = reactflowStyles;
 
@@ -20,7 +37,47 @@ const nodeTypes = {
   empty_node: EmptyNode,
 } satisfies Record<NodeType, React.ComponentType<NodeProps>>;
 
-export const defaultDataModelEdgeOptions: DefaultEdgeOptions = {
+export function WorkflowFlow() {
+  return (
+    <ReactFlowProvider>
+      <WorkflowFlowImpl />
+    </ReactFlowProvider>
+  );
+}
+
+function WorkflowFlowImpl() {
+  const nodes = useNodes();
+  const edges = useEdges();
+  const { onNodesChange, onEdgesChange, onConnect } = useWorkflowActions();
+
+  useLayoutInitializedNodes({
+    mode: 'onMount',
+    layoutElements,
+  });
+
+  return (
+    <ReactFlow
+      nodes={nodes}
+      nodeTypes={nodeTypes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={onConnect}
+      nodeOrigin={nodeOrigin}
+      fitView
+      defaultEdgeOptions={defaultDataModelEdgeOptions}
+      connectionLineStyle={defaultDataModelEdgeOptions.style}
+    >
+      <Background />
+      <Controls position="bottom-left">
+        <AutoLayoutControlButton layoutElements={layoutElements} />
+      </Controls>
+    </ReactFlow>
+  );
+}
+
+const nodeOrigin: NodeOrigin = [0.5, 0];
+const defaultDataModelEdgeOptions: DefaultEdgeOptions = {
   style: {
     strokeWidth: 3,
   },
@@ -33,25 +90,50 @@ export const defaultDataModelEdgeOptions: DefaultEdgeOptions = {
   },
 };
 
-export function WorkflowFlow() {
-  const nodes = useNodes();
-  const edges = useEdges();
-  const { onNodesChange, onEdgesChange, onConnect } = useWorkflowActions();
+function layoutElements(
+  nodes: Node<NodeData>[],
+  edges: Edge[],
+): {
+  nodes: Node<NodeData>[];
+  edges: Edge[];
+} {
+  const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+  g.setGraph({
+    rankdir: 'TB',
+    nodesep,
+    ranksep: 100,
+  });
 
-  return (
-    <ReactFlow
-      nodes={nodes}
-      nodeTypes={nodeTypes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      nodeOrigin={[0.5, 0]}
-      fitView
-      defaultEdgeOptions={defaultDataModelEdgeOptions}
-      connectionLineStyle={defaultDataModelEdgeOptions.style}
-    >
-      <Background />
-    </ReactFlow>
+  edges.forEach((edge) => g.setEdge(edge.source, edge.target));
+  nodes.forEach((node) =>
+    g.setNode(node.id, {
+      width: node.width ?? undefined,
+      height: node.height ?? undefined,
+    }),
   );
+
+  Dagre.layout(g, {
+    weight: 1000,
+    minlen: 3,
+  });
+
+  return {
+    nodes: nodes.map((nd) => {
+      const { x, y } = g.node(nd.id);
+      const position = {
+        x: x,
+        y: y - (nd.height ?? 0) / 2,
+      };
+
+      if (position.x === nd.position.x && position.y === nd.position.y) {
+        return nd;
+      }
+
+      return {
+        ...nd,
+        position,
+      };
+    }),
+    edges: edges,
+  };
 }

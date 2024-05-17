@@ -2,7 +2,6 @@ import { Callout } from '@app-builder/components/Callout';
 import { Outcome, useOutcomes } from '@app-builder/components/Decisions';
 import { Highlight } from '@app-builder/components/Highlight';
 import { type Scenario } from '@app-builder/models/scenario';
-import { Await } from '@remix-run/react';
 import { type Outcome as OutcomeT } from 'marble-api';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
@@ -10,38 +9,18 @@ import { useTranslation } from 'react-i18next';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
 import { type DecisionCreatedTrigger } from '../models/node-data';
-import { useWorkflowActions } from '../store';
 import { workflowI18n } from '../workflow-i18n';
-import { useWorkflowData } from '../WorkflowData';
+import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
 
-export function DecisionCreatedNode(props: {
+export function DecisionCreatedNode({
+  id,
+  data,
+}: {
   id: string;
   data: DecisionCreatedTrigger;
 }) {
   const { t } = useTranslation(workflowI18n);
   const { scenarios } = useWorkflowData();
-
-  return (
-    <React.Suspense fallback={t('common:loading')}>
-      <Await resolve={scenarios}>
-        {(scenarios) => (
-          <DecisionCreatedNodeImpl scenarios={scenarios} {...props} />
-        )}
-      </Await>
-    </React.Suspense>
-  );
-}
-
-function DecisionCreatedNodeImpl({
-  id,
-  data,
-  scenarios,
-}: {
-  id: string;
-  data: DecisionCreatedTrigger;
-  scenarios: Scenario[];
-}) {
-  const { t } = useTranslation(workflowI18n);
   const { updateNode } = useWorkflowActions();
 
   return (

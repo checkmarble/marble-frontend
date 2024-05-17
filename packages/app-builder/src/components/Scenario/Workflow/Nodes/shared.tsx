@@ -10,8 +10,11 @@ import {
   type TriggerData,
   useTitleInfo,
 } from '../models/node-data';
-import { useIsSourceConnectable, useWorkflowActions } from '../store';
 import { workflowI18n } from '../workflow-i18n';
+import {
+  useIsSourceConnectable,
+  useWorkflowActions,
+} from '../WorkflowProvider';
 
 export function NodeRoot({ children }: { children: React.ReactNode }) {
   return <div className="group relative min-w-72">{children}</div>;
