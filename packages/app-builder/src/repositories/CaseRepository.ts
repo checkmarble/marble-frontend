@@ -27,7 +27,7 @@ export type CaseFilters = {
 export type CaseFiltersWithPagination = FiltersWithPagination<CaseFilters>;
 
 export interface CaseRepository {
-  listCases(args: CaseFilters): Promise<PaginatedResponse<Case>>;
+  listCases(args: CaseFiltersWithPagination): Promise<PaginatedResponse<Case>>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;
   updateCase(args: {
     caseId: string;
@@ -44,7 +44,7 @@ export interface CaseRepository {
 
 export function getCaseRepository() {
   return (marbleApiClient: MarbleApi): CaseRepository => ({
-    listCases: async ({ dateRange, inboxIds, statuses }: CaseFilters) => {
+    listCases: async ({ dateRange, inboxIds, statuses, ...rest }) => {
       let startDate, endDate: string | undefined;
       if (dateRange?.type === 'static') {
         startDate = dateRange?.startDate;
@@ -61,6 +61,7 @@ export function getCaseRepository() {
         endDate,
         inboxId: inboxIds,
         status: statuses,
+        ...rest,
       });
 
       return {
