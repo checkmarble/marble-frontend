@@ -88,7 +88,11 @@ export function getDecisionRepository() {
     },
     getDecisionById: async (id) => {
       const decisionDetailDto = await marbleApiClient.getDecision(id);
-      return adaptDecisionDetail(decisionDetailDto);
+      const decision = adaptDecisionDetail(decisionDetailDto);
+      decision.rules = decision.rules.sort((lhs, rhs) =>
+        lhs.name.localeCompare(rhs.name),
+      );
+      return decision;
     },
   });
 }
