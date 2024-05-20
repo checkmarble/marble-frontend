@@ -115,7 +115,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
       columnHelper.group({
         id: 'name',
         header: () => (
-          <div className="bg-grey-02 border-grey-50 flex justify-between gap-2 border-b p-4">
+          <div className="flex justify-between gap-2 p-4">
             <div className="flex flex-col gap-2 text-left">
               <span className="text-grey-100 text-[30px]">{data.name}</span>
               <FormatDescription description={data.description || ''} />
@@ -194,83 +194,87 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   });
 
   return (
-    <table
-      className={clsx(
-        'bg-grey-00 border-grey-50 isolate table-auto border-collapse rounded-xl border',
-        displayPivot && !isTablePartOfPivot(data.original.id) && 'opacity-20',
-      )}
-    >
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id} colSpan={header.colSpan}>
-                {flexRender(
-                  header.column.columnDef.header,
-                  header.getContext(),
-                )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody className="border-grey-50 border">
-        {table.getRowModel().rows.map((row) => {
-          const visibleCells = row.getVisibleCells();
-          return (
+    <div className="border-grey-50 bg-grey-00 overflow-hidden rounded-xl border">
+      <table
+        className={clsx(
+          'isolate table-auto border-collapse',
+          displayPivot && !isTablePartOfPivot(data.original.id) && 'opacity-20',
+        )}
+      >
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
             <tr
-              key={row.id}
-              className={clsx(
-                'border-grey-50 relative border',
-                canEditDataModel && 'hover:bg-purple-10 group',
-                displayPivot &&
-                  isFieldPartOfPivot(row.original.id) &&
-                  'bg-purple-10',
-                displayPivot &&
-                  !isFieldPartOfPivot(row.original.id) &&
-                  'opacity-20',
-              )}
+              key={headerGroup.id}
+              className="bg-grey-02 border-b-grey-25 border-b"
             >
-              {visibleCells.map((cell, index) => {
-                let sourceHandle, targetHandle;
-                if (index === 0) {
-                  sourceHandle = (
-                    <Handle
-                      type="target"
-                      id={row.original.name}
-                      position={Position.Left}
-                      // For now, we don't want to show the handle or allow connections
-                      style={{ background: 'transparent', border: 'none' }}
-                      isConnectable={false}
-                    />
-                  );
-                }
-                if (index === visibleCells.length - 1) {
-                  targetHandle = (
-                    <Handle
-                      type="source"
-                      id={row.original.name}
-                      position={Position.Right}
-                      // For now, we don't want to show the handle or allow connections
-                      style={{ background: 'transparent', border: 'none' }}
-                      isConnectable={false}
-                    />
-                  );
-                }
-
-                return (
-                  <td key={cell.id} className="max-w-96 p-2">
-                    {sourceHandle}
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    {targetHandle}
-                  </td>
-                );
-              })}
+              {/* This is the handle for the left side of the table */}
+              <th></th>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} colSpan={header.colSpan}>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
+                </th>
+              ))}
+              {/* This is the handle for the right side of the table */}
+              <th></th>
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => {
+            const visibleCells = row.getVisibleCells();
+            return (
+              <tr
+                key={row.id}
+                className={clsx(
+                  'border-t-grey-25 relative scale-100 border-t',
+                  canEditDataModel && 'hover:bg-purple-10 group',
+                  displayPivot &&
+                    isFieldPartOfPivot(row.original.id) &&
+                    'bg-purple-10',
+                  displayPivot &&
+                    !isFieldPartOfPivot(row.original.id) &&
+                    'opacity-20',
+                )}
+              >
+                <td className="relative">
+                  <Handle
+                    type="target"
+                    id={row.original.name}
+                    position={Position.Left}
+                    // For now, we don't want to show the handle or allow connections
+                    style={{ background: 'transparent', border: 'none' }}
+                    isConnectable={false}
+                  />
+                </td>
+                {visibleCells.map((cell) => {
+                  return (
+                    <td key={cell.id} className="max-w-96 p-2 ">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  );
+                })}
+                <td className="relative">
+                  <Handle
+                    type="source"
+                    id={row.original.name}
+                    position={Position.Right}
+                    // For now, we don't want to show the handle or allow connections
+                    style={{ background: 'transparent', border: 'none' }}
+                    isConnectable={false}
+                  />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
