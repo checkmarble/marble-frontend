@@ -128,14 +128,14 @@ interface TableProps<TData extends RowData> extends TableOptions<TData> {
   /**
    * Transform the row into a link.
    *
-   * Be aware you need to use 'isolate' class on other interactable cell elements to avoid z-index issues.
+   * Be aware you need to use 'relative' class on other interactable cell elements to create a new stacking context and avoid z-index issues.
    *
    * @example
    *  rowLink={(row) => <Link to={`/row/${row.id}`}>{row.name}</Link>}
    *  ...
    *   columnHelper.accessor({
    *     ...
-   *     cell: ({ getValue }) => <Checkbox className="isolate">{getValue()}</Checkbox>,
+   *     cell: ({ getValue }) => <Checkbox className="relative">{getValue()}</Checkbox>,
    *    }),
    */
   rowLink?: (row: TData) => JSX.Element;
@@ -253,7 +253,8 @@ function Row<TData extends RowData>({
   ...props
 }: Omit<React.ComponentProps<'tr'>, 'children'> & { row: Row<TData> }) {
   return (
-    <tr className={clsx('group relative h-16', className)} {...props}>
+    // Scale-100 is a hack to bypass relative bug on <tr /> for Safari https://bugs.webkit.org/show_bug.cgi?id=240961
+    <tr className={clsx('group relative h-16 scale-100', className)} {...props}>
       {row.getVisibleCells().map((cell) => {
         const context = cell.getContext();
         if (context.column.id === internalRowLink) {
