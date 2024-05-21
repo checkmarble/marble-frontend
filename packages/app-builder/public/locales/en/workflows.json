@@ -30,7 +30,7 @@
   "detail_pannel.create_case.inbox.label": "Inbox",
   "detail_pannel.create_case.inbox.placeholder": "Select an inbox",
   "detail_pannel.create_case.default_name.helper": "The default name should follow this template:",
-  "detail_pannel.add_to_case_if_possible.description": "In the selected inbox, if an open case match the decision’s pivot value, add the decision to it. If no matching case is found, a new case will be created with a default name.",
+  "detail_pannel.add_to_case_if_possible.description": "In the selected inbox, if an open case matches the decision’s pivot value, add the decision to it. If no matching case is found, a new case will be created with a default name.",
   "detail_pannel.add_to_case_if_possible.inbox.label": "Inbox",
   "detail_pannel.add_to_case_if_possible.inbox.placeholder": "Select an inbox",
   "detail_pannel.add_to_case_if_possible.default_name.helper": "If no matching case is found, the created case name should follow this template:"
