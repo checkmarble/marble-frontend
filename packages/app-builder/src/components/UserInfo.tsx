@@ -4,7 +4,7 @@ import { getFullName } from '@app-builder/services/user';
 import { getRoute } from '@app-builder/utils/routes';
 import * as Popover from '@radix-ui/react-popover';
 import { Form } from '@remix-run/react';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Tag } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';
 
@@ -23,6 +23,7 @@ export function UserInfo({
   role,
   orgOrPartnerName,
 }: UserInfoProps) {
+  const { t } = useTranslation(['common']);
   const fullName = getFullName({ firstName, lastName });
   return (
     <Popover.Root>

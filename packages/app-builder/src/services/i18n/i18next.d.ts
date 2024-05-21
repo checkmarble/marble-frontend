@@ -12,6 +12,7 @@ import type scheduledExecution from '../../../public/locales/en/scheduledExecuti
 import type settings from '../../../public/locales/en/settings.json';
 import type transfercheck from '../../../public/locales/en/transfercheck.json';
 import type upload from '../../../public/locales/en/upload.json';
+import type workflows from '../../../public/locales/en/workflows.json';
 import { type defaultNS } from './i18n-config';
 
 declare module 'i18next' {
@@ -32,6 +33,7 @@ declare module 'i18next' {
       settings: typeof settings;
       transfercheck: typeof transfercheck;
       upload: typeof upload;
+      workflows: typeof workflows;
     };
   }
 }
