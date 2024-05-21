@@ -21,7 +21,7 @@
   "detail_pannel.create_trigger_node.description": "A trigger is an event that starts the workflow. Choose a trigger to start the workflow.",
   "detail_pannel.create_action_node.title": "Choose an action",
   "detail_pannel.create_action_node.description": "An action is a task that the workflow performs. Choose an action to add to the workflow.",
-  "detail_pannel.decision_created.description": "Trigered when a decision is created which matches the following criteria.",
+  "detail_pannel.decision_created.description": "Triggered when a decision is created, that matches the following criteria.",
   "detail_pannel.decision_created.scenario.label": "Scenario",
   "detail_pannel.decision_created.scenario.placeholder": "Select a scenario",
   "detail_pannel.decision_created.outcomes.label": "Outcomes",
