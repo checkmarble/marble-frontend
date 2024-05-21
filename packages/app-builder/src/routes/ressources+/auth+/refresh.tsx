@@ -41,7 +41,16 @@ export function useRefreshToken() {
           );
         },
         () => {
-          navigate(getRoute('/ressources/auth/logout'));
+          let redirectUrl = getRoute('/ressources/auth/logout');
+          if (window) {
+            const searchParams = new URLSearchParams();
+            searchParams.set(
+              'redirectTo',
+              `${window.location.pathname}${window.location.search}`,
+            );
+            redirectUrl = `${redirectUrl}?${searchParams.toString()}`;
+          }
+          navigate(redirectUrl);
         },
       );
     },

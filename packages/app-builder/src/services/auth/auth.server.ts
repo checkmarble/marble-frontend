@@ -19,7 +19,6 @@ import { type TransferRepository } from '@app-builder/repositories/TransferRepos
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
-import { type RoutePath } from '@app-builder/utils/routes/types';
 import { json, redirect } from '@remix-run/node';
 import * as Sentry from '@sentry/remix';
 import { marbleApi } from 'marble-api';
@@ -268,7 +267,7 @@ export function makeAuthenticationServerService(
 
   async function logout(
     request: Request,
-    options: { redirectTo: RoutePath },
+    options: { redirectTo: string },
   ): Promise<never> {
     const authSession = await authSessionService.getSession(request);
 

@@ -11,8 +11,14 @@ import {
   json,
   type LoaderFunctionArgs,
 } from '@remix-run/node';
-import { Link, useFetcher, useLoaderData } from '@remix-run/react';
+import {
+  Link,
+  useFetcher,
+  useLoaderData,
+  useSearchParams,
+} from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
+import { safeRedirect } from 'remix-utils/safe-redirect';
 
 export const handle = {
   i18n: authI18n,
@@ -36,8 +42,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
+
+  const { searchParams } = new URL(request.url);
+  const redirectTo = searchParams.get('redirectTo');
+  const successRedirect = safeRedirect(redirectTo, getRoute('/app-router'));
+
   return await authService.authenticate(request, {
-    successRedirect: getRoute('/app-router'),
+    successRedirect,
     failureRedirect: getRoute('/sign-in'),
   });
 }
@@ -46,11 +57,14 @@ export default function Login() {
   const { t } = useTranslation(handle.i18n);
   const { authError } = useLoaderData<typeof loader>();
 
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get('redirectTo');
   const fetcher = useFetcher();
   const signIn = (authPayload: AuthPayload) =>
     fetcher.submit(authPayload, {
       method: 'POST',
-      action: getRoute('/sign-in'),
+      action:
+        getRoute('/sign-in') + (redirectTo ? `?redirectTo=${redirectTo}` : ''),
     });
 
   return (
