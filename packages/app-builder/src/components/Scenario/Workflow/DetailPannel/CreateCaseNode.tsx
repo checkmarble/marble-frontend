@@ -6,7 +6,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { type CreateCaseAction } from '../models/node-data';
+import { type CreateCaseAction } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
 import { defaultCaseName } from './shared';
