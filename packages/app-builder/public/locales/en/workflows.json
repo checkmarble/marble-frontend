@@ -15,7 +15,7 @@
   "detail_pannel.no_selected_nodes.title": "Workflow detail",
   "detail_pannel.no_selected_nodes.description": "Select a node to see its details.",
   "detail_pannel.multiple_selected_nodes.title": "Multiple selected nodes",
-  "detail_pannel.multiple_selected_nodes.description": "You have selected multiple nodes. This panel don't show details of multiple nodes. Please select only one node to see details.",
+  "detail_pannel.multiple_selected_nodes.description": "You have selected multiple nodes. This panel doesn't show details of multiple nodes. Please select only one node to see details.",
   "detail_pannel.multiple_selected_nodes.clear_selection": "Clear selection",
   "detail_pannel.create_trigger_node.title": "Choose a trigger",
   "detail_pannel.create_trigger_node.description": "A trigger is an event that starts the workflow. Choose a trigger to start the workflow.",
