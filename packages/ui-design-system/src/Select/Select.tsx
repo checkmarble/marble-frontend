@@ -62,9 +62,13 @@ function SelectViewport({
 }
 
 export const selectTrigger = cva(
-  'bg-grey-00 text-s text-grey-100 flex min-h-[40px] min-w-[40px] items-center justify-between border font-medium outline-none radix-state-open:border-purple-100 radix-state-open:text-purple-100 radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
+  'text-s text-grey-100 flex min-h-[40px] min-w-[40px] items-center justify-between border font-medium outline-none radix-state-open:border-purple-100 radix-state-open:text-purple-100 radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
   {
     variants: {
+      backgroundColor: {
+        enabled: 'bg-grey-00',
+        disabled: 'bg-grey-02',
+      },
       border: {
         square: 'gap-2 rounded p-2',
         rounded: 'rounded-full p-2',
@@ -89,6 +93,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
       className,
       border = 'square',
       borderColor = 'grey-10',
+      disabled,
       ...props
     },
     ref,
@@ -100,9 +105,14 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
         data-border-color={borderColor}
         className={clsx(
           'group',
-          selectTrigger({ border, borderColor }),
+          selectTrigger({
+            border,
+            borderColor,
+            backgroundColor: disabled ? 'disabled' : 'enabled',
+          }),
           className,
         )}
+        disabled={disabled}
         {...props}
       >
         {children}

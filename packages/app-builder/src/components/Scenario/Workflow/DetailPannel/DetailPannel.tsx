@@ -19,6 +19,7 @@ import {
   useSelectedNodes,
   useValidationPayload,
   useWorkflowActions,
+  useWorkflowData,
 } from '../WorkflowProvider';
 import { AddToCaseIfPossibleNode } from './AddToCaseIfPossibleNode';
 import { Checklist } from './Checklist';
@@ -152,6 +153,7 @@ function CreateAllowedNode({ id }: { id: string }) {
 
 function CreateTriggerNode({ id }: { id: string }) {
   const { t } = useTranslation(workflowI18n);
+  const { nonEditableData } = useWorkflowData();
   const { updateNode } = useWorkflowActions();
 
   return (
@@ -170,7 +172,7 @@ function CreateTriggerNode({ id }: { id: string }) {
             onClick={() => {
               updateNode(id, {
                 type: 'decision-created',
-                scenarioId: null,
+                scenarioId: nonEditableData.scenarioId,
                 outcomes: [],
               });
             }}

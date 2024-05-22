@@ -56,6 +56,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     : undefined;
 
   return json({
+    nonEditableData: { scenarioId },
     scenarioName: currentScenario?.name,
     initialWorkflow,
     scenarios,
@@ -95,7 +96,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Workflow() {
-  const { scenarioName, initialWorkflow, scenarios, inboxes } =
+  const { nonEditableData, scenarioName, initialWorkflow, scenarios, inboxes } =
     useLoaderData<typeof loader>();
 
   const fetcher = useFetcher();
@@ -127,7 +128,7 @@ export default function Workflow() {
         </div>
       </Page.Header>
       <WorkflowProvider
-        data={{ scenarios, inboxes }}
+        data={{ scenarios, inboxes, nonEditableData }}
         initialWorkflow={initialWorkflow}
       >
         <div className="grid size-full grid-cols-[2fr_1fr]">

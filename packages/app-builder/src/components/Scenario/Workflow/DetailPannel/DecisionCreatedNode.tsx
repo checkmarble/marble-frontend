@@ -20,7 +20,7 @@ export function DecisionCreatedNode({
   data: DecisionCreatedTrigger;
 }) {
   const { t } = useTranslation(workflowI18n);
-  const { scenarios } = useWorkflowData();
+  const { scenarios, nonEditableData } = useWorkflowData();
   const { updateNode } = useWorkflowActions();
 
   return (
@@ -34,6 +34,7 @@ export function DecisionCreatedNode({
           updateNode(id, { ...data, scenarioId });
         }}
         scenarios={scenarios}
+        disabled={nonEditableData.scenarioId !== null}
       />
       <SelectOutcomes
         selectedOutcomes={data.outcomes}
@@ -49,10 +50,12 @@ function SelectScenario({
   selectedScenarioId,
   onSelectedScenarioIdChange,
   scenarios,
+  disabled,
 }: {
   selectedScenarioId?: string;
   onSelectedScenarioIdChange: (outcomes: string) => void;
   scenarios: Scenario[];
+  disabled?: boolean;
 }) {
   const { t } = useTranslation(workflowI18n);
   const [value, setSearchValue] = React.useState('');
@@ -77,7 +80,7 @@ function SelectScenario({
       <SelectWithCombobox.Label className="text-grey-100 capitalize">
         {t('workflows:detail_pannel.decision_created.scenario.label')}
       </SelectWithCombobox.Label>
-      <SelectWithCombobox.Select>
+      <SelectWithCombobox.Select disabled={disabled}>
         {selectedScenario ? (
           <span className="text-grey-100">{selectedScenario.name}</span>
         ) : (

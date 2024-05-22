@@ -51,6 +51,7 @@ const WorkflowStoreContext = createSimpleContext<StoreApi<WorkflowStore>>(
 );
 
 interface WorkflowDataContext {
+  nonEditableData: { scenarioId: string | null };
   scenarios: Scenario[];
   inboxes: Inbox[];
 }
@@ -174,8 +175,9 @@ export function WorkflowProvider({
     () => ({
       inboxes: data.inboxes,
       scenarios: data.scenarios,
+      nonEditableData: data.nonEditableData,
     }),
-    [data.inboxes, data.scenarios],
+    [data.inboxes, data.nonEditableData, data.scenarios],
   );
 
   return (
