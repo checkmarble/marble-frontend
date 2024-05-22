@@ -1,4 +1,5 @@
 import {
+  CursorPaginationButtons,
   DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
@@ -8,7 +9,6 @@ import {
   DecisionsList,
   ErrorComponent,
   Page,
-  PaginationButtons,
   paginationSchema,
   useDecisionRightPanelContext,
   useSelectedDecisionIds,
@@ -166,7 +166,7 @@ export default function Decisions() {
                 selectable
                 selectionProps={selectionProps}
               />
-              <PaginationButtons
+              <CursorPaginationButtons
                 items={decisions}
                 onPaginationChange={(paginationParams: PaginationParams) =>
                   navigateDecisionList(filters, paginationParams)

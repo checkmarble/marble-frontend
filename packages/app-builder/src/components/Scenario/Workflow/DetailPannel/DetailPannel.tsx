@@ -12,10 +12,12 @@ import {
   type TriggerData,
   useTitleInfo,
 } from '../models/nodes';
+import { type ValidWorkflow } from '../models/valitation';
 import { workflowI18n } from '../workflow-i18n';
 import {
   useCreateNodeType,
   useSelectedNodes,
+  useValidationPayload,
   useWorkflowActions,
 } from '../WorkflowProvider';
 import { AddToCaseIfPossibleNode } from './AddToCaseIfPossibleNode';
@@ -23,14 +25,42 @@ import { Checklist } from './Checklist';
 import { CreateCaseNode } from './CreateCaseNode';
 import { DecisionCreatedNode } from './DecisionCreatedNode';
 
-export function DetailPannel() {
+interface DetailPannelProps {
+  onSave: (validWorkflow: ValidWorkflow) => void;
+  onDelete: () => void;
+}
+
+export function DetailPannel({ onSave, onDelete }: DetailPannelProps) {
+  const { t } = useTranslation(workflowI18n);
+  const validationPayload = useValidationPayload();
+
+  const saveWorkflow = () => {
+    if (!validationPayload.isValid) return;
+    onSave(validationPayload.value);
+  };
+
   return (
     <div className="border-grey-10 bg-grey-00 flex h-full flex-col overflow-hidden border-l">
-      <ScrollAreaV2 type="auto">
+      <ScrollAreaV2 type="auto" className="flex-1">
         <div className="flex h-full flex-col gap-4 p-6">
           <DetailPannelContent />
         </div>
       </ScrollAreaV2>
+      <Separator className="bg-grey-10" />
+      <div className="flex items-center justify-center gap-4 p-4">
+        <Button
+          className="w-full"
+          disabled={!validationPayload.isValid}
+          onClick={saveWorkflow}
+        >
+          <Icon icon="rule-settings" className="size-6" />
+          {t('common:save')}
+        </Button>
+        <Button className="w-full" color="red" onClick={onDelete}>
+          <Icon icon="delete" className="size-6" />
+          {t('common:delete')}
+        </Button>
+      </div>
     </div>
   );
 }

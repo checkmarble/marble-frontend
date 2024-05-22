@@ -2,6 +2,8 @@ import {
   type PaginatedResponse,
   type PaginationParams,
 } from '@app-builder/models/pagination';
+import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import { type Table } from '@tanstack/react-table';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -20,17 +22,17 @@ type ItemWithId = {
   id: string;
 };
 
-type PaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
+type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
   onPaginationChange: (paginationParams: PaginationParams) => void;
 };
 
-export const PaginationButtons = ({
+export function CursorPaginationButtons({
   items,
   totalCount: { value: total, isMaxCount },
   startIndex,
   endIndex,
   onPaginationChange,
-}: PaginationsButtonsProps) => {
+}: CursorPaginationsButtonsProps) {
   const { t } = useTranslation(['common']);
   const start = Math.min(startIndex, endIndex);
   const end = Math.max(startIndex, endIndex);
@@ -82,4 +84,62 @@ export const PaginationButtons = ({
       </Button>
     </div>
   );
-};
+}
+
+interface OffsetPaginationButtonsProps {
+  previousPage: () => void;
+  canPreviousPage: boolean;
+  nextPage: () => void;
+  canNextPage: boolean;
+  currentPage: number;
+  pageCount: number;
+}
+
+export function OffsetPaginationButtons({
+  previousPage,
+  canPreviousPage,
+  nextPage,
+  canNextPage,
+  currentPage,
+  pageCount,
+}: OffsetPaginationButtonsProps) {
+  const { t } = useTranslation(['common']);
+  const language = useFormatLanguage();
+
+  return (
+    <div className="flex items-center justify-end gap-2">
+      <Trans
+        t={t}
+        i18nKey="common:page_displayed_of_total"
+        components={{ PageCount: <span style={{ fontWeight: 'bold' }} /> }}
+        values={{
+          currentPage: formatNumber(currentPage, { language }),
+          pageCount: formatNumber(pageCount, { language }),
+        }}
+      />
+      <Button
+        onClick={previousPage}
+        variant="secondary"
+        disabled={canPreviousPage}
+      >
+        <Icon icon="arrow-left" className="size-4" />
+      </Button>
+      <Button onClick={nextPage} variant="secondary" disabled={canNextPage}>
+        <Icon icon="arrow-right" className="size-4" />
+      </Button>
+    </div>
+  );
+}
+
+export function adaptOffsetPaginationButtonsProps<T>(
+  table: Table<T>,
+): OffsetPaginationButtonsProps {
+  return {
+    previousPage: () => table.previousPage(),
+    canPreviousPage: !table.getCanPreviousPage(),
+    nextPage: () => table.nextPage(),
+    canNextPage: !table.getCanNextPage(),
+    currentPage: table.getState().pagination.pageIndex + 1,
+    pageCount: table.getPageCount(),
+  };
+}

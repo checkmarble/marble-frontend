@@ -14,14 +14,17 @@ import {
   type Node,
   type NodeChange,
 } from 'reactflow';
+import { assertNever } from 'typescript-utils';
 import { createStore, type StoreApi, useStore } from 'zustand';
 
 import {
   adaptNodeType,
+  createNode,
   type EmptyNodeData,
   isTriggerData,
   type NodeData,
 } from './models/nodes';
+import { type ValidWorkflow } from './models/valitation';
 import { validateWorkflow } from './validate';
 
 interface WorkflowState {
@@ -58,13 +61,20 @@ const WorkflowDataContext = createSimpleContext<WorkflowDataContext>(
 
 export const useWorkflowData = WorkflowDataContext.useValue;
 
+interface WorkflowProviderProps {
+  children: React.ReactNode;
+  data: WorkflowDataContext;
+  initialWorkflow?: ValidWorkflow;
+}
+
 export function WorkflowProvider({
   children,
   data,
-}: { children: React.ReactNode } & { data: WorkflowDataContext }) {
+  initialWorkflow,
+}: WorkflowProviderProps) {
   const [store] = React.useState(() =>
     createStore<WorkflowStore>((set, get) => ({
-      ...createInitialState(),
+      ...createInitialState(initialWorkflow),
       actions: {
         onNodesChange(changes) {
           const nodes = applyNodeChanges(changes, get().nodes);
@@ -210,13 +220,48 @@ function shouldCreateEmptyNode(
   return true;
 }
 
-function createInitialState(): WorkflowState {
-  const emptyNode = createEmptyNode();
-  emptyNode.selected = true;
-  return {
-    nodes: [emptyNode],
-    edges: [],
-  };
+function createInitialState(initialWorkflow?: ValidWorkflow): WorkflowState {
+  if (!initialWorkflow) {
+    const emptyNode = createEmptyNode();
+    emptyNode.selected = true;
+    return {
+      nodes: [emptyNode],
+      edges: [],
+    };
+  }
+
+  switch (initialWorkflow.type) {
+    case 'CREATE_CASE':
+    case 'ADD_TO_CASE_IF_POSSIBLE': {
+      const triggerNode = createNode({
+        type: 'decision-created',
+        ...initialWorkflow.trigger,
+      });
+
+      const actionNode = createNode({
+        type:
+          initialWorkflow.type === 'CREATE_CASE'
+            ? 'create-case'
+            : 'add-to-case-if-possible',
+        ...initialWorkflow.action,
+      });
+
+      return {
+        nodes: [triggerNode, actionNode],
+        edges: addEdge(
+          {
+            source: triggerNode.id,
+            target: actionNode.id,
+            sourceHandle: null,
+            targetHandle: null,
+          },
+          [],
+        ),
+      };
+    }
+    default:
+      assertNever('Unknown workflow', initialWorkflow);
+  }
 }
 
 function useWorkflowStore<Out>(selector: (state: WorkflowStore) => Out) {
