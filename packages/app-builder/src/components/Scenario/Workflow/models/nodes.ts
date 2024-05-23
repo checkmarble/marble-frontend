@@ -1,5 +1,7 @@
 import { type Outcome } from 'marble-api';
+import { nanoid } from 'nanoid';
 import { useTranslation } from 'react-i18next';
+import { type Node } from 'reactflow';
 import { assertNever } from 'typescript-utils';
 import { type IconName } from 'ui-icons';
 
@@ -11,10 +13,16 @@ export interface DecisionCreatedTrigger {
   outcomes: Outcome[];
 }
 
+export function isDecisionCreatedTrigger(
+  data: NodeData,
+): data is DecisionCreatedTrigger {
+  return data.type === 'decision-created';
+}
+
 export type TriggerData = DecisionCreatedTrigger;
 
 export function isTriggerData(data: NodeData): data is TriggerData {
-  return data.type === 'decision-created';
+  return isDecisionCreatedTrigger(data);
 }
 
 export interface CreateCaseAction {
@@ -22,15 +30,25 @@ export interface CreateCaseAction {
   inboxId: string | null;
 }
 
+export function isCreateCaseAction(data: NodeData): data is CreateCaseAction {
+  return data.type === 'create-case';
+}
+
 export interface AddToCaseIfPossibleAction {
   type: 'add-to-case-if-possible';
   inboxId: string | null;
 }
 
+export function isAddToCaseIfPossibleAction(
+  data: NodeData,
+): data is AddToCaseIfPossibleAction {
+  return data.type === 'add-to-case-if-possible';
+}
+
 export type ActionData = CreateCaseAction | AddToCaseIfPossibleAction;
 
 export function isActionData(data: NodeData): data is ActionData {
-  return data.type === 'create-case' || data.type === 'add-to-case-if-possible';
+  return isCreateCaseAction(data) || isAddToCaseIfPossibleAction(data);
 }
 
 export interface EmptyNodeData {
@@ -42,6 +60,12 @@ export function isEmptyNodeData(data: NodeData): data is EmptyNodeData {
 }
 
 export type NodeData = TriggerData | ActionData | EmptyNodeData;
+
+export function isTriggerOrActionData(
+  data: NodeData,
+): data is TriggerData | ActionData {
+  return isTriggerData(data) || isActionData(data);
+}
 
 export function useTitleInfo(data: TriggerData | ActionData): {
   icon: IconName;
@@ -80,4 +104,34 @@ export function useTitleInfo(data: TriggerData | ActionData): {
     }
   }
   assertNever('Unknown NodeData', data);
+}
+
+export type NodeType = 'trigger' | 'action' | 'empty_node';
+
+export function adaptNodeType(nodeData: NodeData): NodeType {
+  if (isTriggerData(nodeData)) {
+    return 'trigger';
+  }
+  if (isActionData(nodeData)) {
+    return 'action';
+  }
+  if (isEmptyNodeData(nodeData)) {
+    return 'empty_node';
+  }
+  assertNever('Unknown node data type', nodeData);
+}
+
+export function createNode<Data extends NodeData>(nodeData: Data): Node<Data> {
+  return {
+    id: nanoid(6),
+    type: adaptNodeType(nodeData),
+    data: nodeData,
+    position: { x: 0, y: 0 },
+  };
+}
+
+export function createEmptyNode(): Node<EmptyNodeData> {
+  return createNode({
+    type: 'empty-node',
+  });
 }

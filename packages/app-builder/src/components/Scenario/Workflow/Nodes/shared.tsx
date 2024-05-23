@@ -9,7 +9,7 @@ import {
   type ActionData,
   type TriggerData,
   useTitleInfo,
-} from '../models/node-data';
+} from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import {
   useIsSourceConnectable,

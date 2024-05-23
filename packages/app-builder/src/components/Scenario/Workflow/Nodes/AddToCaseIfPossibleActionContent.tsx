@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { type AddToCaseIfPossibleAction } from '../models/node-data';
+import { type AddToCaseIfPossibleAction } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowData } from '../WorkflowProvider';
 

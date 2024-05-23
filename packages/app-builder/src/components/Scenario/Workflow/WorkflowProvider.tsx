@@ -17,11 +17,12 @@ import {
 import { createStore, type StoreApi, useStore } from 'zustand';
 
 import {
+  adaptNodeType,
   type EmptyNodeData,
   isTriggerData,
   type NodeData,
-} from './models/node-data';
-import { adaptNodeType } from './models/node-types';
+} from './models/nodes';
+import { validateWorkflow } from './validate';
 
 interface WorkflowState {
   nodes: Node<NodeData>[];
@@ -34,6 +35,7 @@ interface WorkflowActions {
   onConnect(this: void, connection: Connection): void;
   updateNode(this: void, id: string, data: NodeData): void;
   addEmptyNode(this: void, parentId?: string): void;
+  selectNode(this: void, id: string): void;
   clearSelection(this: void): void;
 }
 
@@ -94,6 +96,22 @@ export function WorkflowProvider({
                 data: { ...node.data, ...data },
               };
             }),
+          });
+        },
+        selectNode: (id) => {
+          const prevNodes = get().nodes;
+          const prevEdges = get().edges;
+
+          const nodes = clearSelection(prevNodes).map((node) => {
+            if (node.id === id) {
+              return { ...node, selected: true };
+            }
+            return node;
+          });
+
+          set({
+            nodes,
+            edges: clearSelection(prevEdges),
           });
         },
         clearSelection: () => {
@@ -210,6 +228,12 @@ export function useNodes() {
   return useWorkflowStore((state) => state.nodes);
 }
 
+export function useNodeData(nodeId: string) {
+  return useWorkflowStore(
+    (state) => state.nodes.find((node) => node.id === nodeId)?.data,
+  );
+}
+
 export function useEdges() {
   return useWorkflowStore((state) => state.edges);
 }
@@ -248,4 +272,10 @@ export function useCreateNodeType(nodeId: string) {
 
 export function useWorkflowActions() {
   return useWorkflowStore((state) => state.actions);
+}
+
+export function useValidationPayload() {
+  return useWorkflowStore((state) =>
+    validateWorkflow(state.nodes, state.edges),
+  );
 }

@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
 import { useTranslation } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
-import { Button, Separator, Tag } from 'ui-design-system';
+import { Button, ScrollAreaV2, Separator, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import {
@@ -11,7 +11,7 @@ import {
   isTriggerData,
   type TriggerData,
   useTitleInfo,
-} from '../models/node-data';
+} from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import {
   useCreateNodeType,
@@ -19,13 +19,18 @@ import {
   useWorkflowActions,
 } from '../WorkflowProvider';
 import { AddToCaseIfPossibleNode } from './AddToCaseIfPossibleNode';
+import { Checklist } from './Checklist';
 import { CreateCaseNode } from './CreateCaseNode';
 import { DecisionCreatedNode } from './DecisionCreatedNode';
 
 export function DetailPannel() {
   return (
-    <div className="border-grey-10 bg-grey-00 flex h-full flex-col gap-4 border-l p-6">
-      <DetailPannelContent />
+    <div className="border-grey-10 bg-grey-00 flex h-full flex-col overflow-hidden border-l">
+      <ScrollAreaV2 type="auto">
+        <div className="flex h-full flex-col gap-4 p-6">
+          <DetailPannelContent />
+        </div>
+      </ScrollAreaV2>
     </div>
   );
 }
@@ -80,6 +85,8 @@ function NoSelectedNodes() {
       <p className="text-s text-grey-100">
         {t('workflows:detail_pannel.no_selected_nodes.description')}
       </p>
+      <Separator className="bg-grey-10" />
+      <Checklist />
     </>
   );
 }

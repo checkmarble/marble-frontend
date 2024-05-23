@@ -33,5 +33,21 @@
   "detail_pannel.add_to_case_if_possible.description": "In the selected inbox, if an open case matches the decision’s pivot value, add the decision to it. If no matching case is found, a new case will be created with a default name.",
   "detail_pannel.add_to_case_if_possible.inbox.label": "Inbox",
   "detail_pannel.add_to_case_if_possible.inbox.placeholder": "Select an inbox",
-  "detail_pannel.add_to_case_if_possible.default_name.helper": "If no matching case is found, the created case name should follow this template:"
+  "detail_pannel.add_to_case_if_possible.default_name.helper": "If no matching case is found, the created case name should follow this template:",
+  "detail_pannel.checklist.title": "Checklist",
+  "detail_pannel.checklist.description": "Make sure all issues are resolved before saving the workflow.",
+  "detail_pannel.checklist.no_issues": "No issues found",
+  "detail_pannel.checklist.error.global.title": "Workflow issues",
+  "detail_pannel.checklist.error.global.scope": "global",
+  "detail_pannel.checklist.error.global.missing_trigger_node": "Add a trigger to start the workflow.",
+  "detail_pannel.checklist.error.global.multiple_trigger_nodes": "Only one trigger is allowed in the workflow.",
+  "detail_pannel.checklist.error.global.empty_nodes": "Configure or remove empty nodes.",
+  "detail_pannel.checklist.error.global.graph_loop": "Remove the loop in the workflow.",
+  "detail_pannel.checklist.error.node.select_this_node": "Select this node to see details.",
+  "detail_pannel.checklist.error.node.invalid_node_config": "This step is not configured correctly.",
+  "detail_pannel.checklist.error.node.not_connected_to_trigger": "This step is not connected to the trigger.",
+  "detail_pannel.checklist.error.node.multiple_outgoing_nodes": "This step has multiple outgoing connections.",
+  "detail_pannel.checklist.error.node.missing_outgoing_node": "This step is missing an outgoing connection.",
+  "detail_pannel.checklist.error.node.wrong_outgoing_node": "This step is connected to a wrong node.",
+  "detail_pannel.checklist.error.node.no_outgoing_node_required": "This step should not have an outgoing connection."
 }
