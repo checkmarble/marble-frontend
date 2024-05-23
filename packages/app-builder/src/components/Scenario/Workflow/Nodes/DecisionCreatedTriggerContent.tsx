@@ -2,7 +2,7 @@ import { Outcome } from '@app-builder/components/Decisions';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { type DecisionCreatedTrigger } from '../models/node-data';
+import { type DecisionCreatedTrigger } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowData } from '../WorkflowProvider';
 
