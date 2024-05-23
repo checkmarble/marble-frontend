@@ -1,14 +1,10 @@
 import { Callout } from '@app-builder/components/Callout';
-import { Highlight } from '@app-builder/components/Highlight';
-import { type Inbox } from '@app-builder/models/inbox';
-import { matchSorter } from 'match-sorter';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, SelectWithCombobox } from 'ui-design-system';
 
 import { type CreateCaseAction } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
+import { SelectInbox } from './SelectInbox';
 import { defaultCaseName } from './shared';
 
 export function CreateCaseNode({
@@ -25,7 +21,7 @@ export function CreateCaseNode({
   return (
     <>
       <Callout>{t('workflows:detail_panel.create_case.description')}</Callout>
-      <SelectScenario
+      <SelectInbox
         selectedInboxId={data.inboxId ?? undefined}
         onSelectedInboxIdChange={(inboxId) => {
           updateNode(id, { ...data, inboxId });
@@ -41,69 +37,5 @@ export function CreateCaseNode({
         </span>
       </p>
     </>
-  );
-}
-
-function SelectScenario({
-  selectedInboxId,
-  onSelectedInboxIdChange,
-  inboxes,
-}: {
-  selectedInboxId?: string;
-  onSelectedInboxIdChange: (outcomes: string) => void;
-  inboxes: Inbox[];
-}) {
-  const { t } = useTranslation(workflowI18n);
-  const [value, setSearchValue] = React.useState('');
-  const searchValue = React.useDeferredValue(value);
-
-  const selectedInbox = React.useMemo(
-    () => inboxes.find((inbox) => inbox.id === selectedInboxId),
-    [selectedInboxId, inboxes],
-  );
-
-  const matches = React.useMemo(
-    () => matchSorter(inboxes, searchValue, { keys: ['name'] }),
-    [searchValue, inboxes],
-  );
-
-  return (
-    <SelectWithCombobox.Root
-      onSearchValueChange={setSearchValue}
-      selectedValue={selectedInboxId}
-      onSelectedValueChange={onSelectedInboxIdChange}
-    >
-      <SelectWithCombobox.Label className="text-grey-100 capitalize">
-        {t('workflows:detail_panel.create_case.inbox.label')}
-      </SelectWithCombobox.Label>
-      <SelectWithCombobox.Select>
-        {selectedInbox ? (
-          <span className="text-grey-100">{selectedInbox.name}</span>
-        ) : (
-          <span className="text-grey-25">
-            {t('workflows:detail_panel.create_case.inbox.placeholder')}
-          </span>
-        )}
-        <SelectWithCombobox.Arrow />
-      </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover
-        className="flex flex-col gap-2 p-2"
-        fitViewport
-      >
-        <SelectWithCombobox.Combobox render={<Input />} />
-        <SelectWithCombobox.ComboboxList className="max-h-40">
-          {matches.map((scenario) => {
-            return (
-              <SelectWithCombobox.ComboboxItem
-                key={scenario.id}
-                value={scenario.id}
-              >
-                <Highlight text={scenario.name} query={searchValue} />
-              </SelectWithCombobox.ComboboxItem>
-            );
-          })}
-        </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Popover>
-    </SelectWithCombobox.Root>
   );
 }
