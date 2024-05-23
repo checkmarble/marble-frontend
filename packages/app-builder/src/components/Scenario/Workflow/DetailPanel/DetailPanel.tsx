@@ -1,7 +1,13 @@
 import { Callout } from '@app-builder/components/Callout';
 import { useTranslation } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
-import { Button, ScrollAreaV2, Separator, Tag } from 'ui-design-system';
+import {
+  Button,
+  ModalV2,
+  ScrollAreaV2,
+  Separator,
+  Tag,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import {
@@ -49,6 +55,42 @@ export function DetailPanel({ onSave, onDelete }: DetailPanelProps) {
       </ScrollAreaV2>
       <Separator className="bg-grey-10" />
       <div className="flex items-center justify-center gap-4 p-4">
+        <ModalV2.Root>
+          <ModalV2.Trigger render={<Button className="w-full" color="red" />}>
+            <Icon icon="delete" className="size-6" />
+            {t('common:delete')}
+          </ModalV2.Trigger>
+          <ModalV2.Content>
+            <ModalV2.Title>
+              {t('workflows:detail_panel.confirm_delete_workflow.title')}
+            </ModalV2.Title>
+            <div className="flex flex-col gap-6 p-6">
+              <ModalV2.Description>
+                {t(
+                  'workflows:detail_panel.confirm_delete_workflow.description',
+                )}
+              </ModalV2.Description>
+              <div className="flex flex-1 flex-row gap-4">
+                <ModalV2.Close
+                  render={
+                    <Button
+                      className="flex-1"
+                      variant="secondary"
+                      name="cancel"
+                    />
+                  }
+                >
+                  {t('common:cancel')}
+                </ModalV2.Close>
+                <Button className="flex-1" color="red" onClick={onDelete}>
+                  <Icon icon="delete" className="size-6" />
+                  {t('common:delete')}
+                </Button>
+              </div>
+            </div>
+          </ModalV2.Content>
+        </ModalV2.Root>
+
         <Button
           className="w-full"
           disabled={!validationPayload.isValid}
@@ -56,10 +98,6 @@ export function DetailPanel({ onSave, onDelete }: DetailPanelProps) {
         >
           <Icon icon="rule-settings" className="size-6" />
           {t('common:save')}
-        </Button>
-        <Button className="w-full" color="red" onClick={onDelete}>
-          <Icon icon="delete" className="size-6" />
-          {t('common:delete')}
         </Button>
       </div>
     </div>

@@ -55,6 +55,8 @@
   "detail_panel.checklist.error.node.missing_outgoing_node": "This step is missing an outgoing connection.",
   "detail_panel.checklist.error.node.wrong_outgoing_node": "This step is connected to a wrong node.",
   "detail_panel.checklist.error.node.no_outgoing_node_required": "This step should not have an outgoing connection.",
+  "detail_panel.confirm_delete_workflow.title": "Delete workflow",
+  "detail_panel.confirm_delete_workflow.description": "Are you sure you want to delete this workflow?",
   "toast.success.create_workflow": "Workflow created successfully.",
   "toast.success.delete_workflow": "Workflow deleted successfully."
 }
