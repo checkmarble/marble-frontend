@@ -52,7 +52,7 @@ export function SelectInbox({
       onSelectedValueChange={onSelectedInboxIdChange}
     >
       <SelectWithCombobox.Label className="text-grey-100 capitalize">
-        {t('workflows:detail_panel.inbox.label')}
+        {t('workflows:detail_panel.inbox.label')}*
       </SelectWithCombobox.Label>
       <SelectWithCombobox.Select>
         {selectedInbox ? (

@@ -78,7 +78,7 @@ function SelectScenario({
       onSelectedValueChange={onSelectedScenarioIdChange}
     >
       <SelectWithCombobox.Label className="text-grey-100 capitalize">
-        {t('workflows:detail_panel.decision_created.scenario.label')}
+        {t('workflows:detail_panel.decision_created.scenario.label')}*
       </SelectWithCombobox.Label>
       <SelectWithCombobox.Select disabled={disabled}>
         {selectedScenario ? (
@@ -136,7 +136,7 @@ function SelectOutcomes({
       onSelectedValueChange={onSelectedOutcomesChange}
     >
       <SelectWithCombobox.Label className="text-grey-100 capitalize">
-        {t('workflows:detail_panel.decision_created.outcomes.label')}
+        {t('workflows:detail_panel.decision_created.outcomes.label')}*
       </SelectWithCombobox.Label>
       <SelectWithCombobox.Select>
         {selectedOutcomes.length > 0 ? (
