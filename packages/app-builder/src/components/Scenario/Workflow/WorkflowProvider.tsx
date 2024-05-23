@@ -23,6 +23,7 @@ import {
   type EmptyNodeData,
   isTriggerData,
   type NodeData,
+  type NodeType,
 } from './models/nodes';
 import { type ValidWorkflow } from './models/validation';
 import { validateWorkflow } from './validate';
@@ -285,13 +286,18 @@ export function useEdges() {
   return useWorkflowStore((state) => state.edges);
 }
 
+const nonConnectableNodeDataTypes: NodeData['type'][] = [
+  'add-to-case-if-possible',
+  'create-case',
+];
 export function useIsSourceConnectable({ nodeId }: { nodeId: string }) {
-  const edges = useWorkflowStore((state) => state.edges);
-
-  return React.useMemo(
-    () => !edges.some((edge) => edge.source === nodeId),
-    [edges, nodeId],
-  );
+  return useWorkflowStore((state) => {
+    const nodeType = state.nodes.find((node) => node.id === nodeId)?.data.type;
+    if (nodeType && nonConnectableNodeDataTypes.includes(nodeType)) {
+      return false;
+    }
+    return !state.edges.some((edge) => edge.source === nodeId);
+  });
 }
 
 export function useSelectedNodes() {

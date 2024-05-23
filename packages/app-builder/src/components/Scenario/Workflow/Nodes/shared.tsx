@@ -13,6 +13,7 @@ import {
 import { workflowI18n } from '../workflow-i18n';
 import {
   useIsSourceConnectable,
+  useValidationPayload,
   useWorkflowActions,
 } from '../WorkflowProvider';
 
