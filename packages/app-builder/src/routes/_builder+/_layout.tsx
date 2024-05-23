@@ -138,6 +138,15 @@ export default function Builder() {
                           )}
                         />
                       </li>
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:workflows"
+                          to={getRoute('/workflows/')}
+                          Icon={(props) => (
+                            <Icon icon="rule-settings" {...props} />
+                          )}
+                        />
+                      </li>
                       {user.permissions.canReadAnalytics ? (
                         <li>
                           <SidebarLink
@@ -149,15 +158,6 @@ export default function Builder() {
                           />
                         </li>
                       ) : null}
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:workflows"
-                          to={getRoute('/workflows/')}
-                          Icon={(props) => (
-                            <Icon icon="rule-settings" {...props} />
-                          )}
-                        />
-                      </li>
                     </ul>
                   </nav>
                 </ScrollArea.Viewport>
