@@ -6,27 +6,25 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { type AddToCaseIfPossibleAction } from '../models/nodes';
+import { type CreateCaseAction } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
 import { defaultCaseName } from './shared';
 
-export function AddToCaseIfPossibleNode({
+export function CreateCaseNode({
   id,
   data,
 }: {
   id: string;
-  data: AddToCaseIfPossibleAction;
+  data: CreateCaseAction;
 }) {
   const { t } = useTranslation(workflowI18n);
-  const { inboxes } = useWorkflowData();
   const { updateNode } = useWorkflowActions();
+  const { inboxes } = useWorkflowData();
 
   return (
     <>
-      <Callout>
-        {t('workflows:detail_pannel.add_to_case_if_possible.description')}
-      </Callout>
+      <Callout>{t('workflows:detail_panel.create_case.description')}</Callout>
       <SelectScenario
         selectedInboxId={data.inboxId ?? undefined}
         onSelectedInboxIdChange={(inboxId) => {
@@ -36,9 +34,7 @@ export function AddToCaseIfPossibleNode({
       />
       <p className="flex flex-col gap-2">
         <span className="whitespace-pre-wrap">
-          {t(
-            'workflows:detail_pannel.add_to_case_if_possible.default_name.helper',
-          )}
+          {t('workflows:detail_panel.create_case.default_name.helper')}
         </span>
         <span className="text-s border-grey-10 text-grey-50 bg-grey-02 rounded border p-2">
           {defaultCaseName}
@@ -78,16 +74,14 @@ function SelectScenario({
       onSelectedValueChange={onSelectedInboxIdChange}
     >
       <SelectWithCombobox.Label className="text-grey-100 capitalize">
-        {t('workflows:detail_pannel.add_to_case_if_possible.inbox.label')}
+        {t('workflows:detail_panel.create_case.inbox.label')}
       </SelectWithCombobox.Label>
       <SelectWithCombobox.Select>
         {selectedInbox ? (
           <span className="text-grey-100">{selectedInbox.name}</span>
         ) : (
           <span className="text-grey-25">
-            {t(
-              'workflows:detail_pannel.add_to_case_if_possible.inbox.placeholder',
-            )}
+            {t('workflows:detail_panel.create_case.inbox.placeholder')}
           </span>
         )}
         <SelectWithCombobox.Arrow />

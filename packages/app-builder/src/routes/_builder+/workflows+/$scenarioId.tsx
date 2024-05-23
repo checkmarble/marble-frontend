@@ -1,6 +1,6 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { DetailPannel } from '@app-builder/components/Scenario/Workflow/DetailPannel/DetailPannel';
+import { DetailPanel } from '@app-builder/components/Scenario/Workflow/DetailPanel/DetailPanel';
 import {
   adaptScenarioUpdateWorkflowInput,
   adaptValidWorkflow,
@@ -133,7 +133,7 @@ export default function Workflow() {
       >
         <div className="grid size-full grid-cols-[2fr_1fr]">
           <WorkflowFlow />
-          <DetailPannel onDelete={deleteWorkflow} onSave={saveWorkflow} />
+          <DetailPanel onDelete={deleteWorkflow} onSave={saveWorkflow} />
         </div>
       </WorkflowProvider>
     </Page.Container>

@@ -26,12 +26,12 @@ import { Checklist } from './Checklist';
 import { CreateCaseNode } from './CreateCaseNode';
 import { DecisionCreatedNode } from './DecisionCreatedNode';
 
-interface DetailPannelProps {
+interface DetailPanelProps {
   onSave: (validWorkflow: ValidWorkflow) => void;
   onDelete: () => void;
 }
 
-export function DetailPannel({ onSave, onDelete }: DetailPannelProps) {
+export function DetailPanel({ onSave, onDelete }: DetailPanelProps) {
   const { t } = useTranslation(workflowI18n);
   const validationPayload = useValidationPayload();
 
@@ -44,7 +44,7 @@ export function DetailPannel({ onSave, onDelete }: DetailPannelProps) {
     <div className="border-grey-10 bg-grey-00 flex h-full flex-col overflow-hidden border-l">
       <ScrollAreaV2 type="auto" className="flex-1">
         <div className="flex h-full flex-col gap-4 p-6">
-          <DetailPannelContent />
+          <DetailPanelContent />
         </div>
       </ScrollAreaV2>
       <Separator className="bg-grey-10" />
@@ -66,7 +66,7 @@ export function DetailPannel({ onSave, onDelete }: DetailPannelProps) {
   );
 }
 
-function DetailPannelContent() {
+function DetailPanelContent() {
   const selectedNodes = useSelectedNodes();
 
   if (selectedNodes.length > 1) {
@@ -111,10 +111,10 @@ function NoSelectedNodes() {
   return (
     <>
       <p className="text-l text-grey-100 font-medium">
-        {t('workflows:detail_pannel.no_selected_nodes.title')}
+        {t('workflows:detail_panel.no_selected_nodes.title')}
       </p>
       <p className="text-s text-grey-100">
-        {t('workflows:detail_pannel.no_selected_nodes.description')}
+        {t('workflows:detail_panel.no_selected_nodes.description')}
       </p>
       <Separator className="bg-grey-10" />
       <Checklist />
@@ -129,13 +129,13 @@ function MultipleSelectedNodes() {
   return (
     <>
       <p className="text-l text-grey-100 font-medium">
-        {t('workflows:detail_pannel.multiple_selected_nodes.title')}
+        {t('workflows:detail_panel.multiple_selected_nodes.title')}
       </p>
       <p className="text-s text-grey-100">
-        {t('workflows:detail_pannel.multiple_selected_nodes.description')}
+        {t('workflows:detail_panel.multiple_selected_nodes.description')}
       </p>
       <Button onClick={clearSelection}>
-        {t('workflows:detail_pannel.multiple_selected_nodes.clear_selection')}
+        {t('workflows:detail_panel.multiple_selected_nodes.clear_selection')}
       </Button>
     </>
   );
@@ -159,11 +159,11 @@ function CreateTriggerNode({ id }: { id: string }) {
   return (
     <>
       <p className="text-l text-grey-100 font-medium">
-        {t('workflows:detail_pannel.create_trigger_node.title')}
+        {t('workflows:detail_panel.create_trigger_node.title')}
       </p>
       <Callout>
         <p className="text-s text-grey-100">
-          {t('workflows:detail_pannel.create_trigger_node.description')}
+          {t('workflows:detail_panel.create_trigger_node.description')}
         </p>
       </Callout>
       <ul className="flex w-full list-inside list-none flex-col gap-2">
@@ -192,11 +192,11 @@ function CreateActionNode({ id }: { id: string }) {
   return (
     <>
       <p className="text-l text-grey-100 font-medium">
-        {t('workflows:detail_pannel.create_action_node.title')}
+        {t('workflows:detail_panel.create_action_node.title')}
       </p>
       <Callout>
         <p className="text-s text-grey-100">
-          {t('workflows:detail_pannel.create_action_node.description')}
+          {t('workflows:detail_panel.create_action_node.description')}
         </p>
       </Callout>
       <ul className="flex w-full list-inside list-none flex-col gap-2">

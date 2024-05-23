@@ -26,7 +26,7 @@ export function DecisionCreatedNode({
   return (
     <>
       <Callout>
-        {t('workflows:detail_pannel.decision_created.description')}
+        {t('workflows:detail_panel.decision_created.description')}
       </Callout>
       <SelectScenario
         selectedScenarioId={data.scenarioId ?? undefined}
@@ -78,14 +78,14 @@ function SelectScenario({
       onSelectedValueChange={onSelectedScenarioIdChange}
     >
       <SelectWithCombobox.Label className="text-grey-100 capitalize">
-        {t('workflows:detail_pannel.decision_created.scenario.label')}
+        {t('workflows:detail_panel.decision_created.scenario.label')}
       </SelectWithCombobox.Label>
       <SelectWithCombobox.Select disabled={disabled}>
         {selectedScenario ? (
           <span className="text-grey-100">{selectedScenario.name}</span>
         ) : (
           <span className="text-grey-25">
-            {t('workflows:detail_pannel.decision_created.scenario.placeholder')}
+            {t('workflows:detail_panel.decision_created.scenario.placeholder')}
           </span>
         )}
         <SelectWithCombobox.Arrow />
@@ -136,7 +136,7 @@ function SelectOutcomes({
       onSelectedValueChange={onSelectedOutcomesChange}
     >
       <SelectWithCombobox.Label className="text-grey-100 capitalize">
-        {t('workflows:detail_pannel.decision_created.outcomes.label')}
+        {t('workflows:detail_panel.decision_created.outcomes.label')}
       </SelectWithCombobox.Label>
       <SelectWithCombobox.Select>
         {selectedOutcomes.length > 0 ? (
@@ -152,7 +152,7 @@ function SelectOutcomes({
           </div>
         ) : (
           <span className="text-grey-25">
-            {t('workflows:detail_pannel.decision_created.outcomes.placeholder')}
+            {t('workflows:detail_panel.decision_created.outcomes.placeholder')}
           </span>
         )}
         <SelectWithCombobox.Arrow />

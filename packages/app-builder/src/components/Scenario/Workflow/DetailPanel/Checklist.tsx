@@ -32,8 +32,8 @@ export function Checklist() {
       <div className="border-grey-10 flex w-full flex-col gap-4 rounded-xl border p-4">
         <Title
           icon="rule-settings"
-          title={t('workflows:detail_pannel.checklist.error.global.title')}
-          scope={t('workflows:detail_pannel.checklist.error.global.scope')}
+          title={t('workflows:detail_panel.checklist.error.global.title')}
+          scope={t('workflows:detail_panel.checklist.error.global.scope')}
         />
         <Separator className="bg-grey-10" />
         <div className="flex flex-row items-center gap-2">
@@ -42,7 +42,7 @@ export function Checklist() {
             className="size-6 shrink-0 rounded-full text-green-100"
           />
           <span className="text-green-50">
-            {t('workflows:detail_pannel.checklist.no_issues')}
+            {t('workflows:detail_panel.checklist.no_issues')}
           </span>
         </div>
       </div>
@@ -64,10 +64,10 @@ export function Checklist() {
     <>
       <div className="flex flex-col gap-2">
         <p className="text-l text-grey-100 font-medium">
-          {t('workflows:detail_pannel.checklist.title')}
+          {t('workflows:detail_panel.checklist.title')}
         </p>
         <p className="text-s text-grey-50">
-          {t('workflows:detail_pannel.checklist.description')}
+          {t('workflows:detail_panel.checklist.description')}
         </p>
       </div>
       {content}
@@ -85,33 +85,33 @@ function GlobalChecklist({ checklist }: { checklist: GlobalChecklistVM }) {
     <div className="border-grey-10 flex w-full flex-col gap-4 rounded-xl border p-4">
       <Title
         icon="rule-settings"
-        title={t('workflows:detail_pannel.checklist.error.global.title')}
-        scope={t('workflows:detail_pannel.checklist.error.global.scope')}
+        title={t('workflows:detail_panel.checklist.error.global.title')}
+        scope={t('workflows:detail_panel.checklist.error.global.scope')}
       />
       <Separator className="bg-grey-10" />
       <div className="flex w-full flex-col gap-2">
         {checklist.hasMissingTriggerNode ? (
           <Issue>
             {t(
-              'workflows:detail_pannel.checklist.error.global.missing_trigger_node',
+              'workflows:detail_panel.checklist.error.global.missing_trigger_node',
             )}
           </Issue>
         ) : null}
         {checklist.hasMultipleTriggerNodes ? (
           <Issue>
             {t(
-              'workflows:detail_pannel.checklist.error.global.multiple_trigger_nodes',
+              'workflows:detail_panel.checklist.error.global.multiple_trigger_nodes',
             )}
           </Issue>
         ) : null}
         {checklist.hasEmptyNodes ? (
           <Issue>
-            {t('workflows:detail_pannel.checklist.error.global.empty_nodes')}
+            {t('workflows:detail_panel.checklist.error.global.empty_nodes')}
           </Issue>
         ) : null}
         {checklist.hasGraphLoop ? (
           <Issue>
-            {t('workflows:detail_pannel.checklist.error.global.graph_loop')}
+            {t('workflows:detail_panel.checklist.error.global.graph_loop')}
           </Issue>
         ) : null}
       </div>
@@ -164,42 +164,42 @@ function NodeChecklistContent({
         {checklist.hasInvalidConfig ? (
           <Issue>
             {t(
-              'workflows:detail_pannel.checklist.error.node.invalid_node_config',
+              'workflows:detail_panel.checklist.error.node.invalid_node_config',
             )}
           </Issue>
         ) : null}
         {checklist.isNotConnectedToTrigger ? (
           <Issue>
             {t(
-              'workflows:detail_pannel.checklist.error.node.not_connected_to_trigger',
+              'workflows:detail_panel.checklist.error.node.not_connected_to_trigger',
             )}
           </Issue>
         ) : null}
         {checklist.hasMissingOutgoingNode ? (
           <Issue>
             {t(
-              'workflows:detail_pannel.checklist.error.node.missing_outgoing_node',
+              'workflows:detail_panel.checklist.error.node.missing_outgoing_node',
             )}
           </Issue>
         ) : null}
         {checklist.hasMultipleOutgoingNode ? (
           <Issue>
             {t(
-              'workflows:detail_pannel.checklist.error.node.multiple_outgoing_nodes',
+              'workflows:detail_panel.checklist.error.node.multiple_outgoing_nodes',
             )}
           </Issue>
         ) : null}
         {checklist.hasWrongOutgoinNode ? (
           <Issue>
             {t(
-              'workflows:detail_pannel.checklist.error.node.wrong_outgoing_node',
+              'workflows:detail_panel.checklist.error.node.wrong_outgoing_node',
             )}
           </Issue>
         ) : null}
         {checklist.noOutgoingNodeRequired ? (
           <Issue>
             {t(
-              'workflows:detail_pannel.checklist.error.node.no_outgoing_node_required',
+              'workflows:detail_panel.checklist.error.node.no_outgoing_node_required',
             )}
           </Issue>
         ) : null}
@@ -210,7 +210,7 @@ function NodeChecklistContent({
           selectNode(nodeId);
         }}
       >
-        {t('workflows:detail_pannel.checklist.error.node.select_this_node')}
+        {t('workflows:detail_panel.checklist.error.node.select_this_node')}
       </Button>
     </div>
   );
