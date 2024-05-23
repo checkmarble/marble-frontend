@@ -17,8 +17,7 @@ import ReactFlow, {
 } from 'reactflow';
 import reactflowStyles from 'reactflow/dist/style.css';
 
-import { type NodeData } from './models/node-data';
-import { type NodeType } from './models/node-types';
+import { type NodeData, type NodeType } from './models/nodes';
 import { Action } from './Nodes/Action';
 import { EmptyNode } from './Nodes/EmptyNode';
 import { Trigger } from './Nodes/Trigger';

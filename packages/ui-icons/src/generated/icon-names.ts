@@ -54,6 +54,7 @@ export const iconNames = [
   'pushtolive',
   'queue-list',
   'restart-alt',
+  'rule-settings',
   'rules',
   'scenarios',
   'schedule',
@@ -73,6 +74,7 @@ export const iconNames = [
   'trigger',
   'upload',
   'users',
+  'warning',
   'world',
 ] as const;
 
