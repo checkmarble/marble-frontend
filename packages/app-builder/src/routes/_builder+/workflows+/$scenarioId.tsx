@@ -5,7 +5,7 @@ import {
   adaptScenarioUpdateWorkflowInput,
   adaptValidWorkflow,
   type ValidWorkflow,
-} from '@app-builder/components/Scenario/Workflow/models/valitation';
+} from '@app-builder/components/Scenario/Workflow/models/validation';
 import { workflowI18n } from '@app-builder/components/Scenario/Workflow/workflow-i18n';
 import {
   WorkflowFlow,

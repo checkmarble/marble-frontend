@@ -12,7 +12,7 @@ import {
   type TriggerData,
   useTitleInfo,
 } from '../models/nodes';
-import { type ValidWorkflow } from '../models/valitation';
+import { type ValidWorkflow } from '../models/validation';
 import { workflowI18n } from '../workflow-i18n';
 import {
   useCreateNodeType,

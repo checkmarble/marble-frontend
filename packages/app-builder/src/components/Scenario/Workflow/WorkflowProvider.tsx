@@ -24,7 +24,7 @@ import {
   isTriggerData,
   type NodeData,
 } from './models/nodes';
-import { type ValidWorkflow } from './models/valitation';
+import { type ValidWorkflow } from './models/validation';
 import { validateWorkflow } from './validate';
 
 interface WorkflowState {
