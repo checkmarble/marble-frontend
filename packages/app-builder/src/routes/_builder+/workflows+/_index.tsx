@@ -22,7 +22,8 @@ import {
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Table, useTable } from 'ui-design-system';
+import { assertNever } from 'typescript-utils';
+import { Input, Table, Tag, Tooltip, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -69,6 +70,44 @@ export default function WorkflowsPage() {
         cell: ({ getValue }) => {
           const value = getValue();
           return <p className="text-grey-100 text-s font-normal">{value}</p>;
+        },
+      }),
+      columnHelper.accessor((row) => row.decisionToCaseWorkflowType, {
+        id: 'workflow-type',
+        header: t('workflows:workflow_type'),
+        size: 100,
+        sortingFn: 'text',
+        enableSorting: true,
+        enableGlobalFilter: false,
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (value === 'DISABLED') {
+            return (
+              <Tag color="grey" border="square">
+                -
+              </Tag>
+            );
+          }
+          let tag, tooltip;
+          if (value === 'CREATE_CASE') {
+            tag = t('workflows:workflow_type.create_case');
+            tooltip = t('workflows:workflow_type.create_case.tooltip');
+          } else if (value === 'ADD_TO_CASE_IF_POSSIBLE') {
+            tag = t('workflows:workflow_type.add_to_case_if_possible');
+            tooltip = t(
+              'workflows:workflow_type.add_to_case_if_possible.tooltip',
+            );
+          } else {
+            assertNever('Invalid workflow type', value);
+          }
+          return (
+            <Tag color="purple" border="square" className="gap-px uppercase">
+              {tag}
+              <Tooltip.Default className="max-w-60" content={tooltip}>
+                <Icon className="relative size-4 shrink-0" icon="tip" />
+              </Tooltip.Default>
+            </Tag>
+          );
         },
       }),
     ],
