@@ -5,7 +5,7 @@ import {
 } from '@app-builder/components/ReactFlow';
 import Dagre from '@dagrejs/dagre';
 import type * as React from 'react';
-import ReactFlow, {
+import {
   Background,
   Controls,
   type DefaultEdgeOptions,
@@ -14,6 +14,7 @@ import ReactFlow, {
   type Node,
   type NodeOrigin,
   type NodeProps,
+  ReactFlow,
   ReactFlowProvider,
 } from 'reactflow';
 import reactflowStyles from 'reactflow/dist/style.css';

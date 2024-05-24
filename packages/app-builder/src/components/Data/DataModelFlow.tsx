@@ -4,7 +4,7 @@ import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
 import Dagre from '@dagrejs/dagre';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import ReactFlow, {
+import {
   applyEdgeChanges,
   applyNodeChanges,
   Controls,
@@ -13,6 +13,7 @@ import ReactFlow, {
   type Node,
   type NodeChange,
   Panel,
+  ReactFlow,
   ReactFlowProvider,
   useReactFlow,
 } from 'reactflow';
