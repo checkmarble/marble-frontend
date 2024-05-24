@@ -1,7 +1,6 @@
-/* eslint-disable tailwindcss/no-custom-classname */
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Handle, Position } from 'reactflow';
+import { Handle, NodeToolbar, Position, useReactFlow } from 'reactflow';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -13,7 +12,6 @@ import {
 import { workflowI18n } from '../workflow-i18n';
 import {
   useIsSourceConnectable,
-  useValidationPayload,
   useWorkflowActions,
 } from '../WorkflowProvider';
 
@@ -38,6 +36,7 @@ export function AddNodeButton({
       <div className="bg-grey-25 h-4 w-px" />
       <button
         onClick={onClick}
+        // eslint-disable-next-line tailwindcss/no-custom-classname
         className="nodrag hover:bg-purple-110 active:bg-purple-120 rounded-full bg-purple-100"
       >
         <Icon icon="plus" className="text-grey-00 size-6 " />
@@ -78,9 +77,16 @@ export function TriggerNodeContainer({
   const { t } = useTranslation(workflowI18n);
   return (
     <NodeRoot>
+      <NodeToolbar
+        position={Position.Right}
+        align="center"
+        className="flex flex-col pt-8"
+      >
+        <DeleteNode nodeId={id} />
+      </NodeToolbar>
       <p
         className={clsx(
-          'text-s bg-grey-02 border-grey-10 flex w-fit flex-row items-center gap-1 rounded-t-md border border-b-0 px-2 py-1 capitalize',
+          'text-s bg-grey-02 border-grey-10 flex h-8 w-fit flex-row items-center gap-1 rounded-t-md border border-b-0 px-2 capitalize',
           selected
             ? 'border-purple-100 text-purple-100'
             : 'border-grey-10 text-grey-50',
@@ -114,6 +120,13 @@ export function NodeContainer({
 }) {
   return (
     <NodeRoot>
+      <NodeToolbar
+        position={Position.Right}
+        align="center"
+        className="flex flex-col"
+      >
+        <DeleteNode nodeId={id} />
+      </NodeToolbar>
       <Handle type="target" position={Position.Top} />
       <div
         className={clsx(
@@ -140,5 +153,21 @@ export function NodeTitle({ data }: { data: TriggerData | ActionData }) {
       <span className="text-grey-100 flex-1 font-semibold">{title}</span>
       <Tag color="grey">{entity}</Tag>
     </div>
+  );
+}
+
+function DeleteNode({ nodeId }: { nodeId: string }) {
+  const { t } = useTranslation(workflowI18n);
+  const { deleteElements } = useReactFlow();
+  return (
+    <button
+      className="hover:bg-red-110 active:bg-red-120 rounded-full bg-red-100 p-1"
+      onClick={() => {
+        deleteElements({ nodes: [{ id: nodeId }] });
+      }}
+    >
+      <Icon icon="delete" className="text-grey-00 size-4 shrink-0" />
+      <span className="sr-only">{t('common:delete')}</span>
+    </button>
   );
 }

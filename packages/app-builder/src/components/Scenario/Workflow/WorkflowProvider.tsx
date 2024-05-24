@@ -10,7 +10,6 @@ import {
   type Connection,
   type Edge,
   type EdgeChange,
-  getConnectedEdges,
   type Node,
   type NodeChange,
 } from 'reactflow';
@@ -23,7 +22,6 @@ import {
   type EmptyNodeData,
   isTriggerData,
   type NodeData,
-  type NodeType,
 } from './models/nodes';
 import { type ValidWorkflow } from './models/validation';
 import { validateWorkflow } from './validate';
@@ -79,12 +77,30 @@ export function WorkflowProvider({
       ...createInitialState(initialWorkflow),
       actions: {
         onNodesChange(changes) {
-          const nodes = applyNodeChanges(changes, get().nodes);
-          if (shouldCreateEmptyNode(nodes, get().edges)) {
+          const previousNodes = get().nodes;
+          const nodes = applyNodeChanges(changes, previousNodes);
+
+          for (const change of changes) {
+            if (change.type === 'remove') {
+              const node = previousNodes.find((node) => node.id === change.id);
+              if (!node) continue;
+
+              if (nodes.length === 0 || isTriggerData(node.data)) {
+                const emptyNode = createEmptyNode();
+                emptyNode.selected = true;
+                emptyNode.position = node.position;
+                nodes.push(emptyNode);
+              }
+            }
+          }
+
+          // Should never happen, but just in case
+          if (nodes.length === 0) {
             const emptyNode = createEmptyNode();
             emptyNode.selected = true;
             nodes.push(emptyNode);
           }
+
           set({
             nodes,
           });
@@ -207,21 +223,6 @@ function createEmptyNode(): Node<EmptyNodeData> {
 
 // Layout settings to be used by Dagre and addEmptyNode: define the distance between nodes
 export const nodesep = 100;
-
-function shouldCreateEmptyNode(
-  nodes: Node<NodeData>[],
-  edges: Edge[],
-): boolean {
-  if (nodes.length === 0) return true;
-  if (nodes.some((node) => isTriggerData(node.data))) return false;
-
-  const emptyNodes = nodes.filter((node) => node.type === 'empty_node');
-  for (const emptyNode of emptyNodes) {
-    const connectedEdges = getConnectedEdges([emptyNode], edges);
-    if (connectedEdges.length === 0) return false;
-  }
-  return true;
-}
 
 function createInitialState(initialWorkflow?: ValidWorkflow): WorkflowState {
   if (!initialWorkflow) {
