@@ -219,6 +219,17 @@ export const routes = [
             "id": "routes/_builder+/upload+/$objectType",
             "path": "upload/:objectType",
             "file": "routes/_builder+/upload+/$objectType.tsx"
+          },
+          {
+            "id": "routes/_builder+/workflows+/$scenarioId",
+            "path": "workflows/:scenarioId",
+            "file": "routes/_builder+/workflows+/$scenarioId.tsx"
+          },
+          {
+            "id": "routes/_builder+/workflows+/_index",
+            "index": true,
+            "path": "workflows/",
+            "file": "routes/_builder+/workflows+/_index.tsx"
           }
         ]
       },

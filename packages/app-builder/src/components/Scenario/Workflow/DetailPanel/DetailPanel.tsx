@@ -1,7 +1,13 @@
 import { Callout } from '@app-builder/components/Callout';
 import { useTranslation } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
-import { Button, ScrollAreaV2, Separator, Tag } from 'ui-design-system';
+import {
+  Button,
+  ModalV2,
+  ScrollAreaV2,
+  Separator,
+  Tag,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import {
@@ -12,30 +18,94 @@ import {
   type TriggerData,
   useTitleInfo,
 } from '../models/nodes';
+import { type ValidWorkflow } from '../models/validation';
 import { workflowI18n } from '../workflow-i18n';
 import {
   useCreateNodeType,
   useSelectedNodes,
+  useValidationPayload,
   useWorkflowActions,
+  useWorkflowData,
 } from '../WorkflowProvider';
 import { AddToCaseIfPossibleNode } from './AddToCaseIfPossibleNode';
 import { Checklist } from './Checklist';
 import { CreateCaseNode } from './CreateCaseNode';
 import { DecisionCreatedNode } from './DecisionCreatedNode';
 
-export function DetailPannel() {
+interface DetailPanelProps {
+  onSave: (validWorkflow: ValidWorkflow) => void;
+  onDelete: () => void;
+}
+
+export function DetailPanel({ onSave, onDelete }: DetailPanelProps) {
+  const { t } = useTranslation(workflowI18n);
+  const validationPayload = useValidationPayload();
+
+  const saveWorkflow = () => {
+    if (!validationPayload.isValid) return;
+    onSave(validationPayload.value);
+  };
+
   return (
-    <div className="border-grey-10 bg-grey-00 flex h-full flex-col overflow-hidden border-l">
-      <ScrollAreaV2 type="auto">
+    // eslint-disable-next-line tailwindcss/no-custom-classname -- nokey class ensures that ReactFlow onKeyDown event is not triggered (ex: delete node)
+    <div className="border-grey-10 bg-grey-00 nokey flex h-full flex-col overflow-hidden border-l">
+      <ScrollAreaV2 type="auto" className="flex-1">
         <div className="flex h-full flex-col gap-4 p-6">
-          <DetailPannelContent />
+          <DetailPanelContent />
         </div>
       </ScrollAreaV2>
+      <Separator className="bg-grey-10" />
+      <div className="flex items-center justify-center gap-4 p-4">
+        <ModalV2.Root>
+          <ModalV2.Trigger render={<Button className="w-full" color="red" />}>
+            <Icon icon="delete" className="size-6" />
+            {t('common:delete')}
+          </ModalV2.Trigger>
+          <ModalV2.Content>
+            <ModalV2.Title>
+              {t('workflows:detail_panel.confirm_delete_workflow.title')}
+            </ModalV2.Title>
+            <div className="flex flex-col gap-6 p-6">
+              <ModalV2.Description>
+                {t(
+                  'workflows:detail_panel.confirm_delete_workflow.description',
+                )}
+              </ModalV2.Description>
+              <div className="flex flex-1 flex-row gap-4">
+                <ModalV2.Close
+                  render={
+                    <Button
+                      className="flex-1"
+                      variant="secondary"
+                      name="cancel"
+                    />
+                  }
+                >
+                  {t('common:cancel')}
+                </ModalV2.Close>
+                <Button className="flex-1" color="red" onClick={onDelete}>
+                  <Icon icon="delete" className="size-6" />
+                  {t('common:delete')}
+                </Button>
+              </div>
+            </div>
+          </ModalV2.Content>
+        </ModalV2.Root>
+
+        <Button
+          className="w-full"
+          disabled={!validationPayload.isValid}
+          onClick={saveWorkflow}
+        >
+          <Icon icon="rule-settings" className="size-6" />
+          {t('common:save')}
+        </Button>
+      </div>
     </div>
   );
 }
 
-function DetailPannelContent() {
+function DetailPanelContent() {
   const selectedNodes = useSelectedNodes();
 
   if (selectedNodes.length > 1) {
@@ -80,10 +150,10 @@ function NoSelectedNodes() {
   return (
     <>
       <p className="text-l text-grey-100 font-medium">
-        {t('workflows:detail_pannel.no_selected_nodes.title')}
+        {t('workflows:detail_panel.no_selected_nodes.title')}
       </p>
       <p className="text-s text-grey-100">
-        {t('workflows:detail_pannel.no_selected_nodes.description')}
+        {t('workflows:detail_panel.no_selected_nodes.description')}
       </p>
       <Separator className="bg-grey-10" />
       <Checklist />
@@ -98,13 +168,13 @@ function MultipleSelectedNodes() {
   return (
     <>
       <p className="text-l text-grey-100 font-medium">
-        {t('workflows:detail_pannel.multiple_selected_nodes.title')}
+        {t('workflows:detail_panel.multiple_selected_nodes.title')}
       </p>
       <p className="text-s text-grey-100">
-        {t('workflows:detail_pannel.multiple_selected_nodes.description')}
+        {t('workflows:detail_panel.multiple_selected_nodes.description')}
       </p>
       <Button onClick={clearSelection}>
-        {t('workflows:detail_pannel.multiple_selected_nodes.clear_selection')}
+        {t('workflows:detail_panel.multiple_selected_nodes.clear_selection')}
       </Button>
     </>
   );
@@ -122,16 +192,17 @@ function CreateAllowedNode({ id }: { id: string }) {
 
 function CreateTriggerNode({ id }: { id: string }) {
   const { t } = useTranslation(workflowI18n);
+  const { nonEditableData } = useWorkflowData();
   const { updateNode } = useWorkflowActions();
 
   return (
     <>
       <p className="text-l text-grey-100 font-medium">
-        {t('workflows:detail_pannel.create_trigger_node.title')}
+        {t('workflows:detail_panel.create_trigger_node.title')}
       </p>
       <Callout>
         <p className="text-s text-grey-100">
-          {t('workflows:detail_pannel.create_trigger_node.description')}
+          {t('workflows:detail_panel.create_trigger_node.description')}
         </p>
       </Callout>
       <ul className="flex w-full list-inside list-none flex-col gap-2">
@@ -140,7 +211,7 @@ function CreateTriggerNode({ id }: { id: string }) {
             onClick={() => {
               updateNode(id, {
                 type: 'decision-created',
-                scenarioId: null,
+                scenarioId: nonEditableData.scenarioId,
                 outcomes: [],
               });
             }}
@@ -160,11 +231,11 @@ function CreateActionNode({ id }: { id: string }) {
   return (
     <>
       <p className="text-l text-grey-100 font-medium">
-        {t('workflows:detail_pannel.create_action_node.title')}
+        {t('workflows:detail_panel.create_action_node.title')}
       </p>
       <Callout>
         <p className="text-s text-grey-100">
-          {t('workflows:detail_pannel.create_action_node.description')}
+          {t('workflows:detail_panel.create_action_node.description')}
         </p>
       </Callout>
       <ul className="flex w-full list-inside list-none flex-col gap-2">

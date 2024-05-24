@@ -1,6 +1,6 @@
 import {
+  CursorPaginationButtons,
   Page,
-  PaginationButtons,
   paginationSchema,
 } from '@app-builder/components';
 import { casesI18n, CasesList } from '@app-builder/components/Cases';
@@ -137,7 +137,7 @@ export default function Cases() {
               </div>
               <CasesFiltersBar />
               <CasesList cases={cases} className="max-h-[60dvh]" />
-              <PaginationButtons
+              <CursorPaginationButtons
                 items={cases}
                 onPaginationChange={(paginationParams: PaginationParams) =>
                   navigateCasesList(filters, paginationParams)

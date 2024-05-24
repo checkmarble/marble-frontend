@@ -1,54 +1,15 @@
-import { Callout } from '@app-builder/components/Callout';
 import { Highlight } from '@app-builder/components/Highlight';
+import { usePermissionsContext } from '@app-builder/components/PermissionsContext';
 import { type Inbox } from '@app-builder/models/inbox';
+import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { type AddToCaseIfPossibleAction } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
-import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
-import { defaultCaseName } from './shared';
 
-export function AddToCaseIfPossibleNode({
-  id,
-  data,
-}: {
-  id: string;
-  data: AddToCaseIfPossibleAction;
-}) {
-  const { t } = useTranslation(workflowI18n);
-  const { inboxes } = useWorkflowData();
-  const { updateNode } = useWorkflowActions();
-
-  return (
-    <>
-      <Callout>
-        {t('workflows:detail_pannel.add_to_case_if_possible.description')}
-      </Callout>
-      <SelectScenario
-        selectedInboxId={data.inboxId ?? undefined}
-        onSelectedInboxIdChange={(inboxId) => {
-          updateNode(id, { ...data, inboxId });
-        }}
-        inboxes={inboxes}
-      />
-      <p className="flex flex-col gap-2">
-        <span className="whitespace-pre-wrap">
-          {t(
-            'workflows:detail_pannel.add_to_case_if_possible.default_name.helper',
-          )}
-        </span>
-        <span className="text-s border-grey-10 text-grey-50 bg-grey-02 rounded border p-2">
-          {defaultCaseName}
-        </span>
-      </p>
-    </>
-  );
-}
-
-function SelectScenario({
+export function SelectInbox({
   selectedInboxId,
   onSelectedInboxIdChange,
   inboxes,
@@ -61,6 +22,8 @@ function SelectScenario({
   const [value, setSearchValue] = React.useState('');
   const searchValue = React.useDeferredValue(value);
 
+  const { canEditInboxes } = usePermissionsContext();
+
   const selectedInbox = React.useMemo(
     () => inboxes.find((inbox) => inbox.id === selectedInboxId),
     [selectedInboxId, inboxes],
@@ -71,6 +34,17 @@ function SelectScenario({
     [searchValue, inboxes],
   );
 
+  let footer;
+  if (canEditInboxes) {
+    footer = <CreateInbox />;
+  } else if (inboxes.length === 0) {
+    footer = (
+      <p>{t('workflows:detail_panel.inbox.need_inbox_contact_admin')}</p>
+    );
+  } else {
+    footer = null;
+  }
+
   return (
     <SelectWithCombobox.Root
       onSearchValueChange={setSearchValue}
@@ -78,16 +52,14 @@ function SelectScenario({
       onSelectedValueChange={onSelectedInboxIdChange}
     >
       <SelectWithCombobox.Label className="text-grey-100 capitalize">
-        {t('workflows:detail_pannel.add_to_case_if_possible.inbox.label')}
+        {t('workflows:detail_panel.inbox.label')}*
       </SelectWithCombobox.Label>
       <SelectWithCombobox.Select>
         {selectedInbox ? (
           <span className="text-grey-100">{selectedInbox.name}</span>
         ) : (
           <span className="text-grey-25">
-            {t(
-              'workflows:detail_pannel.add_to_case_if_possible.inbox.placeholder',
-            )}
+            {t('workflows:detail_panel.inbox.placeholder')}
           </span>
         )}
         <SelectWithCombobox.Arrow />
@@ -109,6 +81,7 @@ function SelectScenario({
             );
           })}
         </SelectWithCombobox.ComboboxList>
+        {footer}
       </SelectWithCombobox.Popover>
     </SelectWithCombobox.Root>
   );

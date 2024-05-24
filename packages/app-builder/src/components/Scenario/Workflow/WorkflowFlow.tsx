@@ -1,5 +1,6 @@
 import {
   AutoLayoutControlButton,
+  useIsValidConnection,
   useLayoutInitializedNodes,
 } from '@app-builder/components/ReactFlow';
 import Dagre from '@dagrejs/dagre';
@@ -48,6 +49,11 @@ function WorkflowFlowImpl() {
   const nodes = useNodes();
   const edges = useEdges();
   const { onNodesChange, onEdgesChange, onConnect } = useWorkflowActions();
+  const isValidConnection = useIsValidConnection({
+    singleIncomer: true,
+    singleOutgoer: true,
+    noCycle: true,
+  });
 
   useLayoutInitializedNodes({
     mode: 'onMount',
@@ -66,6 +72,7 @@ function WorkflowFlowImpl() {
       fitView
       defaultEdgeOptions={defaultDataModelEdgeOptions}
       connectionLineStyle={defaultDataModelEdgeOptions.style}
+      isValidConnection={isValidConnection}
     >
       <Background />
       <Controls position="bottom-left">

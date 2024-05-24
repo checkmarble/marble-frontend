@@ -19,7 +19,7 @@ import {
   type ValidDecisionCreatedWorkflow,
   type ValidWorkflow,
   type WorkflowError,
-} from './models/valitation';
+} from './models/validation';
 
 function validateSingleTriggerNode(
   nodes: Node<NodeData>[],
