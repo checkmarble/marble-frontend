@@ -51,6 +51,7 @@ export const PaginationButtons = ({
     onPaginationChange(pagination);
   };
 
+  const previousDisabled = start <= 1;
   const nextDisabled = end === total && !isMaxCount;
   return (
     <div className="flex items-center justify-end gap-2">
@@ -73,7 +74,7 @@ export const PaginationButtons = ({
       <Button
         onClick={fetchPrevious}
         variant="secondary"
-        disabled={start === 1}
+        disabled={previousDisabled}
       >
         <Icon icon="arrow-left" className="size-4" />
       </Button>
