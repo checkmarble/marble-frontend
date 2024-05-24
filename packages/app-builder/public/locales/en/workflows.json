@@ -42,6 +42,7 @@
   "detail_panel.inbox.need_inbox_contact_admin": "Please contact your admin to create an inbox",
   "detail_panel.create_case.default_name.helper": "The default name should follow this template:",
   "detail_panel.add_to_case_if_possible.description": "In the selected inbox, if an open case matches the decision’s pivot value, add the decision to it. If no matching case is found, a new case will be created with a default name.",
+  "detail_panel.add_to_case_if_possible.no_pivot": "You need to define a <DocLink>pivot value</DocLink> to add the decision to a case.",
   "detail_panel.add_to_case_if_possible.default_name.helper": "If no matching case is found, the created case name should follow this template:",
   "detail_panel.checklist.title": "Checklist",
   "detail_panel.checklist.description": "Make sure all issues are resolved before saving the workflow.",

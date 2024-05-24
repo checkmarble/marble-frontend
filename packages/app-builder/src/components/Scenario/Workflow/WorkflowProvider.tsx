@@ -53,6 +53,7 @@ interface WorkflowDataContext {
   nonEditableData: { scenarioId: string | null };
   scenarios: Scenario[];
   inboxes: Inbox[];
+  hasPivotValue: boolean;
 }
 
 const WorkflowDataContext = createSimpleContext<WorkflowDataContext>(
@@ -193,8 +194,9 @@ export function WorkflowProvider({
       inboxes: data.inboxes,
       scenarios: data.scenarios,
       nonEditableData: data.nonEditableData,
+      hasPivotValue: data.hasPivotValue,
     }),
-    [data.inboxes, data.nonEditableData, data.scenarios],
+    [data.hasPivotValue, data.inboxes, data.nonEditableData, data.scenarios],
   );
 
   return (

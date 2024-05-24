@@ -39,15 +39,17 @@ export const links: LinksFunction = () => [
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { scenario, inbox } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { scenario, inbox, dataModelRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const [scenarios, inboxes] = await Promise.all([
+  const [scenarios, inboxes, pivotValues] = await Promise.all([
     scenario.listScenarios(),
     inbox.listInboxes(),
+    dataModelRepository.listPivots({}),
   ]);
 
   const currentScenario = scenarios.find((s) => s.id === scenarioId);
@@ -55,12 +57,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     ? adaptValidWorkflow(currentScenario)
     : undefined;
 
+  const hasPivotValue = pivotValues.some(
+    (pivot) => pivot.baseTable === currentScenario?.triggerObjectType,
+  );
+
   return json({
     nonEditableData: { scenarioId },
     scenarioName: currentScenario?.name,
     initialWorkflow,
     scenarios,
     inboxes,
+    hasPivotValue,
   });
 }
 
@@ -96,8 +103,14 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Workflow() {
-  const { nonEditableData, scenarioName, initialWorkflow, scenarios, inboxes } =
-    useLoaderData<typeof loader>();
+  const {
+    nonEditableData,
+    scenarioName,
+    initialWorkflow,
+    scenarios,
+    inboxes,
+    hasPivotValue,
+  } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher();
 
@@ -128,7 +141,7 @@ export default function Workflow() {
         </div>
       </Page.Header>
       <WorkflowProvider
-        data={{ scenarios, inboxes, nonEditableData }}
+        data={{ scenarios, inboxes, nonEditableData, hasPivotValue }}
         initialWorkflow={initialWorkflow}
       >
         <div className="grid size-full grid-cols-[2fr_1fr]">

@@ -1,5 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
-import { useTranslation } from 'react-i18next';
+import { PivotDocLink } from '@app-builder/components/Data/SelectedPivot';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { type AddToCaseIfPossibleAction } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
@@ -15,8 +16,30 @@ export function AddToCaseIfPossibleNode({
   data: AddToCaseIfPossibleAction;
 }) {
   const { t } = useTranslation(workflowI18n);
-  const { inboxes } = useWorkflowData();
+  const { inboxes, hasPivotValue } = useWorkflowData();
   const { updateNode } = useWorkflowActions();
+
+  if (!hasPivotValue) {
+    return (
+      <>
+        <Callout>
+          {t('workflows:detail_panel.add_to_case_if_possible.description')}
+        </Callout>
+
+        <Callout color="red">
+          <span className="whitespace-pre-wrap">
+            <Trans
+              t={t}
+              i18nKey="workflows:detail_panel.add_to_case_if_possible.no_pivot"
+              components={{
+                DocLink: PivotDocLink,
+              }}
+            />
+          </span>
+        </Callout>
+      </>
+    );
+  }
 
   return (
     <>
