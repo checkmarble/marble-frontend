@@ -1,4 +1,8 @@
-import { type Scenario } from '@app-builder/models/scenario';
+import { outcomeSchema } from '@app-builder/models/outcome';
+import {
+  type Scenario,
+  type ScenarioUpdateWorkflowInput,
+} from '@app-builder/models/scenario';
 import * as R from 'remeda';
 import { assertNever } from 'typescript-utils';
 import * as z from 'zod';
@@ -105,9 +109,7 @@ export function adaptNodeChecklistVM(
 
 export const decisionCreatedTriggerSchema = z.object({
   scenarioId: z.string(),
-  outcomes: z
-    .array(z.enum(['approve', 'review', 'decline', 'null', 'unknown']))
-    .nonempty(),
+  outcomes: z.array(outcomeSchema).nonempty(),
 });
 export type ValidDecisionCreatedTrigger = z.infer<
   typeof decisionCreatedTriggerSchema
@@ -171,4 +173,20 @@ export function adaptValidWorkflow(
         scenario.decisionToCaseWorkflowType,
       );
   }
+}
+
+export function adaptScenarioUpdateWorkflowInput(
+  workflow: ValidWorkflow | undefined,
+): ScenarioUpdateWorkflowInput {
+  if (!workflow) {
+    return {
+      decisionToCaseWorkflowType: 'DISABLED',
+    };
+  }
+
+  return {
+    decisionToCaseWorkflowType: workflow.type,
+    decisionToCaseInboxId: workflow.action.inboxId,
+    decisionToCaseOutcomes: workflow.trigger.outcomes,
+  };
 }

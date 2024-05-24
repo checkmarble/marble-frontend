@@ -1,9 +1,11 @@
 import {
-  type Outcome,
   type ScenarioCreateInputDto,
   type ScenarioDto,
   type ScenarioUpdateInputDto,
 } from 'marble-api';
+import * as z from 'zod';
+
+import { type Outcome, outcomeSchema } from './outcome';
 
 type DecisionToCaseWorkflowType =
   | 'DISABLED'
@@ -54,15 +56,28 @@ export function adaptScenarioCreateInputDto(
   };
 }
 
-export type ScenarioUpdateWorkflowInput =
-  | {
-      decisionToCaseWorkflowType: 'DISABLED';
-    }
-  | {
-      decisionToCaseWorkflowType: 'CREATE_CASE' | 'ADD_TO_CASE_IF_POSSIBLE';
-      decisionToCaseInboxId: string;
-      decisionToCaseOutcomes: Outcome[];
-    };
+export const scenarioUpdateWorkflowInputSchema = z.discriminatedUnion(
+  'decisionToCaseWorkflowType',
+  [
+    z.object({
+      decisionToCaseWorkflowType: z.literal('CREATE_CASE'),
+      decisionToCaseInboxId: z.string(),
+      decisionToCaseOutcomes: z.array(outcomeSchema),
+    }),
+    z.object({
+      decisionToCaseWorkflowType: z.literal('ADD_TO_CASE_IF_POSSIBLE'),
+      decisionToCaseInboxId: z.string(),
+      decisionToCaseOutcomes: z.array(outcomeSchema),
+    }),
+    z.object({
+      decisionToCaseWorkflowType: z.literal('DISABLED'),
+    }),
+  ],
+);
+
+export type ScenarioUpdateWorkflowInput = z.infer<
+  typeof scenarioUpdateWorkflowInputSchema
+>;
 
 export function adaptScenarioUpdateInputDto(
   input: ScenarioUpdateWorkflowInput,

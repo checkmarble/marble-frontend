@@ -65,7 +65,7 @@ const Select = forwardRef<
   HTMLButtonElement,
   Ariakit.SelectProps & VariantProps<typeof selectTrigger>
 >(function SelectWithComboboxPopoverTrigger(
-  { className, border = 'square', borderColor = 'grey-10', ...props },
+  { className, border = 'square', borderColor = 'grey-10', disabled, ...props },
   ref,
 ) {
   return (
@@ -73,9 +73,14 @@ const Select = forwardRef<
       ref={ref}
       className={clsx(
         'group',
-        selectTrigger({ border, borderColor }),
+        selectTrigger({
+          border,
+          borderColor,
+          backgroundColor: disabled ? 'disabled' : 'enabled',
+        }),
         className,
       )}
+      disabled={disabled}
       {...props}
     />
   );

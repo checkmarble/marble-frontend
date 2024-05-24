@@ -10,18 +10,20 @@ import {
   type Connection,
   type Edge,
   type EdgeChange,
-  getConnectedEdges,
   type Node,
   type NodeChange,
 } from 'reactflow';
+import { assertNever } from 'typescript-utils';
 import { createStore, type StoreApi, useStore } from 'zustand';
 
 import {
   adaptNodeType,
+  createNode,
   type EmptyNodeData,
   isTriggerData,
   type NodeData,
 } from './models/nodes';
+import { type ValidWorkflow } from './models/validation';
 import { validateWorkflow } from './validate';
 
 interface WorkflowState {
@@ -48,8 +50,10 @@ const WorkflowStoreContext = createSimpleContext<StoreApi<WorkflowStore>>(
 );
 
 interface WorkflowDataContext {
+  nonEditableData: { scenarioId: string | null };
   scenarios: Scenario[];
   inboxes: Inbox[];
+  hasPivotValue: boolean;
 }
 
 const WorkflowDataContext = createSimpleContext<WorkflowDataContext>(
@@ -58,21 +62,46 @@ const WorkflowDataContext = createSimpleContext<WorkflowDataContext>(
 
 export const useWorkflowData = WorkflowDataContext.useValue;
 
+interface WorkflowProviderProps {
+  children: React.ReactNode;
+  data: WorkflowDataContext;
+  initialWorkflow?: ValidWorkflow;
+}
+
 export function WorkflowProvider({
   children,
   data,
-}: { children: React.ReactNode } & { data: WorkflowDataContext }) {
+  initialWorkflow,
+}: WorkflowProviderProps) {
   const [store] = React.useState(() =>
     createStore<WorkflowStore>((set, get) => ({
-      ...createInitialState(),
+      ...createInitialState(initialWorkflow),
       actions: {
         onNodesChange(changes) {
-          const nodes = applyNodeChanges(changes, get().nodes);
-          if (shouldCreateEmptyNode(nodes, get().edges)) {
+          const previousNodes = get().nodes;
+          const nodes = applyNodeChanges(changes, previousNodes);
+
+          for (const change of changes) {
+            if (change.type === 'remove') {
+              const node = previousNodes.find((node) => node.id === change.id);
+              if (!node) continue;
+
+              if (nodes.length === 0 || isTriggerData(node.data)) {
+                const emptyNode = createEmptyNode();
+                emptyNode.selected = true;
+                emptyNode.position = node.position;
+                nodes.push(emptyNode);
+              }
+            }
+          }
+
+          // Should never happen, but just in case
+          if (nodes.length === 0) {
             const emptyNode = createEmptyNode();
             emptyNode.selected = true;
             nodes.push(emptyNode);
           }
+
           set({
             nodes,
           });
@@ -164,8 +193,10 @@ export function WorkflowProvider({
     () => ({
       inboxes: data.inboxes,
       scenarios: data.scenarios,
+      nonEditableData: data.nonEditableData,
+      hasPivotValue: data.hasPivotValue,
     }),
-    [data.inboxes, data.scenarios],
+    [data.hasPivotValue, data.inboxes, data.nonEditableData, data.scenarios],
   );
 
   return (
@@ -195,28 +226,48 @@ function createEmptyNode(): Node<EmptyNodeData> {
 // Layout settings to be used by Dagre and addEmptyNode: define the distance between nodes
 export const nodesep = 100;
 
-function shouldCreateEmptyNode(
-  nodes: Node<NodeData>[],
-  edges: Edge[],
-): boolean {
-  if (nodes.length === 0) return true;
-  if (nodes.some((node) => isTriggerData(node.data))) return false;
-
-  const emptyNodes = nodes.filter((node) => node.type === 'empty_node');
-  for (const emptyNode of emptyNodes) {
-    const connectedEdges = getConnectedEdges([emptyNode], edges);
-    if (connectedEdges.length === 0) return false;
+function createInitialState(initialWorkflow?: ValidWorkflow): WorkflowState {
+  if (!initialWorkflow) {
+    const emptyNode = createEmptyNode();
+    emptyNode.selected = true;
+    return {
+      nodes: [emptyNode],
+      edges: [],
+    };
   }
-  return true;
-}
 
-function createInitialState(): WorkflowState {
-  const emptyNode = createEmptyNode();
-  emptyNode.selected = true;
-  return {
-    nodes: [emptyNode],
-    edges: [],
-  };
+  switch (initialWorkflow.type) {
+    case 'CREATE_CASE':
+    case 'ADD_TO_CASE_IF_POSSIBLE': {
+      const triggerNode = createNode({
+        type: 'decision-created',
+        ...initialWorkflow.trigger,
+      });
+
+      const actionNode = createNode({
+        type:
+          initialWorkflow.type === 'CREATE_CASE'
+            ? 'create-case'
+            : 'add-to-case-if-possible',
+        ...initialWorkflow.action,
+      });
+
+      return {
+        nodes: [triggerNode, actionNode],
+        edges: addEdge(
+          {
+            source: triggerNode.id,
+            target: actionNode.id,
+            sourceHandle: null,
+            targetHandle: null,
+          },
+          [],
+        ),
+      };
+    }
+    default:
+      assertNever('Unknown workflow', initialWorkflow);
+  }
 }
 
 function useWorkflowStore<Out>(selector: (state: WorkflowStore) => Out) {
@@ -238,13 +289,18 @@ export function useEdges() {
   return useWorkflowStore((state) => state.edges);
 }
 
+const nonConnectableNodeDataTypes: NodeData['type'][] = [
+  'add-to-case-if-possible',
+  'create-case',
+];
 export function useIsSourceConnectable({ nodeId }: { nodeId: string }) {
-  const edges = useWorkflowStore((state) => state.edges);
-
-  return React.useMemo(
-    () => !edges.some((edge) => edge.source === nodeId),
-    [edges, nodeId],
-  );
+  return useWorkflowStore((state) => {
+    const nodeType = state.nodes.find((node) => node.id === nodeId)?.data.type;
+    if (nodeType && nonConnectableNodeDataTypes.includes(nodeType)) {
+      return false;
+    }
+    return !state.edges.some((edge) => edge.source === nodeId);
+  });
 }
 
 export function useSelectedNodes() {
