@@ -52,7 +52,7 @@ export default function Cases() {
                     <NavLink
                       className={({ isActive }) =>
                         clsx(
-                          'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium first-letter:capitalize',
+                          'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium',
                           isActive
                             ? 'bg-purple-10 text-purple-100'
                             : 'text-grey-100 hover:bg-purple-10 hover:text-purple-100',

@@ -126,7 +126,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
           >
             <Link
               to={getDecisionRoute({ pivotValue: getValue() })}
-              className="hover:text-purple-120 focus:text-purple-120 relative font-semibold capitalize text-purple-100 hover:underline focus:underline"
+              className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
             >
               {getValue()}
             </Link>

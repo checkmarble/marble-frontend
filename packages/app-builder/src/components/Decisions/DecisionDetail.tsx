@@ -30,7 +30,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
             to={getRoute('/scenarios/:scenarioId', {
               scenarioId: fromUUID(scenario.id),
             })}
-            className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-120 focus:text-purple-120 font-semibold text-purple-100 hover:underline focus:underline"
           >
             {scenario.name}
           </Link>
@@ -41,13 +41,13 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
               scenarioId: fromUUID(scenario.id),
               iterationId: fromUUID(scenario.scenarioIterationId),
             })}
-            className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-120 focus:text-purple-120 font-semibold text-purple-100 hover:underline focus:underline"
           >
             {`V${scenario.version}`}
           </Link>
 
           <DetailLabel>{t('decisions:object_type')}</DetailLabel>
-          <div className="capitalize">{triggerObjectType}</div>
+          <div>{triggerObjectType}</div>
 
           <DetailLabel>{t('decisions:case')}</DetailLabel>
           {caseDetail ? (
@@ -57,7 +57,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUID(caseDetail.id),
                 })}
-                className="hover:text-purple-120 focus:text-purple-120 font-semibold capitalize text-purple-100 hover:underline focus:underline"
+                className="hover:text-purple-120 focus:text-purple-120 font-semibold text-purple-100 hover:underline focus:underline"
               >
                 {caseDetail.name}
               </Link>
