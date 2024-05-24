@@ -152,7 +152,7 @@ export function DecisionsList({
               scenarioId: fromUUID(row.original.scenario.id),
             })}
             onClick={(e) => e.stopPropagation()}
-            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold capitalize text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
           >
             {getValue()}
           </Link>
@@ -169,7 +169,7 @@ export function DecisionsList({
               iterationId: fromUUID(row.original.scenario.scenarioIterationId),
             })}
             onClick={(e) => e.stopPropagation()}
-            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold capitalize text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
           >
             {`V${getValue()}`}
           </Link>
@@ -179,9 +179,6 @@ export function DecisionsList({
         id: 'trigger_object_type',
         header: t('decisions:trigger_object.type'),
         size: 200,
-        cell: ({ getValue }) => (
-          <span className="capitalize">{getValue()}</span>
-        ),
       }),
       columnHelper.accessor((row) => row.case?.name ?? '-', {
         id: 'case',
@@ -196,7 +193,7 @@ export function DecisionsList({
                   caseId: fromUUID(row.original.case.id),
                 })}
                 onClick={(e) => e.stopPropagation()}
-                className="hover:text-purple-120 focus:text-purple-120 relative font-semibold capitalize text-purple-100 hover:underline focus:underline"
+                className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
               >
                 {getValue()}
               </Link>
