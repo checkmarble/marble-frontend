@@ -165,6 +165,9 @@ export default function Decisions() {
                 decisions={decisions}
                 selectable
                 selectionProps={selectionProps}
+                columnVisibility={{
+                  pivot_value: false,
+                }}
               />
               <CursorPaginationButtons
                 items={decisions}

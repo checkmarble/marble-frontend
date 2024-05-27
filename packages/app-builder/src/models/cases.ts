@@ -66,6 +66,10 @@ export interface CaseDetail
     triggerObject: Record<string, unknown>;
     triggerObjectType: string;
     outcome: Outcome;
+    pivotValues: {
+      id?: string;
+      value?: string;
+    }[];
     scenario: {
       id: string;
       name: string;
@@ -92,6 +96,12 @@ export function adaptCaseDetailDto({
       triggerObject: decisionDto.trigger_object,
       triggerObjectType: decisionDto.trigger_object_type,
       outcome: decisionDto.outcome,
+      pivotValues: decisionDto.pivot_values.map(
+        ({ pivot_id, pivot_value }) => ({
+          id: pivot_id ?? undefined,
+          value: pivot_value ?? undefined,
+        }),
+      ),
       scenario: {
         id: decisionDto.scenario.id,
         name: decisionDto.scenario.name,
