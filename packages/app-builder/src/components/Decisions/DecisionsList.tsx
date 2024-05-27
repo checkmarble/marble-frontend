@@ -17,7 +17,7 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, Table, useVirtualTable } from 'ui-design-system';
+import { Checkbox, Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
 import { Score } from './Score';
 
@@ -26,6 +26,7 @@ type Column =
   | 'scenario_name'
   | 'trigger_object_type'
   | 'case'
+  | 'pivot_value'
   | 'score'
   | 'outcome';
 
@@ -44,6 +45,10 @@ export interface DecisionViewModel {
     name: string;
     status: TCaseStatus;
   };
+  pivotValues: {
+    id?: string;
+    value?: string;
+  }[];
   score: number;
   outcome: TOutcome;
 }
@@ -161,7 +166,7 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.scenario.version, {
         id: 'scenario_version',
         header: 'Vi',
-        size: 20,
+        size: 50,
         cell: ({ getValue, row }) => (
           <Link
             to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
@@ -178,12 +183,12 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.triggerObjectType, {
         id: 'trigger_object_type',
         header: t('decisions:trigger_object.type'),
-        size: 200,
+        size: 150,
       }),
       columnHelper.accessor((row) => row.case?.name ?? '-', {
         id: 'case',
         header: t('decisions:case'),
-        size: 200,
+        size: 150,
         cell: ({ getValue, row }) =>
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-1">
@@ -203,6 +208,26 @@ export function DecisionsList({
               {getValue()}
             </span>
           ),
+      }),
+      columnHelper.accessor((row) => row.pivotValues, {
+        id: 'pivot_value',
+        header: t('decisions:pivot_value'),
+        size: 100,
+        cell: ({ getValue }) => {
+          const pivotValues = getValue() ?? [];
+          if (pivotValues.length === 0) return null;
+          return (
+            <div className="relative flex flex-col gap-1">
+              {pivotValues.map((pivotValue) => (
+                <Tooltip.Default key={pivotValue.id} content={pivotValue.value}>
+                  <span className="text-grey-100 text-s line-clamp-1 text-ellipsis">
+                    {pivotValue.value}
+                  </span>
+                </Tooltip.Default>
+              ))}
+            </div>
+          );
+        },
       }),
       columnHelper.accessor((row) => row.score, {
         id: 'score',
