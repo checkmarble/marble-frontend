@@ -3784,14 +3784,6 @@ components:
               type: array
               items:
                 type: object
-                required:
-                  - id
-                  - created_at
-                  - trigger_object
-                  - trigger_object_type
-                  - outcome
-                  - scenario
-                  - score
                 properties:
                   id:
                     type: string
@@ -3805,6 +3797,10 @@ components:
                     type: string
                   outcome:
                     $ref: '#/components/schemas/Outcome'
+                  pivot_values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PivotValueDto'
                   scenario:
                     type: object
                     required:
@@ -3830,6 +3826,15 @@ components:
                     type: integer
                   error:
                     $ref: '#/components/schemas/Error'
+                required:
+                  - id
+                  - created_at
+                  - trigger_object
+                  - trigger_object_type
+                  - outcome
+                  - pivot_values
+                  - scenario
+                  - score
             events:
               type: array
               items:

@@ -207,6 +207,7 @@ export type CaseDetailDto = Case & {
         };
         trigger_object_type: string;
         outcome: Outcome;
+        pivot_values: PivotValueDto[];
         scenario: {
             id: string;
             name: string;
