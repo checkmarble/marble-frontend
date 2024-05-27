@@ -57,7 +57,7 @@ function WorkflowFlowImpl() {
   });
 
   useLayoutInitializedNodes({
-    mode: 'onMount',
+    mode: 'onNodesInitialized',
     layoutElements,
   });
 
