@@ -104,7 +104,7 @@
   "clone_rule.button": "Clone this rule",
   "clone_rule.title": "Clone this rule",
   "clone_rule.confirmation_button": "Create a copy",
-  "clone_rule.content": "Do you want to create a copy of this rule in the scenario? Make sur to save your changes first as you will be redirected to the copied rule.",
+  "clone_rule.content": "Do you want to create a copy of this rule in the scenario? Make sure to save your changes first as you will be redirected to the copied rule.",
   "clone_rule.default_name": "Copy of: {{name}}",
   "delete_rule.button": "Delete this rule",
   "delete_rule.title": "Delete this rule",
