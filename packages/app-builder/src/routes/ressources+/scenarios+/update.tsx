@@ -110,7 +110,7 @@ function UpdateScenarioContent({
       action={getRoute('/ressources/scenarios/update')}
       {...form.props}
     >
-      <Modal.Title>{t('scenarios:create_scenario.title')}</Modal.Title>
+      <Modal.Title>{t('scenarios:update_scenario.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <input {...conform.input(scenarioId, { type: 'hidden' })} />
         <FormField config={name} className="group flex w-full flex-col gap-2">
