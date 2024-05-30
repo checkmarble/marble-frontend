@@ -1,5 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
-import { PivotDocLink } from '@app-builder/components/Data/SelectedPivot';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
+import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { type AddToCaseIfPossibleAction } from '../models/nodes';
@@ -32,7 +33,7 @@ export function AddToCaseIfPossibleNode({
               t={t}
               i18nKey="workflows:detail_panel.add_to_case_if_possible.no_pivot"
               components={{
-                DocLink: PivotDocLink,
+                DocLink: <ExternalLink href={pivotValuesDocHref} />,
               }}
             />
           </span>

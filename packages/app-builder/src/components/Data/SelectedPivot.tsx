@@ -1,6 +1,7 @@
 import { type DataModel, type Pivot } from '@app-builder/models/data-model';
 import { getLinksToSingleMap } from '@app-builder/services/data/data-model';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
+import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -191,7 +192,3 @@ export function PivotType({ type }: { type: 'field' | 'link' }) {
     </Tag>
   );
 }
-
-export const PivotDocLink = (
-  <ExternalLink href="https://docs.checkmarble.com/docs/pivot-values" />
-);

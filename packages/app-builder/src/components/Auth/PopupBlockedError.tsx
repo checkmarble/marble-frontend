@@ -1,6 +1,8 @@
 import { getCurrentBrowser } from '@app-builder/utils/browser';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { ExternalLink } from '../ExternalLink';
+
 export function PopupBlockedError() {
   const { t } = useTranslation(['common']);
   return (
@@ -27,14 +29,9 @@ function EnablePopup({ children }: { children?: React.ReactNode }) {
   const browser = getCurrentBrowser(navigator.userAgent);
   if (browser in hrefMap) {
     return (
-      <a
-        href={hrefMap[browser as keyof typeof hrefMap]}
-        target="_blank"
-        rel="noreferrer noopener"
-        className="text-purple-100 hover:underline"
-      >
+      <ExternalLink href={hrefMap[browser as keyof typeof hrefMap]}>
         {children}
-      </a>
+      </ExternalLink>
     );
   }
   return <span>{children}</span>;

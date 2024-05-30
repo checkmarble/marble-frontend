@@ -4,6 +4,7 @@ import {
   scenarioI18n,
   usePermissionsContext,
 } from '@app-builder/components';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
@@ -15,6 +16,7 @@ import {
 } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
+import { createDecisionDocHref } from '@app-builder/services/documentation-href';
 import {
   useCurrentScenarioIteration,
   useEditorMode,
@@ -326,15 +328,7 @@ function RunByApiInfo({ scenarioId }: { scenarioId: string }) {
         t={t}
         i18nKey="scenarios:trigger.run_scenario.description.docs"
         components={{
-          DocLink: (
-            // eslint-disable-next-line jsx-a11y/anchor-has-content
-            <a
-              className="text-purple-100"
-              href="https://docs.checkmarble.com/reference/introduction-1"
-              target="_blank"
-              rel="noopener noreferrer"
-            />
-          ),
+          DocLink: <ExternalLink href={createDecisionDocHref} />,
         }}
       />
       <br />

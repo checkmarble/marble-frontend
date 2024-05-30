@@ -9,6 +9,7 @@ import {
   type FuzzyMatchAlgorithm,
   isEditableFuzzyMatchAlgorithm,
 } from '@app-builder/models/fuzzy-match';
+import { fuzzyMatchingDocHref } from '@app-builder/services/documentation-href';
 import { adaptAstNodeFromEditorViewModel } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import {
@@ -147,9 +148,7 @@ function FuzzyMatchComparatorEditModalContent({
               t={t}
               i18nKey="scenarios:edit_fuzzy_match.description"
               components={{
-                DocLink: (
-                  <ExternalLink href="https://docs.checkmarble.com/docs/fuzzy-matching" />
-                ),
+                DocLink: <ExternalLink href={fuzzyMatchingDocHref} />,
               }}
             />
           </ModalV2.Description>
