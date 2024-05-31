@@ -1,27 +1,21 @@
 import clsx from 'clsx';
+import * as React from 'react';
 
 import { type tagBorder, type tagColors, type tagSize } from './Tag.constants';
 
-/* eslint-disable-next-line */
-export interface TagProps
-  extends React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  > {
+export interface TagProps extends React.ComponentProps<'span'> {
   border?: (typeof tagBorder)[number];
   color?: (typeof tagColors)[number];
   size?: (typeof tagSize)[number];
 }
 
-export function Tag({
-  size = 'small',
-  border = 'rounded',
-  color = 'purple',
-  className,
-  ...props
-}: TagProps) {
+export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
+  { size = 'small', border = 'rounded', color = 'purple', className, ...props },
+  ref,
+) {
   return (
     <span
+      ref={ref}
       className={clsx(
         'inline-flex items-center justify-center',
         {
@@ -44,6 +38,6 @@ export function Tag({
       {...props}
     />
   );
-}
+});
 
 export default Tag;
