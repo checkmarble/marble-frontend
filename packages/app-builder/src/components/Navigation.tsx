@@ -3,7 +3,7 @@ import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { type IconProps } from 'packages/ui-icons/src/Icon';
-import type React from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const navigationI18n = ['navigation'] satisfies Namespace;
@@ -48,23 +48,21 @@ export interface SidebarButtonProps
   labelTKey: ParseKeys<['navigation']>;
 }
 
-export function SidebarButton({
-  Icon,
-  labelTKey,
-  className,
-  ...props
-}: SidebarButtonProps) {
+export const SidebarButton = React.forwardRef<
+  HTMLButtonElement,
+  SidebarButtonProps
+>(function SidebarButton({ Icon, labelTKey, className, ...props }, ref) {
   const { t } = useTranslation(navigationI18n);
 
   return (
-    <button className={sidebarLink({ className })} {...props}>
+    <button ref={ref} className={sidebarLink({ className })} {...props}>
       <Icon className="size-6 shrink-0" />
       <span className="line-clamp-1 text-left opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
         {t(labelTKey)}
       </span>
     </button>
   );
-}
+});
 
 export interface TabLinkProps {
   Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;

@@ -2,8 +2,13 @@ import {
   ErrorComponent,
   navigationI18n,
   PermissionsProvider,
+  SidebarButton,
   SidebarLink,
 } from '@app-builder/components';
+import {
+  HelpCenter,
+  useMarbleCoreResources,
+} from '@app-builder/components/HelpCenter';
 import {
   Header,
   ToggleHeader,
@@ -11,7 +16,10 @@ import {
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isAdmin, isMarbleAdmin, isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { ChatlioWidget } from '@app-builder/services/chatlio/ChatlioWidget';
+import {
+  ChatlioButton,
+  ChatlioProvider,
+} from '@app-builder/services/chatlio/ChatlioWidget';
 import { chatlioScript } from '@app-builder/services/chatlio/script';
 import { serverServices } from '@app-builder/services/init.server';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
@@ -79,6 +87,7 @@ export default function Builder() {
   useRefreshToken();
 
   const chatlioWidgetId = getClientEnv('CHATLIO_WIDGET_ID');
+  const marbleCoreResources = useMarbleCoreResources();
 
   return (
     <PermissionsProvider userPermissions={user.permissions}>
@@ -190,23 +199,41 @@ export default function Builder() {
                       />
                     </li>
                   ) : null}
-                  {chatlioWidgetId ? (
-                    <li>
-                      <ChatlioWidget
-                        user={{
-                          id: user.actorIdentity.userId,
-                          email: user.actorIdentity.email,
-                          name: getFullName(user.actorIdentity),
-                        }}
-                        organization={{
-                          id: organization.id,
-                          name: organization.name,
-                        }}
-                        widgetid={chatlioWidgetId}
-                        marbleProduct="marble-core"
+                  <li>
+                    <ChatlioProvider
+                      chatlio={
+                        chatlioWidgetId
+                          ? {
+                              user: {
+                                id: user.actorIdentity.userId,
+                                email: user.actorIdentity.email,
+                                name: getFullName(user.actorIdentity),
+                              },
+                              organization: {
+                                id: organization.id,
+                                name: organization.name,
+                              },
+                              widgetid: chatlioWidgetId,
+                              marbleProduct: 'marble-core',
+                            }
+                          : undefined
+                      }
+                    >
+                      <HelpCenter
+                        defaultTab={marbleCoreResources.defaultTab}
+                        resources={marbleCoreResources.resources}
+                        MenuButton={
+                          <SidebarButton
+                            labelTKey="navigation:helpCenter"
+                            Icon={(props) => (
+                              <Icon icon="helpcenter" {...props} />
+                            )}
+                          />
+                        }
+                        ChatWithUsButton={<ChatlioButton />}
                       />
-                    </li>
-                  ) : null}
+                    </ChatlioProvider>
+                  </li>
                   <li>
                     <ToggleHeader />
                   </li>

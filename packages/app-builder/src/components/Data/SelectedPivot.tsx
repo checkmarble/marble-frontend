@@ -1,7 +1,6 @@
 import { type DataModel, type Pivot } from '@app-builder/models/data-model';
 import { getLinksToSingleMap } from '@app-builder/services/data/data-model';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
-import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +8,6 @@ import { Panel } from 'reactflow';
 import * as R from 'remeda';
 import { Button, Tag } from 'ui-design-system';
 
-import { ExternalLink } from '../ExternalLink';
 import { dataI18n } from './data-i18n';
 
 interface SelectedPivotContextValue {

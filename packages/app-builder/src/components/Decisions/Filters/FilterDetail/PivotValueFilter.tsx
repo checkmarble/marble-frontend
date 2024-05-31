@@ -1,5 +1,4 @@
 import { Callout } from '@app-builder/components/Callout';
-import { PivotDocLink } from '@app-builder/components/Data/SelectedPivot';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';
