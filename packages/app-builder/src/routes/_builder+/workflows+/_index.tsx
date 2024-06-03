@@ -5,6 +5,7 @@ import {
   OffsetPaginationButtons,
   Page,
 } from '@app-builder/components';
+import { Highlight } from '@app-builder/components/Highlight';
 import { type Scenario } from '@app-builder/models/scenario';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -56,9 +57,18 @@ export default function WorkflowsPage() {
         size: 100,
         sortingFn: 'text',
         enableSorting: true,
-        cell: ({ getValue }) => {
-          const value = getValue();
-          return <p className="text-grey-100 text-s font-medium">{value}</p>;
+        cell: ({ getValue, table }) => {
+          const tableState = table.getState();
+          const query =
+            typeof tableState.globalFilter === 'string'
+              ? tableState.globalFilter
+              : '';
+
+          return (
+            <p className="text-grey-100 text-s font-medium">
+              <Highlight text={getValue()} query={query} />
+            </p>
+          );
         },
       }),
       columnHelper.accessor((row) => row.description, {
@@ -67,9 +77,18 @@ export default function WorkflowsPage() {
         size: 200,
         sortingFn: 'text',
         enableSorting: true,
-        cell: ({ getValue }) => {
-          const value = getValue();
-          return <p className="text-grey-100 text-s font-normal">{value}</p>;
+        cell: ({ getValue, table }) => {
+          const tableState = table.getState();
+          const query =
+            typeof tableState.globalFilter === 'string'
+              ? tableState.globalFilter
+              : '';
+
+          return (
+            <p className="text-grey-100 text-s font-normal">
+              <Highlight text={getValue()} query={query} />
+            </p>
+          );
         },
       }),
       columnHelper.accessor((row) => row.decisionToCaseWorkflowType, {
