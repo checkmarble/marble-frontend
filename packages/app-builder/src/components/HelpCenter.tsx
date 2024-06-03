@@ -267,7 +267,7 @@ export function useMarbleCoreResources() {
         {
           label: 'Formula',
           tags: ['Rule formula', 'Trigger formula'],
-          href: 'https://dash.readme.com/project/checkmarble/v1.0.0/docs/formula',
+          href: 'https://docs.checkmarble.com/docs/formula',
         },
         {
           label: 'Operand',
