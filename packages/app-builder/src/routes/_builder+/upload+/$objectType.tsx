@@ -1,6 +1,8 @@
 import { Callout, Page, Paper } from '@app-builder/components';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
+import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -15,7 +17,7 @@ import { type UploadLog } from 'marble-api';
 import { useCallback, useMemo, useState } from 'react';
 import * as reactDropzone from 'react-dropzone';
 const { useDropzone } = reactDropzone;
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -368,7 +370,16 @@ export default function Upload() {
       <Page.Content>
         <Callout className="whitespace-normal" variant="outlined">
           <div className="leading-8">
-            <p>{t('upload:upload_callout_1', { replace: { objectType } })}</p>
+            <p className="whitespace-pre text-wrap">
+              <Trans
+                t={t}
+                i18nKey="upload:upload_callout_1"
+                components={{
+                  DocLink: <ExternalLink href={ingestingDataByCsvDocHref} />,
+                }}
+                values={{ objectType }}
+              />
+            </p>
             <p>{t('upload:upload_callout_2')}</p>
           </div>
         </Callout>

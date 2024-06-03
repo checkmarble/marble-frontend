@@ -5,8 +5,10 @@ import {
   OffsetPaginationButtons,
   Page,
 } from '@app-builder/components';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { Highlight } from '@app-builder/components/Highlight';
 import { type Scenario } from '@app-builder/models/scenario';
+import { workflowsDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -22,7 +24,7 @@ import {
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
 import { Input, Table, Tag, Tooltip, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -167,7 +169,15 @@ export default function WorkflowsPage() {
       </Page.Header>
       <Page.Content className="max-w-screen-lg">
         <Callout className="w-full" variant="outlined">
-          {t('workflows:workflows_description')}
+          <p className="whitespace-pre text-wrap">
+            <Trans
+              t={t}
+              i18nKey="workflows:workflows_description"
+              components={{
+                DocLink: <ExternalLink href={workflowsDocHref} />,
+              }}
+            />
+          </p>
         </Callout>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2 lg:gap-4">

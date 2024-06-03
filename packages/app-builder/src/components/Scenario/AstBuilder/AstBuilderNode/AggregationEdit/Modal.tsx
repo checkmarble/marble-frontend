@@ -1,3 +1,5 @@
+import { Callout } from '@app-builder/components/Callout';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AggregationAstNode,
@@ -14,6 +16,7 @@ import {
   type EvaluationError,
 } from '@app-builder/models/node-evaluation';
 import { useDataModel } from '@app-builder/services/ast-node/options';
+import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import {
   adaptAstNodeFromEditorViewModel,
   type EditorNodeViewModel,
@@ -26,7 +29,7 @@ import {
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type Namespace } from 'i18next';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 import { Logo } from 'ui-icons';
 
@@ -271,6 +274,17 @@ function AggregationEditModalContent({
       </ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-1 flex-col gap-4">
+          <Callout variant="outlined">
+            <ModalV2.Description className="whitespace-pre text-wrap">
+              <Trans
+                t={t}
+                i18nKey="scenarios:edit_aggregation.description"
+                components={{
+                  DocLink: <ExternalLink href={aggregationDocHref} />,
+                }}
+              />
+            </ModalV2.Description>
+          </Callout>
           <div className="flex flex-col gap-2">
             <label htmlFor="aggregation.label">
               {t('scenarios:edit_aggregation.label_title')}

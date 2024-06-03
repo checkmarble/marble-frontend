@@ -1,3 +1,8 @@
+import {
+  executeAScenarioDocHref,
+  pivotValuesDocHref,
+  scenarioDecisionDocHref,
+} from '@app-builder/services/documentation-href';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import * as Ariakit from '@ariakit/react';
@@ -247,7 +252,7 @@ export function useMarbleCoreResources() {
         },
         {
           label: 'Executing a scenario',
-          href: 'https://docs.checkmarble.com/docs/executing-a-scenario#executing-a-scenario',
+          href: executeAScenarioDocHref,
         },
         {
           label: 'Edit Scenario',
@@ -266,7 +271,7 @@ export function useMarbleCoreResources() {
         {
           label: 'Scenario Decision',
           tags: ['Outcome', 'Approve', 'Review', 'Decline'],
-          href: 'https://docs.checkmarble.com/docs/decision-1',
+          href: scenarioDecisionDocHref,
         },
         {
           label: 'Formula',
@@ -349,7 +354,7 @@ export function useMarbleCoreResources() {
         {
           label: 'Pivot values',
           tags: ['Workflow', 'Decision'],
-          href: 'https://docs.checkmarble.com/docs/pivot-values-1',
+          href: pivotValuesDocHref,
         },
         {
           label: 'Ingesting Data',
