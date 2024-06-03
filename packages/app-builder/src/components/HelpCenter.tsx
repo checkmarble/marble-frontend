@@ -246,6 +246,10 @@ export function useMarbleCoreResources() {
           href: 'https://docs.checkmarble.com/docs/introduction-copy',
         },
         {
+          label: 'Executing a scenario',
+          href: 'https://docs.checkmarble.com/docs/executing-a-scenario#executing-a-scenario',
+        },
+        {
           label: 'Edit Scenario',
           href: 'https://docs.checkmarble.com/docs/scenario-edit',
         },
@@ -306,8 +310,12 @@ export function useMarbleCoreResources() {
         },
         {
           label: 'List in Scenario Builder',
-          tags: ['Formula', 'List operators'],
+          tags: ['Formula'],
           href: 'https://docs.checkmarble.com/docs/lists-in-scenario-builder',
+        },
+        {
+          label: 'List operators',
+          href: 'https://docs.checkmarble.com/docs/list-operators',
         },
       ],
       [t('navigation:workflows')]: [
