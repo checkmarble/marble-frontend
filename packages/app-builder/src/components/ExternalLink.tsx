@@ -13,7 +13,7 @@ export const ExternalLink = forwardRef<
         className,
       )}
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
       {...otherProps}
     >
       {children}

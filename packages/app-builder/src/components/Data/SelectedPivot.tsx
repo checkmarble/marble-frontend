@@ -8,7 +8,6 @@ import { Panel } from 'reactflow';
 import * as R from 'remeda';
 import { Button, Tag } from 'ui-design-system';
 
-import { ExternalLink } from '../ExternalLink';
 import { dataI18n } from './data-i18n';
 
 interface SelectedPivotContextValue {
@@ -191,7 +190,3 @@ export function PivotType({ type }: { type: 'field' | 'link' }) {
     </Tag>
   );
 }
-
-export const PivotDocLink = (
-  <ExternalLink href="https://docs.checkmarble.com/docs/pivot-values" />
-);

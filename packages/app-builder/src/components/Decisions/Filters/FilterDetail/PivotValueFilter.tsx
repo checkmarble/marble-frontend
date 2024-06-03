@@ -1,5 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
-import { PivotDocLink } from '@app-builder/components/Data/SelectedPivot';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
+import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -22,7 +23,7 @@ export function PivotValueFilter() {
               t={t}
               i18nKey="decisions:pivot_detail.description.small"
               components={{
-                DocLink: PivotDocLink,
+                DocLink: <ExternalLink href={pivotValuesDocHref} />,
               }}
             />
           </span>
@@ -51,7 +52,7 @@ export function PivotValueFilter() {
                 className="hover:text-purple-120 focus:text-purple-120 font-semibold lowercase text-purple-100 hover:underline focus:underline"
               />
             ),
-            DocLink: PivotDocLink,
+            DocLink: <ExternalLink href={pivotValuesDocHref} />,
           }}
         />
       </span>

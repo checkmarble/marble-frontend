@@ -5,6 +5,7 @@ import {
 } from '@app-builder/components';
 import { type Pivot } from '@app-builder/models';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
+import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
@@ -12,7 +13,8 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Collapsible, Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
-import { PivotDocLink, PivotType } from '../Data/SelectedPivot';
+import { PivotType } from '../Data/SelectedPivot';
+import { ExternalLink } from '../ExternalLink';
 
 interface PivotDetailProps {
   pivotValues: {
@@ -38,7 +40,7 @@ export function PivotDetail({
               t={t}
               i18nKey="decisions:pivot_detail.description"
               components={{
-                DocLink: PivotDocLink,
+                DocLink: <ExternalLink href={pivotValuesDocHref} />,
               }}
             />
           </span>
@@ -54,7 +56,7 @@ export function PivotDetail({
             t={t}
             i18nKey="decisions:pivot_detail.no_pivot_description"
             components={{
-              DocLink: PivotDocLink,
+              DocLink: <ExternalLink href={pivotValuesDocHref} />,
             }}
           />
         </span>
@@ -74,7 +76,7 @@ export function PivotDetail({
                   className="hover:text-purple-120 focus:text-purple-120 font-semibold lowercase text-purple-100 hover:underline focus:underline"
                 />
               ),
-              DocLink: PivotDocLink,
+              DocLink: <ExternalLink href={pivotValuesDocHref} />,
             }}
           />
         </span>

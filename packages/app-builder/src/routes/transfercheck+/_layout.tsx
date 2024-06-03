@@ -2,8 +2,13 @@ import {
   ErrorComponent,
   navigationI18n,
   PermissionsProvider,
+  SidebarButton,
   SidebarLink,
 } from '@app-builder/components';
+import {
+  HelpCenter,
+  useTransfercheckResources,
+} from '@app-builder/components/HelpCenter';
 import {
   Header,
   ToggleHeader,
@@ -11,7 +16,10 @@ import {
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleAdmin, isTransferCheckUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { ChatlioWidget } from '@app-builder/services/chatlio/ChatlioWidget';
+import {
+  ChatlioButton,
+  ChatlioProvider,
+} from '@app-builder/services/chatlio/ChatlioWidget';
 import { chatlioScript } from '@app-builder/services/chatlio/script';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -70,6 +78,7 @@ export default function Builder() {
   useRefreshToken();
 
   const chatlioWidgetId = getClientEnv('CHATLIO_WIDGET_ID');
+  const transfercheckResources = useTransfercheckResources();
 
   return (
     <PermissionsProvider userPermissions={user.permissions}>
@@ -106,22 +115,38 @@ export default function Builder() {
           </ScrollArea.Root>
           <nav className="p-2 pb-4">
             <ul className="flex flex-col gap-2">
-              {chatlioWidgetId ? (
-                <li>
-                  <ChatlioWidget
-                    user={{
-                      id: user.actorIdentity.userId,
-                      email: user.actorIdentity.email,
-                      name: getFullName(user.actorIdentity),
-                    }}
-                    partner={{
-                      id: user.partnerId,
-                    }}
-                    widgetid={chatlioWidgetId}
-                    marbleProduct="transfercheck"
+              <li>
+                <ChatlioProvider
+                  chatlio={
+                    chatlioWidgetId
+                      ? {
+                          user: {
+                            id: user.actorIdentity.userId,
+                            email: user.actorIdentity.email,
+                            name: getFullName(user.actorIdentity),
+                          },
+                          partner: {
+                            id: user.partnerId,
+                          },
+                          widgetid: chatlioWidgetId,
+                          marbleProduct: 'transfercheck',
+                        }
+                      : undefined
+                  }
+                >
+                  <HelpCenter
+                    defaultTab={transfercheckResources.defaultTab}
+                    resources={transfercheckResources.resources}
+                    MenuButton={
+                      <SidebarButton
+                        labelTKey="navigation:helpCenter"
+                        Icon={(props) => <Icon icon="helpcenter" {...props} />}
+                      />
+                    }
+                    ChatWithUsButton={<ChatlioButton />}
                   />
-                </li>
-              ) : null}
+                </ChatlioProvider>
+              </li>
               <li>
                 <ToggleHeader />
               </li>
