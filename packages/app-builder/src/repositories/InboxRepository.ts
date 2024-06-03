@@ -7,6 +7,7 @@ import {
   type InboxUser,
   type InboxWithCasesCount,
 } from '@app-builder/models/inbox';
+import * as R from 'remeda';
 
 export interface InboxRepository {
   listInboxes(): Promise<Inbox[]>;
@@ -21,7 +22,7 @@ export function getInboxRepository() {
         withCaseCount: false,
       });
 
-      return inboxes.map(adaptInbox);
+      return R.pipe(inboxes, R.map(adaptInbox), R.sortBy(R.prop('name')));
     },
     listInboxesWithCaseCount: async () => {
       const { inboxes } = await marbleApiClient.listInboxes({
