@@ -1,6 +1,6 @@
 {
   "upload_cta": "Upload {{objectType}}",
-  "upload_callout_1": "You can manually add {{objectType}} to your Marble instance from this page by uploading a .csv file here.",
+  "upload_callout_1": "You can manually add {{objectType}} to your Marble instance from this page by uploading a .csv file here. (<DocLink>learn more</DocLink>)",
   "upload_callout_2": "The .csv file must follow the same schema as defined in your data model. We have build a template that you can use to get started quickly.",
   "download_template_cta": "Download template .csv",
   "drop_file_cta": "Drop your filled .csv here",

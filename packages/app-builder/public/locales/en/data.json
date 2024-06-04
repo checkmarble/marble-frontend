@@ -37,6 +37,7 @@
   "view_pivot.table": "Table",
   "view_pivot.definition": "Definition",
   "create_pivot.title": "Create a pivot",
+  "create_pivot.description": "A key in the data model used to filter or group decisions (<DocLink>learn more</DocLink>)",
   "create_pivot.select.label": "Select a pivot",
   "create_pivot.select.empty_matches": "No pivot matches your search",
   "create_pivot.button_accept": "Create pivot",

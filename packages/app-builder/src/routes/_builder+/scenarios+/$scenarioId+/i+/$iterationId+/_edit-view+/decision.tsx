@@ -5,6 +5,7 @@ import {
   Paper,
   scenarioI18n,
 } from '@app-builder/components';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import {
   FormControl,
   FormError,
@@ -14,6 +15,7 @@ import {
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { scenarioDecisionDocHref } from '@app-builder/services/documentation-href';
 import {
   useCurrentScenarioIteration,
   useEditorMode,
@@ -198,7 +200,17 @@ export default function Decision() {
     <Paper.Container className="bg-grey-00 max-w-3xl">
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:decision.score_based.title')}</Paper.Title>
-        <Callout>{t('scenarios:decision.score_based.callout')}</Callout>
+        <Callout variant="outlined">
+          <p className="whitespace-pre text-wrap">
+            <Trans
+              t={t}
+              i18nKey="scenarios:decision.score_based.callout"
+              components={{
+                DocLink: <ExternalLink href={scenarioDecisionDocHref} />,
+              }}
+            />
+          </p>
+        </Callout>
       </div>
 
       <Form

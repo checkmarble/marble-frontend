@@ -1,4 +1,6 @@
+import { Callout } from '@app-builder/components';
 import { PivotType } from '@app-builder/components/Data/SelectedPivot';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import {
   FormControl,
   FormError,
@@ -14,6 +16,7 @@ import {
   type TableModel,
 } from '@app-builder/models';
 import { getPivotOptions } from '@app-builder/services/data/pivot';
+import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,7 +26,7 @@ import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2, SelectWithCombobox } from 'ui-design-system';
 import { z } from 'zod';
 
@@ -185,6 +188,17 @@ function CreatePivotContent({
       <FormProvider {...formMethods}>
         <ModalV2.Title>{t('data:create_pivot.title')}</ModalV2.Title>
         <div className="bg-grey-00 flex flex-col gap-6 p-6">
+          <Callout variant="outlined">
+            <ModalV2.Description className="whitespace-pre text-wrap">
+              <Trans
+                t={t}
+                i18nKey="data:create_pivot.description"
+                components={{
+                  DocLink: <ExternalLink href={pivotValuesDocHref} />,
+                }}
+              />
+            </ModalV2.Description>
+          </Callout>
           <FormField
             name="pivot"
             control={control}

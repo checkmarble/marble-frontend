@@ -1,3 +1,5 @@
+import { Callout } from '@app-builder/components/Callout';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
@@ -17,6 +19,7 @@ import {
   computeValidationForNamedChildren,
   type EvaluationError,
 } from '@app-builder/models/node-evaluation';
+import { dateDocHref } from '@app-builder/services/documentation-href';
 import {
   adaptAstNodeFromEditorViewModel,
   type EditorNodeViewModel,
@@ -28,7 +31,7 @@ import {
 } from '@app-builder/services/validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 
@@ -184,8 +187,19 @@ function TimeAddEditModalContent({
     <>
       <ModalV2.Title>{t('scenarios:edit_date.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
-        <div>
-          <div className="flex gap-2 pb-2">
+        <div className="flex flex-col gap-4">
+          <Callout variant="outlined">
+            <ModalV2.Description className="whitespace-pre text-wrap">
+              <Trans
+                t={t}
+                i18nKey="scenarios:edit_date.description"
+                components={{
+                  DocLink: <ExternalLink href={dateDocHref} />,
+                }}
+              />
+            </ModalV2.Description>
+          </Callout>
+          <div className="flex gap-2">
             <TimestampField
               value={value.timestampField}
               onChange={(timestampField) =>

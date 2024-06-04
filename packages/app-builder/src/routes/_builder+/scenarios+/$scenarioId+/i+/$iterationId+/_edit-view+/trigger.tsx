@@ -16,7 +16,10 @@ import {
 } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
-import { createDecisionDocHref } from '@app-builder/services/documentation-href';
+import {
+  createDecisionDocHref,
+  executeAScenarioDocHref,
+} from '@app-builder/services/documentation-href';
 import {
   useCurrentScenarioIteration,
   useEditorMode,
@@ -235,8 +238,16 @@ export default function Trigger() {
 
       <div className="flex flex-col gap-2 lg:gap-4">
         <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
-        <Callout className="w-fit">
-          {t('scenarios:trigger.trigger_object.callout')}
+        <Callout className="w-fit" variant="outlined">
+          <p className="whitespace-pre text-wrap">
+            <Trans
+              t={t}
+              i18nKey="scenarios:trigger.trigger_object.callout"
+              components={{
+                DocLink: <ExternalLink href={executeAScenarioDocHref} />,
+              }}
+            />
+          </p>
         </Callout>
       </div>
 
