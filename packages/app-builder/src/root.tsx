@@ -12,6 +12,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  type ShouldRevalidateFunctionArgs,
   useLoaderData,
   useRouteError,
 } from '@remix-run/react';
@@ -191,3 +192,15 @@ function App() {
 }
 
 export default withSentry(App);
+
+export function shouldRevalidate({
+  defaultShouldRevalidate,
+  nextUrl,
+}: ShouldRevalidateFunctionArgs) {
+  // Revalidate when navigating to the sign-in page to ensure a fresh CSRF token
+  if (nextUrl.pathname === getRoute('/sign-in')) {
+    return true;
+  }
+
+  return defaultShouldRevalidate;
+}
