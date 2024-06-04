@@ -16,10 +16,7 @@ import {
   type TableModel,
 } from '@app-builder/models';
 import { getPivotOptions } from '@app-builder/services/data/pivot';
-import {
-  dateDocHref,
-  pivotValuesDocHref,
-} from '@app-builder/services/documentation-href';
+import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { zodResolver } from '@hookform/resolvers/zod';

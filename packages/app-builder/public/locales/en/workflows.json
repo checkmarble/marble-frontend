@@ -1,5 +1,5 @@
 {
-  "workflows_description": "Workflows are a series of actions that are automatically performed based on a trigger. They help you automate your work and save time. At the moment, workflows can only be created for decisions on Scenarios. (<DocLink>learn more↗</DocLink>)",
+  "workflows_description": "Workflows are a series of actions that are automatically performed based on a trigger. They help you automate your work and save time. At the moment, workflows can only be created for decisions on Scenarios. (<DocLink>learn more</DocLink>)",
   "no_scenarios": "Create a scenario to start creating workflows.",
   "no_matching_scenarios": "No matching scenarios found.",
   "name": "Name",
