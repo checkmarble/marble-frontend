@@ -46,7 +46,7 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Collapsible } from 'ui-design-system';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -218,75 +218,85 @@ export default function Trigger() {
   };
 
   return (
-    <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
-      <div className="flex flex-col gap-2 lg:gap-4">
-        <Paper.Title>{t('scenarios:trigger.run_scenario.title')}</Paper.Title>
-        <RunByApiInfo scenarioId={scenarioIteration.scenarioId} />
-        <ScheduleOption
-          schedule={schedule}
-          setSchedule={setSchedule}
-          hasExportBucket={!!organization.exportScheduledExecutionS3}
-          viewOnly={editorMode === 'view'}
-        />
-      </div>
-      {isLive && canManageDecision ? (
-        <ManualTriggerButton
-          handleTriggerExecution={handleTriggerExecution}
-          hasPendingExecution={pendingExecutions.length > 0}
-        />
-      ) : null}
-
-      <div className="flex flex-col gap-2 lg:gap-4">
-        <Paper.Title>{t('scenarios:trigger.trigger_object.title')}</Paper.Title>
-        <Callout className="w-fit" variant="outlined">
-          <p className="whitespace-pre text-wrap">
-            <Trans
-              t={t}
-              i18nKey="scenarios:trigger.trigger_object.callout"
-              components={{
-                DocLink: <ExternalLink href={executeAScenarioDocHref} />,
-              }}
+    <>
+      <Collapsible.Container className="bg-grey-00 max-w-3xl">
+        <Collapsible.Title>
+          {t('scenarios:trigger.run_scenario.title')}
+        </Collapsible.Title>
+        <Collapsible.Content>
+          <div className="flex flex-col gap-4 lg:gap-6">
+            <RunByApiInfo scenarioId={scenarioIteration.scenarioId} />
+            <ScheduleOption
+              schedule={schedule}
+              setSchedule={setSchedule}
+              hasExportBucket={!!organization.exportScheduledExecutionS3}
+              viewOnly={editorMode === 'view'}
             />
-          </p>
-        </Callout>
-      </div>
+            {isLive && canManageDecision ? (
+              <ManualTriggerButton
+                handleTriggerExecution={handleTriggerExecution}
+                hasPendingExecution={pendingExecutions.length > 0}
+              />
+            ) : null}
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Container>
+      <Collapsible.Container className="bg-grey-00 max-w-3xl">
+        <Collapsible.Title>
+          {t('scenarios:trigger.trigger_object.title')}
+        </Collapsible.Title>
+        <Collapsible.Content>
+          <Callout variant="outlined" className="mb-4 lg:mb-6">
+            <p className="whitespace-pre text-wrap">
+              <Trans
+                t={t}
+                i18nKey="scenarios:trigger.trigger_object.callout"
+                components={{
+                  DocLink: <ExternalLink href={executeAScenarioDocHref} />,
+                }}
+              />
+            </p>
+          </Callout>
+          <div className="flex flex-col gap-2 lg:gap-4">
+            <AstBuilder
+              options={{
+                databaseAccessors,
+                payloadAccessors,
+                operators,
+                dataModel,
+                customLists,
+                triggerObjectType: scenario.triggerObjectType,
+              }}
+              setOperand={astEditor.setOperand}
+              setOperator={astEditor.setOperator}
+              appendChild={astEditor.appendChild}
+              remove={astEditor.remove}
+              editorNodeViewModel={astEditor.editorNodeViewModel}
+              viewOnly={editorMode === 'view'}
+            />
 
-      <AstBuilder
-        options={{
-          databaseAccessors,
-          payloadAccessors,
-          operators,
-          dataModel,
-          customLists,
-          triggerObjectType: scenario.triggerObjectType,
-        }}
-        setOperand={astEditor.setOperand}
-        setOperator={astEditor.setOperator}
-        appendChild={astEditor.appendChild}
-        remove={astEditor.remove}
-        editorNodeViewModel={astEditor.editorNodeViewModel}
-        viewOnly={editorMode === 'view'}
-      />
-
-      {editorMode === 'edit' ? (
-        <div className="flex flex-row-reverse items-center justify-between gap-2">
-          <Button type="submit" onClick={handleSave}>
-            {t('common:save')}
-          </Button>
-          <EvaluationErrors
-            errors={scenarioValidation.trigger.errors
-              .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
-              .map(getScenarioErrorMessage)}
-          />
-        </div>
-      ) : (
-        <EvaluationErrors
-          errors={scenarioValidation.trigger.errors
-            .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
-            .map(getScenarioErrorMessage)}
-        />
-      )}
-    </Paper.Container>
+            {editorMode === 'edit' ? (
+              <div className="flex flex-row-reverse items-center justify-between gap-2">
+                <Button type="submit" onClick={handleSave}>
+                  {t('common:save')}
+                </Button>
+                <EvaluationErrors
+                  errors={scenarioValidation.trigger.errors
+                    .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
+                    .map(getScenarioErrorMessage)}
+                />
+              </div>
+            ) : (
+              <EvaluationErrors
+                errors={scenarioValidation.trigger.errors
+                  .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
+                  .map(getScenarioErrorMessage)}
+              />
+            )}
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Container>
+    </>
   );
 }
 
