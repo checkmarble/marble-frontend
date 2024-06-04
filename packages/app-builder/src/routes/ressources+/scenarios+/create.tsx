@@ -1,3 +1,6 @@
+import { Callout } from '@app-builder/components';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
+import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -11,9 +14,8 @@ import {
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, Input, Modal, Select } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Trans, useTranslation } from 'react-i18next';
+import { Button, HiddenInputs, Input, ModalV2, Select } from 'ui-design-system';
 import { z } from 'zod';
 
 export const handle = {
@@ -79,21 +81,14 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function CreateScenario() {
-  const { t } = useTranslation(handle.i18n);
-
+export function CreateScenario({ children }: { children: React.ReactElement }) {
   return (
-    <Modal.Root>
-      <Modal.Trigger asChild>
-        <Button>
-          <Icon icon="plus" className="size-6" />
-          {t('scenarios:create_scenario.title')}
-        </Button>
-      </Modal.Trigger>
-      <Modal.Content>
+    <ModalV2.Root>
+      <ModalV2.Trigger render={children} />
+      <ModalV2.Content>
         <CreateScenarioContent />
-      </Modal.Content>
-    </Modal.Root>
+      </ModalV2.Content>
+    </ModalV2.Root>
   );
 }
 
@@ -115,8 +110,21 @@ function CreateScenarioContent() {
       method="POST"
       action={getRoute('/ressources/scenarios/create')}
     >
-      <Modal.Title>{t('scenarios:create_scenario.title')}</Modal.Title>
+      <ModalV2.Title>{t('scenarios:create_scenario.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
+        <ModalV2.Description>
+          <Callout variant="outlined">
+            <p className="whitespace-pre text-wrap">
+              <Trans
+                t={t}
+                i18nKey="scenarios:create_scenario.callout"
+                components={{
+                  DocLink: <ExternalLink href={scenarioObjectDocHref} />,
+                }}
+              />
+            </p>
+          </Callout>
+        </ModalV2.Description>
         <div className="flex flex-1 flex-col gap-4">
           <label htmlFor="name">{t('scenarios:create_scenario.name')}</label>
           <Input
@@ -160,11 +168,11 @@ function CreateScenarioContent() {
           <HiddenInputs triggerObjectType={triggerObjectType} />
         </div>
         <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
+          <ModalV2.Close
+            render={<Button className="flex-1" variant="secondary" />}
+          >
+            {t('common:cancel')}
+          </ModalV2.Close>
           <Button
             className="flex-1"
             variant="primary"

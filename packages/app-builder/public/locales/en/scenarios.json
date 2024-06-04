@@ -85,6 +85,7 @@
   "deployment_modal_success.deactivate.title": "Version deactivated",
   "deployment_modal_success.deactivate.description": "The live version has been successfully deactivated, the scenario has ceased to operate",
   "create_scenario.title": "New Scenario",
+  "create_scenario.callout": "A scenario identifies a certain risk type, triggered by a specific event (<DocLink>learn more</DocLink>)",
   "create_scenario.name": "Name",
   "create_scenario.description": "Description",
   "create_scenario.description_placeholder": "Add a description",
