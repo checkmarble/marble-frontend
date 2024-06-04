@@ -31,6 +31,7 @@ import {
   aggregatorOperators,
   isTwoLineOperandOperatorFunction,
   type OperatorFunction,
+  sortTwoLineOperandOperatorFunctions,
 } from '@app-builder/models/editable-operators';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type CustomList } from 'marble-api';
@@ -279,7 +280,10 @@ export function useAdaptEditableAstNode() {
 export function useTwoLineOperandOperatorFunctions() {
   const operators = useOperatorFunctions();
   return useMemo(
-    () => operators.filter(isTwoLineOperandOperatorFunction),
+    () =>
+      operators
+        .filter(isTwoLineOperandOperatorFunction)
+        .sort(sortTwoLineOperandOperatorFunctions),
     [operators],
   );
 }
