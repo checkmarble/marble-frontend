@@ -71,9 +71,11 @@ export function CasesFiltersBar() {
               </FilterPopover.Root>
             );
           })}
-          <CasesFiltersMenu filterNames={undefinedCasesFilterNames}>
-            <AddNewFilterButton />
-          </CasesFiltersMenu>
+          {undefinedCasesFilterNames.length > 0 ? (
+            <CasesFiltersMenu filterNames={undefinedCasesFilterNames}>
+              <AddNewFilterButton />
+            </CasesFiltersMenu>
+          ) : null}
         </div>
         <ClearAllFiltersLink to={getRoute('/cases/')} replace />
       </div>

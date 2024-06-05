@@ -71,9 +71,11 @@ export function DecisionFiltersBar() {
               </FilterPopover.Root>
             );
           })}
-          <DecisionFiltersMenu filterNames={undefinedDecisionFilterNames}>
-            <AddNewFilterButton />
-          </DecisionFiltersMenu>
+          {undefinedDecisionFilterNames.length > 0 ? (
+            <DecisionFiltersMenu filterNames={undefinedDecisionFilterNames}>
+              <AddNewFilterButton />
+            </DecisionFiltersMenu>
+          ) : null}
         </div>
         <ClearAllFiltersLink to={getRoute('/decisions/')} replace />
       </div>
