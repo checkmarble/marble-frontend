@@ -1,6 +1,5 @@
 import {
   Callout,
-  Paper,
   scenarioI18n,
   usePermissionsContext,
 } from '@app-builder/components';
