@@ -21,20 +21,18 @@ export const ScheduleOptionViewer = ({ schedule }: { schedule: string }) => {
     }
   }, [language, schedule]);
 
-  if (!formattedSchedule) return null;
+  if (!formattedSchedule) return t('scenarios:no_scheduled');
 
   return (
-    <p className="text-s text-grey-100 font-normal">
-      <Trans
-        t={t}
-        i18nKey="scenarios:scheduled"
-        components={{
-          ScheduleLocale: <span style={{ fontWeight: 'bold' }} />,
-        }}
-        values={{
-          schedule: formattedSchedule,
-        }}
-      />
-    </p>
+    <Trans
+      t={t}
+      i18nKey="scenarios:scheduled"
+      components={{
+        ScheduleLocale: <span style={{ fontWeight: 'bold' }} />,
+      }}
+      values={{
+        schedule: formattedSchedule,
+      }}
+    />
   );
 };

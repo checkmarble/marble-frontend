@@ -45,7 +45,7 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Collapsible } from 'ui-design-system';
+import { Button, Collapsible, Tooltip } from 'ui-design-system';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -216,6 +216,7 @@ export default function Trigger() {
     );
   };
 
+  const getCopyToClipboardProps = useGetCopyToClipboard();
   return (
     <>
       <Collapsible.Container className="bg-grey-00 max-w-3xl">
@@ -223,23 +224,87 @@ export default function Trigger() {
           {t('scenarios:trigger.run_scenario.title')}
         </Collapsible.Title>
         <Collapsible.Content>
-          <div className="flex flex-col gap-4 lg:gap-6">
-            <RunByApiInfo scenarioId={scenarioIteration.scenarioId} />
-            <ScheduleOption
-              schedule={schedule}
-              setSchedule={setSchedule}
-              hasExportBucket={!!organization.exportScheduledExecutionS3}
-              viewOnly={editorMode === 'view'}
-            />
-            {isLive && canManageDecision ? (
-              <ManualTriggerButton
-                handleTriggerExecution={handleTriggerExecution}
-                hasPendingExecution={pendingExecutions.length > 0}
-              />
-            ) : null}
+          <div className="flex flex-col">
+            <div className="space-y-2">
+              <p>
+                <Trans
+                  t={t}
+                  i18nKey="scenarios:trigger.run_scenario.description"
+                  components={{
+                    DocLink: <ExternalLink href={executeAScenarioDocHref} />,
+                  }}
+                />
+              </p>
+              <ol className="list-outside list-decimal space-y-4 pl-6">
+                <li>
+                  <Trans
+                    t={t}
+                    i18nKey="scenarios:trigger.run_scenario.description.api_execution"
+                    components={{
+                      DocLink: <ExternalLink href={createDecisionDocHref} />,
+                    }}
+                  />
+                  <ul className="list-outside space-y-1 pl-4">
+                    <li>
+                      <Trans
+                        t={t}
+                        i18nKey="scenarios:trigger.run_scenario.description.api_execution.scenario_id"
+                        components={{
+                          ScenarioIdLabel: <code className="select-none" />,
+                          ScenarioIdValue: (
+                            <code
+                              className="border-grey-10 cursor-pointer select-none rounded-sm border px-1"
+                              {...getCopyToClipboardProps(
+                                scenarioIteration.scenarioId,
+                              )}
+                            />
+                          ),
+                        }}
+                        values={{
+                          scenarioId: scenarioIteration.scenarioId,
+                        }}
+                      />
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <Trans
+                    t={t}
+                    i18nKey="scenarios:trigger.run_scenario.description.batch_execution"
+                  />
+                  <ul className="list-outside space-y-1 pl-4">
+                    <li>
+                      {organization.exportScheduledExecutionS3
+                        ? t(
+                            'scenarios:trigger.run_scenario.description.batch_execution.push_to_s3',
+                          )
+                        : t(
+                            'scenarios:trigger.run_scenario.description.batch_execution.configure_your_s3',
+                          )}
+                    </li>
+                    <li>
+                      <ScheduleOption
+                        schedule={schedule}
+                        setSchedule={setSchedule}
+                        viewOnly={editorMode === 'view'}
+                      />
+                    </li>
+                    {isLive && canManageDecision ? (
+                      <li>
+                        <ManualTriggerButton
+                          handleTriggerExecution={handleTriggerExecution}
+                          hasPendingExecution={pendingExecutions.length > 0}
+                        />
+                      </li>
+                    ) : null}
+                  </ul>
+                </li>
+              </ol>
+            </div>
           </div>
         </Collapsible.Content>
       </Collapsible.Container>
+
       <Collapsible.Container className="bg-grey-00 max-w-3xl">
         <Collapsible.Title>
           {t('scenarios:trigger.trigger_object.title')}
@@ -307,17 +372,23 @@ function ManualTriggerButton({
   handleTriggerExecution: () => void;
 }) {
   const { t } = useTranslation(handle.i18n);
+
+  const ManualButton = (
+    <Button
+      type="submit"
+      disabled={hasPendingExecution}
+      onClick={handleTriggerExecution}
+      className={clsx({ 'cursor-not-allowed': hasPendingExecution })}
+    >
+      {t('scenarios:trigger.trigger_manual_execution.button')}
+    </Button>
+  );
+
+  if (!hasPendingExecution) return ManualButton;
+
   return (
-    <div>
-      <Button
-        type="submit"
-        disabled={hasPendingExecution}
-        onClick={handleTriggerExecution}
-        className={clsx({ 'cursor-not-allowed': hasPendingExecution })}
-      >
-        {t('scenarios:trigger.trigger_manual_execution.button')}
-      </Button>
-      {hasPendingExecution ? (
+    <Tooltip.Default
+      content={
         <p className="my-2 text-xs">
           <Trans
             t={t}
@@ -333,41 +404,9 @@ function ManualTriggerButton({
             }}
           />
         </p>
-      ) : null}
-    </div>
-  );
-}
-
-function RunByApiInfo({ scenarioId }: { scenarioId: string }) {
-  const { t } = useTranslation(handle.i18n);
-  const getCopyToClipboardProps = useGetCopyToClipboard();
-
-  return (
-    <p className="text-s text-grey-100 font-normal">
-      <Trans
-        t={t}
-        i18nKey="scenarios:trigger.run_scenario.description.docs"
-        components={{
-          DocLink: <ExternalLink href={createDecisionDocHref} />,
-        }}
-      />
-      <br />
-      <Trans
-        t={t}
-        i18nKey="scenarios:trigger.run_scenario.description.scenario_id"
-        components={{
-          ScenarioIdLabel: <code className="select-none" />,
-          ScenarioIdValue: (
-            <code
-              className="border-grey-10 cursor-pointer select-none rounded-sm border px-1"
-              {...getCopyToClipboardProps(scenarioId)}
-            />
-          ),
-        }}
-        values={{
-          scenarioId,
-        }}
-      />
-    </p>
+      }
+    >
+      {ManualButton}
+    </Tooltip.Default>
   );
 }
