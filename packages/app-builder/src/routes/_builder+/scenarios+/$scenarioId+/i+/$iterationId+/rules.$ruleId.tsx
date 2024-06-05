@@ -48,10 +48,11 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { type CustomList } from 'marble-api';
 import { useEffect } from 'react';
-import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Input, Tag } from 'ui-design-system';
+import { Button, Collapsible, Input, Tag } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -158,7 +159,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 }
 
-export default function RuleEdit() {
+export default function RuleDetail() {
   const { t } = useTranslation(handle.i18n);
 
   const {
@@ -173,7 +174,6 @@ export default function RuleEdit() {
   const scenarioId = useParam('scenarioId');
   const ruleId = useParam('ruleId');
 
-  const fetcher = useFetcher<typeof action>();
   const { validate, validation: localValidation } = useRuleValidationFetcher(
     scenarioId,
     iterationId,
@@ -193,33 +193,6 @@ export default function RuleEdit() {
     localEvaluation: localValidation,
     onValidate: validate,
   });
-  const getCurrentAstNode = () =>
-    adaptAstNodeFromEditorViewModel(astEditor.editorNodeViewModel);
-
-  const formMethods = useForm<EditRuleFormValues>({
-    defaultValues: {
-      name: rule.name,
-      description: rule.description,
-      scoreModifier: rule.scoreModifier,
-    },
-    mode: 'onChange',
-  });
-  const { setError } = formMethods;
-  const { data } = fetcher;
-  const errors = data?.errors;
-
-  useEffect(() => {
-    if (!errors) return;
-
-    R.forEachObj.indexed(errors.fieldErrors, (err, name) => {
-      const message = err?.[0];
-      if (message === undefined) return;
-      setError(name, {
-        type: 'custom',
-        message,
-      });
-    });
-  }, [errors, setError]);
 
   const options = {
     databaseAccessors,
@@ -242,32 +215,6 @@ export default function RuleEdit() {
             </Tag>
           ) : null}
         </div>
-        {editorMode === 'edit' ? (
-          <div className="flex flex-row gap-4">
-            <DuplicateRule
-              ruleId={ruleId}
-              iterationId={iterationId}
-              scenarioId={scenarioId}
-            />
-            <Button
-              onClick={() => {
-                const values = formMethods.getValues();
-                fetcher.submit(
-                  {
-                    astNode: getCurrentAstNode(),
-                    formValues: values,
-                  },
-                  {
-                    method: 'PATCH',
-                    encType: 'application/json',
-                  },
-                );
-              }}
-            >
-              {t('common:save')}
-            </Button>
-          </div>
-        ) : null}
       </Page.Header>
 
       {editorMode === 'view' ? (
@@ -288,10 +235,8 @@ export default function RuleEdit() {
           appendChild={astEditor.appendChild}
           remove={astEditor.remove}
           editorNodeViewModel={astEditor.editorNodeViewModel}
-          iterationId={iterationId}
+          rule={rule}
           scenarioId={scenarioId}
-          ruleId={ruleId}
-          formMethods={formMethods}
         />
       )}
     </Page.Container>
@@ -370,10 +315,8 @@ function RuleEditContent({
   appendChild,
   remove,
   editorNodeViewModel,
-  ruleId,
-  iterationId,
+  rule,
   scenarioId,
-  formMethods,
 }: {
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
@@ -388,98 +331,176 @@ function RuleEditContent({
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
   editorNodeViewModel: EditorNodeViewModel;
-  ruleId: string;
+  rule: ScenarioIterationRule;
   scenarioId: string;
-  iterationId: string;
-  formMethods: UseFormReturn<EditRuleFormValues>;
 }) {
   const { t } = useTranslation(handle.i18n);
 
   const ruleValidation = useCurrentRuleValidationRule();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
+  const fetcher = useFetcher<typeof action>();
+
+  const formMethods = useForm<EditRuleFormValues>({
+    defaultValues: {
+      name: rule.name,
+      description: rule.description,
+      scoreModifier: rule.scoreModifier,
+    },
+    mode: 'onChange',
+  });
+  const { setError } = formMethods;
+  const { data } = fetcher;
+  const errors = data?.errors;
+
+  useEffect(() => {
+    if (!errors) return;
+
+    R.forEachObj.indexed(errors.fieldErrors, (err, name) => {
+      const message = err?.[0];
+      if (message === undefined) return;
+      setError(name, {
+        type: 'custom',
+        message,
+      });
+    });
+  }, [errors, setError]);
+
+  const handleSave = () => {
+    const values = formMethods.getValues();
+    fetcher.submit(
+      {
+        astNode: adaptAstNodeFromEditorViewModel(editorNodeViewModel),
+        formValues: values,
+      },
+      {
+        method: 'PATCH',
+        encType: 'application/json',
+      },
+    );
+  };
+
   return (
     <Page.Content>
-      <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
-        <FormProvider {...formMethods}>
-          <FormField
-            name="name"
-            control={formMethods.control}
-            render={({ field }) => (
-              <FormItem className="flex flex-col gap-2">
-                <FormLabel>{t('common:name')}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder={t('scenarios:edit_rule.name_placeholder')}
-                    {...field}
-                  />
-                </FormControl>
-                <FormError />
-              </FormItem>
-            )}
-          />
-          <FormField
-            name="description"
-            control={formMethods.control}
-            render={({ field }) => (
-              <FormItem className="flex flex-col gap-2">
-                <FormLabel>{t('common:description')}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder={t(
-                      'scenarios:edit_rule.description_placeholder',
-                    )}
-                    {...field}
-                  />
-                </FormControl>
-                <FormError />
-              </FormItem>
-            )}
-          />
-          <FormField
-            name="scoreModifier"
-            control={formMethods.control}
-            render={({ field }) => (
-              <FormItem className="flex flex-col gap-2">
-                <FormLabel>{t('scenarios:create_rule.score')}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder={t('scenarios:edit_rule.score_placeholder')}
-                    {...field}
-                  />
-                </FormControl>
-                <FormError />
-              </FormItem>
-            )}
-          />
-        </FormProvider>
-      </Paper.Container>
+      <Collapsible.Container className="bg-grey-00 max-w-3xl">
+        <Collapsible.Title>
+          {t('scenarios:edit_rule.informations')}
+        </Collapsible.Title>
+        <Collapsible.Content>
+          <div className="flex flex-col gap-4 lg:gap-6">
+            <FormProvider {...formMethods}>
+              <FormField
+                name="name"
+                control={formMethods.control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel>{t('common:name')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder={t('scenarios:edit_rule.name_placeholder')}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="description"
+                control={formMethods.control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel>{t('common:description')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder={t(
+                          'scenarios:edit_rule.description_placeholder',
+                        )}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="scoreModifier"
+                control={formMethods.control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel>{t('scenarios:create_rule.score')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder={t('scenarios:edit_rule.score_placeholder')}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormError />
+                  </FormItem>
+                )}
+              />
+            </FormProvider>
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Container>
 
-      <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
-        <AstBuilder
-          options={options}
-          setOperand={setOperand}
-          setOperator={setOperator}
-          appendChild={appendChild}
-          remove={remove}
-          editorNodeViewModel={editorNodeViewModel}
-        />
+      <Collapsible.Container className="bg-grey-00 max-w-3xl">
+        <Collapsible.Title>
+          {t('scenarios:edit_rule.formula')}
+        </Collapsible.Title>
+        <Collapsible.Content>
+          <div className="flex flex-col gap-4 lg:gap-6">
+            <AstBuilder
+              options={options}
+              setOperand={setOperand}
+              setOperator={setOperator}
+              appendChild={appendChild}
+              remove={remove}
+              editorNodeViewModel={editorNodeViewModel}
+            />
 
-        <EvaluationErrors
-          errors={ruleValidation.errors
-            .filter((error) => error != 'RULE_FORMULA_REQUIRED')
-            .map(getScenarioErrorMessage)}
-        />
-      </Paper.Container>
+            <EvaluationErrors
+              errors={ruleValidation.errors
+                .filter((error) => error != 'RULE_FORMULA_REQUIRED')
+                .map(getScenarioErrorMessage)}
+            />
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Container>
 
-      <DeleteRule
-        ruleId={ruleId}
-        iterationId={iterationId}
-        scenarioId={scenarioId}
-      />
+      <div className="sticky bottom-4 left-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6 lg:left-6">
+        <div className="bg-grey-00 border-grey-10 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
+          <DeleteRule
+            ruleId={rule.id}
+            iterationId={rule.scenarioIterationId}
+            scenarioId={scenarioId}
+          >
+            <Button color="red" className="w-fit">
+              <Icon icon="delete" className="size-5" aria-hidden />
+              {t('common:delete')}
+            </Button>
+          </DeleteRule>
+
+          <DuplicateRule
+            ruleId={rule.id}
+            iterationId={rule.scenarioIterationId}
+            scenarioId={scenarioId}
+          >
+            <Button variant="secondary" className="w-fit">
+              <Icon icon="copy" className="size-5" aria-hidden />
+              {t('scenarios:clone_rule.button')}
+            </Button>
+          </DuplicateRule>
+
+          <Button onClick={handleSave} className="flex-1">
+            <Icon icon="save" className="size-5" aria-hidden />
+            {t('common:save')}
+          </Button>
+        </div>
+      </div>
     </Page.Content>
   );
 }

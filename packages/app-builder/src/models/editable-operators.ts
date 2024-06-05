@@ -3,16 +3,16 @@ import { assertNever } from 'typescript-utils';
 
 export const undefinedAstNodeName = 'Undefined';
 
+// order is important for sorting
 const twoLineOperandOperatorFunctions = [
-  undefinedAstNodeName,
-  '+',
-  '-',
-  '<',
-  '<=',
   '=',
   '≠',
+  '<',
+  '<=',
   '>',
   '>=',
+  '+',
+  '-',
   '*',
   '/',
   'IsInList',
@@ -21,6 +21,7 @@ const twoLineOperandOperatorFunctions = [
   'StringNotContain',
   'ContainsAnyOf',
   'ContainsNoneOf',
+  undefinedAstNodeName,
 ] as const;
 export type TwoLineOperandOperatorFunction =
   (typeof twoLineOperandOperatorFunctions)[number];
@@ -31,6 +32,15 @@ export function isTwoLineOperandOperatorFunction(
   return (twoLineOperandOperatorFunctions as ReadonlyArray<string>).includes(
     value,
   );
+}
+
+export function sortTwoLineOperandOperatorFunctions(
+  lhs: TwoLineOperandOperatorFunction,
+  rhs: TwoLineOperandOperatorFunction,
+) {
+  const lhsIndex = twoLineOperandOperatorFunctions.indexOf(lhs);
+  const rhsIndex = twoLineOperandOperatorFunctions.indexOf(rhs);
+  return lhsIndex - rhsIndex;
 }
 
 export const filterOperators = [

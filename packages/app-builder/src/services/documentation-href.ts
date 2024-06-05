@@ -11,6 +11,9 @@ export const aggregationDocHref = 'https://docs.checkmarble.com/docs/average';
 
 export const dateDocHref = 'https://docs.checkmarble.com/docs/now-copy';
 
+export const scenarioObjectDocHref =
+  'https://docs.checkmarble.com/docs/executing-a-scenario#the-scenario-object';
+
 export const executeAScenarioDocHref =
   'https://docs.checkmarble.com/docs/executing-a-scenario#executing-a-scenario';
 

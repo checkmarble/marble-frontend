@@ -56,6 +56,7 @@ export const iconNames = [
   'restart-alt',
   'rule-settings',
   'rules',
+  'save',
   'scenarios',
   'schedule',
   'scheduled-execution',

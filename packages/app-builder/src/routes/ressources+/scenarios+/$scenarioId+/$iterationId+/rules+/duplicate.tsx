@@ -6,7 +6,7 @@ import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, Modal } from 'ui-design-system';
+import { Button, HiddenInputs, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -49,23 +49,20 @@ export function DuplicateRule({
   ruleId,
   scenarioId,
   iterationId,
+  children,
 }: {
   ruleId: string;
   scenarioId: string;
   iterationId: string;
+  children: React.ReactElement;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
   return (
-    <Modal.Root>
-      <Modal.Trigger asChild>
-        <Button variant="secondary" className="w-fit">
-          <Icon icon="copy" className="size-6" />
-          <p>{t('scenarios:clone_rule.button')}</p>
-        </Button>
-      </Modal.Trigger>
-      <Modal.Content>
+    <ModalV2.Root>
+      <ModalV2.Trigger render={children} />
+      <ModalV2.Content>
         <fetcher.Form
           method="POST"
           action={getRoute(
@@ -92,11 +89,11 @@ export function DuplicateRule({
               <p className="text-center">{t('scenarios:clone_rule.content')}</p>
             </div>
             <div className="flex flex-1 flex-row gap-2">
-              <Modal.Close asChild>
-                <Button className="flex-1" variant="secondary">
-                  {t('common:cancel')}
-                </Button>
-              </Modal.Close>
+              <ModalV2.Close
+                render={<Button className="flex-1" variant="secondary" />}
+              >
+                {t('common:cancel')}
+              </ModalV2.Close>
               <Button
                 className="flex-1"
                 variant="primary"
@@ -109,7 +106,7 @@ export function DuplicateRule({
             </div>
           </div>
         </fetcher.Form>
-      </Modal.Content>
-    </Modal.Root>
+      </ModalV2.Content>
+    </ModalV2.Root>
   );
 }
