@@ -12,6 +12,7 @@ export interface ScenarioIterationRule {
   displayOrder: number;
   name: string;
   description: string;
+  ruleGroup?: string;
   formula: AstNode | null;
   scoreModifier: number;
   createdAt: string;

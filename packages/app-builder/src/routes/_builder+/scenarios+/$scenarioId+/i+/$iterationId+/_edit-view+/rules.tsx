@@ -1,5 +1,13 @@
+import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
+import { rulesFilterNames } from '@app-builder/components/Scenario/Rules/Filters/filters';
+import { RulesFiltersBar } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersBar';
+import {
+  type RulesFilters,
+  RulesFiltersProvider,
+} from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersContext';
+import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersMenu';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
@@ -17,15 +25,17 @@ import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import {
+  type ColumnFiltersState,
   createColumnHelper,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
-import { useMemo } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Table, useVirtualTable } from 'ui-design-system';
+import * as R from 'remeda';
+import { Input, Table, Tag, useVirtualTable } from 'ui-design-system';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,
@@ -42,12 +52,22 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const scenarioIterationId = fromParams(params, 'iterationId');
 
-  const scenarioIterationRules =
-    await scenarioIterationRuleRepository.listRules({
-      scenarioIterationId,
-    });
+  const rules = await scenarioIterationRuleRepository.listRules({
+    scenarioIterationId,
+  });
 
-  return json(scenarioIterationRules);
+  // TODO: remove when rules group are implemented
+  for (const rule of rules) {
+    rule.ruleGroup = rule.name.slice(0, 5);
+  }
+
+  const ruleGroups = R.pipe(
+    rules,
+    R.map((rule) => rule.ruleGroup),
+    R.unique(),
+  );
+
+  return json({ rules, ruleGroups });
 }
 
 const columnHelper = createColumnHelper<ScenarioIterationRule>();
@@ -61,11 +81,11 @@ export default function Rules() {
   const editorMode = useEditorMode();
 
   const navigate = useNavigate();
-  const rules = useLoaderData<typeof loader>();
+  const { rules, ruleGroups } = useLoaderData<typeof loader>();
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
-  const columns = useMemo(
+  const columns = React.useMemo(
     () => [
       columnHelper.accessor((row) => row.name, {
         id: 'name',
@@ -107,6 +127,15 @@ export default function Rules() {
           return <Highlight text={getValue()} query={query} />;
         },
       }),
+      columnHelper.accessor((row) => row.ruleGroup, {
+        id: 'ruleGroup',
+        header: t('scenarios:rules.rule_group'),
+        size: 100,
+        filterFn: 'arrIncludesSome',
+        cell: ({ getValue }) => {
+          return <Tag>{getValue()}</Tag>;
+        },
+      }),
       columnHelper.accessor((row) => row.scoreModifier, {
         id: 'score',
         cell: ({ getValue }) => {
@@ -132,6 +161,29 @@ export default function Rules() {
 
   const hasRules = rules.length > 0;
 
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+
+  const filterValues = R.pullObject(
+    columnFilters,
+    R.prop('id'),
+    R.prop('value'),
+  );
+  const submitRulesFilters = React.useCallback((filters: RulesFilters) => {
+    const nextColumnFilters = R.pipe(
+      filters,
+      R.entries(),
+      R.filter(([_, value]) => value !== undefined),
+      R.map(([id, value]) => ({
+        id,
+        value,
+      })),
+    );
+
+    setColumnFilters(nextColumnFilters);
+  }, []);
+
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: rules,
     columns,
@@ -145,6 +197,8 @@ export default function Rules() {
         },
       ],
     },
+    state: { columnFilters },
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -156,24 +210,37 @@ export default function Rules() {
         errors={scenarioValidation.rules.errors.map(getScenarioErrorMessage)}
       />
 
-      <div className="flex flex-row items-center justify-between gap-4">
-        <form className="flex grow items-center">
-          <Input
-            className="w-full max-w-xl"
-            disabled={rules.length === 0}
-            type="search"
-            aria-label={t('common:search')}
-            placeholder={t('common:search')}
-            startAdornment="search"
-            onChange={(event) => {
-              table.setGlobalFilter(event.target.value);
-            }}
-          />
-        </form>
-        {editorMode === 'edit' ? (
-          <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
-        ) : null}
-      </div>
+      <RulesFiltersProvider
+        filterValues={filterValues}
+        submitRulesFilters={submitRulesFilters}
+        ruleGroups={ruleGroups}
+      >
+        <div className="flex flex-row items-center justify-between gap-4">
+          <form className="flex grow items-center">
+            <Input
+              className="w-full max-w-xl"
+              disabled={rules.length === 0}
+              type="search"
+              aria-label={t('common:search')}
+              placeholder={t('common:search')}
+              startAdornment="search"
+              onChange={(event) => {
+                table.setGlobalFilter(event.target.value);
+              }}
+            />
+          </form>
+
+          <div className="flex flex-row gap-4">
+            <RulesFiltersMenu filterNames={rulesFilterNames}>
+              <FiltersButton />
+            </RulesFiltersMenu>
+            {editorMode === 'edit' ? (
+              <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
+            ) : null}
+          </div>
+        </div>
+        <RulesFiltersBar />
+      </RulesFiltersProvider>
 
       <Table.Container {...getContainerProps()} className="bg-grey-00">
         <Table.Header headerGroups={table.getHeaderGroups()} />

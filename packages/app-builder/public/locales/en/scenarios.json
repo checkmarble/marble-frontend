@@ -38,6 +38,7 @@
   "rules.decision": "Decision",
   "rules.empty": "You don’t have any rules. Click on new rule to make a new one",
   "rules.consequence.score_modifier": "Score modifier: <Score>{{score}}</Score>",
+  "rules.rule_group": "Rule group",
   "logical_operator.or": "or",
   "logical_operator.if": "if",
   "logical_operator.and": "and",

@@ -1,5 +1,5 @@
 export * from './AddNewFilterButton';
-export * from './ClearAllFiltersLink';
+export * from './ClearAllFilters';
 export * from './DateRangeFilter';
 export * from './FilterPopover';
 export * from './FiltersButton';
