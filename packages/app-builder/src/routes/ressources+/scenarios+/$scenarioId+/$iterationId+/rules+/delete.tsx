@@ -22,9 +22,12 @@ const deleteRuleFormSchema = z.object({
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
 
   const parsedForm = await parseFormSafe(request, deleteRuleFormSchema);
   if (!parsedForm.success) {
@@ -32,7 +35,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return null;
   }
   const { ruleId, scenarioId, iterationId } = parsedForm.data;
-  await apiClient.deleteScenarioIterationRule(ruleId);
+  await scenarioIterationRuleRepository.deleteRule({ ruleId });
   return redirect(
     getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
       scenarioId: fromUUID(scenarioId),

@@ -14,18 +14,21 @@ export const handle = {
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
   const t = await i18nextService.getFixedT(request, 'scenarios');
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
   try {
-    const { rule } = await apiClient.createScenarioIterationRule({
+    const rule = await scenarioIterationRuleRepository.createRule({
       scenarioIterationId: iterationId,
       displayOrder: 1,
-      formula_ast_expression: null,
+      formula: null,
       name: t('create_rule.default_name'),
       description: '',
       scoreModifier: 0,

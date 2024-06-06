@@ -317,7 +317,7 @@ export type NodeDto = {
         [key: string]: NodeDto;
     };
 };
-export type CreateScenarioIterationRuleBody = {
+export type CreateScenarioIterationRuleBodyDto = {
     scenarioIterationId: string;
     displayOrder: number;
     name: string;
@@ -331,7 +331,7 @@ export type CreateScenarioIterationBody = {
         trigger_condition_ast_expression?: (NodeDto) | null;
         scoreReviewThreshold?: number;
         scoreRejectThreshold?: number;
-        rules?: CreateScenarioIterationRuleBody[];
+        rules?: CreateScenarioIterationRuleBodyDto[];
     };
 };
 export type ScenarioIterationRuleDto = {
@@ -384,7 +384,7 @@ export type ScenarioValidationDto = {
         errors: ScenarioValidationErrorDto[];
     };
 };
-export type UpdateScenarioIterationRuleBody = {
+export type UpdateScenarioIterationRuleBodyDto = {
     displayOrder?: number;
     name?: string;
     description?: string;
@@ -1538,7 +1538,7 @@ export function listScenarioIterationRules({ scenarioIterationId }: {
 /**
  * Create a scenario iteration rule
  */
-export function createScenarioIterationRule(createScenarioIterationRuleBody: CreateScenarioIterationRuleBody, opts?: Oazapfts.RequestOpts) {
+export function createScenarioIterationRule(createScenarioIterationRuleBodyDto: CreateScenarioIterationRuleBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -1556,7 +1556,7 @@ export function createScenarioIterationRule(createScenarioIterationRuleBody: Cre
     }>("/scenario-iteration-rules", oazapfts.json({
         ...opts,
         method: "POST",
-        body: createScenarioIterationRuleBody
+        body: createScenarioIterationRuleBodyDto
     })));
 }
 /**
@@ -1584,7 +1584,7 @@ export function getScenarioIterationRule(ruleId: string, opts?: Oazapfts.Request
 /**
  * Update a scenario iteration rule
  */
-export function updateScenarioIterationRule(ruleId: string, updateScenarioIterationRuleBody: UpdateScenarioIterationRuleBody, opts?: Oazapfts.RequestOpts) {
+export function updateScenarioIterationRule(ruleId: string, updateScenarioIterationRuleBodyDto: UpdateScenarioIterationRuleBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -1602,7 +1602,7 @@ export function updateScenarioIterationRule(ruleId: string, updateScenarioIterat
     }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: updateScenarioIterationRuleBody
+        body: updateScenarioIterationRuleBodyDto
     })));
 }
 /**

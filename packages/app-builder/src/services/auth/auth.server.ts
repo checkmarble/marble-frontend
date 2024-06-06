@@ -14,6 +14,7 @@ import { type EditorRepository } from '@app-builder/repositories/EditorRepositor
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
 import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
+import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type TransferRepository } from '@app-builder/repositories/TransferRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
@@ -39,6 +40,7 @@ interface AuthenticatedInfo {
   transferRepository: TransferRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
+  scenarioIterationRuleRepository: ScenarioIterationRuleRepository;
   user: CurrentUser;
   inbox: InboxRepository;
 }
@@ -96,6 +98,9 @@ export function makeAuthenticationServerService(
     organizationId: string,
   ) => OrganizationRepository,
   scenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository,
+  scenarioIterationRuleRepository: (
+    marbleApiClient: MarbleApi,
+  ) => ScenarioIterationRuleRepository,
   dataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository,
   apiKeysRepository: (marbleApiClient: MarbleApi) => ApiKeyRepository,
   analyticsRepository: (marbleApiClient: MarbleApi) => AnalyticsRepository,
@@ -255,6 +260,8 @@ export function makeAuthenticationServerService(
       decision: decisionRepository(apiClient),
       cases: caseRepository(apiClient),
       scenario: scenarioRepository(apiClient),
+      scenarioIterationRuleRepository:
+        scenarioIterationRuleRepository(apiClient),
       organization: organizationRepository(apiClient, user.organizationId),
       dataModelRepository: dataModelRepository(apiClient),
       apiKey: apiKeysRepository(apiClient),

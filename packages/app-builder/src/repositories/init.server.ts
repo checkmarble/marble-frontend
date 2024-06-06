@@ -9,6 +9,7 @@ import { getEditorRepository } from './EditorRepository';
 import { getInboxRepository } from './InboxRepository';
 import { getMarbleAPIRepository } from './MarbleAPIRepository';
 import { getOrganizationRepository } from './OrganizationRepository';
+import { getScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
 import { getScenarioRepository } from './ScenarioRepository';
 import {
   getAuthStorageRepository,
@@ -41,6 +42,7 @@ export function makeServerRepositories({
     decisionRepository: getDecisionRepository(),
     caseRepository: getCaseRepository(),
     scenarioRepository: getScenarioRepository(),
+    scenarioIterationRuleRepository: getScenarioIterationRuleRepository(),
     organizationRepository: getOrganizationRepository(),
     dataModelRepository: getDataModelRepository(),
     apiKeyRepository: getApiKeyRepository(),

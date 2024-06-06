@@ -23,20 +23,25 @@ const duplicateRuleFormSchema = z.object({
 export async function action({ request }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
   const t = await i18nextService.getFixedT(request, 'scenarios');
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
 
   const parsedForm = await parseFormSafe(request, duplicateRuleFormSchema);
   if (!parsedForm.success) {
     return null;
   }
   const { ruleId, scenarioId, iterationId } = parsedForm.data;
-  const {
-    rule: { createdAt, name, ...rest },
-  } = await apiClient.getScenarioIterationRule(ruleId);
+  const { createdAt, name, ...rest } =
+    await scenarioIterationRuleRepository.getRule({ ruleId });
   const newName = t('clone_rule.default_name', { name });
-  await apiClient.createScenarioIterationRule({ name: newName, ...rest });
+  await scenarioIterationRuleRepository.createRule({
+    name: newName,
+    ...rest,
+  });
   return redirect(
     getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
       scenarioId: fromUUID(scenarioId),

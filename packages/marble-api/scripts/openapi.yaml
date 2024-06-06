@@ -1483,7 +1483,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateScenarioIterationRuleBody'
+              $ref: '#/components/schemas/CreateScenarioIterationRuleBodyDto'
         required: true
       responses:
         '200':
@@ -1557,7 +1557,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateScenarioIterationRuleBody'
+              $ref: '#/components/schemas/UpdateScenarioIterationRuleBodyDto'
         required: true
       responses:
         '200':
@@ -4347,7 +4347,7 @@ components:
             rules:
               type: array
               items:
-                $ref: '#/components/schemas/CreateScenarioIterationRuleBody'
+                $ref: '#/components/schemas/CreateScenarioIterationRuleBodyDto'
     UpdateScenarioIterationBody:
       type: object
       properties:
@@ -4450,7 +4450,7 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ScenarioValidationErrorDto'
-    CreateScenarioIterationRuleBody:
+    CreateScenarioIterationRuleBodyDto:
       type: object
       required:
         - scenarioIterationId
@@ -4475,7 +4475,7 @@ components:
             - $ref: '#/components/schemas/NodeDto'
         scoreModifier:
           type: integer
-    UpdateScenarioIterationRuleBody:
+    UpdateScenarioIterationRuleBodyDto:
       type: object
       properties:
         displayOrder:

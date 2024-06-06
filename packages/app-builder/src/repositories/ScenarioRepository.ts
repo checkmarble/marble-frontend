@@ -18,10 +18,8 @@ import {
 } from '@app-builder/models/scenario';
 import {
   adaptScenarioIteration,
-  adaptScenarioIterationRule,
   adaptScenarioIterationSummary,
   type ScenarioIteration,
-  type ScenarioIterationRule,
   type ScenarioIterationSummary,
 } from '@app-builder/models/scenario-iteration';
 import {
@@ -46,9 +44,6 @@ export interface ScenarioRepository {
   createScenarioIteration(args: {
     scenarioId: string;
   }): Promise<ScenarioIteration>;
-  getScenarioIterationRule(args: {
-    ruleId: string;
-  }): Promise<ScenarioIterationRule>;
   getScenarioIteration(args: {
     iterationId: string;
   }): Promise<ScenarioIteration>;
@@ -113,11 +108,6 @@ export function getScenarioRepository() {
         scenarioId,
       });
       return adaptScenarioIteration(scenarioIteration);
-    },
-    getScenarioIterationRule: async ({ ruleId }) => {
-      const { rule } = await marbleApiClient.getScenarioIterationRule(ruleId);
-
-      return adaptScenarioIterationRule(rule);
     },
     getScenarioIteration: async ({ iterationId }) => {
       const scenarioIteration =

@@ -13,7 +13,7 @@ import {
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration';
+import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import {
   DisplayReturnValuesProvider,
   useDisplayReturnValues,

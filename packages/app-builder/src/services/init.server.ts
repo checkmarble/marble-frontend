@@ -35,6 +35,7 @@ function makeServerServices(repositories: ServerRepositories) {
       repositories.caseRepository,
       repositories.organizationRepository,
       repositories.scenarioRepository,
+      repositories.scenarioIterationRuleRepository,
       repositories.dataModelRepository,
       repositories.apiKeyRepository,
       repositories.analyticsRepository,
