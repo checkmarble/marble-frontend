@@ -1,22 +1,14 @@
 import {
   type ScenarioIterationDto,
-  type ScenarioIterationRuleDto,
   type ScenarioIterationWithBodyDto,
 } from 'marble-api';
 import * as R from 'remeda';
 
 import { adaptAstNode, type AstNode } from './ast-node';
-
-export interface ScenarioIterationRule {
-  id: string;
-  scenarioIterationId: string;
-  displayOrder: number;
-  name: string;
-  description: string;
-  formula: AstNode | null;
-  scoreModifier: number;
-  createdAt: string;
-}
+import {
+  adaptScenarioIterationRule,
+  type ScenarioIterationRule,
+} from './scenario-iteration-rule';
 
 export interface ScenarioIterationSummary {
   id: string;
@@ -37,24 +29,6 @@ export interface ScenarioIteration {
   rules: ScenarioIterationRule[];
   schedule?: string;
   trigger: AstNode | null;
-}
-
-export function adaptScenarioIterationRule(
-  scenarioIterationRuleDto: ScenarioIterationRuleDto,
-): ScenarioIterationRule {
-  return {
-    id: scenarioIterationRuleDto.id,
-    scenarioIterationId: scenarioIterationRuleDto.scenarioIterationId,
-    displayOrder: scenarioIterationRuleDto.displayOrder,
-    name: scenarioIterationRuleDto.name,
-    description: scenarioIterationRuleDto.description,
-    formula:
-      scenarioIterationRuleDto.formula_ast_expression === null
-        ? null
-        : adaptAstNode(scenarioIterationRuleDto.formula_ast_expression),
-    scoreModifier: scenarioIterationRuleDto.scoreModifier,
-    createdAt: scenarioIterationRuleDto.createdAt,
-  };
 }
 
 export function adaptScenarioIteration(

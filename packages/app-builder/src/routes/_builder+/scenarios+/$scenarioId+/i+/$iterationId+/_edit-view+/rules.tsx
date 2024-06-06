@@ -1,6 +1,7 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
@@ -22,7 +23,6 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
-import { type ScenarioIterationRuleDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Table, useVirtualTable } from 'ui-design-system';
@@ -33,20 +33,24 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
 
   const scenarioIterationId = fromParams(params, 'iterationId');
 
-  const scenarioIterationRules = await apiClient.listScenarioIterationRules({
-    scenarioIterationId,
-  });
+  const scenarioIterationRules =
+    await scenarioIterationRuleRepository.listRules({
+      scenarioIterationId,
+    });
 
   return json(scenarioIterationRules);
 }
 
-const columnHelper = createColumnHelper<ScenarioIterationRuleDto>();
+const columnHelper = createColumnHelper<ScenarioIterationRule>();
 
 export default function Rules() {
   const { t } = useTranslation(handle.i18n);

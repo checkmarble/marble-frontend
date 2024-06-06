@@ -6,6 +6,11 @@ import * as R from 'remeda';
 
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
 
+export interface ScenarioIterationRuleValidation {
+  errors: ScenarioValidationErrorCodeDto[];
+  ruleEvaluation: NodeEvaluation;
+}
+
 export interface ScenarioValidation {
   trigger: {
     errors: ScenarioValidationErrorCodeDto[];
@@ -14,10 +19,7 @@ export interface ScenarioValidation {
   rules: {
     errors: ScenarioValidationErrorCodeDto[];
     ruleItems: {
-      [key: string]: {
-        errors: ScenarioValidationErrorCodeDto[];
-        ruleEvaluation: NodeEvaluation;
-      };
+      [key: string]: ScenarioIterationRuleValidation;
     };
   };
   decision: {

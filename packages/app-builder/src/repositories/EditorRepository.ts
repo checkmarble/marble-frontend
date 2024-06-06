@@ -1,8 +1,6 @@
 import { type MarbleApi } from '@app-builder/infra/marble-api';
 import {
   adaptAstNode,
-  adaptNodeDto,
-  type AstNode,
   type DatabaseAccessAstNode,
   isDatabaseAccess,
   isPayload,
@@ -20,14 +18,6 @@ export interface EditorRepository {
     payloadAccessors: PayloadAstNode[];
   }>;
   listOperators(args: { scenarioId: string }): Promise<OperatorFunction[]>;
-  saveRule(args: {
-    ruleId: string;
-    astNode: AstNode;
-    displayOrder?: number;
-    name?: string;
-    description?: string;
-    scoreModifier?: number;
-  }): Promise<void>;
 }
 
 export function getEditorRepository() {
@@ -68,22 +58,6 @@ export function getEditorRepository() {
       );
 
       return operatorFunctions;
-    },
-    saveRule: async ({
-      ruleId,
-      astNode,
-      displayOrder,
-      name,
-      description,
-      scoreModifier,
-    }) => {
-      await marbleApiClient.updateScenarioIterationRule(ruleId, {
-        displayOrder,
-        name,
-        description,
-        formula_ast_expression: adaptNodeDto(astNode),
-        scoreModifier,
-      });
     },
   });
 }

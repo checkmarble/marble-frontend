@@ -17,7 +17,7 @@ import {
 } from '@app-builder/models';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration';
+import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
@@ -106,9 +106,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
   };
 
   const session = await getSession(request);
-  const { editor } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
 
   const parsedForm = editRuleFormSchema.safeParse(formValuesRaw);
   if (!parsedForm.success) {
@@ -123,9 +126,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   try {
     const ruleId = fromParams(params, 'ruleId');
 
-    await editor.saveRule({
+    await scenarioIterationRuleRepository.updateRule({
       ruleId,
-      astNode,
+      formula: astNode,
       name: formValues.name,
       description: formValues.description,
       scoreModifier: formValues.scoreModifier,
