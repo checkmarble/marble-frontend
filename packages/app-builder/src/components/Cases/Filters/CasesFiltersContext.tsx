@@ -145,8 +145,8 @@ export function useCasesFiltersPartition() {
     R.partition((filterName) => {
       const value = filterValues[filterName];
       if (R.isArray(value)) return value.length === 0;
-      if (R.isObject(value)) return R.isEmpty(value);
-      return R.isNil(value);
+      if (R.isPlainObject(value)) return R.isEmpty(value);
+      return R.isNullish(value);
     }),
   );
   return {

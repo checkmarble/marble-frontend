@@ -29,3 +29,25 @@ export const ClearAllFiltersLink = forwardRef<
     </Link>
   );
 });
+
+export const ClearAllFiltersButton = forwardRef<
+  HTMLButtonElement,
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'ref'>
+>(function ClearAllFiltersButton(props, ref) {
+  const { t } = useTranslation(filtersI18n);
+  return (
+    <button
+      className={clsx(
+        CtaClassName({ variant: 'tertiary', color: 'grey' }),
+        'shrink-0',
+      )}
+      ref={ref}
+      {...props}
+    >
+      <Icon icon="cross" className="size-5" />
+      <span className="line-clamp-1 capitalize">
+        {t('filters:clear_filters')}
+      </span>
+    </button>
+  );
+});

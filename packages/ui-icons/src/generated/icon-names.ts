@@ -40,6 +40,7 @@ export const iconNames = [
   'home',
   'inbox',
   'lightbulb',
+  'linked-services',
   'list',
   'lists',
   'logout',

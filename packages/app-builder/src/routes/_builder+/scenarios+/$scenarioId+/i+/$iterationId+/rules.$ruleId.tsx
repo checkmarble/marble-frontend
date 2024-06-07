@@ -6,6 +6,7 @@ import {
   FormItem,
   FormLabel,
 } from '@app-builder/components/Form';
+import { Highlight } from '@app-builder/components/Highlight';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
@@ -25,6 +26,7 @@ import { useRuleValidationFetcher } from '@app-builder/routes/ressources+/scenar
 import {
   useCurrentScenarioIterationRule,
   useEditorMode,
+  useRuleGroups,
 } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
@@ -47,11 +49,27 @@ import {
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { type CustomList } from 'marble-api';
-import { useEffect } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { matchSorter } from 'match-sorter';
+import * as React from 'react';
+import {
+  type ControllerRenderProps,
+  FormProvider,
+  useForm,
+} from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Collapsible, Input, Tag } from 'ui-design-system';
+import {
+  Button,
+  Collapsible,
+  Combobox,
+  ComboboxItem,
+  ComboboxLabel,
+  ComboboxPopover,
+  ComboboxRoot,
+  Input,
+  ScrollAreaV2,
+  Tag,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -91,6 +109,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const editRuleFormSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
+  ruleGroup: z.string().nullable(),
   scoreModifier: z.coerce.number().int().min(-1000).max(1000),
 });
 type EditRuleFormValues = z.infer<typeof editRuleFormSchema>;
@@ -348,6 +367,7 @@ function RuleEditContent({
     defaultValues: {
       name: rule.name,
       description: rule.description,
+      ruleGroup: rule.ruleGroup,
       scoreModifier: rule.scoreModifier,
     },
     mode: 'onChange',
@@ -356,7 +376,7 @@ function RuleEditContent({
   const { data } = fetcher;
   const errors = data?.errors;
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!errors) return;
 
     R.forEachObj.indexed(errors.fieldErrors, (err, name) => {
@@ -429,11 +449,16 @@ function RuleEditContent({
                 )}
               />
               <FormField
+                name="ruleGroup"
+                control={formMethods.control}
+                render={({ field }) => <RuleGroup field={field} />}
+              />
+              <FormField
                 name="scoreModifier"
                 control={formMethods.control}
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
-                    <FormLabel>{t('scenarios:create_rule.score')}</FormLabel>
+                    <FormLabel>{t('scenarios:edit_rule.score')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -505,5 +530,75 @@ function RuleEditContent({
         </div>
       </div>
     </Page.Content>
+  );
+}
+
+function RuleGroup({
+  field,
+}: {
+  field: ControllerRenderProps<EditRuleFormValues, 'ruleGroup'>;
+}) {
+  const { t } = useTranslation(handle.i18n);
+  const value = field.value ?? '';
+  const searchValue = React.useDeferredValue(value);
+  const ruleGroups = useRuleGroups();
+
+  const onChange = React.useCallback(
+    (value: string) => {
+      field.onChange(value || null);
+    },
+    [field],
+  );
+
+  const matches = React.useMemo(
+    () => matchSorter(ruleGroups, searchValue),
+    [searchValue, ruleGroups],
+  );
+
+  return (
+    <ComboboxRoot
+      open={ruleGroups.length === 0 ? false : undefined}
+      value={value}
+      setValue={onChange}
+      selectedValue={value}
+      setSelectedValue={onChange}
+    >
+      <FormItem className="flex flex-col gap-2">
+        <ComboboxLabel render={<FormLabel />}>
+          {t('scenarios:rules.rule_group')}
+        </ComboboxLabel>
+        <FormControl>
+          <Combobox
+            ref={field.ref}
+            disabled={field.disabled}
+            name={field.name}
+            onBlur={field.onBlur}
+            placeholder={t('scenarios:edit_rule.rule_group_placeholder')}
+          />
+        </FormControl>
+        <FormError />
+        <ComboboxPopover
+          className="flex flex-col gap-2 p-2"
+          fitViewport
+          portal
+          sameWidth
+        >
+          <ScrollAreaV2>
+            {matches.map((item) => {
+              return (
+                <ComboboxItem key={item} value={item}>
+                  <Highlight text={item} query={searchValue} />
+                </ComboboxItem>
+              );
+            })}
+            {matches.length === 0 ? (
+              <p className="text-grey-50 text-xs">
+                {t('scenarios:edit_rule.rule_group.empty_matches')}
+              </p>
+            ) : null}
+          </ScrollAreaV2>
+        </ComboboxPopover>
+      </FormItem>
+    </ComboboxRoot>
   );
 }
