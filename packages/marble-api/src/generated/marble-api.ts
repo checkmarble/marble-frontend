@@ -322,6 +322,7 @@ export type CreateScenarioIterationRuleBodyDto = {
     displayOrder: number;
     name: string;
     description: string;
+    rule_group: string;
     formula_ast_expression: (NodeDto) | null;
     scoreModifier: number;
 };
@@ -340,6 +341,7 @@ export type ScenarioIterationRuleDto = {
     displayOrder: number;
     name: string;
     description: string;
+    rule_group: string;
     formula_ast_expression: (NodeDto) | null;
     scoreModifier: number;
     createdAt: string;
@@ -388,6 +390,7 @@ export type UpdateScenarioIterationRuleBodyDto = {
     displayOrder?: number;
     name?: string;
     description?: string;
+    rule_group?: string;
     formula_ast_expression?: (NodeDto) | null;
     scoreModifier?: number;
 };

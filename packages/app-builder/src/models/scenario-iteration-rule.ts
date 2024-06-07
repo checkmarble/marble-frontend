@@ -12,7 +12,7 @@ export interface ScenarioIterationRule {
   displayOrder: number;
   name: string;
   description: string;
-  ruleGroup: string | null;
+  ruleGroup: string;
   formula: AstNode | null;
   scoreModifier: number;
   createdAt: string;
@@ -27,7 +27,7 @@ export function adaptScenarioIterationRule(
     displayOrder: dto.displayOrder,
     name: dto.name,
     description: dto.description,
-    ruleGroup: null,
+    ruleGroup: dto.rule_group,
     formula: dto.formula_ast_expression
       ? adaptAstNode(dto.formula_ast_expression)
       : null,
@@ -41,6 +41,7 @@ export interface CreateScenarioIterationRuleInput {
   displayOrder: number;
   name: string;
   description: string;
+  ruleGroup: string;
   formula: AstNode | null;
   scoreModifier: number;
 }
@@ -53,6 +54,7 @@ export function adaptCreateScenarioIterationRuleBodyDto(
     displayOrder: input.displayOrder,
     name: input.name,
     description: input.description,
+    rule_group: input.ruleGroup,
     formula_ast_expression: input.formula ? adaptNodeDto(input.formula) : null,
     scoreModifier: input.scoreModifier,
   };
@@ -63,6 +65,7 @@ export interface UpdateScenarioIterationRuleInput {
   displayOrder?: number;
   name?: string;
   description?: string;
+  ruleGroup?: string;
   formula?: AstNode | null;
   scoreModifier?: number;
 }
@@ -74,6 +77,7 @@ export function adaptUpdateScenarioIterationRuleBodyDto(
     displayOrder: input.displayOrder,
     name: input.name,
     description: input.description,
+    rule_group: input.ruleGroup,
     formula_ast_expression: input.formula
       ? adaptNodeDto(input.formula)
       : input.formula,

@@ -4368,15 +4368,6 @@ components:
               type: string
     ScenarioIterationRuleDto:
       type: object
-      required:
-        - id
-        - scenarioIterationId
-        - displayOrder
-        - name
-        - description
-        - formula_ast_expression
-        - scoreModifier
-        - createdAt
       properties:
         id:
           type: string
@@ -4390,6 +4381,8 @@ components:
           type: string
         description:
           type: string
+        rule_group:
+          type: string
         formula_ast_expression:
           nullable: true
           oneOf:
@@ -4399,6 +4392,16 @@ components:
         createdAt:
           type: string
           format: date-time
+      required:
+        - id
+        - scenarioIterationId
+        - displayOrder
+        - name
+        - description
+        - rule_group
+        - formula_ast_expression
+        - scoreModifier
+        - createdAt
     ScenarioValidationDto:
       type: object
       required:
@@ -4452,13 +4455,6 @@ components:
                 $ref: '#/components/schemas/ScenarioValidationErrorDto'
     CreateScenarioIterationRuleBodyDto:
       type: object
-      required:
-        - scenarioIterationId
-        - displayOrder
-        - name
-        - description
-        - formula_ast_expression
-        - scoreModifier
       properties:
         scenarioIterationId:
           type: string
@@ -4469,12 +4465,22 @@ components:
           type: string
         description:
           type: string
+        rule_group:
+          type: string
         formula_ast_expression:
           nullable: true
           oneOf:
             - $ref: '#/components/schemas/NodeDto'
         scoreModifier:
           type: integer
+      required:
+        - scenarioIterationId
+        - displayOrder
+        - name
+        - description
+        - rule_group
+        - formula_ast_expression
+        - scoreModifier
     UpdateScenarioIterationRuleBodyDto:
       type: object
       properties:
@@ -4483,6 +4489,8 @@ components:
         name:
           type: string
         description:
+          type: string
+        rule_group:
           type: string
         formula_ast_expression:
           nullable: true
