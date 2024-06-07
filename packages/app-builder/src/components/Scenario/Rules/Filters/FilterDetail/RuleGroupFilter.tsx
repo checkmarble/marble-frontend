@@ -1,11 +1,13 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
 import { useRuleGroupFilter } from '../RulesFiltersContext';
 
 export function RuleGroupFilter() {
+  const { t } = useTranslation(['scenarios']);
   const [value, setSearchValue] = useState('');
   const { ruleGroups, selectedRuleGroups, setSelectedRuleGroups } =
     useRuleGroupFilter();
@@ -36,6 +38,13 @@ export function RuleGroupFilter() {
               </SelectWithCombobox.ComboboxItem>
             );
           })}
+          {matches.length === 0 ? (
+            <p className="text-grey-50 text-xs">
+              {ruleGroups.length > 0
+                ? t('scenarios:edit_rule.rule_group.empty_matches')
+                : t('scenarios:edit_rule.rule_group.no_rule_groups')}
+            </p>
+          ) : null}
         </SelectWithCombobox.ComboboxList>
       </SelectWithCombobox.Root>
     </div>

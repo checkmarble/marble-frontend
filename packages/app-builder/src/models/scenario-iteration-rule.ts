@@ -12,7 +12,7 @@ export interface ScenarioIterationRule {
   displayOrder: number;
   name: string;
   description: string;
-  ruleGroup?: string;
+  ruleGroup: string | null;
   formula: AstNode | null;
   scoreModifier: number;
   createdAt: string;
@@ -27,6 +27,7 @@ export function adaptScenarioIterationRule(
     displayOrder: dto.displayOrder,
     name: dto.name,
     description: dto.description,
+    ruleGroup: null,
     formula: dto.formula_ast_expression
       ? adaptAstNode(dto.formula_ast_expression)
       : null,

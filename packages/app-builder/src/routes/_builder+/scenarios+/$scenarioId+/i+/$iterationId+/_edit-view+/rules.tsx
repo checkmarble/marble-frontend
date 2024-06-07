@@ -56,14 +56,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenarioIterationId,
   });
 
-  // TODO: remove when rules group are implemented
-  for (const rule of rules) {
-    rule.ruleGroup = rule.name.slice(0, 5);
-  }
-
   const ruleGroups = R.pipe(
     rules,
     R.map((rule) => rule.ruleGroup),
+    R.filter(R.isNonNullish),
     R.unique(),
   );
 
@@ -133,7 +129,9 @@ export default function Rules() {
         size: 100,
         filterFn: 'arrIncludesSome',
         cell: ({ getValue }) => {
-          return <Tag>{getValue()}</Tag>;
+          const value = getValue();
+          if (!value) return '';
+          return <Tag>{value}</Tag>;
         },
       }),
       columnHelper.accessor((row) => row.scoreModifier, {
