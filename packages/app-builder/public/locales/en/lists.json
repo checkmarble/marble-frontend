@@ -9,6 +9,7 @@
   "show_less": "show less",
   "empty_custom_lists_list": "You do not have any list. Add your first one to see it here.",
   "empty_custom_list_values_list": "This list is empty. Add its first value to see it here.",
+  "empty_custom_list_matches": "No value matches your search.",
   "create_list.title": "New List",
   "create_list.name_placeholder": "Add a name to your list",
   "create_list.description_placeholder": "Add a description",

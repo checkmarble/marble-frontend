@@ -141,7 +141,9 @@ export default function Lists() {
           {virtualTable.isEmpty ? (
             <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
               <p className="text-s font-medium">
-                {t('lists:empty_custom_list_values_list')}
+                {listValues.length > 0
+                  ? t('lists:empty_custom_list_matches')
+                  : t('lists:empty_custom_list_values_list')}
               </p>
             </div>
           ) : (
