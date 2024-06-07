@@ -31,6 +31,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       formula: null,
       name: t('create_rule.default_name'),
       description: '',
+      ruleGroup: '',
       scoreModifier: 0,
     });
 

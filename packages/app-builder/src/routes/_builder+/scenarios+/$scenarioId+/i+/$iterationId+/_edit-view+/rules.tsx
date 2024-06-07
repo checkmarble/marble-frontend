@@ -59,7 +59,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const ruleGroups = R.pipe(
     rules,
     R.map((rule) => rule.ruleGroup),
-    R.filter(R.isNonNullish),
+    R.filter((val) => !R.isEmpty(val)),
     R.unique(),
   );
 

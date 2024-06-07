@@ -109,7 +109,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const editRuleFormSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
-  ruleGroup: z.string().nullable(),
+  ruleGroup: z.string(),
   scoreModifier: z.coerce.number().int().min(-1000).max(1000),
 });
 type EditRuleFormValues = z.infer<typeof editRuleFormSchema>;
@@ -150,6 +150,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       formula: astNode,
       name: formValues.name,
       description: formValues.description,
+      ruleGroup: formValues.ruleGroup,
       scoreModifier: formValues.scoreModifier,
     });
 
@@ -539,16 +540,8 @@ function RuleGroup({
   field: ControllerRenderProps<EditRuleFormValues, 'ruleGroup'>;
 }) {
   const { t } = useTranslation(handle.i18n);
-  const value = field.value ?? '';
-  const searchValue = React.useDeferredValue(value);
+  const searchValue = React.useDeferredValue(field.value);
   const ruleGroups = useRuleGroups();
-
-  const onChange = React.useCallback(
-    (value: string) => {
-      field.onChange(value || null);
-    },
-    [field],
-  );
 
   const matches = React.useMemo(
     () => matchSorter(ruleGroups, searchValue),
@@ -558,10 +551,10 @@ function RuleGroup({
   return (
     <ComboboxRoot
       open={ruleGroups.length === 0 ? false : undefined}
-      value={value}
-      setValue={onChange}
-      selectedValue={value}
-      setSelectedValue={onChange}
+      value={field.value}
+      setValue={field.onChange}
+      selectedValue={field.value}
+      setSelectedValue={field.onChange}
     >
       <FormItem className="flex flex-col gap-2">
         <ComboboxLabel render={<FormLabel />}>
