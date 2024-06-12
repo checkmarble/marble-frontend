@@ -1167,7 +1167,9 @@ export function getCustomList(customListId: string, opts?: Oazapfts.RequestOpts)
 export function updateCustomList(customListId: string, updateCustomListBody: UpdateCustomListBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CustomList;
+        data: {
+            custom_list: CustomList;
+        };
     } | {
         status: 401;
         data: string;

@@ -946,7 +946,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomList'
+                type: object
+                properties:
+                  custom_list:
+                    $ref: '#/components/schemas/CustomList'
+                required:
+                  - custom_list
         '401':
           $ref: '#/components/responses/401'
         '403':
