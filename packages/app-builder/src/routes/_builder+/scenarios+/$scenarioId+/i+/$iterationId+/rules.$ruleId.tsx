@@ -231,7 +231,9 @@ export default function RuleDetail() {
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
-          {rule.name ?? fromUUID(ruleId)}
+          <span className="line-clamp-2 text-left">
+            {rule.name ?? fromUUID(ruleId)}
+          </span>
           {editorMode === 'edit' ? (
             <Tag size="big" border="square">
               {t('common:edit')}

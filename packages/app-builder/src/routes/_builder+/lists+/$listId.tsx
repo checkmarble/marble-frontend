@@ -105,7 +105,7 @@ export default function Lists() {
         <div className="flex w-full flex-row items-center justify-between	gap-4">
           <div className="flex flex-row items-center gap-4">
             <Page.BackButton />
-            {customList.name}
+            <span className="line-clamp-2 text-left">{customList.name}</span>
           </div>
           {canManageList ? (
             <EditList

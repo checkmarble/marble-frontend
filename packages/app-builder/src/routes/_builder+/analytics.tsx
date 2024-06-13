@@ -47,7 +47,9 @@ export default function Analytics() {
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center">
           <Icon icon="analytics" className="mr-2 size-6" />
-          {t('navigation:analytics')}
+          <span className="line-clamp-1 text-left">
+            {t('navigation:analytics')}
+          </span>
         </div>
       </Page.Header>
       <iframe

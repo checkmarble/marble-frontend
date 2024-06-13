@@ -137,7 +137,7 @@ export default function Workflow() {
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
-          {scenarioName}
+          <span className="line-clamp-2 text-left">{scenarioName}</span>
         </div>
       </Page.Header>
       <WorkflowProvider
