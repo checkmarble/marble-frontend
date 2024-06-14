@@ -60,7 +60,7 @@ export const ComboboxItem = React.forwardRef<
       ref={ref}
       {...props}
       className={clsx(
-        'data-[active-item]:bg-purple-05 group flex flex-row items-center gap-2 rounded p-2',
+        'data-[active-item]:bg-purple-05 hover:bg-purple-05 group flex flex-row items-center gap-2 rounded p-2',
         props.className,
       )}
     />
