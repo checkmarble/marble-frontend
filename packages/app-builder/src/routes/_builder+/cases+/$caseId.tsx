@@ -63,12 +63,12 @@ export default function CasePage() {
 
   return (
     <Page.Container>
-      <Page.Header className="justify-between">
+      <Page.Header className="justify-between gap-8">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
-          {caseDetail.name}
+          <span className="line-clamp-2 text-left">{caseDetail.name}</span>
           <CopyToClipboardButton toCopy={caseDetail.id}>
-            <span className="text-s font-normal">
+            <span className="text-s line-clamp-1 font-normal">
               <span className="font-medium">ID</span> {caseDetail.id}
             </span>
           </CopyToClipboardButton>
