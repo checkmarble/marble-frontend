@@ -20,6 +20,7 @@ import {
 export type FirebaseClientWrapper = {
   app: FirebaseApp;
   clientAuth: Auth;
+  isFirebaseEmulator: boolean;
   googleAuthProvider: GoogleAuthProvider;
   microsoftAuthProvider: OAuthProvider;
   signInWithOAuth: typeof signInWithPopup;
@@ -54,6 +55,7 @@ export function initializeFirebaseClient({
   return {
     app,
     clientAuth,
+    isFirebaseEmulator: 'emulator' in clientAuth.config,
     googleAuthProvider,
     microsoftAuthProvider,
     signInWithOAuth: signInWithPopup,

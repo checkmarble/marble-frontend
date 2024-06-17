@@ -4,13 +4,18 @@ import { getRoute } from '@app-builder/utils/routes';
 import { useNavigate } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button } from 'ui-design-system';
 
-function SendEmailVerificationButton({ onClick }: { onClick?: () => void }) {
-  const { t } = useTranslation(['auth']);
+function SendEmailVerificationButton({
+  onClick,
+  children,
+}: {
+  onClick?: () => void;
+  children: React.ReactNode;
+}) {
   const isHydrated = useHydrated();
 
   return (
@@ -20,14 +25,16 @@ function SendEmailVerificationButton({ onClick }: { onClick?: () => void }) {
       onClick={onClick}
       disabled={!isHydrated}
     >
-      {t('auth:email-verification.resend')}
+      {children}
     </Button>
   );
 }
 
 function ClientSendEmailVerificationButton() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'auth']);
 
+  const { isFirebaseEmulator } =
+    clientServices.authenticationClientService.authenticationClientRepository;
   const resendEmailVerification = useResendEmailVerification(
     clientServices.authenticationClientService,
   );
@@ -48,14 +55,54 @@ function ClientSendEmailVerificationButton() {
       onClick={() => {
         void onSendClick();
       }}
-    />
+    >
+      {isFirebaseEmulator
+        ? t('auth:email-verification.emulator_resend')
+        : t('auth:email-verification.resend')}
+    </SendEmailVerificationButton>
   );
 }
 
 export function SendEmailVerification() {
+  const { t } = useTranslation(['auth']);
   return (
-    <ClientOnly fallback={<SendEmailVerificationButton />}>
+    <ClientOnly
+      fallback={
+        <SendEmailVerificationButton>
+          {t('auth:email-verification.resend')}
+        </SendEmailVerificationButton>
+      }
+    >
       {() => <ClientSendEmailVerificationButton />}
+    </ClientOnly>
+  );
+}
+
+function ClientSendEmailVerificationDescription() {
+  const { t } = useTranslation(['auth']);
+
+  const { isFirebaseEmulator } =
+    clientServices.authenticationClientService.authenticationClientRepository;
+
+  return (
+    <Trans
+      t={t}
+      i18nKey={
+        isFirebaseEmulator
+          ? 'auth:email-verification.emulator_description'
+          : 'auth:email-verification.description'
+      }
+    />
+  );
+}
+
+export function SendEmailVerificationDescription() {
+  const { t } = useTranslation(['auth']);
+  return (
+    <ClientOnly
+      fallback={<Trans t={t} i18nKey="auth:email-verification.description" />}
+    >
+      {() => <ClientSendEmailVerificationDescription />}
     </ClientOnly>
   );
 }
