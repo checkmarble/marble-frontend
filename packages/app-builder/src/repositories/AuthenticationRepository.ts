@@ -23,6 +23,7 @@ export interface AuthenticationClientRepository {
   ) => Promise<void>;
   sendPasswordResetEmail: (locale: string, email: string) => Promise<void>;
   firebaseIdToken: () => Promise<string>;
+  isFirebaseEmulator: boolean;
 }
 
 export function getAuthenticationClientRepository(
@@ -158,5 +159,6 @@ export function getAuthenticationClientRepository(
     resendEmailVerification,
     sendPasswordResetEmail,
     firebaseIdToken,
+    isFirebaseEmulator: firebaseClient.isFirebaseEmulator,
   };
 }

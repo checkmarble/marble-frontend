@@ -1,5 +1,8 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
-import { SendEmailVerification } from '@app-builder/components/Auth/SendEmailVerification';
+import {
+  SendEmailVerification,
+  SendEmailVerificationDescription,
+} from '@app-builder/components/Auth/SendEmailVerification';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
@@ -24,7 +27,7 @@ export default function SignUp() {
   return (
     <div className="flex w-full flex-col items-center">
       <p className="text-m text-grey-100 mb-4">
-        <Trans t={t} i18nKey="auth:email-verification.description" />
+        <SendEmailVerificationDescription />
       </p>
       <SendEmailVerification />
       <p className="mt-2 text-xs">
