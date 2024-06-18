@@ -1,46 +1,88 @@
 import { type RouteID } from '@app-builder/utils/routes';
-import { toUUID } from '@app-builder/utils/short-uuid';
+import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { type UIMatch } from '@remix-run/react';
+import * as z from 'zod';
 
-function toUUIDifDefined(val: string | undefined) {
-  return val !== undefined ? toUUID(val) : undefined;
+interface PageViewNameAndProps {
+  name: string;
+  properties: Record<string, string> | undefined;
 }
 
-export default function getPageviewNameAndProps(thisPage: UIMatch) {
+export function getPageViewNameAndProps(
+  thisPage: UIMatch,
+): PageViewNameAndProps | undefined {
   switch (thisPage.id as RouteID) {
     case 'routes/_builder+/scenarios+/_index': {
       return { name: 'Scenarios', properties: undefined };
     }
     case 'routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/trigger': {
-      const iterationId = toUUIDifDefined(thisPage.params['iterationId']);
-      const scenarioId = toUUIDifDefined(thisPage.params['scenarioId']);
+      const safeParseProperties = z
+        .object({
+          iterationId: shortUUIDSchema,
+          scenarioId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
       return {
         name: 'Scenario iteration trigger',
-        properties: { iteration_id: iterationId, scenario_id: scenarioId },
+        properties: {
+          iteration_id: safeParseProperties.data.iterationId,
+          scenario_id: safeParseProperties.data.scenarioId,
+        },
       };
     }
     case 'routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/rules': {
-      const iterationId = toUUIDifDefined(thisPage.params['iterationId']);
-      const scenarioId = toUUIDifDefined(thisPage.params['scenarioId']);
+      const safeParseProperties = z
+        .object({
+          iterationId: shortUUIDSchema,
+          scenarioId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
       return {
         name: 'Scenario iteration rules',
-        properties: { iteration_id: iterationId, scenario_id: scenarioId },
+        properties: {
+          iteration_id: safeParseProperties.data.iterationId,
+          scenario_id: safeParseProperties.data.scenarioId,
+        },
       };
     }
     case 'routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/decision': {
-      const iterationId = toUUIDifDefined(thisPage.params['iterationId']);
-      const scenarioId = toUUIDifDefined(thisPage.params['scenarioId']);
+      const safeParseProperties = z
+        .object({
+          iterationId: shortUUIDSchema,
+          scenarioId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
       return {
         name: 'Scenario iteration outcome',
-        properties: { iteration_id: iterationId, scenario_id: scenarioId },
+        properties: {
+          iteration_id: safeParseProperties.data.iterationId,
+          scenario_id: safeParseProperties.data.scenarioId,
+        },
       };
     }
     case 'routes/_builder+/decisions+/_index': {
       return { name: 'Decisions', properties: undefined };
     }
     case 'routes/_builder+/decisions+/$decisionId': {
-      const decisionId = toUUIDifDefined(thisPage.params['decisionId']);
-      return { name: 'Decision', properties: { decision_id: decisionId } };
+      const safeParseProperties = z
+        .object({
+          decisionId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
+      return {
+        name: 'Decision',
+        properties: {
+          decision_id: safeParseProperties.data.decisionId,
+        },
+      };
     }
     case 'routes/_builder+/scheduled-executions': {
       return { name: 'Scheduled executions', properties: undefined };
@@ -49,15 +91,37 @@ export default function getPageviewNameAndProps(thisPage: UIMatch) {
       return { name: 'Cases', properties: undefined };
     }
     case 'routes/_builder+/cases+/$caseId': {
-      const case_id = toUUIDifDefined(thisPage.params['caseId']);
-      return { name: 'Case', properties: { case_id } };
+      const safeParseProperties = z
+        .object({
+          caseId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
+      return {
+        name: 'Case',
+        properties: {
+          case_id: safeParseProperties.data.caseId,
+        },
+      };
     }
     case 'routes/_builder+/lists+/_index': {
       return { name: 'Lists', properties: undefined };
     }
     case 'routes/_builder+/lists+/$listId': {
-      const listId = toUUIDifDefined(thisPage.params['listId']);
-      return { name: 'List', properties: { list_id: listId } };
+      const safeParseProperties = z
+        .object({
+          listId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
+      return {
+        name: 'List',
+        properties: {
+          list_id: safeParseProperties.data.listId,
+        },
+      };
     }
     case 'routes/_builder+/analytics': {
       return { name: 'Analytics', properties: undefined };
@@ -77,10 +141,19 @@ export default function getPageviewNameAndProps(thisPage: UIMatch) {
       return { name: 'Transfers', properties: undefined };
     }
     case 'routes/transfercheck+/transfers+/$transferId': {
-      const transfer_id = toUUIDifDefined(thisPage.params['transferId']);
-      return { name: 'Transfer', properties: { transfer_id } };
+      const safeParseProperties = z
+        .object({
+          transferId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
+      return {
+        name: 'Transfer',
+        properties: {
+          transfer_id: safeParseProperties.data.transferId,
+        },
+      };
     }
-    default:
-      return null;
   }
 }

@@ -3,7 +3,7 @@ import { useLocation, useMatches } from '@remix-run/react';
 import { useEffect } from 'react';
 import { useHydrated } from 'remix-utils/use-hydrated';
 
-import getPageViewNameAndProps from './getPageviewNameAndProps';
+import { getPageViewNameAndProps } from './getPageviewNameAndProps';
 
 export function useSegmentIdentification(user: CurrentUser) {
   const isHydrated = useHydrated();
