@@ -73,7 +73,7 @@ export interface ScenarioRepository {
   }): Promise<void>;
 }
 
-export function getScenarioRepository() {
+export function makeGetScenarioRepository() {
   return (marbleApiClient: MarbleApi): ScenarioRepository => ({
     listScenarios: async () => {
       const scenarios = await marbleApiClient.listScenarios();

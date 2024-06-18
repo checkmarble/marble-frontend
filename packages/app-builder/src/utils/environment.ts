@@ -55,6 +55,7 @@ type ServerPublicEnvVarName = z.infer<typeof ServerPublicEnvVarNameSchema>;
  */
 const ServerSecretEnvVarNameSchema = z.object({
   SESSION_SECRET: z.string(),
+  LICENSE_KEY: z.string(),
 });
 type ServerSecretEnvVarName = z.infer<typeof ServerSecretEnvVarNameSchema>;
 

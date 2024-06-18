@@ -28,7 +28,7 @@ export interface DataModelRepository {
   createPivot(pivot: CreatePivotInput): Promise<Pivot>;
 }
 
-export function getDataModelRepository() {
+export function makeGetDataModelRepository() {
   return (marbleApiClient: MarbleApi): DataModelRepository => ({
     getDataModel: async () => {
       const { data_model } = await marbleApiClient.getDataModel();
