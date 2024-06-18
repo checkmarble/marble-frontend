@@ -42,7 +42,7 @@ export interface CaseRepository {
   setTags(args: { caseId: string; tagIds: string[] }): Promise<CaseDetail>;
 }
 
-export function getCaseRepository() {
+export function makeGetCaseRepository() {
   return (marbleApiClient: MarbleApi): CaseRepository => ({
     listCases: async ({ dateRange, inboxIds, statuses, ...rest }) => {
       let startDate, endDate: string | undefined;

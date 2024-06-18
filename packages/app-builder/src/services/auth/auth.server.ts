@@ -1,4 +1,7 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import {
+  type GetMarbleAPIClientWithAuth,
+  type MarbleApi,
+} from '@app-builder/infra/marble-api';
 import {
   adaptAuthErrors,
   type AuthData,
@@ -12,7 +15,6 @@ import { type DataModelRepository } from '@app-builder/repositories/DataModelRep
 import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
-import { type MarbleAPIRepository } from '@app-builder/repositories/MarbleAPIRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
@@ -86,28 +88,46 @@ const schema = z.object({
 });
 export type AuthPayload = z.infer<typeof schema>;
 
-export function makeAuthenticationServerService(
-  marbleAPIClient: MarbleAPIRepository,
-  userRepository: (marbleApiClient: MarbleApi) => UserRepository,
-  inboxRepository: (marbleApiClient: MarbleApi) => InboxRepository,
-  editorRepository: (marbleApiClient: MarbleApi) => EditorRepository,
-  decisionRepository: (marbleApiClient: MarbleApi) => DecisionRepository,
-  caseRepository: (marbleApiClient: MarbleApi) => CaseRepository,
-  organizationRepository: (
+interface MakeAuthenticationServerServiceArgs {
+  getMarbleAPIClientWithAuth: GetMarbleAPIClientWithAuth;
+  getUserRepository: (marbleApiClient: MarbleApi) => UserRepository;
+  getInboxRepository: (marbleApiClient: MarbleApi) => InboxRepository;
+  getEditorRepository: (marbleApiClient: MarbleApi) => EditorRepository;
+  getDecisionRepository: (marbleApiClient: MarbleApi) => DecisionRepository;
+  getCaseRepository: (marbleApiClient: MarbleApi) => CaseRepository;
+  getOrganizationRepository: (
     marbleApiClient: MarbleApi,
     organizationId: string,
-  ) => OrganizationRepository,
-  scenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository,
-  scenarioIterationRuleRepository: (
+  ) => OrganizationRepository;
+  getScenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository;
+  getScenarioIterationRuleRepository: (
     marbleApiClient: MarbleApi,
-  ) => ScenarioIterationRuleRepository,
-  dataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository,
-  apiKeysRepository: (marbleApiClient: MarbleApi) => ApiKeyRepository,
-  analyticsRepository: (marbleApiClient: MarbleApi) => AnalyticsRepository,
-  transferRepository: (marbleApiClient: MarbleApi) => TransferRepository,
-  authSessionService: SessionService<AuthData, AuthFlashData>,
-  csrfService: CSRF,
-) {
+  ) => ScenarioIterationRuleRepository;
+  getDataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository;
+  getApiKeyRepository: (marbleApiClient: MarbleApi) => ApiKeyRepository;
+  getAnalyticsRepository: (marbleApiClient: MarbleApi) => AnalyticsRepository;
+  getTransferRepository: (marbleApiClient: MarbleApi) => TransferRepository;
+  authSessionService: SessionService<AuthData, AuthFlashData>;
+  csrfService: CSRF;
+}
+
+export function makeAuthenticationServerService({
+  getMarbleAPIClientWithAuth,
+  getUserRepository,
+  getInboxRepository,
+  getEditorRepository,
+  getDecisionRepository,
+  getCaseRepository,
+  getOrganizationRepository,
+  getScenarioRepository,
+  getScenarioIterationRuleRepository,
+  getDataModelRepository,
+  getApiKeyRepository,
+  getAnalyticsRepository,
+  getTransferRepository,
+  authSessionService,
+  csrfService,
+}: MakeAuthenticationServerServiceArgs) {
   function getMarbleAPIClient(marbleAccessToken: string) {
     const tokenService = {
       getToken: () => Promise.resolve(marbleAccessToken),
@@ -116,7 +136,7 @@ export function makeAuthenticationServerService(
         throw redirect(getRoute('/ressources/auth/logout'));
       },
     };
-    return marbleAPIClient(tokenService);
+    return getMarbleAPIClientWithAuth(tokenService);
   }
 
   async function authenticate(
@@ -142,7 +162,7 @@ export function makeAuthenticationServerService(
       );
 
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
-      const user = await userRepository(apiClient).getCurrentUser();
+      const user = await getUserRepository(apiClient).getCurrentUser();
 
       authSession.set('authToken', marbleToken);
       authSession.set('user', user);
@@ -187,7 +207,7 @@ export function makeAuthenticationServerService(
       );
 
       const apiClient = getMarbleAPIClient(marbleToken.access_token);
-      const user = await userRepository(apiClient).getCurrentUser();
+      const user = await getUserRepository(apiClient).getCurrentUser();
 
       authSession.set('authToken', marbleToken);
       authSession.set('user', user);
@@ -256,19 +276,19 @@ export function makeAuthenticationServerService(
 
     return {
       apiClient,
-      editor: editorRepository(apiClient),
-      decision: decisionRepository(apiClient),
-      cases: caseRepository(apiClient),
-      scenario: scenarioRepository(apiClient),
+      editor: getEditorRepository(apiClient),
+      decision: getDecisionRepository(apiClient),
+      cases: getCaseRepository(apiClient),
+      scenario: getScenarioRepository(apiClient),
       scenarioIterationRuleRepository:
-        scenarioIterationRuleRepository(apiClient),
-      organization: organizationRepository(apiClient, user.organizationId),
-      dataModelRepository: dataModelRepository(apiClient),
-      apiKey: apiKeysRepository(apiClient),
-      analytics: analyticsRepository(apiClient),
-      transferRepository: transferRepository(apiClient),
+        getScenarioIterationRuleRepository(apiClient),
+      organization: getOrganizationRepository(apiClient, user.organizationId),
+      dataModelRepository: getDataModelRepository(apiClient),
+      apiKey: getApiKeyRepository(apiClient),
+      analytics: getAnalyticsRepository(apiClient),
+      transferRepository: getTransferRepository(apiClient),
       user,
-      inbox: inboxRepository(apiClient),
+      inbox: getInboxRepository(apiClient),
     };
   }
 

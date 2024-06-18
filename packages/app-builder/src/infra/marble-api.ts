@@ -19,15 +19,17 @@ function getMarbleAPIClient({
   baseUrl,
 }: {
   baseUrl: string;
-  tokenService: TokenService<string>;
+  tokenService?: TokenService<string>;
 }): MarbleApi {
-  const fetch = fetchWithAuthMiddleware({
-    tokenService,
-    getAuthorizationHeader: (token) => ({
-      name: 'Authorization',
-      value: `Bearer ${token}`,
-    }),
-  });
+  const fetch = tokenService
+    ? fetchWithAuthMiddleware({
+        tokenService,
+        getAuthorizationHeader: (token) => ({
+          name: 'Authorization',
+          value: `Bearer ${token}`,
+        }),
+      })
+    : undefined;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { defaults, servers, ...api } = marbleApi;
@@ -40,11 +42,17 @@ function getMarbleAPIClient({
   });
 }
 
-export type GetMarbleAPIClient = ReturnType<
-  typeof initializeGetMarbleAPIClient
->;
+export type GetMarbleAPIClientWithAuth = (
+  tokenService: TokenService<string>,
+) => MarbleApi;
 
-export function initializeGetMarbleAPIClient({ baseUrl }: { baseUrl: string }) {
-  return (tokenService: TokenService<string>) =>
-    getMarbleAPIClient({ tokenService, baseUrl });
+export function initializeMarbleAPIClient({ baseUrl }: { baseUrl: string }): {
+  marbleApiClient: MarbleApi;
+  getMarbleAPIClientWithAuth: GetMarbleAPIClientWithAuth;
+} {
+  return {
+    marbleApiClient: getMarbleAPIClient({ baseUrl }),
+    getMarbleAPIClientWithAuth: (tokenService: TokenService<string>) =>
+      getMarbleAPIClient({ tokenService, baseUrl }),
+  };
 }

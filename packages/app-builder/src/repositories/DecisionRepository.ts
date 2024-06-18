@@ -44,7 +44,7 @@ export interface DecisionRepository {
   getDecisionById(id: string): Promise<DecisionDetail>;
 }
 
-export function getDecisionRepository() {
+export function makeGetDecisionRepository() {
   return (marbleApiClient: MarbleApi): DecisionRepository => ({
     listDecisions: async ({
       caseId,

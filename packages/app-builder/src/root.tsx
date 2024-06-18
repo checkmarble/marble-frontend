@@ -29,6 +29,7 @@ import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { serverServices } from './services/init.server';
+import { LicenseContextProvider } from './services/license/license';
 import { useSegmentPageTracking } from './services/segment';
 import { getSegmentScript } from './services/segment/segment.server';
 import { SegmentScript } from './services/segment/SegmentScript';
@@ -63,11 +64,16 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { i18nextService, toastSessionService, csrfService } = serverServices;
+  const { i18nextService, toastSessionService, csrfService, licenseService } =
+    serverServices;
   const locale = await i18nextService.getLocale(request);
 
-  const toastSession = await toastSessionService.getSession(request);
-  const [csrfToken, csrfCookieHeader] = await csrfService.commitToken(request);
+  const [toastSession, [csrfToken, csrfCookieHeader], licenseEntitlements] =
+    await Promise.all([
+      toastSessionService.getSession(request),
+      csrfService.commitToken(request),
+      licenseService.getLicenseEntitlements(),
+    ]);
 
   const toastMessage = getToastMessage(toastSession);
 
@@ -91,6 +97,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       segmentScript: segmentApiKey
         ? getSegmentScript(segmentApiKey)
         : undefined,
+      licenseEntitlements,
     },
     {
       headers,
@@ -152,8 +159,14 @@ export function ErrorBoundary() {
 }
 
 function App() {
-  const { locale, ENV, toastMessage, csrf, segmentScript } =
-    useLoaderData<typeof loader>();
+  const {
+    locale,
+    ENV,
+    toastMessage,
+    csrf,
+    segmentScript,
+    licenseEntitlements,
+  } = useLoaderData<typeof loader>();
 
   const { i18n } = useTranslation(handle.i18n);
 
@@ -171,9 +184,11 @@ function App() {
       </head>
       <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
         <AuthenticityTokenProvider token={csrf}>
-          <Tooltip.Provider>
-            <Outlet />
-          </Tooltip.Provider>
+          <LicenseContextProvider value={licenseEntitlements}>
+            <Tooltip.Provider>
+              <Outlet />
+            </Tooltip.Provider>
+          </LicenseContextProvider>
         </AuthenticityTokenProvider>
         <script
           dangerouslySetInnerHTML={{

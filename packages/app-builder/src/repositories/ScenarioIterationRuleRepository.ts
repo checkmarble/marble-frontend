@@ -22,7 +22,7 @@ export interface ScenarioIterationRuleRepository {
   deleteRule(args: { ruleId: string }): Promise<void>;
 }
 
-export function getScenarioIterationRuleRepository() {
+export function makeGetScenarioIterationRuleRepository() {
   return (marbleApiClient: MarbleApi): ScenarioIterationRuleRepository => ({
     listRules: async (args) => {
       const rules = await marbleApiClient.listScenarioIterationRules(args);
