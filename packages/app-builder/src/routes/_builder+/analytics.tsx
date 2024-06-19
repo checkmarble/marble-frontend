@@ -14,11 +14,14 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const { user, analytics } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  if (!user.permissions.canReadAnalytics) {
+  const isAnalyticsAvailable = await featureAccessService.isAnalyticsAvailable({
+    userPermissions: user.permissions,
+  });
+  if (!isAnalyticsAvailable) {
     return redirect(getRoute('/'));
   }
 

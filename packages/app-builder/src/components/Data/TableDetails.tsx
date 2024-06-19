@@ -1,7 +1,4 @@
-import {
-  CollapsiblePaper,
-  usePermissionsContext,
-} from '@app-builder/components';
+import { CollapsiblePaper } from '@app-builder/components';
 import {
   type DataModel,
   type DataType,
@@ -12,6 +9,7 @@ import { CreateField } from '@app-builder/routes/ressources+/data+/createField';
 import { CreateLink } from '@app-builder/routes/ressources+/data+/createLink';
 import { EditField } from '@app-builder/routes/ressources+/data+/editField';
 import { EditTable } from '@app-builder/routes/ressources+/data+/editTable';
+import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
 import { NavLink } from '@remix-run/react';
 import {
@@ -34,7 +32,12 @@ interface TableDetailsProps {
 
 export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
   const { t } = useTranslation(dataI18n);
-  const { canEditDataModel, canIngestData } = usePermissionsContext();
+  const {
+    isCreateDataModelFieldAvailable,
+    isEditDataModelInfoAvailable,
+    isIngestDataAvailable,
+    isCreateDataModelLinkAvailable,
+  } = useDataModelFeatureAccess();
 
   const otherTablesWithUnique = useMemo(
     () =>
@@ -82,7 +85,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
       <CollapsiblePaper.Title>
         <span className="flex flex-1">{tableModel.name}</span>
 
-        {canEditDataModel ? (
+        {isCreateDataModelFieldAvailable ? (
           // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
           <div
             onClick={(e) => {
@@ -98,7 +101,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
             </CreateField>
           </div>
         ) : null}
-        {canIngestData ? (
+        {isIngestDataAvailable ? (
           <NavLink
             className={clsx(
               'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
@@ -115,7 +118,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
       </CollapsiblePaper.Title>
       <CollapsiblePaper.Content>
         <div className="flex flex-col gap-6">
-          {canEditDataModel ? (
+          {isEditDataModelInfoAvailable ? (
             <div className="before:hover:bg-grey-05 text-grey-100 group relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out hover:cursor-pointer">
               <EditTable table={tableModel}>
                 <div className="flex flex-row gap-5">
@@ -137,7 +140,6 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
             fields={fields}
             tableModel={tableModel}
             dataModel={dataModel}
-            permissions={{ canEditDataModel }}
           />
 
           {links.length > 0 ? (
@@ -158,7 +160,8 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
             </>
           ) : null}
 
-          {canEditDataModel && otherTablesWithUnique.length > 0 ? (
+          {isCreateDataModelLinkAvailable &&
+          otherTablesWithUnique.length > 0 ? (
             <CreateLink
               thisTable={tableModel}
               otherTables={otherTablesWithUnique}
@@ -189,9 +192,6 @@ interface TableDetailColumnsProps {
   }[];
   tableModel: TableModel;
   dataModel: DataModel;
-  permissions: {
-    canEditDataModel: boolean;
-  };
 }
 
 const fieldsColumnHelper =
@@ -201,9 +201,9 @@ function TableDetailFields({
   fields,
   tableModel,
   dataModel,
-  permissions: { canEditDataModel },
 }: TableDetailColumnsProps) {
   const { t } = useTranslation(dataI18n);
+  const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
 
   const linksToThisTable = useMemo(
     () =>
@@ -274,7 +274,7 @@ function TableDetailFields({
           return (
             <div className="flex flex-row items-center justify-between gap-1">
               <FormatDescription description={cell.row.original.description} />
-              {canEditDataModel ? (
+              {isEditDataModelFieldAvailable ? (
                 <EditField
                   key={cell.row.original.id}
                   field={cell.row.original}
@@ -290,7 +290,7 @@ function TableDetailFields({
         },
       }),
     ],
-    [canEditDataModel, linksToThisTable, t],
+    [isEditDataModelFieldAvailable, linksToThisTable, t],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({

@@ -1,5 +1,7 @@
-import { usePermissionsContext } from '@app-builder/components';
-import { EditorModeContextProvider } from '@app-builder/services/editor';
+import {
+  type EditorMode,
+  EditorModeContextProvider,
+} from '@app-builder/services/editor';
 import { CurrentScenarioIterationContextProvider } from '@app-builder/services/editor/current-scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
 import { CurrentScenarioValidationContextProvider } from '@app-builder/services/validation/current-scenario-validation';
@@ -8,42 +10,48 @@ import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { isDefined } from 'remeda';
+import * as R from 'remeda';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
-  const { scenario } = await authService.isAuthenticated(request, {
+  const { authService, featureAccessService } = serverServices;
+  const { user, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const iterationId = fromParams(params, 'iterationId');
 
-  const [scenarioIteration, scenarioValidation] = await Promise.all([
-    scenario.getScenarioIteration({
-      iterationId,
-    }),
-    scenario.validate({
-      iterationId,
-    }),
-  ]);
+  const [isEditScenarioAvailable, scenarioIteration, scenarioValidation] =
+    await Promise.all([
+      featureAccessService.isEditScenarioAvailable({
+        userPermissions: user.permissions,
+      }),
+      scenario.getScenarioIteration({
+        iterationId,
+      }),
+      scenario.validate({
+        iterationId,
+      }),
+    ]);
 
-  return json({ scenarioIteration, scenarioValidation });
+  const editorMode: EditorMode =
+    isEditScenarioAvailable && !R.isNullish(scenarioIteration.version)
+      ? 'edit'
+      : 'view';
+
+  return json({
+    editorMode,
+    scenarioIteration,
+    scenarioValidation,
+  });
 }
 
 export default function CurrentScenarioIterationProvider() {
-  const { canManageScenario } = usePermissionsContext();
-  const { scenarioIteration, scenarioValidation } =
+  const { editorMode, scenarioIteration, scenarioValidation } =
     useLoaderData<typeof loader>();
-
-  //TODO(merge view/edit): move this logic in an adapter from DTO
-  const editorMode =
-    canManageScenario && !isDefined(scenarioIteration.version)
-      ? 'edit'
-      : 'view';
 
   return (
     <CurrentScenarioIterationContextProvider value={scenarioIteration}>

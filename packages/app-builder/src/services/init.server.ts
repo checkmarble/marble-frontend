@@ -8,8 +8,9 @@ import { CSRF } from 'remix-utils/csrf/server';
 
 import { makeAuthenticationServerService } from './auth/auth.server';
 import { makeSessionService } from './auth/session.server';
+import { makeFeatureAccessService } from './feature-access.server';
 import { makeI18nextServerService } from './i18n/i18next.server';
-import { makeLicenseServerService } from './license/license.server';
+import { makeLicenseServerService } from './license.server';
 
 function makeServerServices(repositories: ServerRepositories) {
   const csrfService = new CSRF({
@@ -23,6 +24,10 @@ function makeServerServices(repositories: ServerRepositories) {
   const toastSessionService = makeSessionService({
     sessionStorage: repositories.toastStorageRepository.toastStorage,
   });
+  const licenseService = makeLicenseServerService({
+    licenseKey: getServerEnv('LICENSE_KEY'),
+    licenseRepository: repositories.licenseRepository,
+  });
   return {
     authSessionService,
     csrfService,
@@ -35,9 +40,9 @@ function makeServerServices(repositories: ServerRepositories) {
     i18nextService: makeI18nextServerService({
       authStorage: repositories.authStorageRepository.authStorage,
     }),
-    licenseService: makeLicenseServerService({
-      licenseKey: getServerEnv('LICENSE_KEY'),
-      licenseRepository: repositories.licenseRepository,
+    licenseService,
+    featureAccessService: makeFeatureAccessService({
+      getLicenseEntitlements: licenseService.getLicenseEntitlements,
     }),
   };
 }

@@ -7,7 +7,6 @@ export * from './Navigation';
 export * from './Page';
 export * from './PaginationButtons';
 export * from './Paper';
-export * from './PermissionsContext';
 export * from './RightPanel';
 export * from './Scenario';
 export * from './ScheduledExecutions';

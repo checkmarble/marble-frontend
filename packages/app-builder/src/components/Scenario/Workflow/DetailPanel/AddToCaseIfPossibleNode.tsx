@@ -5,7 +5,11 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { type AddToCaseIfPossibleAction } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
-import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
+import {
+  useWorkflowActions,
+  useWorkflowData,
+  useWorkflowDataFeatureAccess,
+} from '../WorkflowProvider';
 import { SelectInbox } from './SelectInbox';
 import { defaultCaseName } from './shared';
 
@@ -18,6 +22,7 @@ export function AddToCaseIfPossibleNode({
 }) {
   const { t } = useTranslation(workflowI18n);
   const { inboxes, hasPivotValue } = useWorkflowData();
+  const { isCreateInboxAvailable } = useWorkflowDataFeatureAccess();
   const { updateNode } = useWorkflowActions();
 
   if (!hasPivotValue) {
@@ -53,6 +58,7 @@ export function AddToCaseIfPossibleNode({
           updateNode(id, { ...data, inboxId });
         }}
         inboxes={inboxes}
+        isCreateInboxAvailable={isCreateInboxAvailable}
       />
       <p className="flex flex-col gap-2">
         <span className="whitespace-pre-wrap">
