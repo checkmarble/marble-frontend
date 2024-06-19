@@ -38,8 +38,8 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
-  const { scenario, inbox, dataModelRepository } =
+  const { authService, featureAccessService } = serverServices;
+  const { user, scenario, inbox, dataModelRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -68,6 +68,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenarios,
     inboxes,
     hasPivotValue,
+    workflowDataFeatureAccess: {
+      isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable({
+        userPermissions: user.permissions,
+      }),
+    },
   });
 }
 
@@ -110,6 +115,7 @@ export default function Workflow() {
     scenarios,
     inboxes,
     hasPivotValue,
+    workflowDataFeatureAccess,
   } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher();
@@ -141,7 +147,13 @@ export default function Workflow() {
         </div>
       </Page.Header>
       <WorkflowProvider
-        data={{ scenarios, inboxes, nonEditableData, hasPivotValue }}
+        data={{
+          scenarios,
+          inboxes,
+          nonEditableData,
+          hasPivotValue,
+        }}
+        workflowDataFeatureAccess={workflowDataFeatureAccess}
         initialWorkflow={initialWorkflow}
       >
         <div className="grid size-full grid-cols-[2fr_1fr]">

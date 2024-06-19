@@ -1,5 +1,4 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import { usePermissionsContext } from '@app-builder/components/PermissionsContext';
 import { CreateList } from '@app-builder/routes/ressources+/lists+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -20,13 +19,18 @@ import { Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { authService, featureAccessService } = serverServices;
+  const { user, apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const { custom_lists } = await apiClient.listCustomLists();
 
-  return json(custom_lists);
+  return json({
+    customList: custom_lists,
+    isCreateListAvailable: featureAccessService.isCreateListAvailable({
+      userPermissions: user.permissions,
+    }),
+  });
 }
 
 export const handle = {
@@ -37,8 +41,7 @@ const columnHelper = createColumnHelper<CustomList>();
 
 export default function ListsPage() {
   const { t } = useTranslation(handle.i18n);
-  const customList = useLoaderData<typeof loader>();
-  const { canManageList } = usePermissionsContext();
+  const { customList, isCreateListAvailable } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
 
@@ -78,7 +81,7 @@ export default function ListsPage() {
       <Page.Content>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row justify-end">
-            {canManageList ? <CreateList /> : null}
+            {isCreateListAvailable ? <CreateList /> : null}
           </div>
           {isEmpty ? (
             <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">

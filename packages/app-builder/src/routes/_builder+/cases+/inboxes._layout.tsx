@@ -1,4 +1,4 @@
-import { Page, usePermissionsContext } from '@app-builder/components';
+import { Page } from '@app-builder/components';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { serverServices } from '@app-builder/services/init.server';
@@ -17,20 +17,24 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
-  const { inbox } = await authService.isAuthenticated(request, {
+  const { authService, featureAccessService } = serverServices;
+  const { user, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const inboxes = await inbox.listInboxes();
 
-  return json({ inboxes });
+  return json({
+    inboxes,
+    isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable({
+      userPermissions: user.permissions,
+    }),
+  });
 }
 
 export default function Cases() {
   const { t } = useTranslation(handle.i18n);
-  const { inboxes } = useLoaderData<typeof loader>();
-  const { canEditInboxes } = usePermissionsContext();
+  const { inboxes, isCreateInboxAvailable } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -69,7 +73,7 @@ export default function Cases() {
               </ul>
             </nav>
           </ScrollAreaV2>
-          {canEditInboxes ? (
+          {isCreateInboxAvailable ? (
             <CreateInbox redirectRoutePath="/cases/inboxes/:inboxId" />
           ) : null}
         </div>

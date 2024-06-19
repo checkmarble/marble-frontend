@@ -1,6 +1,6 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 
-type EditorMode = 'edit' | 'view';
+export type EditorMode = 'edit' | 'view';
 
 const EditorModeContext = createSimpleContext<EditorMode>('EditorModeContext');
 

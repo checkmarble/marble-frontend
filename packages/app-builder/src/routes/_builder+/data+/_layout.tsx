@@ -13,18 +13,52 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
-  const { dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { authService, featureAccessService } = serverServices;
+  const { user, dataModelRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
 
   const dataModel = await dataModelRepository.getDataModel();
-  return json({ dataModel });
+  return json({
+    dataModel,
+    dataModelFeatureAccess: {
+      isCreateDataModelTableAvailable:
+        featureAccessService.isCreateDataModelTableAvailable({
+          userPermissions: user.permissions,
+        }),
+      isEditDataModelInfoAvailable:
+        featureAccessService.isEditDataModelInfoAvailable({
+          userPermissions: user.permissions,
+        }),
+      isCreateDataModelFieldAvailable:
+        featureAccessService.isCreateDataModelFieldAvailable({
+          userPermissions: user.permissions,
+        }),
+      isEditDataModelFieldAvailable:
+        featureAccessService.isEditDataModelFieldAvailable({
+          userPermissions: user.permissions,
+        }),
+      isCreateDataModelLinkAvailable:
+        featureAccessService.isCreateDataModelLinkAvailable({
+          userPermissions: user.permissions,
+        }),
+      isCreateDataModelPivotAvailable:
+        featureAccessService.isCreateDataModelPivotAvailable({
+          userPermissions: user.permissions,
+        }),
+      isIngestDataAvailable: featureAccessService.isIngestDataAvailable({
+        userPermissions: user.permissions,
+      }),
+    },
+  });
 }
 
 export default function Data() {
   const { t } = useTranslation(handle.i18n);
-  const { dataModel } = useLoaderData<typeof loader>();
+  const { dataModel, dataModelFeatureAccess } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -34,7 +68,10 @@ export default function Data() {
           {t('navigation:data')}
         </div>
       </Page.Header>
-      <DataModelContextProvider value={dataModel}>
+      <DataModelContextProvider
+        dataModel={dataModel}
+        dataModelFeatureAccess={dataModelFeatureAccess}
+      >
         <Outlet />
       </DataModelContextProvider>
     </Page.Container>

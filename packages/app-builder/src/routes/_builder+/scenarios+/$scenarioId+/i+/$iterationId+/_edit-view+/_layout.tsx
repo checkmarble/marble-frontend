@@ -1,9 +1,4 @@
-import {
-  navigationI18n,
-  Page,
-  TabLink,
-  usePermissionsContext,
-} from '@app-builder/components';
+import { navigationI18n, Page, TabLink } from '@app-builder/components';
 import { CornerPing } from '@app-builder/components/Ping';
 import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
 import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
@@ -37,7 +32,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const { scenario, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -45,9 +40,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
-  if (!user.permissions.canPublishScenario) {
+  const isDeploymentActionsAvailable =
+    featureAccessService.isDeploymentActionsAvailable({
+      userPermissions: user.permissions,
+    });
+  const isCreateDraftAvailable = featureAccessService.isCreateDraftAvailable({
+    userPermissions: user.permissions,
+  });
+  if (!isDeploymentActionsAvailable) {
     return json({
-      withDeploymentActions: false as const,
+      isDeploymentActionsAvailable: false as const,
+      isCreateDraftAvailable,
       scenarioIterations: await scenario.listScenarioIterations({
         scenarioId,
       }),
@@ -64,7 +67,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   return json({
-    withDeploymentActions: true as const,
+    isDeploymentActionsAvailable: true as const,
+    isCreateDraftAvailable,
     scenarioIterations,
     publicationPreparationStatus,
   });
@@ -74,9 +78,8 @@ export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
   const scenarioValidation = useCurrentScenarioValidation();
-  const loaderData = useLoaderData<typeof loader>();
-  const { canManageScenario } = usePermissionsContext();
-  const { scenarioIterations } = loaderData;
+  const { scenarioIterations, isCreateDraftAvailable, ...loaderData } =
+    useLoaderData<typeof loader>();
 
   const sortedScenarioIterations = sortScenarioIterations(
     scenarioIterations,
@@ -97,7 +100,7 @@ export default function ScenarioEditLayout() {
 
   const withEditTag = editorMode === 'edit';
   const withCreateDraftIteration =
-    canManageScenario && currentIteration.type !== 'draft';
+    isCreateDraftAvailable && currentIteration.type !== 'draft';
 
   return (
     <Page.Container>
@@ -135,7 +138,7 @@ export default function ScenarioEditLayout() {
               draftId={draftIteration?.id}
             />
           ) : null}
-          {loaderData.withDeploymentActions ? (
+          {loaderData.isDeploymentActionsAvailable ? (
             <DeploymentActions
               scenario={{
                 id: currentScenario.id,

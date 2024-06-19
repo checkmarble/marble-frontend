@@ -1,13 +1,11 @@
-import {
-  Callout,
-  Page,
-  TabLink,
-  usePermissionsContext,
-} from '@app-builder/components';
+import { Callout, Page, TabLink } from '@app-builder/components';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { TableDetails } from '@app-builder/components/Data/TableDetails';
 import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
-import { useDataModel } from '@app-builder/services/data/data-model';
+import {
+  useDataModel,
+  useDataModelFeatureAccess,
+} from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -20,8 +18,8 @@ export const handle = {
 
 export default function Data() {
   const { t } = useTranslation(handle.i18n);
-  const { canEditDataModel } = usePermissionsContext();
   const dataModel = useDataModel();
+  const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
 
   return (
     <Page.Content>
@@ -46,7 +44,7 @@ export default function Data() {
       <Callout className="whitespace-normal" variant="outlined">
         {t('data:your_data_callout')}
       </Callout>
-      {canEditDataModel ? (
+      {isCreateDataModelTableAvailable ? (
         <CreateTable>
           <Button className="w-fit">
             <Icon icon="plus" className="size-6" />

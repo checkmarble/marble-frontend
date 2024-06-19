@@ -1,9 +1,4 @@
-import {
-  Callout,
-  ErrorComponent,
-  Page,
-  usePermissionsContext,
-} from '@app-builder/components';
+import { Callout, ErrorComponent, Page } from '@app-builder/components';
 import { DeleteList } from '@app-builder/routes/ressources+/lists+/delete';
 import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
 import { NewListValue } from '@app-builder/routes/ressources+/lists+/value_create';
@@ -27,15 +22,33 @@ import { Input, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { authService, featureAccessService } = serverServices;
+  const { user, apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const listId = fromParams(params, 'listId');
   const { custom_list } = await apiClient.getCustomList(listId);
 
-  return json(custom_list);
+  return json({
+    customList: custom_list,
+    listFeatureAccess: {
+      isCreateListValueAvailable:
+        featureAccessService.isCreateListValueAvailable({
+          userPermissions: user.permissions,
+        }),
+      isDeleteListValueAvailable:
+        featureAccessService.isDeleteListValueAvailable({
+          userPermissions: user.permissions,
+        }),
+      isEditListAvailable: featureAccessService.isEditListAvailable({
+        userPermissions: user.permissions,
+      }),
+      isDeleteListAvailable: featureAccessService.isDeleteListAvailable({
+        userPermissions: user.permissions,
+      }),
+    },
+  });
 }
 
 export const handle = {
@@ -50,10 +63,9 @@ type CustomListValue = {
 const columnHelper = createColumnHelper<CustomListValue>();
 
 export default function Lists() {
-  const customList = useLoaderData<typeof loader>();
+  const { customList, listFeatureAccess } = useLoaderData<typeof loader>();
   const listValues = customList.values ?? [];
   const { t } = useTranslation(handle.i18n);
-  const { canManageListItem, canManageList } = usePermissionsContext();
 
   const columns = useMemo(
     () => [
@@ -68,7 +80,7 @@ export default function Lists() {
           return (
             <div className="group flex items-center justify-between">
               <p className="text-grey-100 text-s font-medium">{value}</p>
-              {canManageListItem ? (
+              {listFeatureAccess.isDeleteListValueAvailable ? (
                 <DeleteListValue
                   listId={customList.id}
                   listValueId={row.original.id}
@@ -88,7 +100,12 @@ export default function Lists() {
         },
       }),
     ],
-    [customList.id, listValues.length, t, canManageListItem],
+    [
+      t,
+      listValues.length,
+      listFeatureAccess.isDeleteListValueAvailable,
+      customList.id,
+    ],
   );
 
   const virtualTable = useVirtualTable({
@@ -107,7 +124,7 @@ export default function Lists() {
             <Page.BackButton />
             <span className="line-clamp-2 text-left">{customList.name}</span>
           </div>
-          {canManageList ? (
+          {listFeatureAccess.isEditListAvailable ? (
             <EditList
               listId={customList.id}
               name={customList.name}
@@ -136,7 +153,9 @@ export default function Lists() {
                 }}
               />
             </form>
-            {canManageListItem ? <NewListValue listId={customList.id} /> : null}
+            {listFeatureAccess.isCreateListValueAvailable ? (
+              <NewListValue listId={customList.id} />
+            ) : null}
           </div>
           {virtualTable.isEmpty ? (
             <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
@@ -150,7 +169,9 @@ export default function Lists() {
             <Table.Default {...virtualTable}></Table.Default>
           )}
         </div>
-        {canManageList ? <DeleteList listId={customList.id} /> : null}
+        {listFeatureAccess.isDeleteListAvailable ? (
+          <DeleteList listId={customList.id} />
+        ) : null}
       </Page.Content>
     </Page.Container>
   );
