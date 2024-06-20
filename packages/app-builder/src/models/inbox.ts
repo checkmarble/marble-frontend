@@ -1,8 +1,5 @@
-import {
-  type InboxDto,
-  type InboxUserDto,
-  type InboxUserRole,
-} from 'marble-api';
+import { type ParseKeys } from 'i18next';
+import { type InboxDto, type InboxUserDto } from 'marble-api';
 import invariant from 'tiny-invariant';
 
 export interface Inbox {
@@ -41,7 +38,7 @@ export interface InboxUser {
   id: string;
   inboxId: string;
   userId: string;
-  role: InboxUserRole;
+  role: string;
 }
 
 export function adaptInboxUser(inboxUser: InboxUserDto): InboxUser {
@@ -51,4 +48,15 @@ export function adaptInboxUser(inboxUser: InboxUserDto): InboxUser {
     userId: inboxUser.user_id,
     role: inboxUser.role,
   };
+}
+
+export function tKeyForInboxUserRole(role: string): ParseKeys<['settings']> {
+  switch (role) {
+    case 'admin':
+      return 'settings:inboxes.user_role.admin';
+    case 'member':
+      return 'settings:inboxes.user_role.member';
+    default:
+      return 'settings:inboxes.user_role.unknown';
+  }
 }

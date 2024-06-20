@@ -1,4 +1,5 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
+import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
 import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.create';
 import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.delete';
@@ -17,34 +18,40 @@ import {
 } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { type InboxUserDto, type InboxUserRole } from 'marble-api';
+import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, useTable } from 'ui-design-system';
-
-import { tKeyForInboxUserRole } from './inboxes._index';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const { apiClient, cases } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const inboxId = fromParams(params, 'inboxId');
-  const { inbox } = await apiClient.getInbox(inboxId);
-  const caseList = await cases.listCases({ inboxIds: [inboxId] });
 
-  return json({ caseList, inbox });
+  const [{ inbox }, caseList, inboxUserRoles] = await Promise.all([
+    apiClient.getInbox(inboxId),
+    cases.listCases({ inboxIds: [inboxId] }),
+    featureAccessService.getInboxUserRoles(),
+  ]);
+
+  return json({
+    inbox,
+    caseList,
+    inboxUserRoles,
+  });
 }
 
 const columnHelper = createColumnHelper<InboxUserDto>();
 
 export default function Inbox() {
-  const { caseList, inbox } = useLoaderData<typeof loader>();
+  const { caseList, inbox, inboxUserRoles } = useLoaderData<typeof loader>();
   const { t } = useTranslation(handle.i18n);
   const { orgUsers } = useOrganizationUsers();
 
@@ -64,8 +71,7 @@ export default function Inbox() {
         id: 'role',
         header: t('settings:inboxes.inbox_details.role'),
         size: 200,
-        cell: ({ getValue }) =>
-          t(tKeyForInboxUserRole(getValue<InboxUserRole>())),
+        cell: ({ getValue }) => t(tKeyForInboxUserRole(getValue())),
       }),
       columnHelper.display({
         id: 'actions',
@@ -73,14 +79,17 @@ export default function Inbox() {
         cell: ({ cell }) => {
           return (
             <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
-              <UpdateInboxUser inboxUser={cell.row.original} />
+              <UpdateInboxUser
+                inboxUser={cell.row.original}
+                inboxUserRoles={inboxUserRoles}
+              />
               <DeleteInboxUser inboxUser={cell.row.original} />
             </div>
           );
         },
       }),
     ];
-  }, [orgUsers, t]);
+  }, [inboxUserRoles, orgUsers, t]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: inbox.users ?? [],
@@ -127,7 +136,11 @@ export default function Inbox() {
             <span className="flex-1">
               {t('settings:inboxes.inbox_details.members')}
             </span>
-            <CreateInboxUser inboxId={inbox.id} users={nonInboxUsers} />
+            <CreateInboxUser
+              inboxId={inbox.id}
+              users={nonInboxUsers}
+              inboxUserRoles={inboxUserRoles}
+            />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()} className="max-h-96">

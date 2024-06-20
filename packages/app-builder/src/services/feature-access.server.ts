@@ -142,5 +142,19 @@ export function makeFeatureAccessService({
     }) => {
       return userPermissions.canEditInboxes;
     },
+    getUserRoles: async () => {
+      const licenseEntitlements = await getLicenseEntitlements();
+      if (licenseEntitlements.userRoles) {
+        return ['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const;
+      }
+      return ['ADMIN'] as const;
+    },
+    getInboxUserRoles: async () => {
+      const licenseEntitlements = await getLicenseEntitlements();
+      if (licenseEntitlements.userRoles) {
+        return ['admin', 'member'] as const;
+      }
+      return ['admin'] as const;
+    },
   };
 }

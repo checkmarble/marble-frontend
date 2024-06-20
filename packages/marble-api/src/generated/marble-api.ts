@@ -558,12 +558,11 @@ export type FuncAttributes = {
     number_of_arguments: number;
     named_arguments?: string[];
 };
-export type InboxUserRole = "member" | "admin";
 export type InboxUserDto = {
     id: string;
     inbox_id: string;
     user_id: string;
-    role: InboxUserRole;
+    role: string;
 };
 export type InboxDto = {
     id: string;
@@ -579,7 +578,7 @@ export type CreateInboxBodyDto = {
 };
 export type AddInboxUserBodyDto = {
     user_id: string;
-    role: InboxUserRole;
+    role: string;
 };
 export type TransferDataDto = {
     beneficiary_bic: string;
@@ -2488,7 +2487,7 @@ export function getInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts) {
  * Update an inbox user
  */
 export function updateInboxUser(inboxUserId: string, body: {
-    role: InboxUserRole;
+    role: string;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
