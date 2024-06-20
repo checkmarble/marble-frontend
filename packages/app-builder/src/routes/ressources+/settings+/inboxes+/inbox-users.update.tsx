@@ -3,7 +3,7 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { tKeyForInboxUserRole } from '@app-builder/routes/_builder+/settings+/inboxes._index';
+import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -13,7 +13,7 @@ import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { type InboxUserDto } from 'marble-api';
-import { useEffect, useId, useState } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -23,25 +23,32 @@ export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
-const roleOptions = ['member', 'admin'] as const;
-
-const updateInboxUserFormSchema = z.object({
-  id: z.string().uuid(),
-  inbox_id: z.string().uuid(),
-  role: z.enum(roleOptions),
-});
+function getUpdateInboxUserFormSchema(
+  inboxUserRoles: readonly [string, ...string[]],
+) {
+  return z.object({
+    id: z.string().uuid(),
+    inbox_id: z.string().uuid(),
+    role: z.enum(inboxUserRoles),
+  });
+}
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
+    featureAccessService,
   } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema: updateInboxUserFormSchema });
+  const submission = parse(formData, {
+    schema: getUpdateInboxUserFormSchema(
+      await featureAccessService.getInboxUserRoles(),
+    ),
+  });
 
   if (submission.intent !== 'submit' || !submission.value) {
     return json(submission);
@@ -70,12 +77,18 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function UpdateInboxUser({ inboxUser }: { inboxUser: InboxUserDto }) {
+export function UpdateInboxUser({
+  inboxUser,
+  inboxUserRoles,
+}: {
+  inboxUser: InboxUserDto;
+  inboxUserRoles: readonly [string, ...string[]];
+}) {
   const { t } = useTranslation(handle.i18n);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const navigation = useNavigation();
-  useEffect(() => {
+  React.useEffect(() => {
     if (navigation.state === 'loading') {
       setOpen(false);
     }
@@ -91,7 +104,10 @@ export function UpdateInboxUser({ inboxUser }: { inboxUser: InboxUserDto }) {
         />
       </Modal.Trigger>
       <Modal.Content>
-        <UpdateInboxUserContent currentInboxUser={inboxUser} />
+        <UpdateInboxUserContent
+          currentInboxUser={inboxUser}
+          inboxUserRoles={inboxUserRoles}
+        />
       </Modal.Content>
     </Modal.Root>
   );
@@ -99,22 +115,28 @@ export function UpdateInboxUser({ inboxUser }: { inboxUser: InboxUserDto }) {
 
 export function UpdateInboxUserContent({
   currentInboxUser,
+  inboxUserRoles,
 }: {
   currentInboxUser: InboxUserDto;
+  inboxUserRoles: readonly [string, ...string[]];
 }) {
   const { t } = useTranslation(handle.i18n);
+  const schema = React.useMemo(
+    () => getUpdateInboxUserFormSchema(inboxUserRoles),
+    [inboxUserRoles],
+  );
 
   const fetcher = useFetcher<typeof action>();
 
-  const formId = useId();
+  const formId = React.useId();
   const [form, { id, inbox_id, role }] = useForm({
     id: formId,
     defaultValue: currentInboxUser,
     lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(updateInboxUserFormSchema),
+    constraint: getFieldsetConstraint(schema),
     onValidate({ formData }) {
       return parse(formData, {
-        schema: updateInboxUserFormSchema,
+        schema,
       });
     },
   });
@@ -132,7 +154,7 @@ export function UpdateInboxUserContent({
         <FormField config={role} className="group flex flex-col gap-2">
           <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
           <FormSelect.Default config={role}>
-            {roleOptions.map((role) => (
+            {inboxUserRoles.map((role) => (
               <FormSelect.DefaultItem key={role} value={role}>
                 {t(tKeyForInboxUserRole(role))}
               </FormSelect.DefaultItem>

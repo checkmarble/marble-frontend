@@ -1,6 +1,9 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { isAdmin } from '@app-builder/models';
-import { type InboxWithCasesCount } from '@app-builder/models/inbox';
+import {
+  type InboxWithCasesCount,
+  tKeyForInboxUserRole,
+} from '@app-builder/models/inbox';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -49,17 +52,16 @@ export default function Inboxes() {
         size: 200,
         cell: ({ cell }) => {
           if (!cell.row.original.users) return null;
-          const inboxUsersPerRoles = R.groupBy(
-            cell.row.original.users,
-            (u) => u.role,
-          );
 
-          return Object.keys(inboxUsersPerRoles)
-            .map((role) => {
-              const count = inboxUsersPerRoles[role].length;
-              return t(tKeyForInboxUserRole(role), { count });
-            })
-            .join(', ');
+          return R.pipe(
+            cell.row.original.users,
+            R.groupBy.strict((u) => u.role),
+            R.entries.strict(),
+            R.map(([role, users]) => {
+              return t(tKeyForInboxUserRole(role), { count: users.length });
+            }),
+            R.join(', '),
+          );
         },
       }),
       columnHelper.accessor((row) => row.casesCount, {
@@ -115,14 +117,3 @@ export default function Inboxes() {
     </Page.Container>
   );
 }
-
-export const tKeyForInboxUserRole = (role: string) => {
-  switch (role) {
-    case 'admin':
-      return 'settings:inboxes.user_role.admin';
-    case 'member':
-      return 'settings:inboxes.user_role.member';
-    default:
-      return 'settings:inboxes.user_role.unknown';
-  }
-};

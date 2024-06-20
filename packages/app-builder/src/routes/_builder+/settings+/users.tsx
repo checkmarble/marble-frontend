@@ -16,7 +16,7 @@ import * as R from 'remeda';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const { user, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -24,7 +24,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/'));
   }
 
-  const inboxUsers = await inbox.listAllInboxUsers();
+  const [inboxUsers, userRoles] = await Promise.all([
+    inbox.listAllInboxUsers(),
+    featureAccessService.getUserRoles(),
+  ]);
 
   const inboxUsersByUserId = R.pipe(
     inboxUsers,
@@ -39,14 +42,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
     ),
   );
 
-  return json({ inboxUsersByUserId, user });
+  return json({ inboxUsersByUserId, user, userRoles });
 }
 
 const columnHelper = createColumnHelper<User>();
 
 export default function Users() {
   const { t } = useTranslation(['settings', 'cases']);
-  const { inboxUsersByUserId, user } = useLoaderData<typeof loader>();
+  const { inboxUsersByUserId, user, userRoles } =
+    useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
 
   const columns = useMemo(
@@ -95,7 +99,7 @@ export default function Users() {
         cell: ({ cell }) => {
           return (
             <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
-              <UpdateUser user={cell.row.original} />
+              <UpdateUser user={cell.row.original} userRoles={userRoles} />
               <DeleteUser
                 userId={cell.row.original.userId}
                 currentUserId={user.actorIdentity.userId}
@@ -105,7 +109,7 @@ export default function Users() {
         },
       }),
     ],
-    [inboxUsersByUserId, t, user.actorIdentity.userId],
+    [inboxUsersByUserId, t, user.actorIdentity.userId, userRoles],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
@@ -122,7 +126,7 @@ export default function Users() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:users')}</span>
-            <CreateUser orgId={user.organizationId} />
+            <CreateUser orgId={user.organizationId} userRoles={userRoles} />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()} className="max-h-96">
