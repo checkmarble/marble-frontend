@@ -348,9 +348,6 @@ importers:
 
   packages/marble-api:
     dependencies:
-      '@faker-js/faker':
-        specifier: ^8.4.1
-        version: 8.4.1
       '@oazapfts/runtime':
         specifier: ^1.0.3
         version: 1.0.3
