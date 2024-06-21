@@ -1,3 +1,4 @@
+import { initializeLicenseAPIClient } from '@app-builder/infra/license-api';
 import { initializeMarbleAPIClient } from '@app-builder/infra/marble-api';
 import {
   makeServerRepositories,
@@ -49,12 +50,21 @@ function makeServerServices(repositories: ServerRepositories) {
 
 function initServerServices() {
   checkServerEnv();
-  const { marbleApiClient, getMarbleAPIClientWithAuth } =
-    initializeMarbleAPIClient({
-      baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
-    });
+
+  const devEnvironment =
+    getServerEnv('FIREBASE_AUTH_EMULATOR_HOST') !== undefined;
+
+  const { getMarbleAPIClientWithAuth } = initializeMarbleAPIClient({
+    baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+  });
+
+  const { licenseAPIClient } = initializeLicenseAPIClient({
+    baseUrl: 'https://api.checkmarble.com',
+  });
+
   const serverRepositories = makeServerRepositories({
-    marbleApiClient,
+    devEnvironment,
+    licenseAPIClient,
     getMarbleAPIClientWithAuth,
     sessionStorageRepositoryOptions: {
       maxAge: Number(getServerEnv('SESSION_MAX_AGE')),
@@ -62,6 +72,7 @@ function initServerServices() {
       secure: getServerEnv('NODE_ENV') !== 'development',
     },
   });
+
   return makeServerServices(serverRepositories);
 }
 

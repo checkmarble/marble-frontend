@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: 'License API'
+  description: 'API for managing licenses'
+servers:
+  - url: 'http://localhost:8080'
+    description: Local devlopment server
+paths:
+  /validate-license/{licenseKey}:
+    get:
+      summary: Validate a license key
+      description: Returns the license information if the license key is valid
+      operationId: validateLicense
+      parameters:
+        - name: licenseKey
+          description: License key to validate
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: License validation response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseValidationDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+components:
+  schemas:
+    LicenseValidationDto:
+      type: object
+      properties:
+        license_validation_code:
+          type: string
+          enum:
+            - VALID
+            - EXPIRED
+            - NOT_FOUND
+            - OVERDUE
+            - SUSPENDED
+        license_entitlements:
+          type: object
+          properties:
+            sso:
+              type: boolean
+            workflows:
+              type: boolean
+            analytics:
+              type: boolean
+            data_enrichment:
+              type: boolean
+            user_roles:
+              type: boolean
+          required:
+            - sso
+            - workflows
+            - analytics
+            - data_enrichment
+            - user_roles
+      required:
+        - license_validation_code
+        - license_entitlements
+  responses:
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Unauthorized
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Forbidden

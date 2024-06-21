@@ -3,22 +3,27 @@ import * as Oazapfts from 'oazapfts';
 import ora from 'ora';
 
 import {
-  GENERATED_API,
+  type Config,
   GENERATED_FOLDER,
-  OPENAPI_OPTIONS,
-  OPENAPI_SPEC,
+  licenseApiConfig,
+  marbleApiConfig,
 } from './config';
 
-async function openapiGenerator() {
-  const spinner = ora('Start to generate OpenAPI client...').start();
+async function openapiGenerator({
+  apiName,
+  apiSpec,
+  generatedApi,
+  apiOptions,
+}: Config) {
+  const spinner = ora(`Start to generate ${apiName} client...`).start();
   try {
-    const code = await Oazapfts.generateSource(OPENAPI_SPEC, OPENAPI_OPTIONS);
+    const code = await Oazapfts.generateSource(apiSpec, apiOptions);
 
-    await writeFile(GENERATED_API, code);
+    await writeFile(generatedApi, code);
 
-    spinner.succeed('Succesfully generated OpenAPI client');
+    spinner.succeed(`Succesfully generated ${apiName} client`);
   } catch (error) {
-    spinner.fail('Failed to generate OpenAPI client');
+    spinner.fail(`Failed to generate ${apiName} client`);
     throw error;
   }
 }
@@ -28,7 +33,8 @@ async function main() {
     await rm(GENERATED_FOLDER, { recursive: true, force: true });
     await mkdir(GENERATED_FOLDER);
 
-    await openapiGenerator();
+    await openapiGenerator(marbleApiConfig);
+    await openapiGenerator(licenseApiConfig);
   } catch (error) {
     console.error('\n', error);
     process.exit(1);

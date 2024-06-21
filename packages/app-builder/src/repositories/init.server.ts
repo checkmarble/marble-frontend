@@ -1,7 +1,5 @@
-import {
-  type GetMarbleAPIClientWithAuth,
-  type MarbleApi,
-} from '@app-builder/infra/marble-api';
+import { type LicenseApi } from '@app-builder/infra/license-api';
+import { type GetMarbleAPIClientWithAuth } from '@app-builder/infra/marble-api';
 
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';
@@ -24,12 +22,14 @@ import { makeGetTransferRepository } from './TransferRepository';
 import { makeGetUserRepository } from './UserRepository';
 
 export function makeServerRepositories({
+  devEnvironment,
   sessionStorageRepositoryOptions,
-  marbleApiClient,
+  licenseAPIClient,
   getMarbleAPIClientWithAuth,
 }: {
+  devEnvironment: boolean;
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
-  marbleApiClient: MarbleApi;
+  licenseAPIClient: LicenseApi;
   getMarbleAPIClientWithAuth: GetMarbleAPIClientWithAuth;
 }) {
   return {
@@ -54,7 +54,7 @@ export function makeServerRepositories({
     getApiKeyRepository: makeGetApiKeyRepository(),
     getAnalyticsRepository: makeGetAnalyticsRepository(),
     getTransferRepository: makeGetTransferRepository(),
-    licenseRepository: getLicenseRepository(marbleApiClient),
+    licenseRepository: getLicenseRepository(licenseAPIClient, devEnvironment),
   };
 }
 
