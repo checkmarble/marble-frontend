@@ -11,11 +11,11 @@
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
-    "@types/node": "20.12.10",
+    "@types/node": "20.14.8",
     "oazapfts": "^6.1.0",
     "ora": "^8.0.1",
     "tailwind-preset": "^1.0.8",
-    "tsx": "^4.9.3"
+    "tsx": "^4.15.7"
   },
   "dependencies": {
     "@oazapfts/runtime": "^1.0.3"

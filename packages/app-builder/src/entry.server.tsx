@@ -116,11 +116,7 @@ function handleBrowserRequest(
 Sentry.init({
   dsn: getServerEnv('SENTRY_DSN'),
   environment: getServerEnv('SENTRY_ENVIRONMENT'),
-  integrations: [
-    //TODO: replace with `Sentry.httpIntegration` when it's available (need to be checked on build bundle)
-    new Sentry.Integrations.Http(),
-    Sentry.requestDataIntegration(),
-  ],
+  integrations: [Sentry.httpIntegration(), Sentry.requestDataIntegration()],
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.
   // We recommend adjusting this value in production
@@ -129,6 +125,7 @@ Sentry.init({
 
 export const handleError: HandleErrorFunction = (error, { request }) => {
   if (error instanceof Error) {
+    // @ts-expect-error fixed in https://github.com/getsentry/sentry-javascript/pull/12614, remove when updated
     void Sentry.captureRemixServerException(error, 'remix.server', request);
   } else {
     // Optionally capture non-Error objects

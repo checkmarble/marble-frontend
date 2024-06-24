@@ -121,7 +121,7 @@ export function RootAnd({
               {/* Row 1 */}
               <div
                 className={clsx(
-                  'border-grey-10 col-span-5 w-2 border-r ',
+                  'border-grey-10 col-span-5 w-2 border-r',
                   isFirstCondition ? 'h-4' : 'h-2',
                 )}
               />

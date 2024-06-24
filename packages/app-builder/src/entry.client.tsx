@@ -1,5 +1,4 @@
 import { RemixBrowser, useLocation, useMatches } from '@remix-run/react';
-import { httpClientIntegration } from '@sentry/integrations';
 import * as Sentry from '@sentry/remix';
 import { startTransition, StrictMode, useEffect } from 'react';
 import { hydrateRoot } from 'react-dom/client';
@@ -19,7 +18,7 @@ Sentry.init({
     }),
     // Replay is only available in the client
     Sentry.replayIntegration(),
-    httpClientIntegration(),
+    Sentry.httpClientIntegration(),
   ],
   beforeSend: (event, hint) => {
     if (getClientEnv('ENV') === 'development') {
