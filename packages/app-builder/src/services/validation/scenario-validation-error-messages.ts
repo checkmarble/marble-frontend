@@ -49,7 +49,7 @@ export function adaptEvaluationErrorViewModels(
     DATABASE_ACCESS_NOT_FOUND,
     PAYLOAD_FIELD_NOT_FOUND,
     ...expectedErrors
-  } = R.groupBy.strict(evaluationErrors, ({ error }) => error);
+  } = R.groupBy(evaluationErrors, ({ error }) => error);
 
   const evaluationErrorVMs: EvaluationErrorViewModel[] = [];
 
@@ -96,7 +96,7 @@ export function adaptEvaluationErrorViewModels(
 
   const expectedErrorVMs = R.pipe(
     expectedErrors,
-    R.entries.strict(),
+    R.entries(),
     R.map(([error, evaluationErrors]) => ({
       error,
       count: evaluationErrors.length,

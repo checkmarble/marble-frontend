@@ -135,7 +135,7 @@ function DataModelFlowImpl({
               state: 'initialized',
             },
             style: { opacity: 0 },
-          };
+          } satisfies Node<DataModelNodeData>;
         }),
       ),
     );
@@ -165,7 +165,7 @@ function DataModelFlowImpl({
               state: 'initialized',
             },
             hidden: true,
-          };
+          } satisfies Edge<DataModelEdgeData>;
         }),
       ),
     );
@@ -188,7 +188,7 @@ function DataModelFlowImpl({
             return {
               ...nd,
               data: { ...nd.data, state: 'laid_out' },
-            };
+            } satisfies Node<DataModelNodeData>;
           }),
         ),
       );
@@ -200,7 +200,7 @@ function DataModelFlowImpl({
             return {
               ...ed,
               data: { ...ed.data, state: 'laid_out' },
-            };
+            } satisfies Edge<DataModelEdgeData>;
           }),
         ),
       );
@@ -223,7 +223,7 @@ function DataModelFlowImpl({
               ...nd,
               data: { ...nd.data, state: 'visible' },
               style: { ...nd.style, opacity: 1 },
-            };
+            } satisfies Node<DataModelNodeData>;
           }),
         ),
       );
@@ -237,7 +237,7 @@ function DataModelFlowImpl({
               ...ed,
               data: { ...ed.data, state: 'visible' },
               hidden: false,
-            };
+            } satisfies Edge<DataModelEdgeData>;
           }),
         ),
       );

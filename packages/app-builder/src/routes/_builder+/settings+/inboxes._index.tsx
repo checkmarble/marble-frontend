@@ -55,8 +55,8 @@ export default function Inboxes() {
 
           return R.pipe(
             cell.row.original.users,
-            R.groupBy.strict((u) => u.role),
-            R.entries.strict(),
+            R.groupBy((u) => u.role),
+            R.entries(),
             R.map(([role, users]) => {
               return t(tKeyForInboxUserRole(role), { count: users.length });
             }),

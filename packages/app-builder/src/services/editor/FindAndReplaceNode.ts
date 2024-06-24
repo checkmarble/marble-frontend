@@ -18,7 +18,7 @@ export function findAndReplaceNode(
   const children = R.pipe(
     node.children,
     R.map((child) => findAndReplaceNode(nodeIdToReplace, fn, child, node)),
-    R.compact,
+    R.filter(R.isNonNullish),
   );
 
   const namedChildren = R.pipe(
@@ -27,8 +27,8 @@ export function findAndReplaceNode(
       const newChild = findAndReplaceNode(nodeIdToReplace, fn, child, node);
       return newChild === null ? null : ([key, newChild] as const);
     }),
-    R.compact,
-    (pairs) => R.fromPairs(pairs),
+    R.filter(R.isNonNullish),
+    R.fromEntries(),
   );
 
   return {

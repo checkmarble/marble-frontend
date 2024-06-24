@@ -92,7 +92,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
     id: tableDto.id,
     name: tableDto.name,
     description: tableDto.description,
-    fields: R.pipe(tableDto.fields, R.values, R.map(adaptDataModelField)),
+    fields: R.pipe(tableDto.fields, R.values(), R.map(adaptDataModelField)),
     linksToSingle: R.pipe(
       tableDto.links_to_single ?? {},
       R.entries(),
@@ -104,7 +104,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
 export type DataModel = TableModel[];
 
 export function adaptDataModel(dataModelDto: DataModelDto): DataModel {
-  return R.pipe(dataModelDto.tables, R.values, R.map(adaptTableModel));
+  return R.pipe(dataModelDto.tables, R.values(), R.map(adaptTableModel));
 }
 
 export type Pivot =

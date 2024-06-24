@@ -9,7 +9,7 @@ import { type CaseFile } from 'marble-api';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { last } from 'remeda';
+import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Collapsible, Table, useVirtualTable } from 'ui-design-system';
 
@@ -57,7 +57,7 @@ function FilesList({ files }: { files: CaseFile[] }) {
         size: 40,
         header: t('cases:case.file.extension'),
         cell: ({ getValue }) => {
-          return last(getValue().split('.'))?.toUpperCase();
+          return R.last(getValue().split('.'))?.toUpperCase();
         },
       }),
       columnHelper.accessor((row) => row.created_at, {

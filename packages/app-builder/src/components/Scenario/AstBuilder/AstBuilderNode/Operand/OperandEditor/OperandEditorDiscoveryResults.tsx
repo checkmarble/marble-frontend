@@ -56,13 +56,13 @@ export function OperandEditorDiscoveryResults({
   const optionsGroups = useMemo(() => {
     return R.pipe(
       options,
-      R.groupBy.strict((option) => option.operandType),
+      R.groupBy((option) => option.operandType),
     );
   }, [options]);
 
   return R.pipe(
     discoveryResultsConfig,
-    R.entries.strict(),
+    R.entries(),
     R.map(([operandType, Getter]) => {
       return (
         <Getter
@@ -144,7 +144,7 @@ const FieldGroupGetter: GroupGetter = ({
   const fieldByPathOptions = useMemo(() => {
     return R.pipe(
       options,
-      R.groupBy.strict((option) => {
+      R.groupBy((option) => {
         if (
           option instanceof PayloadAccessorsEditableAstNode ||
           option instanceof DatabaseAccessEditableAstNode
