@@ -1,6 +1,7 @@
 import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { type DataModel, type Pivot } from '@app-builder/models/data-model';
 import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
+import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import Dagre from '@dagrejs/dagre';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -95,6 +96,7 @@ function DataModelFlowImpl({
   pivots,
   children,
 }: DataModelFlowProps) {
+  const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
   const { t } = useTranslation(dataI18n);
   const [nodes, setNodes] = React.useState<Array<Node<DataModelNodeData>>>([]);
   const [edges, setEdges] = React.useState<Array<Edge<DataModelEdgeData>>>([]);
@@ -261,14 +263,16 @@ function DataModelFlowImpl({
         <CustomControls />
       </Controls>
       <SelectedPivotPanel />
-      <Panel position="bottom-right">
-        <CreateTable>
-          <Button className="w-fit">
-            <Icon icon="plus" className="size-6" />
-            {t('data:create_table.title')}
-          </Button>
-        </CreateTable>
-      </Panel>
+      {isCreateDataModelTableAvailable ? (
+        <Panel position="bottom-right">
+          <CreateTable>
+            <Button className="w-fit">
+              <Icon icon="plus" className="size-6" />
+              {t('data:create_table.title')}
+            </Button>
+          </CreateTable>
+        </Panel>
+      ) : null}
       {children}
     </ReactFlow>
   );

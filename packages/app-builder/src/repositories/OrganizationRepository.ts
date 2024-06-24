@@ -12,7 +12,7 @@ export interface OrganizationRepository {
   listTags(args?: { withCaseCount: boolean }): Promise<Tag[]>;
 }
 
-export function getOrganizationRepository() {
+export function makeGetOrganizationRepository() {
   return (
     marbleApiClient: MarbleApi,
     organizationId: string,

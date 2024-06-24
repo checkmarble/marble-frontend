@@ -62,15 +62,29 @@ const WorkflowDataContext = createSimpleContext<WorkflowDataContext>(
 
 export const useWorkflowData = WorkflowDataContext.useValue;
 
+interface WorkflowDataFeatureAccess {
+  isCreateInboxAvailable: boolean;
+}
+
+const WorkflowDataFeatureAccessContext =
+  createSimpleContext<WorkflowDataFeatureAccess>(
+    'WorkflowDataFeatureAccessContext',
+  );
+
+export const useWorkflowDataFeatureAccess =
+  WorkflowDataFeatureAccessContext.useValue;
+
 interface WorkflowProviderProps {
   children: React.ReactNode;
   data: WorkflowDataContext;
+  workflowDataFeatureAccess: WorkflowDataFeatureAccess;
   initialWorkflow?: ValidWorkflow;
 }
 
 export function WorkflowProvider({
   children,
   data,
+  workflowDataFeatureAccess,
   initialWorkflow,
 }: WorkflowProviderProps) {
   const [store] = React.useState(() =>
@@ -202,7 +216,11 @@ export function WorkflowProvider({
   return (
     <WorkflowDataContext.Provider value={dataValue}>
       <WorkflowStoreContext.Provider value={store}>
-        {children}
+        <WorkflowDataFeatureAccessContext.Provider
+          value={workflowDataFeatureAccess}
+        >
+          {children}
+        </WorkflowDataFeatureAccessContext.Provider>
       </WorkflowStoreContext.Provider>
     </WorkflowDataContext.Provider>
   );

@@ -5,7 +5,7 @@ export interface AnalyticsRepository {
   listAnalytics(): Promise<Analytics[]>;
 }
 
-export function getAnalyticsRepository() {
+export function makeGetAnalyticsRepository() {
   return (marbleApiClient: MarbleApi): AnalyticsRepository => ({
     listAnalytics: async () => {
       const { analytics } = await marbleApiClient.listAnalytics();

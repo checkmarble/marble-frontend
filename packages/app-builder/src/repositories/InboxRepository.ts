@@ -15,7 +15,7 @@ export interface InboxRepository {
   listAllInboxUsers(): Promise<InboxUser[]>;
 }
 
-export function getInboxRepository() {
+export function makeGetInboxRepository() {
   return (marbleApiClient: MarbleApi): InboxRepository => ({
     listInboxes: async () => {
       const { inboxes } = await marbleApiClient.listInboxes({

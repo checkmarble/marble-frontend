@@ -27,13 +27,15 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const { apiClient, user, dataModelRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
-
-  if (!user.permissions.canIngestData) {
+  const isIngestDataAvailable = featureAccessService.isIngestDataAvailable({
+    userPermissions: user.permissions,
+  });
+  if (!isIngestDataAvailable) {
     return redirect(getRoute('/data'));
   }
 

@@ -15,7 +15,7 @@ export interface ApiKeyRepository {
   deleteApiKey(args: { apiKeyId: string }): Promise<void>;
 }
 
-export function getApiKeyRepository() {
+export function makeGetApiKeyRepository() {
   return (marbleApiClient: MarbleApi): ApiKeyRepository => ({
     listApiKeys: async () => {
       const { api_keys } = await marbleApiClient.listApiKeys();

@@ -1,5 +1,4 @@
 import { Highlight } from '@app-builder/components/Highlight';
-import { usePermissionsContext } from '@app-builder/components/PermissionsContext';
 import { type Inbox } from '@app-builder/models/inbox';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { matchSorter } from 'match-sorter';
@@ -13,16 +12,16 @@ export function SelectInbox({
   selectedInboxId,
   onSelectedInboxIdChange,
   inboxes,
+  isCreateInboxAvailable,
 }: {
   selectedInboxId?: string;
   onSelectedInboxIdChange: (outcomes: string) => void;
   inboxes: Inbox[];
+  isCreateInboxAvailable: boolean;
 }) {
   const { t } = useTranslation(workflowI18n);
   const [value, setSearchValue] = React.useState('');
   const searchValue = React.useDeferredValue(value);
-
-  const { canEditInboxes } = usePermissionsContext();
 
   const selectedInbox = React.useMemo(
     () => inboxes.find((inbox) => inbox.id === selectedInboxId),
@@ -35,7 +34,7 @@ export function SelectInbox({
   );
 
   let footer;
-  if (canEditInboxes) {
+  if (isCreateInboxAvailable) {
     footer = <CreateInbox />;
   } else if (inboxes.length === 0) {
     footer = (

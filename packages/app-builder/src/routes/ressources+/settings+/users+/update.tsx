@@ -3,7 +3,7 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
-import { type User } from '@app-builder/models';
+import { tKeyForUserRole, type User } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { conform, useForm } from '@conform-to/react';
@@ -11,34 +11,36 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { useEffect, useId, useState } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
-import { roleOptions } from './create';
-
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
-const updateUserFormSchema = z.object({
-  userId: z.string().uuid(),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.string().email().min(5),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const),
-  organizationId: z.string().uuid(),
-});
+function getUpdateUserFormSchema(userRoles: readonly [string, ...string[]]) {
+  return z.object({
+    userId: z.string().uuid(),
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+    email: z.string().email().min(5),
+    role: z.enum(userRoles),
+    organizationId: z.string().uuid(),
+  });
+}
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const formData = await request.formData();
-  const submission = parse(formData, { schema: updateUserFormSchema });
+  const submission = parse(formData, {
+    schema: getUpdateUserFormSchema(await featureAccessService.getUserRoles()),
+  });
 
   if (submission.intent !== 'submit' || !submission.value) {
     return json(submission);
@@ -58,12 +60,18 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function UpdateUser({ user }: { user: User }) {
+export function UpdateUser({
+  user,
+  userRoles,
+}: {
+  user: User;
+  userRoles: readonly [string, ...string[]];
+}) {
   const { t } = useTranslation(handle.i18n);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const navigation = useNavigation();
-  useEffect(() => {
+  React.useEffect(() => {
     if (navigation.state === 'loading') {
       setOpen(false);
     }
@@ -79,26 +87,36 @@ export function UpdateUser({ user }: { user: User }) {
         />
       </Modal.Trigger>
       <Modal.Content>
-        <UpdateUserContent user={user} />
+        <UpdateUserContent user={user} userRoles={userRoles} />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-const UpdateUserContent = ({ user }: { user: User }) => {
+function UpdateUserContent({
+  user,
+  userRoles,
+}: {
+  user: User;
+  userRoles: readonly [string, ...string[]];
+}) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
-  const formId = useId();
+  const schema = React.useMemo(
+    () => getUpdateUserFormSchema(userRoles),
+    [userRoles],
+  );
+  const formId = React.useId();
 
   const [form, { userId, firstName, lastName, email, role, organizationId }] =
     useForm({
       id: formId,
       defaultValue: user,
       lastSubmission: fetcher.data,
-      constraint: getFieldsetConstraint(updateUserFormSchema),
+      constraint: getFieldsetConstraint(schema),
       onValidate({ formData }) {
         return parse(formData, {
-          schema: updateUserFormSchema,
+          schema,
         });
       },
     });
@@ -140,9 +158,9 @@ const UpdateUserContent = ({ user }: { user: User }) => {
           <FormField config={role} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:users.role')}</FormLabel>
             <FormSelect.Default config={role}>
-              {roleOptions.map(({ value, labelTKey }) => (
-                <FormSelect.DefaultItem key={value} value={value}>
-                  {t(labelTKey)}
+              {userRoles.map((role) => (
+                <FormSelect.DefaultItem key={role} value={role}>
+                  {t(tKeyForUserRole(role))}
                 </FormSelect.DefaultItem>
               ))}
             </FormSelect.Default>
@@ -167,4 +185,4 @@ const UpdateUserContent = ({ user }: { user: User }) => {
       </div>
     </fetcher.Form>
   );
-};
+}

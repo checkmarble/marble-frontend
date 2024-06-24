@@ -20,7 +20,7 @@ export interface EditorRepository {
   listOperators(args: { scenarioId: string }): Promise<OperatorFunction[]>;
 }
 
-export function getEditorRepository() {
+export function makeGetEditorRepository() {
   return (marbleApiClient: MarbleApi): EditorRepository => ({
     listAccessors: async ({ scenarioId }) => {
       const { database_accessors, payload_accessors } =

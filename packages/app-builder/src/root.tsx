@@ -63,11 +63,15 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { i18nextService, toastSessionService, csrfService } = serverServices;
+  const { i18nextService, toastSessionService, csrfService, licenseService } =
+    serverServices;
   const locale = await i18nextService.getLocale(request);
 
-  const toastSession = await toastSessionService.getSession(request);
-  const [csrfToken, csrfCookieHeader] = await csrfService.commitToken(request);
+  const [toastSession, [csrfToken, csrfCookieHeader]] = await Promise.all([
+    toastSessionService.getSession(request),
+    csrfService.commitToken(request),
+    licenseService.getLicenseEntitlements(),
+  ]);
 
   const toastMessage = getToastMessage(toastSession);
 

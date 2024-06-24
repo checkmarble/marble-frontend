@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { type CreateCaseAction } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
-import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
+import {
+  useWorkflowActions,
+  useWorkflowData,
+  useWorkflowDataFeatureAccess,
+} from '../WorkflowProvider';
 import { SelectInbox } from './SelectInbox';
 import { defaultCaseName } from './shared';
 
@@ -17,6 +21,7 @@ export function CreateCaseNode({
   const { t } = useTranslation(workflowI18n);
   const { updateNode } = useWorkflowActions();
   const { inboxes } = useWorkflowData();
+  const { isCreateInboxAvailable } = useWorkflowDataFeatureAccess();
 
   return (
     <>
@@ -27,6 +32,7 @@ export function CreateCaseNode({
           updateNode(id, { ...data, inboxId });
         }}
         inboxes={inboxes}
+        isCreateInboxAvailable={isCreateInboxAvailable}
       />
       <p className="flex flex-col gap-2">
         <span className="whitespace-pre-wrap">

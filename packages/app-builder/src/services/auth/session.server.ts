@@ -21,9 +21,11 @@ export type SessionService<Data = SessionData, FlashData = Data> = {
   ) => Promise<string>;
 };
 
-export function makeSessionService<Data = SessionData, FlashData = Data>(
-  sessionStorage: SessionStorage<Data, FlashData>,
-): SessionService<Data, FlashData> {
+export function makeSessionService<Data = SessionData, FlashData = Data>({
+  sessionStorage,
+}: {
+  sessionStorage: SessionStorage<Data, FlashData>;
+}): SessionService<Data, FlashData> {
   return {
     getSession: (request, options) =>
       sessionStorage.getSession(request.headers.get('cookie'), options),

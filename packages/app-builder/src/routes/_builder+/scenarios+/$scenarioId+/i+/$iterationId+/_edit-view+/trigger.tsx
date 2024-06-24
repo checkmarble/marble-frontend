@@ -1,8 +1,4 @@
-import {
-  Callout,
-  scenarioI18n,
-  usePermissionsContext,
-} from '@app-builder/components';
+import { Callout, scenarioI18n } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
@@ -52,8 +48,8 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
-  const { apiClient, editor, organization, dataModelRepository } =
+  const { authService, featureAccessService } = serverServices;
+  const { user, apiClient, editor, organization, dataModelRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -61,6 +57,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
 
   const [
+    isManualTriggerScenarioAvailable,
     operators,
     accessors,
     dataModel,
@@ -68,6 +65,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     currentOrganization,
     scheduledExecutions,
   ] = await Promise.all([
+    featureAccessService.isManualTriggerScenarioAvailable({
+      userPermissions: user.permissions,
+    }),
     editor.listOperators({
       scenarioId,
     }),
@@ -83,6 +83,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   return json({
+    featureAccess: { isManualTriggerScenarioAvailable },
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
     operators,
@@ -160,6 +161,7 @@ export default function Trigger() {
   const scenarioValidation = useCurrentScenarioValidation();
 
   const {
+    featureAccess,
     databaseAccessors,
     payloadAccessors,
     operators,
@@ -171,7 +173,6 @@ export default function Trigger() {
 
   const fetcher = useFetcher<typeof action>();
   const editorMode = useEditorMode();
-  const { canManageDecision } = usePermissionsContext();
 
   const [schedule, setSchedule] = useState(scenarioIteration.schedule ?? '');
 
@@ -205,6 +206,8 @@ export default function Trigger() {
   };
 
   const isLive = scenarioIteration.id == scenario.liveVersionId;
+  const withManualTriggerButton =
+    isLive && featureAccess.isManualTriggerScenarioAvailable;
   const pendingExecutions = scheduledExecutions.filter((execution) =>
     ['pending', 'processing'].includes(execution.status),
   );
@@ -289,7 +292,7 @@ export default function Trigger() {
                         viewOnly={editorMode === 'view'}
                       />
                     </li>
-                    {isLive && canManageDecision ? (
+                    {withManualTriggerButton ? (
                       <li>
                         <ManualTriggerButton
                           handleTriggerExecution={handleTriggerExecution}

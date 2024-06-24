@@ -1,5 +1,6 @@
 import {
   type DataModel,
+  type DataModelField,
   type DataType,
   type LinkToSingle,
   type Pivot,
@@ -11,6 +12,7 @@ import { CreateField } from '@app-builder/routes/ressources+/data+/createField';
 import { CreateLink } from '@app-builder/routes/ressources+/data+/createLink';
 import { EditField } from '@app-builder/routes/ressources+/data+/editField';
 import { EditTable } from '@app-builder/routes/ressources+/data+/editTable';
+import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
 import { NavLink } from '@remix-run/react';
 import {
@@ -25,7 +27,6 @@ import { useTranslation } from 'react-i18next';
 import { Handle, type NodeProps, Position } from 'reactflow';
 import { Icon } from 'ui-icons';
 
-import { usePermissionsContext } from '../PermissionsContext';
 import {
   SchemaMenuMenuButton,
   SchemaMenuMenuItem,
@@ -106,9 +107,9 @@ const columnHelper =
 
 export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   const { t } = useTranslation(dataI18n);
-  const { canEditDataModel } = usePermissionsContext();
   const { displayPivot, isFieldPartOfPivot, isTablePartOfPivot } =
     useSelectedPivot();
+  const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
 
   const columns = React.useMemo(
     () => [
@@ -162,21 +163,17 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               );
             },
           }),
-          ...(canEditDataModel
+          ...(isEditDataModelFieldAvailable
             ? [
                 columnHelper.display({
                   id: 'row-link',
                   header: '',
                   cell: ({ cell }) => (
-                    <EditField
+                    <EditDataModelField
                       key={cell.row.original.id}
                       field={cell.row.original}
                       linksToThisTable={data.linksToThisTable}
-                    >
-                      <button className="group-hover:text-grey-100 focus:text-grey-100 block overflow-hidden text-transparent after:absolute after:inset-0 after:content-['']">
-                        <Icon icon="edit" className="size-5" />
-                      </button>
-                    </EditField>
+                    />
                   ),
                 }),
               ]
@@ -184,7 +181,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         ],
       }),
     ],
-    [canEditDataModel, data, t],
+    [isEditDataModelFieldAvailable, data, t],
   );
 
   const table = useReactTable({
@@ -230,7 +227,9 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
                 key={row.id}
                 className={clsx(
                   'border-t-grey-25 relative scale-100 border-t',
-                  canEditDataModel && 'hover:bg-purple-10 group',
+                  !displayPivot &&
+                    isEditDataModelFieldAvailable &&
+                    'hover:bg-purple-10 group',
                   displayPivot &&
                     isFieldPartOfPivot(row.original.id) &&
                     'bg-purple-10',
@@ -278,6 +277,26 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   );
 }
 
+function EditDataModelField({
+  field,
+  linksToThisTable,
+}: {
+  field: DataModelField;
+  linksToThisTable: LinkToSingle[];
+}) {
+  const { displayPivot } = useSelectedPivot();
+  return (
+    <EditField field={field} linksToThisTable={linksToThisTable}>
+      <button
+        disabled={displayPivot}
+        className="group-hover:text-grey-100 focus:text-grey-100 block overflow-hidden text-transparent after:absolute after:inset-0 after:content-['']"
+      >
+        <Icon icon="edit" className="size-5" />
+      </button>
+    </EditField>
+  );
+}
+
 function FormatDescription({ description }: { description: string }) {
   const { t } = useTranslation(dataI18n);
 
@@ -296,11 +315,17 @@ function FormatDescription({ description }: { description: string }) {
 function MoreMenu({ data }: { data: TableModelNodeData }) {
   const { t } = useTranslation(dataI18n);
 
-  const { canEditDataModel, canIngestData } = usePermissionsContext();
   const { setSelectedPivot } = useSelectedPivot();
+  const {
+    isIngestDataAvailable,
+    isEditDataModelInfoAvailable,
+    isCreateDataModelFieldAvailable,
+    isCreateDataModelLinkAvailable,
+    isCreateDataModelPivotAvailable,
+  } = useDataModelFeatureAccess();
 
   const menuItems = [];
-  if (canEditDataModel) {
+  if (isEditDataModelInfoAvailable) {
     menuItems.push(
       <EditTable key="edit-description" table={data.original}>
         <SchemaMenuMenuItem>
@@ -310,7 +335,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </EditTable>,
     );
   }
-  if (canIngestData) {
+  if (isIngestDataAvailable) {
     menuItems.push(
       <SchemaMenuMenuItem
         key="upload-data"
@@ -327,7 +352,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </SchemaMenuMenuItem>,
     );
   }
-  if (canEditDataModel) {
+  if (isCreateDataModelFieldAvailable) {
     menuItems.push(
       <CreateField tableId={data.original.id} key="create-field">
         <SchemaMenuMenuItem>
@@ -337,7 +362,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </CreateField>,
     );
   }
-  if (canEditDataModel && data.otherTablesWithUnique.length > 0) {
+  if (isCreateDataModelLinkAvailable && data.otherTablesWithUnique.length > 0) {
     menuItems.push(
       <CreateLink
         key="create-link"
@@ -351,35 +376,34 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </CreateLink>,
     );
   }
-  if (canEditDataModel) {
-    const { pivot } = data;
-    if (pivot) {
-      menuItems.push(
-        <SchemaMenuMenuItem
-          key="view-pivot"
-          onClick={() => {
-            setSelectedPivot(pivot);
-          }}
-        >
-          <Icon icon="center-focus" className="size-6" />
-          {t('data:view_pivot.button')}
-        </SchemaMenuMenuItem>,
-      );
-    } else {
-      menuItems.push(
-        <CreatePivot
-          key="create-pivot"
-          tableModel={data.original}
-          dataModel={data.dataModel}
-        >
-          <SchemaMenuMenuItem>
-            <Icon icon="plus" className="size-6" />
-            {t('data:create_pivot.title')}
-          </SchemaMenuMenuItem>
-        </CreatePivot>,
-      );
-    }
+  const { pivot } = data;
+  if (pivot) {
+    menuItems.push(
+      <SchemaMenuMenuItem
+        key="view-pivot"
+        onClick={() => {
+          setSelectedPivot(pivot);
+        }}
+      >
+        <Icon icon="center-focus" className="size-6" />
+        {t('data:view_pivot.button')}
+      </SchemaMenuMenuItem>,
+    );
+  } else if (isCreateDataModelPivotAvailable) {
+    menuItems.push(
+      <CreatePivot
+        key="create-pivot"
+        tableModel={data.original}
+        dataModel={data.dataModel}
+      >
+        <SchemaMenuMenuItem>
+          <Icon icon="plus" className="size-6" />
+          {t('data:create_pivot.title')}
+        </SchemaMenuMenuItem>
+      </CreatePivot>,
+    );
   }
+
   if (menuItems.length === 0) {
     return null;
   }

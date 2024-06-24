@@ -4,18 +4,21 @@ import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { isStatusConflictHttpError } from '@app-builder/models';
+import {
+  isStatusConflictHttpError,
+  tKeyForUserRole,
+} from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
-import { type Namespace, type ParseKeys } from 'i18next';
-import { useEffect, useId, useState } from 'react';
+import { type Namespace } from 'i18next';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -23,23 +26,27 @@ export const handle = {
   i18n: ['settings', 'navigation', 'common'] satisfies Namespace,
 };
 
-const createUserFormSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.string().email().min(5),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const),
-  organizationId: z.string().uuid(),
-});
+function getCreateUserFormSchema(userRoles: readonly [string, ...string[]]) {
+  return z.object({
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+    email: z.string().email().min(5),
+    role: z.enum(userRoles),
+    organizationId: z.string().uuid(),
+  });
+}
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService, csrfService } = serverServices;
+  const { authService, csrfService, featureAccessService } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   await csrfService.validate(request);
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema: createUserFormSchema });
+  const submission = parse(formData, {
+    schema: getCreateUserFormSchema(await featureAccessService.getUserRoles()),
+  });
 
   if (submission.intent !== 'submit' || !submission.value) {
     return json(submission);
@@ -75,12 +82,18 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function CreateUser({ orgId }: { orgId: string }) {
+export function CreateUser({
+  orgId,
+  userRoles,
+}: {
+  orgId: string;
+  userRoles: readonly [string, ...string[]];
+}) {
   const { t } = useTranslation(handle.i18n);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const navigation = useNavigation();
-  useEffect(() => {
+  React.useEffect(() => {
     if (navigation.state === 'loading') {
       setOpen(false);
     }
@@ -95,15 +108,25 @@ export function CreateUser({ orgId }: { orgId: string }) {
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateUserContent orgId={orgId} />
+        <CreateUserContent orgId={orgId} userRoles={userRoles} />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-const CreateUserContent = ({ orgId }: { orgId: string }) => {
+function CreateUserContent({
+  orgId,
+  userRoles,
+}: {
+  orgId: string;
+  userRoles: readonly [string, ...string[]];
+}) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
+  const schema = React.useMemo(
+    () => getCreateUserFormSchema(userRoles),
+    [userRoles],
+  );
 
   const defaultValue = {
     firstName: '',
@@ -113,16 +136,16 @@ const CreateUserContent = ({ orgId }: { orgId: string }) => {
     organizationId: orgId,
   };
 
-  const formId = useId();
+  const formId = React.useId();
 
   const [form, { firstName, lastName, email, role, organizationId }] = useForm({
     id: formId,
     defaultValue,
     lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(createUserFormSchema),
+    constraint: getFieldsetConstraint(schema),
     onValidate({ formData }) {
       return parse(formData, {
-        schema: createUserFormSchema,
+        schema,
       });
     },
   });
@@ -164,10 +187,10 @@ const CreateUserContent = ({ orgId }: { orgId: string }) => {
           <FormField config={role} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:users.role')}</FormLabel>
             <FormSelect.Default config={role}>
-              {roleOptions.map(({ value, labelTKey }) => (
-                <Select.DefaultItem key={value} value={value}>
-                  {t(labelTKey)}
-                </Select.DefaultItem>
+              {userRoles.map((role) => (
+                <FormSelect.DefaultItem key={role} value={role}>
+                  {t(tKeyForUserRole(role))}
+                </FormSelect.DefaultItem>
               ))}
             </FormSelect.Default>
             <FormError />
@@ -191,14 +214,4 @@ const CreateUserContent = ({ orgId }: { orgId: string }) => {
       </div>
     </fetcher.Form>
   );
-};
-
-export const roleOptions: {
-  value: string;
-  labelTKey: ParseKeys<['settings']>;
-}[] = [
-  { value: 'VIEWER', labelTKey: 'settings:users.role.viewer' },
-  { value: 'BUILDER', labelTKey: 'settings:users.role.builder' },
-  { value: 'PUBLISHER', labelTKey: 'settings:users.role.publisher' },
-  { value: 'ADMIN', labelTKey: 'settings:users.role.admin' },
-];
+}

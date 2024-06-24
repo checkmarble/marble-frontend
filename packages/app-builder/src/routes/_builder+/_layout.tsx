@@ -1,7 +1,6 @@
 import {
   ErrorComponent,
   navigationI18n,
-  PermissionsProvider,
   SidebarButton,
   SidebarLink,
 } from '@app-builder/components';
@@ -48,7 +47,7 @@ import { Button, ScrollArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const { user, organization } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -61,13 +60,32 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw forbidden('Only TransferCheck users can access TransferCheck.');
   }
 
-  const [organizationDetail, orgUsers, orgTags] = await Promise.all([
+  const [
+    organizationDetail,
+    orgUsers,
+    orgTags,
+    isAnalyticsAvailable,
+    isWorkflowsAvailable,
+  ] = await Promise.all([
     organization.getCurrentOrganization(),
     organization.listUsers(),
     organization.listTags(),
+    featureAccessService.isAnalyticsAvailable({
+      userPermissions: user.permissions,
+    }),
+    featureAccessService.isWorkflowsAvailable(),
   ]);
 
-  return json({ user, orgUsers, organization: organizationDetail, orgTags });
+  return json({
+    user,
+    orgUsers,
+    organization: organizationDetail,
+    orgTags,
+    featuresAccess: {
+      isAnalyticsAvailable,
+      isWorkflowsAvailable,
+    },
+  });
 }
 
 export const handle = {
@@ -78,7 +96,7 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user, orgUsers, organization, orgTags } =
+  const { user, orgUsers, organization, orgTags, featuresAccess } =
     useLoaderData<typeof loader>();
   useSegmentIdentification(user);
 
@@ -90,63 +108,63 @@ export default function Builder() {
   const marbleCoreResources = useMarbleCoreResources();
 
   return (
-    <PermissionsProvider userPermissions={user.permissions}>
-      <OrganizationUsersContextProvider orgUsers={orgUsers}>
-        <OrganizationTagsContextProvider orgTags={orgTags}>
-          <div className="flex h-full flex-1 flex-row overflow-hidden">
-            <Header>
-              <div className="h-24 px-2 pt-3">
-                <UserInfo
-                  email={user.actorIdentity.email}
-                  firstName={user.actorIdentity.firstName}
-                  lastName={user.actorIdentity.lastName}
-                  role={user.role}
-                  orgOrPartnerName={organization.name}
-                />
-              </div>
-              <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
-                <ScrollArea.Viewport>
-                  <nav className="p-2">
-                    <ul className="flex flex-col gap-2">
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:scenarios"
-                          to={getRoute('/scenarios/')}
-                          Icon={(props) => <Icon icon="scenarios" {...props} />}
-                        />
-                      </li>
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:lists"
-                          to={getRoute('/lists/')}
-                          Icon={(props) => <Icon icon="lists" {...props} />}
-                        />
-                      </li>
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:decisions"
-                          to={getRoute('/decisions/')}
-                          Icon={(props) => <Icon icon="decision" {...props} />}
-                        />
-                      </li>
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:scheduledExecutions"
-                          to={getRoute('/scheduled-executions')}
-                          Icon={(props) => (
-                            <Icon icon="scheduled-execution" {...props} />
-                          )}
-                        />
-                      </li>
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:caseManager"
-                          to={getRoute('/cases/')}
-                          Icon={(props) => (
-                            <Icon icon="case-manager" {...props} />
-                          )}
-                        />
-                      </li>
+    <OrganizationUsersContextProvider orgUsers={orgUsers}>
+      <OrganizationTagsContextProvider orgTags={orgTags}>
+        <div className="flex h-full flex-1 flex-row overflow-hidden">
+          <Header>
+            <div className="h-24 px-2 pt-3">
+              <UserInfo
+                email={user.actorIdentity.email}
+                firstName={user.actorIdentity.firstName}
+                lastName={user.actorIdentity.lastName}
+                role={user.role}
+                orgOrPartnerName={organization.name}
+              />
+            </div>
+            <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
+              <ScrollArea.Viewport>
+                <nav className="p-2">
+                  <ul className="flex flex-col gap-2">
+                    <li>
+                      <SidebarLink
+                        labelTKey="navigation:scenarios"
+                        to={getRoute('/scenarios/')}
+                        Icon={(props) => <Icon icon="scenarios" {...props} />}
+                      />
+                    </li>
+                    <li>
+                      <SidebarLink
+                        labelTKey="navigation:lists"
+                        to={getRoute('/lists/')}
+                        Icon={(props) => <Icon icon="lists" {...props} />}
+                      />
+                    </li>
+                    <li>
+                      <SidebarLink
+                        labelTKey="navigation:decisions"
+                        to={getRoute('/decisions/')}
+                        Icon={(props) => <Icon icon="decision" {...props} />}
+                      />
+                    </li>
+                    <li>
+                      <SidebarLink
+                        labelTKey="navigation:scheduledExecutions"
+                        to={getRoute('/scheduled-executions')}
+                        Icon={(props) => (
+                          <Icon icon="scheduled-execution" {...props} />
+                        )}
+                      />
+                    </li>
+                    <li>
+                      <SidebarLink
+                        labelTKey="navigation:caseManager"
+                        to={getRoute('/cases/')}
+                        Icon={(props) => (
+                          <Icon icon="case-manager" {...props} />
+                        )}
+                      />
+                    </li>
+                    {featuresAccess.isWorkflowsAvailable ? (
                       <li>
                         <SidebarLink
                           labelTKey="navigation:workflows"
@@ -156,96 +174,94 @@ export default function Builder() {
                           )}
                         />
                       </li>
-                      {user.permissions.canReadAnalytics ? (
-                        <li>
-                          <SidebarLink
-                            labelTKey="navigation:analytics"
-                            to={getRoute('/analytics')}
-                            Icon={(props) => (
-                              <Icon icon="analytics" {...props} />
-                            )}
-                          />
-                        </li>
-                      ) : null}
-                    </ul>
-                  </nav>
-                </ScrollArea.Viewport>
-                <ScrollArea.Scrollbar>
-                  <ScrollArea.Thumb />
-                </ScrollArea.Scrollbar>
-              </ScrollArea.Root>
-              <nav className="p-2 pb-4">
-                <ul className="flex flex-col gap-2">
-                  <li>
+                    ) : null}
+                    {featuresAccess.isAnalyticsAvailable ? (
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:analytics"
+                          to={getRoute('/analytics')}
+                          Icon={(props) => <Icon icon="analytics" {...props} />}
+                        />
+                      </li>
+                    ) : null}
+                  </ul>
+                </nav>
+              </ScrollArea.Viewport>
+              <ScrollArea.Scrollbar>
+                <ScrollArea.Thumb />
+              </ScrollArea.Scrollbar>
+            </ScrollArea.Root>
+            <nav className="p-2 pb-4">
+              <ul className="flex flex-col gap-2">
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:data"
+                    to={getRoute('/data')}
+                    Icon={(props) => <Icon icon="harddrive" {...props} />}
+                  />
+                </li>
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:api"
+                    to={getRoute('/api')}
+                    Icon={(props) => <Icon icon="world" {...props} />}
+                  />
+                </li>
+                {isAdmin(user) ? (
+                  <li key="navigation:settings">
                     <SidebarLink
-                      labelTKey="navigation:data"
-                      to={getRoute('/data')}
-                      Icon={(props) => <Icon icon="harddrive" {...props} />}
+                      labelTKey="navigation:settings"
+                      to={getRoute('/settings')}
+                      Icon={(props) => <Icon icon="settings" {...props} />}
                     />
                   </li>
-                  <li>
-                    <SidebarLink
-                      labelTKey="navigation:api"
-                      to={getRoute('/api')}
-                      Icon={(props) => <Icon icon="world" {...props} />}
-                    />
-                  </li>
-                  {isAdmin(user) ? (
-                    <li key="navigation:settings">
-                      <SidebarLink
-                        labelTKey="navigation:settings"
-                        to={getRoute('/settings')}
-                        Icon={(props) => <Icon icon="settings" {...props} />}
-                      />
-                    </li>
-                  ) : null}
-                  <li>
-                    <ChatlioProvider
-                      chatlio={
-                        chatlioWidgetId
-                          ? {
-                              user: {
-                                id: user.actorIdentity.userId,
-                                email: user.actorIdentity.email,
-                                name: getFullName(user.actorIdentity),
-                              },
-                              organization: {
-                                id: organization.id,
-                                name: organization.name,
-                              },
-                              widgetid: chatlioWidgetId,
-                              marbleProduct: 'marble-core',
-                            }
-                          : undefined
+                ) : null}
+                <li>
+                  <ChatlioProvider
+                    chatlio={
+                      chatlioWidgetId
+                        ? {
+                            user: {
+                              id: user.actorIdentity.userId,
+                              email: user.actorIdentity.email,
+                              name: getFullName(user.actorIdentity),
+                            },
+                            organization: {
+                              id: organization.id,
+                              name: organization.name,
+                            },
+                            widgetid: chatlioWidgetId,
+                            marbleProduct: 'marble-core',
+                          }
+                        : undefined
+                    }
+                  >
+                    <HelpCenter
+                      defaultTab={marbleCoreResources.defaultTab}
+                      resources={marbleCoreResources.resources}
+                      MenuButton={
+                        <SidebarButton
+                          labelTKey="navigation:helpCenter"
+                          Icon={(props) => (
+                            <Icon icon="helpcenter" {...props} />
+                          )}
+                        />
                       }
-                    >
-                      <HelpCenter
-                        defaultTab={marbleCoreResources.defaultTab}
-                        resources={marbleCoreResources.resources}
-                        MenuButton={
-                          <SidebarButton
-                            labelTKey="navigation:helpCenter"
-                            Icon={(props) => (
-                              <Icon icon="helpcenter" {...props} />
-                            )}
-                          />
-                        }
-                        ChatWithUsButton={<ChatlioButton />}
-                      />
-                    </ChatlioProvider>
-                  </li>
-                  <li>
-                    <ToggleHeader />
-                  </li>
-                </ul>
-              </nav>
-            </Header>
+                      ChatWithUsButton={<ChatlioButton />}
+                    />
+                  </ChatlioProvider>
+                </li>
+                <li>
+                  <ToggleHeader />
+                </li>
+              </ul>
+            </nav>
+          </Header>
 
-            <Outlet />
-          </div>
-        </OrganizationTagsContextProvider>
-      </OrganizationUsersContextProvider>
-    </PermissionsProvider>
+          <Outlet />
+        </div>
+      </OrganizationTagsContextProvider>
+    </OrganizationUsersContextProvider>
   );
 }
 

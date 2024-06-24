@@ -1,7 +1,6 @@
 import {
   ErrorComponent,
   navigationI18n,
-  PermissionsProvider,
   SidebarButton,
   SidebarLink,
 } from '@app-builder/components';
@@ -81,82 +80,80 @@ export default function Builder() {
   const transfercheckResources = useTransfercheckResources();
 
   return (
-    <PermissionsProvider userPermissions={user.permissions}>
-      <div className="flex h-full flex-1 flex-row overflow-hidden">
-        <Header>
-          <div className="h-24 px-2 pt-3">
-            <UserInfo
-              email={user.actorIdentity.email}
-              firstName={user.actorIdentity.firstName}
-              lastName={user.actorIdentity.lastName}
-              role={user.role}
-              orgOrPartnerName="TODO"
-            />
-          </div>
-          <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
-            <ScrollArea.Viewport>
-              <nav className="p-2">
-                <ul className="flex flex-col gap-2">
-                  <li>
-                    <SidebarLink
-                      labelTKey="navigation:transfercheck.transfers"
-                      to={getRoute('/transfercheck/transfers/')}
-                      Icon={(props) => (
-                        <Icon icon="arrows-right-left" {...props} />
-                      )}
-                    />
-                  </li>
-                </ul>
-              </nav>
-            </ScrollArea.Viewport>
-            <ScrollArea.Scrollbar>
-              <ScrollArea.Thumb />
-            </ScrollArea.Scrollbar>
-          </ScrollArea.Root>
-          <nav className="p-2 pb-4">
-            <ul className="flex flex-col gap-2">
-              <li>
-                <ChatlioProvider
-                  chatlio={
-                    chatlioWidgetId
-                      ? {
-                          user: {
-                            id: user.actorIdentity.userId,
-                            email: user.actorIdentity.email,
-                            name: getFullName(user.actorIdentity),
-                          },
-                          partner: {
-                            id: user.partnerId,
-                          },
-                          widgetid: chatlioWidgetId,
-                          marbleProduct: 'transfercheck',
-                        }
-                      : undefined
-                  }
-                >
-                  <HelpCenter
-                    defaultTab={transfercheckResources.defaultTab}
-                    resources={transfercheckResources.resources}
-                    MenuButton={
-                      <SidebarButton
-                        labelTKey="navigation:helpCenter"
-                        Icon={(props) => <Icon icon="helpcenter" {...props} />}
-                      />
-                    }
-                    ChatWithUsButton={<ChatlioButton />}
+    <div className="flex h-full flex-1 flex-row overflow-hidden">
+      <Header>
+        <div className="h-24 px-2 pt-3">
+          <UserInfo
+            email={user.actorIdentity.email}
+            firstName={user.actorIdentity.firstName}
+            lastName={user.actorIdentity.lastName}
+            role={user.role}
+            orgOrPartnerName="TODO"
+          />
+        </div>
+        <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
+          <ScrollArea.Viewport>
+            <nav className="p-2">
+              <ul className="flex flex-col gap-2">
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:transfercheck.transfers"
+                    to={getRoute('/transfercheck/transfers/')}
+                    Icon={(props) => (
+                      <Icon icon="arrows-right-left" {...props} />
+                    )}
                   />
-                </ChatlioProvider>
-              </li>
-              <li>
-                <ToggleHeader />
-              </li>
-            </ul>
-          </nav>
-        </Header>
+                </li>
+              </ul>
+            </nav>
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar>
+            <ScrollArea.Thumb />
+          </ScrollArea.Scrollbar>
+        </ScrollArea.Root>
+        <nav className="p-2 pb-4">
+          <ul className="flex flex-col gap-2">
+            <li>
+              <ChatlioProvider
+                chatlio={
+                  chatlioWidgetId
+                    ? {
+                        user: {
+                          id: user.actorIdentity.userId,
+                          email: user.actorIdentity.email,
+                          name: getFullName(user.actorIdentity),
+                        },
+                        partner: {
+                          id: user.partnerId,
+                        },
+                        widgetid: chatlioWidgetId,
+                        marbleProduct: 'transfercheck',
+                      }
+                    : undefined
+                }
+              >
+                <HelpCenter
+                  defaultTab={transfercheckResources.defaultTab}
+                  resources={transfercheckResources.resources}
+                  MenuButton={
+                    <SidebarButton
+                      labelTKey="navigation:helpCenter"
+                      Icon={(props) => <Icon icon="helpcenter" {...props} />}
+                    />
+                  }
+                  ChatWithUsButton={<ChatlioButton />}
+                />
+              </ChatlioProvider>
+            </li>
+            <li>
+              <ToggleHeader />
+            </li>
+          </ul>
+        </nav>
+      </Header>
 
-        <Outlet />
-      </div>
-    </PermissionsProvider>
+      <Outlet />
+    </div>
   );
 }
 

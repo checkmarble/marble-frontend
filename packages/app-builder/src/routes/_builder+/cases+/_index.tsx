@@ -1,15 +1,16 @@
-import { Page, usePermissionsContext } from '@app-builder/components';
+import { Page } from '@app-builder/components';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
-  const { inbox } = await authService.isAuthenticated(request, {
+  const { authService, featureAccessService } = serverServices;
+  const { user, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -20,12 +21,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
       getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxes[0].id) }),
     );
   }
-  return null;
+
+  return json({
+    isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable({
+      userPermissions: user.permissions,
+    }),
+  });
 }
 
 export default function Cases() {
   const { t } = useTranslation(['navigation', 'cases']);
-  const { canEditInboxes } = usePermissionsContext();
+  const { isCreateInboxAvailable } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -34,7 +40,7 @@ export default function Cases() {
         {t('navigation:caseManager')}
       </Page.Header>
       <Page.Content>
-        {canEditInboxes ? (
+        {isCreateInboxAvailable ? (
           <div className="flex max-w-xl flex-col gap-4">
             <p>{t('cases:inbox.need_first_inbox')}</p>
             <CreateInbox redirectRoutePath="/cases/inboxes/:inboxId" />

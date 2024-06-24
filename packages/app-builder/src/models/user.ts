@@ -1,3 +1,4 @@
+import { type ParseKeys } from 'i18next';
 import { type CredentialsDto, type UserDto } from 'marble-api';
 import * as R from 'remeda';
 
@@ -91,3 +92,18 @@ export const isMarbleCoreUser = (user: CurrentUser) =>
   ['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'].includes(user.role);
 
 export type MarbleProduct = 'marble-core' | 'transfercheck';
+
+export function tKeyForUserRole(role: string): ParseKeys<['settings']> {
+  switch (role) {
+    case 'ADMIN':
+      return 'settings:users.role.admin';
+    case 'PUBLISHER':
+      return 'settings:users.role.publisher';
+    case 'BUILDER':
+      return 'settings:users.role.builder';
+    case 'VIEWER':
+      return 'settings:users.role.viewer';
+    default:
+      return 'settings:users.role.unknown';
+  }
+}

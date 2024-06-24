@@ -2880,7 +2880,7 @@ paths:
                 - role
               properties:
                 role:
-                  $ref: '#/components/schemas/InboxUserRole'
+                  type: string
         required: true
       responses:
         '200':
@@ -4775,10 +4775,7 @@ components:
           type: string
           format: uuid
         role:
-          $ref: '#/components/schemas/InboxUserRole'
-    InboxUserRole:
-      type: string
-      enum: [member, admin]
+          type: string
     AddInboxUserBodyDto:
       type: object
       required:
@@ -4789,7 +4786,7 @@ components:
           type: string
           format: uuid
         role:
-          $ref: '#/components/schemas/InboxUserRole'
+          type: string
   securitySchemes:
     bearerAuth:
       type: http

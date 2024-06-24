@@ -1,31 +1,36 @@
-import { type GetMarbleAPIClient } from '@app-builder/infra/marble-api';
+import { type LicenseApi } from '@app-builder/infra/license-api';
+import { type GetMarbleAPIClientWithAuth } from '@app-builder/infra/marble-api';
 
-import { getAnalyticsRepository } from './AnalyticsRepository';
-import { getApiKeyRepository } from './ApiKeyRepository';
-import { getCaseRepository } from './CaseRepository';
-import { getDataModelRepository } from './DataModelRepository';
-import { getDecisionRepository } from './DecisionRepository';
-import { getEditorRepository } from './EditorRepository';
-import { getInboxRepository } from './InboxRepository';
-import { getMarbleAPIRepository } from './MarbleAPIRepository';
-import { getOrganizationRepository } from './OrganizationRepository';
-import { getScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
-import { getScenarioRepository } from './ScenarioRepository';
+import { makeGetAnalyticsRepository } from './AnalyticsRepository';
+import { makeGetApiKeyRepository } from './ApiKeyRepository';
+import { makeGetCaseRepository } from './CaseRepository';
+import { makeGetDataModelRepository } from './DataModelRepository';
+import { makeGetDecisionRepository } from './DecisionRepository';
+import { makeGetEditorRepository } from './EditorRepository';
+import { makeGetInboxRepository } from './InboxRepository';
+import { getLicenseRepository } from './LicenseRepository';
+import { makeGetOrganizationRepository } from './OrganizationRepository';
+import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
+import { makeGetScenarioRepository } from './ScenarioRepository';
 import {
   getAuthStorageRepository,
   getCsrfCookie,
   getToastStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepositories';
-import { getTransferRepository } from './TransferRepository';
-import { getUserRepository } from './UserRepository';
+import { makeGetTransferRepository } from './TransferRepository';
+import { makeGetUserRepository } from './UserRepository';
 
 export function makeServerRepositories({
+  devEnvironment,
   sessionStorageRepositoryOptions,
-  getMarbleAPIClient,
+  licenseAPIClient,
+  getMarbleAPIClientWithAuth,
 }: {
+  devEnvironment: boolean;
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
-  getMarbleAPIClient: GetMarbleAPIClient;
+  licenseAPIClient: LicenseApi;
+  getMarbleAPIClientWithAuth: GetMarbleAPIClientWithAuth;
 }) {
   return {
     authStorageRepository: getAuthStorageRepository(
@@ -35,19 +40,21 @@ export function makeServerRepositories({
     toastStorageRepository: getToastStorageRepository(
       sessionStorageRepositoryOptions,
     ),
-    marbleAPIClient: getMarbleAPIRepository(getMarbleAPIClient),
-    userRepository: getUserRepository(),
-    inboxRepository: getInboxRepository(),
-    editorRepository: getEditorRepository(),
-    decisionRepository: getDecisionRepository(),
-    caseRepository: getCaseRepository(),
-    scenarioRepository: getScenarioRepository(),
-    scenarioIterationRuleRepository: getScenarioIterationRuleRepository(),
-    organizationRepository: getOrganizationRepository(),
-    dataModelRepository: getDataModelRepository(),
-    apiKeyRepository: getApiKeyRepository(),
-    analyticsRepository: getAnalyticsRepository(),
-    transferRepository: getTransferRepository(),
+    getMarbleAPIClientWithAuth,
+    getUserRepository: makeGetUserRepository(),
+    getInboxRepository: makeGetInboxRepository(),
+    getEditorRepository: makeGetEditorRepository(),
+    getDecisionRepository: makeGetDecisionRepository(),
+    getCaseRepository: makeGetCaseRepository(),
+    getScenarioRepository: makeGetScenarioRepository(),
+    getScenarioIterationRuleRepository:
+      makeGetScenarioIterationRuleRepository(),
+    getOrganizationRepository: makeGetOrganizationRepository(),
+    getDataModelRepository: makeGetDataModelRepository(),
+    getApiKeyRepository: makeGetApiKeyRepository(),
+    getAnalyticsRepository: makeGetAnalyticsRepository(),
+    getTransferRepository: makeGetTransferRepository(),
+    licenseRepository: getLicenseRepository(licenseAPIClient, devEnvironment),
   };
 }
 

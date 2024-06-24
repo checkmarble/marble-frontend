@@ -5,7 +5,7 @@ export interface UserRepository {
   getCurrentUser(): Promise<CurrentUser>;
 }
 
-export function getUserRepository() {
+export function makeGetUserRepository() {
   return (marbleApiClient: MarbleApi): UserRepository => ({
     getCurrentUser: async () => {
       const { credentials } = await marbleApiClient.getCredentials();

@@ -14,7 +14,7 @@ export interface TransferRepository {
   }): Promise<Transfer>;
 }
 
-export function getTransferRepository() {
+export function makeGetTransferRepository() {
   return (marbleApiClient: MarbleApi): TransferRepository => ({
     listTransfers: async ({ partnerTransferId }) => {
       const { transfers } =
