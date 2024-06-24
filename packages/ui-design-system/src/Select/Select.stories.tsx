@@ -85,7 +85,7 @@ export const Complex: StoryFn<StoryProps> = ({
                 <p className="text-s text-grey-100 group-radix-highlighted:text-blue-100 group-radix-state-open:text-blue-100 text-left font-semibold">
                   {book.title}
                 </p>
-                <p className="text-grey-50 group-radix-highlighted:text-blue-50 group-radix-state-open:text-blue-50 text-left text-xs font-normal ">
+                <p className="text-grey-50 group-radix-highlighted:text-blue-50 group-radix-state-open:text-blue-50 text-left text-xs font-normal">
                   {book.author}
                 </p>
               </Select.ItemText>

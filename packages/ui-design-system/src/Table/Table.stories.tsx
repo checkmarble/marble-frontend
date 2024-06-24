@@ -72,7 +72,7 @@ const Story: Meta<StoryProps> = {
   argTypes: {
     count: { type: 'number' },
   },
-  decorators: [(story) => <div className="flex max-h-72 ">{story()}</div>],
+  decorators: [(story) => <div className="flex max-h-72">{story()}</div>],
 };
 export default Story;
 

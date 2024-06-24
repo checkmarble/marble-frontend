@@ -184,7 +184,7 @@ export function AddToCase() {
             name="newCase"
             control={control}
             render={({ field: { value, onChange, ...rest } }) => (
-              <FormItem className="flex items-center  gap-2">
+              <FormItem className="flex items-center gap-2">
                 <FormLabel className="text-xs capitalize">
                   {t('decisions:add_to_case.create_new_case')}
                 </FormLabel>

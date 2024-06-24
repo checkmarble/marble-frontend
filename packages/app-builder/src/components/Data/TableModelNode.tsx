@@ -250,7 +250,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
                 </td>
                 {visibleCells.map((cell) => {
                   return (
-                    <td key={cell.id} className="max-w-96 p-2 ">
+                    <td key={cell.id} className="max-w-96 p-2">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

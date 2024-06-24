@@ -105,7 +105,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
           <NavLink
             className={clsx(
               'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
-              'hover:bg-purple-110 active:bg-purple-120 text-grey-00 focus:border-grey-100  bg-purple-100 disabled:bg-purple-50',
+              'hover:bg-purple-110 active:bg-purple-120 text-grey-00 focus:border-grey-100 bg-purple-100 disabled:bg-purple-50',
             )}
             to={getRoute('/upload/:objectType', {
               objectType: tableModel.name,

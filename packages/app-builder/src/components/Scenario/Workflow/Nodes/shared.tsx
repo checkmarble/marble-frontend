@@ -39,7 +39,7 @@ export function AddNodeButton({
         // eslint-disable-next-line tailwindcss/no-custom-classname
         className="nodrag hover:bg-purple-110 active:bg-purple-120 rounded-full bg-purple-100"
       >
-        <Icon icon="plus" className="text-grey-00 size-6 " />
+        <Icon icon="plus" className="text-grey-00 size-6" />
       </button>
     </div>
   );
