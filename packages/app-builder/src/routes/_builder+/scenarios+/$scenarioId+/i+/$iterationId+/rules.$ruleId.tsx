@@ -382,7 +382,7 @@ function RuleEditContent({
   React.useEffect(() => {
     if (!errors) return;
 
-    R.forEachObj.indexed(errors.fieldErrors, (err, name) => {
+    R.forEachObj(errors.fieldErrors, (err, name) => {
       const message = err?.[0];
       if (message === undefined) return;
       setError(name, {

@@ -125,7 +125,7 @@ function getLinkPivotOptions(
         link,
       };
     }),
-    R.filter(R.isDefined),
+    R.filter(R.isNonNullish),
     R.flatMap(({ parentTable, parentField, link }) => {
       const pathLinks = previousPathLinks.concat(link);
       const pivot: LinkPivotOption = adaptLinkPivotOption({

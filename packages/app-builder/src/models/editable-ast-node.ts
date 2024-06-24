@@ -160,7 +160,7 @@ export class ConstantEditableAstNode implements EditableAstNodeBase {
     t: TFunctionDisplayName,
     constant: ConstantType,
   ): string {
-    if (R.isNil(constant)) return '';
+    if (R.isNullish(constant)) return '';
 
     if (R.isArray(constant)) {
       return `[${constant.map((constant) => ConstantEditableAstNode.getConstantDisplayName(t, constant)).join(', ')}]`;

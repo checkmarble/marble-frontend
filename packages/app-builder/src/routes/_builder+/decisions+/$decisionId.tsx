@@ -116,7 +116,7 @@ export default function DecisionPage() {
         value,
       };
     }),
-    R.filter(R.isDefined),
+    R.filter(R.isNonNullish),
   );
 
   const existingPivotDefinition = pivots.some(

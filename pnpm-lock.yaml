@@ -204,8 +204,8 @@ importers:
         specifier: ^11.11.4
         version: 11.11.4(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       remeda:
-        specifier: ^1.61.0
-        version: 1.61.0
+        specifier: ^2.2.0
+        version: 2.2.0
       remix:
         specifier: ^2.9.2
         version: 2.9.2
@@ -8246,8 +8246,8 @@ packages:
     engines: {node: '>= 6.0.0'}
     hasBin: true
 
-  remeda@1.61.0:
-    resolution: {integrity: sha512-caKfSz9rDeSKBQQnlJnVW3mbVdFgxgGWQKq1XlFokqjf+hQD5gxutLGTTY2A/x24UxVyJe9gH5fAkFI63ULw4A==}
+  remeda@2.2.0:
+    resolution: {integrity: sha512-qHV/yLbFKT6qX4OlqTizatGNfCPJNRgtL3HaFCM/3vaOWgblLw+uj/ji+Q3GNS0By/yZPlYuQr37WLBWOgCjvg==}
 
   remix-flat-routes@0.6.5:
     resolution: {integrity: sha512-VvPak+LCxL4Fm6Kb/nqPLipB71k9p+GXpzRNPVxs9FmCeJ7hxVmQ3HQMpStzuRQyAh0PMkaX6mBiRlCRHTCYHw==}
@@ -9028,6 +9028,10 @@ packages:
 
   type-fest@4.15.0:
     resolution: {integrity: sha512-tB9lu0pQpX5KJq54g+oHOLumOx+pMep4RaM6liXh2PKmVRFF+/vAtUP0ZaJ0kOySfVNjF6doBWPHhBhISKdlIA==}
+    engines: {node: '>=16'}
+
+  type-fest@4.20.1:
+    resolution: {integrity: sha512-R6wDsVsoS9xYOpy8vgeBlqpdOyzJ12HNfQhC/aAKWM3YoCV9TtunJzh/QpkMgeDhkoynDcw5f1y+qF9yc/HHyg==}
     engines: {node: '>=16'}
 
   type-is@1.6.18:
@@ -19169,7 +19173,9 @@ snapshots:
       argparse: 1.0.10
       autolinker: 3.16.2
 
-  remeda@1.61.0: {}
+  remeda@2.2.0:
+    dependencies:
+      type-fest: 4.20.1
 
   remix-flat-routes@0.6.5(@remix-run/dev@2.9.2(@remix-run/react@2.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.2))(@remix-run/serve@2.9.2(typescript@5.5.2))(@types/node@20.14.8)(babel-plugin-macros@3.1.0)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.8))):
     dependencies:
@@ -20069,6 +20075,8 @@ snapshots:
   type-fest@2.19.0: {}
 
   type-fest@4.15.0: {}
+
+  type-fest@4.20.1: {}
 
   type-is@1.6.18:
     dependencies:

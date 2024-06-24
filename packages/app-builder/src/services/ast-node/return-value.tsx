@@ -24,7 +24,7 @@ function formatConstantType(
     language: string;
   },
 ): string {
-  if (R.isNil(constant)) return 'NULL';
+  if (R.isNullish(constant)) return 'NULL';
 
   if (R.isArray(constant)) {
     return `[${constant.map((c) => formatConstantType(c, config)).join(', ')}]`;
