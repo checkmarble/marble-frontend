@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptApiKey,
   adaptCreatedApiKey,
@@ -16,14 +16,14 @@ export interface ApiKeyRepository {
 }
 
 export function makeGetApiKeyRepository() {
-  return (marbleApiClient: MarbleApi): ApiKeyRepository => ({
+  return (marbleCoreApiClient: MarbleCoreApi): ApiKeyRepository => ({
     listApiKeys: async () => {
-      const { api_keys } = await marbleApiClient.listApiKeys();
+      const { api_keys } = await marbleCoreApiClient.listApiKeys();
 
       return api_keys.map(adaptApiKey);
     },
     createApiKey: async ({ description, role }) => {
-      const { api_key } = await marbleApiClient.createApiKey({
+      const { api_key } = await marbleCoreApiClient.createApiKey({
         description,
         role,
       });
@@ -31,7 +31,7 @@ export function makeGetApiKeyRepository() {
       return adaptCreatedApiKey(api_key);
     },
     deleteApiKey: async ({ apiKeyId }) => {
-      await marbleApiClient.deleteApiKey(apiKeyId);
+      await marbleCoreApiClient.deleteApiKey(apiKeyId);
     },
   });
 }

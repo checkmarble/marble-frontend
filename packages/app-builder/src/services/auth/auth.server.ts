@@ -1,7 +1,11 @@
 import {
-  type GetMarbleAPIClientWithAuth,
-  type MarbleApi,
-} from '@app-builder/infra/marble-api';
+  type GetMarbleCoreAPIClientWithAuth,
+  type MarbleCoreApi,
+} from '@app-builder/infra/marblecore-api';
+import {
+  type GetTransfercheckAPIClientWithAuth,
+  type TransfercheckApi,
+} from '@app-builder/infra/transfercheck-api';
 import {
   adaptAuthErrors,
   type AuthData,
@@ -24,7 +28,7 @@ import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { json, redirect } from '@remix-run/node';
 import * as Sentry from '@sentry/remix';
-import { marbleApi } from 'marble-api';
+import { marblecoreApi } from 'marble-api';
 import { type CSRF } from 'remix-utils/csrf/server';
 import * as z from 'zod';
 
@@ -32,7 +36,10 @@ import { getRoute } from '../../utils/routes';
 import { type SessionService } from './session.server';
 
 interface AuthenticatedInfo {
-  apiClient: MarbleApi;
+  /**
+   * @deprecated Use repositories directly
+   */
+  apiClient: MarbleCoreApi;
   editor: EditorRepository;
   decision: DecisionRepository;
   cases: CaseRepository;
@@ -89,30 +96,42 @@ const schema = z.object({
 export type AuthPayload = z.infer<typeof schema>;
 
 interface MakeAuthenticationServerServiceArgs {
-  getMarbleAPIClientWithAuth: GetMarbleAPIClientWithAuth;
-  getUserRepository: (marbleApiClient: MarbleApi) => UserRepository;
-  getInboxRepository: (marbleApiClient: MarbleApi) => InboxRepository;
-  getEditorRepository: (marbleApiClient: MarbleApi) => EditorRepository;
-  getDecisionRepository: (marbleApiClient: MarbleApi) => DecisionRepository;
-  getCaseRepository: (marbleApiClient: MarbleApi) => CaseRepository;
+  getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
+  getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
+  getUserRepository: (marbleCoreApiClient: MarbleCoreApi) => UserRepository;
+  getInboxRepository: (marbleCoreApiClient: MarbleCoreApi) => InboxRepository;
+  getEditorRepository: (marbleCoreApiClient: MarbleCoreApi) => EditorRepository;
+  getDecisionRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => DecisionRepository;
+  getCaseRepository: (marbleCoreApiClient: MarbleCoreApi) => CaseRepository;
   getOrganizationRepository: (
-    marbleApiClient: MarbleApi,
+    marbleCoreApiClient: MarbleCoreApi,
     organizationId: string,
   ) => OrganizationRepository;
-  getScenarioRepository: (marbleApiClient: MarbleApi) => ScenarioRepository;
+  getScenarioRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => ScenarioRepository;
   getScenarioIterationRuleRepository: (
-    marbleApiClient: MarbleApi,
+    marbleCoreApiClient: MarbleCoreApi,
   ) => ScenarioIterationRuleRepository;
-  getDataModelRepository: (marbleApiClient: MarbleApi) => DataModelRepository;
-  getApiKeyRepository: (marbleApiClient: MarbleApi) => ApiKeyRepository;
-  getAnalyticsRepository: (marbleApiClient: MarbleApi) => AnalyticsRepository;
-  getTransferRepository: (marbleApiClient: MarbleApi) => TransferRepository;
+  getDataModelRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => DataModelRepository;
+  getApiKeyRepository: (marbleCoreApiClient: MarbleCoreApi) => ApiKeyRepository;
+  getAnalyticsRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => AnalyticsRepository;
+  getTransferRepository: (
+    transfercheckApi: TransfercheckApi,
+  ) => TransferRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   csrfService: CSRF;
 }
 
 export function makeAuthenticationServerService({
-  getMarbleAPIClientWithAuth,
+  getMarbleCoreAPIClientWithAuth,
+  getTransfercheckAPIClientWithAuth,
   getUserRepository,
   getInboxRepository,
   getEditorRepository,
@@ -128,15 +147,14 @@ export function makeAuthenticationServerService({
   authSessionService,
   csrfService,
 }: MakeAuthenticationServerServiceArgs) {
-  function getMarbleAPIClient(marbleAccessToken: string) {
-    const tokenService = {
+  function getTokenService(marbleAccessToken: string) {
+    return {
       getToken: () => Promise.resolve(marbleAccessToken),
       refreshToken: () => {
         // We don't handle refresh for now, force a logout when 401 is returned instead
         throw redirect(getRoute('/ressources/auth/logout'));
       },
     };
-    return getMarbleAPIClientWithAuth(tokenService);
   }
 
   async function authenticate(
@@ -154,15 +172,18 @@ export function makeAuthenticationServerService({
       const { idToken } = await parseForm(request, schema);
       await csrfService.validate(request);
 
-      const marbleToken = await marbleApi.postToken(
+      const marbleToken = await marblecoreApi.postToken(
         {
           authorization: `Bearer ${idToken}`,
         },
         { baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER') },
       );
 
-      const apiClient = getMarbleAPIClient(marbleToken.access_token);
-      const user = await getUserRepository(apiClient).getCurrentUser();
+      const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(
+        getTokenService(marbleToken.access_token),
+      );
+      const user =
+        await getUserRepository(marbleCoreApiClient).getCurrentUser();
 
       authSession.set('authToken', marbleToken);
       authSession.set('user', user);
@@ -199,15 +220,18 @@ export function makeAuthenticationServerService({
       );
       await csrfService.validate(request);
 
-      const marbleToken = await marbleApi.postToken(
+      const marbleToken = await marblecoreApi.postToken(
         {
           authorization: `Bearer ${idToken}`,
         },
         { baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER') },
       );
 
-      const apiClient = getMarbleAPIClient(marbleToken.access_token);
-      const user = await getUserRepository(apiClient).getCurrentUser();
+      const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(
+        getTokenService(marbleToken.access_token),
+      );
+      const user =
+        await getUserRepository(marbleCoreApiClient).getCurrentUser();
 
       authSession.set('authToken', marbleToken);
       authSession.set('user', user);
@@ -272,23 +296,29 @@ export function makeAuthenticationServerService({
 
     if (options.successRedirect) throw redirect(options.successRedirect);
 
-    const apiClient = getMarbleAPIClient(marbleToken.access_token);
+    const tokenService = getTokenService(marbleToken.access_token);
+    const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(tokenService);
+    const transfercheckAPIClient =
+      getTransfercheckAPIClientWithAuth(tokenService);
 
     return {
-      apiClient,
-      editor: getEditorRepository(apiClient),
-      decision: getDecisionRepository(apiClient),
-      cases: getCaseRepository(apiClient),
-      scenario: getScenarioRepository(apiClient),
+      apiClient: marbleCoreApiClient,
+      editor: getEditorRepository(marbleCoreApiClient),
+      decision: getDecisionRepository(marbleCoreApiClient),
+      cases: getCaseRepository(marbleCoreApiClient),
+      scenario: getScenarioRepository(marbleCoreApiClient),
       scenarioIterationRuleRepository:
-        getScenarioIterationRuleRepository(apiClient),
-      organization: getOrganizationRepository(apiClient, user.organizationId),
-      dataModelRepository: getDataModelRepository(apiClient),
-      apiKey: getApiKeyRepository(apiClient),
-      analytics: getAnalyticsRepository(apiClient),
-      transferRepository: getTransferRepository(apiClient),
+        getScenarioIterationRuleRepository(marbleCoreApiClient),
+      organization: getOrganizationRepository(
+        marbleCoreApiClient,
+        user.organizationId,
+      ),
+      dataModelRepository: getDataModelRepository(marbleCoreApiClient),
+      apiKey: getApiKeyRepository(marbleCoreApiClient),
+      analytics: getAnalyticsRepository(marbleCoreApiClient),
+      transferRepository: getTransferRepository(transfercheckAPIClient),
       user,
-      inbox: getInboxRepository(apiClient),
+      inbox: getInboxRepository(marbleCoreApiClient),
     };
   }
 

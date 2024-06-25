@@ -6,7 +6,8 @@ import {
   type Config,
   GENERATED_FOLDER,
   licenseApiConfig,
-  marbleApiConfig,
+  marbleCoreApiConfig,
+  transfercheckApiConfig,
 } from './config';
 
 async function openapiGenerator({
@@ -33,8 +34,9 @@ async function main() {
     await rm(GENERATED_FOLDER, { recursive: true, force: true });
     await mkdir(GENERATED_FOLDER);
 
-    await openapiGenerator(marbleApiConfig);
+    await openapiGenerator(marbleCoreApiConfig);
     await openapiGenerator(licenseApiConfig);
+    await openapiGenerator(transfercheckApiConfig);
   } catch (error) {
     console.error('\n', error);
     process.exit(1);

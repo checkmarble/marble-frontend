@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptCreateScenarioIterationRuleBodyDto,
   adaptScenarioIterationRule,
@@ -23,30 +23,33 @@ export interface ScenarioIterationRuleRepository {
 }
 
 export function makeGetScenarioIterationRuleRepository() {
-  return (marbleApiClient: MarbleApi): ScenarioIterationRuleRepository => ({
+  return (
+    marbleCoreApiClient: MarbleCoreApi,
+  ): ScenarioIterationRuleRepository => ({
     listRules: async (args) => {
-      const rules = await marbleApiClient.listScenarioIterationRules(args);
+      const rules = await marbleCoreApiClient.listScenarioIterationRules(args);
       return rules.map(adaptScenarioIterationRule);
     },
     getRule: async ({ ruleId }) => {
-      const { rule } = await marbleApiClient.getScenarioIterationRule(ruleId);
+      const { rule } =
+        await marbleCoreApiClient.getScenarioIterationRule(ruleId);
       return adaptScenarioIterationRule(rule);
     },
     createRule: async (args) => {
-      const { rule } = await marbleApiClient.createScenarioIterationRule(
+      const { rule } = await marbleCoreApiClient.createScenarioIterationRule(
         adaptCreateScenarioIterationRuleBodyDto(args),
       );
       return adaptScenarioIterationRule(rule);
     },
     updateRule: async (args) => {
-      const { rule } = await marbleApiClient.updateScenarioIterationRule(
+      const { rule } = await marbleCoreApiClient.updateScenarioIterationRule(
         args.ruleId,
         adaptUpdateScenarioIterationRuleBodyDto(args),
       );
       return adaptScenarioIterationRule(rule);
     },
     deleteRule: async ({ ruleId }) => {
-      await marbleApiClient.deleteScenarioIterationRule(ruleId);
+      await marbleCoreApiClient.deleteScenarioIterationRule(ruleId);
     },
   });
 }

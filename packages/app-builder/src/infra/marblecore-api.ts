@@ -1,6 +1,6 @@
 import {
   fetchWithAuthMiddleware,
-  marbleApi,
+  marblecoreApi,
   type TokenService,
 } from 'marble-api';
 import * as R from 'remeda';
@@ -10,17 +10,17 @@ type FunctionKeys<T> = {
   [P in keyof T]: T[P] extends Function ? P : never;
 }[keyof T];
 
-export type MarbleApi = {
-  [P in FunctionKeys<typeof marbleApi>]: (typeof marbleApi)[P];
+export type MarbleCoreApi = {
+  [P in FunctionKeys<typeof marblecoreApi>]: (typeof marblecoreApi)[P];
 };
 
-function getMarbleAPIClient({
+function getMarbleCoreAPIClient({
   tokenService,
   baseUrl,
 }: {
   baseUrl: string;
   tokenService?: TokenService<string>;
-}): MarbleApi {
+}): MarbleCoreApi {
   const fetch = tokenService
     ? fetchWithAuthMiddleware({
         tokenService,
@@ -32,7 +32,7 @@ function getMarbleAPIClient({
     : undefined;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { defaults, servers, ...api } = marbleApi;
+  const { defaults, servers, ...api } = marblecoreApi;
 
   //@ts-expect-error can't infer args
   return R.mapValues(api, (value) => (...args) => {
@@ -42,17 +42,21 @@ function getMarbleAPIClient({
   });
 }
 
-export type GetMarbleAPIClientWithAuth = (
+export type GetMarbleCoreAPIClientWithAuth = (
   tokenService: TokenService<string>,
-) => MarbleApi;
+) => MarbleCoreApi;
 
-export function initializeMarbleAPIClient({ baseUrl }: { baseUrl: string }): {
-  marbleApiClient: MarbleApi;
-  getMarbleAPIClientWithAuth: GetMarbleAPIClientWithAuth;
+export function initializeMarbleCoreAPIClient({
+  baseUrl,
+}: {
+  baseUrl: string;
+}): {
+  marbleCoreApiClient: MarbleCoreApi;
+  getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
 } {
   return {
-    marbleApiClient: getMarbleAPIClient({ baseUrl }),
-    getMarbleAPIClientWithAuth: (tokenService: TokenService<string>) =>
-      getMarbleAPIClient({ tokenService, baseUrl }),
+    marbleCoreApiClient: getMarbleCoreAPIClient({ baseUrl }),
+    getMarbleCoreAPIClientWithAuth: (tokenService: TokenService<string>) =>
+      getMarbleCoreAPIClient({ tokenService, baseUrl }),
   };
 }

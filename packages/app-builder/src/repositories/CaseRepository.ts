@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { adaptCaseDetailDto, type CaseDetail } from '@app-builder/models/cases';
 import {
   adaptPagination,
@@ -43,7 +43,7 @@ export interface CaseRepository {
 }
 
 export function makeGetCaseRepository() {
-  return (marbleApiClient: MarbleApi): CaseRepository => ({
+  return (marbleCoreApiClient: MarbleCoreApi): CaseRepository => ({
     listCases: async ({ dateRange, inboxIds, statuses, ...rest }) => {
       let startDate, endDate: string | undefined;
       if (dateRange?.type === 'static') {
@@ -56,7 +56,7 @@ export function makeGetCaseRepository() {
         startDate = add(new Date(), fromNowDuration).toISOString();
       }
 
-      const { items, ...pagination } = await marbleApiClient.listCases({
+      const { items, ...pagination } = await marbleCoreApiClient.listCases({
         startDate,
         endDate,
         inboxId: inboxIds,
@@ -70,19 +70,19 @@ export function makeGetCaseRepository() {
       };
     },
     getCase: async ({ caseId }) => {
-      const result = await marbleApiClient.getCase(caseId);
+      const result = await marbleCoreApiClient.getCase(caseId);
       return adaptCaseDetailDto(result);
     },
     updateCase: async ({ caseId, body }) => {
-      const result = await marbleApiClient.updateCase(caseId, body);
+      const result = await marbleCoreApiClient.updateCase(caseId, body);
       return adaptCaseDetailDto(result.case);
     },
     addComment: async ({ caseId, body }) => {
-      const result = await marbleApiClient.addCommentToCase(caseId, body);
+      const result = await marbleCoreApiClient.addCommentToCase(caseId, body);
       return adaptCaseDetailDto(result.case);
     },
     setTags: async ({ caseId, tagIds }) => {
-      const result = await marbleApiClient.updateTagsForCase(caseId, {
+      const result = await marbleCoreApiClient.updateTagsForCase(caseId, {
         tag_ids: tagIds,
       });
       return adaptCaseDetailDto(result.case);

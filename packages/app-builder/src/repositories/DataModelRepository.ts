@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptCreatePivotInputDto,
   adaptCreateTableFieldDto,
@@ -29,34 +29,36 @@ export interface DataModelRepository {
 }
 
 export function makeGetDataModelRepository() {
-  return (marbleApiClient: MarbleApi): DataModelRepository => ({
+  return (marbleCoreApiClient: MarbleCoreApi): DataModelRepository => ({
     getDataModel: async () => {
-      const { data_model } = await marbleApiClient.getDataModel();
+      const { data_model } = await marbleCoreApiClient.getDataModel();
 
       return adaptDataModel(data_model);
     },
     getOpenApiSpec: async () => {
-      return marbleApiClient.getDataModelOpenApi();
+      return marbleCoreApiClient.getDataModelOpenApi();
     },
     postDataModelTableField: async (tableId, createFieldInput) => {
-      await marbleApiClient.postDataModelTableField(
+      await marbleCoreApiClient.postDataModelTableField(
         tableId,
         adaptCreateTableFieldDto(createFieldInput),
       );
     },
     patchDataModelField: async (tableId, updateFieldInput) => {
-      await marbleApiClient.patchDataModelField(
+      await marbleCoreApiClient.patchDataModelField(
         tableId,
         adaptUpdateFieldDto(updateFieldInput),
       );
     },
     listPivots: async ({ tableId }) => {
-      const { pivots } = await marbleApiClient.listDataModelPivots({ tableId });
+      const { pivots } = await marbleCoreApiClient.listDataModelPivots({
+        tableId,
+      });
 
       return pivots.map(adaptPivot);
     },
     createPivot: async (pivotInput) => {
-      const { pivot } = await marbleApiClient.createDataModelPivot(
+      const { pivot } = await marbleCoreApiClient.createDataModelPivot(
         adaptCreatePivotInputDto(pivotInput),
       );
 

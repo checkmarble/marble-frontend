@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type TransfercheckApi } from '@app-builder/infra/transfercheck-api';
 import {
   adaptTransfer,
   type Transfer,
@@ -15,20 +15,20 @@ export interface TransferRepository {
 }
 
 export function makeGetTransferRepository() {
-  return (marbleApiClient: MarbleApi): TransferRepository => ({
+  return (transfercheckApi: TransfercheckApi): TransferRepository => ({
     listTransfers: async ({ partnerTransferId }) => {
       const { transfers } =
-        await marbleApiClient.listTransfers(partnerTransferId);
+        await transfercheckApi.listTransfers(partnerTransferId);
 
       return transfers.map(adaptTransfer);
     },
     getTransfer: async ({ transferId }) => {
-      const { transfer } = await marbleApiClient.getTransfer(transferId);
+      const { transfer } = await transfercheckApi.getTransfer(transferId);
 
       return adaptTransfer(transfer);
     },
     updateTransfer: async ({ transferId, transferUpdateBody }) => {
-      const { transfer } = await marbleApiClient.updateTransfer(
+      const { transfer } = await transfercheckApi.updateTransfer(
         transferId,
         transferUpdateBody,
       );

@@ -1,5 +1,5 @@
 /**
- * Marble API
+ * Marble Core API
  * 1.0.0
  * DO NOT MODIFY - This file has been generated using oazapfts.
  * See https://www.npmjs.com/package/oazapfts
@@ -579,33 +579,6 @@ export type CreateInboxBodyDto = {
 export type AddInboxUserBodyDto = {
     user_id: string;
     role: string;
-};
-export type TransferDataDto = {
-    beneficiary_bic: string;
-    beneficiary_iban: string;
-    beneficiary_name: string;
-    created_at: string;
-    currency: string;
-    label: string;
-    sender_account_id: string;
-    sender_bic: string;
-    sender_device: string;
-    sender_ip: string;
-    status: "neutral" | "suspected_fraud" | "confirmed_fraud";
-    timezone: string;
-    transfer_id: string;
-    transfer_requested_at: string;
-    updated_at: string;
-    value: number;
-};
-export type TransferDto = {
-    id: string;
-    last_scored_at?: string | null;
-    score?: number | null;
-    transfer_data: TransferDataDto;
-};
-export type TransferUpdateBodyDto = {
-    status: "neutral" | "suspected_fraud" | "confirmed_fraud";
 };
 /**
  * Get an access token
@@ -2522,74 +2495,4 @@ export function deleteInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts
         ...opts,
         method: "DELETE"
     }));
-}
-/**
- * List transfers
- */
-export function listTransfers(transferId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            transfers: TransferDto[];
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/transfers${QS.query(QS.explode({
-        transfer_id: transferId
-    }))}`, {
-        ...opts
-    }));
-}
-/**
- * Get a transfer by id
- */
-export function getTransfer(transferId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            transfer: TransferDto;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/transfers/${encodeURIComponent(transferId)}`, {
-        ...opts
-    }));
-}
-/**
- * Update a transfer
- */
-export function updateTransfer(transferId: string, transferUpdateBodyDto: TransferUpdateBodyDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            transfer: TransferDto;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/transfers/${encodeURIComponent(transferId)}`, oazapfts.json({
-        ...opts,
-        method: "PATCH",
-        body: transferUpdateBodyDto
-    })));
 }
