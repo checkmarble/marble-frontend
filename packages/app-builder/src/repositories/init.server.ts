@@ -20,6 +20,7 @@ import {
   getToastStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepositories';
+import { makeGetTransferAlertRepository } from './TransferAlertRepository';
 import { makeGetTransferRepository } from './TransferRepository';
 import { makeGetUserRepository } from './UserRepository';
 
@@ -60,6 +61,7 @@ export function makeServerRepositories({
     getAnalyticsRepository: makeGetAnalyticsRepository(),
     getTransferRepository: makeGetTransferRepository(),
     getPartnerRepository: makeGetPartnerRepository(),
+    getTransferAlertRepository: makeGetTransferAlertRepository(),
     licenseRepository: getLicenseRepository(licenseAPIClient, devEnvironment),
   };
 }

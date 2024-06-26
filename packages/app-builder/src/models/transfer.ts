@@ -3,6 +3,8 @@ import {
   type TransferDto,
 } from 'marble-api/generated/transfercheck-api';
 
+export type TransferStatus = 'neutral' | 'suspected_fraud' | 'confirmed_fraud';
+
 export interface TransferData {
   beneficiaryBic: string;
   beneficiaryIban: string;
@@ -14,7 +16,7 @@ export interface TransferData {
   senderBic: string;
   senderDevice: string;
   senderIp: string;
-  status: 'neutral' | 'suspected_fraud' | 'confirmed_fraud';
+  status: TransferStatus;
   timezone: string;
   partnerTransferId: string;
   transferRequestedAt: string;
@@ -62,5 +64,5 @@ export function adaptTransfer(transferDto: TransferDto): Transfer {
 }
 
 export interface TransferUpdateBody {
-  status: 'neutral' | 'suspected_fraud' | 'confirmed_fraud';
+  status: TransferStatus;
 }

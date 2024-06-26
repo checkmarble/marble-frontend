@@ -23,6 +23,7 @@ import { type OrganizationRepository } from '@app-builder/repositories/Organizat
 import { type PartnerRepository } from '@app-builder/repositories/PartnerRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
+import { type TransferAlertRepository } from '@app-builder/repositories/TransferAlertRepository';
 import { type TransferRepository } from '@app-builder/repositories/TransferRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { getServerEnv } from '@app-builder/utils/environment';
@@ -49,6 +50,7 @@ interface AuthenticatedInfo {
   analytics: AnalyticsRepository;
   transferRepository: TransferRepository;
   partnerRepository: PartnerRepository;
+  transferAlertRepository: TransferAlertRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   scenarioIterationRuleRepository: ScenarioIterationRuleRepository;
@@ -130,6 +132,10 @@ interface MakeAuthenticationServerServiceArgs {
   getPartnerRepository: (
     transfercheckApi: TransfercheckApi,
   ) => PartnerRepository;
+  getTransferAlertRepository: (
+    transfercheckApi: TransfercheckApi,
+    partnerId?: string,
+  ) => TransferAlertRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   csrfService: CSRF;
 }
@@ -150,6 +156,7 @@ export function makeAuthenticationServerService({
   getAnalyticsRepository,
   getTransferRepository,
   getPartnerRepository,
+  getTransferAlertRepository,
   authSessionService,
   csrfService,
 }: MakeAuthenticationServerServiceArgs) {
@@ -324,6 +331,10 @@ export function makeAuthenticationServerService({
       analytics: getAnalyticsRepository(marbleCoreApiClient),
       transferRepository: getTransferRepository(transfercheckAPIClient),
       partnerRepository: getPartnerRepository(transfercheckAPIClient),
+      transferAlertRepository: getTransferAlertRepository(
+        transfercheckAPIClient,
+        user.partnerId,
+      ),
       user,
       inbox: getInboxRepository(marbleCoreApiClient),
     };
