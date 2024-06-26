@@ -234,7 +234,7 @@ export function useMarbleCoreResources() {
       return t('navigation:scenarios');
     if (location.pathname.startsWith(getRoute('/lists/')))
       return t('navigation:lists');
-    if (location.pathname.startsWith(getRoute('/workflows/')))
+    if (location.pathname.startsWith(getRoute('/workflows')))
       return t('navigation:workflows');
     if (location.pathname.startsWith(getRoute('/data')))
       return t('navigation:data');

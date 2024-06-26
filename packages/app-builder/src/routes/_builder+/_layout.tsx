@@ -168,7 +168,7 @@ export default function Builder() {
                       <li>
                         <SidebarLink
                           labelTKey="navigation:workflows"
-                          to={getRoute('/workflows/')}
+                          to={getRoute('/workflows')}
                           Icon={(props) => (
                             <Icon icon="rule-settings" {...props} />
                           )}

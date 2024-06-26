@@ -221,15 +221,21 @@ export const routes = [
             "file": "routes/_builder+/upload+/$objectType.tsx"
           },
           {
-            "id": "routes/_builder+/workflows+/$scenarioId",
-            "path": "workflows/:scenarioId",
-            "file": "routes/_builder+/workflows+/$scenarioId.tsx"
-          },
-          {
-            "id": "routes/_builder+/workflows+/_index",
-            "index": true,
-            "path": "workflows/",
-            "file": "routes/_builder+/workflows+/_index.tsx"
+            "id": "routes/_builder+/workflows+/_layout",
+            "path": "workflows",
+            "file": "routes/_builder+/workflows+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/workflows+/$scenarioId",
+                "path": ":scenarioId",
+                "file": "routes/_builder+/workflows+/$scenarioId.tsx"
+              },
+              {
+                "id": "routes/_builder+/workflows+/_index",
+                "index": true,
+                "file": "routes/_builder+/workflows+/_index.tsx"
+              }
+            ]
           }
         ]
       },
@@ -497,6 +503,17 @@ export const routes = [
             "id": "routes/transfercheck+/_index",
             "index": true,
             "file": "routes/transfercheck+/_index.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/alerts+/$alertId",
+            "path": "alerts/:alertId",
+            "file": "routes/transfercheck+/alerts+/$alertId.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/alerts+/_index",
+            "index": true,
+            "path": "alerts/",
+            "file": "routes/transfercheck+/alerts+/_index.tsx"
           },
           {
             "id": "routes/transfercheck+/transfers+/$transferId",
