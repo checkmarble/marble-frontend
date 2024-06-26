@@ -48,6 +48,7 @@ export type TransferDataDto = {
     currency: string;
     label: string;
     sender_account_id: string;
+    sender_account_type: "physical_person" | "moral_person";
     sender_bic: string;
     sender_device: string;
     sender_ip: string;

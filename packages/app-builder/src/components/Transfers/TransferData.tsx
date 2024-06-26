@@ -17,6 +17,7 @@ interface TransferDataProps {
   currency: string;
   label: string;
   senderAccountId: string;
+  senderAccountType: string;
   senderBic: string;
   senderDevice: string;
   senderIp: string;
@@ -108,6 +109,14 @@ export function TransferData(props: TransferDataProps) {
             </td>
             <td className="text-grey-100 text-s border-grey-10 border-t p-4">
               {props.senderAccountId}
+            </td>
+          </tr>
+          <tr>
+            <td className="text-grey-50 text-s border-grey-10 border-t p-4">
+              Account Type
+            </td>
+            <td className="text-grey-100 text-s border-grey-10 border-t p-4">
+              {props.senderAccountType}
             </td>
           </tr>
           <tr>
