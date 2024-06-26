@@ -11,6 +11,7 @@ import { makeGetEditorRepository } from './EditorRepository';
 import { makeGetInboxRepository } from './InboxRepository';
 import { getLicenseRepository } from './LicenseRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
+import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
 import { makeGetScenarioRepository } from './ScenarioRepository';
 import {
@@ -58,6 +59,7 @@ export function makeServerRepositories({
     getApiKeyRepository: makeGetApiKeyRepository(),
     getAnalyticsRepository: makeGetAnalyticsRepository(),
     getTransferRepository: makeGetTransferRepository(),
+    getPartnerRepository: makeGetPartnerRepository(),
     licenseRepository: getLicenseRepository(licenseAPIClient, devEnvironment),
   };
 }

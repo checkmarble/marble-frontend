@@ -1,6 +1,7 @@
 import { type ParseKeys } from 'i18next';
 import { type CredentialsDto, type UserDto } from 'marble-api';
 import * as R from 'remeda';
+import { type RequiredKeys } from 'typescript-utils';
 
 export interface CurrentUser {
   organizationId: string;
@@ -85,8 +86,10 @@ export const isAdmin = (user: CurrentUser) => user.role === 'ADMIN';
 export const isMarbleAdmin = (user: CurrentUser) =>
   user.role === 'MARBLE_ADMIN';
 
-export const isTransferCheckUser = (user: CurrentUser) =>
-  ['TRANSFER_CHECK_USER'].includes(user.role);
+export const isTransferCheckUser = (
+  user: CurrentUser,
+): user is RequiredKeys<CurrentUser, 'partnerId'> =>
+  ['TRANSFER_CHECK_USER'].includes(user.role) && !!user.partnerId;
 
 export const isMarbleCoreUser = (user: CurrentUser) =>
   ['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'].includes(user.role);

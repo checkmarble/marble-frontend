@@ -14,6 +14,11 @@ const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
     localDevlopmentServer: "http://localhost:8080"
 };
+export type PartnerDto = {
+    id: string;
+    created_at: string;
+    name: string;
+};
 export type Token = {
     access_token: string;
     token_type: string;
@@ -61,6 +66,28 @@ export type TransferDto = {
 export type TransferUpdateBodyDto = {
     status: "neutral" | "suspected_fraud" | "confirmed_fraud";
 };
+/**
+ * Get a partner
+ */
+export function getPartner(partnerId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            partner: PartnerDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/partners/${encodeURIComponent(partnerId)}`, {
+        ...opts
+    }));
+}
 /**
  * Get an access token
  */

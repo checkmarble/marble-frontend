@@ -4,12 +4,48 @@ info:
   title: 'Transfercheck API'
   description: 'Consume Transfercheck endpoints'
 tags:
+  - name: Partners
+    description: Operations about partners.
   - name: Transfers
     description: Operations about transfers.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
 paths:
+  /partners/{partnerId}:
+    get:
+      tags:
+        - Partners
+      summary: Get a partner
+      description: Get a partner by database ID
+      operationId: getPartner
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: partnerId
+          description: ID of the partner in the database
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Partner corresponding to the provided `partnerId`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  partner:
+                    $ref: '#/components/schemas/PartnerDto'
+                required:
+                  - partner
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /token:
     post:
       tags:
@@ -220,6 +256,21 @@ components:
               type: array
               items:
                 type: string
+    PartnerDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+      required:
+        - id
+        - created_at
+        - name
     TransferUpdateBodyDto:
       type: object
       properties:

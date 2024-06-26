@@ -20,6 +20,7 @@ import { type DecisionRepository } from '@app-builder/repositories/DecisionRepos
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
+import { type PartnerRepository } from '@app-builder/repositories/PartnerRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type TransferRepository } from '@app-builder/repositories/TransferRepository';
@@ -47,6 +48,7 @@ interface AuthenticatedInfo {
   apiKey: ApiKeyRepository;
   analytics: AnalyticsRepository;
   transferRepository: TransferRepository;
+  partnerRepository: PartnerRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   scenarioIterationRuleRepository: ScenarioIterationRuleRepository;
@@ -125,6 +127,9 @@ interface MakeAuthenticationServerServiceArgs {
   getTransferRepository: (
     transfercheckApi: TransfercheckApi,
   ) => TransferRepository;
+  getPartnerRepository: (
+    transfercheckApi: TransfercheckApi,
+  ) => PartnerRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   csrfService: CSRF;
 }
@@ -144,6 +149,7 @@ export function makeAuthenticationServerService({
   getApiKeyRepository,
   getAnalyticsRepository,
   getTransferRepository,
+  getPartnerRepository,
   authSessionService,
   csrfService,
 }: MakeAuthenticationServerServiceArgs) {
@@ -317,6 +323,7 @@ export function makeAuthenticationServerService({
       apiKey: getApiKeyRepository(marbleCoreApiClient),
       analytics: getAnalyticsRepository(marbleCoreApiClient),
       transferRepository: getTransferRepository(transfercheckAPIClient),
+      partnerRepository: getPartnerRepository(transfercheckAPIClient),
       user,
       inbox: getInboxRepository(marbleCoreApiClient),
     };

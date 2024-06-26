@@ -123,6 +123,7 @@ export function useEmailAndPasswordSignIn({
             throw new NetworkRequestFailed();
         }
       }
+      throw error;
     }
   };
 }
