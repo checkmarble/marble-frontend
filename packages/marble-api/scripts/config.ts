@@ -10,10 +10,10 @@ export interface Config {
 
 export const GENERATED_FOLDER = join('src', 'generated');
 
-export const marbleApiConfig: Config = {
-  apiName: 'Marble API',
-  apiSpec: join('openapis', 'marble-api.yaml'),
-  generatedApi: join(GENERATED_FOLDER, 'marble-api.ts'),
+export const marbleCoreApiConfig: Config = {
+  apiName: 'Marble Core API',
+  apiSpec: join('openapis', 'marblecore-api.yaml'),
+  generatedApi: join(GENERATED_FOLDER, 'marblecore-api.ts'),
   apiOptions: {
     optimistic: true,
     useEnumType: false,
@@ -26,6 +26,18 @@ export const licenseApiConfig: Config = {
   apiName: 'License API',
   apiSpec: join('openapis', 'license-api.yaml'),
   generatedApi: join(GENERATED_FOLDER, 'license-api.ts'),
+  apiOptions: {
+    optimistic: true,
+    useEnumType: false,
+    unionUndefined: false,
+    mergeReadWriteOnly: true,
+  },
+};
+
+export const transfercheckApiConfig: Config = {
+  apiName: 'Transfercheck API',
+  apiSpec: join('openapis', 'transfercheck-api.yaml'),
+  generatedApi: join(GENERATED_FOLDER, 'transfercheck-api.ts'),
   apiOptions: {
     optimistic: true,
     useEnumType: false,

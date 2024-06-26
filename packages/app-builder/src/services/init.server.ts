@@ -1,5 +1,6 @@
 import { initializeLicenseAPIClient } from '@app-builder/infra/license-api';
-import { initializeMarbleAPIClient } from '@app-builder/infra/marble-api';
+import { initializeMarbleCoreAPIClient } from '@app-builder/infra/marblecore-api';
+import { initializeTransfercheckAPIClient } from '@app-builder/infra/transfercheck-api';
 import {
   makeServerRepositories,
   type ServerRepositories,
@@ -54,9 +55,14 @@ function initServerServices() {
   const devEnvironment =
     getServerEnv('FIREBASE_AUTH_EMULATOR_HOST') !== undefined;
 
-  const { getMarbleAPIClientWithAuth } = initializeMarbleAPIClient({
+  const { getMarbleCoreAPIClientWithAuth } = initializeMarbleCoreAPIClient({
     baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
   });
+
+  const { getTransfercheckAPIClientWithAuth } =
+    initializeTransfercheckAPIClient({
+      baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+    });
 
   const { licenseAPIClient } = initializeLicenseAPIClient({
     baseUrl: 'https://api.checkmarble.com',
@@ -65,7 +71,8 @@ function initServerServices() {
   const serverRepositories = makeServerRepositories({
     devEnvironment,
     licenseAPIClient,
-    getMarbleAPIClientWithAuth,
+    getMarbleCoreAPIClientWithAuth,
+    getTransfercheckAPIClientWithAuth,
     sessionStorageRepositoryOptions: {
       maxAge: Number(getServerEnv('SESSION_MAX_AGE')),
       secrets: [getServerEnv('SESSION_SECRET')],

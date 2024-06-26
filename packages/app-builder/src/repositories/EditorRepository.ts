@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptAstNode,
   type DatabaseAccessAstNode,
@@ -21,10 +21,10 @@ export interface EditorRepository {
 }
 
 export function makeGetEditorRepository() {
-  return (marbleApiClient: MarbleApi): EditorRepository => ({
+  return (marbleCoreApiClient: MarbleCoreApi): EditorRepository => ({
     listAccessors: async ({ scenarioId }) => {
       const { database_accessors, payload_accessors } =
-        await marbleApiClient.listIdentifiers(scenarioId);
+        await marbleCoreApiClient.listIdentifiers(scenarioId);
       const databaseAccessors = database_accessors
         .map(adaptAstNode)
         .filter((node): node is DatabaseAccessAstNode => {
@@ -49,7 +49,7 @@ export function makeGetEditorRepository() {
     },
     listOperators: async ({ scenarioId }) => {
       const { operators_accessors } =
-        await marbleApiClient.listOperators(scenarioId);
+        await marbleCoreApiClient.listOperators(scenarioId);
 
       const operatorFunctions = R.pipe(
         operators_accessors,

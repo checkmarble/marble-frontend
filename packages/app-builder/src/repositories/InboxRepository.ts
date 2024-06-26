@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptInbox,
   adaptInboxUser,
@@ -16,23 +16,23 @@ export interface InboxRepository {
 }
 
 export function makeGetInboxRepository() {
-  return (marbleApiClient: MarbleApi): InboxRepository => ({
+  return (marbleCoreApiClient: MarbleCoreApi): InboxRepository => ({
     listInboxes: async () => {
-      const { inboxes } = await marbleApiClient.listInboxes({
+      const { inboxes } = await marbleCoreApiClient.listInboxes({
         withCaseCount: false,
       });
 
       return R.pipe(inboxes, R.map(adaptInbox), R.sortBy(R.prop('name')));
     },
     listInboxesWithCaseCount: async () => {
-      const { inboxes } = await marbleApiClient.listInboxes({
+      const { inboxes } = await marbleCoreApiClient.listInboxes({
         withCaseCount: true,
       });
 
       return inboxes.map(adaptInboxWithCasesCount);
     },
     listAllInboxUsers: async () => {
-      const { inbox_users } = await marbleApiClient.listAllInboxUsers();
+      const { inbox_users } = await marbleCoreApiClient.listAllInboxUsers();
 
       return inbox_users.map(adaptInboxUser);
     },

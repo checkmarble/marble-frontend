@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { adaptAnalytics, type Analytics } from '@app-builder/models/analytics';
 
 export interface AnalyticsRepository {
@@ -6,9 +6,9 @@ export interface AnalyticsRepository {
 }
 
 export function makeGetAnalyticsRepository() {
-  return (marbleApiClient: MarbleApi): AnalyticsRepository => ({
+  return (marbleCoreApiClient: MarbleCoreApi): AnalyticsRepository => ({
     listAnalytics: async () => {
-      const { analytics } = await marbleApiClient.listAnalytics();
+      const { analytics } = await marbleCoreApiClient.listAnalytics();
 
       return analytics.map(adaptAnalytics);
     },

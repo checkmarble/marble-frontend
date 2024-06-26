@@ -2,7 +2,7 @@ import { type AuthenticationClientRepository } from '@app-builder/repositories/A
 import { getClientEnv } from '@app-builder/utils/environment';
 import { FirebaseError } from 'firebase/app';
 import { AuthErrorCodes } from 'firebase/auth';
-import { marbleApi } from 'marble-api';
+import { marblecoreApi } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { useAuthenticityToken } from 'remix-utils/csrf/react';
 
@@ -123,6 +123,7 @@ export function useEmailAndPasswordSignIn({
             throw new NetworkRequestFailed();
         }
       }
+      throw error;
     }
   };
 }
@@ -207,7 +208,7 @@ export function useBackendInfo({
     try {
       const firebaseIdToken =
         await authenticationClientRepository.firebaseIdToken();
-      const token = await marbleApi.postToken(
+      const token = await marblecoreApi.postToken(
         {
           authorization: `Bearer ${firebaseIdToken}`,
         },

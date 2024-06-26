@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptDecision,
   adaptDecisionDetail,
@@ -45,7 +45,7 @@ export interface DecisionRepository {
 }
 
 export function makeGetDecisionRepository() {
-  return (marbleApiClient: MarbleApi): DecisionRepository => ({
+  return (marbleCoreApiClient: MarbleCoreApi): DecisionRepository => ({
     listDecisions: async ({
       caseId,
       dateRange,
@@ -68,7 +68,7 @@ export function makeGetDecisionRepository() {
         startDate = add(new Date(), fromNowDuration).toISOString();
       }
 
-      const { items, ...pagination } = await marbleApiClient.listDecisions({
+      const { items, ...pagination } = await marbleCoreApiClient.listDecisions({
         caseId,
         endDate,
         hasCase,
@@ -87,7 +87,7 @@ export function makeGetDecisionRepository() {
       };
     },
     getDecisionById: async (id) => {
-      const decisionDetailDto = await marbleApiClient.getDecision(id);
+      const decisionDetailDto = await marbleCoreApiClient.getDecision(id);
       const decision = adaptDecisionDetail(decisionDetailDto);
       decision.rules = decision.rules.sort((lhs, rhs) =>
         lhs.name.localeCompare(rhs.name),

@@ -1,5 +1,6 @@
 import { type LicenseApi } from '@app-builder/infra/license-api';
-import { type GetMarbleAPIClientWithAuth } from '@app-builder/infra/marble-api';
+import { type GetMarbleCoreAPIClientWithAuth } from '@app-builder/infra/marblecore-api';
+import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/transfercheck-api';
 
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';
@@ -10,6 +11,7 @@ import { makeGetEditorRepository } from './EditorRepository';
 import { makeGetInboxRepository } from './InboxRepository';
 import { getLicenseRepository } from './LicenseRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
+import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
 import { makeGetScenarioRepository } from './ScenarioRepository';
 import {
@@ -25,12 +27,14 @@ export function makeServerRepositories({
   devEnvironment,
   sessionStorageRepositoryOptions,
   licenseAPIClient,
-  getMarbleAPIClientWithAuth,
+  getMarbleCoreAPIClientWithAuth,
+  getTransfercheckAPIClientWithAuth,
 }: {
   devEnvironment: boolean;
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
   licenseAPIClient: LicenseApi;
-  getMarbleAPIClientWithAuth: GetMarbleAPIClientWithAuth;
+  getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
+  getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
 }) {
   return {
     authStorageRepository: getAuthStorageRepository(
@@ -40,7 +44,8 @@ export function makeServerRepositories({
     toastStorageRepository: getToastStorageRepository(
       sessionStorageRepositoryOptions,
     ),
-    getMarbleAPIClientWithAuth,
+    getMarbleCoreAPIClientWithAuth,
+    getTransfercheckAPIClientWithAuth,
     getUserRepository: makeGetUserRepository(),
     getInboxRepository: makeGetInboxRepository(),
     getEditorRepository: makeGetEditorRepository(),
@@ -54,6 +59,7 @@ export function makeServerRepositories({
     getApiKeyRepository: makeGetApiKeyRepository(),
     getAnalyticsRepository: makeGetAnalyticsRepository(),
     getTransferRepository: makeGetTransferRepository(),
+    getPartnerRepository: makeGetPartnerRepository(),
     licenseRepository: getLicenseRepository(licenseAPIClient, devEnvironment),
   };
 }

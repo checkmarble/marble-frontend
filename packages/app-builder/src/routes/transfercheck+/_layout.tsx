@@ -46,9 +46,12 @@ import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { user } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { user, partnerRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
 
   if (isMarbleAdmin(user)) {
     throw conflict("Marble Admins can't access the app builder.");
@@ -58,7 +61,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw forbidden('Only TransferCheck users can access TransferCheck.');
   }
 
-  return json({ user });
+  const partner = await partnerRepository.getPartner(user.partnerId);
+
+  return json({ user, partner });
 }
 
 export const handle = {
@@ -69,7 +74,7 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user } = useLoaderData<typeof loader>();
+  const { user, partner } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
 
   // Refresh is done in the JSX because it needs to be done in the browser
@@ -88,7 +93,7 @@ export default function Builder() {
             firstName={user.actorIdentity.firstName}
             lastName={user.actorIdentity.lastName}
             role={user.role}
-            orgOrPartnerName="TODO"
+            orgOrPartnerName={partner.name}
           />
         </div>
         <ScrollArea.Root className="flex flex-1 flex-col" type="auto">

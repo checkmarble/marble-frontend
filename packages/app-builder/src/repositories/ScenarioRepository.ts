@@ -1,4 +1,4 @@
-import { type MarbleApi } from '@app-builder/infra/marble-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptNodeDto,
   adaptScenarioValidation,
@@ -74,58 +74,64 @@ export interface ScenarioRepository {
 }
 
 export function makeGetScenarioRepository() {
-  return (marbleApiClient: MarbleApi): ScenarioRepository => ({
+  return (marbleCoreApiClient: MarbleCoreApi): ScenarioRepository => ({
     listScenarios: async () => {
-      const scenarios = await marbleApiClient.listScenarios();
+      const scenarios = await marbleCoreApiClient.listScenarios();
       return scenarios.map(adaptScenario);
     },
     getScenario: async ({ scenarioId }) => {
-      const scenario = await marbleApiClient.getScenario(scenarioId);
+      const scenario = await marbleCoreApiClient.getScenario(scenarioId);
       return adaptScenario(scenario);
     },
     createScenario: async (args) => {
-      const scenario = await marbleApiClient.createScenario(
+      const scenario = await marbleCoreApiClient.createScenario(
         adaptScenarioCreateInputDto(args),
       );
       return adaptScenario(scenario);
     },
     updateScenario: async ({ scenarioId, name, description }) => {
-      const scenario = await marbleApiClient.updateScenario(scenarioId, {
+      const scenario = await marbleCoreApiClient.updateScenario(scenarioId, {
         name,
         description: description ?? '',
       });
       return adaptScenario(scenario);
     },
     updateScenarioWorkflow: async (scenarioId, args) => {
-      const scenario = await marbleApiClient.updateScenario(
+      const scenario = await marbleCoreApiClient.updateScenario(
         scenarioId,
         adaptScenarioUpdateInputDto(args),
       );
       return adaptScenario(scenario);
     },
     createScenarioIteration: async ({ scenarioId }) => {
-      const scenarioIteration = await marbleApiClient.createScenarioIteration({
-        scenarioId,
-      });
+      const scenarioIteration =
+        await marbleCoreApiClient.createScenarioIteration({
+          scenarioId,
+        });
       return adaptScenarioIteration(scenarioIteration);
     },
     getScenarioIteration: async ({ iterationId }) => {
       const scenarioIteration =
-        await marbleApiClient.getScenarioIteration(iterationId);
+        await marbleCoreApiClient.getScenarioIteration(iterationId);
       return adaptScenarioIteration(scenarioIteration);
     },
     listScenarioIterations: async ({ scenarioId }) => {
-      const dtos = await marbleApiClient.listScenarioIterations({ scenarioId });
+      const dtos = await marbleCoreApiClient.listScenarioIterations({
+        scenarioId,
+      });
       return dtos.map(adaptScenarioIterationSummary);
     },
     validate: async ({ iterationId }) => {
       const { scenario_validation } =
-        await marbleApiClient.validateScenarioIteration(iterationId, undefined);
+        await marbleCoreApiClient.validateScenarioIteration(
+          iterationId,
+          undefined,
+        );
       return adaptScenarioValidation(scenario_validation);
     },
     validateTrigger: async ({ iterationId, trigger }) => {
       const { scenario_validation } =
-        await marbleApiClient.validateScenarioIteration(iterationId, {
+        await marbleCoreApiClient.validateScenarioIteration(iterationId, {
           trigger_or_rule: adaptNodeDto(trigger),
           rule_id: null,
         });
@@ -133,7 +139,7 @@ export function makeGetScenarioRepository() {
     },
     validateRule: async ({ iterationId, rule, ruleId }) => {
       const { scenario_validation } =
-        await marbleApiClient.validateScenarioIteration(iterationId, {
+        await marbleCoreApiClient.validateScenarioIteration(iterationId, {
           trigger_or_rule: adaptNodeDto(rule),
           rule_id: ruleId,
         });
@@ -144,19 +150,19 @@ export function makeGetScenarioRepository() {
     },
     commitScenarioIteration: async ({ iterationId }) => {
       const { iteration } =
-        await marbleApiClient.commitScenarioIteration(iterationId);
+        await marbleCoreApiClient.commitScenarioIteration(iterationId);
       return adaptScenarioIteration(iteration);
     },
     getPublicationPreparationStatus: async ({ iterationId }) => {
       const status =
-        await marbleApiClient.getScenarioPublicationPreparationStatus(
+        await marbleCoreApiClient.getScenarioPublicationPreparationStatus(
           iterationId,
         );
       return adaptScenarioPublicationStatus(status);
     },
     startPublicationPreparation: async ({ iterationId }) => {
       try {
-        await marbleApiClient.startScenarioPublicationPreparation({
+        await marbleCoreApiClient.startScenarioPublicationPreparation({
           scenario_iteration_id: iterationId,
         });
       } catch (error) {
@@ -168,7 +174,7 @@ export function makeGetScenarioRepository() {
     },
     createScenarioPublication: async (args) => {
       try {
-        await marbleApiClient.createScenarioPublication(args);
+        await marbleCoreApiClient.createScenarioPublication(args);
       } catch (error) {
         if (isStatusBadRequestHttpError(error) && isMarbleError(error)) {
           const errorCode = error.data.error_code;
