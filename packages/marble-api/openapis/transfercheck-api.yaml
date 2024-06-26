@@ -8,6 +8,8 @@ tags:
     description: Operations about partners.
   - name: Transfers
     description: Operations about transfers.
+  - name: Alerts
+    description: Operations about alerts.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
@@ -204,6 +206,139 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /transfer/alerts:
+    get:
+      tags:
+        - Alerts
+      summary: List alerts
+      description: List alerts, either from the sender or from the beneficiary partner point of view
+      operationId: listAlerts
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of alerts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TransferAlertDto'
+                required:
+                  - alerts
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Alerts
+      summary: Create an alert
+      operationId: createAlert
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Describe the alert to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransferAlertDto'
+        required: true
+      responses:
+        '200':
+          description: Alert created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alert:
+                    $ref: '#/components/schemas/TransferAlertDto'
+                required:
+                  - alert
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /transfer/alerts/{alertId}:
+    get:
+      tags:
+        - Alerts
+      summary: Get an alert by id
+      operationId: getAlert
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: alertId
+          description: ID of the alert
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Alert corresponding to the provided `alertId`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alert:
+                    $ref: '#/components/schemas/TransferAlertDto'
+                required:
+                  - alert
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    patch:
+      tags:
+        - Alerts
+      summary: Update an alert
+      operationId: updateAlert
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: alertId
+          description: ID of the alert
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Describe the modifications to make to the alert
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTransferAlertDto'
+        required: true
+      responses:
+        '200':
+          description: Updated alert corresponding to the provided `alertId`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alert:
+                    $ref: '#/components/schemas/TransferAlertDto'
+                required:
+                  - alert
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
 components:
   schemas:
     Token:
@@ -271,12 +406,14 @@ components:
         - id
         - created_at
         - name
+    TransferStatusDto:
+      type: string
+      enum: [neutral, suspected_fraud, confirmed_fraud]
     TransferUpdateBodyDto:
       type: object
       properties:
         status:
-          type: string
-          enum: [neutral, suspected_fraud, confirmed_fraud]
+          $ref: '#/components/schemas/TransferStatusDto'
       required:
         - status
     TransferDto:
@@ -322,8 +459,7 @@ components:
         sender_ip:
           type: string
         status:
-          type: string
-          enum: [neutral, suspected_fraud, confirmed_fraud]
+          $ref: '#/components/schemas/TransferStatusDto'
         timezone:
           type: string
         transfer_id:
@@ -353,6 +489,99 @@ components:
         - transfer_requested_at
         - updated_at
         - value
+    TransferAlertStatusDto:
+      type: string
+      enum: [unread, read, archived]
+    TransferAlertDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        transfer_id:
+          type: string
+          format: uuid
+        sender_partner_id:
+          type: string
+          format: uuid
+        beneficiary_partner_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/TransferAlertStatusDto'
+        message:
+          type: string
+        transfer_end_to_end_id:
+          type: string
+        beneficiary_iban:
+          type: string
+          description: in clear, not hashed
+        sender_iban:
+          type: string
+          description: in clear, not hashed or pseudonimized
+      required:
+        - id
+        - transfer_id
+        - sender_partner_id
+        - beneficiary_partner_id
+        - created_at
+        - status
+        - message
+        - transfer_end_to_end_id
+        - beneficiary_iban
+        - sender_iban
+    CreateTransferAlertDto:
+      type: object
+      properties:
+        transfer_id:
+          type: string
+          format: uuid
+        message:
+          type: string
+        transfer_end_to_end_id:
+          type: string
+        beneficiary_iban:
+          type: string
+          description: in clear, not hashed
+        sender_iban:
+          type: string
+          description: in clear, not hashed or pseudonimized
+      required:
+        - transfer_id
+        - message
+        - transfer_end_to_end_id
+        - beneficiary_iban
+        - sender_iban
+    UpdateTransferAlertDto:
+      oneOf:
+        - type: object
+          description: Update for the sender. At least one of the properties must be provided
+          properties:
+            message:
+              type: string
+            transfer_end_to_end_id:
+              type: string
+            beneficiary_iban:
+              type: string
+              description: in clear, not hashed
+            sender_iban:
+              type: string
+              description: in clear, not hashed or pseudonimized
+          required:
+            - message
+            - transfer_end_to_end_id
+            - beneficiary_iban
+            - sender_iban
+        - type: object
+          description: Update for the beneficiary. At least one of the properties must be provided
+          properties:
+            status:
+              $ref: '#/components/schemas/TransferAlertStatusDto'
+          required:
+            - status
   securitySchemes:
     bearerAuth:
       type: http
