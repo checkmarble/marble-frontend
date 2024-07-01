@@ -8,7 +8,7 @@
   "transfer_detail.transfer_status.alert_exists": "An alert has been created for this transfer. <AlertLink>Click here</AlertLink> to see more details.",
   "transfer_detail.transfer_status.alert_not_partner": "Alerts are not available for this transfer. The beneficiary is not a Transfercheck partner.",
   "transfer_detail.transfer_status.neutral": "Alerts are not available for this transfer. The transfer is neutral.",
-  "transfer_detail.transfer_status.create_alert": "Alerts are available for this transfer. <CreateAlert>Click here</CreateAlert> to create an alert.",
+  "transfer_detail.transfer_status.create_alert": "<CreateAlert>Click here</CreateAlert> to create an alert.",
   "transfer_detail.title": "Transfer details",
   "transfer_detail.transfer_status.title": "Transfer status",
   "transfer_detail.transfer_data.title": "Transfer data",
