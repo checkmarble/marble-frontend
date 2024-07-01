@@ -141,7 +141,7 @@ export default function TransferDetailPage() {
         <div className="flex max-w-3xl flex-col gap-4 lg:gap-6">
           <Collapsible.Container className="bg-grey-00 w-full">
             <Collapsible.Title>
-              {t('transfercheck:transfer_detail.transfer_data.title')}
+              {t('transfercheck:transfer_detail.transfer_status.title')}
             </Collapsible.Title>
             <Collapsible.Content>
               <fetcher.Form

@@ -49,6 +49,7 @@ export const iconNames = [
   'minus',
   'more-menu',
   'new-inbox',
+  'notifications',
   'number',
   'play',
   'plus',

@@ -13,6 +13,7 @@ export interface TransferData {
   currency: string;
   label: string;
   senderAccountId: string;
+  senderAccountType: 'physical_person' | 'moral_person';
   senderBic: string;
   senderDevice: string;
   senderIp: string;
@@ -35,6 +36,7 @@ export function adaptTransferData(
     currency: transferDataDto.currency,
     label: transferDataDto.label,
     senderAccountId: transferDataDto.sender_account_id,
+    senderAccountType: transferDataDto.sender_account_type,
     senderBic: transferDataDto.sender_bic,
     senderDevice: transferDataDto.sender_device,
     senderIp: transferDataDto.sender_ip,

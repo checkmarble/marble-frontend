@@ -102,7 +102,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
         : t('workflows:toast.success.create_workflow'),
   });
 
-  return redirect(getRoute('/workflows/'), {
+  return redirect(getRoute('/workflows'), {
     headers: { 'Set-Cookie': await commitSession(session) },
   });
 }

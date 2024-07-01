@@ -17,6 +17,7 @@ interface TransferDataProps {
   currency: string;
   label: string;
   senderAccountId: string;
+  senderAccountType: string;
   senderBic: string;
   senderDevice: string;
   senderIp: string;
@@ -55,20 +56,28 @@ export function TransferData(props: TransferDataProps) {
         </span>
       </Callout>
       <div className="grid w-full grid-cols-[max-content_1fr] gap-2">
-        <span className="text-grey-50 text-s">Label</span>
+        <span className="text-grey-50 text-s first-letter:capitalize">
+          {t('transfercheck:transfer_detail.transfer_data.label')}
+        </span>
         <span className="text-grey-100 text-s">{props.label}</span>
 
-        <span className="text-grey-50 text-s">Currency</span>
+        <span className="text-grey-50 text-s first-letter:capitalize">
+          {t('transfercheck:transfer_detail.transfer_data.currency')}
+        </span>
         <span className="text-grey-100 text-s">{props.currency}</span>
 
-        <span className="text-grey-50 text-s">Value</span>
+        <span className="text-grey-50 text-s first-letter:capitalize">
+          {t('transfercheck:transfer_detail.transfer_data.value')}
+        </span>
         <span className="text-grey-100 text-s">
           {formatNumber(props.value, { language })}
         </span>
       </div>
 
       <div className="grid w-full grid-cols-[max-content_1fr] gap-2">
-        <span className="text-grey-50 text-s">requested at</span>
+        <span className="text-grey-50 text-s first-letter:capitalize">
+          {t('transfercheck:transfer_detail.transfer_data.requested_at')}
+        </span>
         <span className="text-grey-100 text-s">
           {formatDateTime(props.transferRequestedAt, {
             language,
@@ -76,7 +85,9 @@ export function TransferData(props: TransferDataProps) {
           })}
         </span>
 
-        <span className="text-grey-50 text-s">created at</span>
+        <span className="text-grey-50 text-s first-letter:capitalize">
+          {t('transfercheck:transfer_detail.transfer_data.created_at')}
+        </span>
         <span className="text-grey-100 text-s">
           {formatDateTime(props.createdAt, {
             language,
@@ -84,7 +95,9 @@ export function TransferData(props: TransferDataProps) {
           })}
         </span>
 
-        <span className="text-grey-50 text-s">updated at</span>
+        <span className="text-grey-50 text-s first-letter:capitalize">
+          {t('transfercheck:transfer_detail.transfer_data.updated_at')}
+        </span>
         <span className="text-grey-100 text-s">
           {formatDateTime(props.updatedAt, {
             language,
@@ -96,39 +109,50 @@ export function TransferData(props: TransferDataProps) {
       <table className="border-grey-10 h-fit w-full table-auto border-separate border-spacing-0 overflow-hidden rounded-lg border">
         <thead>
           <tr>
-            <th className="bg-grey-02 h-12 px-4" colSpan={2}>
-              Sender
+            <th
+              className="bg-grey-02 h-12 px-4 first-letter:capitalize"
+              colSpan={2}
+            >
+              {t('transfercheck:transfer_detail.transfer_data.sender')}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="text-grey-50 text-s border-grey-10 border-t p-4">
-              Account ID
+            <td className="text-grey-50 text-s border-grey-10 border-t p-4 first-letter:capitalize">
+              {t('transfercheck:transfer_detail.transfer_data.account_id')}
             </td>
             <td className="text-grey-100 text-s border-grey-10 border-t p-4">
               {props.senderAccountId}
             </td>
           </tr>
           <tr>
-            <td className="text-grey-50 text-s border-grey-10 border-t p-4">
-              BIC
+            <td className="text-grey-50 text-s border-grey-10 border-t p-4 first-letter:capitalize">
+              {t('transfercheck:transfer_detail.transfer_data.account_type')}
+            </td>
+            <td className="text-grey-100 text-s border-grey-10 border-t p-4">
+              {props.senderAccountType}
+            </td>
+          </tr>
+          <tr>
+            <td className="text-grey-50 text-s border-grey-10 border-t p-4 capitalize">
+              {t('transfercheck:transfer_detail.transfer_data.bic')}
             </td>
             <td className="text-grey-100 text-s border-grey-10 border-t p-4">
               {props.senderBic}
             </td>
           </tr>
           <tr>
-            <td className="text-grey-50 text-s border-grey-10 border-t p-4">
-              Device
+            <td className="text-grey-50 text-s border-grey-10 border-t p-4 first-letter:capitalize">
+              {t('transfercheck:transfer_detail.transfer_data.device')}
             </td>
             <td className="text-grey-100 text-s border-grey-10 border-t p-4">
               {props.senderDevice}
             </td>
           </tr>
           <tr>
-            <td className="text-grey-50 text-s border-grey-10 border-t p-4">
-              IP
+            <td className="text-grey-50 text-s border-grey-10 border-t p-4 capitalize">
+              {t('transfercheck:transfer_detail.transfer_data.ip')}
             </td>
             <td className="text-grey-100 text-s border-grey-10 border-t p-4">
               {props.senderIp}
@@ -140,23 +164,26 @@ export function TransferData(props: TransferDataProps) {
       <table className="border-grey-10 h-fit w-full table-auto border-separate border-spacing-0 overflow-hidden rounded-lg border">
         <thead>
           <tr>
-            <th className="bg-grey-02 h-12 px-4" colSpan={2}>
-              Beneficiary
+            <th
+              className="bg-grey-02 h-12 px-4 first-letter:capitalize"
+              colSpan={2}
+            >
+              {t('transfercheck:transfer_detail.transfer_data.beneficiary')}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="text-grey-50 text-s border-grey-10 border-t p-4">
-              BIC
+            <td className="text-grey-50 text-s border-grey-10 border-t p-4 capitalize">
+              {t('transfercheck:transfer_detail.transfer_data.bic')}
             </td>
             <td className="text-grey-100 text-s border-grey-10 border-t p-4">
               {props.beneficiaryBic}
             </td>
           </tr>
           <tr>
-            <td className="text-grey-50 text-s border-grey-10 border-t p-4">
-              Name
+            <td className="text-grey-50 text-s border-grey-10 border-t p-4 first-letter:capitalize">
+              {t('transfercheck:transfer_detail.transfer_data.name')}
             </td>
             <td className="text-grey-100 text-s border-grey-10 border-t p-4">
               {props.beneficiaryName}

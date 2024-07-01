@@ -33,8 +33,8 @@ export type RoutePath =
   | '/settings/tags'
   | '/settings/users'
   | '/upload/:objectType'
+  | '/workflows'
   | '/workflows/:scenarioId'
-  | '/workflows/'
   | '/app-router'
   | '/healthcheck'
   | '/ressources/auth/logout'
@@ -86,6 +86,8 @@ export type RoutePath =
   | '/ressources/user/language'
   | '/transfercheck'
   | '/transfercheck/*'
+  | '/transfercheck/alerts/:alertId'
+  | '/transfercheck/alerts/'
   | '/transfercheck/transfers/:transferId'
   | '/transfercheck/transfers/';
 
@@ -131,6 +133,7 @@ export type RouteID =
   | 'routes/_builder+/settings+/tags'
   | 'routes/_builder+/settings+/users'
   | 'routes/_builder+/upload+/$objectType'
+  | 'routes/_builder+/workflows+/_layout'
   | 'routes/_builder+/workflows+/$scenarioId'
   | 'routes/_builder+/workflows+/_index'
   | 'routes/_index'
@@ -186,5 +189,7 @@ export type RouteID =
   | 'routes/transfercheck+/_layout'
   | 'routes/transfercheck+/$'
   | 'routes/transfercheck+/_index'
+  | 'routes/transfercheck+/alerts+/$alertId'
+  | 'routes/transfercheck+/alerts+/_index'
   | 'routes/transfercheck+/transfers+/$transferId'
   | 'routes/transfercheck+/transfers+/_index';
