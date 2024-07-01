@@ -516,6 +516,11 @@ export const routes = [
             "file": "routes/transfercheck+/alerts+/_index.tsx"
           },
           {
+            "id": "routes/transfercheck+/ressources+/alert.create",
+            "path": "ressources/alert/create",
+            "file": "routes/transfercheck+/ressources+/alert.create.tsx"
+          },
+          {
             "id": "routes/transfercheck+/transfers+/$transferId",
             "path": "transfers/:transferId",
             "file": "routes/transfercheck+/transfers+/$transferId.tsx"

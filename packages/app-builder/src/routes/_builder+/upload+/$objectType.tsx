@@ -429,7 +429,7 @@ const LoadingButton = () => {
   const { t } = useTranslation(handle.i18n);
   return (
     <Button variant="secondary" className="cursor-wait">
-      <Icon icon="help" className="mr-2 size-6" />
+      <Icon icon="helpcenter" className="mr-2 size-6" />
       {t('upload:download_template_cta')}
     </Button>
   );

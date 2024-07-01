@@ -42,7 +42,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     useImperativeHandle(ref, () => internalRef.current!);
 
     return (
-      <div className="grid">
+      <div className={clsx('grid', className)}>
         <div
           className={clsx('invisible whitespace-pre-wrap', sharedClassNames)}
         >{`${internalRef.current?.value} `}</div>

@@ -14,7 +14,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Collapsible, Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
 import { PivotType } from '../Data/SelectedPivot';
-import { ExternalLink } from '../ExternalLink';
+import { ExternalLink, linkClasses } from '../ExternalLink';
 
 interface PivotDetailProps {
   pivotValues: {
@@ -71,10 +71,7 @@ export function PivotDetail({
             i18nKey="decisions:pivot_detail.missing_pivot_definition"
             components={{
               DataModelLink: (
-                <Link
-                  to={getRoute('/data/schema')}
-                  className="hover:text-purple-120 focus:text-purple-120 font-semibold lowercase text-purple-100 hover:underline focus:underline"
-                />
+                <Link to={getRoute('/data/schema')} className={linkClasses} />
               ),
               DocLink: <ExternalLink href={pivotValuesDocHref} />,
             }}
