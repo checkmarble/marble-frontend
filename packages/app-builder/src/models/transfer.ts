@@ -3,7 +3,12 @@ import {
   type TransferDto,
 } from 'marble-api/generated/transfercheck-api';
 
-export type TransferStatus = 'neutral' | 'suspected_fraud' | 'confirmed_fraud';
+export const transferStatuses = [
+  'neutral',
+  'suspected_fraud',
+  'confirmed_fraud',
+] as const;
+export type TransferStatus = (typeof transferStatuses)[number];
 
 export interface TransferData {
   beneficiaryBic: string;

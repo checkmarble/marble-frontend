@@ -1,4 +1,5 @@
 export const iconNames = [
+  'add-alert',
   'alt-route',
   'analytics',
   'arrow-2-down',
@@ -34,7 +35,6 @@ export const iconNames = [
   'filters',
   'function',
   'harddrive',
-  'help',
   'helpcenter',
   'history',
   'home',

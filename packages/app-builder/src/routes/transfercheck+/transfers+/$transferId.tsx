@@ -5,7 +5,12 @@ import {
 } from '@app-builder/components';
 import { TransferData } from '@app-builder/components/Transfers/TransferData';
 import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
+import {
+  TransferStatusAlert,
+  TransferStatusRadioButton,
+} from '@app-builder/components/Transfers/TransferStatus';
 import { isNotFoundHttpError } from '@app-builder/models';
+import { transferStatuses } from '@app-builder/models/transfer';
 import { serverServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { notFound } from '@app-builder/utils/http/http-responses';
@@ -21,12 +26,10 @@ import {
 } from '@remix-run/node';
 import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -65,10 +68,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
-const status = ['neutral', 'suspected_fraud', 'confirmed_fraud'] as const;
-
 const transferUpdateBodySchema = z.object({
-  status: z.enum(status),
+  status: z.enum(transferStatuses),
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -144,50 +145,33 @@ export default function TransferDetailPage() {
               {t('transfercheck:transfer_detail.transfer_status.title')}
             </Collapsible.Title>
             <Collapsible.Content>
-              <fetcher.Form
-                {...form.props}
-                onChange={(event) =>
-                  fetcher.submit(event.currentTarget, { method: 'POST' })
-                }
-              >
-                <fieldset className="flex flex-row gap-2">
-                  {status.map((status) => {
-                    return (
-                      <div key={status} className="relative flex">
-                        <input
-                          id={status}
-                          className="peer appearance-none"
-                          type="radio"
-                          name={fields.status.name}
+              <div className="flex flex-col gap-4">
+                <fetcher.Form
+                  {...form.props}
+                  onChange={(event) =>
+                    fetcher.submit(event.currentTarget, { method: 'POST' })
+                  }
+                >
+                  <fieldset className="flex flex-row gap-2">
+                    {transferStatuses.map((status) => {
+                      return (
+                        <TransferStatusRadioButton
+                          key={status}
                           value={status}
+                          name={fields.status.name}
                           defaultChecked={fields.status.defaultValue === status}
                         />
-                        <label
-                          htmlFor={status}
-                          className={clsx(
-                            'border-grey-10 flex cursor-pointer rounded border p-4 font-medium transition peer-focus:outline peer-focus:outline-2 peer-focus:outline-purple-100',
-                            {
-                              'bg-green-10 hover:bg-green-05 text-green-100':
-                                status === 'neutral',
-                              'bg-yellow-10 hover:bg-yellow-05 text-yellow-100':
-                                status === 'suspected_fraud',
-                              'bg-red-10 hover:bg-red-05 text-red-100':
-                                status === 'confirmed_fraud',
-                            },
-                          )}
-                        >
-                          {t(`transfercheck:transfer_detail.status.${status}`)}
-                        </label>
-                        <span className="pointer-events-none absolute -inset-px rounded border-2 border-transparent transition-colors peer-checked:border-purple-100" />
-                        <Icon
-                          icon="tick"
-                          className="text-grey-00 absolute right-0 top-0 hidden size-4 -translate-y-1/2 translate-x-1/2 rounded-full bg-purple-100 peer-checked:block"
-                        />
-                      </div>
-                    );
-                  })}
-                </fieldset>
-              </fetcher.Form>
+                      );
+                    })}
+                  </fieldset>
+                </fetcher.Form>
+                <TransferStatusAlert
+                  // TODO(alerts): Add alertId and isBeneficiaryPartner props
+                  transferId={transfer.id}
+                  transferStatus={transfer.data.status}
+                  isBeneficiaryPartner={true}
+                />
+              </div>
             </Collapsible.Content>
           </Collapsible.Container>
 

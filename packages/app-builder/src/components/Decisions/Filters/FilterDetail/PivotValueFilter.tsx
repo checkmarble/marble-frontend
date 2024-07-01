@@ -1,5 +1,8 @@
 import { Callout } from '@app-builder/components/Callout';
-import { ExternalLink } from '@app-builder/components/ExternalLink';
+import {
+  ExternalLink,
+  linkClasses,
+} from '@app-builder/components/ExternalLink';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
@@ -47,10 +50,7 @@ export function PivotValueFilter() {
           i18nKey="decisions:pivot_detail.missing_pivot_definition"
           components={{
             DataModelLink: (
-              <Link
-                to={getRoute('/data/schema')}
-                className="hover:text-purple-120 focus:text-purple-120 font-semibold lowercase text-purple-100 hover:underline focus:underline"
-              />
+              <Link to={getRoute('/data/schema')} className={linkClasses} />
             ),
             DocLink: <ExternalLink href={pivotValuesDocHref} />,
           }}

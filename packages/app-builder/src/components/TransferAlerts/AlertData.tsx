@@ -15,6 +15,7 @@ interface AlertDataProps {
   alert: TransferAlert;
 }
 
+//TODO(alert): choose one of the two components below and add translation keys
 export function AlertData({ alert }: AlertDataProps) {
   const { t } = useTranslation(alertsI18n);
   const language = useFormatLanguage();
@@ -89,7 +90,6 @@ export function AlertData({ alert }: AlertDataProps) {
           t={t}
           i18nKey="transfercheck:alert_detail.alert_data.transfer_id"
           components={{
-            TransferIdLabel: <code className="select-none" />,
             TransferIdValue: (
               <code
                 className="border-grey-10 cursor-pointer select-none rounded-sm border px-1"
@@ -98,7 +98,7 @@ export function AlertData({ alert }: AlertDataProps) {
             ),
           }}
           values={{
-            transferId: alert.transferEndToEndId,
+            transferEndToEndId: alert.transferEndToEndId,
           }}
         />
       </p>
@@ -134,7 +134,7 @@ export function AlertData2({ alert }: AlertDataProps) {
       </Callout>
 
       <div className="grid w-full grid-cols-[max-content_1fr] gap-x-8 gap-y-2">
-        <span className="text-grey-50 text-s">Transfer ID</span>
+        <span className="text-grey-50 text-s">Transfer end to end ID</span>
         <span className="text-grey-100 text-s">{alert.transferEndToEndId}</span>
 
         <span className="text-grey-50 text-s">Sender IBAN</span>
