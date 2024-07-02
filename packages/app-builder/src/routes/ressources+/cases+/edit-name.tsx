@@ -1,4 +1,5 @@
 import { serverServices } from '@app-builder/services/init.server';
+import { submitOnBlur } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
@@ -60,11 +61,7 @@ export function EditCaseName(defaultValue: z.infer<typeof schema>) {
       <Input
         {...conform.input(name, { type: 'text' })}
         autoComplete="off"
-        onBlur={(e) => {
-          if (e.currentTarget.value !== e.currentTarget.defaultValue) {
-            e.currentTarget.form?.requestSubmit();
-          }
-        }}
+        onBlur={submitOnBlur}
       />
     </fetcher.Form>
   );
