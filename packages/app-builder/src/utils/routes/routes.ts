@@ -510,10 +510,26 @@ export const routes = [
             "file": "routes/transfercheck+/alerts+/$alertId.tsx"
           },
           {
-            "id": "routes/transfercheck+/alerts+/_index",
-            "index": true,
-            "path": "alerts/",
-            "file": "routes/transfercheck+/alerts+/_index.tsx"
+            "id": "routes/transfercheck+/alerts+/inboxes._layout",
+            "path": "alerts/inboxes",
+            "file": "routes/transfercheck+/alerts+/inboxes._layout.tsx",
+            "children": [
+              {
+                "id": "routes/transfercheck+/alerts+/inboxes._index",
+                "index": true,
+                "file": "routes/transfercheck+/alerts+/inboxes._index.tsx"
+              },
+              {
+                "id": "routes/transfercheck+/alerts+/inboxes.received",
+                "path": "received",
+                "file": "routes/transfercheck+/alerts+/inboxes.received.tsx"
+              },
+              {
+                "id": "routes/transfercheck+/alerts+/inboxes.sent",
+                "path": "sent",
+                "file": "routes/transfercheck+/alerts+/inboxes.sent.tsx"
+              }
+            ]
           },
           {
             "id": "routes/transfercheck+/ressources+/alert.create",

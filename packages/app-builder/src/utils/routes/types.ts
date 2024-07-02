@@ -87,7 +87,9 @@ export type RoutePath =
   | '/transfercheck'
   | '/transfercheck/*'
   | '/transfercheck/alerts/:alertId'
-  | '/transfercheck/alerts/'
+  | '/transfercheck/alerts/inboxes'
+  | '/transfercheck/alerts/inboxes/received'
+  | '/transfercheck/alerts/inboxes/sent'
   | '/transfercheck/ressources/alert/create'
   | '/transfercheck/transfers/:transferId'
   | '/transfercheck/transfers/';
@@ -191,7 +193,10 @@ export type RouteID =
   | 'routes/transfercheck+/$'
   | 'routes/transfercheck+/_index'
   | 'routes/transfercheck+/alerts+/$alertId'
-  | 'routes/transfercheck+/alerts+/_index'
+  | 'routes/transfercheck+/alerts+/inboxes._layout'
+  | 'routes/transfercheck+/alerts+/inboxes._index'
+  | 'routes/transfercheck+/alerts+/inboxes.received'
+  | 'routes/transfercheck+/alerts+/inboxes.sent'
   | 'routes/transfercheck+/ressources+/alert.create'
   | 'routes/transfercheck+/transfers+/$transferId'
   | 'routes/transfercheck+/transfers+/_index';

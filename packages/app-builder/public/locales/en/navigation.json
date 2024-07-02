@@ -25,5 +25,7 @@
   "settings.inboxes": "Inboxes",
   "settings.tags": "Tags",
   "transfercheck.transfers": "Transfers",
-  "transfercheck.alerts": "Alerts"
+  "transfercheck.alerts": "Alerts",
+  "transfercheck.alerts.received": "Received alerts",
+  "transfercheck.alerts.sent": "Sent alerts"
 }

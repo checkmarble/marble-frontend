@@ -83,6 +83,13 @@ export interface CaseDetail
   events: CaseEvent[];
 }
 
+export const caseStatuses = [
+  'open',
+  'investigating',
+  'discarded',
+  'resolved',
+] as const;
+
 export function adaptCaseDetailDto({
   events,
   decisions,

@@ -5,9 +5,9 @@ import {
   caseStatusVariants,
   useCaseStatuses,
 } from '@app-builder/components/Cases';
+import { caseStatuses } from '@app-builder/models/cases';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { caseStatusSchema } from '@app-builder/utils/schema/filterSchema';
 import { conform, useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
@@ -26,8 +26,8 @@ export const handle = {
 
 const schema = z.object({
   caseId: z.string(),
-  status: caseStatusSchema,
-  nextStatus: caseStatusSchema,
+  status: z.enum(caseStatuses),
+  nextStatus: z.enum(caseStatuses),
 });
 type Schema = z.infer<typeof schema>;
 

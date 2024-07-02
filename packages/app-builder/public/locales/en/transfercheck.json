@@ -40,7 +40,15 @@
   "alert.create.success": "The alert has been created",
   "alerts.empty": "You have no alerts",
   "alerts.search.empty": "No alert found",
+  "alerts.search.placeholder": "Search alert by message",
+  "alerts.filters.date_range.title": "creation date is:",
+  "alerts.list.status": "Status",
+  "alerts.list.message": "Message",
+  "alerts.list.created_at": "Created at",
   "alert_detail.title": "Alert details",
   "alert_detail.alert_data.title": "Alert data",
-  "alert_detail.alert_data.transfer_id": "Here is the transfer end to end id associated to this alert: <TransferIdValue>{{transferEndToEndId}}</TransferIdValue>"
+  "alert_detail.alert_data.transfer_id": "Here is the transfer end to end id associated to this alert: <TransferIdValue>{{transferEndToEndId}}</TransferIdValue>",
+  "alert_status.unread": "Unread",
+  "alert_status.read": "Read",
+  "alert_status.resolved": "Resolved"
 }
