@@ -1,7 +1,7 @@
+import { caseStatuses } from '@app-builder/models/cases';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import {
-  caseStatusSchema,
   type DateRangeFilterForm,
   dateRangeSchema,
 } from '@app-builder/utils/schema/filterSchema';
@@ -19,7 +19,7 @@ import * as z from 'zod';
 import { type CasesFilterName, casesFilterNames } from './filters';
 
 export const casesFiltersSchema = z.object({
-  statuses: z.array(caseStatusSchema).optional(),
+  statuses: z.array(z.enum(caseStatuses)).optional(),
   dateRange: dateRangeSchema.optional(),
 });
 

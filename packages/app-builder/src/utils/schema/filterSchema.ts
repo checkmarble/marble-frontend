@@ -20,6 +20,8 @@ export const dateRangeSchema = z.discriminatedUnion('type', [
   }),
 ]);
 
+export type DateRangeFilter = z.infer<typeof dateRangeSchema>;
+
 export type DateRangeFilterForm =
   | {
       type: 'static';
@@ -31,10 +33,3 @@ export type DateRangeFilterForm =
       fromNow: string;
     }
   | null;
-
-export const caseStatusSchema = z.enum([
-  'open',
-  'investigating',
-  'discarded',
-  'resolved',
-]);

@@ -4,9 +4,10 @@ import {
   type UpdateTransferAlertDto,
 } from 'marble-api/generated/transfercheck-api';
 
-export type TransferAlerStatus = 'unread' | 'read' | 'archived';
+export const transferAlerStatuses = ['unread', 'read', 'archived'] as const;
+export type TransferAlertStatus = (typeof transferAlerStatuses)[number];
 
-export type TransferAlertType = 'sender' | 'beneficiary';
+export type TransferAlertType = 'sent' | 'received';
 
 export interface TransferAlert {
   id: string;
@@ -15,7 +16,7 @@ export interface TransferAlert {
   senderPartnerId: string;
   beneficiaryPartnerId: string;
   createdAt: string;
-  status: TransferAlerStatus;
+  status: TransferAlertStatus;
   message: string;
   transferEndToEndId: string;
   beneficiaryIban: string;
@@ -28,9 +29,9 @@ export function adaptTransferAlert(
 ): TransferAlert {
   let type: TransferAlertType;
   if (dto.sender_partner_id === partnerId) {
-    type = 'sender';
+    type = 'sent';
   } else if (dto.beneficiary_partner_id === partnerId) {
-    type = 'beneficiary';
+    type = 'received';
   } else {
     throw new Error('Invalid partner id');
   }
@@ -79,7 +80,7 @@ export type UpdateTransferAlert =
     }
   | {
       type: 'beneficiary';
-      status: TransferAlerStatus;
+      status: TransferAlertStatus;
     };
 
 export function adaptUpdateTransferAlertDto(
