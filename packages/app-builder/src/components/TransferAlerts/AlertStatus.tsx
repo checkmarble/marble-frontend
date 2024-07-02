@@ -70,7 +70,7 @@ export const alertStatusMapping = {
   },
   archived: {
     color: 'grey',
-    tKey: 'transfercheck:alert_status.resolved',
+    tKey: 'transfercheck:alert_status.archived',
   },
 } satisfies Record<
   TransferAlertStatus,

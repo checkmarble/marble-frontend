@@ -86,7 +86,7 @@ export function TransferStatusAlert({
             components={{
               AlertLink: (
                 <Link
-                  to={getRoute('/transfercheck/alerts/:alertId', {
+                  to={getRoute('/transfercheck/alerts/sent/:alertId', {
                     alertId,
                   })}
                   className={linkClasses}
