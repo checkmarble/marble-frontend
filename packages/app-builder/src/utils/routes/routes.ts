@@ -505,11 +505,6 @@ export const routes = [
             "file": "routes/transfercheck+/_index.tsx"
           },
           {
-            "id": "routes/transfercheck+/alerts+/$alertId",
-            "path": "alerts/:alertId",
-            "file": "routes/transfercheck+/alerts+/$alertId.tsx"
-          },
-          {
             "id": "routes/transfercheck+/alerts+/inboxes._layout",
             "path": "alerts/inboxes",
             "file": "routes/transfercheck+/alerts+/inboxes._layout.tsx",
@@ -532,9 +527,31 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/transfercheck+/alerts+/received.$alertId",
+            "path": "alerts/received/:alertId",
+            "file": "routes/transfercheck+/alerts+/received.$alertId.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/alerts+/sent.$alertId",
+            "path": "alerts/sent/:alertId",
+            "file": "routes/transfercheck+/alerts+/sent.$alertId.tsx"
+          },
+          {
             "id": "routes/transfercheck+/ressources+/alert.create",
             "path": "ressources/alert/create",
             "file": "routes/transfercheck+/ressources+/alert.create.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/ressources+/alert.update",
+            "path": "ressources/alert/update",
+            "file": "routes/transfercheck+/ressources+/alert.update.tsx",
+            "children": [
+              {
+                "id": "routes/transfercheck+/ressources+/alert.update.status",
+                "path": "status",
+                "file": "routes/transfercheck+/ressources+/alert.update.status.tsx"
+              }
+            ]
           },
           {
             "id": "routes/transfercheck+/transfers+/$transferId",

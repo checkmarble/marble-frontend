@@ -19,6 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 import { z } from 'zod';
 
+import { UpdateAlertStatus } from '../ressources+/alert.update.status';
+
 export const handle = {
   i18n: ['common', 'navigation', ...alertsI18n] satisfies Namespace,
 };
@@ -58,7 +60,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
-export default function AlertDetailPage() {
+export default function ReceivedAlertDetailPage() {
   const { t } = useTranslation(handle.i18n);
   const { alert } = useLoaderData<typeof loader>();
 
@@ -68,8 +70,14 @@ export default function AlertDetailPage() {
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
           <span className="line-clamp-1 text-left">
-            {t('transfercheck:alert_detail.title')}
+            {t('transfercheck:alert_detail.received.title')}
           </span>
+          <UpdateAlertStatus
+            defaultValue={{
+              alertId: alert.id,
+              status: alert.status,
+            }}
+          />
         </div>
       </Page.Header>
 
@@ -83,6 +91,7 @@ export default function AlertDetailPage() {
               <AlertData alert={alert} />
             </Collapsible.Content>
           </Collapsible.Container>
+
           <Collapsible.Container className="bg-grey-00 w-full">
             <Collapsible.Title>
               {t('transfercheck:alert_detail.alert_data.title')}

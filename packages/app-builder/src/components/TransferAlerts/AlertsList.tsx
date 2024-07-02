@@ -4,14 +4,11 @@ import {
   type TransferAlertStatus,
 } from '@app-builder/models/transfer-alert';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
 import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
-import { fromUUID } from '@app-builder/utils/short-uuid';
 import {
   arrIncludesExactSome,
   dateRangeFilterFn,
 } from '@app-builder/utils/table-filter-fn';
-import { Link } from '@remix-run/react';
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -38,6 +35,7 @@ import { alertsFilterNames } from './Filters/filters';
 interface AlertsListProps {
   alerts: TransferAlert[];
   className?: string;
+  rowLink: (alert: TransferAlert) => JSX.Element;
 }
 
 type TransferAlertColumnFiltersState = (
@@ -46,7 +44,7 @@ type TransferAlertColumnFiltersState = (
   | { id: 'message'; value: string }
 )[];
 
-export function AlertsList({ alerts, className }: AlertsListProps) {
+export function AlertsList({ alerts, className, rowLink }: AlertsListProps) {
   const [columnFilters, setColumnFilters] =
     React.useState<TransferAlertColumnFiltersState>([]);
 
@@ -100,6 +98,7 @@ export function AlertsList({ alerts, className }: AlertsListProps) {
           className={className}
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
+          rowLink={rowLink}
         />
       </div>
     </AlertsFiltersProvider>
@@ -111,6 +110,7 @@ interface AlertsListTableProps {
   className?: string;
   columnFilters: TransferAlertColumnFiltersState;
   setColumnFilters: OnChangeFn<TransferAlertColumnFiltersState>;
+  rowLink: (alert: TransferAlert) => JSX.Element;
 }
 
 const columnHelper = createColumnHelper<TransferAlert>();
@@ -120,6 +120,7 @@ function AlertsListTable({
   className,
   columnFilters,
   setColumnFilters,
+  rowLink,
 }: AlertsListTableProps) {
   const { t } = useTranslation(alertsI18n);
   const language = useFormatLanguage();
@@ -177,13 +178,7 @@ function AlertsListTable({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    rowLink: (alert) => (
-      <Link
-        to={getRoute('/transfercheck/alerts/:alertId', {
-          alertId: fromUUID(alert.id),
-        })}
-      />
-    ),
+    rowLink,
   });
 
   if (rows.length === 0) {
