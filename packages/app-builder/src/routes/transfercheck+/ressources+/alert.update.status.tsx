@@ -118,7 +118,7 @@ export function UpdateAlertStatus({
         className="group flex flex-row items-center gap-4"
       >
         <FormLabel className="sr-only">
-          {t('transfercheck:alerts.list.status')}
+          {t('transfercheck:alerts.status')}
         </FormLabel>
         <FormSelect.Root
           config={fields.status}

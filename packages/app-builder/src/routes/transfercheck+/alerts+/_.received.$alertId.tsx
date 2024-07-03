@@ -1,8 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import {
-  AlertData,
-  AlertData2,
-} from '@app-builder/components/TransferAlerts/AlertData';
+import { AlertData } from '@app-builder/components/TransferAlerts/AlertData';
 import { alertsI18n } from '@app-builder/components/TransferAlerts/alerts-i18n';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
@@ -89,15 +86,6 @@ export default function ReceivedAlertDetailPage() {
             </Collapsible.Title>
             <Collapsible.Content>
               <AlertData alert={alert} />
-            </Collapsible.Content>
-          </Collapsible.Container>
-
-          <Collapsible.Container className="bg-grey-00 w-full">
-            <Collapsible.Title>
-              {t('transfercheck:alert_detail.alert_data.title')}
-            </Collapsible.Title>
-            <Collapsible.Content>
-              <AlertData2 alert={alert} />
             </Collapsible.Content>
           </Collapsible.Container>
         </div>

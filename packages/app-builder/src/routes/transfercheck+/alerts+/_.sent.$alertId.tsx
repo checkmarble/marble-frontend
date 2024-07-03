@@ -1,8 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import {
-  AlertData,
-  AlertData2,
-} from '@app-builder/components/TransferAlerts/AlertData';
+import { AlertData } from '@app-builder/components/TransferAlerts/AlertData';
 import { alertsI18n } from '@app-builder/components/TransferAlerts/alerts-i18n';
 import {
   alertStatusMapping,
@@ -101,33 +98,6 @@ export default function SentAlertDetailPage() {
             <Collapsible.Content>
               <div className="flex flex-col gap-4">
                 <AlertData alert={alert} />
-                <div className="flex items-center justify-end">
-                  <UpdateAlert
-                    defaultValue={{
-                      alertId: alert.id,
-                      transferEndToEndId: alert.transferEndToEndId,
-                      senderIban: alert.senderIban,
-                      beneficiaryIban: alert.beneficiaryIban,
-                      message: alert.message,
-                    }}
-                  >
-                    <Button>
-                      <Icon icon="edit" className="size-5" />
-                      {t('transfercheck:alert.update.title')}
-                    </Button>
-                  </UpdateAlert>
-                </div>
-              </div>
-            </Collapsible.Content>
-          </Collapsible.Container>
-
-          <Collapsible.Container className="bg-grey-00 w-full">
-            <Collapsible.Title>
-              {t('transfercheck:alert_detail.alert_data.title')}
-            </Collapsible.Title>
-            <Collapsible.Content>
-              <div className="flex flex-col gap-4">
-                <AlertData2 alert={alert} />
                 <div className="flex items-center justify-end">
                   <UpdateAlert
                     defaultValue={{

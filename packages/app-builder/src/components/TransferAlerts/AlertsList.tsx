@@ -20,6 +20,7 @@ import { Table, useTable } from 'ui-design-system';
 
 import { FiltersButton } from '../Filters/FiltersButton';
 import { alertsI18n } from './alerts-i18n';
+import { AlertStatus } from './AlertStatus';
 import {
   type AlertsFilters,
   AlertsFiltersBar,
@@ -133,14 +134,17 @@ function AlertsListTable({
     () => [
       columnHelper.accessor((row) => row.status, {
         id: 'status',
-        header: t('transfercheck:alerts.list.status'),
+        header: t('transfercheck:alerts.status'),
         size: 50,
         filterFn: arrIncludesExactSome,
-        // TODO: cell renderer
+        cell: ({ getValue }) => {
+          const status = getValue();
+          return <AlertStatus className="relative" status={status} />;
+        },
       }),
       columnHelper.accessor((row) => row.message, {
         id: 'message', // Used for filtering, change in both places
-        header: t('transfercheck:alerts.list.message'),
+        header: t('transfercheck:alerts.message'),
         size: 200,
         cell: ({ getValue, column }) => {
           const columnFilterValue = column.getFilterValue();
@@ -156,7 +160,7 @@ function AlertsListTable({
       }),
       columnHelper.accessor((row) => row.createdAt, {
         id: 'createdAt',
-        header: t('transfercheck:alerts.list.created_at'),
+        header: t('transfercheck:alerts.created_at'),
         size: 100,
         filterFn: dateRangeFilterFn,
         cell: ({ getValue }) => {

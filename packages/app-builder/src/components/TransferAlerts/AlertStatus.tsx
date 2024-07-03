@@ -41,7 +41,13 @@ export const alertStatusVariants = cva(undefined, {
   ],
 });
 
-export function AlertStatus({ status }: { status: TransferAlertStatus }) {
+export function AlertStatus({
+  status,
+  className,
+}: {
+  status: TransferAlertStatus;
+  className?: string;
+}) {
   const { t } = useTranslation(alertsI18n);
   const { color, tKey } = alertStatusMapping[status];
 
@@ -51,6 +57,7 @@ export function AlertStatus({ status }: { status: TransferAlertStatus }) {
         className={cx(
           alertStatusVariants({ color, variant: 'contained' }),
           'text-s flex size-6 items-center justify-center rounded font-semibold capitalize',
+          className,
         )}
       >
         {t(tKey)[0]}

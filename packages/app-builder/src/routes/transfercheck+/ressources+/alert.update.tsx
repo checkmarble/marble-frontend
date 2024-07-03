@@ -143,7 +143,7 @@ function UpdateAlertContent({
           className="flex flex-col items-start gap-2"
         >
           <FormLabel>
-            {t('transfercheck:alert.update.transfer_end_to_end_id')}
+            {t('transfercheck:alert.transfer_end_to_end_id')}
           </FormLabel>
           <FormInput
             className="w-full"
@@ -157,10 +157,12 @@ function UpdateAlertContent({
           config={fields.senderIban}
           className="flex flex-col items-start gap-2"
         >
-          <FormLabel>{t('transfercheck:alert.update.senderIban')}</FormLabel>
+          <FormLabel>{t('transfercheck:alert.sender_iban')}</FormLabel>
           <FormInput
             className="w-full"
-            placeholder={t('transfercheck:alert.update.senderIban.placeholder')}
+            placeholder={t(
+              'transfercheck:alert.update.sender_iban.placeholder',
+            )}
           />
           <FormError />
         </FormField>
@@ -168,13 +170,11 @@ function UpdateAlertContent({
           config={fields.beneficiaryIban}
           className="flex flex-col items-start gap-2"
         >
-          <FormLabel>
-            {t('transfercheck:alert.update.beneficiaryIban')}
-          </FormLabel>
+          <FormLabel>{t('transfercheck:alert.beneficiary_iban')}</FormLabel>
           <FormInput
             className="w-full"
             placeholder={t(
-              'transfercheck:alert.update.beneficiaryIban.placeholder',
+              'transfercheck:alert.update.beneficiary_iban.placeholder',
             )}
           />
           <FormError />
