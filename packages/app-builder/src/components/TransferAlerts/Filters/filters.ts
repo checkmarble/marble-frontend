@@ -1,3 +1,4 @@
+import { type ParseKeys } from 'i18next';
 import { assertNever } from 'typescript-utils';
 import { type IconName } from 'ui-icons';
 
@@ -16,12 +17,14 @@ export function getFilterIcon(filterName: AlertsFilterName): IconName {
   }
 }
 
-export function getFilterTKey(filterName: AlertsFilterName) {
+export function getFilterTKey(
+  filterName: AlertsFilterName,
+): ParseKeys<['transfercheck']> {
   switch (filterName) {
     case 'dateRange':
-      return 'transfercheck:alerts.list.created_at';
+      return 'transfercheck:alerts.created_at';
     case 'statuses':
-      return 'transfercheck:alerts.list.status';
+      return 'transfercheck:alerts.status';
     default:
       assertNever('[AlertsFilterName] unknown filter:', filterName);
   }

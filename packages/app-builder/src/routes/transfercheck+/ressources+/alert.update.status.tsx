@@ -47,8 +47,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    //TODO(alert): call updateAlertStatus
-    // await transferAlertRepository.updateAlertStatus(submission.value);
+    await transferAlertRepository.updateReceivedAlert(submission.value);
 
     const session = await getSession(request);
     const t = await getFixedT(request, ['transfercheck']);
@@ -119,7 +118,7 @@ export function UpdateAlertStatus({
         className="group flex flex-row items-center gap-4"
       >
         <FormLabel className="sr-only">
-          {t('transfercheck:alerts.list.status')}
+          {t('transfercheck:alerts.status')}
         </FormLabel>
         <FormSelect.Root
           config={fields.status}

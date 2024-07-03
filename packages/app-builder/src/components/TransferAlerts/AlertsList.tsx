@@ -1,8 +1,5 @@
 import { Highlight } from '@app-builder/components/Highlight';
-import {
-  type TransferAlert,
-  type TransferAlertStatus,
-} from '@app-builder/models/transfer-alert';
+import { type TransferAlertStatus } from '@app-builder/models/transfer-alert';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import {
@@ -23,6 +20,7 @@ import { Table, useTable } from 'ui-design-system';
 
 import { FiltersButton } from '../Filters/FiltersButton';
 import { alertsI18n } from './alerts-i18n';
+import { AlertStatus } from './AlertStatus';
 import {
   type AlertsFilters,
   AlertsFiltersBar,
@@ -33,9 +31,9 @@ import { MessageFilter } from './Filters/FilterDetail/MessageFilter';
 import { alertsFilterNames } from './Filters/filters';
 
 interface AlertsListProps {
-  alerts: TransferAlert[];
+  alerts: TransferAlertRow[];
   className?: string;
-  rowLink: (alert: TransferAlert) => JSX.Element;
+  rowLink: (id: string) => JSX.Element;
 }
 
 type TransferAlertColumnFiltersState = (
@@ -105,15 +103,22 @@ export function AlertsList({ alerts, className, rowLink }: AlertsListProps) {
   );
 }
 
+interface TransferAlertRow {
+  id: string;
+  status: TransferAlertStatus;
+  message: string;
+  createdAt: string;
+}
+
 interface AlertsListTableProps {
-  alerts: TransferAlert[];
+  alerts: TransferAlertRow[];
   className?: string;
   columnFilters: TransferAlertColumnFiltersState;
   setColumnFilters: OnChangeFn<TransferAlertColumnFiltersState>;
-  rowLink: (alert: TransferAlert) => JSX.Element;
+  rowLink: (id: string) => JSX.Element;
 }
 
-const columnHelper = createColumnHelper<TransferAlert>();
+const columnHelper = createColumnHelper<TransferAlertRow>();
 
 function AlertsListTable({
   alerts,
@@ -129,14 +134,17 @@ function AlertsListTable({
     () => [
       columnHelper.accessor((row) => row.status, {
         id: 'status',
-        header: t('transfercheck:alerts.list.status'),
+        header: t('transfercheck:alerts.status'),
         size: 50,
         filterFn: arrIncludesExactSome,
-        // TODO: cell renderer
+        cell: ({ getValue }) => {
+          const status = getValue();
+          return <AlertStatus className="relative" status={status} />;
+        },
       }),
       columnHelper.accessor((row) => row.message, {
         id: 'message', // Used for filtering, change in both places
-        header: t('transfercheck:alerts.list.message'),
+        header: t('transfercheck:alerts.message'),
         size: 200,
         cell: ({ getValue, column }) => {
           const columnFilterValue = column.getFilterValue();
@@ -152,7 +160,7 @@ function AlertsListTable({
       }),
       columnHelper.accessor((row) => row.createdAt, {
         id: 'createdAt',
-        header: t('transfercheck:alerts.list.created_at'),
+        header: t('transfercheck:alerts.created_at'),
         size: 100,
         filterFn: dateRangeFilterFn,
         cell: ({ getValue }) => {
@@ -178,7 +186,7 @@ function AlertsListTable({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    rowLink,
+    rowLink: (row) => rowLink(row.id),
   });
 
   if (rows.length === 0) {
@@ -199,7 +207,7 @@ function AlertsListTable({
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
           const bgClassName =
-            row.original.status === 'unread' ? 'bg-grey-00' : 'transparent';
+            row.original.status === 'archived' ? 'transparent' : 'bg-grey-00';
           return (
             <Table.Row
               key={row.id}

@@ -38,9 +38,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { transferRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { transferRepository, transferAlertRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const parsedParam = await parseParamsSafe(
     params,
@@ -55,9 +56,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const transfer = await transferRepository.getTransfer({
       transferId: transferId,
     });
+    const alerts = await transferAlertRepository.listSentAlerts({
+      transferId: transfer.id,
+    });
 
     return json({
       transfer,
+      transferAlert: alerts.at(0),
     });
   } catch (error) {
     if (isNotFoundHttpError(error)) {
@@ -106,7 +111,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function TransferDetailPage() {
   const { t } = useTranslation(handle.i18n);
-  const { transfer } = useLoaderData<typeof loader>();
+  const { transfer, transferAlert } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
 
@@ -166,10 +171,10 @@ export default function TransferDetailPage() {
                   </fieldset>
                 </fetcher.Form>
                 <TransferStatusAlert
-                  // TODO(alerts): Add alertId and isBeneficiaryPartner props
                   transferId={transfer.id}
                   transferStatus={transfer.data.status}
-                  isBeneficiaryPartner={true}
+                  alertId={transferAlert?.id}
+                  beneficiaryInNetwork={transfer.beneficiaryInNetwork}
                 />
               </div>
             </Collapsible.Content>
