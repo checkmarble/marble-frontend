@@ -9,14 +9,16 @@ import {
 } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import SwaggerUI from 'swagger-ui-react';
-import swaggercss from 'swagger-ui-react/swagger-ui.css';
+import swaggercss from 'swagger-ui-react/swagger-ui.css?url';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+const SwaggerUI = React.lazy(() => import('swagger-ui-react'));
+
 export const handle = {
-  i18n: ['navigation', 'api'] satisfies Namespace,
+  i18n: ['common', 'navigation', 'api'] satisfies Namespace,
 };
 
 export const links: LinksFunction = () =>
@@ -64,13 +66,15 @@ export default function Api() {
           </Button>
         </div>
         <div className="-mx-5">
-          {/* Issue with UNSAFE_componentWillReceiveProps: https://github.com/swagger-api/swagger-ui/issues/5729 */}
-          <SwaggerUI
-            spec={openapi}
-            supportedSubmitMethods={[]}
-            defaultModelExpandDepth={5}
-            defaultModelsExpandDepth={4}
-          />
+          <React.Suspense fallback={t('common:loading')}>
+            {/* Issue with UNSAFE_componentWillReceiveProps: https://github.com/swagger-api/swagger-ui/issues/5729 */}
+            <SwaggerUI
+              spec={openapi}
+              supportedSubmitMethods={[]}
+              defaultModelExpandDepth={5}
+              defaultModelsExpandDepth={4}
+            />
+          </React.Suspense>
         </div>
       </Page.Content>
     </Page.Container>

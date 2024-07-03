@@ -17,7 +17,7 @@ import {
   ReactFlow,
   ReactFlowProvider,
 } from 'reactflow';
-import reactflowStyles from 'reactflow/dist/style.css';
+import reactflowStyles from 'reactflow/dist/style.css?url';
 
 import { type NodeData, type NodeType } from './models/nodes';
 import { Action } from './Nodes/Action';
