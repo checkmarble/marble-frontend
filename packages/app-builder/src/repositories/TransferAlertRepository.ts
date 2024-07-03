@@ -1,66 +1,81 @@
 import { type TransfercheckApi } from '@app-builder/infra/transfercheck-api';
 import {
-  adaptCreateTransferAlertDto,
-  adaptTransferAlert,
-  adaptUpdateTransferAlertDto,
-  type CreateTransferAlert,
-  type TransferAlert,
-  type UpdateTransferAlert,
+  adaptTransferAlertBeneficiary,
+  adaptTransferAlertCreateBodyDto,
+  adaptTransferAlertSender,
+  adaptTransferAlertUpdateAsSenderBodyDto,
+  adaptUpdateTransferAlertAsBeneficiaryDto,
+  type TransferAlertBeneficiary,
+  type TransferAlertCreateBody,
+  type TransferAlertSender,
+  type TransferAlertUpdateAsBeneficiaryBody,
+  type TransferAlertUpdateAsSenderBody,
 } from '@app-builder/models/transfer-alert';
-import invariant from 'tiny-invariant';
 
 export interface TransferAlertRepository {
-  listAlerts(): Promise<TransferAlert[]>;
-  createAlert(args: CreateTransferAlert): Promise<TransferAlert>;
-  getAlert(args: { alertId: string }): Promise<TransferAlert>;
-  updateAlert(
-    alertId: string,
-    updateTransferAlert: UpdateTransferAlert,
-  ): Promise<TransferAlert>;
+  createAlert(args: TransferAlertCreateBody): Promise<TransferAlertSender>;
+  listSentAlerts(args?: {
+    transferId?: string;
+  }): Promise<TransferAlertSender[]>;
+  listReceivedAlerts(args?: {
+    transferId?: string;
+  }): Promise<TransferAlertBeneficiary[]>;
+  getSentAlert(args: { alertId: string }): Promise<TransferAlertSender>;
+  getReceivedAlert(args: {
+    alertId: string;
+  }): Promise<TransferAlertBeneficiary>;
+  updateSentAlert(
+    updateTransferAlert: TransferAlertUpdateAsSenderBody,
+  ): Promise<TransferAlertSender>;
+  updateReceivedAlert(
+    updateTransferAlert: TransferAlertUpdateAsBeneficiaryBody,
+  ): Promise<TransferAlertBeneficiary>;
 }
 
 export function makeGetTransferAlertRepository() {
-  return (
-    transfercheckApi: TransfercheckApi,
-    // TODO: make partnerId required (need to split init.server.ts into multiple files)
-    partnerId?: string,
-  ): TransferAlertRepository => ({
-    listAlerts: async () => {
-      // TODO: make partnerId required (need to split init.server.ts into multiple files)
-      invariant(partnerId, 'partnerId is required');
-
-      const { alerts } = await transfercheckApi.listAlerts();
-
-      return alerts.map((alert) => adaptTransferAlert(alert, partnerId));
-    },
+  return (transfercheckApi: TransfercheckApi): TransferAlertRepository => ({
     createAlert: async (createTransferAlert) => {
-      // TODO: make partnerId required (need to split init.server.ts into multiple files)
-      invariant(partnerId, 'partnerId is required');
-
       const { alert } = await transfercheckApi.createAlert(
-        adaptCreateTransferAlertDto(createTransferAlert),
+        adaptTransferAlertCreateBodyDto(createTransferAlert),
       );
 
-      return adaptTransferAlert(alert, partnerId);
+      return adaptTransferAlertSender(alert);
     },
-    getAlert: async ({ alertId }) => {
-      // TODO: make partnerId required (need to split init.server.ts into multiple files)
-      invariant(partnerId, 'partnerId is required');
+    listSentAlerts: async (args) => {
+      const { alerts } = await transfercheckApi.listSentAlerts(args ?? {});
 
-      const { alert } = await transfercheckApi.getAlert(alertId);
-
-      return adaptTransferAlert(alert, partnerId);
+      return alerts.map((alert) => adaptTransferAlertSender(alert));
     },
-    updateAlert: async (alertId, updateTransferAlert) => {
-      // TODO: make partnerId required (need to split init.server.ts into multiple files)
-      invariant(partnerId, 'partnerId is required');
+    listReceivedAlerts: async (args) => {
+      const { alerts } = await transfercheckApi.listReceivedAlerts(args ?? {});
 
-      const { alert } = await transfercheckApi.updateAlert(
-        alertId,
-        adaptUpdateTransferAlertDto(updateTransferAlert),
+      return alerts.map((alert) => adaptTransferAlertBeneficiary(alert));
+    },
+    getSentAlert: async ({ alertId }) => {
+      const { alert } = await transfercheckApi.getSentAlert(alertId);
+
+      return adaptTransferAlertSender(alert);
+    },
+    getReceivedAlert: async ({ alertId }) => {
+      const { alert } = await transfercheckApi.getReceivedAlert(alertId);
+
+      return adaptTransferAlertBeneficiary(alert);
+    },
+    updateSentAlert: async (updateTransferAlert) => {
+      const { alert } = await transfercheckApi.updateSentAlert(
+        updateTransferAlert.alertId,
+        adaptTransferAlertUpdateAsSenderBodyDto(updateTransferAlert),
       );
 
-      return adaptTransferAlert(alert, partnerId);
+      return adaptTransferAlertSender(alert);
+    },
+    updateReceivedAlert: async (updateTransferAlert) => {
+      const { alert } = await transfercheckApi.updateReceivedAlert(
+        updateTransferAlert.alertId,
+        adaptUpdateTransferAlertAsBeneficiaryDto(updateTransferAlert),
+      );
+
+      return adaptTransferAlertBeneficiary(alert);
     },
   });
 }

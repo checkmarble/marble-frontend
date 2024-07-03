@@ -1,9 +1,10 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import {
-  AlertData,
-  AlertData2,
-} from '@app-builder/components/TransferAlerts/AlertData';
+import { AlertData } from '@app-builder/components/TransferAlerts/AlertData';
 import { alertsI18n } from '@app-builder/components/TransferAlerts/alerts-i18n';
+import {
+  alertStatusMapping,
+  alertStatusVariants,
+} from '@app-builder/components/TransferAlerts/AlertStatus';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
@@ -16,10 +17,11 @@ import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Collapsible } from 'ui-design-system';
+import { Button, Collapsible } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
-import { UpdateAlertStatus } from '../ressources+/alert.update.status';
+import { UpdateAlert } from '../ressources+/alert.update';
 
 export const handle = {
   i18n: ['common', 'navigation', ...alertsI18n] satisfies Namespace,
@@ -44,7 +46,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { alertId } = parsedParam.data;
 
   try {
-    const alert = await transferAlertRepository.getAlert({
+    const alert = await transferAlertRepository.getSentAlert({
       alertId,
     });
 
@@ -60,9 +62,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
-export default function ReceivedAlertDetailPage() {
+export default function SentAlertDetailPage() {
   const { t } = useTranslation(handle.i18n);
   const { alert } = useLoaderData<typeof loader>();
+
+  const { color, tKey } = alertStatusMapping[alert.status];
 
   return (
     <Page.Container>
@@ -70,14 +74,18 @@ export default function ReceivedAlertDetailPage() {
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
           <span className="line-clamp-1 text-left">
-            {t('transfercheck:alert_detail.received.title')}
+            {t('transfercheck:alert_detail.sent.title')}
           </span>
-          <UpdateAlertStatus
-            defaultValue={{
-              alertId: alert.id,
-              status: alert.status,
-            }}
-          />
+          <div
+            className={alertStatusVariants({
+              color,
+              variant: 'contained',
+              className:
+                'text-s border-grey-10 flex min-h-[40px] min-w-[40px] items-center justify-between gap-2 rounded border p-2 font-medium',
+            })}
+          >
+            {t(tKey)}
+          </div>
         </div>
       </Page.Header>
 
@@ -88,16 +96,25 @@ export default function ReceivedAlertDetailPage() {
               {t('transfercheck:alert_detail.alert_data.title')}
             </Collapsible.Title>
             <Collapsible.Content>
-              <AlertData alert={alert} />
-            </Collapsible.Content>
-          </Collapsible.Container>
-
-          <Collapsible.Container className="bg-grey-00 w-full">
-            <Collapsible.Title>
-              {t('transfercheck:alert_detail.alert_data.title')}
-            </Collapsible.Title>
-            <Collapsible.Content>
-              <AlertData2 alert={alert} />
+              <div className="flex flex-col gap-4">
+                <AlertData alert={alert} />
+                <div className="flex items-center justify-end">
+                  <UpdateAlert
+                    defaultValue={{
+                      alertId: alert.id,
+                      transferEndToEndId: alert.transferEndToEndId,
+                      senderIban: alert.senderIban,
+                      beneficiaryIban: alert.beneficiaryIban,
+                      message: alert.message,
+                    }}
+                  >
+                    <Button>
+                      <Icon icon="edit" className="size-5" />
+                      {t('transfercheck:alert.update.title')}
+                    </Button>
+                  </UpdateAlert>
+                </div>
+              </div>
             </Collapsible.Content>
           </Collapsible.Container>
         </div>

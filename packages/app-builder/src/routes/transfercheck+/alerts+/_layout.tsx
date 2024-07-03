@@ -1,10 +1,7 @@
 import { Page, TabLink } from '@app-builder/components';
 import { alertsI18n } from '@app-builder/components/TransferAlerts/alerts-i18n';
-import { serverServices } from '@app-builder/services/init.server';
-import { AlertsContextProvider } from '@app-builder/services/transfercheck/alerts/alerts';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { Outlet } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
@@ -13,23 +10,8 @@ export const handle = {
   i18n: ['common', 'navigation', ...alertsI18n] satisfies Namespace,
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
-  const { transferAlertRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
-
-  const alerts = await transferAlertRepository.listAlerts();
-
-  return json({ alerts });
-}
-
 export default function AlertsPage() {
   const { t } = useTranslation(handle.i18n);
-  const { alerts } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -44,22 +26,20 @@ export default function AlertsPage() {
             <li>
               <TabLink
                 labelTKey="navigation:transfercheck.alerts.received"
-                to={getRoute('/transfercheck/alerts/inboxes/received')}
+                to={getRoute('/transfercheck/alerts/received')}
                 Icon={(props) => <Icon {...props} icon="inbox" />}
               />
             </li>
             <li>
               <TabLink
                 labelTKey="navigation:transfercheck.alerts.sent"
-                to={getRoute('/transfercheck/alerts/inboxes/sent')}
+                to={getRoute('/transfercheck/alerts/sent')}
                 Icon={(props) => <Icon {...props} icon="send" />}
               />
             </li>
           </ul>
         </nav>
-        <AlertsContextProvider alerts={alerts}>
-          <Outlet />
-        </AlertsContextProvider>
+        <Outlet />
       </Page.Content>
     </Page.Container>
   );

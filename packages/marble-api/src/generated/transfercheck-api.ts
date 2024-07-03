@@ -63,16 +63,45 @@ export type TransferDto = {
     id: string;
     last_scored_at?: string | null;
     score?: number | null;
+    beneficiary_in_network: boolean;
     transfer_data: TransferDataDto;
 };
 export type TransferUpdateBodyDto = {
     status: TransferStatusDto;
 };
-export type TransferAlertStatusDto = "unread" | "read" | "archived";
-export type TransferAlertDto = {
+export type TransferAlertCreateBodyDto = {
+    transfer_id: string;
+    message: string;
+    transfer_end_to_end_id: string;
+    /** in clear, not hashed */
+    beneficiary_iban: string;
+    /** in clear, not hashed or pseudonimized */
+    sender_iban: string;
+};
+export type TransferAlertStatusDto = "pending" | "acknowledged" | "archived";
+export type TransferAlertSenderDto = {
     id: string;
     transfer_id: string;
     sender_partner_id: string;
+    created_at: string;
+    status: TransferAlertStatusDto;
+    message: string;
+    transfer_end_to_end_id: string;
+    /** in clear, not hashed */
+    beneficiary_iban: string;
+    /** in clear, not hashed or pseudonimized */
+    sender_iban: string;
+};
+export type TransferAlertUpdateAsSenderBodyDto = {
+    message?: string;
+    transfer_end_to_end_id?: string;
+    /** in clear, not hashed */
+    beneficiary_iban?: string;
+    /** in clear, not hashed or pseudonimized */
+    sender_iban?: string;
+};
+export type TransferAlertBeneficiaryDto = {
+    id: string;
     beneficiary_partner_id: string;
     created_at: string;
     status: TransferAlertStatusDto;
@@ -83,23 +112,7 @@ export type TransferAlertDto = {
     /** in clear, not hashed or pseudonimized */
     sender_iban: string;
 };
-export type CreateTransferAlertDto = {
-    transfer_id: string;
-    message: string;
-    transfer_end_to_end_id: string;
-    /** in clear, not hashed */
-    beneficiary_iban: string;
-    /** in clear, not hashed or pseudonimized */
-    sender_iban: string;
-};
-export type UpdateTransferAlertDto = {
-    message: string;
-    transfer_end_to_end_id: string;
-    /** in clear, not hashed */
-    beneficiary_iban: string;
-    /** in clear, not hashed or pseudonimized */
-    sender_iban: string;
-} | {
+export type TransferAlertUpdateAsBeneficiaryBodyDto = {
     status: TransferAlertStatusDto;
 };
 /**
@@ -234,35 +247,13 @@ export function updateTransfer(transferId: string, transferUpdateBodyDto: Transf
     })));
 }
 /**
- * List alerts
- */
-export function listAlerts(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            alerts: TransferAlertDto[];
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>("/transfer/alerts", {
-        ...opts
-    }));
-}
-/**
  * Create an alert
  */
-export function createAlert(createTransferAlertDto: CreateTransferAlertDto, opts?: Oazapfts.RequestOpts) {
+export function createAlert(transferAlertCreateBodyDto: TransferAlertCreateBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            alert: TransferAlertDto;
+            alert: TransferAlertSenderDto;
         };
     } | {
         status: 401;
@@ -276,17 +267,19 @@ export function createAlert(createTransferAlertDto: CreateTransferAlertDto, opts
     }>("/transfer/alerts", oazapfts.json({
         ...opts,
         method: "POST",
-        body: createTransferAlertDto
+        body: transferAlertCreateBodyDto
     })));
 }
 /**
- * Get an alert by id
+ * List sent alerts
  */
-export function getAlert(alertId: string, opts?: Oazapfts.RequestOpts) {
+export function listSentAlerts({ transferId }: {
+    transferId?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            alert: TransferAlertDto;
+            alerts: TransferAlertSenderDto[];
         };
     } | {
         status: 401;
@@ -297,18 +290,20 @@ export function getAlert(alertId: string, opts?: Oazapfts.RequestOpts) {
     } | {
         status: 404;
         data: string;
-    }>(`/transfer/alerts/${encodeURIComponent(alertId)}`, {
+    }>(`/transfer/sent/alerts${QS.query(QS.explode({
+        transfer_id: transferId
+    }))}`, {
         ...opts
     }));
 }
 /**
- * Update an alert
+ * Get a sent alert by id
  */
-export function updateAlert(alertId: string, updateTransferAlertDto: UpdateTransferAlertDto, opts?: Oazapfts.RequestOpts) {
+export function getSentAlert(alertId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            alert: TransferAlertDto;
+            alert: TransferAlertSenderDto;
         };
     } | {
         status: 401;
@@ -319,9 +314,103 @@ export function updateAlert(alertId: string, updateTransferAlertDto: UpdateTrans
     } | {
         status: 404;
         data: string;
-    }>(`/transfer/alerts/${encodeURIComponent(alertId)}`, oazapfts.json({
+    }>(`/transfer/sent/alerts/${encodeURIComponent(alertId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Update a sent alert
+ */
+export function updateSentAlert(alertId: string, transferAlertUpdateAsSenderBodyDto: TransferAlertUpdateAsSenderBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            alert: TransferAlertSenderDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/transfer/sent/alerts/${encodeURIComponent(alertId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: updateTransferAlertDto
+        body: transferAlertUpdateAsSenderBodyDto
+    })));
+}
+/**
+ * List received alerts
+ */
+export function listReceivedAlerts({ transferId }: {
+    transferId?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            alerts: TransferAlertBeneficiaryDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/transfer/received/alerts${QS.query(QS.explode({
+        transfer_id: transferId
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Get a received alert by id
+ */
+export function getReceivedAlert(alertId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            alert: TransferAlertBeneficiaryDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/transfer/received/alerts/${encodeURIComponent(alertId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Update a received alert
+ */
+export function updateReceivedAlert(alertId: string, transferAlertUpdateAsBeneficiaryBodyDto: TransferAlertUpdateAsBeneficiaryBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            alert: TransferAlertBeneficiaryDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/transfer/received/alerts/${encodeURIComponent(alertId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: transferAlertUpdateAsBeneficiaryBodyDto
     })));
 }
