@@ -26,14 +26,14 @@ export default function AlertsPage() {
             <li>
               <TabLink
                 labelTKey="navigation:transfercheck.alerts.received"
-                to={getRoute('/transfercheck/alerts/inboxes/received')}
+                to={getRoute('/transfercheck/alerts/received')}
                 Icon={(props) => <Icon {...props} icon="inbox" />}
               />
             </li>
             <li>
               <TabLink
                 labelTKey="navigation:transfercheck.alerts.sent"
-                to={getRoute('/transfercheck/alerts/inboxes/sent')}
+                to={getRoute('/transfercheck/alerts/sent')}
                 Icon={(props) => <Icon {...props} icon="send" />}
               />
             </li>

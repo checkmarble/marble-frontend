@@ -112,7 +112,7 @@ export default function Builder() {
                 <li>
                   <SidebarLink
                     labelTKey="navigation:transfercheck.alerts"
-                    to={getRoute('/transfercheck/alerts/inboxes')}
+                    to={getRoute('/transfercheck/alerts')}
                     Icon={(props) => <Icon icon="notifications" {...props} />}
                   />
                 </li>
