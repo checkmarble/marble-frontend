@@ -44,7 +44,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { alertId } = parsedParam.data;
 
   try {
-    const alert = await transferAlertRepository.getAlert({
+    const alert = await transferAlertRepository.getReceivedAlert({
       alertId,
     });
 

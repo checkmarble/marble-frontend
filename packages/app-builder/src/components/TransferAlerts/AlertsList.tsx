@@ -1,8 +1,5 @@
 import { Highlight } from '@app-builder/components/Highlight';
-import {
-  type TransferAlert,
-  type TransferAlertStatus,
-} from '@app-builder/models/transfer-alert';
+import { type TransferAlertStatus } from '@app-builder/models/transfer-alert';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import {
@@ -33,9 +30,9 @@ import { MessageFilter } from './Filters/FilterDetail/MessageFilter';
 import { alertsFilterNames } from './Filters/filters';
 
 interface AlertsListProps {
-  alerts: TransferAlert[];
+  alerts: TransferAlertRow[];
   className?: string;
-  rowLink: (alert: TransferAlert) => JSX.Element;
+  rowLink: (id: string) => JSX.Element;
 }
 
 type TransferAlertColumnFiltersState = (
@@ -105,15 +102,22 @@ export function AlertsList({ alerts, className, rowLink }: AlertsListProps) {
   );
 }
 
+interface TransferAlertRow {
+  id: string;
+  status: TransferAlertStatus;
+  message: string;
+  createdAt: string;
+}
+
 interface AlertsListTableProps {
-  alerts: TransferAlert[];
+  alerts: TransferAlertRow[];
   className?: string;
   columnFilters: TransferAlertColumnFiltersState;
   setColumnFilters: OnChangeFn<TransferAlertColumnFiltersState>;
-  rowLink: (alert: TransferAlert) => JSX.Element;
+  rowLink: (id: string) => JSX.Element;
 }
 
-const columnHelper = createColumnHelper<TransferAlert>();
+const columnHelper = createColumnHelper<TransferAlertRow>();
 
 function AlertsListTable({
   alerts,
@@ -178,7 +182,7 @@ function AlertsListTable({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    rowLink,
+    rowLink: (row) => rowLink(row.id),
   });
 
   if (rows.length === 0) {
@@ -199,7 +203,7 @@ function AlertsListTable({
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
           const bgClassName =
-            row.original.status === 'unread' ? 'bg-grey-00' : 'transparent';
+            row.original.status === 'archived' ? 'transparent' : 'bg-grey-00';
           return (
             <Table.Row
               key={row.id}

@@ -1,19 +1,48 @@
 import {
-  type CreateTransferAlertDto,
-  type TransferAlertDto,
-  type UpdateTransferAlertDto,
+  type TransferAlertBeneficiaryDto,
+  type TransferAlertCreateBodyDto,
+  type TransferAlertSenderDto,
+  type TransferAlertUpdateAsBeneficiaryBodyDto,
+  type TransferAlertUpdateAsSenderBodyDto,
 } from 'marble-api/generated/transfercheck-api';
 
-export const transferAlerStatuses = ['unread', 'read', 'archived'] as const;
+export const transferAlerStatuses = [
+  'pending',
+  'acknowledged',
+  'archived',
+] as const;
 export type TransferAlertStatus = (typeof transferAlerStatuses)[number];
 
-export type TransferAlertType = 'sent' | 'received';
-
-export interface TransferAlert {
+export interface TransferAlertSender {
   id: string;
-  type: TransferAlertType;
   transferId: string;
   senderPartnerId: string;
+  createdAt: string;
+  status: TransferAlertStatus;
+  message: string;
+  transferEndToEndId: string;
+  beneficiaryIban: string;
+  senderIban: string;
+}
+
+export function adaptTransferAlertSender(
+  dto: TransferAlertSenderDto,
+): TransferAlertSender {
+  return {
+    id: dto.id,
+    transferId: dto.transfer_id,
+    senderPartnerId: dto.sender_partner_id,
+    createdAt: dto.created_at,
+    status: dto.status,
+    message: dto.message,
+    transferEndToEndId: dto.transfer_end_to_end_id,
+    beneficiaryIban: dto.beneficiary_iban,
+    senderIban: dto.sender_iban,
+  };
+}
+
+export interface TransferAlertBeneficiary {
+  id: string;
   beneficiaryPartnerId: string;
   createdAt: string;
   status: TransferAlertStatus;
@@ -23,23 +52,11 @@ export interface TransferAlert {
   senderIban: string;
 }
 
-export function adaptTransferAlert(
-  dto: TransferAlertDto,
-  partnerId: string,
-): TransferAlert {
-  let type: TransferAlertType;
-  if (dto.sender_partner_id === partnerId) {
-    type = 'sent';
-  } else if (dto.beneficiary_partner_id === partnerId) {
-    type = 'received';
-  } else {
-    throw new Error('Invalid partner id');
-  }
+export function adaptTransferAlertBeneficiary(
+  dto: TransferAlertBeneficiaryDto,
+): TransferAlertBeneficiary {
   return {
     id: dto.id,
-    transferId: dto.transfer_id,
-    type,
-    senderPartnerId: dto.sender_partner_id,
     beneficiaryPartnerId: dto.beneficiary_partner_id,
     createdAt: dto.created_at,
     status: dto.status,
@@ -50,7 +67,7 @@ export function adaptTransferAlert(
   };
 }
 
-export interface CreateTransferAlert {
+export interface TransferAlertCreateBody {
   transferId: string;
   message: string;
   transferEndToEndId: string;
@@ -58,9 +75,9 @@ export interface CreateTransferAlert {
   senderIban: string;
 }
 
-export function adaptCreateTransferAlertDto(
-  createTransferAlert: CreateTransferAlert,
-): CreateTransferAlertDto {
+export function adaptTransferAlertCreateBodyDto(
+  createTransferAlert: TransferAlertCreateBody,
+): TransferAlertCreateBodyDto {
   return {
     transfer_id: createTransferAlert.transferId,
     message: createTransferAlert.message,
@@ -70,32 +87,34 @@ export function adaptCreateTransferAlertDto(
   };
 }
 
-export type UpdateTransferAlert =
-  | {
-      type: 'sender';
-      message: string;
-      transferEndToEndId: string;
-      beneficiaryIban: string;
-      senderIban: string;
-    }
-  | {
-      type: 'beneficiary';
-      status: TransferAlertStatus;
-    };
+export interface TransferAlertUpdateAsSenderBody {
+  alertId: string;
+  message?: string;
+  transferEndToEndId?: string;
+  beneficiaryIban?: string;
+  senderIban?: string;
+}
 
-export function adaptUpdateTransferAlertDto(
-  updateTransferAlert: UpdateTransferAlert,
-): UpdateTransferAlertDto {
-  if (updateTransferAlert.type === 'sender') {
-    return {
-      message: updateTransferAlert.message,
-      transfer_end_to_end_id: updateTransferAlert.transferEndToEndId,
-      beneficiary_iban: updateTransferAlert.beneficiaryIban,
-      sender_iban: updateTransferAlert.senderIban,
-    };
-  } else {
-    return {
-      status: updateTransferAlert.status,
-    };
-  }
+export function adaptTransferAlertUpdateAsSenderBodyDto(
+  body: TransferAlertUpdateAsSenderBody,
+): TransferAlertUpdateAsSenderBodyDto {
+  return {
+    message: body.message,
+    transfer_end_to_end_id: body.transferEndToEndId,
+    beneficiary_iban: body.beneficiaryIban,
+    sender_iban: body.senderIban,
+  };
+}
+
+export interface TransferAlertUpdateAsBeneficiaryBody {
+  alertId: string;
+  status: TransferAlertStatus;
+}
+
+export function adaptUpdateTransferAlertAsBeneficiaryDto(
+  body: TransferAlertUpdateAsBeneficiaryBody,
+): TransferAlertUpdateAsBeneficiaryBodyDto {
+  return {
+    status: body.status,
+  };
 }

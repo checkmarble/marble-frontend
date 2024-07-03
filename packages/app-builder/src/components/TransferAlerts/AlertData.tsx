@@ -1,4 +1,4 @@
-import { type TransferAlert } from '@app-builder/models/transfer-alert';
+import { type TransferAlertStatus } from '@app-builder/models/transfer-alert';
 import {
   formatDateRelative,
   formatDateTime,
@@ -12,7 +12,14 @@ import { Callout } from '../Callout';
 import { alertsI18n } from './alerts-i18n';
 
 interface AlertDataProps {
-  alert: TransferAlert;
+  alert: {
+    createdAt: string;
+    status: TransferAlertStatus;
+    message: string;
+    transferEndToEndId: string;
+    beneficiaryIban: string;
+    senderIban: string;
+  };
 }
 
 //TODO(alert): choose one of the two components below and add translation keys

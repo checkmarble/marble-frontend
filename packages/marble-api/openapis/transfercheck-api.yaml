@@ -207,34 +207,6 @@ paths:
         '404':
           $ref: '#/components/responses/404'
   /transfer/alerts:
-    get:
-      tags:
-        - Alerts
-      summary: List alerts
-      description: List alerts, either from the sender or from the beneficiary partner point of view
-      operationId: listAlerts
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: List of alerts
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  alerts:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TransferAlertDto'
-                required:
-                  - alerts
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
     post:
       tags:
         - Alerts
@@ -247,7 +219,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTransferAlertDto'
+              $ref: '#/components/schemas/TransferAlertCreateBodyDto'
         required: true
       responses:
         '200':
@@ -258,7 +230,7 @@ paths:
                 type: object
                 properties:
                   alert:
-                    $ref: '#/components/schemas/TransferAlertDto'
+                    $ref: '#/components/schemas/TransferAlertSenderDto'
                 required:
                   - alert
         '401':
@@ -267,12 +239,46 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-  /transfer/alerts/{alertId}:
+  /transfer/sent/alerts:
     get:
       tags:
         - Alerts
-      summary: Get an alert by id
-      operationId: getAlert
+      summary: List sent alerts
+      operationId: listSentAlerts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: transfer_id
+          description: ID of the transfer associated with the alert
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of sent alerts corresponding to filters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TransferAlertSenderDto'
+                required:
+                  - alerts
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /transfer/sent/alerts/{alertId}:
+    get:
+      tags:
+        - Alerts
+      summary: Get a sent alert by id
+      operationId: getSentAlert
       security:
         - bearerAuth: []
       parameters:
@@ -291,7 +297,7 @@ paths:
                 type: object
                 properties:
                   alert:
-                    $ref: '#/components/schemas/TransferAlertDto'
+                    $ref: '#/components/schemas/TransferAlertSenderDto'
                 required:
                   - alert
         '401':
@@ -303,8 +309,8 @@ paths:
     patch:
       tags:
         - Alerts
-      summary: Update an alert
-      operationId: updateAlert
+      summary: Update a sent alert
+      operationId: updateSentAlert
       security:
         - bearerAuth: []
       parameters:
@@ -319,7 +325,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateTransferAlertDto'
+              $ref: '#/components/schemas/TransferAlertUpdateAsSenderBodyDto'
         required: true
       responses:
         '200':
@@ -330,7 +336,113 @@ paths:
                 type: object
                 properties:
                   alert:
-                    $ref: '#/components/schemas/TransferAlertDto'
+                    $ref: '#/components/schemas/TransferAlertSenderDto'
+                required:
+                  - alert
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /transfer/received/alerts:
+    get:
+      tags:
+        - Alerts
+      summary: List received alerts
+      operationId: listReceivedAlerts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: transfer_id
+          description: ID of the transfer associated with the alert
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of received alerts corresponding to filters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TransferAlertBeneficiaryDto'
+                required:
+                  - alerts
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /transfer/received/alerts/{alertId}:
+    get:
+      tags:
+        - Alerts
+      summary: Get a received alert by id
+      operationId: getReceivedAlert
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: alertId
+          description: ID of the alert
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Alert corresponding to the provided `alertId`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alert:
+                    $ref: '#/components/schemas/TransferAlertBeneficiaryDto'
+                required:
+                  - alert
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    patch:
+      tags:
+        - Alerts
+      summary: Update a received alert
+      operationId: updateReceivedAlert
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: alertId
+          description: ID of the alert
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Describe the modifications to make to the alert
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferAlertUpdateAsBeneficiaryBodyDto'
+        required: true
+      responses:
+        '200':
+          description: Updated alert corresponding to the provided `alertId`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alert:
+                    $ref: '#/components/schemas/TransferAlertBeneficiaryDto'
                 required:
                   - alert
         '401':
@@ -429,11 +541,14 @@ components:
         score:
           type: number
           nullable: true
+        beneficiary_in_network:
+          type: boolean
         transfer_data:
           $ref: '#/components/schemas/TransferDataDto'
       required:
         - id
         - transfer_data
+        - beneficiary_in_network
     TransferDataDto:
       type: object
       properties:
@@ -495,8 +610,8 @@ components:
         - value
     TransferAlertStatusDto:
       type: string
-      enum: [unread, read, archived]
-    TransferAlertDto:
+      enum: [pending, acknowledged, archived]
+    TransferAlertSenderDto:
       type: object
       properties:
         id:
@@ -506,6 +621,37 @@ components:
           type: string
           format: uuid
         sender_partner_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/TransferAlertStatusDto'
+        message:
+          type: string
+        transfer_end_to_end_id:
+          type: string
+        beneficiary_iban:
+          type: string
+          description: in clear, not hashed
+        sender_iban:
+          type: string
+          description: in clear, not hashed or pseudonimized
+      required:
+        - id
+        - transfer_id
+        - sender_partner_id
+        - created_at
+        - status
+        - message
+        - transfer_end_to_end_id
+        - beneficiary_iban
+        - sender_iban
+    TransferAlertBeneficiaryDto:
+      type: object
+      properties:
+        id:
           type: string
           format: uuid
         beneficiary_partner_id:
@@ -528,8 +674,6 @@ components:
           description: in clear, not hashed or pseudonimized
       required:
         - id
-        - transfer_id
-        - sender_partner_id
         - beneficiary_partner_id
         - created_at
         - status
@@ -537,7 +681,7 @@ components:
         - transfer_end_to_end_id
         - beneficiary_iban
         - sender_iban
-    CreateTransferAlertDto:
+    TransferAlertCreateBodyDto:
       type: object
       properties:
         transfer_id:
@@ -559,33 +703,27 @@ components:
         - transfer_end_to_end_id
         - beneficiary_iban
         - sender_iban
-    UpdateTransferAlertDto:
-      oneOf:
-        - type: object
-          description: Update for the sender. At least one of the properties must be provided
-          properties:
-            message:
-              type: string
-            transfer_end_to_end_id:
-              type: string
-            beneficiary_iban:
-              type: string
-              description: in clear, not hashed
-            sender_iban:
-              type: string
-              description: in clear, not hashed or pseudonimized
-          required:
-            - message
-            - transfer_end_to_end_id
-            - beneficiary_iban
-            - sender_iban
-        - type: object
-          description: Update for the beneficiary. At least one of the properties must be provided
-          properties:
-            status:
-              $ref: '#/components/schemas/TransferAlertStatusDto'
-          required:
-            - status
+    TransferAlertUpdateAsBeneficiaryBodyDto:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/TransferAlertStatusDto'
+      required:
+        - status
+    TransferAlertUpdateAsSenderBodyDto:
+      type: object
+      description: Update for the sender. At least one of the properties must be provided
+      properties:
+        message:
+          type: string
+        transfer_end_to_end_id:
+          type: string
+        beneficiary_iban:
+          type: string
+          description: in clear, not hashed
+        sender_iban:
+          type: string
+          description: in clear, not hashed or pseudonimized
   securitySchemes:
     bearerAuth:
       type: http

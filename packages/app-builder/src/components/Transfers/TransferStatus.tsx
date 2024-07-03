@@ -65,14 +65,14 @@ interface TransferStatusAlertProps {
   alertId?: string;
   transferId: string;
   transferStatus: TransferStatus;
-  isBeneficiaryPartner: boolean;
+  beneficiaryInNetwork: boolean;
 }
 
 export function TransferStatusAlert({
   alertId,
   transferId,
   transferStatus,
-  isBeneficiaryPartner,
+  beneficiaryInNetwork,
 }: TransferStatusAlertProps) {
   const { t } = useTranslation(transfersI18n);
 
@@ -99,7 +99,7 @@ export function TransferStatusAlert({
     );
   }
 
-  if (!isBeneficiaryPartner) {
+  if (!beneficiaryInNetwork) {
     return (
       <Callout variant="outlined" className="w-fit">
         {t('transfercheck:transfer_detail.transfer_status.alert_not_partner')}

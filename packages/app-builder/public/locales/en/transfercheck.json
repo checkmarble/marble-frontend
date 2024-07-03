@@ -60,7 +60,7 @@
   "alert_detail.received.title": "Received alert details",
   "alert_detail.alert_data.title": "Alert data",
   "alert_detail.alert_data.transfer_id": "Here is the transfer end to end id associated to this alert: <TransferIdValue>{{transferEndToEndId}}</TransferIdValue>",
-  "alert_status.unread": "Unread",
-  "alert_status.read": "Read",
+  "alert_status.pending": "Pending",
+  "alert_status.acknowledged": "Acknowledged",
   "alert_status.archived": "Archived"
 }

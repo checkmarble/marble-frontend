@@ -58,6 +58,7 @@ export interface Transfer {
   id: string;
   lastScoredAt?: string;
   score?: number;
+  beneficiaryInNetwork: boolean;
   data: TransferData;
 }
 
@@ -66,6 +67,7 @@ export function adaptTransfer(transferDto: TransferDto): Transfer {
     id: transferDto.id,
     lastScoredAt: transferDto.last_scored_at ?? undefined,
     score: transferDto.score ?? undefined,
+    beneficiaryInNetwork: transferDto.beneficiary_in_network,
     data: adaptTransferData(transferDto.transfer_data),
   };
 }

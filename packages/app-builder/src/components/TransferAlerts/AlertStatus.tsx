@@ -60,13 +60,13 @@ export function AlertStatus({ status }: { status: TransferAlertStatus }) {
 }
 
 export const alertStatusMapping = {
-  unread: {
+  pending: {
     color: 'red',
-    tKey: 'transfercheck:alert_status.unread',
+    tKey: 'transfercheck:alert_status.pending',
   },
-  read: {
+  acknowledged: {
     color: 'blue',
-    tKey: 'transfercheck:alert_status.read',
+    tKey: 'transfercheck:alert_status.acknowledged',
   },
   archived: {
     color: 'grey',

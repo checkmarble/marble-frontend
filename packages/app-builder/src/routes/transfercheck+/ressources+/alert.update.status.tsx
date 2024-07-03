@@ -47,8 +47,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    //TODO(alert): call updateAlertStatus
-    // await transferAlertRepository.updateAlertStatus(submission.value);
+    await transferAlertRepository.updateReceivedAlert(submission.value);
 
     const session = await getSession(request);
     const t = await getFixedT(request, ['transfercheck']);
