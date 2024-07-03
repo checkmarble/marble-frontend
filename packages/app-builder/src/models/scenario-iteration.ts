@@ -70,7 +70,7 @@ export function sortScenarioIterations<T extends ScenarioIterationSummary>(
 ) {
   return R.pipe(
     scenarioIterations,
-    R.partition(({ version }) => R.isDefined(version)),
+    R.partition(({ version }) => R.isNonNullish(version)),
     ([versions, drafts]) => {
       const sortedDrafts = R.pipe(
         drafts,
