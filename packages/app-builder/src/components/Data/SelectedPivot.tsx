@@ -62,7 +62,7 @@ export function SelectedPivotProvider({
     return R.pipe(
       selectedPivot.pathLinkIds,
       R.map((linkId) => linksToSingleMap.get(linkId)),
-      R.filter(R.isDefined),
+      R.filter(R.isNonNullish),
     );
   }, [selectedPivot, linksToSingleMap]);
 

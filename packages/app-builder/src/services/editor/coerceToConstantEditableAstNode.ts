@@ -64,7 +64,7 @@ function coerceToConstantArray(
     const astNode = R.pipe(
       Array.from(trimSearch.matchAll(captureNumbers)),
       R.map((match) => match.groups?.['numbers']),
-      R.filter(R.isDefined),
+      R.filter(R.isNonNullish),
       R.map(Number),
       (constant) =>
         NewConstantAstNode({
@@ -78,7 +78,7 @@ function coerceToConstantArray(
     const astNode = R.pipe(
       Array.from(trimSearch.matchAll(captureStrings)),
       R.map((match) => match.groups?.['strings']),
-      R.filter(R.isDefined),
+      R.filter(R.isNonNullish),
       (constant) =>
         NewConstantAstNode({
           constant,
