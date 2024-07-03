@@ -65,7 +65,7 @@ export function hasRuleErrors(
   ruleValidation: ScenarioValidation['rules']['ruleItems'][number],
 ): boolean {
   return (
-    ruleValidation.errors.length > 1 ||
+    ruleValidation.errors.length > 0 ||
     countNodeEvaluationErrors(ruleValidation.ruleEvaluation) > 0
   );
 }
