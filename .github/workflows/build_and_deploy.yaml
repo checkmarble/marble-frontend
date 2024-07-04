@@ -44,17 +44,6 @@ jobs:
           username: _json_key
           password: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Setup Sentry CLI
-        uses: mathieu-bour/setup-sentry-cli@v1
-        with:
-          token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          organization: 'checkmarble'
-          project: 'marble-frontend'
-
-      - name: Get release
-        run: |
-          echo "SENTRY_RELEASE=$(sentry-cli releases propose-version)" >> "$GITHUB_ENV"
-
       # source: https://github.com/docker/build-push-action
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -65,7 +54,8 @@ jobs:
           tags: ${{ env.IMAGE }}
           file: ./Dockerfile
           build-args: |
-            "SENTRY_RELEASE=${{ env.SENTRY_RELEASE }}"
+            "SENTRY_ORG='checkmarble'"
+            "SENTRY_PROJECT='marble-frontend'"
           secrets: |
             "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
 
