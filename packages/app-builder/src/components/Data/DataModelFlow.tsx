@@ -18,7 +18,7 @@ import {
   ReactFlowProvider,
   useReactFlow,
 } from 'reactflow';
-import reactflowStyles from 'reactflow/dist/style.css?url';
+import reactflowStyles from 'reactflow/dist/style.css';
 import * as R from 'remeda';
 import { Button, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
