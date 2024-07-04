@@ -505,6 +505,16 @@ export const routes = [
             "file": "routes/transfercheck+/_index.tsx"
           },
           {
+            "id": "routes/transfercheck+/alerts+/_.received.$alertId",
+            "path": "alerts/received/:alertId",
+            "file": "routes/transfercheck+/alerts+/_.received.$alertId.tsx"
+          },
+          {
+            "id": "routes/transfercheck+/alerts+/_.sent.$alertId",
+            "path": "alerts/sent/:alertId",
+            "file": "routes/transfercheck+/alerts+/_.sent.$alertId.tsx"
+          },
+          {
             "id": "routes/transfercheck+/alerts+/_layout",
             "path": "alerts",
             "file": "routes/transfercheck+/alerts+/_layout.tsx",
@@ -517,26 +527,12 @@ export const routes = [
               {
                 "id": "routes/transfercheck+/alerts+/received",
                 "path": "received",
-                "file": "routes/transfercheck+/alerts+/received.tsx",
-                "children": [
-                  {
-                    "id": "routes/transfercheck+/alerts+/received.$alertId",
-                    "path": ":alertId",
-                    "file": "routes/transfercheck+/alerts+/received.$alertId.tsx"
-                  }
-                ]
+                "file": "routes/transfercheck+/alerts+/received.tsx"
               },
               {
                 "id": "routes/transfercheck+/alerts+/sent",
                 "path": "sent",
-                "file": "routes/transfercheck+/alerts+/sent.tsx",
-                "children": [
-                  {
-                    "id": "routes/transfercheck+/alerts+/sent.$alertId",
-                    "path": ":alertId",
-                    "file": "routes/transfercheck+/alerts+/sent.$alertId.tsx"
-                  }
-                ]
+                "file": "routes/transfercheck+/alerts+/sent.tsx"
               }
             ]
           },
