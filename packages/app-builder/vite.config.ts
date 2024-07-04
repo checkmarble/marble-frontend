@@ -8,7 +8,7 @@ import viteTsConfigPaths from 'vite-tsconfig-paths';
 installGlobals();
 
 // eslint-disable-next-line no-restricted-properties
-const isCI = process.env['CI'] === 'true';
+const hasSentryAuthToken = process.env['SENTRY_AUTH_TOKEN'] !== undefined;
 const appDirectory = 'src';
 
 export default defineConfig({
@@ -37,7 +37,7 @@ export default defineConfig({
     viteTsConfigPaths(),
     sentryVitePlugin({
       telemetry: false,
-      disable: !isCI,
+      disable: !hasSentryAuthToken,
     }),
   ],
   test: {
@@ -45,6 +45,6 @@ export default defineConfig({
     environment: 'jsdom',
   },
   build: {
-    sourcemap: isCI,
+    sourcemap: hasSentryAuthToken,
   },
 });
