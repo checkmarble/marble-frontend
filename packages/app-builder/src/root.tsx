@@ -7,6 +7,7 @@ import {
 import {
   Link,
   Links,
+  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -31,7 +32,7 @@ import { serverServices } from './services/init.server';
 import { useSegmentPageTracking } from './services/segment';
 import { getSegmentScript } from './services/segment/segment.server';
 import { SegmentScript } from './services/segment/SegmentScript';
-import tailwindStyles from './tailwind.css?url';
+import tailwindStyles from './tailwind.css';
 import { getClientEnvVars, getServerEnv } from './utils/environment';
 import { getRoute } from './utils/routes';
 
@@ -130,7 +131,7 @@ export function ErrorBoundary() {
       </head>
       <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
         <div className="from-purple-10 to-grey-02 flex size-full flex-col items-center bg-gradient-to-r">
-          <div className="flex size-full flex-col items-center bg-no-repeat">
+          <div className="flex size-full flex-col items-center bg-[url('/img/login_background.svg')] bg-no-repeat">
             <div className="flex h-full max-h-80 flex-col justify-center">
               <Link to={getRoute('/sign-in')}>
                 <Logo
@@ -148,6 +149,7 @@ export function ErrorBoundary() {
         </div>
         <ScrollRestoration />
         <Scripts />
+        <LiveReload />
       </body>
     </html>
   );
@@ -184,6 +186,7 @@ function App() {
         />
         <ScrollRestoration />
         <Scripts />
+        <LiveReload />
         <ClientOnly>
           {() => <MarbleToaster toastMessage={toastMessage} />}
         </ClientOnly>
