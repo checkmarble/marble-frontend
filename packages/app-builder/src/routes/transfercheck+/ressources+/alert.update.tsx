@@ -4,10 +4,16 @@ import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormTextArea } from '@app-builder/components/Form/FormTextArea';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import {
+  beneficiaryIbanSchema,
+  messageSchema,
+  senderIbanSchema,
+  transferEndToEndIdSchema,
+} from '@app-builder/models/transfer-alert';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { conform, useForm } from '@conform-to/react';
-import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import { parse } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
@@ -18,10 +24,10 @@ import { z } from 'zod';
 
 const updateAlertFormSchema = z.object({
   alertId: z.string(),
-  message: z.string({ required_error: 'required' }),
-  transferEndToEndId: z.string(),
-  senderIban: z.string(),
-  beneficiaryIban: z.string(),
+  message: messageSchema,
+  transferEndToEndId: transferEndToEndIdSchema.optional(),
+  senderIban: senderIbanSchema.optional(),
+  beneficiaryIban: beneficiaryIbanSchema.optional(),
 });
 
 type UpdateAlertForm = z.infer<typeof updateAlertFormSchema>;
@@ -121,7 +127,6 @@ function UpdateAlertContent({
     id: formId,
     defaultValue,
     lastSubmission: fetcher.data?.submission,
-    constraint: getFieldsetConstraint(updateAlertFormSchema),
     onValidate({ formData }) {
       return parse(formData, {
         schema: updateAlertFormSchema,
@@ -138,6 +143,17 @@ function UpdateAlertContent({
       <ModalV2.Title>{t('transfercheck:alert.update.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <input {...conform.input(fields.alertId, { type: 'hidden' })} />
+        <FormField
+          config={fields.message}
+          className="flex flex-col items-start gap-2"
+        >
+          <FormLabel>{t('transfercheck:alert.update.message')}</FormLabel>
+          <FormTextArea
+            className="w-full"
+            placeholder={t('transfercheck:alert.update.message.placeholder')}
+          />
+          <FormError />
+        </FormField>
         <FormField
           config={fields.transferEndToEndId}
           className="flex flex-col items-start gap-2"
@@ -176,17 +192,6 @@ function UpdateAlertContent({
             placeholder={t(
               'transfercheck:alert.update.beneficiary_iban.placeholder',
             )}
-          />
-          <FormError />
-        </FormField>
-        <FormField
-          config={fields.message}
-          className="flex flex-col items-start gap-2"
-        >
-          <FormLabel>{t('transfercheck:alert.update.message')}</FormLabel>
-          <FormTextArea
-            className="w-full"
-            placeholder={t('transfercheck:alert.update.message.placeholder')}
           />
           <FormError />
         </FormField>
