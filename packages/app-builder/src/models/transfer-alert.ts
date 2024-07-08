@@ -5,6 +5,7 @@ import {
   type TransferAlertUpdateAsBeneficiaryBodyDto,
   type TransferAlertUpdateAsSenderBodyDto,
 } from 'marble-api/generated/transfercheck-api';
+import { z } from 'zod';
 
 export const transferAlerStatuses = [
   'pending',
@@ -70,9 +71,9 @@ export function adaptTransferAlertBeneficiary(
 export interface TransferAlertCreateBody {
   transferId: string;
   message: string;
-  transferEndToEndId: string;
-  beneficiaryIban: string;
-  senderIban: string;
+  transferEndToEndId?: string;
+  beneficiaryIban?: string;
+  senderIban?: string;
 }
 
 export function adaptTransferAlertCreateBodyDto(
@@ -81,9 +82,9 @@ export function adaptTransferAlertCreateBodyDto(
   return {
     transfer_id: createTransferAlert.transferId,
     message: createTransferAlert.message,
-    transfer_end_to_end_id: createTransferAlert.transferEndToEndId,
-    beneficiary_iban: createTransferAlert.beneficiaryIban,
-    sender_iban: createTransferAlert.senderIban,
+    transfer_end_to_end_id: createTransferAlert.transferEndToEndId ?? '',
+    beneficiary_iban: createTransferAlert.beneficiaryIban ?? '',
+    sender_iban: createTransferAlert.senderIban ?? '',
   };
 }
 
@@ -99,10 +100,10 @@ export function adaptTransferAlertUpdateAsSenderBodyDto(
   body: TransferAlertUpdateAsSenderBody,
 ): TransferAlertUpdateAsSenderBodyDto {
   return {
-    message: body.message,
-    transfer_end_to_end_id: body.transferEndToEndId,
-    beneficiary_iban: body.beneficiaryIban,
-    sender_iban: body.senderIban,
+    message: body.message ?? '',
+    transfer_end_to_end_id: body.transferEndToEndId ?? '',
+    beneficiary_iban: body.beneficiaryIban ?? '',
+    sender_iban: body.senderIban ?? '',
   };
 }
 
@@ -118,3 +119,19 @@ export function adaptUpdateTransferAlertAsBeneficiaryDto(
     status: body.status,
   };
 }
+
+export const messageSchema = z
+  .string({ required_error: 'required' })
+  .max(1000, { message: 'max 1000 characters' });
+
+export const transferEndToEndIdSchema = z
+  .string()
+  .max(100, { message: 'max 100 characters' });
+
+export const senderIbanSchema = z
+  .string()
+  .max(34, { message: 'max 34 characters' });
+
+export const beneficiaryIbanSchema = z
+  .string()
+  .max(34, { message: 'max 34 characters' });
