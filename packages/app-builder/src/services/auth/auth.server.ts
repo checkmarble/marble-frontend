@@ -94,6 +94,7 @@ export interface AuthenticationServerService {
 }
 
 const schema = z.object({
+  type: z.enum(['google', 'microsoft', 'email']),
   idToken: z.string(),
   csrf: z.string(),
 });

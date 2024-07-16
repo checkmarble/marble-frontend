@@ -69,13 +69,24 @@ export default function Login() {
         getRoute('/sign-in') + (redirectTo ? `?redirectTo=${redirectTo}` : ''),
     });
 
+  const loading = fetcher.state === 'loading';
+  const type = fetcher.formData?.get('type');
+
   return (
     <div className="flex w-full flex-col items-center">
       {isSSOAvailable ? (
         <>
           <div className="flex w-full flex-col gap-2">
-            <SignInWithGoogle signIn={signIn} />
-            <SignInWithMicrosoft signIn={signIn} />
+            <SignInWithGoogle
+              signIn={signIn}
+              // eslint-disable-next-line react/jsx-no-leaked-render
+              loading={loading && type === 'google'}
+            />
+            <SignInWithMicrosoft
+              signIn={signIn}
+              // eslint-disable-next-line react/jsx-no-leaked-render
+              loading={loading && type === 'microsoft'}
+            />
           </div>
 
           <div
@@ -90,7 +101,11 @@ export default function Login() {
       ) : null}
 
       <div className="flex w-full flex-col items-center gap-2">
-        <SignInWithEmailAndPassword signIn={signIn} />
+        <SignInWithEmailAndPassword
+          signIn={signIn}
+          // eslint-disable-next-line react/jsx-no-leaked-render
+          loading={loading && type === 'email'}
+        />
         <p className="w-fit text-xs">
           <Trans
             t={t}

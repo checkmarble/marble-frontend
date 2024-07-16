@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   FormControl,
   FormError,
@@ -25,6 +26,8 @@ import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Input } from 'ui-design-system';
 import * as z from 'zod';
+import { Spinner } from '../Spinner';
+import { sleep } from '@app-builder/utils/sleep';
 
 const emailAndPasswordFormSchema = z.object({
   credentials: z.object({
@@ -36,21 +39,44 @@ type EmailAndPasswordFormValues = z.infer<typeof emailAndPasswordFormSchema>;
 
 export function SignInWithEmailAndPassword({
   signIn,
+  loading,
 }: {
   signIn: (authPayload: AuthPayload) => void;
+  loading?: boolean;
 }) {
-  const { t } = useTranslation(['auth', 'common']);
-
   const formMethods = useForm<z.infer<typeof emailAndPasswordFormSchema>>({
     resolver: zodResolver(emailAndPasswordFormSchema),
     defaultValues: {
       credentials: { email: '', password: '' },
     },
   });
-  const { control } = formMethods;
 
-  const children = (
-    <>
+  return (
+    <FormProvider {...formMethods}>
+      <ClientOnly
+        fallback={<SignInWithEmailAndPasswordForm loading={loading} />}
+      >
+        {() => (
+          <ClientSignInWithEmailAndPasswordForm
+            loading={loading}
+            signIn={signIn}
+          />
+        )}
+      </ClientOnly>
+    </FormProvider>
+  );
+}
+
+function SignInWithEmailAndPasswordForm({
+  loading,
+  ...props
+}: Omit<React.ComponentPropsWithoutRef<'form'>, 'children'> & {
+  loading?: boolean;
+}) {
+  const { t } = useTranslation(['auth', 'common']);
+  const { control } = useFormContext<EmailAndPasswordFormValues>();
+  return (
+    <form noValidate className="flex w-full flex-col gap-4" {...props}>
       <FormField
         control={control}
         name="credentials.email"
@@ -87,41 +113,19 @@ export function SignInWithEmailAndPassword({
         name="credentials"
         render={() => <FormError />}
       />
-      <Button type="submit">{t('auth:sign_in')}</Button>
-    </>
+      <Button type="submit">
+        {loading ? <Spinner className="size-4" /> : t('auth:sign_in')}
+      </Button>
+    </form>
   );
-
-  return (
-    <FormProvider {...formMethods}>
-      <ClientOnly
-        fallback={
-          <SignInWithEmailAndPasswordForm>
-            {children}
-          </SignInWithEmailAndPasswordForm>
-        }
-      >
-        {() => (
-          <ClientSignInWithEmailAndPasswordForm signIn={signIn}>
-            {children}
-          </ClientSignInWithEmailAndPasswordForm>
-        )}
-      </ClientOnly>
-    </FormProvider>
-  );
-}
-
-function SignInWithEmailAndPasswordForm(
-  props: React.ComponentPropsWithoutRef<'form'>,
-) {
-  return <form noValidate className="flex w-full flex-col gap-4" {...props} />;
 }
 
 function ClientSignInWithEmailAndPasswordForm({
-  children,
   signIn,
+  loading,
 }: {
-  children: React.ReactNode;
   signIn: (authPayload: AuthPayload) => void;
+  loading?: boolean;
 }) {
   const { t } = useTranslation(['auth', 'common']);
 
@@ -129,7 +133,7 @@ function ClientSignInWithEmailAndPasswordForm({
     clientServices.authenticationClientService,
   );
 
-  const { handleSubmit, setError } =
+  const { handleSubmit, setError, formState } =
     useFormContext<EmailAndPasswordFormValues>();
   const navigate = useNavigate();
 
@@ -141,7 +145,9 @@ function ClientSignInWithEmailAndPasswordForm({
         if (!result) return;
         const { idToken, csrf } = result;
         if (!idToken) return;
-        signIn({ idToken, csrf });
+        signIn({ type: 'email', idToken, csrf });
+        // Hack to wait for the form to be submitted, otherwise the loading spinner will be flickering
+        await sleep(1000);
       } catch (error) {
         if (error instanceof EmailUnverified) {
           navigate(getRoute('/email-verification'));
@@ -177,11 +183,10 @@ function ClientSignInWithEmailAndPasswordForm({
 
   return (
     <SignInWithEmailAndPasswordForm
+      loading={loading || formState.isSubmitting}
       onSubmit={(e) => {
         void handleEmailSignIn(e);
       }}
-    >
-      {children}
-    </SignInWithEmailAndPasswordForm>
+    />
   );
 }
