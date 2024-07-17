@@ -7,9 +7,16 @@ import {
 } from 'marble-api/generated/marblecore-api';
 import invariant from 'tiny-invariant';
 
+export const eventTypes = ['case_status_updated'] as const;
+type EventType = (typeof eventTypes)[number];
+
+function isEventType(value: string): value is EventType {
+  return eventTypes.includes(value as EventType);
+}
+
 export interface Webhook {
   id: string;
-  eventTypes: string[];
+  eventTypes: EventType[];
   url: string;
   httpTimeout?: number;
   rateLimit?: number;
@@ -17,9 +24,14 @@ export interface Webhook {
 }
 
 export function adaptWebhook(dto: WebhookDto): Webhook {
+  const eventTypes = dto.event_types ?? [];
+  invariant(
+    eventTypes.every(isEventType),
+    `Invalid event types: ${eventTypes.join(', ')}`,
+  );
   return {
     id: dto.id,
-    eventTypes: dto.event_types ?? [],
+    eventTypes,
     url: dto.url,
     httpTimeout: dto.http_timeout,
     rateLimit: dto.rate_limit,

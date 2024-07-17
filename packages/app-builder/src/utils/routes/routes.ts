@@ -212,6 +212,11 @@ export const routes = [
                 "id": "routes/_builder+/settings+/users",
                 "path": "users",
                 "file": "routes/_builder+/settings+/users.tsx"
+              },
+              {
+                "id": "routes/_builder+/settings+/webhooks",
+                "path": "webhooks",
+                "file": "routes/_builder+/settings+/webhooks.tsx"
               }
             ]
           },
@@ -483,6 +488,21 @@ export const routes = [
         "id": "routes/ressources+/settings+/users+/update",
         "path": "ressources/settings/users/update",
         "file": "routes/ressources+/settings+/users+/update.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/webhooks+/create",
+        "path": "ressources/settings/webhooks/create",
+        "file": "routes/ressources+/settings+/webhooks+/create.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/webhooks+/delete",
+        "path": "ressources/settings/webhooks/delete",
+        "file": "routes/ressources+/settings+/webhooks+/delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/webhooks+/update",
+        "path": "ressources/settings/webhooks/update",
+        "file": "routes/ressources+/settings+/webhooks+/update.tsx"
       },
       {
         "id": "routes/ressources+/user+/language",

@@ -113,7 +113,7 @@ export default function ApiKeys() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx('hover:bg-grey-02 cursor-pointer')}
+                      className={clsx('hover:bg-grey-02')}
                       row={row}
                     />
                   );

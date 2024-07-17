@@ -73,5 +73,14 @@
   "tags.delete_tag.content": "You are about to delete this tag. This action is irreversible, do you want to proceed?",
   "tags.name": "Name",
   "tags.color": "Color",
-  "tags.cases": "Cases"
+  "tags.cases": "Cases",
+  "api": "API",
+  "webhooks": "Webhooks",
+  "webhooks.new_webhook": "New webhook",
+  "webhooks.new_webhook.create": "Create new webhook",
+  "webhooks.update_webhook": "Update webhook",
+  "webhooks.delete_webhook": "Delete webhook",
+  "webhooks.delete_webhook.title": "Delete this webhook",
+  "webhooks.delete_webhook.content": "You are about to delete this webhook. This action is irreversible, do you want to proceed?",
+  "webhooks.url": "URL"
 }

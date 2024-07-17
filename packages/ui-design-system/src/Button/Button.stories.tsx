@@ -3,9 +3,7 @@ import { Icon } from 'ui-icons';
 
 import { Button, type ButtonProps, variantColors } from './Button';
 
-type StoryProps = Omit<ButtonProps, 'ref'>;
-
-const Story: Meta<StoryProps> = {
+const Story: Meta<ButtonProps> = {
   component: Button,
   title: 'Button',
   args: {
@@ -26,14 +24,11 @@ const Story: Meta<StoryProps> = {
 };
 export default Story;
 
-const Template: StoryFn<StoryProps> = (args) => {
+const Template: StoryFn<ButtonProps> = (args) => {
   return <Button {...args} />;
 };
 
-const TemplateWithIcon: StoryFn<StoryProps> = ({
-  children,
-  ...args
-}: StoryProps) => {
+const TemplateWithIcon: StoryFn<ButtonProps> = ({ children, ...args }) => {
   return (
     <Button {...args}>
       <Icon icon="plus" className="size-6" />

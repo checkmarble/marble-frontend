@@ -71,7 +71,11 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
           ),
         })}
         backdrop={
-          <div className="bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-sm transition-all data-[enter]:opacity-100" />
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-grey-100/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-sm transition-all data-[enter]:opacity-100"
+          />
         }
         unmountOnHide
         {...props}

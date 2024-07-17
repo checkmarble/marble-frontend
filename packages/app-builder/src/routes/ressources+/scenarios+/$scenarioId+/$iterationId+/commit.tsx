@@ -10,11 +10,11 @@ import { useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
-import { forwardRef, useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
 import { redirectBack } from 'remix-utils/redirect-back';
-import { Button, type ButtonProps, Modal, Tooltip } from 'ui-design-system';
+import { Button, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -240,22 +240,3 @@ function CommitScenarioDraftContent({
     </fetcher.Form>
   );
 }
-
-export const CommitScenarioDraftButton = forwardRef<
-  HTMLButtonElement,
-  Omit<ButtonProps, 'ref'>
->(function CommitScenarioDraftButton(props, ref) {
-  const { t } = useTranslation(['scenarios']);
-  return (
-    <Button
-      ref={ref}
-      className="flex-1"
-      variant="primary"
-      type="submit"
-      {...props}
-    >
-      <Icon icon="commit" className="size-6" />
-      {t('scenarios:deployment_modal.commit.button')}
-    </Button>
-  );
-});

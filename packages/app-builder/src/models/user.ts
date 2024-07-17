@@ -27,6 +27,7 @@ function NewPermissionsList() {
     canManageDecision: 'DECISION_CREATE',
     canEditInboxes: 'INBOX_EDITOR',
     canReadAnalytics: 'ANALYTICS_READ',
+    canManageWebhooks: 'WEBHOOK',
   } as const;
 }
 

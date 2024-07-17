@@ -66,6 +66,16 @@ export default function Settings() {
               </li>
             </ul>
           </SettingsNavSection>
+          <SettingsNavSection icon="world" title={t('settings:api')}>
+            <ul className="flex flex-col gap-1 pb-6">
+              <li>
+                <SettingsNavLink
+                  text={t('settings:webhooks')}
+                  to={getRoute('/settings/webhooks')}
+                />
+              </li>
+            </ul>
+          </SettingsNavSection>
         </div>
         <Outlet />
       </div>
