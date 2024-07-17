@@ -28,9 +28,7 @@ function SignInWithGoogleButton({
   return (
     <button
       className="relative flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)] disabled:cursor-wait"
-      onClick={() => {
-        void onClick?.();
-      }}
+      onClick={onClick}
       disabled={loading}
     >
       <div className="bg-grey-00 flex h-full w-10 items-center justify-center rounded-l-[3px]">
@@ -83,7 +81,9 @@ function ClientSignInWithGoogle({
 
   return (
     <SignInWithGoogleButton
-      onClick={void handleGoogleSignIn}
+      onClick={() => {
+        void handleGoogleSignIn();
+      }}
       // We can't rely on state.loading if the user closes the popup without signing in
       // Related Firebase issue: https://github.com/firebase/firebase-js-sdk/issues/8061
       loading={loading}

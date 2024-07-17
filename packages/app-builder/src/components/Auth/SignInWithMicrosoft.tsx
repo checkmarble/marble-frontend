@@ -83,7 +83,9 @@ function ClientSignInWithMicrosoft({
 
   return (
     <SignInWithMicrosoftButton
-      onClick={void handleMicrosoftSignIn}
+      onClick={() => {
+        void handleMicrosoftSignIn();
+      }}
       // We can't rely on state.loading if the user closes the popup without signing in
       // Related Firebase issue: https://github.com/firebase/firebase-js-sdk/issues/8061
       loading={loading}
