@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   FormControl,
   FormError,
@@ -17,17 +16,19 @@ import {
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
 import { getRoute } from '@app-builder/utils/routes';
+import { sleep } from '@app-builder/utils/sleep';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
+import type * as React from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Input } from 'ui-design-system';
 import * as z from 'zod';
+
 import { Spinner } from '../Spinner';
-import { sleep } from '@app-builder/utils/sleep';
 
 const emailAndPasswordFormSchema = z.object({
   credentials: z.object({
