@@ -6,8 +6,8 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { eventTypes } from '@app-builder/models/webhook';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { useForm } from '@conform-to/react';
-import { parse } from '@conform-to/zod';
+import { FormProvider, getFormProps, useForm } from '@conform-to/react';
+import { parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
@@ -38,10 +38,12 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema: updateWebhookFormSchema });
+  const submission = parseWithZod(formData, {
+    schema: updateWebhookFormSchema,
+  });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json({ submission, success: false });
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   try {
@@ -50,22 +52,21 @@ export async function action({ request }: ActionFunctionArgs) {
       webhookUpdateBody: submission.value,
     });
 
-    return json({ submission, success: true });
+    return json(submission.reply());
   } catch (error) {
     const session = await getSession(request);
     const t = await getFixedT(request, ['common']);
 
+    const formError = t('common:errors.unknown');
+
     setToastMessage(session, {
       type: 'error',
-      message: t('common:errors.unknown'),
+      message: formError,
     });
 
-    return json(
-      { submission, success: false },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return json(submission.reply({ formErrors: [formError] }), {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
   }
 }
 
@@ -99,59 +100,60 @@ function UpdateWebhookContent({
 
   const fetcher = useFetcher<typeof action>();
   React.useEffect(() => {
-    if (fetcher?.data?.success) {
+    if (fetcher?.data?.status === 'success') {
       setOpen(false);
     }
-  }, [setOpen, fetcher?.data?.success]);
+  }, [setOpen, fetcher?.data?.status]);
 
-  const formId = React.useId();
   const [form, fields] = useForm({
-    id: formId,
+    shouldRevalidate: 'onInput',
     defaultValue,
-    lastSubmission: fetcher.data?.submission,
+    lastResult: fetcher.data,
     onValidate({ formData }) {
-      return parse(formData, {
+      return parseWithZod(formData, {
         schema: updateWebhookFormSchema,
       });
     },
   });
 
   return (
-    <fetcher.Form
-      method="post"
-      action={getRoute('/ressources/settings/webhooks/update')}
-      {...form.props}
-    >
-      <ModalV2.Title>{t('settings:webhooks.update_webhook')}</ModalV2.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <input name="id" value={defaultValue.id} type="hidden" />
-        {/* TODO(webhook): implement all fields */}
-        <FormField
-          config={fields.url}
-          className="flex flex-col items-start gap-2"
-        >
-          <FormLabel>{t('settings:webhooks.url')}</FormLabel>
-          <FormInput className="w-full" />
-          <FormError />
-        </FormField>
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        method="post"
+        action={getRoute('/ressources/settings/webhooks/update')}
+        {...getFormProps(form)}
+      >
+        <ModalV2.Title>{t('settings:webhooks.update_webhook')}</ModalV2.Title>
+        <div className="flex flex-col gap-6 p-6">
+          <input name="id" value={defaultValue.id} type="hidden" />
+          {/* TODO(webhook): implement all fields */}
+          <FormField
+            name={fields.url.name}
+            className="flex flex-col items-start gap-2"
+          >
+            <FormLabel>{t('settings:webhooks.url')}</FormLabel>
+            <FormInput type="url" className="w-full" />
+            <FormError />
+          </FormField>
 
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close
-            render={<Button className="flex-1" variant="secondary" />}
-          >
-            {t('common:cancel')}
-          </ModalV2.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="update"
-          >
-            <Icon icon="edit" className="size-5" />
-            {t('settings:webhooks.update_webhook')}
-          </Button>
+          <div className="flex flex-1 flex-row gap-2">
+            <ModalV2.Close
+              render={<Button className="flex-1" variant="secondary" />}
+            >
+              {t('common:cancel')}
+            </ModalV2.Close>
+            <Button
+              className="flex-1"
+              variant="primary"
+              type="submit"
+              name="update"
+            >
+              <Icon icon="edit" className="size-5" />
+              {t('settings:webhooks.update_webhook')}
+            </Button>
+          </div>
         </div>
-      </div>
-    </fetcher.Form>
+      </fetcher.Form>
+    </FormProvider>
   );
 }

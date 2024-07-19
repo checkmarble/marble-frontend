@@ -1,17 +1,22 @@
 import { CaseTag, CaseTags } from '@app-builder/components/Cases/CaseTags';
+import { FormField } from '@app-builder/components/Form/FormField';
 import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
 import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { getRoute } from '@app-builder/utils/routes';
-import { stringToStringArray } from '@app-builder/utils/schema/stringToJSONSchema';
-import { conform, useForm } from '@conform-to/react';
-import { parse } from '@conform-to/zod';
+import {
+  FormProvider,
+  getFormProps,
+  getInputProps,
+  useForm,
+} from '@conform-to/react';
+import { parseWithZod } from '@conform-to/zod';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { Link, useFetcher } from '@remix-run/react';
 import { matchSorter } from 'match-sorter';
-import { useDeferredValue, useId, useMemo, useState } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Input } from 'ui-design-system';
@@ -19,7 +24,7 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const schema = z.object({
-  caseTagIds: stringToStringArray,
+  caseTagIds: z.array(z.string()),
   caseId: z.string(),
 });
 
@@ -30,17 +35,18 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema });
+  const submission = parseWithZod(formData, { schema });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
+
   await cases.setTags({
     caseId: submission.value.caseId,
     tagIds: submission.value.caseTagIds,
   });
 
-  return json(submission);
+  return json(submission.reply());
 }
 
 export function EditCaseTags({
@@ -55,13 +61,12 @@ export function EditCaseTags({
   const { t } = useTranslation(['cases']);
   const fetcher = useFetcher<typeof action>();
 
-  const formId = useId();
+  const formRef = React.useRef<HTMLFormElement>(null);
   const [form, fields] = useForm({
-    id: formId,
     defaultValue: { caseTagIds: defaultCaseTagIds, caseId },
-    lastSubmission: fetcher.data,
+    lastResult: fetcher.data,
     onValidate({ formData }) {
-      return parse(formData, {
+      return parseWithZod(formData, {
         schema,
       });
     },
@@ -69,11 +74,11 @@ export function EditCaseTags({
 
   const { orgTags } = useOrganizationTags();
 
-  const [value, setSearchValue] = useState('');
-  const [caseTagIds, setCaseTagIds] = useState(defaultCaseTagIds);
-  const searchValue = useDeferredValue(value);
+  const [value, setSearchValue] = React.useState('');
+  const [caseTagIds, setCaseTagIds] = React.useState(defaultCaseTagIds);
+  const searchValue = React.useDeferredValue(value);
 
-  const matches = useMemo(
+  const matches = React.useMemo(
     () => matchSorter(orgTags, searchValue, { keys: ['name'] }),
     [orgTags, searchValue],
   );
@@ -119,49 +124,60 @@ export function EditCaseTags({
   }
 
   return (
-    <fetcher.Form
-      method="post"
-      className="w-full"
-      action={getRoute('/ressources/cases/edit-tags')}
-      {...form.props}
-    >
-      <input {...conform.input(fields.caseId, { type: 'hidden' })} />
-      <FormSelectWithCombobox.Root
-        config={fields.caseTagIds}
-        searchValue={searchValue}
-        onSearchValueChange={setSearchValue}
-        onSelectedValueChange={(selectedValues) => {
-          setCaseTagIds(selectedValues);
-        }}
-        onOpenChange={(open) => {
-          if (!open && !R.isDeepEqual(defaultCaseTagIds, caseTagIds))
-            form.ref.current?.requestSubmit();
-        }}
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        ref={formRef}
+        method="post"
+        className="w-full"
+        action={getRoute('/ressources/cases/edit-tags')}
+        {...getFormProps(form)}
       >
-        <FormSelectWithCombobox.Select className="w-full">
-          <CaseTags caseTagIds={caseTagIds} />
-          <FormSelectWithCombobox.Arrow />
-        </FormSelectWithCombobox.Select>
-        <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
-          <FormSelectWithCombobox.Combobox
-            render={<Input className="shrink-0" />}
-            autoSelect
-            autoFocus
-          />
-          <FormSelectWithCombobox.ComboboxList>
-            {matches.map((tag) => (
-              <FormSelectWithCombobox.ComboboxItem key={tag.id} value={tag.id}>
-                <CaseTag tagId={tag.id} />
-              </FormSelectWithCombobox.ComboboxItem>
-            ))}
-            {matches.length === 0 ? (
-              <p className="text-grey-50 flex items-center justify-center p-2">
-                {t('cases:case_detail.tags.empty_matches')}
-              </p>
-            ) : null}
-          </FormSelectWithCombobox.ComboboxList>
-        </FormSelectWithCombobox.Popover>
-      </FormSelectWithCombobox.Root>
-    </fetcher.Form>
+        <input
+          {...getInputProps(fields.caseId, { type: 'hidden' })}
+          key={fields.caseId.key}
+        />
+        <FormField name={fields.caseTagIds.name}>
+          <FormSelectWithCombobox.Root
+            searchValue={searchValue}
+            onSearchValueChange={setSearchValue}
+            onSelectedValueChange={(selectedValues) => {
+              setCaseTagIds(selectedValues);
+            }}
+            onOpenChange={(open) => {
+              if (!open && !R.isDeepEqual(defaultCaseTagIds, caseTagIds))
+                formRef.current?.requestSubmit();
+            }}
+            options={orgTags.map((tag) => tag.id)}
+          >
+            <FormSelectWithCombobox.Select className="w-full">
+              <CaseTags caseTagIds={caseTagIds} />
+              <FormSelectWithCombobox.Arrow />
+            </FormSelectWithCombobox.Select>
+            <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+              <FormSelectWithCombobox.Combobox
+                render={<Input className="shrink-0" />}
+                autoSelect
+                autoFocus
+              />
+              <FormSelectWithCombobox.ComboboxList>
+                {matches.map((tag) => (
+                  <FormSelectWithCombobox.ComboboxItem
+                    key={tag.id}
+                    value={tag.id}
+                  >
+                    <CaseTag tagId={tag.id} />
+                  </FormSelectWithCombobox.ComboboxItem>
+                ))}
+                {matches.length === 0 ? (
+                  <p className="text-grey-50 flex items-center justify-center p-2">
+                    {t('cases:case_detail.tags.empty_matches')}
+                  </p>
+                ) : null}
+              </FormSelectWithCombobox.ComboboxList>
+            </FormSelectWithCombobox.Popover>
+          </FormSelectWithCombobox.Root>
+        </FormField>
+      </fetcher.Form>
+    </FormProvider>
   );
 }

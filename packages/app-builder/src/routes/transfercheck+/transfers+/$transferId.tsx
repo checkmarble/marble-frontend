@@ -17,8 +17,8 @@ import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
-import { useForm } from '@conform-to/react';
-import { parse } from '@conform-to/zod';
+import { getFormProps, useForm } from '@conform-to/react';
+import { parseWithZod } from '@conform-to/zod';
 import {
   type ActionFunctionArgs,
   json,
@@ -27,7 +27,6 @@ import {
 import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 import { z } from 'zod';
@@ -93,12 +92,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { transferId } = parsedParam.data;
 
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: transferUpdateBodySchema,
   });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   await transferRepository.updateTransfer({
@@ -106,7 +105,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     transferUpdateBody: submission.value,
   });
 
-  return json(submission);
+  return json(submission.reply());
 }
 
 export default function TransferDetailPage() {
@@ -115,13 +114,11 @@ export default function TransferDetailPage() {
 
   const fetcher = useFetcher<typeof action>();
 
-  const formId = React.useId();
   const [form, fields] = useForm({
-    id: formId,
     defaultValue: { status: transfer.data.status },
-    lastSubmission: fetcher.data,
+    lastResult: fetcher.data,
     onValidate({ formData }) {
-      return parse(formData, {
+      return parseWithZod(formData, {
         schema: transferUpdateBodySchema,
       });
     },
@@ -152,7 +149,7 @@ export default function TransferDetailPage() {
             <Collapsible.Content>
               <div className="flex flex-col gap-4">
                 <fetcher.Form
-                  {...form.props}
+                  {...getFormProps(form)}
                   onChange={(event) =>
                     fetcher.submit(event.currentTarget, { method: 'POST' })
                   }
@@ -164,7 +161,7 @@ export default function TransferDetailPage() {
                           key={status}
                           value={status}
                           name={fields.status.name}
-                          defaultChecked={fields.status.defaultValue === status}
+                          defaultChecked={fields.status.initialValue === status}
                         />
                       );
                     })}

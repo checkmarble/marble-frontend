@@ -1,8 +1,14 @@
+import { FormField } from '@app-builder/components/Form/FormField';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { conform, useForm } from '@conform-to/react';
-import { parse } from '@conform-to/zod';
+import {
+  FormProvider,
+  getFormProps,
+  getInputProps,
+  useForm,
+} from '@conform-to/react';
+import { parseWithZod } from '@conform-to/zod';
 import {
   type ActionFunctionArgs,
   json,
@@ -10,7 +16,7 @@ import {
 } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type InboxDto } from 'marble-api';
-import { useId } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
@@ -36,17 +42,18 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema });
+  const submission = parseWithZod(formData, { schema });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
+
   await cases.updateCase({
     caseId: submission.value.caseId,
     body: { inbox_id: submission.value.inboxId },
   });
 
-  return json(submission);
+  return json(submission.reply());
 }
 
 export function EditCaseInbox({
@@ -58,53 +65,66 @@ export function EditCaseInbox({
 }) {
   const { t } = useTranslation(['common']);
   const loadFetcher = useFetcher<typeof loader>();
+  React.useEffect(() => {
+    if (loadFetcher.state === 'idle' && !loadFetcher.data) {
+      loadFetcher.load(getRoute('/ressources/cases/create-case'));
+    }
+  }, [loadFetcher]);
   const inboxes = loadFetcher.data?.inboxes || [defaultInbox];
 
   const fetcher = useFetcher<typeof action>();
 
-  const formId = useId();
   const [form, fields] = useForm({
-    id: formId,
     defaultValue: { inboxId: defaultInbox.id, caseId },
-    lastSubmission: fetcher.data,
+    lastResult: fetcher.data,
     onValidate({ formData }) {
-      return parse(formData, {
+      return parseWithZod(formData, {
         schema,
       });
     },
   });
 
+  const formRef = React.useRef<HTMLFormElement>(null);
+
   return (
-    <fetcher.Form
-      method="post"
-      className="w-full"
-      action={getRoute('/ressources/cases/edit-inbox')}
-      {...form.props}
-    >
-      <input {...conform.input(fields.caseId, { type: 'hidden' })} />
-      <FormSelect.Default
-        config={fields.inboxId}
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        ref={formRef}
+        method="post"
         className="w-full"
-        onOpenChange={(open) => {
-          if (open && loadFetcher.state === 'idle' && !loadFetcher.data) {
-            loadFetcher.load(getRoute('/ressources/cases/edit-inbox'));
-          }
-        }}
-        onValueChange={() => {
-          form.ref.current?.requestSubmit();
-        }}
+        action={getRoute('/ressources/cases/edit-inbox')}
+        {...getFormProps(form)}
       >
-        {inboxes.map((inbox) => (
-          <FormSelect.DefaultItem key={inbox.id} value={inbox.id}>
-            {inbox.name}
-          </FormSelect.DefaultItem>
-        ))}
-        {loadFetcher.state === 'loading' ? (
-          <div className="text-grey-100 h-10 p-2 first-letter:capitalize">
-            {t('common:loading')}
-          </div>
-        ) : null}
-      </FormSelect.Default>
-    </fetcher.Form>
+        <input
+          {...getInputProps(fields.caseId, { type: 'hidden' })}
+          key={fields.caseId.key}
+        />
+        <FormField name={fields.inboxId.name}>
+          <FormSelect.Default
+            className="w-full"
+            onOpenChange={(open) => {
+              if (open && loadFetcher.state === 'idle' && !loadFetcher.data) {
+                loadFetcher.load(getRoute('/ressources/cases/edit-inbox'));
+              }
+            }}
+            onValueChange={() => {
+              formRef.current?.requestSubmit();
+            }}
+            options={inboxes.map((inbox) => inbox.id)}
+          >
+            {inboxes.map((inbox) => (
+              <FormSelect.DefaultItem key={inbox.id} value={inbox.id}>
+                {inbox.name}
+              </FormSelect.DefaultItem>
+            ))}
+            {loadFetcher.state === 'loading' ? (
+              <div className="text-grey-100 h-10 p-2 first-letter:capitalize">
+                {t('common:loading')}
+              </div>
+            ) : null}
+          </FormSelect.Default>
+        </FormField>
+      </fetcher.Form>
+    </FormProvider>
   );
 }

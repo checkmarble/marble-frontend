@@ -8,13 +8,13 @@ import {
 import { caseStatuses } from '@app-builder/models/cases';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { conform, useForm } from '@conform-to/react';
-import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import { getFormProps, getInputProps, useForm } from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -38,10 +38,10 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema });
+  const submission = parseWithZod(formData, { schema });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   await cases.updateCase({
@@ -49,7 +49,7 @@ export async function action({ request }: ActionFunctionArgs) {
     body: { status: submission.value.nextStatus },
   });
 
-  return json(submission);
+  return json(submission.reply());
 }
 
 export function EditCaseStatus({
@@ -57,10 +57,10 @@ export function EditCaseStatus({
   caseId,
 }: Pick<Schema, 'caseId' | 'status'>) {
   const { t } = useTranslation(handle.i18n);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [hasOpenDialog, setHasOpenDialog] = useState(false);
-  const dropdownTriggerRef = useRef<HTMLButtonElement>(null);
-  const focusRef = useRef<HTMLButtonElement | null>(null);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
+  const [hasOpenDialog, setHasOpenDialog] = React.useState(false);
+  const dropdownTriggerRef = React.useRef<HTMLButtonElement>(null);
+  const focusRef = React.useRef<HTMLButtonElement | null>(null);
 
   function handleDialogItemSelect() {
     focusRef.current = dropdownTriggerRef.current;
@@ -75,7 +75,7 @@ export function EditCaseStatus({
 
   const caseStatus = caseStatusMapping[status];
   const statuses = useCaseStatuses();
-  const nextStatuses = useMemo(
+  const nextStatuses = React.useMemo(
     () => statuses.filter((nextStatus) => nextStatus.value !== status),
     [statuses, status],
   );
@@ -165,36 +165,43 @@ function ModalContent({
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const formId = useId();
-  const [form, fieldset] = useForm({
-    id: formId,
+  const [form, fields] = useForm({
     defaultValue: { caseId, status, nextStatus },
-    lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(schema),
+    lastResult: fetcher.data,
+    constraint: getZodConstraint(schema),
     onValidate({ formData }) {
-      return parse(formData, {
+      return parseWithZod(formData, {
         schema,
       });
     },
   });
 
-  useEffect(() => {
-    if (fetcher.data?.intent === 'submit' && fetcher.data?.value) {
+  React.useEffect(() => {
+    if (fetcher.data?.status === 'success') {
       onSubmitSuccess();
     }
-  }, [fetcher.data?.intent, fetcher.data?.value, onSubmitSuccess]);
+  }, [fetcher.data?.intent, fetcher.data?.status, onSubmitSuccess]);
 
   return (
     <fetcher.Form
       method="post"
       action={getRoute('/ressources/cases/edit-status')}
-      {...form.props}
+      {...getFormProps(form)}
     >
       <Modal.Title>{t('cases:change_status_modal.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <input {...conform.input(fieldset.caseId, { type: 'hidden' })} />
-        <input {...conform.input(fieldset.status, { type: 'hidden' })} />
-        <input {...conform.input(fieldset.nextStatus, { type: 'hidden' })} />
+        <input
+          {...getInputProps(fields.caseId, { type: 'hidden' })}
+          key={fields.caseId.key}
+        />
+        <input
+          {...getInputProps(fields.status, { type: 'hidden' })}
+          key={fields.status.key}
+        />
+        <input
+          {...getInputProps(fields.nextStatus, { type: 'hidden' })}
+          key={fields.nextStatus.key}
+        />
         <div className="text-grey-100 text-s flex flex-row items-center justify-center gap-6 font-medium capitalize">
           <div className="flex w-full flex-1 flex-row items-center justify-end gap-2">
             <Trans

@@ -42,7 +42,7 @@ export function adaptScenario(dto: ScenarioDto): Scenario {
 
 export interface ScenarioCreateInput {
   name: string;
-  description: string;
+  description: string | null;
   triggerObjectType: string;
 }
 
@@ -51,7 +51,7 @@ export function adaptScenarioCreateInputDto(
 ): ScenarioCreateInputDto {
   return {
     name: input.name,
-    description: input.description,
+    description: input.description ?? '',
     triggerObjectType: input.triggerObjectType,
   };
 }

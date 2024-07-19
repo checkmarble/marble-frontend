@@ -1,24 +1,43 @@
-import { conform } from '@conform-to/react';
+import { getInputProps, useField } from '@conform-to/react';
 import * as React from 'react';
 import { Input, type InputProps } from 'ui-design-system';
 
-import { useFieldConfig } from './FormField';
-import { extractInputOptions, type InputOptions } from './helpers';
+import { useFieldName } from './FormField';
+
+interface FormInputProps extends Omit<InputProps, 'borderColor' | 'type'> {
+  type:
+    | 'color'
+    | 'date'
+    | 'datetime-local'
+    | 'email'
+    | 'file'
+    | 'hidden'
+    | 'month'
+    | 'number'
+    | 'password'
+    | 'range'
+    | 'search'
+    | 'tel'
+    | 'text'
+    | 'time'
+    | 'url'
+    | 'week';
+}
 
 export const FormInput = React.forwardRef<
   React.ElementRef<typeof Input>,
-  InputOptions & Omit<InputProps, 'borderColor'>
->(function FormInput(props, ref) {
-  const config = useFieldConfig();
-
-  const { options, ...rest } = extractInputOptions(props);
+  FormInputProps
+>(function FormInput({ type, ...inputProps }, ref) {
+  const name = useFieldName();
+  const [meta] = useField<string>(name);
 
   return (
     <Input
       ref={ref}
-      borderColor={config.error ? 'red-100' : 'grey-10'}
-      {...rest}
-      {...conform.input(config, options)}
+      borderColor={meta.valid ? 'grey-10' : 'red-100'}
+      {...inputProps}
+      {...getInputProps(meta, { type })}
+      key={meta.key}
     />
   );
 });

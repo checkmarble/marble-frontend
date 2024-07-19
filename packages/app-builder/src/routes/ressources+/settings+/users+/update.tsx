@@ -3,11 +3,17 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { tKeyForUserRole, type User } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { conform, useForm } from '@conform-to/react';
-import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import {
+  FormProvider,
+  getFormProps,
+  getInputProps,
+  useForm,
+} from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -33,17 +39,22 @@ function getUpdateUserFormSchema(userRoles: readonly [string, ...string[]]) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const {
+    authService,
+    featureAccessService,
+    i18nextService: { getFixedT },
+    toastSessionService: { getSession, commitSession },
+  } = serverServices;
   const { apiClient } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: getUpdateUserFormSchema(await featureAccessService.getUserRoles()),
   });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   try {
@@ -56,7 +67,19 @@ export async function action({ request }: ActionFunctionArgs) {
     });
     return redirect(getRoute('/settings/users'));
   } catch (error) {
-    return json(submission);
+    const session = await getSession(request);
+    const t = await getFixedT(request, ['common']);
+
+    const formError = t('common:errors.unknown');
+
+    setToastMessage(session, {
+      type: 'error',
+      message: formError,
+    });
+
+    return json(submission.reply({ formErrors: [formError] }), {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
   }
 }
 
@@ -106,83 +129,104 @@ function UpdateUserContent({
     () => getUpdateUserFormSchema(userRoles),
     [userRoles],
   );
-  const formId = React.useId();
 
-  const [form, { userId, firstName, lastName, email, role, organizationId }] =
-    useForm({
-      id: formId,
-      defaultValue: user,
-      lastSubmission: fetcher.data,
-      constraint: getFieldsetConstraint(schema),
-      onValidate({ formData }) {
-        return parse(formData, {
-          schema,
-        });
-      },
-    });
+  const [form, fields] = useForm({
+    shouldRevalidate: 'onInput',
+    defaultValue: user,
+    lastResult: fetcher.data,
+    constraint: getZodConstraint(schema),
+    onValidate({ formData }) {
+      return parseWithZod(formData, {
+        schema,
+      });
+    },
+  });
+
+  const userRoleOptions = React.useMemo(
+    () =>
+      userRoles.map((role) => ({
+        value: role,
+        label: t(tKeyForUserRole(role)),
+      })),
+    [t, userRoles],
+  );
 
   return (
-    <fetcher.Form
-      action={getRoute('/ressources/settings/users/update')}
-      method="PATCH"
-      {...form.props}
-    >
-      <Modal.Title>{t('settings:users.update_user')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <div className="flex flex-1 flex-col gap-4">
-          <input {...conform.input(userId, { type: 'hidden' })} />
-          <input {...conform.input(organizationId, { type: 'hidden' })} />
-          <div className="flex gap-2">
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        action={getRoute('/ressources/settings/users/update')}
+        method="PATCH"
+        {...getFormProps(form)}
+      >
+        <Modal.Title>{t('settings:users.update_user')}</Modal.Title>
+        <div className="flex flex-col gap-6 p-6">
+          <div className="flex flex-1 flex-col gap-4">
+            <input
+              {...getInputProps(fields.userId, { type: 'hidden' })}
+              key={fields.userId.key}
+            />
+            <input
+              {...getInputProps(fields.organizationId, { type: 'hidden' })}
+              key={fields.organizationId.key}
+            />
+            <div className="flex gap-2">
+              <FormField
+                name={fields.firstName.name}
+                className="group flex w-full flex-col gap-2"
+              >
+                <FormLabel>{t('settings:users.first_name')}</FormLabel>
+                <FormInput type="text" />
+                <FormError />
+              </FormField>
+              <FormField
+                name={fields.lastName.name}
+                className="group flex w-full flex-col gap-2"
+              >
+                <FormLabel>{t('settings:users.last_name')}</FormLabel>
+                <FormInput type="text" />
+                <FormError />
+              </FormField>
+            </div>
             <FormField
-              config={firstName}
-              className="group flex w-full flex-col gap-2"
+              name={fields.email.name}
+              className="group flex flex-col gap-2"
             >
-              <FormLabel>{t('settings:users.first_name')}</FormLabel>
+              <FormLabel>{t('settings:users.email')}</FormLabel>
               <FormInput type="text" />
               <FormError />
             </FormField>
             <FormField
-              config={lastName}
-              className="group flex w-full flex-col gap-2"
+              name={fields.role.name}
+              className="group flex flex-col gap-2"
             >
-              <FormLabel>{t('settings:users.last_name')}</FormLabel>
-              <FormInput type="text" />
+              <FormLabel>{t('settings:users.role')}</FormLabel>
+              <FormSelect.Default options={userRoleOptions}>
+                {userRoleOptions.map((role) => (
+                  <FormSelect.DefaultItem key={role.value} value={role.value}>
+                    {role.label}
+                  </FormSelect.DefaultItem>
+                ))}
+              </FormSelect.Default>
               <FormError />
             </FormField>
           </div>
-          <FormField config={email} className="group flex flex-col gap-2">
-            <FormLabel>{t('settings:users.email')}</FormLabel>
-            <FormInput type="text" />
-            <FormError />
-          </FormField>
-          <FormField config={role} className="group flex flex-col gap-2">
-            <FormLabel>{t('settings:users.role')}</FormLabel>
-            <FormSelect.Default config={role}>
-              {userRoles.map((role) => (
-                <FormSelect.DefaultItem key={role} value={role}>
-                  {t(tKeyForUserRole(role))}
-                </FormSelect.DefaultItem>
-              ))}
-            </FormSelect.Default>
-            <FormError />
-          </FormField>
-        </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
-              {t('common:cancel')}
+          <div className="flex flex-1 flex-row gap-2">
+            <Modal.Close asChild>
+              <Button className="flex-1" variant="secondary" name="cancel">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button
+              className="flex-1"
+              variant="primary"
+              type="submit"
+              name="update"
+            >
+              {t('common:save')}
             </Button>
-          </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="update"
-          >
-            {t('common:save')}
-          </Button>
+          </div>
         </div>
-      </div>
-    </fetcher.Form>
+      </fetcher.Form>
+    </FormProvider>
   );
 }

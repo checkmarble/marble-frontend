@@ -237,7 +237,7 @@ function getEnumOptionsFromNeighbour({
       table: triggerObjectTable,
       fieldName: neighbourNode.children[0].constant,
     });
-    return field.isEnum ? field.values ?? [] : [];
+    return field.isEnum ? (field.values ?? []) : [];
   }
 
   if (isDatabaseAccess(neighbourNode)) {
@@ -250,7 +250,7 @@ function getEnumOptionsFromNeighbour({
       table: table,
       fieldName: neighbourNode.namedChildren.fieldName.constant,
     });
-    return field.isEnum ? field.values ?? [] : [];
+    return field.isEnum ? (field.values ?? []) : [];
   }
   return [];
 }

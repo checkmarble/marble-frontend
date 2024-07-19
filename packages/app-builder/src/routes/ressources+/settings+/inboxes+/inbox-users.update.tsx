@@ -7,8 +7,13 @@ import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { conform, useForm } from '@conform-to/react';
-import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import {
+  FormProvider,
+  getFormProps,
+  getInputProps,
+  useForm,
+} from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -36,6 +41,7 @@ function getUpdateInboxUserFormSchema(
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
+    i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
     featureAccessService,
   } = serverServices;
@@ -44,14 +50,14 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: getUpdateInboxUserFormSchema(
       await featureAccessService.getInboxUserRoles(),
     ),
   });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   try {
@@ -65,13 +71,16 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   } catch (error) {
     const session = await getSession(request);
+    const t = await getFixedT(request, ['common']);
+
+    const formError = t('common:errors.unknown');
 
     setToastMessage(session, {
       type: 'error',
-      messageKey: 'common:errors.unknown',
+      message: formError,
     });
 
-    return json(submission, {
+    return json(submission.reply({ formErrors: [formError] }), {
       headers: { 'Set-Cookie': await commitSession(session) },
     });
   }
@@ -128,56 +137,73 @@ export function UpdateInboxUserContent({
 
   const fetcher = useFetcher<typeof action>();
 
-  const formId = React.useId();
-  const [form, { id, inbox_id, role }] = useForm({
-    id: formId,
+  const [form, fields] = useForm({
+    shouldRevalidate: 'onInput',
     defaultValue: currentInboxUser,
-    lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(schema),
+    lastResult: fetcher.data,
+    constraint: getZodConstraint(schema),
     onValidate({ formData }) {
-      return parse(formData, {
+      return parseWithZod(formData, {
         schema,
       });
     },
   });
 
+  const inboxUserRoleOptions = React.useMemo(() => {
+    return inboxUserRoles.map((role) => ({
+      value: role,
+      label: t(tKeyForInboxUserRole(role)),
+    }));
+  }, [inboxUserRoles, t]);
+
   return (
-    <fetcher.Form
-      method="patch"
-      action={getRoute('/ressources/settings/inboxes/inbox-users/update')}
-      {...form.props}
-    >
-      <Modal.Title>{t('settings:inboxes.inbox_user.update')}</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-6 p-6">
-        <input {...conform.input(id, { type: 'hidden' })} />
-        <input {...conform.input(inbox_id, { type: 'hidden' })} />
-        <FormField config={role} className="group flex flex-col gap-2">
-          <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
-          <FormSelect.Default config={role}>
-            {inboxUserRoles.map((role) => (
-              <FormSelect.DefaultItem key={role} value={role}>
-                {t(tKeyForInboxUserRole(role))}
-              </FormSelect.DefaultItem>
-            ))}
-          </FormSelect.Default>
-          <FormError />
-        </FormField>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="update"
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        method="patch"
+        action={getRoute('/ressources/settings/inboxes/inbox-users/update')}
+        {...getFormProps(form)}
+      >
+        <Modal.Title>{t('settings:inboxes.inbox_user.update')}</Modal.Title>
+        <div className="bg-grey-00 flex flex-col gap-6 p-6">
+          <input
+            {...getInputProps(fields.id, { type: 'hidden' })}
+            key={fields.id.key}
+          />
+          <input
+            {...getInputProps(fields.inbox_id, { type: 'hidden' })}
+            key={fields.inbox_id.key}
+          />
+          <FormField
+            name={fields.role.name}
+            className="group flex flex-col gap-2"
           >
-            {t('common:save')}
-          </Button>
+            <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
+            <FormSelect.Default options={inboxUserRoleOptions}>
+              {inboxUserRoleOptions.map((role) => (
+                <FormSelect.DefaultItem key={role.value} value={role.value}>
+                  {role.label}
+                </FormSelect.DefaultItem>
+              ))}
+            </FormSelect.Default>
+            <FormError />
+          </FormField>
+          <div className="flex flex-1 flex-row gap-2">
+            <Modal.Close asChild>
+              <Button className="flex-1" variant="secondary">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button
+              className="flex-1"
+              variant="primary"
+              type="submit"
+              name="update"
+            >
+              {t('common:save')}
+            </Button>
+          </div>
         </div>
-      </div>
-    </fetcher.Form>
+      </fetcher.Form>
+    </FormProvider>
   );
 }

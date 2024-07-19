@@ -1,12 +1,17 @@
+import { FormField } from '@app-builder/components/Form/FormField';
+import { FormInput } from '@app-builder/components/Form/FormInput';
 import { serverServices } from '@app-builder/services/init.server';
 import { submitOnBlur } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { conform, useForm } from '@conform-to/react';
-import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import {
+  FormProvider,
+  getFormProps,
+  getInputProps,
+  useForm,
+} from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { useId } from 'react';
-import { Input } from 'ui-design-system';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -21,10 +26,10 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema });
+  const submission = parseWithZod(formData, { schema });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   await cases.updateCase({
@@ -32,37 +37,38 @@ export async function action({ request }: ActionFunctionArgs) {
     body: { name: submission.value.name },
   });
 
-  return json(submission);
+  return json(submission.reply());
 }
 
 export function EditCaseName(defaultValue: z.infer<typeof schema>) {
   const fetcher = useFetcher<typeof action>();
 
-  const formId = useId();
-  const [form, { name, caseId }] = useForm({
-    id: formId,
+  const [form, fields] = useForm({
     defaultValue,
-    lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(schema),
+    lastResult: fetcher.data,
+    constraint: getZodConstraint(schema),
     onValidate({ formData }) {
-      return parse(formData, {
+      return parseWithZod(formData, {
         schema,
       });
     },
   });
 
   return (
-    <fetcher.Form
-      method="post"
-      action={getRoute('/ressources/cases/edit-name')}
-      {...form.props}
-    >
-      <input {...conform.input(caseId, { type: 'hidden' })} />
-      <Input
-        {...conform.input(name, { type: 'text' })}
-        autoComplete="off"
-        onBlur={submitOnBlur}
-      />
-    </fetcher.Form>
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        method="post"
+        action={getRoute('/ressources/cases/edit-name')}
+        {...getFormProps(form)}
+      >
+        <input
+          {...getInputProps(fields.caseId, { type: 'hidden' })}
+          key={fields.caseId.key}
+        />
+        <FormField name={fields.name.name}>
+          <FormInput type="text" autoComplete="off" onBlur={submitOnBlur} />
+        </FormField>
+      </fetcher.Form>
+    </FormProvider>
   );
 }
