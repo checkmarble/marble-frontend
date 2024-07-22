@@ -208,5 +208,25 @@ export function makeFeatureAccessService({
     }) => {
       return permissions.canDeleteUser;
     },
+    isReadTagAvailable: ({ role }: { role: string }) => {
+      return role === 'ADMIN' || role === 'MARBLE_ADMIN';
+    },
+    isCreateTagAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isEditTagAvailable: ({ permissions }: { permissions: UserPermissions }) => {
+      return permissions.canEditInboxes;
+    },
+    isDeleteTagAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
   };
 }

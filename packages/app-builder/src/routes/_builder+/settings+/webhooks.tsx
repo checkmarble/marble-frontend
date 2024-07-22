@@ -7,11 +7,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import {
-  type ColumnDef,
-  createColumnHelper,
-  getCoreRowModel,
-} from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -56,50 +52,47 @@ export default function Webhooks() {
   } = useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
-    const columns: ColumnDef<Webhook, string>[] = [
+    return [
       columnHelper.accessor((row) => row.url, {
         id: 'url',
         header: t('settings:webhooks.url'),
         size: 200,
       }),
+      ...(isDeleteWebhookAvailable || isEditWebhookAvailable
+        ? [
+            columnHelper.display({
+              id: 'actions',
+              size: 100,
+              cell: ({ cell }) => {
+                return (
+                  <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
+                    {isEditWebhookAvailable ? (
+                      <UpdateWebhook defaultValue={cell.row.original}>
+                        <button className="hover:text-purple-110 active:text-purple-120">
+                          <Icon icon="edit" className="size-6 shrink-0" />
+                          <span className="sr-only">
+                            {t('settings:webhooks.update_webhook')}
+                          </span>
+                        </button>
+                      </UpdateWebhook>
+                    ) : null}
+                    {isDeleteWebhookAvailable ? (
+                      <DeleteWebhook webhookId={cell.row.original.id}>
+                        <button className="hover:text-red-110 active:text-red-120">
+                          <Icon icon="delete" className="size-6 shrink-0" />
+                          <span className="sr-only">
+                            {t('settings:webhooks.delete_webhook')}
+                          </span>
+                        </button>
+                      </DeleteWebhook>
+                    ) : null}
+                  </div>
+                );
+              },
+            }),
+          ]
+        : []),
     ];
-
-    if (isDeleteWebhookAvailable || isEditWebhookAvailable) {
-      columns.push(
-        columnHelper.display({
-          id: 'actions',
-          size: 100,
-          cell: ({ cell }) => {
-            return (
-              <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
-                {isEditWebhookAvailable ? (
-                  <UpdateWebhook defaultValue={cell.row.original}>
-                    <button className="hover:text-purple-110 active:text-purple-120">
-                      <Icon icon="edit" className="size-6 shrink-0" />
-                      <span className="sr-only">
-                        {t('settings:webhooks.update_webhook')}
-                      </span>
-                    </button>
-                  </UpdateWebhook>
-                ) : null}
-                {isDeleteWebhookAvailable ? (
-                  <DeleteWebhook webhookId={cell.row.original.id}>
-                    <button className="hover:text-red-110 active:text-red-120">
-                      <Icon icon="delete" className="size-6 shrink-0" />
-                      <span className="sr-only">
-                        {t('settings:webhooks.delete_webhook')}
-                      </span>
-                    </button>
-                  </DeleteWebhook>
-                ) : null}
-              </div>
-            );
-          },
-        }),
-      );
-    }
-
-    return columns;
   }, [isDeleteWebhookAvailable, isEditWebhookAvailable, t]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
