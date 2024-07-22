@@ -35,13 +35,13 @@
     "postcss": "^8.4.38",
     "tailwindcss": "3.4.4",
     "tsx": "^4.15.7",
-    "vite": "^5.3.1"
+    "vite": "^5.3.4"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.7",
-    "@conform-to/dom": "^0.9.1",
-    "@conform-to/react": "^0.9.1",
-    "@conform-to/zod": "^0.9.1",
+    "@conform-to/dom": "^1.1.5",
+    "@conform-to/react": "^1.1.5",
+    "@conform-to/zod": "^1.1.5",
     "@dagrejs/dagre": "^1.1.2",
     "@hookform/devtools": "^4.3.1",
     "@hookform/resolvers": "^3.6.0",
@@ -105,7 +105,6 @@
     "typescript-utils": "workspace:*",
     "ui-design-system": "workspace:*",
     "ui-icons": "workspace:*",
-    "winston": "^3.11.0",
     "zod": "^3.23.8",
     "zustand": "^4.5.2"
   }

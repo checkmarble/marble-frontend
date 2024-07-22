@@ -6,11 +6,16 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { conform, useForm } from '@conform-to/react';
-import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import {
+  FormProvider,
+  getFormProps,
+  getInputProps,
+  useForm,
+} from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
-import { useEffect, useId, useState } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { redirectBack } from 'remix-utils/redirect-back';
 import { Button, Modal } from 'ui-design-system';
@@ -27,16 +32,19 @@ type UpdateScenarioForm = z.infer<typeof updateScenarioFormSchema>;
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
+    i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
   const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const formData = await request.formData();
-  const submission = parse(formData, { schema: updateScenarioFormSchema });
+  const submission = parseWithZod(formData, {
+    schema: updateScenarioFormSchema,
+  });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   try {
@@ -48,11 +56,16 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   } catch (error) {
     const session = await getSession(request);
+    const t = await getFixedT(request, ['common']);
+
+    const formError = t('common:errors.unknown');
+
     setToastMessage(session, {
       type: 'error',
-      messageKey: 'common:errors.unknown',
+      message: formError,
     });
-    return json(submission, {
+
+    return json(submission.reply({ formErrors: [formError] }), {
       headers: { 'Set-Cookie': await commitSession(session) },
     });
   }
@@ -65,10 +78,10 @@ export function UpdateScenario({
   children: React.ReactNode;
   defaultValue: UpdateScenarioForm;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const navigation = useNavigation();
-  useEffect(() => {
+  React.useEffect(() => {
     if (navigation.state === 'loading') {
       setOpen(false);
     }
@@ -91,58 +104,68 @@ function UpdateScenarioContent({
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const fetcher = useFetcher<typeof action>();
-  const formId = useId();
-  const [form, { name, description, scenarioId }] = useForm({
-    id: formId,
+
+  const [form, fields] = useForm({
+    shouldRevalidate: 'onInput',
     defaultValue,
-    lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(updateScenarioFormSchema),
-    // onValidate({ formData }) {
-    //   return parse(formData, {
-    //     schema: updateScenarioFormSchema,
-    //   });
-    // },
+    lastResult: fetcher.data,
+    constraint: getZodConstraint(updateScenarioFormSchema),
+    onValidate({ formData }) {
+      return parseWithZod(formData, {
+        schema: updateScenarioFormSchema,
+      });
+    },
   });
 
   return (
-    <fetcher.Form
-      method="PATCH"
-      action={getRoute('/ressources/scenarios/update')}
-      {...form.props}
-    >
-      <Modal.Title>{t('scenarios:update_scenario.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <input {...conform.input(scenarioId, { type: 'hidden' })} />
-        <FormField config={name} className="group flex w-full flex-col gap-2">
-          <FormLabel>{t('scenarios:create_scenario.name')}</FormLabel>
-          <FormInput
-            type="text"
-            placeholder={t('scenarios:create_scenario.name_placeholder')}
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        method="PATCH"
+        action={getRoute('/ressources/scenarios/update')}
+        {...getFormProps(form)}
+      >
+        <Modal.Title>{t('scenarios:update_scenario.title')}</Modal.Title>
+        <div className="flex flex-col gap-6 p-6">
+          <input
+            {...getInputProps(fields.scenarioId, { type: 'hidden' })}
+            key={fields.scenarioId.key}
           />
-          <FormError />
-        </FormField>
-        <FormField
-          config={description}
-          className="group flex w-full flex-col gap-2"
-        >
-          <FormLabel>{t('scenarios:create_scenario.description')}</FormLabel>
-          <FormInput
-            type="text"
-            placeholder={t('scenarios:create_scenario.description_placeholder')}
-          />
-          <FormError />
-        </FormField>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary">
-              {t('common:cancel')}
+          <FormField
+            name={fields.name.name}
+            className="group flex w-full flex-col gap-2"
+          >
+            <FormLabel>{t('scenarios:create_scenario.name')}</FormLabel>
+            <FormInput
+              type="text"
+              placeholder={t('scenarios:create_scenario.name_placeholder')}
+            />
+            <FormError />
+          </FormField>
+          <FormField
+            name={fields.description.name}
+            className="group flex w-full flex-col gap-2"
+          >
+            <FormLabel>{t('scenarios:create_scenario.description')}</FormLabel>
+            <FormInput
+              type="text"
+              placeholder={t(
+                'scenarios:create_scenario.description_placeholder',
+              )}
+            />
+            <FormError />
+          </FormField>
+          <div className="flex flex-1 flex-row gap-2">
+            <Modal.Close asChild>
+              <Button className="flex-1" variant="secondary">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button className="flex-1" variant="primary" type="submit">
+              {t('common:save')}
             </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            {t('common:save')}
-          </Button>
+          </div>
         </div>
-      </div>
-    </fetcher.Form>
+      </fetcher.Form>
+    </FormProvider>
   );
 }

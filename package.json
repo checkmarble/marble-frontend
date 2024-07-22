@@ -10,17 +10,17 @@
     "format:write": "prettier --write .",
     "format:check": "prettier --check .",
     "test:all": "vitest",
-    "update-deps": "pnpm update -i -r --latest;clear; pnpm licenses ls > packages-licenses.txt"
+    "update-deps": "pnpm update -i -r --latest;clear; pnpm licenses ls --json > packages-licenses.json"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "4.3.1",
-    "@vitest/coverage-v8": "^1.6.0",
-    "@vitest/ui": "1.6.0",
-    "prettier": "^3.3.2",
+    "@vitest/coverage-v8": "^2.0.3",
+    "@vitest/ui": "2.0.3",
+    "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "react-refresh": "^0.14.2",
-    "typescript": "5.5.2",
+    "typescript": "5.5.3",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "1.6.0"
+    "vitest": "2.0.3"
   }
 }

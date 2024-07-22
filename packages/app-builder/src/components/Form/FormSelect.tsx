@@ -1,55 +1,71 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useComposedRefs } from '@app-builder/utils/hooks/use-compose-refs';
-import { conform, type FieldConfig, useInputEvent } from '@conform-to/react';
+import { unstable_useControl, useField } from '@conform-to/react';
 import { type SelectValueProps } from '@radix-ui/react-select';
-import { forwardRef, type RefObject, useRef, useState } from 'react';
+import * as React from 'react';
 import { Select } from 'ui-design-system';
 
-interface FormSelectContext<Schema extends string> {
-  buttonRef: RefObject<HTMLButtonElement>;
-  config: FieldConfig<Schema>;
+import { useFieldName } from './FormField';
+
+interface FormSelectContext {
+  selectRef: React.RefObject<HTMLButtonElement>;
+  valid: boolean;
 }
-const FormSelectContext =
-  createSimpleContext<FormSelectContext<string>>('FormSelect');
+const FormSelectContext = createSimpleContext<FormSelectContext>('FormSelect');
 const useFormSelectContext = FormSelectContext.useValue;
 
-function FormSelectRoot<Schema extends string>({
-  config,
+interface FormSelectRootProps
+  extends Omit<React.ComponentProps<typeof Select.Root>, 'value'> {
+  options: readonly { value: string }[] | readonly string[];
+}
+
+function FormSelectRoot({
   children,
   onValueChange,
+  options,
   ...rest
-}: Omit<React.ComponentProps<typeof Select.Root>, 'value'> & {
-  config: FieldConfig<Schema>;
-}) {
-  const [value, setValue] = useState(config.defaultValue ?? '');
-  const shadowInputRef = useRef<HTMLInputElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const control = useInputEvent({
-    ref: shadowInputRef,
-    onReset: () => setValue(config.defaultValue ?? ''),
-  });
+}: FormSelectRootProps) {
+  const selectRef = React.useRef<HTMLButtonElement>(null);
+  const name = useFieldName();
+  const [meta] = useField<string>(name);
 
-  const contextValue = {
-    buttonRef,
-    config,
-  };
+  const control = unstable_useControl(meta);
+
+  const contextValue = React.useMemo(
+    () => ({
+      selectRef,
+      valid: meta.valid,
+    }),
+    [selectRef, meta.valid],
+  );
   return (
     <FormSelectContext.Provider value={contextValue}>
-      <input
-        ref={shadowInputRef}
-        {...conform.input(config, { hidden: true })}
-        onFocus={() => buttonRef.current?.focus()}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-      />
+      <select
+        className="sr-only"
+        aria-hidden
+        tabIndex={-1}
+        ref={control.register}
+        name={meta.name}
+        defaultValue={meta.initialValue}
+      >
+        <option value="" />
+        {options.map((option) => {
+          const value = typeof option === 'string' ? option : option.value;
+          return <option key={value} value={value} />;
+        })}
+      </select>
       <Select.Root
         {...rest}
-        defaultValue={config.defaultValue}
-        value={value}
+        defaultValue={meta.initialValue}
+        value={control.value}
         onValueChange={(value) => {
           control.change(value);
           onValueChange?.(value);
+        }}
+        onOpenChange={(open) => {
+          if (!open) {
+            control.blur();
+          }
         }}
       >
         {children}
@@ -58,17 +74,17 @@ function FormSelectRoot<Schema extends string>({
   );
 }
 
-const FormSelectTrigger = forwardRef<
+const FormSelectTrigger = React.forwardRef<
   HTMLButtonElement,
   Omit<React.ComponentProps<typeof Select.Trigger>, 'borderColor'>
 >(function FormSelectTrigger(props, ref) {
-  const { buttonRef, config } = useFormSelectContext();
-  const composedRef = useComposedRefs(ref, buttonRef);
+  const { valid, selectRef } = useFormSelectContext();
+  const composedRef = useComposedRefs(ref, selectRef);
 
   return (
     <Select.Trigger
       ref={composedRef}
-      borderColor={config.error ? 'red-100' : 'grey-10'}
+      borderColor={valid ? 'grey-10' : 'red-100'}
       {...props}
     />
   );
@@ -78,7 +94,7 @@ export type SelectProps = React.ComponentProps<typeof FormSelectRoot> &
   Pick<SelectValueProps, 'placeholder'> &
   Pick<React.ComponentProps<typeof FormSelectTrigger>, 'border' | 'className'>;
 
-const FormSelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
+const FormSelectDefault = React.forwardRef<HTMLButtonElement, SelectProps>(
   function SelectDefault(
     { children, placeholder, border, className, ...props },
     triggerRef,

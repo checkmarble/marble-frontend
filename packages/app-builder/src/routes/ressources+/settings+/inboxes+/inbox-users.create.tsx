@@ -8,8 +8,13 @@ import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { conform, useForm } from '@conform-to/react';
-import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import {
+  FormProvider,
+  getFormProps,
+  getInputProps,
+  useForm,
+} from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -36,6 +41,7 @@ function getCreateInboxUserFormSchema(
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
+    i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
     featureAccessService,
   } = serverServices;
@@ -44,14 +50,14 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: getCreateInboxUserFormSchema(
       await featureAccessService.getInboxUserRoles(),
     ),
   });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   try {
@@ -66,13 +72,16 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   } catch (error) {
     const session = await getSession(request);
+    const t = await getFixedT(request, ['common']);
+
+    const formError = t('common:errors.unknown');
 
     setToastMessage(session, {
       type: 'error',
-      messageKey: 'common:errors.unknown',
+      message: formError,
     });
 
-    return json(submission, {
+    return json(submission.reply({ formErrors: [formError] }), {
       headers: { 'Set-Cookie': await commitSession(session) },
     });
   }
@@ -133,74 +142,84 @@ export function CreateInboxUserContent({
 
   const fetcher = useFetcher<typeof action>();
 
-  const formId = React.useId();
-  const [form, { userId, inboxId, role }] = useForm({
-    id: formId,
+  const [form, fields] = useForm({
+    shouldRevalidate: 'onInput',
     defaultValue: { userId: '', inboxId: currentInboxId, role: 'member' },
-    lastSubmission: fetcher.data,
-    constraint: getFieldsetConstraint(schema),
+    lastResult: fetcher.data,
+    constraint: getZodConstraint(schema),
     onValidate({ formData }) {
-      return parse(formData, {
+      return parseWithZod(formData, {
         schema,
       });
     },
   });
 
   const userOptions = users.map((user) => ({
-    id: user.userId,
-    name: `${user.firstName} ${user.lastName}`,
+    value: user.userId,
+    label: `${user.firstName} ${user.lastName}`,
   }));
 
   return (
-    <fetcher.Form
-      method="post"
-      action={getRoute('/ressources/settings/inboxes/inbox-users/create')}
-      {...form.props}
-    >
-      <Modal.Title>
-        {t('settings:inboxes.inbox_details.add_member')}
-      </Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-6 p-6">
-        <input {...conform.input(inboxId, { type: 'hidden' })} />
-        <FormField config={userId} className="group flex flex-col gap-2">
-          <FormLabel>{t('settings:inboxes.inbox_details.user')}</FormLabel>
-          <FormSelect.Default config={userId}>
-            {userOptions.map(({ id, name }) => (
-              <FormSelect.DefaultItem key={id} value={id}>
-                {name}
-              </FormSelect.DefaultItem>
-            ))}
-          </FormSelect.Default>
-          <FormError />
-        </FormField>
-        <FormField config={role} className="group flex flex-col gap-2">
-          <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
-          <FormSelect.Default config={role}>
-            {inboxUserRoles.map((role) => (
-              <FormSelect.DefaultItem key={role} value={role}>
-                {t(tKeyForInboxUserRole(role))}
-              </FormSelect.DefaultItem>
-            ))}
-          </FormSelect.Default>
-          <FormError />
-        </FormField>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="create"
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        method="post"
+        action={getRoute('/ressources/settings/inboxes/inbox-users/create')}
+        {...getFormProps(form)}
+      >
+        <Modal.Title>
+          {t('settings:inboxes.inbox_details.add_member')}
+        </Modal.Title>
+        <div className="bg-grey-00 flex flex-col gap-6 p-6">
+          <input
+            {...getInputProps(fields.inboxId, { type: 'hidden' })}
+            key={fields.inboxId.key}
+          />
+          <FormField
+            name={fields.userId.name}
+            className="group flex flex-col gap-2"
           >
-            <Icon icon="new-inbox" className="size-6" />
-            {t('settings:inboxes.inbox_details.create_user')}
-          </Button>
+            <FormLabel>{t('settings:inboxes.inbox_details.user')}</FormLabel>
+            <FormSelect.Default options={userOptions}>
+              {userOptions.map(({ value, label }) => (
+                <FormSelect.DefaultItem key={value} value={value}>
+                  {label}
+                </FormSelect.DefaultItem>
+              ))}
+            </FormSelect.Default>
+            <FormError />
+          </FormField>
+          <FormField
+            name={fields.role.name}
+            className="group flex flex-col gap-2"
+          >
+            <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
+            <FormSelect.Default options={inboxUserRoles}>
+              {inboxUserRoles.map((role) => (
+                <FormSelect.DefaultItem key={role} value={role}>
+                  {t(tKeyForInboxUserRole(role))}
+                </FormSelect.DefaultItem>
+              ))}
+            </FormSelect.Default>
+            <FormError />
+          </FormField>
+          <div className="flex flex-1 flex-row gap-2">
+            <Modal.Close asChild>
+              <Button className="flex-1" variant="secondary">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button
+              className="flex-1"
+              variant="primary"
+              type="submit"
+              name="create"
+            >
+              <Icon icon="new-inbox" className="size-6" />
+              {t('settings:inboxes.inbox_details.create_user')}
+            </Button>
+          </div>
         </div>
-      </div>
-    </fetcher.Form>
+      </fetcher.Form>
+    </FormProvider>
   );
 }

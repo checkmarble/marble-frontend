@@ -11,8 +11,13 @@ import {
 import { transferAlerStatuses } from '@app-builder/models/transfer-alert';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { conform, useForm } from '@conform-to/react';
-import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import {
+  FormProvider,
+  getFormProps,
+  getInputProps,
+  useForm,
+} from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
@@ -40,10 +45,12 @@ export async function action({ request }: ActionFunctionArgs) {
   );
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema: updateAlertStatusFormSchema });
+  const submission = parseWithZod(formData, {
+    schema: updateAlertStatusFormSchema,
+  });
 
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json({ submission, success: false });
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   try {
@@ -57,27 +64,23 @@ export async function action({ request }: ActionFunctionArgs) {
       message: t('transfercheck:alert.update.success'),
     });
 
-    return json(
-      { submission, success: true },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return json(submission.reply(), {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
   } catch (error) {
     const session = await getSession(request);
     const t = await getFixedT(request, ['common']);
 
+    const formError = t('common:errors.unknown');
+
     setToastMessage(session, {
       type: 'error',
-      message: t('common:errors.unknown'),
+      message: formError,
     });
 
-    return json(
-      { submission, success: false },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return json(submission.reply({ formErrors: [formError] }), {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
   }
 }
 
@@ -90,71 +93,77 @@ export function UpdateAlertStatus({
   const fetcher = useFetcher<typeof action>();
   const alertStatuses = useAlertStatuses();
 
-  const formId = React.useId();
   const [form, fields] = useForm({
-    id: formId,
     defaultValue,
-    lastSubmission: fetcher.data?.submission,
-    constraint: getFieldsetConstraint(updateAlertStatusFormSchema),
+    lastResult: fetcher.data,
+    constraint: getZodConstraint(updateAlertStatusFormSchema),
     onValidate({ formData }) {
-      return parse(formData, {
+      return parseWithZod(formData, {
         schema: updateAlertStatusFormSchema,
       });
     },
   });
 
+  const formRef = React.useRef<HTMLFormElement>(null);
+
   const [status, setStatus] = React.useState(defaultValue.status);
   const { color, tKey } = alertStatusMapping[status];
 
   return (
-    <fetcher.Form
-      method="post"
-      action={getRoute('/transfercheck/ressources/alert/update/status')}
-      {...form.props}
-    >
-      <input {...conform.input(fields.alertId, { type: 'hidden' })} />
-      <FormField
-        config={fields.status}
-        className="group flex flex-row items-center gap-4"
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        ref={formRef}
+        method="post"
+        action={getRoute('/transfercheck/ressources/alert/update/status')}
+        {...getFormProps(form)}
       >
-        <FormLabel className="sr-only">
-          {t('transfercheck:alerts.status')}
-        </FormLabel>
-        <FormSelect.Root
-          config={fields.status}
-          onValueChange={(value) => {
-            //@ts-expect-error value is string but indeed, it is a valid status
-            setStatus(value);
-            form.ref.current?.requestSubmit();
-          }}
+        <input
+          {...getInputProps(fields.alertId, { type: 'hidden' })}
+          key={fields.alertId.key}
+        />
+        <FormField
+          name={fields.status.name}
+          className="group flex flex-row items-center gap-4"
         >
-          <FormSelect.Trigger>
-            <FormSelect.Value
-              className={alertStatusVariants({ color, variant: 'text' })}
-            >
-              {t(tKey)}
-            </FormSelect.Value>
-            <FormSelect.Arrow />
-          </FormSelect.Trigger>
-          <FormSelect.Content
-            className="max-h-60 min-w-[var(--radix-select-trigger-width)]"
-            align="start"
+          <FormLabel className="sr-only">
+            {t('transfercheck:alerts.status')}
+          </FormLabel>
+          <FormSelect.Root
+            onValueChange={(value) => {
+              //@ts-expect-error value is string but indeed, it is a valid status
+              setStatus(value);
+              formRef.current?.requestSubmit();
+            }}
+            options={alertStatuses}
           >
-            <FormSelect.Viewport>
-              {alertStatuses.map((status) => (
-                <FormSelect.Item
-                  key={status.value}
-                  value={status.value}
-                  className="flex flex-row items-center gap-2"
-                >
-                  <AlertStatus status={status.value} />
-                  <FormSelect.ItemText>{status.label}</FormSelect.ItemText>
-                </FormSelect.Item>
-              ))}
-            </FormSelect.Viewport>
-          </FormSelect.Content>
-        </FormSelect.Root>
-      </FormField>
-    </fetcher.Form>
+            <FormSelect.Trigger>
+              <FormSelect.Value
+                className={alertStatusVariants({ color, variant: 'text' })}
+              >
+                {t(tKey)}
+              </FormSelect.Value>
+              <FormSelect.Arrow />
+            </FormSelect.Trigger>
+            <FormSelect.Content
+              className="max-h-60 min-w-[var(--radix-select-trigger-width)]"
+              align="start"
+            >
+              <FormSelect.Viewport>
+                {alertStatuses.map((status) => (
+                  <FormSelect.Item
+                    key={status.value}
+                    value={status.value}
+                    className="flex flex-row items-center gap-2"
+                  >
+                    <AlertStatus status={status.value} />
+                    <FormSelect.ItemText>{status.label}</FormSelect.ItemText>
+                  </FormSelect.Item>
+                ))}
+              </FormSelect.Viewport>
+            </FormSelect.Content>
+          </FormSelect.Root>
+        </FormField>
+      </fetcher.Form>
+    </FormProvider>
   );
 }

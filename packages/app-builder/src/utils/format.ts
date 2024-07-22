@@ -21,7 +21,7 @@ export function useFormatLanguage() {
     () =>
       typeof navigator === 'undefined'
         ? 'fr-FR'
-        : navigator?.languages[0] ?? 'fr-FR',
+        : (navigator?.languages[0] ?? 'fr-FR'),
     [],
   );
 }

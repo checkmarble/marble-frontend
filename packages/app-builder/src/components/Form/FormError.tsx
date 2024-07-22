@@ -1,31 +1,39 @@
+import { useField } from '@conform-to/react';
 import clsx from 'clsx';
 import * as React from 'react';
 
-import { useFieldConfig } from './FormField';
+import { useFieldName } from './FormField';
 
-export const FormError = React.forwardRef<
-  HTMLParagraphElement,
-  Omit<React.HTMLAttributes<HTMLParagraphElement>, 'id'>
->(function FormError({ className, children, ...props }, ref) {
-  const { error, errorId } = useFieldConfig();
+interface FormErrorProps
+  extends Omit<React.HTMLAttributes<HTMLParagraphElement>, 'id'> {}
 
-  if (!error) {
-    return null;
-  }
+export const FormError = React.forwardRef<HTMLParagraphElement, FormErrorProps>(
+  function FormError({ className, children, ...props }, ref) {
+    const name = useFieldName();
+    const [meta] = useField(name);
 
-  const body = children ?? error;
+    const { errors, errorId } = meta;
 
-  return (
-    <p
-      ref={ref}
-      id={errorId}
-      className={clsx(
-        'text-s font-medium text-red-100 transition-opacity duration-200 ease-in-out',
-        className,
-      )}
-      {...props}
-    >
-      {body}
-    </p>
-  );
-});
+    const error = errors?.at(0);
+
+    if (!error) {
+      return null;
+    }
+
+    const body = children ?? error;
+
+    return (
+      <p
+        ref={ref}
+        id={errorId}
+        className={clsx(
+          'text-s font-medium text-red-100 transition-opacity duration-200 ease-in-out',
+          className,
+        )}
+        {...props}
+      >
+        {body}
+      </p>
+    );
+  },
+);

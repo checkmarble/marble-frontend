@@ -1,20 +1,19 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type FieldConfig } from '@conform-to/react';
+import { type FieldName } from '@conform-to/react';
 import type * as React from 'react';
 
-const FieldConfigContext =
-  createSimpleContext<FieldConfig<void>>('FieldConfig');
-export const useFieldConfig = FieldConfigContext.useValue;
+const FieldNameContext = createSimpleContext<string>('FieldName');
+export const useFieldName = FieldNameContext.useValue;
 
 export function FormField<Schema>({
-  config,
+  name,
   ...props
 }: {
-  config: FieldConfig<Schema>;
+  name: FieldName<Schema>;
 } & React.ComponentPropsWithoutRef<'div'>) {
   return (
-    <FieldConfigContext.Provider value={config}>
+    <FieldNameContext.Provider value={name}>
       <div {...props} />
-    </FieldConfigContext.Provider>
+    </FieldNameContext.Provider>
   );
 }

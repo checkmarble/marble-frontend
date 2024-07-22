@@ -1,72 +1,92 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
+import { adaptToStringArray } from '@app-builder/utils/form';
 import { useComposedRefs } from '@app-builder/utils/hooks/use-compose-refs';
-import { stringToStringArray } from '@app-builder/utils/schema/stringToJSONSchema';
-import { conform, type FieldConfig, useInputEvent } from '@conform-to/react';
-import { forwardRef, type RefObject, useMemo, useRef, useState } from 'react';
+import { unstable_useControl, useField } from '@conform-to/react';
+import * as React from 'react';
 import {
   type Select,
   SelectWithCombobox,
   type SelectWithComboboxProviderProps,
 } from 'ui-design-system';
 
-interface FormSelectWithComboboxContext<Schema extends string[]> {
-  buttonRef: RefObject<HTMLButtonElement>;
-  config: FieldConfig<Schema>;
+import { useFieldName } from './FormField';
+
+interface FormSelectWithComboboxContext {
+  selectRef: React.RefObject<HTMLButtonElement>;
+  valid: boolean;
 }
-const FormSelectWithComboboxContext = createSimpleContext<
-  FormSelectWithComboboxContext<string[]>
->('FormSelectWithCombobox');
+const FormSelectWithComboboxContext =
+  createSimpleContext<FormSelectWithComboboxContext>('FormSelectWithCombobox');
 const useFormSelectWithComboboxContext = FormSelectWithComboboxContext.useValue;
 
-function FormSelectWithComboboxRoot<Schema extends string[]>({
-  config,
+interface FormSelectWithComboboxRootProps
+  extends Omit<SelectWithComboboxProviderProps<string[]>, 'selectedValues'> {
+  onOpenChange?: (open: boolean) => void;
+  options: string[];
+}
+
+function FormSelectWithComboboxRoot({
   children,
   onSelectedValueChange: onSelectedValuesChange,
   onOpenChange,
+  options,
   ...rest
-}: Omit<SelectWithComboboxProviderProps<string[]>, 'selectedValues'> & {
-  config: FieldConfig<Schema>;
-  onOpenChange?: (open: boolean) => void;
-}) {
-  const [selectedValues, setSelectedValues] = useState<string[]>(
-    config.defaultValue ?? [],
+}: FormSelectWithComboboxRootProps) {
+  const selectRef = React.useRef<HTMLButtonElement>(null);
+  const name = useFieldName();
+  const [meta] = useField<string[]>(name);
+
+  const control = unstable_useControl(meta);
+
+  const initialValue = React.useMemo(
+    () => adaptToStringArray(meta.initialValue),
+    [meta.initialValue],
   );
 
-  const shadowInputRef = useRef<HTMLInputElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const control = useInputEvent({
-    ref: shadowInputRef,
-    onReset: () => setSelectedValues(config.defaultValue ?? []),
-  });
+  const selectedValue = React.useMemo(
+    () => adaptToStringArray(control.value),
+    [control.value],
+  );
 
-  const contextValue = useMemo(
+  const contextValue = React.useMemo(
     () => ({
-      buttonRef,
-      config,
+      selectRef,
+      valid: meta.valid,
     }),
-    [buttonRef, config],
+    [selectRef, meta.valid],
   );
   return (
     <FormSelectWithComboboxContext.Provider value={contextValue}>
-      <input
-        ref={shadowInputRef}
-        {...conform.input<string>(
-          { ...config, defaultValue: JSON.stringify(config.defaultValue) },
-          { hidden: true },
-        )}
-        onFocus={() => buttonRef.current?.focus()}
-        onChange={(e) => {
-          const parsedValue = stringToStringArray.safeParse(e.target.value);
-          setSelectedValues(parsedValue.success ? parsedValue.data : []);
+      <select
+        className="sr-only"
+        aria-hidden
+        tabIndex={-1}
+        ref={control.register}
+        multiple
+        name={meta.name}
+        defaultValue={initialValue.filter((val) => val !== undefined)}
+        onFocus={() => {
+          selectRef.current?.focus();
         }}
-      />
+      >
+        <option value="" />
+        {options.map((option) => (
+          <option key={option} value={option} />
+        ))}
+      </select>
+
       <SelectWithCombobox.Root
         {...rest}
-        onOpenChange={onOpenChange}
-        selectedValue={selectedValues}
+        selectedValue={selectedValue}
         onSelectedValueChange={(value) => {
-          control.change(JSON.stringify(value));
-          return onSelectedValuesChange?.(value);
+          control.change(value);
+          onSelectedValuesChange?.(value);
+        }}
+        onOpenChange={(open) => {
+          if (!open) {
+            control.blur();
+          }
+          onOpenChange?.(open);
         }}
       >
         {children}
@@ -75,23 +95,23 @@ function FormSelectWithComboboxRoot<Schema extends string[]>({
   );
 }
 
-const FormSelectWithComboboxSelect = forwardRef<
+const FormSelectWithComboboxSelect = React.forwardRef<
   HTMLButtonElement,
   Omit<React.ComponentProps<typeof Select.Trigger>, 'borderColor'>
 >(function FormSelectTrigger(props, ref) {
-  const { buttonRef, config } = useFormSelectWithComboboxContext();
-  const composedRef = useComposedRefs(ref, buttonRef);
+  const { valid, selectRef } = useFormSelectWithComboboxContext();
+  const composedRef = useComposedRefs(ref, selectRef);
 
   return (
     <SelectWithCombobox.Select
       ref={composedRef}
-      borderColor={config.error ? 'red-100' : 'grey-10'}
+      borderColor={valid ? 'grey-10' : 'red-100'}
       {...props}
     />
   );
 });
 
-const FormSelectWithComboboxPopover = forwardRef<
+const FormSelectWithComboboxPopover = React.forwardRef<
   HTMLDivElement,
   Omit<React.ComponentProps<typeof SelectWithCombobox.Popover>, 'portal'>
 >(function FormSelectWithComboboxPopover(props, ref) {

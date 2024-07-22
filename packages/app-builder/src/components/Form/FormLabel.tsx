@@ -1,20 +1,27 @@
+import { useField } from '@conform-to/react';
 import * as LabelPrimitive from '@radix-ui/react-label';
 import clsx from 'clsx';
 import * as React from 'react';
 
-import { useFieldConfig } from './FormField';
+import { useFieldName } from './FormField';
+
+interface FormLabelProps
+  extends Omit<
+    React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>,
+    'htmlFor'
+  > {}
 
 export const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
-  Omit<React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>, 'htmlFor'>
+  FormLabelProps
 >(function FormLabel({ className, ...props }, ref) {
-  const { id, error } = useFieldConfig();
-
+  const name = useFieldName();
+  const [meta] = useField(name);
   return (
     <LabelPrimitive.Root
       ref={ref}
-      htmlFor={id}
-      className={clsx(!!error && 'text-red-100', className)}
+      htmlFor={meta.id}
+      className={clsx(!meta.valid && 'text-red-100', className)}
       {...props}
     />
   );

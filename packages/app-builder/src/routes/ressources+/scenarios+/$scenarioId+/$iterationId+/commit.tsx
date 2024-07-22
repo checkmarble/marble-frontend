@@ -6,11 +6,11 @@ import { isStatusBadRequestHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { useForm } from '@conform-to/react';
-import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import { FormProvider, getFormProps, useForm } from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
-import { useEffect, useId, useState } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
 import { redirectBack } from 'remix-utils/redirect-back';
@@ -19,9 +19,9 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const commitFormSchema = z.object({
-  draftIsReadOnly: z.coerce.boolean().pipe(z.literal(true)),
-  activateToGoInProd: z.coerce.boolean().pipe(z.literal(true)),
-  changeIsImmediate: z.coerce.boolean().pipe(z.literal(true)),
+  draftIsReadOnly: z.boolean().pipe(z.literal(true)),
+  activateToGoInProd: z.boolean().pipe(z.literal(true)),
+  changeIsImmediate: z.boolean().pipe(z.literal(true)),
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -34,9 +34,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const iterationId = fromParams(params, 'iterationId');
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema: commitFormSchema });
-  if (submission.intent !== 'submit' || !submission.value) {
-    return json(submission);
+  const submission = parseWithZod(formData, { schema: commitFormSchema });
+
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
 
   try {
@@ -57,18 +58,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
     } = serverServices;
     const t = await getFixedT(request, ['scenarios', 'common']);
     const session = await getSession(request);
-    if (isStatusBadRequestHttpError(error)) {
-      setToastMessage(session, {
-        type: 'error',
-        message: t('scenarios:deployment_modal.commit.validation_error'),
-      });
-    } else {
-      setToastMessage(session, {
-        type: 'error',
-        message: t('common:errors.unknown'),
-      });
-    }
-    return json(submission, {
+    const formError = isStatusBadRequestHttpError(error)
+      ? t('scenarios:deployment_modal.commit.validation_error')
+      : t('common:errors.unknown');
+
+    setToastMessage(session, {
+      type: 'error',
+      message: formError,
+    });
+    return json(submission.reply({ formErrors: [formError] }), {
       headers: { 'Set-Cookie': await commitSession(session) },
     });
   }
@@ -85,10 +83,10 @@ export function CommitScenarioDraft({
   };
 }) {
   const { t } = useTranslation(['scenarios']);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const navigation = useNavigation();
-  useEffect(() => {
+  React.useEffect(() => {
     if (navigation.state === 'loading') {
       setOpen(false);
     }
@@ -135,108 +133,113 @@ function CommitScenarioDraftContent({
   const { t } = useTranslation(['common', 'scenarios']);
   const fetcher = useFetcher<typeof action>();
 
-  const formId = useId();
-
-  const [form, { draftIsReadOnly, activateToGoInProd, changeIsImmediate }] =
-    useForm({
-      id: formId,
-      defaultValue: { draftIsCommited: false, changeIsImmediate: false },
-      lastSubmission: fetcher.data,
-      constraint: getFieldsetConstraint(commitFormSchema),
-      onValidate({ formData }) {
-        return parse(formData, {
-          schema: commitFormSchema,
-        });
-      },
-    });
+  const [form, fields] = useForm({
+    shouldRevalidate: 'onInput',
+    defaultValue: {
+      activateToGoInProd: false,
+      draftIsReadOnly: false,
+      changeIsImmediate: false,
+    },
+    lastResult: fetcher.data,
+    constraint: getZodConstraint(commitFormSchema),
+    onValidate({ formData }) {
+      return parseWithZod(formData, {
+        schema: commitFormSchema,
+      });
+    },
+  });
 
   return (
-    <fetcher.Form
-      action={getRoute(
-        '/ressources/scenarios/:scenarioId/:iterationId/commit',
-        {
-          scenarioId: fromUUID(scenarioId),
-          iterationId: fromUUID(iterationId),
-        },
-      )}
-      method="POST"
-      {...form.props}
-    >
-      <Modal.Title>{t('scenarios:deployment_modal.commit.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <AuthenticityTokenInput />
-        <div className="text-s flex flex-col gap-4 font-medium">
-          <p className="font-semibold">
-            {t('scenarios:deployment_modal.commit.confirm')}
-          </p>
-          <FormField
-            config={draftIsReadOnly}
-            className="group flex flex-row items-center gap-2"
-          >
-            <FormCheckbox />
-            <FormLabel>
-              {t('scenarios:deployment_modal.commit.draft_is_readonly')}
-            </FormLabel>
-            <Tooltip.Default
-              content={
-                <p className="max-w-60">
-                  {t(
-                    'scenarios:deployment_modal.commit.draft_is_readonly.tooltip',
-                  )}
-                </p>
-              }
+    <FormProvider context={form.context}>
+      <fetcher.Form
+        action={getRoute(
+          '/ressources/scenarios/:scenarioId/:iterationId/commit',
+          {
+            scenarioId: fromUUID(scenarioId),
+            iterationId: fromUUID(iterationId),
+          },
+        )}
+        method="POST"
+        {...getFormProps(form)}
+      >
+        <Modal.Title>
+          {t('scenarios:deployment_modal.commit.title')}
+        </Modal.Title>
+        <div className="flex flex-col gap-6 p-6">
+          <AuthenticityTokenInput />
+          <div className="text-s flex flex-col gap-4 font-medium">
+            <p className="font-semibold">
+              {t('scenarios:deployment_modal.commit.confirm')}
+            </p>
+            <FormField
+              name={fields.draftIsReadOnly.name}
+              className="group flex flex-row items-center gap-2"
             >
-              <Icon
-                icon="tip"
-                className="size-6 text-purple-50 hover:text-purple-100"
-              />
-            </Tooltip.Default>
-          </FormField>
-          <FormField
-            config={activateToGoInProd}
-            className="group flex flex-row items-center gap-2"
-          >
-            <FormCheckbox />
-            <FormLabel>
-              {t('scenarios:deployment_modal.commit.activate_to_go_in_prod')}
-            </FormLabel>
-            <Tooltip.Default
-              content={
-                <p className="max-w-60">
-                  {t(
-                    'scenarios:deployment_modal.commit.activate_to_go_in_prod.tooltip',
-                  )}
-                </p>
-              }
+              <FormCheckbox />
+              <FormLabel>
+                {t('scenarios:deployment_modal.commit.draft_is_readonly')}
+              </FormLabel>
+              <Tooltip.Default
+                content={
+                  <p className="max-w-60">
+                    {t(
+                      'scenarios:deployment_modal.commit.draft_is_readonly.tooltip',
+                    )}
+                  </p>
+                }
+              >
+                <Icon
+                  icon="tip"
+                  className="size-6 text-purple-50 hover:text-purple-100"
+                />
+              </Tooltip.Default>
+            </FormField>
+            <FormField
+              name={fields.activateToGoInProd.name}
+              className="group flex flex-row items-center gap-2"
             >
-              <Icon
-                icon="tip"
-                className="size-6 text-purple-50 hover:text-purple-100"
-              />
-            </Tooltip.Default>
-          </FormField>
-          <FormField
-            config={changeIsImmediate}
-            className="group flex flex-row items-center gap-2"
-          >
-            <FormCheckbox />
-            <FormLabel>
-              {t('scenarios:deployment_modal.commit.change_is_immediate')}
-            </FormLabel>
-          </FormField>
-        </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
-              {t('common:cancel')}
+              <FormCheckbox />
+              <FormLabel>
+                {t('scenarios:deployment_modal.commit.activate_to_go_in_prod')}
+              </FormLabel>
+              <Tooltip.Default
+                content={
+                  <p className="max-w-60">
+                    {t(
+                      'scenarios:deployment_modal.commit.activate_to_go_in_prod.tooltip',
+                    )}
+                  </p>
+                }
+              >
+                <Icon
+                  icon="tip"
+                  className="size-6 text-purple-50 hover:text-purple-100"
+                />
+              </Tooltip.Default>
+            </FormField>
+            <FormField
+              name={fields.changeIsImmediate.name}
+              className="group flex flex-row items-center gap-2"
+            >
+              <FormCheckbox />
+              <FormLabel>
+                {t('scenarios:deployment_modal.commit.change_is_immediate')}
+              </FormLabel>
+            </FormField>
+          </div>
+          <div className="flex flex-1 flex-row gap-2">
+            <Modal.Close asChild>
+              <Button className="flex-1" variant="secondary" name="cancel">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button className="flex-1" variant="primary" type="submit">
+              <Icon icon="commit" className="size-6" />
+              {t('scenarios:deployment_modal.commit.button')}
             </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            <Icon icon="commit" className="size-6" />
-            {t('scenarios:deployment_modal.commit.button')}
-          </Button>
+          </div>
         </div>
-      </div>
-    </fetcher.Form>
+      </fetcher.Form>
+    </FormProvider>
   );
 }
