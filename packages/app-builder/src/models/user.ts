@@ -28,6 +28,8 @@ function NewPermissionsList() {
     canEditInboxes: 'INBOX_EDITOR',
     canReadAnalytics: 'ANALYTICS_READ',
     canManageWebhooks: 'WEBHOOK',
+    canCreateUser: 'MARBLE_USER_CREATE',
+    canDeleteUser: 'MARBLE_USER_DELETE',
   } as const;
 }
 

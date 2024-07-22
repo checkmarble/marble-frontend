@@ -184,5 +184,29 @@ export function makeFeatureAccessService({
     }) => {
       return permissions.canManageWebhooks;
     },
+    isReadUserAvailable: ({ role }: { role: string }) => {
+      return role === 'ADMIN' || role === 'MARBLE_ADMIN';
+    },
+    isCreateUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canCreateUser;
+    },
+    isEditUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canCreateUser;
+    },
+    isDeleteUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canDeleteUser;
+    },
   };
 }
