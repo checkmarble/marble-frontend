@@ -1,6 +1,7 @@
 # Add files here to ignore them from prettier formatting
 /.vscode/
 pnpm-lock.yaml
+packages-licenses.json
 
 # app-builder
 /packages/app-builder/.cache/
