@@ -65,9 +65,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     currentOrganization,
     scheduledExecutions,
   ] = await Promise.all([
-    featureAccessService.isManualTriggerScenarioAvailable({
-      userPermissions: user.permissions,
-    }),
+    featureAccessService.isManualTriggerScenarioAvailable(user),
     editor.listOperators({
       scenarioId,
     }),

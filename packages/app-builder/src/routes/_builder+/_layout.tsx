@@ -70,9 +70,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     organization.getCurrentOrganization(),
     organization.listUsers(),
     organization.listTags(),
-    featureAccessService.isAnalyticsAvailable({
-      userPermissions: user.permissions,
-    }),
+    featureAccessService.isAnalyticsAvailable(user),
     featureAccessService.isWorkflowsAvailable(),
   ]);
 

@@ -69,9 +69,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     inboxes,
     hasPivotValue,
     workflowDataFeatureAccess: {
-      isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable({
-        userPermissions: user.permissions,
-      }),
+      isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable(user),
     },
   });
 }

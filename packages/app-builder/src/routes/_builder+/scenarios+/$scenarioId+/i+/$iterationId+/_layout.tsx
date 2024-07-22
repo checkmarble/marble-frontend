@@ -26,9 +26,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const [isEditScenarioAvailable, scenarioIteration, scenarioValidation] =
     await Promise.all([
-      featureAccessService.isEditScenarioAvailable({
-        userPermissions: user.permissions,
-      }),
+      featureAccessService.isEditScenarioAvailable(user),
       scenario.getScenarioIteration({
         iterationId,
       }),

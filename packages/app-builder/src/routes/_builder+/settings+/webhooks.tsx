@@ -26,9 +26,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
       failureRedirect: getRoute('/sign-in'),
     },
   );
-  const isReadWebhookAvailable = featureAccessService.isReadWebhookAvailable({
-    userPermissions: user.permissions,
-  });
+  const isReadWebhookAvailable =
+    featureAccessService.isReadWebhookAvailable(user);
   if (!isReadWebhookAvailable) {
     return redirect(getRoute('/'));
   }
@@ -37,15 +36,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({
     webhooks,
-    isCreateWebhookAvailable: featureAccessService.isCreateWebhookAvailable({
-      userPermissions: user.permissions,
-    }),
-    isEditWebhookAvailable: featureAccessService.isCreateWebhookAvailable({
-      userPermissions: user.permissions,
-    }),
-    isDeleteWebhookAvailable: featureAccessService.isDeleteWebhookAvailable({
-      userPermissions: user.permissions,
-    }),
+    isCreateWebhookAvailable:
+      featureAccessService.isCreateWebhookAvailable(user),
+    isEditWebhookAvailable: featureAccessService.isCreateWebhookAvailable(user),
+    isDeleteWebhookAvailable:
+      featureAccessService.isDeleteWebhookAvailable(user),
   });
 }
 
