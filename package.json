@@ -9,7 +9,8 @@
   "scripts": {
     "format:write": "prettier --write .",
     "format:check": "prettier --check .",
-    "test:all": "vitest"
+    "test:all": "vitest",
+    "update-deps": "pnpm update -i -r --latest;clear; pnpm licenses ls > packages-licenses.txt"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "4.3.1",
