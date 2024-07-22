@@ -26,6 +26,7 @@ import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepos
 import { type TransferAlertRepository } from '@app-builder/repositories/TransferAlertRepository';
 import { type TransferRepository } from '@app-builder/repositories/TransferRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
+import { type WebhookRepository } from '@app-builder/repositories/WebhookRepository';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { json, redirect } from '@remix-run/node';
@@ -51,6 +52,7 @@ interface AuthenticatedInfo {
   transferRepository: TransferRepository;
   partnerRepository: PartnerRepository;
   transferAlertRepository: TransferAlertRepository;
+  webhookRepository: WebhookRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   scenarioIterationRuleRepository: ScenarioIterationRuleRepository;
@@ -137,6 +139,9 @@ interface MakeAuthenticationServerServiceArgs {
     transfercheckApi: TransfercheckApi,
     partnerId?: string,
   ) => TransferAlertRepository;
+  getWebhookRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => WebhookRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   csrfService: CSRF;
 }
@@ -158,6 +163,7 @@ export function makeAuthenticationServerService({
   getTransferRepository,
   getPartnerRepository,
   getTransferAlertRepository,
+  getWebhookRepository,
   authSessionService,
   csrfService,
 }: MakeAuthenticationServerServiceArgs) {
@@ -336,6 +342,7 @@ export function makeAuthenticationServerService({
         transfercheckAPIClient,
         user.partnerId,
       ),
+      webhookRepository: getWebhookRepository(marbleCoreApiClient),
       user,
       inbox: getInboxRepository(marbleCoreApiClient),
     };

@@ -5,9 +5,11 @@ import { Icon } from 'ui-icons';
 
 import { filtersI18n } from './filters-i18n';
 
+type AddNewFilterButtonProps = Omit<ButtonProps, 'variant' | 'color' | 'ref'>;
+
 export const AddNewFilterButton = forwardRef<
   HTMLButtonElement,
-  Omit<ButtonProps, 'ref'>
+  AddNewFilterButtonProps
 >(function AddNewFilterButton(props, ref) {
   const { t } = useTranslation(filtersI18n);
   return (

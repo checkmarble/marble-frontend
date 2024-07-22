@@ -38,6 +38,8 @@ tags:
     description: Operations about editor.
   - name: Tags
     description: Operations about tags.
+  - name: Webhooks
+    description: Operations about webhooks.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
@@ -2918,6 +2920,123 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /webhooks:
+    get:
+      tags:
+        - Webhooks
+      summary: List all webhooks
+      operationId: listWebhooks
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The list of webhooks
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - webhooks
+                properties:
+                  webhooks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WebhookDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      tags:
+        - Webhooks
+      summary: Create a webhook
+      operationId: createWebhook
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Describe the webhook to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookRegisterBodyDto'
+        required: true
+      responses:
+        '201':
+          description: The created webhook
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - webhook
+                properties:
+                  webhook:
+                    $ref: '#/components/schemas/WebhookWithSecretDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /webhooks/{webhookId}:
+    patch:
+      tags:
+        - Webhooks
+      summary: Update a webhook
+      operationId: updateWebhook
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: webhookId
+          description: ID of the webhook that needs to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Describe the fields to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookUpdateBodyDto'
+        required: true
+      responses:
+        '200':
+          description: The updated webhook
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - webhook
+                properties:
+                  webhook:
+                    $ref: '#/components/schemas/WebhookDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    delete:
+      tags:
+        - Webhooks
+      summary: Delete a webhook
+      operationId: deleteWebhook
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: webhookId
+          description: ID of the webhook that needs to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: The webhook user has been deleted
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
 components:
   parameters:
     start_date:
@@ -4593,6 +4712,90 @@ components:
           format: uuid
         role:
           type: string
+    WebhookDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        event_types:
+          type: array
+          items:
+            type: string
+        url:
+          type: string
+        http_timeout:
+          type: integer
+        rate_limit:
+          type: integer
+        rate_limit_duration:
+          type: integer
+      required:
+        - id
+        - secrets
+        - url
+    WebhookSecretDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        deleted_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        value:
+          type: string
+    WebhookWithSecretDto:
+      allOf:
+        - $ref: '#/components/schemas/WebhookDto'
+        - type: object
+          properties:
+            secrets:
+              type: array
+              items:
+                $ref: '#/components/schemas/WebhookSecretDto'
+    WebhookRegisterBodyDto:
+      type: object
+      properties:
+        event_types:
+          type: array
+          items:
+            type: string
+        url:
+          type: string
+        http_timeout:
+          type: integer
+        rate_limit:
+          type: integer
+        rate_limit_duration:
+          type: integer
+      required:
+        - event_types
+        - url
+    WebhookUpdateBodyDto:
+      type: object
+      properties:
+        event_types:
+          type: array
+          items:
+            type: string
+        url:
+          type: string
+        http_timeout:
+          type: integer
+        rate_limit:
+          type: integer
+        rate_limit_duration:
+          type: integer
   securitySchemes:
     bearerAuth:
       type: http

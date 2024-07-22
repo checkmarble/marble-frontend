@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 export const variants = ['primary', 'secondary', 'tertiary'] as const;
 export type Variant = (typeof variants)[number];
 
-export const variantColors: Record<Variant, readonly string[]> = {
+export const variantColors = {
   primary: ['purple', 'green', 'red'],
   secondary: ['grey'],
   tertiary: ['grey'],

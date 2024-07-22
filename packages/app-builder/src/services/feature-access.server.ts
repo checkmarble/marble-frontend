@@ -156,5 +156,33 @@ export function makeFeatureAccessService({
       }
       return ['admin'] as const;
     },
+    isReadWebhookAvailable: ({
+      userPermissions,
+    }: {
+      userPermissions: UserPermissions;
+    }) => {
+      return userPermissions.canManageWebhooks;
+    },
+    isCreateWebhookAvailable: ({
+      userPermissions,
+    }: {
+      userPermissions: UserPermissions;
+    }) => {
+      return userPermissions.canManageWebhooks;
+    },
+    isEditWebhookAvailable: ({
+      userPermissions,
+    }: {
+      userPermissions: UserPermissions;
+    }) => {
+      return userPermissions.canManageWebhooks;
+    },
+    isDeleteWebhookAvailable: ({
+      userPermissions,
+    }: {
+      userPermissions: UserPermissions;
+    }) => {
+      return userPermissions.canManageWebhooks;
+    },
   };
 }

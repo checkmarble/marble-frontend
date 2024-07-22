@@ -23,6 +23,7 @@ import {
 import { makeGetTransferAlertRepository } from './TransferAlertRepository';
 import { makeGetTransferRepository } from './TransferRepository';
 import { makeGetUserRepository } from './UserRepository';
+import { makeGetWebhookRepository } from './WebhookRepository';
 
 export function makeServerRepositories({
   devEnvironment,
@@ -62,6 +63,7 @@ export function makeServerRepositories({
     getTransferRepository: makeGetTransferRepository(),
     getPartnerRepository: makeGetPartnerRepository(),
     getTransferAlertRepository: makeGetTransferAlertRepository(),
+    getWebhookRepository: makeGetWebhookRepository(),
     licenseRepository: getLicenseRepository(licenseAPIClient, devEnvironment),
   };
 }

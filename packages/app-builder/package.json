@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "type-check": "npx tsc --noEmit",
+    "type-check": "pnpm exec tsc --noEmit",
     "dev": "remix vite:dev",
     "build": "remix vite:build",
     "build-with-sourcemaps": "remix vite:build --sourcemap && sentry-upload-sourcemaps --org checkmarble --project marble-frontend",

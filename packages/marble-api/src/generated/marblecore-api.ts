@@ -580,6 +580,39 @@ export type AddInboxUserBodyDto = {
     user_id: string;
     role: string;
 };
+export type WebhookDto = {
+    id: string;
+    event_types?: string[];
+    url: string;
+    http_timeout?: number;
+    rate_limit?: number;
+    rate_limit_duration?: number;
+};
+export type WebhookRegisterBodyDto = {
+    event_types: string[];
+    url: string;
+    http_timeout?: number;
+    rate_limit?: number;
+    rate_limit_duration?: number;
+};
+export type WebhookSecretDto = {
+    id?: string;
+    created_at?: string;
+    deleted_at?: string;
+    expires_at?: string;
+    updated_at?: string;
+    value?: string;
+};
+export type WebhookWithSecretDto = WebhookDto & {
+    secrets?: WebhookSecretDto[];
+};
+export type WebhookUpdateBodyDto = {
+    event_types?: string[];
+    url?: string;
+    http_timeout?: number;
+    rate_limit?: number;
+    rate_limit_duration?: number;
+};
 /**
  * Get an access token
  */
@@ -2492,6 +2525,84 @@ export function deleteInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts
         status: 403;
         data: string;
     }>(`/inbox_users/${encodeURIComponent(inboxUserId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * List all webhooks
+ */
+export function listWebhooks(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            webhooks: WebhookDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/webhooks", {
+        ...opts
+    }));
+}
+/**
+ * Create a webhook
+ */
+export function createWebhook(webhookRegisterBodyDto: WebhookRegisterBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: {
+            webhook: WebhookWithSecretDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/webhooks", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: webhookRegisterBodyDto
+    })));
+}
+/**
+ * Update a webhook
+ */
+export function updateWebhook(webhookId: string, webhookUpdateBodyDto: WebhookUpdateBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            webhook: WebhookDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/webhooks/${encodeURIComponent(webhookId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: webhookUpdateBodyDto
+    })));
+}
+/**
+ * Delete a webhook
+ */
+export function deleteWebhook(webhookId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/webhooks/${encodeURIComponent(webhookId)}`, {
         ...opts,
         method: "DELETE"
     }));
