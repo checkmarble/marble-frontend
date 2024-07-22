@@ -157,7 +157,7 @@ export function adaptValidWorkflow(
         return undefined;
       }
       return {
-        type: 'CREATE_CASE',
+        type: scenario.decisionToCaseWorkflowType,
         trigger: {
           scenarioId: scenario.id,
           outcomes: [firstOutcome, ...scenario.decisionToCaseOutcomes.slice(1)],
