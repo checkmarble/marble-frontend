@@ -30,6 +30,8 @@ function NewPermissionsList() {
     canManageWebhooks: 'WEBHOOK',
     canCreateUser: 'MARBLE_USER_CREATE',
     canDeleteUser: 'MARBLE_USER_DELETE',
+    canReadApiKey: 'APIKEY_READ',
+    canCreateApiKey: 'APIKEY_CREATE',
   } as const;
 }
 

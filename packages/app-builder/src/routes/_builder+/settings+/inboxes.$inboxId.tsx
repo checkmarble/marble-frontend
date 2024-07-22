@@ -29,29 +29,60 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { apiClient, cases } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { user, apiClient, cases } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
 
   const inboxId = fromParams(params, 'inboxId');
 
-  const [{ inbox }, caseList, inboxUserRoles] = await Promise.all([
+  const [
+    { inbox },
+    caseList,
+    inboxUserRoles,
+    isEditInboxAvailable,
+    isDeleteInboxAvailable,
+    isCreateInboxUserAvailable,
+    isEditInboxUserAvailable,
+    isDeleteInboxUserAvailable,
+  ] = await Promise.all([
     apiClient.getInbox(inboxId),
     cases.listCases({ inboxIds: [inboxId] }),
     featureAccessService.getInboxUserRoles(),
+    featureAccessService.isEditInboxAvailable(user),
+    featureAccessService.isDeleteInboxAvailable(user),
+    featureAccessService.isCreateInboxUserAvailable(user),
+    featureAccessService.isEditInboxUserAvailable(user),
+    featureAccessService.isDeleteInboxUserAvailable(user),
   ]);
 
   return json({
     inbox,
     caseList,
     inboxUserRoles,
+    isEditInboxAvailable,
+    isDeleteInboxAvailable,
+    isCreateInboxUserAvailable,
+    isEditInboxUserAvailable,
+    isDeleteInboxUserAvailable,
   });
 }
 
 const columnHelper = createColumnHelper<InboxUserDto>();
 
 export default function Inbox() {
-  const { caseList, inbox, inboxUserRoles } = useLoaderData<typeof loader>();
+  const {
+    caseList,
+    inbox,
+    inboxUserRoles,
+    isEditInboxAvailable,
+    isDeleteInboxAvailable,
+    isCreateInboxUserAvailable,
+    isEditInboxUserAvailable,
+    isDeleteInboxUserAvailable,
+  } = useLoaderData<typeof loader>();
   const { t } = useTranslation(handle.i18n);
   const { orgUsers } = useOrganizationUsers();
 
@@ -73,23 +104,37 @@ export default function Inbox() {
         size: 200,
         cell: ({ getValue }) => t(tKeyForInboxUserRole(getValue())),
       }),
-      columnHelper.display({
-        id: 'actions',
-        size: 100,
-        cell: ({ cell }) => {
-          return (
-            <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
-              <UpdateInboxUser
-                inboxUser={cell.row.original}
-                inboxUserRoles={inboxUserRoles}
-              />
-              <DeleteInboxUser inboxUser={cell.row.original} />
-            </div>
-          );
-        },
-      }),
+      ...(isEditInboxUserAvailable || isDeleteInboxUserAvailable
+        ? [
+            columnHelper.display({
+              id: 'actions',
+              size: 100,
+              cell: ({ cell }) => {
+                return (
+                  <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
+                    {isEditInboxUserAvailable ? (
+                      <UpdateInboxUser
+                        inboxUser={cell.row.original}
+                        inboxUserRoles={inboxUserRoles}
+                      />
+                    ) : null}
+                    {isDeleteInboxUserAvailable ? (
+                      <DeleteInboxUser inboxUser={cell.row.original} />
+                    ) : null}
+                  </div>
+                );
+              },
+            }),
+          ]
+        : []),
     ];
-  }, [inboxUserRoles, orgUsers, t]);
+  }, [
+    inboxUserRoles,
+    isDeleteInboxUserAvailable,
+    isEditInboxUserAvailable,
+    orgUsers,
+    t,
+  ]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: inbox.users ?? [],
@@ -111,10 +156,12 @@ export default function Inbox() {
             <span className="flex-1">
               {t('settings:inboxes.inbox_details.title')}
             </span>
-            <UpdateInbox
-              inbox={inbox}
-              redirectRoutePath="/settings/inboxes/:inboxId"
-            />
+            {isEditInboxAvailable ? (
+              <UpdateInbox
+                inbox={inbox}
+                redirectRoutePath="/settings/inboxes/:inboxId"
+              />
+            ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-4">
@@ -136,11 +183,13 @@ export default function Inbox() {
             <span className="flex-1">
               {t('settings:inboxes.inbox_details.members')}
             </span>
-            <CreateInboxUser
-              inboxId={inbox.id}
-              users={nonInboxUsers}
-              inboxUserRoles={inboxUserRoles}
-            />
+            {isCreateInboxUserAvailable ? (
+              <CreateInboxUser
+                inboxId={inbox.id}
+                users={nonInboxUsers}
+                inboxUserRoles={inboxUserRoles}
+              />
+            ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()} className="max-h-96">
@@ -161,21 +210,23 @@ export default function Inbox() {
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
 
-        {caseList.totalCount.value === 0 ? (
-          <DeleteInbox inbox={inbox} />
-        ) : (
-          <Tooltip.Default
-            content={
-              <p className="p-2">
-                {t('settings:inboxes.inbox_details.delete_inbox.tooltip')}
-              </p>
-            }
-          >
-            <span className="w-fit">
-              <DeleteInbox inbox={inbox} disabled />
-            </span>
-          </Tooltip.Default>
-        )}
+        {isDeleteInboxAvailable ? (
+          caseList.totalCount.value === 0 ? (
+            <DeleteInbox inbox={inbox} />
+          ) : (
+            <Tooltip.Default
+              content={
+                <p className="p-2">
+                  {t('settings:inboxes.inbox_details.delete_inbox.tooltip')}
+                </p>
+              }
+            >
+              <span className="w-fit">
+                <DeleteInbox inbox={inbox} disabled />
+              </span>
+            </Tooltip.Default>
+          )
+        ) : null}
       </Page.Content>
     </Page.Container>
   );

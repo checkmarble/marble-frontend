@@ -135,13 +135,6 @@ export function makeFeatureAccessService({
     }) => {
       return permissions.canEditDataModel;
     },
-    isCreateInboxAvailable: ({
-      permissions,
-    }: {
-      permissions: UserPermissions;
-    }) => {
-      return permissions.canEditInboxes;
-    },
     getUserRoles: async () => {
       const licenseEntitlements = await getLicenseEntitlements();
       if (licenseEntitlements.userRoles) {
@@ -228,5 +221,74 @@ export function makeFeatureAccessService({
     }) => {
       return permissions.canEditInboxes;
     },
+    isReadApiKeyAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canReadApiKey;
+    },
+    isCreateApiKeyAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canCreateApiKey;
+    },
+    isDeleteApiKeyAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      // Not necessary in the backend implementation but added to only let creators delete api keys
+      return permissions.canCreateApiKey;
+    },
+    isReadAllInboxesAvailable: ({ role }: { role: string }) => {
+      return role === 'ADMIN' || role === 'MARBLE_ADMIN';
+    },
+    isCreateInboxAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isEditInboxAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isDeleteInboxAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isCreateInboxUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isEditInboxUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isDeleteInboxUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
   };
 }
+
+export type FeatureAccessService = ReturnType<typeof makeFeatureAccessService>;
