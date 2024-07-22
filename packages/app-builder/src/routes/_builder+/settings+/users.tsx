@@ -24,18 +24,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/'));
   }
 
-  const [
-    inboxUsers,
-    userRoles,
-    isCreateUserAvailable,
-    isEditUserAvailable,
-    isDeleteUserAvailable,
-  ] = await Promise.all([
+  const [inboxUsers, userRoles] = await Promise.all([
     inbox.listAllInboxUsers(),
     featureAccessService.getUserRoles(),
-    featureAccessService.isCreateUserAvailable(user),
-    featureAccessService.isEditUserAvailable(user),
-    featureAccessService.isDeleteUserAvailable(user),
   ]);
 
   const inboxUsersByUserId = R.pipe(
@@ -55,9 +46,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     inboxUsersByUserId,
     user,
     userRoles,
-    isCreateUserAvailable,
-    isEditUserAvailable,
-    isDeleteUserAvailable,
+    isCreateUserAvailable: featureAccessService.isCreateUserAvailable(user),
+    isEditUserAvailable: featureAccessService.isEditUserAvailable(user),
+    isDeleteUserAvailable: featureAccessService.isDeleteUserAvailable(user),
   });
 }
 

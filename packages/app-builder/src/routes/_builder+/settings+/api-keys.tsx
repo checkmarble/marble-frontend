@@ -27,12 +27,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!featureAccessService.isReadApiKeyAvailable(user)) {
     return redirect(getRoute('/'));
   }
-  const [apiKeys, isCreateApiKeyAvailable, isDeleteApiKeyAvailable] =
-    await Promise.all([
-      apiKey.listApiKeys(),
-      featureAccessService.isCreateApiKeyAvailable(user),
-      featureAccessService.isDeleteApiKeyAvailable(user),
-    ]);
+  const apiKeys = await apiKey.listApiKeys();
 
   const authSession = await authSessionService.getSession(request);
   const createdApiKey = authSession.get('createdApiKey');
@@ -48,8 +43,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     {
       apiKeys,
       createdApiKey,
-      isCreateApiKeyAvailable,
-      isDeleteApiKeyAvailable,
+      isCreateApiKeyAvailable:
+        featureAccessService.isCreateApiKeyAvailable(user),
+      isDeleteApiKeyAvailable:
+        featureAccessService.isDeleteApiKeyAvailable(user),
     },
     {
       headers,

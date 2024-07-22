@@ -24,16 +24,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const iterationId = fromParams(params, 'iterationId');
 
-  const [isEditScenarioAvailable, scenarioIteration, scenarioValidation] =
-    await Promise.all([
-      featureAccessService.isEditScenarioAvailable(user),
-      scenario.getScenarioIteration({
-        iterationId,
-      }),
-      scenario.validate({
-        iterationId,
-      }),
-    ]);
+  const [scenarioIteration, scenarioValidation] = await Promise.all([
+    scenario.getScenarioIteration({
+      iterationId,
+    }),
+    scenario.validate({
+      iterationId,
+    }),
+  ]);
+
+  const isEditScenarioAvailable =
+    featureAccessService.isEditScenarioAvailable(user);
 
   const editorMode: EditorMode =
     isEditScenarioAvailable && R.isNullish(scenarioIteration.version)

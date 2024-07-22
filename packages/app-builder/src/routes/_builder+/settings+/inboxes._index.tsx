@@ -25,12 +25,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/'));
   }
 
-  const [inboxes, isCreateInboxAvailable] = await Promise.all([
-    inbox.listInboxesWithCaseCount(),
-    featureAccessService.isCreateInboxAvailable(user),
-  ]);
+  const inboxes = await inbox.listInboxesWithCaseCount();
 
-  return json({ inboxes, isCreateInboxAvailable });
+  return json({
+    inboxes,
+    isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable(user),
+  });
 }
 
 const columnHelper = createColumnHelper<InboxWithCasesCount>();

@@ -57,7 +57,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
 
   const [
-    isManualTriggerScenarioAvailable,
     operators,
     accessors,
     dataModel,
@@ -65,7 +64,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     currentOrganization,
     scheduledExecutions,
   ] = await Promise.all([
-    featureAccessService.isManualTriggerScenarioAvailable(user),
     editor.listOperators({
       scenarioId,
     }),
@@ -81,7 +79,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   return json({
-    featureAccess: { isManualTriggerScenarioAvailable },
+    featureAccess: {
+      isManualTriggerScenarioAvailable:
+        featureAccessService.isManualTriggerScenarioAvailable(user),
+    },
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
     operators,

@@ -38,35 +38,24 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const inboxId = fromParams(params, 'inboxId');
 
-  const [
-    { inbox },
-    caseList,
-    inboxUserRoles,
-    isEditInboxAvailable,
-    isDeleteInboxAvailable,
-    isCreateInboxUserAvailable,
-    isEditInboxUserAvailable,
-    isDeleteInboxUserAvailable,
-  ] = await Promise.all([
+  const [{ inbox }, caseList, inboxUserRoles] = await Promise.all([
     apiClient.getInbox(inboxId),
     cases.listCases({ inboxIds: [inboxId] }),
     featureAccessService.getInboxUserRoles(),
-    featureAccessService.isEditInboxAvailable(user),
-    featureAccessService.isDeleteInboxAvailable(user),
-    featureAccessService.isCreateInboxUserAvailable(user),
-    featureAccessService.isEditInboxUserAvailable(user),
-    featureAccessService.isDeleteInboxUserAvailable(user),
   ]);
 
   return json({
     inbox,
     caseList,
     inboxUserRoles,
-    isEditInboxAvailable,
-    isDeleteInboxAvailable,
-    isCreateInboxUserAvailable,
-    isEditInboxUserAvailable,
-    isDeleteInboxUserAvailable,
+    isEditInboxAvailable: featureAccessService.isEditInboxAvailable(user),
+    isDeleteInboxAvailable: featureAccessService.isDeleteInboxAvailable(user),
+    isCreateInboxUserAvailable:
+      featureAccessService.isCreateInboxUserAvailable(user),
+    isEditInboxUserAvailable:
+      featureAccessService.isEditInboxUserAvailable(user),
+    isDeleteInboxUserAvailable:
+      featureAccessService.isDeleteInboxUserAvailable(user),
   });
 }
 

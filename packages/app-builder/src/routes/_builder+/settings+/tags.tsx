@@ -22,19 +22,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/'));
   }
 
-  const [tags, isCreateTagAvailable, isEditTagAvailable, isDeleteTagAvailable] =
-    await Promise.all([
-      organization.listTags({ withCaseCount: true }),
-      featureAccessService.isCreateTagAvailable(user),
-      featureAccessService.isEditTagAvailable(user),
-      featureAccessService.isDeleteTagAvailable(user),
-    ]);
+  const tags = await organization.listTags({ withCaseCount: true });
 
   return json({
     tags,
-    isCreateTagAvailable,
-    isEditTagAvailable,
-    isDeleteTagAvailable,
+    isCreateTagAvailable: featureAccessService.isCreateTagAvailable(user),
+    isEditTagAvailable: featureAccessService.isEditTagAvailable(user),
+    isDeleteTagAvailable: featureAccessService.isDeleteTagAvailable(user),
   });
 }
 
