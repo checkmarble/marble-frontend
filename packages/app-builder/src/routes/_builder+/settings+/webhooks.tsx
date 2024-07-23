@@ -1,4 +1,5 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
+import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { type Webhook } from '@app-builder/models/webhook';
 import { CreateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/create';
 import { DeleteWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/delete';
@@ -57,6 +58,22 @@ export default function Webhooks() {
         id: 'url',
         header: t('settings:webhooks.url'),
         size: 200,
+      }),
+      columnHelper.accessor((row) => row.eventTypes, {
+        id: 'eventTypes',
+        header: t('settings:webhooks.event_types'),
+        size: 200,
+        cell: ({ getValue }) => {
+          const eventTypes = getValue();
+          if (eventTypes.length === 0) {
+            return (
+              <span className="text-grey-25 text-s">
+                {t('settings:webhooks.event_types.placeholder')}
+              </span>
+            );
+          }
+          return <EventTypes eventTypes={eventTypes} />;
+        },
       }),
       ...(isDeleteWebhookAvailable || isEditWebhookAvailable
         ? [

@@ -56,7 +56,7 @@ export function FormSelectEvents({
           ))}
           {matches.length === 0 ? (
             <p className="text-grey-50 flex items-center justify-center p-2">
-              {t('cases:case_detail.tags.empty_matches')}
+              {t('settings:webhooks.event_types.empty_matches')}
             </p>
           ) : null}
         </FormSelectWithCombobox.ComboboxList>
@@ -65,7 +65,7 @@ export function FormSelectEvents({
   );
 }
 
-function EventTypes({ eventTypes }: { eventTypes: string[] }) {
+export function EventTypes({ eventTypes }: { eventTypes: string[] }) {
   return (
     <Tooltip.Default
       content={

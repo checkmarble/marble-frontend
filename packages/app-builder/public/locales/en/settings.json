@@ -84,5 +84,12 @@
   "webhooks.delete_webhook.content": "You are about to delete this webhook. This action is irreversible, do you want to proceed?",
   "webhooks.url": "URL",
   "webhooks.event_types": "Events",
-  "webhooks.event_types.placeholder": "All events by default"
+  "webhooks.event_types.placeholder": "All events by default",
+  "webhooks.event_types.empty_matches": "no events match your search",
+  "webhooks.http_timeout": "Timeout",
+  "webhooks.http_timeout.description": "Define endpoint http timeout in seconds",
+  "webhooks.rate_limit": "Rate limit",
+  "webhooks.rate_limit.description": "Define the rate limit for the endpoint",
+  "webhooks.rate_limit_duration": "Rate limit duration",
+  "webhooks.rate_limit_duration.description": "Specifies the time range for the rate limit"
 }
