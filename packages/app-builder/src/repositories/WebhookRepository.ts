@@ -12,6 +12,7 @@ import {
 
 export interface WebhookRepository {
   listWebhooks(): Promise<Webhook[]>;
+  getWebhook(args: { webhookId: string }): Promise<WebhookWithSecret>;
   createWebhook(args: {
     webhookCreateBody: WebhookCreateBody;
   }): Promise<WebhookWithSecret>;
@@ -33,6 +34,11 @@ export function makeGetWebhookRepository() {
       const { webhook } = await marbleCoreApiClient.createWebhook(
         adaptWebhookRegisterBodyDto(webhookCreateBody),
       );
+
+      return adaptWebhookWithSecret(webhook);
+    },
+    getWebhook: async ({ webhookId }) => {
+      const { webhook } = await marbleCoreApiClient.getWebhook(webhookId);
 
       return adaptWebhookWithSecret(webhook);
     },

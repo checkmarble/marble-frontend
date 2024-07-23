@@ -2570,6 +2570,25 @@ export function createWebhook(webhookRegisterBodyDto: WebhookRegisterBodyDto, op
     })));
 }
 /**
+ * Get a webhook by id
+ */
+export function getWebhook(webhookId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            webhook: WebhookWithSecretDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/webhooks/${encodeURIComponent(webhookId)}`, {
+        ...opts
+    }));
+}
+/**
  * Update a webhook
  */
 export function updateWebhook(webhookId: string, webhookUpdateBodyDto: WebhookUpdateBodyDto, opts?: Oazapfts.RequestOpts) {

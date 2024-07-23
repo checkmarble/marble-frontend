@@ -7,7 +7,16 @@ import {
 } from 'marble-api/generated/marblecore-api';
 import invariant from 'tiny-invariant';
 
-export const eventTypes = ['case_status_updated'] as const;
+export const eventTypes = [
+  'case.updated',
+  'case.created_manually',
+  'case.created_from_workflow',
+  'case.decisions_updated',
+  'case.tags_updated',
+  'case.comment_created',
+  'case.file_created',
+  'decision.created',
+] as const;
 type EventType = (typeof eventTypes)[number];
 
 function isEventType(value: string): value is EventType {
