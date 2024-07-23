@@ -82,5 +82,7 @@
   "webhooks.delete_webhook": "Delete webhook",
   "webhooks.delete_webhook.title": "Delete this webhook",
   "webhooks.delete_webhook.content": "You are about to delete this webhook. This action is irreversible, do you want to proceed?",
-  "webhooks.url": "URL"
+  "webhooks.url": "URL",
+  "webhooks.event_types": "Events",
+  "webhooks.event_types.placeholder": "All events by default"
 }
