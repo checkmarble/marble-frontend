@@ -4,18 +4,18 @@ import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { LoadingIcon } from '@app-builder/components/Spinner';
 import { FormSelectEvents } from '@app-builder/components/Webhooks/EventTypes';
 import { eventTypes } from '@app-builder/models/webhook';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const createWebhookFormSchema = z.object({
@@ -46,12 +46,15 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    // TODO(webhook): implement a way to retrieve webhook secret frontend side
-    await webhookRepository.createWebhook({
+    const webhook = await webhookRepository.createWebhook({
       webhookCreateBody: submission.value,
     });
 
-    return json(submission.reply());
+    return redirect(
+      getRoute('/settings/webhooks/:webhookId', {
+        webhookId: webhook.id,
+      }),
+    );
   } catch (error) {
     const session = await getSession(request);
     const t = await getFixedT(request, ['common']);
@@ -76,25 +79,16 @@ export function CreateWebhook({ children }: { children: React.ReactElement }) {
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
-        <CreateWebhookContent setOpen={setOpen} />
+        <CreateWebhookContent />
       </ModalV2.Content>
     </ModalV2.Root>
   );
 }
 
-function CreateWebhookContent({
-  setOpen,
-}: {
-  setOpen: (open: boolean) => void;
-}) {
+function CreateWebhookContent() {
   const { t } = useTranslation(['common', 'settings']);
 
   const fetcher = useFetcher<typeof action>();
-  React.useEffect(() => {
-    if (fetcher?.data?.status === 'success') {
-      setOpen(false);
-    }
-  }, [setOpen, fetcher?.data?.status]);
 
   const [form, fields] = useForm({
     shouldRevalidate: 'onInput',
@@ -194,7 +188,11 @@ function CreateWebhookContent({
               type="submit"
               name="create"
             >
-              <Icon icon="plus" className="size-5" />
+              <LoadingIcon
+                icon="plus"
+                className="size-5"
+                loading={fetcher.state === 'submitting'}
+              />
               {t('settings:webhooks.new_webhook.create')}
             </Button>
           </div>

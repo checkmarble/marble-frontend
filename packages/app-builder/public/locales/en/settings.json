@@ -76,6 +76,8 @@
   "tags.cases": "Cases",
   "api": "API",
   "webhooks": "Webhooks",
+  "webhook_details": "Webhook details",
+  "webhook_secrets": "Webhook secrets",
   "webhooks.new_webhook": "New webhook",
   "webhooks.new_webhook.create": "Create new webhook",
   "webhooks.update_webhook": "Update webhook",

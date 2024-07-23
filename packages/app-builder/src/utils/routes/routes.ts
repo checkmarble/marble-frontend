@@ -217,6 +217,11 @@ export const routes = [
                 "id": "routes/_builder+/settings+/webhooks",
                 "path": "webhooks",
                 "file": "routes/_builder+/settings+/webhooks.tsx"
+              },
+              {
+                "id": "routes/_builder+/settings+/webhooks_.$webhookId",
+                "path": "webhooks/:webhookId",
+                "file": "routes/_builder+/settings+/webhooks_.$webhookId.tsx"
               }
             ]
           },

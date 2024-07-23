@@ -4,6 +4,7 @@ import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { LoadingIcon } from '@app-builder/components/Spinner';
 import { FormSelectEvents } from '@app-builder/components/Webhooks/EventTypes';
 import { eventTypes } from '@app-builder/models/webhook';
 import { serverServices } from '@app-builder/services/init.server';
@@ -15,7 +16,6 @@ import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const updateWebhookFormSchema = z.object({
@@ -202,7 +202,11 @@ function UpdateWebhookContent({
               type="submit"
               name="update"
             >
-              <Icon icon="edit" className="size-5" />
+              <LoadingIcon
+                icon="edit"
+                className="size-5"
+                loading={fetcher.state === 'submitting'}
+              />
               {t('settings:webhooks.update_webhook')}
             </Button>
           </div>
