@@ -1,15 +1,30 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
+import { SecretValue } from '@app-builder/components/SecretValue';
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
+import { type WebhookSecret } from '@app-builder/models/webhook';
 import { DeleteWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/delete';
 import { UpdateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/update';
 import { serverServices } from '@app-builder/services/init.server';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getSortedRowModel,
+} from '@tanstack/react-table';
+import clsx from 'clsx';
+import { type Namespace } from 'i18next';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
-import { Button } from 'ui-design-system';
+import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+export const handle = {
+  i18n: ['common', 'settings'] satisfies Namespace,
+};
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
@@ -87,6 +102,14 @@ export default function WebhookDetail() {
             </div>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
+        <CollapsiblePaper.Container>
+          <CollapsiblePaper.Title>
+            <span className="flex-1">{t('settings:webhook_secrets')}</span>
+          </CollapsiblePaper.Title>
+          <CollapsiblePaper.Content>
+            <WebhookSecrets secrets={webhook.secrets} />
+          </CollapsiblePaper.Content>
+        </CollapsiblePaper.Container>
         {isDeleteWebhookAvailable ? (
           <DeleteWebhook webhookId={webhook.id}>
             <Button color="red" className="w-fit">
@@ -110,3 +133,96 @@ const WebhookValue = ({ children }: { children: React.ReactNode }) => {
   }
   return <span className="text-s text-grey-100">{children}</span>;
 };
+
+const columnHelper = createColumnHelper<WebhookSecret>();
+
+function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
+  const { t } = useTranslation(['settings']);
+  const language = useFormatLanguage();
+
+  const columns = React.useMemo(() => {
+    return [
+      columnHelper.accessor((row) => row.value, {
+        id: 'value',
+        header: t('settings:webhooks.secret.value'),
+        size: 200,
+        enableSorting: false,
+        cell: ({ getValue }) => {
+          const value = getValue();
+          return <SecretValue value={value} />;
+        },
+      }),
+      columnHelper.accessor((row) => row.createdAt, {
+        id: 'createdAt',
+        header: t('settings:webhooks.secret.created_at'),
+        size: 100,
+        cell: ({ getValue }) => {
+          const dateTime = getValue();
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+            </time>
+          );
+        },
+      }),
+      columnHelper.accessor((row) => row.expiresAt, {
+        id: 'expiresAt',
+        header: t('settings:webhooks.secret.expires_at'),
+        size: 100,
+        cell: ({ getValue }) => {
+          const dateTime = getValue();
+          if (!dateTime) {
+            return '-';
+          }
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+            </time>
+          );
+        },
+      }),
+      columnHelper.accessor((row) => row.deletedAt, {
+        id: 'deletedAt',
+        header: t('settings:webhooks.secret.deleted_at'),
+        size: 100,
+        cell: ({ getValue }) => {
+          const dateTime = getValue();
+          if (!dateTime) {
+            return '-';
+          }
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+            </time>
+          );
+        },
+      }),
+    ];
+  }, [language, t]);
+
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
+    data: secrets,
+    columns,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  return (
+    <Table.Container {...getContainerProps()} className="max-h-96">
+      <Table.Header headerGroups={table.getHeaderGroups()} />
+      <Table.Body {...getBodyProps()}>
+        {rows.map((row) => {
+          return (
+            <Table.Row
+              key={row.id}
+              tabIndex={0}
+              className={clsx('relative')}
+              row={row}
+            />
+          );
+        })}
+      </Table.Body>
+    </Table.Container>
+  );
+}

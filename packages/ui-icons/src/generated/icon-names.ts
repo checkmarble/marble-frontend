@@ -77,6 +77,8 @@ export const iconNames = [
   'trigger',
   'upload',
   'users',
+  'visibility',
+  'visibility_off',
   'warning',
   'world',
 ] as const;

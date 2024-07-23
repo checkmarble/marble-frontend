@@ -8,10 +8,15 @@ import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { useMemo } from 'react';
+import { type Namespace } from 'i18next';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+export const handle = {
+  i18n: ['common', 'settings'] satisfies Namespace,
+};
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
@@ -43,7 +48,7 @@ export default function Webhooks() {
   const { t } = useTranslation(['settings']);
   const { webhooks, isCreateWebhookAvailable } = useLoaderData<typeof loader>();
 
-  const columns = useMemo(() => {
+  const columns = React.useMemo(() => {
     return [
       columnHelper.accessor((row) => row.url, {
         id: 'url',

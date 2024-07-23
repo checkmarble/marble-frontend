@@ -93,5 +93,9 @@
   "webhooks.rate_limit": "Rate limit",
   "webhooks.rate_limit.description": "Define the rate limit for the endpoint",
   "webhooks.rate_limit_duration": "Rate limit duration",
-  "webhooks.rate_limit_duration.description": "Specifies the time range for the rate limit"
+  "webhooks.rate_limit_duration.description": "Specifies the time range for the rate limit",
+  "webhooks.secret.created_at": "Created at",
+  "webhooks.secret.deleted_at": "Deleted at",
+  "webhooks.secret.expires_at": "Expires at",
+  "webhooks.secret.value": "Value"
 }
