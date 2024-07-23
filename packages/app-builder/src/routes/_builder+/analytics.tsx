@@ -18,9 +18,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { user, analytics } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  const isAnalyticsAvailable = await featureAccessService.isAnalyticsAvailable({
-    userPermissions: user.permissions,
-  });
+  const isAnalyticsAvailable =
+    await featureAccessService.isAnalyticsAvailable(user);
   if (!isAnalyticsAvailable) {
     return redirect(getRoute('/'));
   }

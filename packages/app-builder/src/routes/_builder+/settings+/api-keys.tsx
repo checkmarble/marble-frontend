@@ -4,7 +4,6 @@ import {
   CopyToClipboardButton,
   Page,
 } from '@app-builder/components';
-import { isAdmin } from '@app-builder/models';
 import { type ApiKey, type CreatedApiKey } from '@app-builder/models/api-keys';
 import { CreateApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/create';
 import { DeleteApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/delete';
@@ -20,11 +19,12 @@ import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, authSessionService } = serverServices;
+  const { authService, authSessionService, featureAccessService } =
+    serverServices;
   const { apiKey, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  if (!isAdmin(user)) {
+  if (!featureAccessService.isReadApiKeyAvailable(user)) {
     return redirect(getRoute('/'));
   }
   const apiKeys = await apiKey.listApiKeys();
@@ -40,7 +40,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   return json(
-    { apiKeys, createdApiKey },
+    {
+      apiKeys,
+      createdApiKey,
+      isCreateApiKeyAvailable:
+        featureAccessService.isCreateApiKeyAvailable(user),
+      isDeleteApiKeyAvailable:
+        featureAccessService.isDeleteApiKeyAvailable(user),
+    },
     {
       headers,
     },
@@ -51,7 +58,12 @@ const columnHelper = createColumnHelper<ApiKey>();
 
 export default function ApiKeys() {
   const { t } = useTranslation(['settings']);
-  const { apiKeys, createdApiKey } = useLoaderData<typeof loader>();
+  const {
+    apiKeys,
+    createdApiKey,
+    isCreateApiKeyAvailable,
+    isDeleteApiKeyAvailable,
+  } = useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
     return [
@@ -74,19 +86,23 @@ export default function ApiKeys() {
         size: 150,
         cell: ({ getValue }) => t(tKeyForApiKeyRole(getValue())),
       }),
-      columnHelper.display({
-        id: 'actions',
-        size: 100,
-        cell: ({ cell }) => {
-          return (
-            <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
-              <DeleteApiKey apiKey={cell.row.original} />
-            </div>
-          );
-        },
-      }),
+      ...(isDeleteApiKeyAvailable
+        ? [
+            columnHelper.display({
+              id: 'actions',
+              size: 100,
+              cell: ({ cell }) => {
+                return (
+                  <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
+                    <DeleteApiKey apiKey={cell.row.original} />
+                  </div>
+                );
+              },
+            }),
+          ]
+        : []),
     ];
-  }, [t]);
+  }, [isDeleteApiKeyAvailable, t]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: apiKeys,
@@ -102,7 +118,7 @@ export default function ApiKeys() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:api_keys')}</span>
-            <CreateApiKey />
+            {isCreateApiKeyAvailable ? <CreateApiKey /> : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()} className="max-h-96">

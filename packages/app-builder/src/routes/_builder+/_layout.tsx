@@ -13,7 +13,7 @@ import {
   ToggleHeader,
 } from '@app-builder/components/Layout/MainLayout';
 import { UserInfo } from '@app-builder/components/UserInfo';
-import { isAdmin, isMarbleAdmin, isMarbleCoreUser } from '@app-builder/models';
+import { isMarbleAdmin, isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import {
   ChatlioButton,
@@ -46,6 +46,8 @@ import { useTranslation } from 'react-i18next';
 import { Button, ScrollArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { getSettings } from './settings+/_layout';
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
   const { user, organization } = await authService.isAuthenticated(request, {
@@ -53,28 +55,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 
   if (isMarbleAdmin(user)) {
-    throw conflict("Marble Admins can't access the app builder.");
+    throw conflict("Marble Admins can't access this app.");
   }
 
   if (!isMarbleCoreUser(user)) {
-    throw forbidden('Only TransferCheck users can access TransferCheck.');
+    throw forbidden('Only Marble Core users can access this app.');
   }
 
-  const [
-    organizationDetail,
-    orgUsers,
-    orgTags,
-    isAnalyticsAvailable,
-    isWorkflowsAvailable,
-  ] = await Promise.all([
+  const [organizationDetail, orgUsers, orgTags] = await Promise.all([
     organization.getCurrentOrganization(),
     organization.listUsers(),
     organization.listTags(),
-    featureAccessService.isAnalyticsAvailable({
-      userPermissions: user.permissions,
-    }),
-    featureAccessService.isWorkflowsAvailable(),
   ]);
+
+  const firstSettings = getSettings(user, featureAccessService).at(0);
 
   return json({
     user,
@@ -82,8 +76,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
     organization: organizationDetail,
     orgTags,
     featuresAccess: {
-      isAnalyticsAvailable,
-      isWorkflowsAvailable,
+      isAnalyticsAvailable: featureAccessService.isAnalyticsAvailable(user),
+      isWorkflowsAvailable: featureAccessService.isWorkflowsAvailable(),
+      settings:
+        firstSettings !== undefined
+          ? {
+              isAvailable: true as const,
+              to: firstSettings.to,
+            }
+          : {
+              isAvailable: false as const,
+            },
     },
   });
 }
@@ -207,11 +210,11 @@ export default function Builder() {
                     Icon={(props) => <Icon icon="world" {...props} />}
                   />
                 </li>
-                {isAdmin(user) ? (
+                {featuresAccess.settings.isAvailable ? (
                   <li key="navigation:settings">
                     <SidebarLink
                       labelTKey="navigation:settings"
-                      to={getRoute('/settings')}
+                      to={featuresAccess.settings.to}
                       Icon={(props) => <Icon icon="settings" {...props} />}
                     />
                   </li>

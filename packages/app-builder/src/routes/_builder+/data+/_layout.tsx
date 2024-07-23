@@ -26,32 +26,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
     dataModel,
     dataModelFeatureAccess: {
       isCreateDataModelTableAvailable:
-        featureAccessService.isCreateDataModelTableAvailable({
-          userPermissions: user.permissions,
-        }),
+        featureAccessService.isCreateDataModelTableAvailable(user),
       isEditDataModelInfoAvailable:
-        featureAccessService.isEditDataModelInfoAvailable({
-          userPermissions: user.permissions,
-        }),
+        featureAccessService.isEditDataModelInfoAvailable(user),
       isCreateDataModelFieldAvailable:
-        featureAccessService.isCreateDataModelFieldAvailable({
-          userPermissions: user.permissions,
-        }),
+        featureAccessService.isCreateDataModelFieldAvailable(user),
       isEditDataModelFieldAvailable:
-        featureAccessService.isEditDataModelFieldAvailable({
-          userPermissions: user.permissions,
-        }),
+        featureAccessService.isEditDataModelFieldAvailable(user),
       isCreateDataModelLinkAvailable:
-        featureAccessService.isCreateDataModelLinkAvailable({
-          userPermissions: user.permissions,
-        }),
+        featureAccessService.isCreateDataModelLinkAvailable(user),
       isCreateDataModelPivotAvailable:
-        featureAccessService.isCreateDataModelPivotAvailable({
-          userPermissions: user.permissions,
-        }),
-      isIngestDataAvailable: featureAccessService.isIngestDataAvailable({
-        userPermissions: user.permissions,
-      }),
+        featureAccessService.isCreateDataModelPivotAvailable(user),
+      isIngestDataAvailable: featureAccessService.isIngestDataAvailable(user),
     },
   });
 }

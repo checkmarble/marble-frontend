@@ -12,135 +12,128 @@ export function makeFeatureAccessService({
       return licenseEntitlements.sso;
     },
     isAnalyticsAvailable: async ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
       const licenseEntitlements = await getLicenseEntitlements();
-      return licenseEntitlements.analytics && userPermissions.canReadAnalytics;
+      return licenseEntitlements.analytics && permissions.canReadAnalytics;
     },
     isIngestDataAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canIngestData;
+      return permissions.canIngestData;
     },
     isWorkflowsAvailable: async () => {
       const licenseEntitlements = await getLicenseEntitlements();
       return licenseEntitlements.workflows;
     },
     isDeploymentActionsAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canPublishScenario;
+      return permissions.canPublishScenario;
     },
     isCreateDraftAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageScenario;
+      return permissions.canManageScenario;
     },
     isEditScenarioAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageScenario;
+      return permissions.canManageScenario;
     },
     isManualTriggerScenarioAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageDecision;
+      return permissions.canManageDecision;
     },
     isCreateListValueAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageListItem;
+      return permissions.canManageListItem;
     },
     isDeleteListValueAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageListItem;
+      return permissions.canManageListItem;
     },
     isCreateListAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageList;
+      return permissions.canManageList;
     },
     isEditListAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageList;
+      return permissions.canManageList;
     },
     isDeleteListAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageList;
+      return permissions.canManageList;
     },
     isCreateDataModelTableAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canEditDataModel;
+      return permissions.canEditDataModel;
     },
     isEditDataModelInfoAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canEditDataModel;
+      return permissions.canEditDataModel;
     },
     isCreateDataModelFieldAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canEditDataModel;
+      return permissions.canEditDataModel;
     },
     isEditDataModelFieldAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canEditDataModel;
+      return permissions.canEditDataModel;
     },
     isCreateDataModelLinkAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canEditDataModel;
+      return permissions.canEditDataModel;
     },
     isCreateDataModelPivotAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canEditDataModel;
-    },
-    isCreateInboxAvailable: ({
-      userPermissions,
-    }: {
-      userPermissions: UserPermissions;
-    }) => {
-      return userPermissions.canEditInboxes;
+      return permissions.canEditDataModel;
     },
     getUserRoles: async () => {
       const licenseEntitlements = await getLicenseEntitlements();
@@ -157,32 +150,145 @@ export function makeFeatureAccessService({
       return ['admin'] as const;
     },
     isReadWebhookAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageWebhooks;
+      return permissions.canManageWebhooks;
     },
     isCreateWebhookAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageWebhooks;
+      return permissions.canManageWebhooks;
     },
     isEditWebhookAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageWebhooks;
+      return permissions.canManageWebhooks;
     },
     isDeleteWebhookAvailable: ({
-      userPermissions,
+      permissions,
     }: {
-      userPermissions: UserPermissions;
+      permissions: UserPermissions;
     }) => {
-      return userPermissions.canManageWebhooks;
+      return permissions.canManageWebhooks;
+    },
+    isReadUserAvailable: ({ role }: { role: string }) => {
+      return role === 'ADMIN' || role === 'MARBLE_ADMIN';
+    },
+    isCreateUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canCreateUser;
+    },
+    isEditUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canCreateUser;
+    },
+    isDeleteUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canDeleteUser;
+    },
+    isReadTagAvailable: ({ role }: { role: string }) => {
+      return role === 'ADMIN' || role === 'MARBLE_ADMIN';
+    },
+    isCreateTagAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isEditTagAvailable: ({ permissions }: { permissions: UserPermissions }) => {
+      return permissions.canEditInboxes;
+    },
+    isDeleteTagAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isReadApiKeyAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canReadApiKey;
+    },
+    isCreateApiKeyAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canCreateApiKey;
+    },
+    isDeleteApiKeyAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      // Not necessary in the backend implementation but added to only let creators delete api keys
+      return permissions.canCreateApiKey;
+    },
+    isReadAllInboxesAvailable: ({ role }: { role: string }) => {
+      return role === 'ADMIN' || role === 'MARBLE_ADMIN';
+    },
+    isCreateInboxAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isEditInboxAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isDeleteInboxAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isCreateInboxUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isEditInboxUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
+    },
+    isDeleteInboxUserAvailable: ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      return permissions.canEditInboxes;
     },
   };
 }
+
+export type FeatureAccessService = ReturnType<typeof makeFeatureAccessService>;

@@ -23,9 +23,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   return json({
-    isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable({
-      userPermissions: user.permissions,
-    }),
+    isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable(user),
   });
 }
 

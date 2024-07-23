@@ -1,5 +1,4 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { isAdmin } from '@app-builder/models';
 import {
   type InboxWithCasesCount,
   tKeyForInboxUserRole,
@@ -18,24 +17,27 @@ import * as R from 'remeda';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const { inbox, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  if (!isAdmin(user)) {
+  if (!featureAccessService.isReadAllInboxesAvailable(user)) {
     return redirect(getRoute('/'));
   }
 
   const inboxes = await inbox.listInboxesWithCaseCount();
 
-  return json({ inboxes });
+  return json({
+    inboxes,
+    isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable(user),
+  });
 }
 
 const columnHelper = createColumnHelper<InboxWithCasesCount>();
 
 export default function Inboxes() {
   const { t } = useTranslation(['settings']);
-  const { inboxes } = useLoaderData<typeof loader>();
+  const { inboxes, isCreateInboxAvailable } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
 
@@ -46,15 +48,16 @@ export default function Inboxes() {
         header: t('settings:inboxes.name'),
         size: 100,
       }),
-      columnHelper.display({
+      columnHelper.accessor((row) => row.users, {
         id: 'users',
         header: t('settings:inboxes.users'),
         size: 200,
-        cell: ({ cell }) => {
-          if (!cell.row.original.users) return null;
+        cell: ({ getValue }) => {
+          const users = getValue();
+          if (!users) return null;
 
           return R.pipe(
-            cell.row.original.users,
+            users,
             R.groupBy((u) => u.role),
             R.entries(),
             R.map(([role, users]) => {
@@ -86,7 +89,9 @@ export default function Inboxes() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:inboxes')}</span>
-            <CreateInbox redirectRoutePath="/settings/inboxes/:inboxId" />
+            {isCreateInboxAvailable ? (
+              <CreateInbox redirectRoutePath="/settings/inboxes/:inboxId" />
+            ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()} className="max-h-96">

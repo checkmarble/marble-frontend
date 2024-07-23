@@ -34,19 +34,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     customList: custom_list,
     listFeatureAccess: {
       isCreateListValueAvailable:
-        featureAccessService.isCreateListValueAvailable({
-          userPermissions: user.permissions,
-        }),
+        featureAccessService.isCreateListValueAvailable(user),
       isDeleteListValueAvailable:
-        featureAccessService.isDeleteListValueAvailable({
-          userPermissions: user.permissions,
-        }),
-      isEditListAvailable: featureAccessService.isEditListAvailable({
-        userPermissions: user.permissions,
-      }),
-      isDeleteListAvailable: featureAccessService.isDeleteListAvailable({
-        userPermissions: user.permissions,
-      }),
+        featureAccessService.isDeleteListValueAvailable(user),
+      isEditListAvailable: featureAccessService.isEditListAvailable(user),
+      isDeleteListAvailable: featureAccessService.isDeleteListAvailable(user),
     },
   });
 }

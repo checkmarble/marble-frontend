@@ -41,12 +41,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const iterationId = fromParams(params, 'iterationId');
 
   const isDeploymentActionsAvailable =
-    featureAccessService.isDeploymentActionsAvailable({
-      userPermissions: user.permissions,
-    });
-  const isCreateDraftAvailable = featureAccessService.isCreateDraftAvailable({
-    userPermissions: user.permissions,
-  });
+    featureAccessService.isDeploymentActionsAvailable(user);
+  const isCreateDraftAvailable =
+    featureAccessService.isCreateDraftAvailable(user);
   if (!isDeploymentActionsAvailable) {
     return json({
       isDeploymentActionsAvailable: false as const,

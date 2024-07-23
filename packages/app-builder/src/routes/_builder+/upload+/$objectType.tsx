@@ -32,9 +32,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
-  const isIngestDataAvailable = featureAccessService.isIngestDataAvailable({
-    userPermissions: user.permissions,
-  });
+  const isIngestDataAvailable =
+    featureAccessService.isIngestDataAvailable(user);
   if (!isIngestDataAvailable) {
     return redirect(getRoute('/data'));
   }

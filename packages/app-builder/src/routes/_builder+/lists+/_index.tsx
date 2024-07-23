@@ -27,9 +27,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({
     customList: custom_lists,
-    isCreateListAvailable: featureAccessService.isCreateListAvailable({
-      userPermissions: user.permissions,
-    }),
+    isCreateListAvailable: featureAccessService.isCreateListAvailable(user),
   });
 }
 

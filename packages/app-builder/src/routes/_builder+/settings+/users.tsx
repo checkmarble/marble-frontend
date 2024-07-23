@@ -1,5 +1,5 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { isAdmin, type User } from '@app-builder/models';
+import { type User } from '@app-builder/models';
 import { CreateUser } from '@app-builder/routes/ressources+/settings+/users+/create';
 import { DeleteUser } from '@app-builder/routes/ressources+/settings+/users+/delete';
 import { UpdateUser } from '@app-builder/routes/ressources+/settings+/users+/update';
@@ -20,7 +20,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { user, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  if (!isAdmin(user)) {
+  if (!featureAccessService.isReadUserAvailable(user)) {
     return redirect(getRoute('/'));
   }
 
@@ -42,19 +42,32 @@ export async function loader({ request }: LoaderFunctionArgs) {
     ),
   );
 
-  return json({ inboxUsersByUserId, user, userRoles });
+  return json({
+    inboxUsersByUserId,
+    user,
+    userRoles,
+    isCreateUserAvailable: featureAccessService.isCreateUserAvailable(user),
+    isEditUserAvailable: featureAccessService.isEditUserAvailable(user),
+    isDeleteUserAvailable: featureAccessService.isDeleteUserAvailable(user),
+  });
 }
 
 const columnHelper = createColumnHelper<User>();
 
 export default function Users() {
   const { t } = useTranslation(['settings', 'cases']);
-  const { inboxUsersByUserId, user, userRoles } =
-    useLoaderData<typeof loader>();
+  const {
+    inboxUsersByUserId,
+    user,
+    userRoles,
+    isCreateUserAvailable,
+    isEditUserAvailable,
+    isDeleteUserAvailable,
+  } = useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    return [
       columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
         id: 'name',
         header: t('settings:users.name'),
@@ -93,24 +106,41 @@ export default function Users() {
           );
         },
       }),
-      columnHelper.display({
-        id: 'actions',
-        size: 50,
-        cell: ({ cell }) => {
-          return (
-            <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
-              <UpdateUser user={cell.row.original} userRoles={userRoles} />
-              <DeleteUser
-                userId={cell.row.original.userId}
-                currentUserId={user.actorIdentity.userId}
-              />
-            </div>
-          );
-        },
-      }),
-    ],
-    [inboxUsersByUserId, t, user.actorIdentity.userId, userRoles],
-  );
+      ...(isDeleteUserAvailable || isEditUserAvailable
+        ? [
+            columnHelper.display({
+              id: 'actions',
+              size: 50,
+              cell: ({ cell }) => {
+                return (
+                  <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
+                    {isEditUserAvailable ? (
+                      <UpdateUser
+                        user={cell.row.original}
+                        userRoles={userRoles}
+                      />
+                    ) : null}
+                    {isDeleteUserAvailable ? (
+                      <DeleteUser
+                        userId={cell.row.original.userId}
+                        currentUserId={user.actorIdentity.userId}
+                      />
+                    ) : null}
+                  </div>
+                );
+              },
+            }),
+          ]
+        : []),
+    ];
+  }, [
+    inboxUsersByUserId,
+    isDeleteUserAvailable,
+    isEditUserAvailable,
+    t,
+    user.actorIdentity.userId,
+    userRoles,
+  ]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: orgUsers,
@@ -126,7 +156,9 @@ export default function Users() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:users')}</span>
-            <CreateUser orgId={user.organizationId} userRoles={userRoles} />
+            {isCreateUserAvailable ? (
+              <CreateUser orgId={user.organizationId} userRoles={userRoles} />
+            ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()} className="max-h-96">

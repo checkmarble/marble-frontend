@@ -1,5 +1,4 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { isAdmin } from '@app-builder/models';
 import { CreateTag } from '@app-builder/routes/ressources+/settings+/tags+/create';
 import { DeleteTag } from '@app-builder/routes/ressources+/settings+/tags+/delete';
 import { UpdateTag } from '@app-builder/routes/ressources+/settings+/tags+/update';
@@ -15,24 +14,34 @@ import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const { organization, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  if (!isAdmin(user)) {
+  if (!featureAccessService.isReadTagAvailable(user)) {
     return redirect(getRoute('/'));
   }
 
   const tags = await organization.listTags({ withCaseCount: true });
 
-  return json({ tags });
+  return json({
+    tags,
+    isCreateTagAvailable: featureAccessService.isCreateTagAvailable(user),
+    isEditTagAvailable: featureAccessService.isEditTagAvailable(user),
+    isDeleteTagAvailable: featureAccessService.isDeleteTagAvailable(user),
+  });
 }
 
 const columnHelper = createColumnHelper<Tag>();
 
 export default function Tags() {
   const { t } = useTranslation(['settings']);
-  const { tags } = useLoaderData<typeof loader>();
+  const {
+    tags,
+    isCreateTagAvailable,
+    isEditTagAvailable,
+    isDeleteTagAvailable,
+  } = useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
     return [
@@ -57,20 +66,28 @@ export default function Tags() {
         header: t('settings:tags.cases'),
         size: 200,
       }),
-      columnHelper.display({
-        id: 'actions',
-        size: 100,
-        cell: ({ cell }) => {
-          return (
-            <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
-              <UpdateTag tag={cell.row.original} />
-              <DeleteTag tag={cell.row.original} />
-            </div>
-          );
-        },
-      }),
+      ...(isEditTagAvailable || isDeleteTagAvailable
+        ? [
+            columnHelper.display({
+              id: 'actions',
+              size: 100,
+              cell: ({ cell }) => {
+                return (
+                  <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
+                    {isEditTagAvailable ? (
+                      <UpdateTag tag={cell.row.original} />
+                    ) : null}
+                    {isDeleteTagAvailable ? (
+                      <DeleteTag tag={cell.row.original} />
+                    ) : null}
+                  </div>
+                );
+              },
+            }),
+          ]
+        : []),
     ];
-  }, [t]);
+  }, [isDeleteTagAvailable, isEditTagAvailable, t]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: tags,
@@ -86,7 +103,7 @@ export default function Tags() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:tags')}</span>
-            <CreateTag />
+            {isCreateTagAvailable ? <CreateTag /> : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()} className="max-h-96">
