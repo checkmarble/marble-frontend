@@ -1,4 +1,4 @@
-import { FormError } from '@app-builder/components/Form/FormError';
+import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
@@ -176,7 +176,7 @@ function UpdateUserContent({
               >
                 <FormLabel>{t('settings:users.first_name')}</FormLabel>
                 <FormInput type="text" />
-                <FormError />
+                <FormErrorOrDescription />
               </FormField>
               <FormField
                 name={fields.lastName.name}
@@ -184,7 +184,7 @@ function UpdateUserContent({
               >
                 <FormLabel>{t('settings:users.last_name')}</FormLabel>
                 <FormInput type="text" />
-                <FormError />
+                <FormErrorOrDescription />
               </FormField>
             </div>
             <FormField
@@ -193,7 +193,7 @@ function UpdateUserContent({
             >
               <FormLabel>{t('settings:users.email')}</FormLabel>
               <FormInput type="text" />
-              <FormError />
+              <FormErrorOrDescription />
             </FormField>
             <FormField
               name={fields.role.name}
@@ -207,7 +207,7 @@ function UpdateUserContent({
                   </FormSelect.DefaultItem>
                 ))}
               </FormSelect.Default>
-              <FormError />
+              <FormErrorOrDescription />
             </FormField>
           </div>
           <div className="flex flex-1 flex-row gap-2">

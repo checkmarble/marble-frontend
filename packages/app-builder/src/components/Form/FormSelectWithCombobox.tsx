@@ -2,7 +2,11 @@ import { createSimpleContext } from '@app-builder/utils/create-context';
 import { adaptToStringArray } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useComposedRefs } from '@app-builder/utils/hooks/use-compose-refs';
-import { unstable_useControl, useField } from '@conform-to/react';
+import {
+  getSelectProps,
+  unstable_useControl,
+  useField,
+} from '@conform-to/react';
 import * as React from 'react';
 import {
   type Select,
@@ -36,15 +40,10 @@ function FormSelectWithComboboxControl({
   render,
 }: FormSelectWithComboboxControlProps) {
   const selectRef = React.useRef<HTMLButtonElement>(null);
-  const name = useFieldName();
+  const { name, description } = useFieldName();
   const [meta] = useField<string[]>(name);
 
   const control = unstable_useControl(meta);
-
-  const initialValue = React.useMemo(
-    () => adaptToStringArray(meta.initialValue),
-    [meta.initialValue],
-  );
 
   const selectedValues = React.useMemo(
     () => adaptToStringArray(control.value),
@@ -70,12 +69,12 @@ function FormSelectWithComboboxControl({
         aria-hidden
         tabIndex={-1}
         ref={control.register}
-        multiple
-        name={meta.name}
-        defaultValue={initialValue}
         onFocus={() => {
           selectRef.current?.focus();
         }}
+        {...getSelectProps(meta, {
+          ariaDescribedBy: description ? meta.descriptionId : undefined,
+        })}
       >
         <option value="" />
         {options.map((option) => (
@@ -139,7 +138,7 @@ const FormSelectWithComboboxSelect = React.forwardRef<
   Omit<React.ComponentProps<typeof Select.Trigger>, 'borderColor'>
 >(function FormSelectTrigger(props, ref) {
   const { selectRef } = useFormSelectWithComboboxContext();
-  const name = useFieldName();
+  const { name } = useFieldName();
   const [meta] = useField<string[]>(name);
   const composedRef = useComposedRefs(ref, selectRef);
 

@@ -1,6 +1,6 @@
 import { Callout } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { FormError } from '@app-builder/components/Form/FormError';
+import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
@@ -145,7 +145,7 @@ function CreateScenarioContent() {
                 type="text"
                 placeholder={t('scenarios:create_scenario.name_placeholder')}
               />
-              <FormError />
+              <FormErrorOrDescription />
             </FormField>
             <FormField
               name={fields.description.name}
@@ -160,7 +160,7 @@ function CreateScenarioContent() {
                   'scenarios:create_scenario.description_placeholder',
                 )}
               />
-              <FormError />
+              <FormErrorOrDescription />
             </FormField>
             <FormField
               name={fields.triggerObjectType.name}
@@ -189,7 +189,7 @@ function CreateScenarioContent() {
                   <p>{t('scenarios:create_scenario.no_trigger_object')}</p>
                 ) : null}
               </FormSelect.Default>
-              <FormError />
+              <FormErrorOrDescription />
             </FormField>
           </div>
           <div className="flex flex-1 flex-row gap-2">

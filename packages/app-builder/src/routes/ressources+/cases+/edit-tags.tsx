@@ -11,7 +11,7 @@ import {
   getInputProps,
   useForm,
 } from '@conform-to/react';
-import { parseWithZod } from '@conform-to/zod';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { Link, useFetcher } from '@remix-run/react';
@@ -63,6 +63,7 @@ export function EditCaseTags({
   const [form, fields] = useForm({
     defaultValue: { caseTagIds: defaultCaseTagIds, caseId },
     lastResult: fetcher.data,
+    constraint: getZodConstraint(schema),
     onValidate({ formData }) {
       return parseWithZod(formData, {
         schema,

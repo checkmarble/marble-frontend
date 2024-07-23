@@ -28,7 +28,7 @@ export const FormInput = React.forwardRef<
   React.ElementRef<typeof Input>,
   FormInputProps
 >(function FormInput({ type, ...inputProps }, ref) {
-  const name = useFieldName();
+  const { name, description } = useFieldName();
   const [meta] = useField<string>(name);
 
   return (
@@ -36,7 +36,10 @@ export const FormInput = React.forwardRef<
       ref={ref}
       borderColor={meta.valid ? 'grey-10' : 'red-100'}
       {...inputProps}
-      {...getInputProps(meta, { type })}
+      {...getInputProps(meta, {
+        type,
+        ariaDescribedBy: description ? meta.descriptionId : undefined,
+      })}
       key={meta.key}
     />
   );

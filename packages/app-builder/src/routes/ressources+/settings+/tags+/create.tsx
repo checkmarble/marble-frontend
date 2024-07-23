@@ -1,4 +1,4 @@
-import { FormError } from '@app-builder/components/Form/FormError';
+import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
@@ -128,7 +128,7 @@ const CreateTagContent = () => {
             >
               <FormLabel>{t('settings:tags.name')}</FormLabel>
               <FormInput type="text" />
-              <FormError />
+              <FormErrorOrDescription />
             </FormField>
             <FormField
               name={fields.color.name}
@@ -145,7 +145,7 @@ const CreateTagContent = () => {
                   </FormSelect.DefaultItem>
                 ))}
               </FormSelect.Default>
-              <FormError />
+              <FormErrorOrDescription />
             </FormField>
           </div>
           <div className="flex flex-1 flex-row gap-2">

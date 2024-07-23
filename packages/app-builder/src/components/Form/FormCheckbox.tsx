@@ -1,4 +1,8 @@
-import { unstable_useControl, useField } from '@conform-to/react';
+import {
+  getInputProps,
+  unstable_useControl,
+  useField,
+} from '@conform-to/react';
 import { Checkbox } from 'ui-design-system';
 
 import { useFieldName } from './FormField';
@@ -11,17 +15,21 @@ export function FormCheckbox({
   onCheckedChange,
   ...rest
 }: FormCheckboxProps) {
-  const name = useFieldName();
+  const { name, description } = useFieldName();
   const [meta] = useField<boolean>(name);
 
   const control = unstable_useControl(meta);
+
+  const { type, ...otherProps } = getInputProps(meta, {
+    type: 'checkbox',
+    ariaDescribedBy: description ? meta.descriptionId : undefined,
+  });
 
   return (
     // Radix UI don't expose the input element directly, so we need to query it
     <div ref={(element) => control.register(element?.querySelector('input'))}>
       <Checkbox
-        id={meta.id}
-        name={name}
+        {...otherProps}
         checked={control.value === 'on'}
         onCheckedChange={(state) => control.change(state.valueOf() ? 'on' : '')}
         onBlur={control.blur}

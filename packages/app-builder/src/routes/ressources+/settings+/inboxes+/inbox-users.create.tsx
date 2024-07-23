@@ -1,4 +1,4 @@
-import { FormError } from '@app-builder/components/Form/FormError';
+import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
@@ -186,7 +186,7 @@ export function CreateInboxUserContent({
                 </FormSelect.DefaultItem>
               ))}
             </FormSelect.Default>
-            <FormError />
+            <FormErrorOrDescription />
           </FormField>
           <FormField
             name={fields.role.name}
@@ -200,7 +200,7 @@ export function CreateInboxUserContent({
                 </FormSelect.DefaultItem>
               ))}
             </FormSelect.Default>
-            <FormError />
+            <FormErrorOrDescription />
           </FormField>
           <div className="flex flex-1 flex-row gap-2">
             <Modal.Close asChild>
