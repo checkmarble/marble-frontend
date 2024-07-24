@@ -1,3 +1,4 @@
+import { LoadingIcon } from '@app-builder/components/Spinner';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -6,7 +7,6 @@ import { Form, useNavigation } from '@remix-run/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const deleteWebhookFormSchema = z.object({
@@ -54,6 +54,8 @@ export function DeleteWebhook({
 function DeleteWebhookContent({ webhookId }: { webhookId: string }) {
   const { t } = useTranslation(['common', 'settings']);
 
+  const navigation = useNavigation();
+
   return (
     <Form
       action={getRoute('/ressources/settings/webhooks/delete')}
@@ -83,7 +85,11 @@ function DeleteWebhookContent({ webhookId }: { webhookId: string }) {
             type="submit"
             name="create"
           >
-            <Icon icon="delete" className="size-5" />
+            <LoadingIcon
+              icon="delete"
+              className="size-5"
+              loading={navigation.state === 'submitting'}
+            />
             {t('common:delete')}
           </Button>
         </div>

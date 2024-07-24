@@ -2977,6 +2977,37 @@ paths:
         '403':
           $ref: '#/components/responses/403'
   /webhooks/{webhookId}:
+    get:
+      tags:
+        - Webhooks
+      summary: Get a webhook by id
+      operationId: getWebhook
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: webhookId
+          description: ID of the webhook that needs to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The webhook corresponding to the provided `webhookId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - webhook
+                properties:
+                  webhook:
+                    $ref: '#/components/schemas/WebhookWithSecretDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
     patch:
       tags:
         - Webhooks
