@@ -1,5 +1,6 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { eventTypes } from '@app-builder/models/webhook';
+import clsx from 'clsx';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -65,7 +66,13 @@ export function FormSelectEvents({
   );
 }
 
-export function EventTypes({ eventTypes }: { eventTypes: string[] }) {
+export function EventTypes({
+  className,
+  eventTypes,
+}: {
+  eventTypes: string[];
+  className?: string;
+}) {
   return (
     <Tooltip.Default
       content={
@@ -76,7 +83,9 @@ export function EventTypes({ eventTypes }: { eventTypes: string[] }) {
         </div>
       }
     >
-      <div className="flex w-fit flex-wrap items-center gap-1">
+      <div
+        className={clsx('flex w-fit flex-wrap items-center gap-1', className)}
+      >
         {eventTypes.slice(0, 3).map((event) => (
           <EventType key={event}>{event}</EventType>
         ))}
