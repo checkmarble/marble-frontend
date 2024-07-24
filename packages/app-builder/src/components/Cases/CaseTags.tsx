@@ -1,8 +1,11 @@
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
-import { type CaseTag } from 'marble-api';
+import { type Tag } from 'marble-api';
+import { matchSorter } from 'match-sorter';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'ui-design-system';
+import { Input, Tooltip } from 'ui-design-system';
 
+import { FormSelectWithCombobox } from '../Form/FormSelectWithCombobox';
 import { casesI18n } from './cases-i18n';
 
 export function CaseTags({ caseTagIds }: { caseTagIds: string[] }) {
@@ -48,5 +51,57 @@ export function CaseTag({ tagId }: { tagId: string }) {
         {tag?.name || t('cases:case_detail.unknown_tag')}
       </span>
     </div>
+  );
+}
+
+export function FormSelectCaseTags({
+  selectedTagIds,
+  orgTags,
+  onOpenChange,
+}: {
+  selectedTagIds: string[];
+  orgTags: Tag[];
+  onOpenChange?: (open: boolean) => void;
+}) {
+  const { t } = useTranslation(['cases']);
+  const [value, setSearchValue] = React.useState('');
+  const searchValue = React.useDeferredValue(value);
+
+  const matches = React.useMemo(
+    () => matchSorter(orgTags, searchValue, { keys: ['name'] }),
+    [orgTags, searchValue],
+  );
+
+  return (
+    <FormSelectWithCombobox.Root
+      selectedValues={selectedTagIds}
+      searchValue={searchValue}
+      onSearchValueChange={setSearchValue}
+      onOpenChange={onOpenChange}
+    >
+      <FormSelectWithCombobox.Select className="w-full">
+        <CaseTags caseTagIds={selectedTagIds} />
+        <FormSelectWithCombobox.Arrow />
+      </FormSelectWithCombobox.Select>
+      <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+        <FormSelectWithCombobox.Combobox
+          render={<Input className="shrink-0" />}
+          autoSelect
+          autoFocus
+        />
+        <FormSelectWithCombobox.ComboboxList>
+          {matches.map((tag) => (
+            <FormSelectWithCombobox.ComboboxItem key={tag.id} value={tag.id}>
+              <CaseTag tagId={tag.id} />
+            </FormSelectWithCombobox.ComboboxItem>
+          ))}
+          {matches.length === 0 ? (
+            <p className="text-grey-50 flex items-center justify-center p-2">
+              {t('cases:case_detail.tags.empty_matches')}
+            </p>
+          ) : null}
+        </FormSelectWithCombobox.ComboboxList>
+      </FormSelectWithCombobox.Popover>
+    </FormSelectWithCombobox.Root>
   );
 }

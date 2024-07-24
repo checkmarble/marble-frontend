@@ -15,7 +15,7 @@ export const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   FormLabelProps
 >(function FormLabel({ className, ...props }, ref) {
-  const name = useFieldName();
+  const { name } = useFieldName();
   const [meta] = useField(name);
   return (
     <LabelPrimitive.Root

@@ -33,9 +33,10 @@ export function adaptWebhook(dto: WebhookDto): Webhook {
     id: dto.id,
     eventTypes,
     url: dto.url,
-    httpTimeout: dto.http_timeout,
-    rateLimit: dto.rate_limit,
-    rateLimitDuration: dto.rate_limit_duration,
+    httpTimeout: dto.http_timeout !== 0 ? dto.http_timeout : undefined,
+    rateLimit: dto.rate_limit !== 0 ? dto.rate_limit : undefined,
+    rateLimitDuration:
+      dto.rate_limit_duration !== 0 ? dto.rate_limit_duration : undefined,
   };
 }
 

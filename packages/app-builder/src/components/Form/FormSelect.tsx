@@ -1,6 +1,10 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useComposedRefs } from '@app-builder/utils/hooks/use-compose-refs';
-import { unstable_useControl, useField } from '@conform-to/react';
+import {
+  getSelectProps,
+  unstable_useControl,
+  useField,
+} from '@conform-to/react';
 import { type SelectValueProps } from '@radix-ui/react-select';
 import * as React from 'react';
 import { Select } from 'ui-design-system';
@@ -26,7 +30,7 @@ function FormSelectRoot({
   ...rest
 }: FormSelectRootProps) {
   const selectRef = React.useRef<HTMLButtonElement>(null);
-  const name = useFieldName();
+  const { name, description } = useFieldName();
   const [meta] = useField<string>(name);
 
   const control = unstable_useControl(meta);
@@ -45,8 +49,9 @@ function FormSelectRoot({
         aria-hidden
         tabIndex={-1}
         ref={control.register}
-        name={meta.name}
-        defaultValue={meta.initialValue}
+        {...getSelectProps(meta, {
+          ariaDescribedBy: description ? meta.descriptionId : undefined,
+        })}
       >
         <option value="" />
         {options.map((option) => {

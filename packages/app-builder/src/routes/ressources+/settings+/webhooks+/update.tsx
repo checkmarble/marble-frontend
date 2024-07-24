@@ -1,13 +1,15 @@
-import { FormError } from '@app-builder/components/Form/FormError';
+import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
+import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { FormSelectEvents } from '@app-builder/components/Webhooks/EventTypes';
 import { eventTypes } from '@app-builder/models/webhook';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
-import { parseWithZod } from '@conform-to/zod';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
@@ -109,6 +111,7 @@ function UpdateWebhookContent({
     shouldRevalidate: 'onInput',
     defaultValue,
     lastResult: fetcher.data,
+    constraint: getZodConstraint(updateWebhookFormSchema),
     onValidate({ formData }) {
       return parseWithZod(formData, {
         schema: updateWebhookFormSchema,
@@ -126,16 +129,67 @@ function UpdateWebhookContent({
         <ModalV2.Title>{t('settings:webhooks.update_webhook')}</ModalV2.Title>
         <div className="flex flex-col gap-6 p-6">
           <input name="id" value={defaultValue.id} type="hidden" />
-          {/* TODO(webhook): implement all fields */}
           <FormField
             name={fields.url.name}
             className="flex flex-col items-start gap-2"
           >
             <FormLabel>{t('settings:webhooks.url')}</FormLabel>
             <FormInput type="url" className="w-full" />
-            <FormError />
+            <FormErrorOrDescription />
           </FormField>
 
+          <FormField
+            name={fields.eventTypes.name}
+            className="flex flex-col items-start gap-2"
+          >
+            <FormLabel>{t('settings:webhooks.event_types')}</FormLabel>
+            <FormSelectWithCombobox.Control
+              options={eventTypes}
+              render={({ selectedValues }) => (
+                <FormSelectEvents
+                  selectedEventTypes={selectedValues}
+                  className="w-full"
+                />
+              )}
+            />
+            <FormErrorOrDescription />
+          </FormField>
+
+          <FormField
+            name={fields.httpTimeout.name}
+            className="flex flex-col items-start gap-2"
+            description={t('settings:webhooks.http_timeout.description')}
+          >
+            <FormLabel>{t('settings:webhooks.http_timeout')}</FormLabel>
+            <FormInput type="number" className="w-full" />
+            <FormErrorOrDescription />
+          </FormField>
+
+          <div className="flex w-full flex-row gap-2">
+            <FormField
+              name={fields.rateLimit.name}
+              className="flex flex-1 flex-col items-start gap-2"
+              description={t('settings:webhooks.rate_limit.description')}
+            >
+              <FormLabel>{t('settings:webhooks.rate_limit')}</FormLabel>
+              <FormInput type="number" className="w-full" />
+              <FormErrorOrDescription />
+            </FormField>
+
+            <FormField
+              name={fields.rateLimitDuration.name}
+              className="flex flex-1 flex-col items-start gap-2"
+              description={t(
+                'settings:webhooks.rate_limit_duration.description',
+              )}
+            >
+              <FormLabel>
+                {t('settings:webhooks.rate_limit_duration')}
+              </FormLabel>
+              <FormInput type="number" className="w-full" />
+              <FormErrorOrDescription />
+            </FormField>
+          </div>
           <div className="flex flex-1 flex-row gap-2">
             <ModalV2.Close
               render={<Button className="flex-1" variant="secondary" />}

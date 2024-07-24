@@ -1,4 +1,4 @@
-import { FormError } from '@app-builder/components/Form/FormError';
+import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
@@ -156,7 +156,7 @@ function CreateAlertContent({
               className="w-full"
               placeholder={t('transfercheck:alert.create.message.placeholder')}
             />
-            <FormError />
+            <FormErrorOrDescription />
           </FormField>
           <FormField
             name={fields.transferEndToEndId.name}
@@ -172,7 +172,7 @@ function CreateAlertContent({
                 'transfercheck:alert.create.transfer_end_to_end_id.placeholder',
               )}
             />
-            <FormError />
+            <FormErrorOrDescription />
           </FormField>
           <FormField
             name={fields.senderIban.name}
@@ -186,7 +186,7 @@ function CreateAlertContent({
                 'transfercheck:alert.create.sender_iban.placeholder',
               )}
             />
-            <FormError />
+            <FormErrorOrDescription />
           </FormField>
           <FormField
             name={fields.beneficiaryIban.name}
@@ -200,7 +200,7 @@ function CreateAlertContent({
                 'transfercheck:alert.create.beneficiary_iban.placeholder',
               )}
             />
-            <FormError />
+            <FormErrorOrDescription />
           </FormField>
 
           <div className="flex flex-1 flex-row gap-2">
