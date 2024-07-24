@@ -15,11 +15,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const settings = getSettings(user, featureAccessService);
-  const firstSetting = settings.at(0);
+  const settings = await getSettings(user, featureAccessService);
+  const firstSettings = settings.at(0);
 
-  if (firstSetting) {
-    return redirect(firstSetting.to);
+  if (firstSettings) {
+    return redirect(firstSettings.to);
   }
   return redirect(getRoute('/'));
 }

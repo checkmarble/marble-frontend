@@ -23,6 +23,7 @@ export function getLicenseRepository(
             analytics: true,
             dataEnrichment: true,
             userRoles: true,
+            webhooks: true,
           },
         });
       }

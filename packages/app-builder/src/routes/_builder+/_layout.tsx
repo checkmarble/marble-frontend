@@ -62,13 +62,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw forbidden('Only Marble Core users can access this app.');
   }
 
-  const [organizationDetail, orgUsers, orgTags] = await Promise.all([
+  const [
+    organizationDetail,
+    orgUsers,
+    orgTags,
+    settings,
+    isAnalyticsAvailable,
+    isWorkflowsAvailable,
+  ] = await Promise.all([
     organization.getCurrentOrganization(),
     organization.listUsers(),
     organization.listTags(),
+    getSettings(user, featureAccessService),
+    featureAccessService.isAnalyticsAvailable(user),
+    featureAccessService.isWorkflowsAvailable(),
   ]);
 
-  const firstSettings = getSettings(user, featureAccessService).at(0);
+  const firstSettings = settings.at(0);
 
   return json({
     user,
@@ -76,8 +86,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     organization: organizationDetail,
     orgTags,
     featuresAccess: {
-      isAnalyticsAvailable: featureAccessService.isAnalyticsAvailable(user),
-      isWorkflowsAvailable: featureAccessService.isWorkflowsAvailable(),
+      isAnalyticsAvailable,
+      isWorkflowsAvailable,
       settings:
         firstSettings !== undefined
           ? {

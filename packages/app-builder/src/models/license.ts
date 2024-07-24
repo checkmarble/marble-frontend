@@ -6,6 +6,7 @@ export interface LicenseEntitlements {
   analytics: boolean;
   dataEnrichment: boolean;
   userRoles: boolean;
+  webhooks: boolean;
 }
 
 export type LicenseValidationCode =
@@ -31,6 +32,7 @@ export function adaptLicenseValidation(
       analytics: dto.license_entitlements.analytics,
       dataEnrichment: dto.license_entitlements.data_enrichment,
       userRoles: dto.license_entitlements.user_roles,
+      webhooks: dto.license_entitlements.webhooks,
     },
   };
 }
