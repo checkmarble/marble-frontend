@@ -22,8 +22,6 @@ const createWebhookFormSchema = z.object({
   url: z.string().url(),
   eventTypes: z.array(z.enum(eventTypes)),
   httpTimeout: z.number().int().positive().optional(),
-  rateLimit: z.number().int().positive().optional(),
-  rateLimitDuration: z.number().int().positive().optional(),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -149,32 +147,6 @@ function CreateWebhookContent() {
             <FormInput type="number" className="w-full" />
             <FormErrorOrDescription />
           </FormField>
-
-          <div className="flex w-full flex-row gap-2">
-            <FormField
-              name={fields.rateLimit.name}
-              className="flex flex-1 flex-col items-start gap-2"
-              description={t('settings:webhooks.rate_limit.description')}
-            >
-              <FormLabel>{t('settings:webhooks.rate_limit')}</FormLabel>
-              <FormInput type="number" className="w-full" />
-              <FormErrorOrDescription />
-            </FormField>
-
-            <FormField
-              name={fields.rateLimitDuration.name}
-              className="flex flex-1 flex-col items-start gap-2"
-              description={t(
-                'settings:webhooks.rate_limit_duration.description',
-              )}
-            >
-              <FormLabel>
-                {t('settings:webhooks.rate_limit_duration')}
-              </FormLabel>
-              <FormInput type="number" className="w-full" />
-              <FormErrorOrDescription />
-            </FormField>
-          </div>
 
           <div className="flex flex-1 flex-row gap-2">
             <ModalV2.Close

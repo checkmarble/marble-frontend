@@ -68,7 +68,7 @@ export default function Webhooks() {
               </span>
             );
           }
-          return <EventTypes eventTypes={eventTypes} />;
+          return <EventTypes className="relative" eventTypes={eventTypes} />;
         },
       }),
     ];

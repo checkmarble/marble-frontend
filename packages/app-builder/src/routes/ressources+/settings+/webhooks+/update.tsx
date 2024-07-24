@@ -20,11 +20,8 @@ import { z } from 'zod';
 
 const updateWebhookFormSchema = z.object({
   id: z.string(),
-  url: z.string().url(),
   eventTypes: z.array(z.enum(eventTypes)),
   httpTimeout: z.number().int().positive().optional(),
-  rateLimit: z.number().int().positive().optional(),
-  rateLimitDuration: z.number().int().positive().optional(),
 });
 
 type UpdateWebhookForm = z.infer<typeof updateWebhookFormSchema>;
@@ -129,14 +126,6 @@ function UpdateWebhookContent({
         <ModalV2.Title>{t('settings:webhooks.update_webhook')}</ModalV2.Title>
         <div className="flex flex-col gap-6 p-6">
           <input name="id" value={defaultValue.id} type="hidden" />
-          <FormField
-            name={fields.url.name}
-            className="flex flex-col items-start gap-2"
-          >
-            <FormLabel>{t('settings:webhooks.url')}</FormLabel>
-            <FormInput type="url" className="w-full" />
-            <FormErrorOrDescription />
-          </FormField>
 
           <FormField
             name={fields.eventTypes.name}
@@ -165,31 +154,6 @@ function UpdateWebhookContent({
             <FormErrorOrDescription />
           </FormField>
 
-          <div className="flex w-full flex-row gap-2">
-            <FormField
-              name={fields.rateLimit.name}
-              className="flex flex-1 flex-col items-start gap-2"
-              description={t('settings:webhooks.rate_limit.description')}
-            >
-              <FormLabel>{t('settings:webhooks.rate_limit')}</FormLabel>
-              <FormInput type="number" className="w-full" />
-              <FormErrorOrDescription />
-            </FormField>
-
-            <FormField
-              name={fields.rateLimitDuration.name}
-              className="flex flex-1 flex-col items-start gap-2"
-              description={t(
-                'settings:webhooks.rate_limit_duration.description',
-              )}
-            >
-              <FormLabel>
-                {t('settings:webhooks.rate_limit_duration')}
-              </FormLabel>
-              <FormInput type="number" className="w-full" />
-              <FormErrorOrDescription />
-            </FormField>
-          </div>
           <div className="flex flex-1 flex-row gap-2">
             <ModalV2.Close
               render={<Button className="flex-1" variant="secondary" />}
