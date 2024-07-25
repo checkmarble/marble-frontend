@@ -32,7 +32,8 @@ export function adaptLicenseValidation(
       analytics: dto.license_entitlements.analytics,
       dataEnrichment: dto.license_entitlements.data_enrichment,
       userRoles: dto.license_entitlements.user_roles,
-      webhooks: dto.license_entitlements.webhooks,
+      // webhooks: dto.license_entitlements.webhooks,
+      webhooks: dto.license_entitlements.user_roles,
     },
   };
 }
