@@ -125,7 +125,6 @@ Sentry.init({
 
 export const handleError: HandleErrorFunction = (error, { request }) => {
   if (error instanceof Error) {
-    // @ts-expect-error fixed in https://github.com/getsentry/sentry-javascript/pull/12614, remove when updated
     void Sentry.captureRemixServerException(error, 'remix.server', request);
   } else {
     // Optionally capture non-Error objects
