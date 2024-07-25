@@ -159,6 +159,8 @@ export function useEmailAndPasswordSignUp({
             throw new WeakPasswordError();
           case AuthErrorCodes.NETWORK_REQUEST_FAILED:
             throw new NetworkRequestFailed();
+          case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
+            throw new TooManyRequest();
         }
       }
       throw error;
@@ -168,6 +170,7 @@ export function useEmailAndPasswordSignUp({
 
 export class EmailExistsError extends Error {}
 export class WeakPasswordError extends Error {}
+export class TooManyRequest extends Error {}
 
 export function useResendEmailVerification({
   authenticationClientRepository,
@@ -177,10 +180,22 @@ export function useResendEmailVerification({
   } = useTranslation();
 
   return async (logout: () => void) => {
-    await authenticationClientRepository.resendEmailVerification(
-      language,
-      logout,
-    );
+    try {
+      await authenticationClientRepository.resendEmailVerification(
+        language,
+        logout,
+      );
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+            throw new NetworkRequestFailed();
+          case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
+            throw new TooManyRequest();
+        }
+      }
+      throw error;
+    }
   };
 }
 
@@ -192,10 +207,22 @@ export function useSendPasswordResetEmail({
   } = useTranslation();
 
   return async (email: string) => {
-    await authenticationClientRepository.sendPasswordResetEmail(
-      language,
-      email,
-    );
+    try {
+      await authenticationClientRepository.sendPasswordResetEmail(
+        language,
+        email,
+      );
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+            throw new NetworkRequestFailed();
+          case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
+            throw new TooManyRequest();
+        }
+      }
+      throw error;
+    }
   };
 }
 
