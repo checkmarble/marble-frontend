@@ -1,4 +1,8 @@
-import { useResendEmailVerification } from '@app-builder/services/auth/auth.client';
+import {
+  NetworkRequestFailed,
+  TooManyRequest,
+  useResendEmailVerification,
+} from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { getRoute } from '@app-builder/utils/routes';
 import { useNavigate } from '@remix-run/react';
@@ -45,8 +49,14 @@ function ClientSendEmailVerificationButton() {
       const logout = () => navigate(getRoute('/ressources/auth/logout'));
       await resendEmailVerification(logout);
     } catch (error) {
-      Sentry.captureException(error);
-      toast.error(t('common:errors.unknown'));
+      if (error instanceof NetworkRequestFailed) {
+        toast.error(t('common:errors.firebase_network_error'));
+      } else if (error instanceof TooManyRequest) {
+        toast.error(t('common:errors.too_many_requests'));
+      } else {
+        Sentry.captureException(error);
+        toast.error(t('common:errors.unknown'));
+      }
     }
   }
 

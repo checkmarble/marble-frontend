@@ -5,7 +5,11 @@ import {
   FormItem,
   FormLabel,
 } from '@app-builder/components/Form';
-import { useSendPasswordResetEmail } from '@app-builder/services/auth/auth.client';
+import {
+  NetworkRequestFailed,
+  TooManyRequest,
+  useSendPasswordResetEmail,
+} from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Sentry from '@sentry/remix';
@@ -78,8 +82,14 @@ function ClientResetPasswordForm({ children }: { children: React.ReactNode }) {
       await sendPasswordResetEmail(email);
       toast.success(t('auth:reset-password.email_sent'));
     } catch (error) {
-      Sentry.captureException(error);
-      toast.error(t('common:errors.unknown'));
+      if (error instanceof NetworkRequestFailed) {
+        toast.error(t('common:errors.firebase_network_error'));
+      } else if (error instanceof TooManyRequest) {
+        toast.error(t('common:errors.too_many_requests'));
+      } else {
+        Sentry.captureException(error);
+        toast.error(t('common:errors.unknown'));
+      }
     }
   });
 

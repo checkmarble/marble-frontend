@@ -8,6 +8,7 @@ import {
 import {
   EmailExistsError,
   NetworkRequestFailed,
+  TooManyRequest,
   useEmailAndPasswordSignUp,
   WeakPasswordError,
 } from '@app-builder/services/auth/auth.client';
@@ -147,6 +148,8 @@ function ClientSignUpWithEmailAndPasswordForm({
           );
         } else if (error instanceof NetworkRequestFailed) {
           toast.error(t('common:errors.firebase_network_error'));
+        } else if (error instanceof TooManyRequest) {
+          toast.error(t('common:errors.too_many_requests'));
         } else {
           Sentry.captureException(error);
           toast.error(t('common:errors.unknown'));
