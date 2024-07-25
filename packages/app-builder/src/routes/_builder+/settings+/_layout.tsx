@@ -15,7 +15,7 @@ export const handle = {
   i18n: ['navigation', 'settings'] satisfies Namespace,
 };
 
-export function getSettings(
+export async function getSettings(
   user: CurrentUser,
   featureAccessService: FeatureAccessService,
 ) {
@@ -48,7 +48,7 @@ export function getSettings(
       to: getRoute('/settings/api-keys'),
     });
   }
-  if (featureAccessService.isReadWebhookAvailable(user)) {
+  if (await featureAccessService.isReadWebhookAvailable(user)) {
     settings.push({
       section: 'api' as const,
       title: 'webhooks' as const,
@@ -64,7 +64,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const settings = getSettings(user, featureAccessService);
+  const settings = await getSettings(user, featureAccessService);
 
   const sections = R.pipe(
     settings,

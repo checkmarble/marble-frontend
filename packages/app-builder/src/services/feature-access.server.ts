@@ -149,32 +149,40 @@ export function makeFeatureAccessService({
       }
       return ['admin'] as const;
     },
-    isReadWebhookAvailable: ({
+    isReadWebhookAvailable: async ({
       permissions,
     }: {
       permissions: UserPermissions;
     }) => {
+      const licenseEntitlements = await getLicenseEntitlements();
+      if (!licenseEntitlements.webhooks) return false;
       return permissions.canManageWebhooks;
     },
-    isCreateWebhookAvailable: ({
+    isCreateWebhookAvailable: async ({
       permissions,
     }: {
       permissions: UserPermissions;
     }) => {
+      const licenseEntitlements = await getLicenseEntitlements();
+      if (!licenseEntitlements.webhooks) return false;
       return permissions.canManageWebhooks;
     },
-    isEditWebhookAvailable: ({
+    isEditWebhookAvailable: async ({
       permissions,
     }: {
       permissions: UserPermissions;
     }) => {
+      const licenseEntitlements = await getLicenseEntitlements();
+      if (!licenseEntitlements.webhooks) return false;
       return permissions.canManageWebhooks;
     },
-    isDeleteWebhookAvailable: ({
+    isDeleteWebhookAvailable: async ({
       permissions,
     }: {
       permissions: UserPermissions;
     }) => {
+      const licenseEntitlements = await getLicenseEntitlements();
+      if (!licenseEntitlements.webhooks) return false;
       return permissions.canManageWebhooks;
     },
     isReadUserAvailable: ({ role }: { role: string }) => {

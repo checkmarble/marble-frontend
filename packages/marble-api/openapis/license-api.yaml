@@ -56,12 +56,15 @@ components:
               type: boolean
             user_roles:
               type: boolean
+            webhooks:
+              type: boolean
           required:
             - sso
             - workflows
             - analytics
             - data_enrichment
             - user_roles
+            - webhooks
       required:
         - license_validation_code
         - license_entitlements

@@ -23,6 +23,7 @@ export function makeLicenseServerService({
           analytics: false,
           dataEnrichment: false,
           userRoles: false,
+          webhooks: false,
         };
       });
 

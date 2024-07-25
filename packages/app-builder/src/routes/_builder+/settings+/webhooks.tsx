@@ -26,19 +26,27 @@ export async function loader({ request }: LoaderFunctionArgs) {
       failureRedirect: getRoute('/sign-in'),
     },
   );
-  if (!featureAccessService.isReadWebhookAvailable(user)) {
+  if (!(await featureAccessService.isReadWebhookAvailable(user))) {
     return redirect(getRoute('/'));
   }
 
-  const webhooks = await webhookRepository.listWebhooks();
+  const [
+    webhooks,
+    isCreateWebhookAvailable,
+    isEditWebhookAvailable,
+    isDeleteWebhookAvailable,
+  ] = await Promise.all([
+    webhookRepository.listWebhooks(),
+    featureAccessService.isCreateWebhookAvailable(user),
+    featureAccessService.isCreateWebhookAvailable(user),
+    featureAccessService.isDeleteWebhookAvailable(user),
+  ]);
 
   return json({
     webhooks,
-    isCreateWebhookAvailable:
-      featureAccessService.isCreateWebhookAvailable(user),
-    isEditWebhookAvailable: featureAccessService.isCreateWebhookAvailable(user),
-    isDeleteWebhookAvailable:
-      featureAccessService.isDeleteWebhookAvailable(user),
+    isCreateWebhookAvailable,
+    isEditWebhookAvailable,
+    isDeleteWebhookAvailable,
   });
 }
 
