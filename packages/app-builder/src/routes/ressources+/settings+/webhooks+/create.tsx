@@ -1,3 +1,4 @@
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
@@ -7,6 +8,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { FormSelectEvents } from '@app-builder/components/Webhooks/EventTypes';
 import { eventTypes } from '@app-builder/models/webhook';
+import { webhooksEventsDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
@@ -14,7 +16,7 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
 import { z } from 'zod';
 
@@ -124,6 +126,17 @@ function CreateWebhookContent() {
           <FormField
             name={fields.eventTypes.name}
             className="flex flex-col items-start gap-2"
+            description={
+              <span className="whitespace-pre text-wrap">
+                <Trans
+                  t={t}
+                  i18nKey="settings:webhooks.events_documentation"
+                  components={{
+                    DocLink: <ExternalLink href={webhooksEventsDocHref} />,
+                  }}
+                />
+              </span>
+            }
           >
             <FormLabel>{t('settings:webhooks.event_types')}</FormLabel>
             <FormSelectWithCombobox.Control

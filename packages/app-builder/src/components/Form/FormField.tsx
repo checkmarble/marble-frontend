@@ -4,21 +4,23 @@ import * as React from 'react';
 
 interface FieldNameContextValue {
   name: string;
-  description?: string;
+  description?: React.ReactNode;
 }
 
 const FieldNameContext =
   createSimpleContext<FieldNameContextValue>('FieldName');
 export const useFieldName = FieldNameContext.useValue;
 
+interface FormFieldProps<Schema> extends React.ComponentPropsWithoutRef<'div'> {
+  name: FieldName<Schema>;
+  description?: React.ReactNode;
+}
+
 export function FormField<Schema>({
   name,
   description,
   ...props
-}: {
-  name: FieldName<Schema>;
-  description?: string;
-} & React.ComponentPropsWithoutRef<'div'>) {
+}: FormFieldProps<Schema>) {
   const value = React.useMemo(
     () => ({
       name,

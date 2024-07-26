@@ -1,7 +1,9 @@
-import { CollapsiblePaper, Page } from '@app-builder/components';
+import { Callout, CollapsiblePaper, Page } from '@app-builder/components';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { type Webhook } from '@app-builder/models/webhook';
 import { CreateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/create';
+import { webhooksSetupDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -10,7 +12,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -117,6 +119,18 @@ export default function Webhooks() {
             ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
+            <Callout className="mb-4 lg:mb-6" variant="outlined">
+              <p className="whitespace-pre text-wrap">
+                <Trans
+                  t={t}
+                  i18nKey="settings:webhooks.setup_documentation"
+                  components={{
+                    DocLink: <ExternalLink href={webhooksSetupDocHref} />,
+                  }}
+                />
+              </p>
+            </Callout>
+
             <Table.Container {...getContainerProps()} className="max-h-96">
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>

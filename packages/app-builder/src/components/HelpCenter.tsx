@@ -2,6 +2,8 @@ import {
   executeAScenarioDocHref,
   pivotValuesDocHref,
   scenarioDecisionDocHref,
+  webhooksEventsDocHref,
+  webhooksSetupDocHref,
 } from '@app-builder/services/documentation-href';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -139,6 +141,9 @@ function HelpCenterContent({
               return (
                 <Ariakit.Tab
                   key={category}
+                  ref={(element) => {
+                    if (category === defaultTab) element?.scrollIntoView();
+                  }}
                   id={category}
                   className="aria-selected:bg-purple-10 aria-selected:border-purple-10 text-grey-100 bg-grey-05 border-grey-05 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize aria-selected:text-purple-100 data-[active-item]:border-purple-100"
                   accessibleWhenDisabled={false}
@@ -238,6 +243,8 @@ export function useMarbleCoreResources() {
       return t('navigation:workflows');
     if (location.pathname.startsWith(getRoute('/data')))
       return t('navigation:data');
+    if (location.pathname.startsWith(getRoute('/settings')))
+      return t('navigation:settings');
 
     return t('navigation:scenarios');
   }, [location.pathname, t]);
@@ -360,6 +367,22 @@ export function useMarbleCoreResources() {
           label: 'Ingesting Data',
           tags: ['Manual', 'CSV'],
           href: 'https://docs.checkmarble.com/docs/ingesting-data',
+        },
+      ],
+      [t('navigation:settings')]: [
+        {
+          label: 'Create a webhook',
+          href: webhooksSetupDocHref,
+        },
+        {
+          label: 'Receive a webhook',
+          tags: ['Payload', 'Validate'],
+          href: 'https://docs.checkmarble.com/docs/receiving-webhooks',
+        },
+        {
+          label: 'Available events',
+          tags: ['Format', 'Payload'],
+          href: webhooksEventsDocHref,
         },
       ],
     }),

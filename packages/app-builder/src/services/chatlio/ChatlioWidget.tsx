@@ -57,7 +57,7 @@ export function ChatlioProvider({ chatlio, children }: ChatlioProviderProps) {
 export const ChatlioButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function ChatlioWidget(props, ref) {
     const { t } = useTranslation(['common']);
-    const chatlio = ChatlioContext.useValue();
+    const chatlio = ChatlioContext.useOptionalValue();
 
     if (!chatlio) return null;
 

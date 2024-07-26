@@ -97,5 +97,7 @@
   "webhooks.secret.created_at": "Created at",
   "webhooks.secret.deleted_at": "Deleted at",
   "webhooks.secret.expires_at": "Expires at",
-  "webhooks.secret.value": "Value"
+  "webhooks.secret.value": "Value",
+  "webhooks.setup_documentation": "For more information on webhooks, please refer to <DocLink>the documentation</DocLink>.",
+  "webhooks.events_documentation": "For more information on events, please refer to <DocLink>the documentation</DocLink>."
 }
