@@ -46,7 +46,7 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { cases } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -62,12 +62,9 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await getSession(request);
 
   try {
-    const result = await apiClient.createCase({
-      name: parsedForm.data.name,
-      inbox_id: parsedForm.data.inboxId,
-    });
+    const createdCase = await cases.createCase(parsedForm.data);
     return redirect(
-      getRoute('/cases/:caseId', { caseId: fromUUID(result.case.id) }),
+      getRoute('/cases/:caseId', { caseId: fromUUID(createdCase.id) }),
     );
   } catch (error) {
     setToastMessage(session, {

@@ -1,5 +1,4 @@
 import {
-  type Case,
   type DecisionDetailDto,
   type DecisionDto,
   type Error,
@@ -7,6 +6,7 @@ import {
   type RuleExecutionDto,
 } from 'marble-api';
 
+import { adaptCase, type Case } from './cases';
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
 
 export interface Decision {
@@ -98,7 +98,7 @@ export function adaptDecision(dto: DecisionDto): Decision {
       version: dto.scenario.version,
     },
     score: dto.score,
-    case: dto.case,
+    case: dto.case ? adaptCase(dto.case) : undefined,
   };
 }
 

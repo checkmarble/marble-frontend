@@ -1,7 +1,7 @@
+import { type CaseContributor } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { cx } from 'class-variance-authority';
-import { type CaseContributor } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Tooltip } from 'ui-design-system';
 
@@ -20,7 +20,7 @@ export function CaseContributors({
       content={
         <div className="flex flex-col gap-1">
           {contributors.map((contributor) => {
-            const user = getOrgUserById(contributor.user_id);
+            const user = getOrgUserById(contributor.userId);
             return (
               <div
                 key={contributor.id}
@@ -44,7 +44,7 @@ export function CaseContributors({
       <div className="flex w-fit flex-row items-center gap-1">
         <div className="isolate flex -space-x-4 overflow-hidden">
           {contributors.slice(0, 3).map((contributor, index) => {
-            const user = getOrgUserById(contributor.user_id);
+            const user = getOrgUserById(contributor.userId);
             return (
               <Avatar
                 key={contributor.id}

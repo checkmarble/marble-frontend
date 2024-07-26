@@ -42,7 +42,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const caseId = fromParams(params, 'caseId');
   try {
     const caseDetail = await cases.getCase({ caseId });
-    const currentInbox = await inbox.getInbox(caseDetail.inbox_id);
+    const currentInbox = await inbox.getInbox(caseDetail.inboxId);
 
     return json({ caseDetail, inbox: currentInbox, user });
   } catch (error) {

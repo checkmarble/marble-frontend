@@ -44,28 +44,28 @@ export type Pagination = {
     end_index: number;
     total_count: PaginationCount;
 };
-export type CaseStatus = "open" | "investigating" | "discarded" | "resolved";
-export type CaseContributor = {
+export type CaseStatusDto = "open" | "investigating" | "discarded" | "resolved";
+export type CaseContributorDto = {
     id: string;
     case_id: string;
     user_id: string;
     created_at: string;
 };
-export type CaseTag = {
+export type CaseTagDto = {
     id: string;
     case_id: string;
     tag_id: string;
     created_at: string;
 };
-export type Case = {
+export type CaseDto = {
     id: string;
     created_at: string;
     decisions_count: number;
     name: string;
-    status: CaseStatus;
+    status: CaseStatusDto;
     inbox_id: string;
-    contributors: CaseContributor[];
-    tags: CaseTag[];
+    contributors: CaseContributorDto[];
+    tags: CaseTagDto[];
 };
 export type Error = {
     code: number;
@@ -77,7 +77,7 @@ export type PivotValueDto = {
 };
 export type DecisionDto = {
     id: string;
-    "case"?: Case;
+    "case"?: CaseDto;
     created_at: string;
     error?: Error;
     outcome: Outcome;
@@ -133,7 +133,7 @@ export type RuleExecutionDto = {
 export type DecisionDetailDto = DecisionDto & {
     rules: RuleExecutionDto[];
 };
-export type CreateCaseBody = {
+export type CreateCaseBodyDto = {
     name: string;
     inbox_id: string;
     decision_ids?: string[];
@@ -144,29 +144,29 @@ export type CaseEventDtoBase = {
     created_at: string;
     event_type: string;
 };
-export type CaseCreatedEvent = {
+export type CaseCreatedEventDto = {
     event_type: "case_created";
 } & CaseEventDtoBase & {
     user_id?: string;
 };
-export type CaseStatusUpdatedEvent = {
+export type CaseStatusUpdatedEventDto = {
     event_type: "status_updated";
 } & CaseEventDtoBase & {
-    new_value: CaseStatus;
+    new_value: CaseStatusDto;
     user_id: string;
 };
-export type DecisionAddedEvent = {
+export type DecisionAddedEventDto = {
     event_type: "decision_added";
 } & CaseEventDtoBase & {
     user_id?: string;
 };
-export type CommentAddedEvent = {
+export type CommentAddedEventDto = {
     event_type: "comment_added";
 } & CaseEventDtoBase & {
     additional_note: string;
     user_id: string;
 };
-export type NameUpdatedEvent = {
+export type NameUpdatedEventDto = {
     event_type: "name_updated";
 } & CaseEventDtoBase & {
     new_value: string;
@@ -179,26 +179,26 @@ export type CaseTagsUpdatedEventDto = {
     new_value: string;
     user_id: string;
 };
-export type FileAddedEvent = {
+export type FileAddedEventDto = {
     event_type: "file_added";
 } & CaseEventDtoBase & {
     additional_note: string;
     user_id: string;
 };
-export type InboxChangedEvent = {
+export type InboxChangedEventDto = {
     event_type: "inbox_changed";
 } & CaseEventDtoBase & {
     new_value: string;
     user_id: string;
 };
-export type CaseEventDto = CaseCreatedEvent | CaseStatusUpdatedEvent | DecisionAddedEvent | CommentAddedEvent | NameUpdatedEvent | CaseTagsUpdatedEventDto | FileAddedEvent | InboxChangedEvent;
-export type CaseFile = {
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto;
+export type CaseFileDto = {
     id: string;
     case_id: string;
     created_at: string;
     file_name: string;
 };
-export type CaseDetailDto = Case & {
+export type CaseDetailDto = CaseDto & {
     decisions: {
         id: string;
         created_at: string;
@@ -219,12 +219,12 @@ export type CaseDetailDto = Case & {
         error?: Error;
     }[];
     events: CaseEventDto[];
-    files: CaseFile[];
+    files: CaseFileDto[];
 };
-export type UpdateCaseBody = {
+export type UpdateCaseBodyDto = {
     name?: string;
     inbox_id?: string;
-    status?: CaseStatus;
+    status?: CaseStatusDto;
 };
 export type Tag = {
     id: string;
@@ -726,7 +726,7 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
  * List cases
  */
 export function listCases({ status, inboxId, startDate, endDate, sorting, offsetId, previous, next, limit, order }: {
-    status?: CaseStatus[];
+    status?: CaseStatusDto[];
     inboxId?: string[];
     startDate?: string;
     endDate?: string;
@@ -740,7 +740,7 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, offset
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: Pagination & {
-            items: Case[];
+            items: CaseDto[];
         };
     } | {
         status: 401;
@@ -766,7 +766,7 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, offset
 /**
  * Create a case
  */
-export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.RequestOpts) {
+export function createCase(createCaseBodyDto: CreateCaseBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -781,7 +781,7 @@ export function createCase(createCaseBody: CreateCaseBody, opts?: Oazapfts.Reque
     }>("/cases", oazapfts.json({
         ...opts,
         method: "POST",
-        body: createCaseBody
+        body: createCaseBodyDto
     })));
 }
 /**
@@ -807,7 +807,7 @@ export function getCase(caseId: string, opts?: Oazapfts.RequestOpts) {
 /**
  * Update a case
  */
-export function updateCase(caseId: string, updateCaseBody: UpdateCaseBody, opts?: Oazapfts.RequestOpts) {
+export function updateCase(caseId: string, updateCaseBodyDto: UpdateCaseBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -825,7 +825,7 @@ export function updateCase(caseId: string, updateCaseBody: UpdateCaseBody, opts?
     }>(`/cases/${encodeURIComponent(caseId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: updateCaseBody
+        body: updateCaseBodyDto
     })));
 }
 /**

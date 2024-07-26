@@ -1,11 +1,10 @@
-import { caseStatuses } from '@app-builder/models/cases';
+import { type CaseStatus, caseStatuses } from '@app-builder/models/cases';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import {
   type DateRangeFilterForm,
   dateRangeSchema,
 } from '@app-builder/utils/schema/filterSchema';
-import { type CaseStatus } from 'marble-api';
 import { useCallback, useMemo } from 'react';
 import {
   FormProvider,

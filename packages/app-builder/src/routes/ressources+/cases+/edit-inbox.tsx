@@ -1,5 +1,6 @@
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import {
@@ -15,7 +16,6 @@ import {
   type LoaderFunctionArgs,
 } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { type InboxDto } from 'marble-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -50,7 +50,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   await cases.updateCase({
     caseId: submission.value.caseId,
-    body: { inbox_id: submission.value.inboxId },
+    body: submission.value,
   });
 
   return json(submission.reply());
@@ -60,7 +60,7 @@ export function EditCaseInbox({
   defaultInbox,
   caseId,
 }: {
-  defaultInbox: InboxDto;
+  defaultInbox: Inbox;
   caseId: string;
 }) {
   const { t } = useTranslation(['common']);

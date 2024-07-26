@@ -40,7 +40,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
       <Collapsible.ScrollableContent className="max-h-[70dvh]">
         <Accordion.Container className="relative z-0">
           <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
-          {events.filter(displayedEventTypes).map((event) => {
+          {events.map((event) => {
             const Icon = getEventIcon(event);
             const Title = getEventTitle(event, t);
             const Detail = getEventDetail(event);
@@ -52,7 +52,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
                     {Title}
                   </span>
                   <span className="text-s text-grey-25 mx-4 font-normal">
-                    {formatDateRelative(event.created_at, {
+                    {formatDateRelative(event.createdAt, {
                       language,
                     })}
                   </span>
@@ -68,19 +68,6 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
       </Collapsible.ScrollableContent>
     </Collapsible.Container>
   );
-}
-
-function displayedEventTypes(event: CaseEvent) {
-  return [
-    'case_created',
-    'comment_added',
-    'decision_added',
-    'name_updated',
-    'status_updated',
-    'tags_updated',
-    'file_added',
-    'inbox_changed',
-  ].includes(event.event_type);
 }
 
 function EventIcon({
@@ -103,8 +90,8 @@ function EventIcon({
 }
 
 export function getEventIcon(event: CaseEvent) {
-  const { event_type } = event;
-  switch (event_type) {
+  const { eventType } = event;
+  switch (eventType) {
     case 'case_created':
       return (
         <EventIcon
@@ -136,11 +123,10 @@ export function getEventIcon(event: CaseEvent) {
         />
       );
     case 'status_updated': {
-      const newStatus = event.new_value;
       return (
         <EventIcon
           className={caseStatusVariants({
-            color: caseStatusMapping[newStatus].color,
+            color: caseStatusMapping[event.newStatus].color,
             variant: 'contained',
           })}
           icon="manage-search"
@@ -161,10 +147,10 @@ export function getEventTitle(
   event: CaseEvent,
   t: TFunction<typeof casesI18n>,
 ) {
-  const { event_type } = event;
-  switch (event_type) {
+  const { eventType } = event;
+  switch (eventType) {
     case 'case_created': {
-      if (event.user_id) {
+      if (event.userId) {
         return (
           <span className="text-s text-grey-100 font-semibold">
             {t('cases:case_detail.history.event_title.case_created')}
@@ -208,7 +194,7 @@ export function getEventTitle(
               Name: <span className="text-s text-grey-100 font-normal" />,
             }}
             values={{
-              name: event.new_value,
+              name: event.newName,
             }}
           />
         </span>
@@ -229,7 +215,6 @@ export function getEventTitle(
       );
     }
     case 'status_updated': {
-      const newStatus = event.new_value;
       return (
         <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
           <Trans
@@ -239,7 +224,7 @@ export function getEventTitle(
               Status: (
                 <span
                   className={caseStatusVariants({
-                    color: caseStatusMapping[newStatus].color,
+                    color: caseStatusMapping[event.newStatus].color,
                     variant: 'text',
                     className: 'capitalize',
                   })}
@@ -247,7 +232,7 @@ export function getEventTitle(
               ),
             }}
             values={{
-              status: t(caseStatusMapping[newStatus].tKey),
+              status: t(caseStatusMapping[event.newStatus].tKey),
             }}
           />
         </span>
@@ -263,7 +248,7 @@ export function getEventTitle(
               Name: <span className="text-s text-grey-100 font-normal" />,
             }}
             values={{
-              name: event.additional_note || 'default file name',
+              name: event.fileName || 'default file name',
             }}
           />
         </span>
@@ -322,13 +307,13 @@ function ByWorkflow({
 }
 
 export function getEventDetail(event: CaseEvent) {
-  const { event_type } = event;
-  switch (event_type) {
+  const { eventType } = event;
+  switch (eventType) {
     case 'case_created': {
-      if (!event.user_id) {
+      if (!event.userId) {
         return <ByWorkflow type="added_by_workflow" />;
       }
-      return <Author userId={event.user_id} type="added_by" />;
+      return <Author userId={event.userId} type="added_by" />;
     }
     case 'comment_added': {
       return <CommentAddedEventDetail event={event} />;
@@ -337,18 +322,18 @@ export function getEventDetail(event: CaseEvent) {
       return <TagsUpdatedEventDetail event={event} />;
     }
     case 'decision_added': {
-      if (!event.user_id) {
+      if (!event.userId) {
         return <ByWorkflow type="added_by_workflow" />;
       }
-      return <Author userId={event.user_id} type="added_by" />;
+      return <Author userId={event.userId} type="added_by" />;
     }
     case 'file_added': {
-      return <Author userId={event.user_id} type="added_by" />;
+      return <Author userId={event.userId} type="added_by" />;
     }
     case 'name_updated':
     case 'status_updated':
     case 'inbox_changed': {
-      return <Author userId={event.user_id} type="edited_by" />;
+      return <Author userId={event.userId} type="edited_by" />;
     }
   }
 }
@@ -356,10 +341,10 @@ export function getEventDetail(event: CaseEvent) {
 function CommentAddedEventDetail({ event }: { event: CommentAddedEvent }) {
   return (
     <div className="flex flex-col gap-2">
-      <Author userId={event.user_id} type="added_by" />
-      {event.additional_note ? (
+      <Author userId={event.userId} type="added_by" />
+      {event.comment ? (
         <div className="text-s text-grey-100 whitespace-break-spaces font-normal">
-          {event.additional_note}
+          {event.comment}
         </div>
       ) : null}
     </div>
@@ -370,7 +355,7 @@ function TagsUpdatedEventDetail({ event }: { event: CaseTagsUpdatedEvent }) {
   const { t } = useTranslation(casesI18n);
   return (
     <div className="flex flex-col gap-2">
-      <Author userId={event.user_id} type="edited_by" />
+      <Author userId={event.userId} type="edited_by" />
       {event.tagIds.length === 0 ? (
         <p className="text-grey-100 text-s font-normal first-letter:capitalize">
           {t('cases:case_detail.history.event_detail.case_tags.none')}

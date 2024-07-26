@@ -1,3 +1,4 @@
+import { type CaseFile } from '@app-builder/models/cases';
 import {
   AlreadyDownloadingError,
   AuthRequestError,
@@ -5,7 +6,6 @@ import {
 } from '@app-builder/services/DownloadCaseFilesService';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import { type CaseFile } from 'marble-api';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -47,12 +47,12 @@ function FilesList({ files }: { files: CaseFile[] }) {
 
   const columns = useMemo(() => {
     const columns = [
-      columnHelper.accessor((row) => row.file_name, {
+      columnHelper.accessor((row) => row.fileName, {
         id: 'file_name',
         header: t('cases:case.file.name'),
         size: 120,
       }),
-      columnHelper.accessor((row) => row.file_name, {
+      columnHelper.accessor((row) => row.fileName, {
         id: 'extension',
         size: 40,
         header: t('cases:case.file.extension'),
@@ -60,7 +60,7 @@ function FilesList({ files }: { files: CaseFile[] }) {
           return R.last(getValue().split('.'))?.toUpperCase();
         },
       }),
-      columnHelper.accessor((row) => row.created_at, {
+      columnHelper.accessor((row) => row.createdAt, {
         id: 'created_at',
         header: t('cases:case.file.added_date'),
         size: 40,
