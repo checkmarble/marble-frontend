@@ -21,13 +21,13 @@ const deleteInboxFormSchema = z.object({
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const formData = await parseForm(request, deleteInboxFormSchema);
 
-  await apiClient.deleteInbox(formData.inboxId);
+  await inbox.deleteInbox(formData.inboxId);
   return redirect(getRoute('/settings/inboxes/'));
 }
 

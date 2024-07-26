@@ -41,7 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -53,7 +53,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    const { inbox: createdInbox } = await apiClient.createInbox({
+    const createdInbox = await inbox.createInbox({
       name: submission.value.name,
     });
     if (submission.value.redirectRoute)

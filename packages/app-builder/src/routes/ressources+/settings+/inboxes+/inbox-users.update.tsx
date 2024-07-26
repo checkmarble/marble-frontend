@@ -45,7 +45,7 @@ export async function action({ request }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
     featureAccessService,
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -61,7 +61,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await apiClient.updateInboxUser(submission.value.id, {
+    await inbox.updateInboxUser(submission.value.id, {
       role: submission.value.role,
     });
     return redirect(
