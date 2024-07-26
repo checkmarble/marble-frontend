@@ -25,3 +25,9 @@ export const workflowsDocHref =
 
 export const scenarioDecisionDocHref =
   'https://docs.checkmarble.com/docs/decision-1';
+
+export const webhooksSetupDocHref =
+  'https://docs.checkmarble.com/docs/setting-up-the-webhooks';
+
+export const webhooksEventsDocHref =
+  'https://docs.checkmarble.com/docs/available-events-and-webhooks-format';
