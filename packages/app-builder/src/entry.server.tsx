@@ -33,10 +33,21 @@ export default async function handleRequest(
     </I18nextProvider>
   );
 
-  const userAgent = request.headers.get('user-agent');
-  return userAgent && isbot(userAgent)
+  const prohibitOutOfOrderStreaming =
+    isBotRequest(request) || remixContext.isSpaMode;
+
+  return prohibitOutOfOrderStreaming
     ? handleBotRequest(responseStatusCode, responseHeaders, App)
     : handleBrowserRequest(responseStatusCode, responseHeaders, App);
+}
+
+function isBotRequest(request: Request) {
+  const userAgent = request.headers.get('user-agent');
+  if (!userAgent) {
+    return false;
+  }
+
+  return isbot(userAgent);
 }
 
 function handleBotRequest(
@@ -45,18 +56,19 @@ function handleBotRequest(
   App: JSX.Element,
 ) {
   return new Promise((resolve, reject) => {
-    let didError = false;
-
+    let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(App, {
       onAllReady() {
+        shellRendered = true;
         const body = new PassThrough();
+        const stream = createReadableStreamFromReadable(body);
 
         responseHeaders.set('Content-Type', 'text/html');
 
         resolve(
-          new Response(createReadableStreamFromReadable(body), {
+          new Response(stream, {
             headers: responseHeaders,
-            status: didError ? 500 : responseStatusCode,
+            status: responseStatusCode,
           }),
         );
 
@@ -66,9 +78,13 @@ function handleBotRequest(
         reject(error);
       },
       onError(error: unknown) {
-        didError = true;
-
-        console.error(error);
+        responseStatusCode = 500;
+        // Log streaming rendering errors from inside the shell.  Don't log
+        // errors encountered during initial shell rendering since they'll
+        // reject and get logged in handleDocumentRequest.
+        if (shellRendered) {
+          console.error(error);
+        }
       },
     });
 
@@ -82,30 +98,35 @@ function handleBrowserRequest(
   App: JSX.Element,
 ) {
   return new Promise((resolve, reject) => {
-    let didError = false;
-
+    let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(App, {
       onShellReady() {
+        shellRendered = true;
         const body = new PassThrough();
+        const stream = createReadableStreamFromReadable(body);
 
         responseHeaders.set('Content-Type', 'text/html');
 
         resolve(
-          new Response(createReadableStreamFromReadable(body), {
+          new Response(stream, {
             headers: responseHeaders,
-            status: didError ? 500 : responseStatusCode,
+            status: responseStatusCode,
           }),
         );
 
         pipe(body);
       },
-      onShellError(err: unknown) {
-        reject(err);
+      onShellError(error: unknown) {
+        reject(error);
       },
       onError(error: unknown) {
-        didError = true;
-
-        console.error(error);
+        responseStatusCode = 500;
+        // Log streaming rendering errors from inside the shell.  Don't log
+        // errors encountered during initial shell rendering since they'll
+        // reject and get logged in handleDocumentRequest.
+        if (shellRendered) {
+          console.error(error);
+        }
       },
     });
 

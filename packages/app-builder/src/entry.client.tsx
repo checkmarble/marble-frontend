@@ -62,12 +62,4 @@ async function hydrate() {
   });
 }
 
-if (window.requestIdleCallback) {
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  window.requestIdleCallback(hydrate);
-} else {
-  // Safari doesn't support requestIdleCallback
-  // https://caniuse.com/requestidlecallback
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  window.setTimeout(hydrate, 1);
-}
+void hydrate();
