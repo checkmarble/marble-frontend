@@ -42,7 +42,7 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -54,13 +54,13 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    const { inbox } = await apiClient.updateInbox(submission.value.id, {
+    const updatedInbox = await inbox.updateInbox(submission.value.id, {
       name: submission.value.name,
     });
     return redirect(
       safeRedirect(
         getRoute(submission.value.redirectRoute, {
-          inboxId: fromUUID(inbox.id),
+          inboxId: fromUUID(updatedInbox.id),
         }),
         getRoute('/ressources/auth/logout'),
       ),

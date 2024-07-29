@@ -234,7 +234,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/CaseStatus'
+              $ref: '#/components/schemas/CaseStatusDto'
         - name: inbox_id[]
           description: inbox IDs used to filter the list
           in: query
@@ -274,7 +274,7 @@ paths:
                       items:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Case'
+                          $ref: '#/components/schemas/CaseDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -291,7 +291,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateCaseBody'
+              $ref: '#/components/schemas/CreateCaseBodyDto'
         required: true
       responses:
         '200':
@@ -358,7 +358,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCaseBody'
+              $ref: '#/components/schemas/UpdateCaseBodyDto'
         required: true
       responses:
         '200':
@@ -3635,7 +3635,7 @@ components:
           type: string
           format: uuid
         case:
-          $ref: '#/components/schemas/Case'
+          $ref: '#/components/schemas/CaseDto'
         created_at:
           type: string
           format: date-time
@@ -3694,10 +3694,10 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/RuleExecutionDto'
-    CaseStatus:
+    CaseStatusDto:
       type: string
       enum: ['open', 'investigating', 'discarded', 'resolved']
-    Case:
+    CaseDto:
       type: object
       required:
         - id
@@ -3720,21 +3720,21 @@ components:
         name:
           type: string
         status:
-          $ref: '#/components/schemas/CaseStatus'
+          $ref: '#/components/schemas/CaseStatusDto'
         inbox_id:
           type: string
           format: uuid
         contributors:
           type: array
           items:
-            $ref: '#/components/schemas/CaseContributor'
+            $ref: '#/components/schemas/CaseContributorDto'
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/CaseTag'
+            $ref: '#/components/schemas/CaseTagDto'
     CaseDetailDto:
       allOf:
-        - $ref: '#/components/schemas/Case'
+        - $ref: '#/components/schemas/CaseDto'
         - type: object
           required:
             - decisions
@@ -3803,20 +3803,20 @@ components:
             files:
               type: array
               items:
-                $ref: '#/components/schemas/CaseFile'
+                $ref: '#/components/schemas/CaseFileDto'
     CaseEventDto:
       type: object
       discriminator:
         propertyName: event_type
         mapping:
-          case_created: '#/components/schemas/CaseCreatedEvent'
-          status_updated: '#/components/schemas/CaseStatusUpdatedEvent'
-          decision_added: '#/components/schemas/DecisionAddedEvent'
-          comment_added: '#/components/schemas/CommentAddedEvent'
-          name_updated: '#/components/schemas/NameUpdatedEvent'
+          case_created: '#/components/schemas/CaseCreatedEventDto'
+          status_updated: '#/components/schemas/CaseStatusUpdatedEventDto'
+          decision_added: '#/components/schemas/DecisionAddedEventDto'
+          comment_added: '#/components/schemas/CommentAddedEventDto'
+          name_updated: '#/components/schemas/NameUpdatedEventDto'
           tags_updated: '#/components/schemas/CaseTagsUpdatedEventDto'
-          file_added: '#/components/schemas/FileAddedEvent'
-          inbox_changed: '#/components/schemas/InboxChangedEvent'
+          file_added: '#/components/schemas/FileAddedEventDto'
+          inbox_changed: '#/components/schemas/InboxChangedEventDto'
       required:
         - id
         - case_id
@@ -3834,7 +3834,7 @@ components:
           format: date-time
         event_type:
           type: string
-    CaseFile:
+    CaseFileDto:
       type: object
       required:
         - id
@@ -3853,7 +3853,7 @@ components:
           format: date-time
         file_name:
           type: string
-    CaseTag:
+    CaseTagDto:
       type: object
       required:
         - id
@@ -3897,7 +3897,7 @@ components:
           format: date-time
         cases_count:
           type: number
-    CaseContributor:
+    CaseContributorDto:
       type: object
       required:
         - id
@@ -3917,7 +3917,7 @@ components:
         created_at:
           type: string
           format: date-time
-    CaseCreatedEvent:
+    CaseCreatedEventDto:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
@@ -3925,7 +3925,7 @@ components:
             user_id:
               type: string
               format: uuid
-    CaseStatusUpdatedEvent:
+    CaseStatusUpdatedEventDto:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
@@ -3934,7 +3934,7 @@ components:
             - user_id
           properties:
             new_value:
-              $ref: '#/components/schemas/CaseStatus'
+              $ref: '#/components/schemas/CaseStatusDto'
             user_id:
               type: string
               format: uuid
@@ -3952,7 +3952,7 @@ components:
             user_id:
               type: string
               format: uuid
-    DecisionAddedEvent:
+    DecisionAddedEventDto:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
@@ -3960,33 +3960,7 @@ components:
             user_id:
               type: string
               format: uuid
-    CommentAddedEvent:
-      allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - additional_note
-            - user_id
-          properties:
-            additional_note:
-              type: string
-            user_id:
-              type: string
-              format: uuid
-    NameUpdatedEvent:
-      allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - new_value
-            - user_id
-          properties:
-            new_value:
-              type: string
-            user_id:
-              type: string
-              format: uuid
-    FileAddedEvent:
+    CommentAddedEventDto:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
@@ -3999,7 +3973,33 @@ components:
             user_id:
               type: string
               format: uuid
-    InboxChangedEvent:
+    NameUpdatedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - new_value
+            - user_id
+          properties:
+            new_value:
+              type: string
+            user_id:
+              type: string
+              format: uuid
+    FileAddedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - additional_note
+            - user_id
+          properties:
+            additional_note:
+              type: string
+            user_id:
+              type: string
+              format: uuid
+    InboxChangedEventDto:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
@@ -4013,7 +4013,7 @@ components:
             user_id:
               type: string
               format: uuid
-    UpdateCaseBody:
+    UpdateCaseBodyDto:
       type: object
       properties:
         name:
@@ -4022,8 +4022,8 @@ components:
           type: string
           format: uuid
         status:
-          $ref: '#/components/schemas/CaseStatus'
-    CreateCaseBody:
+          $ref: '#/components/schemas/CaseStatusDto'
+    CreateCaseBodyDto:
       type: object
       required:
         - name

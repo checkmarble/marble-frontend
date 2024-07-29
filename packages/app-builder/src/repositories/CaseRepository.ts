@@ -1,12 +1,19 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { adaptCaseDetailDto, type CaseDetail } from '@app-builder/models/cases';
+import {
+  adaptCase,
+  adaptCaseCreateBody,
+  adaptCaseDetail,
+  type Case,
+  type CaseDetail,
+  type CaseStatus,
+  type CaseUpdateBody,
+} from '@app-builder/models/cases';
 import {
   adaptPagination,
   type FiltersWithPagination,
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
-import { type Case, type CaseStatus, type UpdateCaseBody } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
 
 export type CaseFilters = {
@@ -28,10 +35,15 @@ export type CaseFiltersWithPagination = FiltersWithPagination<CaseFilters>;
 
 export interface CaseRepository {
   listCases(args: CaseFiltersWithPagination): Promise<PaginatedResponse<Case>>;
+  createCase(data: {
+    name: string;
+    inboxId: string;
+    decisionIds?: string[];
+  }): Promise<CaseDetail>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;
   updateCase(args: {
     caseId: string;
-    body: UpdateCaseBody;
+    body: CaseUpdateBody;
   }): Promise<CaseDetail>;
   addComment(args: {
     caseId: string;
@@ -40,6 +52,10 @@ export interface CaseRepository {
     };
   }): Promise<CaseDetail>;
   setTags(args: { caseId: string; tagIds: string[] }): Promise<CaseDetail>;
+  addDecisionsToCase(args: {
+    caseId: string;
+    decisionIds: string[];
+  }): Promise<CaseDetail>;
 }
 
 export function makeGetCaseRepository() {
@@ -65,27 +81,39 @@ export function makeGetCaseRepository() {
       });
 
       return {
-        items,
+        items: items.map(adaptCase),
         ...adaptPagination(pagination),
       };
     },
+    createCase: async (data) => {
+      const result = await marbleCoreApiClient.createCase(
+        adaptCaseCreateBody(data),
+      );
+      return adaptCaseDetail(result.case);
+    },
     getCase: async ({ caseId }) => {
       const result = await marbleCoreApiClient.getCase(caseId);
-      return adaptCaseDetailDto(result);
+      return adaptCaseDetail(result);
     },
     updateCase: async ({ caseId, body }) => {
       const result = await marbleCoreApiClient.updateCase(caseId, body);
-      return adaptCaseDetailDto(result.case);
+      return adaptCaseDetail(result.case);
     },
     addComment: async ({ caseId, body }) => {
       const result = await marbleCoreApiClient.addCommentToCase(caseId, body);
-      return adaptCaseDetailDto(result.case);
+      return adaptCaseDetail(result.case);
     },
     setTags: async ({ caseId, tagIds }) => {
       const result = await marbleCoreApiClient.updateTagsForCase(caseId, {
         tag_ids: tagIds,
       });
-      return adaptCaseDetailDto(result.case);
+      return adaptCaseDetail(result.case);
+    },
+    addDecisionsToCase: async ({ caseId, decisionIds }) => {
+      const result = await marbleCoreApiClient.addDecisionsToCase(caseId, {
+        decision_ids: decisionIds,
+      });
+      return adaptCaseDetail(result.case);
     },
   });
 }

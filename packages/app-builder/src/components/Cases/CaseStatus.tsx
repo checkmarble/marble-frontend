@@ -1,6 +1,6 @@
+import { type CaseStatus } from '@app-builder/models/cases';
 import { cva, cx, type VariantProps } from 'class-variance-authority';
 import { type ParseKeys } from 'i18next';
-import { type CaseStatus } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'ui-design-system';

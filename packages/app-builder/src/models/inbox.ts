@@ -1,5 +1,9 @@
 import { type ParseKeys } from 'i18next';
-import { type InboxDto, type InboxUserDto } from 'marble-api';
+import {
+  type AddInboxUserBodyDto,
+  type InboxDto,
+  type InboxUserDto,
+} from 'marble-api';
 import invariant from 'tiny-invariant';
 
 export interface Inbox {
@@ -34,6 +38,14 @@ export function adaptInboxWithCasesCount(inbox: InboxDto): InboxWithCasesCount {
   };
 }
 
+export interface InboxCreateBody {
+  name: string;
+}
+
+export interface InboxUpdateBody {
+  name: string;
+}
+
 export interface InboxUser {
   id: string;
   inboxId: string;
@@ -48,6 +60,25 @@ export function adaptInboxUser(inboxUser: InboxUserDto): InboxUser {
     userId: inboxUser.user_id,
     role: inboxUser.role,
   };
+}
+
+export interface InboxUserCreateBody {
+  userId: string;
+  role: string;
+}
+
+export function adaptInboxUserCreateBody({
+  userId,
+  role,
+}: InboxUserCreateBody): AddInboxUserBodyDto {
+  return {
+    user_id: userId,
+    role,
+  };
+}
+
+export interface InboxUserUpdateBody {
+  role: string;
 }
 
 export function tKeyForInboxUserRole(role: string): ParseKeys<['settings']> {

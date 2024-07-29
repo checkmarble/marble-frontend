@@ -35,19 +35,16 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { user, cases, apiClient } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { user, cases, inbox } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const caseId = fromParams(params, 'caseId');
   try {
     const caseDetail = await cases.getCase({ caseId });
-    const { inbox } = await apiClient.getInbox(caseDetail.inbox_id);
+    const currentInbox = await inbox.getInbox(caseDetail.inboxId);
 
-    return json({ caseDetail, inbox, user });
+    return json({ caseDetail, inbox: currentInbox, user });
   } catch (error) {
     // On purpusely catch 403 errors to display a 404 page
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {

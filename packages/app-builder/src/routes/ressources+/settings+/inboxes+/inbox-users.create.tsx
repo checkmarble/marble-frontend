@@ -45,7 +45,7 @@ export async function action({ request }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
     featureAccessService,
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -61,10 +61,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await apiClient.addInboxUser(submission.value.inboxId, {
-      user_id: submission.value.userId,
-      role: submission.value.role,
-    });
+    await inbox.createInboxUser(submission.value.inboxId, submission.value);
     return redirect(
       getRoute('/settings/inboxes/:inboxId', {
         inboxId: fromUUID(submission.value.inboxId),

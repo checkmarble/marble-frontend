@@ -1,10 +1,10 @@
+import { type Case } from '@app-builder/models/cases';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { useNavigate } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type Case } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
@@ -40,7 +40,7 @@ export function CasesList({
         header: t('cases:case.name'),
         size: 200,
       }),
-      columnHelper.accessor(({ created_at }) => created_at, {
+      columnHelper.accessor(({ createdAt }) => createdAt, {
         id: 'created_at',
         header: t('cases:case.date'),
         size: 100,
@@ -53,7 +53,7 @@ export function CasesList({
           );
         },
       }),
-      columnHelper.accessor(({ decisions_count }) => decisions_count, {
+      columnHelper.accessor(({ decisionsCount }) => decisionsCount, {
         id: 'decisions',
         header: t('cases:case.decisions'),
         size: 100,
@@ -64,7 +64,7 @@ export function CasesList({
         size: 100,
         cell: ({ getValue }) => (
           <div className="p-2">
-            <CaseTags caseTagIds={getValue().map(({ tag_id }) => tag_id)} />
+            <CaseTags caseTagIds={getValue().map(({ tagId }) => tagId)} />
           </div>
         ),
       }),
