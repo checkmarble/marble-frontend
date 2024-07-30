@@ -3,6 +3,7 @@ import {
   adaptCase,
   adaptCaseCreateBody,
   adaptCaseDetail,
+  adaptUpdateCaseBodyDto,
   type Case,
   type CaseDetail,
   type CaseStatus,
@@ -96,7 +97,10 @@ export function makeGetCaseRepository() {
       return adaptCaseDetail(result);
     },
     updateCase: async ({ caseId, body }) => {
-      const result = await marbleCoreApiClient.updateCase(caseId, body);
+      const result = await marbleCoreApiClient.updateCase(
+        caseId,
+        adaptUpdateCaseBodyDto(body),
+      );
       return adaptCaseDetail(result.case);
     },
     addComment: async ({ caseId, body }) => {
