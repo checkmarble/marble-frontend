@@ -1,4 +1,5 @@
 import { FormField } from '@app-builder/components/Form/FormField';
+import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
@@ -63,7 +64,7 @@ export function EditCaseInbox({
   defaultInbox: Inbox;
   caseId: string;
 }) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'cases']);
   const loadFetcher = useFetcher<typeof loader>();
   React.useEffect(() => {
     if (loadFetcher.state === 'idle' && !loadFetcher.data) {
@@ -99,7 +100,10 @@ export function EditCaseInbox({
           {...getInputProps(fields.caseId, { type: 'hidden' })}
           key={fields.caseId.key}
         />
-        <FormField name={fields.inboxId.name}>
+        <FormField name={fields.inboxId.name} className="flex flex-col gap-2">
+          <FormLabel className="text-grey-25 text-s capitalize">
+            {t('cases:case.inbox')}
+          </FormLabel>
           <FormSelect.Default
             className="w-full"
             onOpenChange={(open) => {

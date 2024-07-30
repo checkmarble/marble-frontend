@@ -6,15 +6,19 @@ import {
 import {
   CaseDecisions,
   CaseEvents,
-  CaseInformation,
   casesI18n,
 } from '@app-builder/components/Cases';
+import { CaseContributors } from '@app-builder/components/Cases/CaseContributors';
 import { CaseFiles } from '@app-builder/components/Cases/CaseFiles';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
+import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
+import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
 import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-status';
+import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
 import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
 import { serverServices } from '@app-builder/services/init.server';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -28,9 +32,10 @@ import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export const handle = {
-  i18n: ['common', 'navigation', 'cases', ...casesI18n] satisfies Namespace,
+  i18n: ['common', 'navigation', ...casesI18n] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -56,7 +61,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function CasePage() {
+  const { t } = useTranslation(handle.i18n);
   const { caseDetail, inbox, user } = useLoaderData<typeof loader>();
+  const language = useFormatLanguage();
 
   return (
     <Page.Container>
@@ -72,25 +79,52 @@ export default function CasePage() {
         </div>
         <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
       </Page.Header>
-      <Page.Content>
-        <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-6">
-          <div className="flex flex-col gap-4 lg:gap-6">
-            <CaseInformation
-              caseDetail={caseDetail}
-              inbox={inbox}
-              user={user}
-            />
+      <div className="flex size-full flex-row overflow-hidden">
+        <div className="relative flex size-full flex-col overflow-hidden">
+          <Page.Content>
             <CaseDecisions decisions={caseDetail.decisions} />
             <CaseFiles files={caseDetail.files} />
-          </div>
-          <div className="flex flex-col gap-4 lg:gap-6">
             <CaseEvents events={caseDetail.events} />
+          </Page.Content>
+          <div className="bg-grey-00 border-t-grey-10 flex shrink-0 flex-row items-center gap-4 border-t p-4">
+            <AddComment caseId={caseDetail.id} />
+            <UploadFile caseDetail={caseDetail}>
+              <Button
+                className="h-14 w-fit whitespace-nowrap"
+                variant="secondary"
+              >
+                <Icon icon="attachment" className="size-5" />
+                {t('cases:add_file')}
+              </Button>
+            </UploadFile>
           </div>
         </div>
-      </Page.Content>
-      <div className="bg-grey-00 border-t-grey-10 sticky inset-x-0 bottom-0 flex flex-row gap-4 border-t p-4">
-        <AddComment caseId={caseDetail.id} />
-        <UploadFile caseDetail={caseDetail} />
+        <div className="bg-grey-00 border-l-grey-10 flex h-full min-w-52 max-w-64 flex-col gap-4 border-l p-4">
+          <EditCaseName caseId={caseDetail.id} name={caseDetail.name} />
+          <div className="flex flex-col gap-2">
+            <div className="text-s text-grey-25 capitalize">
+              {t('cases:case.date')}
+            </div>
+            <time dateTime={caseDetail.createdAt}>
+              {formatDateTime(caseDetail.createdAt, {
+                language,
+                timeStyle: undefined,
+              })}
+            </time>
+          </div>
+          <EditCaseInbox defaultInbox={inbox} caseId={caseDetail.id} />
+          <EditCaseTags
+            defaultCaseTagIds={caseDetail.tags.map(({ tagId }) => tagId)}
+            caseId={caseDetail.id}
+            user={user}
+          />
+          <div className="flex flex-col gap-2">
+            <div className="text-s text-grey-25 capitalize">
+              {t('cases:case.contributors')}
+            </div>
+            <CaseContributors contributors={caseDetail.contributors} />
+          </div>
+        </div>
       </div>
     </Page.Container>
   );

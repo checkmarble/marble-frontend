@@ -24,7 +24,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
   const language = useFormatLanguage();
 
   return (
-    <Collapsible.Container className="bg-grey-00">
+    <Collapsible.Container className="bg-grey-00 max-h-[70dvh]">
       <Collapsible.Title>
         <div className="flex flex-1 items-center justify-between">
           <span className="text-grey-100 text-m font-bold capitalize">
@@ -37,7 +37,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
           </span>
         </div>
       </Collapsible.Title>
-      <Collapsible.ScrollableContent className="max-h-[70dvh]">
+      <Collapsible.Content className="overflow-y-auto">
         <Accordion.Container className="relative z-0">
           <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
           {events.map((event) => {
@@ -65,7 +65,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
             );
           })}
         </Accordion.Container>
-      </Collapsible.ScrollableContent>
+      </Collapsible.Content>
     </Collapsible.Container>
   );
 }
