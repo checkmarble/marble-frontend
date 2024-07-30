@@ -22,6 +22,7 @@ import {
 import { dateDocHref } from '@app-builder/services/documentation-href';
 import {
   adaptAstNodeFromEditorViewModel,
+  type ConstantEditorNodeViewModel,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
@@ -58,36 +59,40 @@ export const isTimeAddEditorNodeViewModel = (
   return vm.funcName === timeAddAstNodeName;
 };
 
-export type TimeAddEditorNodeViewModel = {
+export interface TimeAddEditorNodeViewModel {
   nodeId: string;
-  funcName: string | null;
-  constant: string;
+  funcName: typeof timeAddAstNodeName;
+  constant: undefined;
   errors: EvaluationError[];
-  children: TimeAddEditorNodeViewModel[];
-  namedChildren: Record<string, TimeAddEditorNodeViewModel>;
+  children: [];
+  namedChildren: {
+    timestampField: EditorNodeViewModel;
+    sign: ConstantEditorNodeViewModel<string, TimeAddEditorNodeViewModel>;
+    duration: ConstantEditorNodeViewModel<string, TimeAddEditorNodeViewModel>;
+  };
   parent: TimeAddEditorNodeViewModel;
-};
+}
 
 export const defaultISO8601Duration = 'PT0S';
 export const adaptTimeAddViewModal = (
   vm: TimeAddEditorNodeViewModel,
 ): TimeAddViewModal => {
   const iso8601Duration =
-    vm.namedChildren['duration']?.constant !== ''
-      ? vm.namedChildren['duration']?.constant
+    vm.namedChildren.duration.constant !== ''
+      ? vm.namedChildren.duration.constant
       : defaultISO8601Duration;
   const temporalDuration =
     Temporal.Duration.from(iso8601Duration).round('seconds');
   const { duration, durationUnit } =
     adaptDurationAndUnitFromTemporalDuration(temporalDuration);
 
-  const sign = isTimeAddOperator(vm.namedChildren['sign']?.constant)
-    ? vm.namedChildren['sign']?.constant
+  const sign = isTimeAddOperator(vm.namedChildren.sign.constant)
+    ? vm.namedChildren.sign.constant
     : '+';
 
   return {
     nodeId: vm.nodeId,
-    timestampField: vm.namedChildren['timestampField'],
+    timestampField: vm.namedChildren.timestampField,
     sign,
     duration: duration.toString(),
     durationUnit,

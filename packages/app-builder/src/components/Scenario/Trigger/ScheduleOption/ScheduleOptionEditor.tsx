@@ -47,13 +47,16 @@ export function ScheduleOptionEditor({
             {t('scenarios:trigger.schedule_scenario.frequency_label')}
             <ScheduleFrequencySelect
               onChange={(frequency) => {
+                const scheduleDetail = getScheduleDetailOptions(
+                  frequency,
+                  language,
+                )[0];
+                if (!scheduleDetail) return;
+
                 setScheduleOption({
                   ...scheduleOption,
                   frequency,
-                  scheduleDetail: getScheduleDetailOptions(
-                    frequency,
-                    language,
-                  )[0],
+                  scheduleDetail,
                 });
               }}
               value={scheduleOption.frequency}
@@ -198,7 +201,7 @@ const getWeekInfo = (
 const weeklyScheduleOptions = (locale: string) => {
   const weekInfo = getWeekInfo(locale);
   if (weekInfo.firstDay === 1) {
-    return [...weekDays.slice(1), weekDays[0]];
+    return [...weekDays.slice(1), ...weekDays.slice(0, 1)];
   }
   return weekDays;
 };

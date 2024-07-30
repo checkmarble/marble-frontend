@@ -112,7 +112,7 @@ function DetailPanelContent() {
     return <MultipleSelectedNodes />;
   }
 
-  const selectedNode = selectedNodes.at(0);
+  const selectedNode = selectedNodes[0];
   if (selectedNode === undefined) {
     return <NoSelectedNodes />;
   }

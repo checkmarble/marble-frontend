@@ -78,7 +78,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     featureAccessService.isWorkflowsAvailable(),
   ]);
 
-  const firstSettings = settings.at(0);
+  const firstSettings = settings[0];
 
   return json({
     user,

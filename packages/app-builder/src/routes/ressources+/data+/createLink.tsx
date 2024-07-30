@@ -101,7 +101,7 @@ export function CreateLink({
   otherTables,
   children,
 }: {
-  otherTables: TableModel[];
+  otherTables: [TableModel, ...TableModel[]];
   thisTable: TableModel;
   children: React.ReactNode;
 }) {
@@ -128,7 +128,7 @@ function CreateLinkContent({
   otherTables,
   closeModal,
 }: {
-  otherTables: TableModel[];
+  otherTables: [TableModel, ...TableModel[]];
   thisTable: TableModel;
   closeModal: () => void;
 }) {
@@ -149,9 +149,9 @@ function CreateLinkContent({
     defaultValues: {
       name: '',
       parentTableId: otherTables[0].id,
-      parentFieldId: selectedParentTableFields[0].id,
+      parentFieldId: selectedParentTableFields[0]?.id,
       childTableId: thisTable.id,
-      childFieldId: thisTable.fields[0].id,
+      childFieldId: thisTable.fields[0]?.id,
     },
   });
   const { control, setValue } = formMethods;
@@ -162,7 +162,9 @@ function CreateLinkContent({
     }
   }, [closeModal, fetcher.data?.success, fetcher.state]);
   useEffect(() => {
-    setValue('parentFieldId', selectedParentTableFields[0].id);
+    const parentFieldId = selectedParentTableFields[0]?.id;
+    if (!parentFieldId) return;
+    setValue('parentFieldId', parentFieldId);
   }, [setValue, selectedParentTableFields]);
 
   return (
@@ -292,7 +294,7 @@ function CreateLinkContent({
                     <FormLabel>{t('data:create_link.parent_field')}</FormLabel>
                     <FormControl>
                       <Select.Default
-                        defaultValue={selectedParentTableFields[0].id}
+                        defaultValue={selectedParentTableFields[0]?.id}
                         onValueChange={(type) => {
                           field.onChange(type);
                         }}

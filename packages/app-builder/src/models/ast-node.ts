@@ -1,3 +1,4 @@
+import { hasExactlyTwoElements } from '@app-builder/utils/array';
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 
@@ -405,7 +406,7 @@ export function isFuzzyMatchComparator(
   if (node.name !== '>') {
     return false;
   }
-  if (node.children.length !== 2) {
+  if (!hasExactlyTwoElements(node.children)) {
     return false;
   }
   const firstChild = node.children[0];

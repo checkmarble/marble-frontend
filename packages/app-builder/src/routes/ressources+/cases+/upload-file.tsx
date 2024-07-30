@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import * as reactDropzone from 'react-dropzone';
+import * as R from 'remeda';
 const { useDropzone } = reactDropzone;
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -80,7 +81,7 @@ function UploadFileContent({
   });
 
   const onDrop = async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length < 1) {
+    if (!R.hasAtLeast(acceptedFiles, 1)) {
       toast.error('Please select a file');
       // toastError(
       //   `Please select a file of an accepted type and of size less than ${MAX_FILE_SIZE_MB} MB`,

@@ -75,12 +75,17 @@ describe('Table', () => {
     render(<TestTable data={data} />);
 
     function checkTableSort(sortedData: typeof data) {
-      within(screen.getAllByRole('rowgroup')[1])
+      const secondRowGroup = screen.getAllByRole('rowgroup')[1];
+      expect(secondRowGroup).toBeDefined();
+      if (!secondRowGroup) return;
+
+      within(secondRowGroup)
         .getAllByRole('row')
         .forEach((row, index) => {
-          expect(
-            within(row).getByText(sortedData[index].name),
-          ).toBeInTheDocument();
+          const name = sortedData[index]?.name;
+          expect(name).toBeDefined();
+          if (!name) return;
+          expect(within(row).getByText(name)).toBeInTheDocument();
         });
     }
 

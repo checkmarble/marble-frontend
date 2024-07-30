@@ -40,9 +40,12 @@ describe('Menu', () => {
     fruitMenuitems.forEach((fruitMenuitem) =>
       expect(fruitMenuitem).toBeInTheDocument(),
     );
+    const firstItem = fruitMenuitems[0];
+    expect(firstItem).toBeDefined();
+    if (!firstItem) return;
 
     // Click on an option
-    await userEvent.click(fruitMenuitems[0]);
+    await userEvent.click(firstItem);
 
     // Menu should be closed and the content should not be visible
     fruitMenuitems.forEach((fruitMenuitem) =>
@@ -89,9 +92,12 @@ describe('Menu with combobox', () => {
     fruitOptions.forEach((fruitOption) =>
       expect(fruitOption).toBeInTheDocument(),
     );
+    const firstItem = fruitOptions[0];
+    expect(firstItem).toBeDefined();
+    if (!firstItem) return;
 
     // Click on an option
-    await userEvent.click(fruitOptions[0]);
+    await userEvent.click(firstItem);
 
     // Menu should be closed and the content should not be visible
     fruitOptions.forEach((fruitOption) =>

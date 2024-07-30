@@ -16,6 +16,7 @@ import {
   adaptAstNodeFromEditorViewModel,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
+import { hasExactlyTwoElements } from '@app-builder/utils/array';
 import { useTranslation } from 'react-i18next';
 import { Switch } from 'ui-design-system';
 
@@ -61,10 +62,9 @@ export function TwoOperandsLine({
   }
 
   function removeNestedChild(child: EditorNodeViewModel) {
-    setOperand(
-      child.nodeId,
-      adaptAstNodeFromEditorViewModel(child.children[0]),
-    );
+    const nestedChild = child.children[0];
+    if (!nestedChild) return;
+    setOperand(child.nodeId, adaptAstNodeFromEditorViewModel(nestedChild));
   }
 
   const operators = useTwoLineOperandOperatorFunctions();
@@ -109,7 +109,7 @@ export function TwoOperandsLine({
           </label>
           <Switch
             id="nest"
-            checked={twoOperandsViewModel.right.children.length === 2}
+            checked={isNested(twoOperandsViewModel)}
             onCheckedChange={(checked) =>
               checked
                 ? addNestedChild(twoOperandsViewModel.right)
@@ -127,7 +127,7 @@ export function adaptTwoOperandsLineViewModel(
 ): TwoOperandsLineViewModel | null {
   if (isFunctionAstNode(adaptAstNodeFromEditorViewModel(vm))) return null;
 
-  if (vm.children.length !== 2) return null;
+  if (!hasExactlyTwoElements(vm.children)) return null;
   if (Object.keys(vm.namedChildren).length > 0) return null;
   if (vm.funcName == null || !isTwoLineOperandOperatorFunction(vm.funcName))
     return null;
@@ -143,6 +143,10 @@ export function adaptTwoOperandsLineViewModel(
     },
     right,
   };
+}
+
+function isNested(twoOperandsViewModel: TwoOperandsLineViewModel) {
+  return adaptTwoOperandsLineViewModel(twoOperandsViewModel.right) !== null;
 }
 
 export const computeLineErrors = (
