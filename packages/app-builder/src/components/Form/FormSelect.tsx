@@ -49,6 +49,9 @@ function FormSelectRoot({
         aria-hidden
         tabIndex={-1}
         ref={control.register}
+        onFocus={() => {
+          selectRef.current?.focus();
+        }}
         {...getSelectProps(meta, {
           ariaDescribedBy: description ? meta.descriptionId : undefined,
         })}

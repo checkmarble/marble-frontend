@@ -1,29 +1,28 @@
-import { casesI18n } from '@app-builder/components/Cases';
 import { type CaseDetail } from '@app-builder/models/cases';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { useNavigation, useRevalidator } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import * as reactDropzone from 'react-dropzone';
 import * as R from 'remeda';
 const { useDropzone } = reactDropzone;
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-export const handle = {
-  i18n: ['common', 'navigation', ...casesI18n] satisfies Namespace,
-};
 
 const MAX_FILE_SIZE_MB = 20;
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-export function UploadFile({ caseDetail }: { caseDetail: CaseDetail }) {
-  const { t } = useTranslation(handle.i18n);
+export function UploadFile({
+  caseDetail,
+  children,
+}: {
+  caseDetail: CaseDetail;
+  children: React.ReactElement;
+}) {
   const [open, setOpen] = useState(false);
 
   const navigation = useNavigation();
@@ -34,17 +33,12 @@ export function UploadFile({ caseDetail }: { caseDetail: CaseDetail }) {
   }, [navigation.state]);
 
   return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>
-        <Button className="w-fit whitespace-nowrap" variant="secondary">
-          <Icon icon="attachment" className="size-5" />
-          {t('cases:add_file')}
-        </Button>
-      </Modal.Trigger>
-      <Modal.Content>
+    <ModalV2.Root open={open} setOpen={setOpen}>
+      <ModalV2.Trigger render={children} />
+      <ModalV2.Content>
         <UploadFileContent caseDetail={caseDetail} setOpen={setOpen} />
-      </Modal.Content>
-    </Modal.Root>
+      </ModalV2.Content>
+    </ModalV2.Root>
   );
 }
 
@@ -55,7 +49,7 @@ function UploadFileContent({
   caseDetail: CaseDetail;
   setOpen: (open: boolean) => void;
 }) {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['common', 'cases']);
   const [loading, setLoading] = useState(false);
   const revalidator = useRevalidator();
 
@@ -129,7 +123,7 @@ function UploadFileContent({
 
   return (
     <div>
-      <Modal.Title>{t('cases:add_file')}</Modal.Title>
+      <ModalV2.Title>{t('cases:add_file')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <div
           {...getRootProps()}
@@ -160,7 +154,7 @@ function UploadFileContent({
 }
 
 const Loading = ({ className }: { className?: string }) => {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['common']);
   return (
     <div
       className={clsx(
