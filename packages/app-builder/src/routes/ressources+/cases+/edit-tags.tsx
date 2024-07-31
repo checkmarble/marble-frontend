@@ -1,5 +1,6 @@
 import { FormSelectCaseTags } from '@app-builder/components/Cases/CaseTags';
 import { FormField } from '@app-builder/components/Form/FormField';
+import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
 import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
@@ -130,7 +131,13 @@ export function EditCaseTags({
           {...getInputProps(fields.caseId, { type: 'hidden' })}
           key={fields.caseId.key}
         />
-        <FormField name={fields.caseTagIds.name}>
+        <FormField
+          name={fields.caseTagIds.name}
+          className="flex flex-col gap-2"
+        >
+          <FormLabel className="text-grey-25 text-s capitalize">
+            {t('cases:case.tags')}
+          </FormLabel>
           <FormSelectWithCombobox.Control
             options={orgTagIds}
             render={({ selectedValues }) => (

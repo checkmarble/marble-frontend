@@ -10,8 +10,6 @@ import clsx from 'clsx';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
-import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
-
 const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
   function CollapsibleContainer({ className, ...props }, ref) {
     return (
@@ -66,25 +64,8 @@ const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
   },
 );
 
-const CollapsibleScrollableContent = forwardRef<
-  HTMLDivElement,
-  CollapsibleContentProps
->(function CollapsibleScrollableContent(
-  { children, className, ...props },
-  ref,
-) {
-  return (
-    <Content className={content} {...props} ref={ref}>
-      <ScrollAreaV2 className={className}>
-        <div className="text-s p-4 lg:p-6">{children}</div>
-      </ScrollAreaV2>
-    </Content>
-  );
-});
-
 export const Collapsible = {
   Container: CollapsibleContainer,
   Title: CollapsibleTitle,
   Content: CollapsibleContent,
-  ScrollableContent: CollapsibleScrollableContent,
 };
