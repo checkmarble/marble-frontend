@@ -1,3 +1,25 @@
 @tailwind base;
+
+/* Firefox and new Chromium based browsers */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(193, 192, 200) transparent;
+}
+
+/* Safari and old Chromium based browsers */
+*::-webkit-scrollbar {
+  width: 4px;
+}
+*::-webkit-scrollbar-track:hover {
+  background: rgb(230, 230, 233);
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(193, 192, 200);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(131, 130, 146);
+}
+
 @tailwind components;
 @tailwind utilities;

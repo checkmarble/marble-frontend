@@ -1,5 +1,6 @@
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
+import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { serverServices } from '@app-builder/services/init.server';
 import { submitOnBlur } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
@@ -12,6 +13,7 @@ import {
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -41,6 +43,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export function EditCaseName(defaultValue: z.infer<typeof schema>) {
+  const { t } = useTranslation(['cases']);
   const fetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
@@ -65,7 +68,10 @@ export function EditCaseName(defaultValue: z.infer<typeof schema>) {
           {...getInputProps(fields.caseId, { type: 'hidden' })}
           key={fields.caseId.key}
         />
-        <FormField name={fields.name.name}>
+        <FormField name={fields.name.name} className="flex flex-col gap-2">
+          <FormLabel className="text-grey-25 text-s capitalize">
+            {t('cases:case.name')}
+          </FormLabel>
           <FormInput type="text" autoComplete="off" onBlur={submitOnBlur} />
         </FormField>
       </fetcher.Form>
