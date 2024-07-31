@@ -12,6 +12,7 @@ import {
 import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useState } from 'react';
 import * as R from 'remeda';
+import invariant from 'tiny-invariant';
 
 import { type ReturnValue } from '../ast-node/return-value';
 import { findAndReplaceNode } from './FindAndReplaceNode';
@@ -65,6 +66,44 @@ export function adaptEditorNodeViewModel({
   );
 
   return currentNode;
+}
+
+export interface ConstantEditorNodeViewModel<
+  T extends ConstantType,
+  P extends { nodeId: string } | null,
+> {
+  nodeId: string;
+  funcName: null;
+  constant: T;
+  errors: EvaluationError[];
+  children: [];
+  namedChildren: Record<string, never>;
+  parent: P;
+}
+
+export function NewConstantEditorNodeViewModel<
+  T extends ConstantType,
+  P extends EditorNodeViewModel | null,
+>({
+  nodeId,
+  constant,
+  errors,
+  parent,
+}: {
+  nodeId: string;
+  constant: T;
+  errors: EvaluationError[];
+  parent: P;
+}): ConstantEditorNodeViewModel<T, P> {
+  return {
+    nodeId,
+    funcName: null,
+    constant,
+    errors,
+    children: [],
+    namedChildren: {},
+    parent,
+  };
 }
 
 type ValidationViewModel = {
@@ -304,9 +343,7 @@ function updateEvaluation({
   parent?: EditorNodeViewModel;
 }): EditorNodeViewModel {
   // Ensure validation is consistent with view model (due to children, namedChildren recursion)
-  if (!evaluation) {
-    throw new Error('validation is required');
-  }
+  invariant(evaluation, 'validation is required');
 
   const currentNode: EditorNodeViewModel = {
     ...editorNodeViewModel,
@@ -318,21 +355,28 @@ function updateEvaluation({
     children: [],
     namedChildren: {},
   };
-  currentNode.children = editorNodeViewModel.children.map((child, i) =>
-    updateEvaluation({
+  currentNode.children = editorNodeViewModel.children.map((child, i) => {
+    const childEvaluation = evaluation.children[i];
+    invariant(childEvaluation, 'validation is required');
+
+    return updateEvaluation({
       editorNodeViewModel: child,
-      evaluation: evaluation.children[i],
+      evaluation: childEvaluation,
       parent: currentNode,
-    }),
-  );
+    });
+  });
   currentNode.namedChildren = R.mapValues(
     editorNodeViewModel.namedChildren,
-    (child, namedKey) =>
-      updateEvaluation({
+    (child, namedKey) => {
+      const childEvaluation = evaluation.namedChildren[namedKey];
+      invariant(childEvaluation, 'validation is required');
+
+      return updateEvaluation({
         editorNodeViewModel: child,
-        evaluation: evaluation.namedChildren[namedKey],
+        evaluation: childEvaluation,
         parent: currentNode,
-      }),
+      });
+    },
   );
 
   return currentNode;

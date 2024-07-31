@@ -155,7 +155,7 @@ function CreatePivotContent({
     progressive: true,
     resolver: zodResolver(createPivotFormSchema),
     defaultValues: {
-      pivot: pivotOptions.at(0),
+      pivot: pivotOptions[0],
     },
   });
   const { control } = formMethods;

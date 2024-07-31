@@ -152,7 +152,7 @@ export function adaptValidWorkflow(
       if (!scenario.decisionToCaseInboxId) {
         return undefined;
       }
-      const firstOutcome = scenario.decisionToCaseOutcomes.at(0);
+      const firstOutcome = scenario.decisionToCaseOutcomes[0];
       if (!firstOutcome) {
         return undefined;
       }

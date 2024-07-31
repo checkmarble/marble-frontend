@@ -27,16 +27,6 @@ function validateSingleTriggerNode(
   const triggerNodes = nodes.filter((node): node is Node<TriggerData> =>
     isTriggerData(node.data),
   );
-  if (triggerNodes.length === 0) {
-    return {
-      isValid: false,
-      errors: [
-        {
-          type: 'missing-trigger-node',
-        },
-      ],
-    };
-  }
   if (triggerNodes.length > 1) {
     return {
       isValid: false,
@@ -47,9 +37,20 @@ function validateSingleTriggerNode(
       ],
     };
   }
+  const triggerNode = triggerNodes[0];
+  if (!triggerNode) {
+    return {
+      isValid: false,
+      errors: [
+        {
+          type: 'missing-trigger-node',
+        },
+      ],
+    };
+  }
   return {
     isValid: true,
-    value: triggerNodes[0],
+    value: triggerNode,
   };
 }
 
@@ -70,7 +71,7 @@ function validateSingleOutgoer(
       ],
     };
   }
-  const outgoer = outgoers.at(0);
+  const outgoer = outgoers[0];
   if (!outgoer) {
     return {
       isValid: false,

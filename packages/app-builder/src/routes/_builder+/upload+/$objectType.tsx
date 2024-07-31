@@ -18,6 +18,7 @@ import { useCallback, useMemo, useState } from 'react';
 import * as reactDropzone from 'react-dropzone';
 const { useDropzone } = reactDropzone;
 import { Trans, useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -103,7 +104,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
   );
 
   const onDrop = async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length < 1) {
+    if (!R.hasAtLeast(acceptedFiles, 1)) {
       return;
     }
     const file = acceptedFiles[0];

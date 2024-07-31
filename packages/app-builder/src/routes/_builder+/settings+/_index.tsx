@@ -16,7 +16,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 
   const settings = await getSettings(user, featureAccessService);
-  const firstSettings = settings.at(0);
+  const firstSettings = settings[0];
 
   if (firstSettings) {
     return redirect(firstSettings.to);

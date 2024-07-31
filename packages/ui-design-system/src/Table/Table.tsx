@@ -198,7 +198,11 @@ export function useVirtualTable<TData extends RowData>(
       return { scrollElementRef };
     },
     isEmpty: rows.length === 0,
-    rows: virtualRows.map((virtualRow) => rows[virtualRow.index]),
+    rows: virtualRows.map(
+      (virtualRow) =>
+        // Safe to cast as virtualRows is built from rows
+        rows[virtualRow.index] as Row<TData>,
+    ),
   };
 }
 

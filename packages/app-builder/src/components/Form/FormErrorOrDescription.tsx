@@ -16,13 +16,16 @@ interface FormErrorOrDescriptionProps
 export const FormErrorOrDescription = React.forwardRef<
   HTMLParagraphElement,
   FormErrorOrDescriptionProps
->(function FormError({ errorClassName, descriptionClassName, ...props }, ref) {
+>(function FormErrorOrDescription(
+  { errorClassName, descriptionClassName, ...props },
+  ref,
+) {
   const { name, description } = useFieldName();
   const [meta] = useField(name);
 
   const { errors, errorId, descriptionId } = meta;
 
-  const error = errors?.at(0);
+  const error = errors?.[0];
 
   if (error) {
     return (

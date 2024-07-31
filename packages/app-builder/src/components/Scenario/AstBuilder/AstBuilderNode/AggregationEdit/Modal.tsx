@@ -19,6 +19,7 @@ import { useDataModel } from '@app-builder/services/ast-node/options';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import {
   adaptAstNodeFromEditorViewModel,
+  type ConstantEditorNodeViewModel,
   type EditorNodeViewModel,
 } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
@@ -65,15 +66,64 @@ export interface FilterViewModel {
   };
 }
 
-export type AggregationEditorNodeViewModel = {
+export interface AggregationEditorNodeViewModel {
   nodeId: string;
-  funcName: string | null;
-  constant: string;
+  funcName: typeof aggregationAstNodeName;
+  constant: undefined;
   errors: EvaluationError[];
-  children: AggregationEditorNodeViewModel[];
-  namedChildren: Record<string, AggregationEditorNodeViewModel>;
+  children: [];
+  namedChildren: {
+    aggregator: ConstantEditorNodeViewModel<
+      string,
+      AggregationEditorNodeViewModel
+    >;
+    tableName: ConstantEditorNodeViewModel<
+      string,
+      AggregationEditorNodeViewModel
+    >;
+    fieldName: ConstantEditorNodeViewModel<
+      string,
+      AggregationEditorNodeViewModel
+    >;
+    label: ConstantEditorNodeViewModel<string, AggregationEditorNodeViewModel>;
+    filters?: AggregationFiltersEditorNodeViewModel;
+  };
+  parent: EditorNodeViewModel;
+}
+
+interface AggregationFiltersEditorNodeViewModel {
+  nodeId: string;
+  funcName: 'List';
+  constant: undefined;
+  errors: EvaluationError[];
+  children: AggregationFilterEditorNodeViewModel[];
+  namedChildren: Record<string, never>;
   parent: AggregationEditorNodeViewModel;
-};
+}
+
+interface AggregationFilterEditorNodeViewModel {
+  nodeId: string;
+  funcName: 'Filter';
+  constant: undefined;
+  errors: EvaluationError[];
+  children: [];
+  namedChildren: {
+    tableName: ConstantEditorNodeViewModel<
+      string | null,
+      AggregationFilterEditorNodeViewModel
+    >;
+    fieldName: ConstantEditorNodeViewModel<
+      string | null,
+      AggregationFilterEditorNodeViewModel
+    >;
+    operator: ConstantEditorNodeViewModel<
+      string | null,
+      AggregationFilterEditorNodeViewModel
+    >;
+    value: EditorNodeViewModel;
+  };
+  parent: AggregationFiltersEditorNodeViewModel;
+}
 
 export const isAggregationEditorNodeViewModel = (
   vm: EditorNodeViewModel,
@@ -85,18 +135,17 @@ export const adaptAggregationViewModel = (
   vm: AggregationEditorNodeViewModel,
 ): AggregationViewModel => {
   const aggregatedField: DataModelField = {
-    tableName: vm.namedChildren['tableName']?.constant,
-    fieldName: vm.namedChildren['fieldName']?.constant,
+    tableName: vm.namedChildren.tableName.constant,
+    fieldName: vm.namedChildren.fieldName.constant,
   };
-  const filters = vm.namedChildren['filters']
-    ? vm.namedChildren['filters'].children.map(adaptFilterViewModel)
-    : [];
+  const filters =
+    vm.namedChildren.filters?.children.map(adaptFilterViewModel) ?? [];
 
   return {
     nodeId: vm.nodeId,
-    label: vm.namedChildren['label']?.constant,
+    label: vm.namedChildren.label.constant ?? '',
     // No guard here: we prefer to display an unhandled operator to a default one
-    aggregator: vm.namedChildren['aggregator'].constant as AggregatorOperator,
+    aggregator: vm.namedChildren.aggregator.constant as AggregatorOperator,
     aggregatedField,
     filters,
     errors: {
@@ -110,25 +159,27 @@ export const adaptAggregationViewModel = (
   };
 };
 
-const adaptFilterViewModel = (
-  filterVM: AggregationEditorNodeViewModel,
-): FilterViewModel => ({
-  operator: filterVM.namedChildren['operator']?.constant,
-  filteredField: {
-    tableName: filterVM.namedChildren['tableName']?.constant,
-    fieldName: filterVM.namedChildren['fieldName']?.constant,
-  },
-  value: filterVM.namedChildren['value'],
-  errors: {
-    filter: filterVM.errors,
-    operator: computeValidationForNamedChildren(filterVM, 'operator'),
-    filteredField: computeValidationForNamedChildren(filterVM, [
-      'tableName',
-      'fieldName',
-    ]),
-    value: computeValidationForNamedChildren(filterVM, 'value'),
-  },
-});
+function adaptFilterViewModel(
+  filterVM: AggregationFilterEditorNodeViewModel,
+): FilterViewModel {
+  return {
+    operator: filterVM.namedChildren.operator.constant,
+    filteredField: {
+      tableName: filterVM.namedChildren.tableName?.constant,
+      fieldName: filterVM.namedChildren.fieldName?.constant,
+    },
+    value: filterVM.namedChildren.value,
+    errors: {
+      filter: filterVM.errors,
+      operator: computeValidationForNamedChildren(filterVM, 'operator'),
+      filteredField: computeValidationForNamedChildren(filterVM, [
+        'tableName',
+        'fieldName',
+      ]),
+      value: computeValidationForNamedChildren(filterVM, 'value'),
+    },
+  };
+}
 
 export const adaptAggregationAstNode = (
   aggregationViewModel: AggregationViewModel,
@@ -139,7 +190,9 @@ export const adaptAggregationAstNode = (
       constant: undefined,
       children: [],
       namedChildren: {
-        operator: NewConstantAstNode({ constant: filter.operator }),
+        operator: NewConstantAstNode({
+          constant: filter.operator,
+        }),
         tableName: NewConstantAstNode({
           constant: filter.filteredField?.tableName ?? null,
         }),

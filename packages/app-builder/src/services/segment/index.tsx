@@ -23,14 +23,15 @@ export function useSegmentPageTracking() {
   const matches = useMatches();
   const thisPage = matches[matches.length - 1];
   useEffect(() => {
-    if (isHydrated) {
-      const tracking = getPageViewNameAndProps(thisPage);
-      if (!tracking) return;
-      const { name, properties } = tracking;
-      void window.analytics?.page(name, properties);
-    }
+    if (!isHydrated) return;
+    if (!thisPage) return;
+
+    const tracking = getPageViewNameAndProps(thisPage);
+    if (!tracking) return;
+    const { name, properties } = tracking;
+    void window.analytics?.page(name, properties);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location, thisPage.id, isHydrated]);
+  }, [location, thisPage?.id, isHydrated]);
 
   return null;
 }

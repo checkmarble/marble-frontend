@@ -25,6 +25,7 @@ import clsx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Handle, type NodeProps, Position } from 'reactflow';
+import * as R from 'remeda';
 import { Icon } from 'ui-icons';
 
 import {
@@ -362,7 +363,10 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </CreateField>,
     );
   }
-  if (isCreateDataModelLinkAvailable && data.otherTablesWithUnique.length > 0) {
+  if (
+    isCreateDataModelLinkAvailable &&
+    R.hasAtLeast(data.otherTablesWithUnique, 1)
+  ) {
     menuItems.push(
       <CreateLink
         key="create-link"

@@ -40,7 +40,7 @@ export function CursorPaginationButtons({
   const fetchPrevious = () => {
     const pagination: PaginationParams = {
       previous: true,
-      offsetId: items[0].id,
+      offsetId: items[0]?.id,
     };
     onPaginationChange(pagination);
   };
@@ -48,7 +48,7 @@ export function CursorPaginationButtons({
   const fetchNext = () => {
     const pagination: PaginationParams = {
       next: true,
-      offsetId: items[items.length - 1].id,
+      offsetId: items[items.length - 1]?.id,
     };
     onPaginationChange(pagination);
   };

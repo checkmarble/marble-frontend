@@ -20,6 +20,7 @@ import {
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -161,7 +162,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
           ) : null}
 
           {isCreateDataModelLinkAvailable &&
-          otherTablesWithUnique.length > 0 ? (
+          R.hasAtLeast(otherTablesWithUnique, 1) ? (
             <CreateLink
               thisTable={tableModel}
               otherTables={otherTablesWithUnique}

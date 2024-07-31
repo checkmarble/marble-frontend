@@ -6,6 +6,7 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -16,7 +17,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const inboxes = await inbox.listInboxes();
 
-  if (inboxes.length > 0) {
+  if (R.hasAtLeast(inboxes, 1)) {
     return redirect(
       getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxes[0].id) }),
     );

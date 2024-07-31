@@ -61,7 +61,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
     return json({
       transfer,
-      transferAlert: alerts.at(0),
+      transferAlert: alerts[0],
     });
   } catch (error) {
     if (isNotFoundHttpError(error)) {

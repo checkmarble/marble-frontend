@@ -85,11 +85,8 @@ export const computeValidationForNamedChildren = (
   }
   const errors: EvaluationError[] = [];
   for (const key of namedArgumentKeys) {
-    invariant(
-      key in editorNodeViewModel.namedChildren,
-      `${key} is not a valid named argument key`,
-    );
     const namedChild = editorNodeViewModel.namedChildren[key];
+    invariant(namedChild, `${key} is not a valid named argument key`);
 
     errors.push(...namedChild.errors);
     errors.push(...findArgumentNameErrorsFromParent(namedChild));
