@@ -30,6 +30,7 @@
   "close": "Close",
   "show": "Show",
   "hide": "Hide",
+  "more_options": "More options",
   "clipboard.aria-label": "Copy to clipboard: {{value}}",
   "clipboard.copy": "Copied in clipboard: <Value>{{value}}</Value>",
   "empty_scenario_iteration_list": "You don't have any rules. Click on create rule to make a new one",

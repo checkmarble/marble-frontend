@@ -3,13 +3,10 @@ import {
   ErrorComponent,
   Page,
 } from '@app-builder/components';
-import {
-  CaseDecisions,
-  CaseEvents,
-  casesI18n,
-} from '@app-builder/components/Cases';
+import { CaseEvents, casesI18n } from '@app-builder/components/Cases';
 import { CaseContributors } from '@app-builder/components/Cases/CaseContributors';
-import { CaseFiles } from '@app-builder/components/Cases/CaseFiles';
+import { CaseDecisions } from '@app-builder/components/Cases/CaseDecisions';
+import { FilesList } from '@app-builder/components/Cases/CaseFiles';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
@@ -31,7 +28,7 @@ import {
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -82,9 +79,88 @@ export default function CasePage() {
       <div className="flex size-full flex-row overflow-hidden">
         <div className="relative flex size-full flex-col overflow-hidden">
           <Page.Content>
-            <CaseDecisions decisions={caseDetail.decisions} />
-            <CaseFiles files={caseDetail.files} />
-            <CaseEvents events={caseDetail.events} />
+            <div>
+              <CollapsibleV2.Provider
+                defaultOpen={caseDetail.decisions.length > 0}
+              >
+                <div className="group flex flex-1 items-center gap-2">
+                  <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
+                    <Icon
+                      icon="arrow-2-up"
+                      aria-hidden
+                      className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
+                    />
+                    <span className="text-m mx-2 font-bold capitalize">
+                      {t('cases:case.decisions')}
+                    </span>
+                  </CollapsibleV2.Title>
+                  <span className="text-grey-25 text-xs font-normal capitalize">
+                    {t('cases:case_detail.decisions_count', {
+                      count: caseDetail.decisions.length,
+                    })}
+                  </span>
+                </div>
+
+                <CollapsibleV2.Content>
+                  <div className="mt-4">
+                    <CaseDecisions decisions={caseDetail.decisions} />
+                  </div>
+                </CollapsibleV2.Content>
+              </CollapsibleV2.Provider>
+            </div>
+            <div>
+              <CollapsibleV2.Provider defaultOpen={caseDetail.files.length > 0}>
+                <div className="group flex flex-1 items-center gap-2">
+                  <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
+                    <Icon
+                      icon="arrow-2-up"
+                      aria-hidden
+                      className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
+                    />
+                    <span className="text-m mx-2 font-bold capitalize">
+                      {t('cases:case.files')}
+                    </span>
+                  </CollapsibleV2.Title>
+                  <span className="text-grey-25 text-xs font-normal capitalize">
+                    {t('cases:case_detail.files_count', {
+                      count: caseDetail.files.length,
+                    })}
+                  </span>
+                </div>
+
+                <CollapsibleV2.Content>
+                  <div className="mt-4">
+                    <FilesList files={caseDetail.files} />
+                  </div>
+                </CollapsibleV2.Content>
+              </CollapsibleV2.Provider>
+            </div>
+            <div>
+              <CollapsibleV2.Provider>
+                <div className="group flex flex-1 items-center gap-2">
+                  <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
+                    <Icon
+                      icon="arrow-2-up"
+                      aria-hidden
+                      className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180"
+                    />
+                    <span className="text-m mx-2 font-bold capitalize">
+                      {t('cases:case_detail.history')}
+                    </span>
+                  </CollapsibleV2.Title>
+                  <span className="text-grey-25 text-xs font-normal capitalize">
+                    {t('cases:case_detail.events_count', {
+                      count: caseDetail.events.length,
+                    })}
+                  </span>
+                </div>
+                <CollapsibleV2.Content>
+                  <div className="border-grey-10 bg-grey-00 mt-4 max-h-96 overflow-y-scroll rounded-lg border p-4">
+                    <CaseEvents events={caseDetail.events} />
+                  </div>
+                </CollapsibleV2.Content>
+              </CollapsibleV2.Provider>
+            </div>
           </Page.Content>
           <div className="bg-grey-00 border-t-grey-10 flex shrink-0 flex-row items-center gap-4 border-t p-4">
             <AddComment caseId={caseDetail.id} />
@@ -130,25 +206,21 @@ export default function CasePage() {
   );
 }
 
-const CaseNotFound = () => {
+export function ErrorBoundary() {
   const navigate = useNavigate();
   const { t } = useTranslation(['common']);
-  return (
-    <div className="m-auto flex flex-col items-center gap-4">
-      {t('common:errors.not_found')}
-      <div className="mb-1">
-        <Button onClick={() => navigate(-1)}>{t('common:go_back')}</Button>
-      </div>
-    </div>
-  );
-};
-
-export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
 
   if (isRouteErrorResponse(error) && error.status === 404) {
-    return <CaseNotFound />;
+    return (
+      <div className="m-auto flex flex-col items-center gap-4">
+        {t('common:errors.not_found')}
+        <div className="mb-1">
+          <Button onClick={() => navigate(-1)}>{t('common:go_back')}</Button>
+        </div>
+      </div>
+    );
   }
 
   return <ErrorComponent error={error} />;

@@ -11,37 +11,13 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
-import { Button, Collapsible, Table, useVirtualTable } from 'ui-design-system';
+import { Button, Table, useVirtualTable } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
 
-export function CaseFiles({ files }: { files: CaseFile[] }) {
-  const { t } = useTranslation(casesI18n);
-
-  return (
-    <Collapsible.Container className="bg-grey-00">
-      <Collapsible.Title>
-        <div className="flex flex-1 items-center justify-between">
-          <span className="text-grey-100 text-m font-bold capitalize">
-            {t('cases:case.files')}
-          </span>
-          <span className="text-grey-25 text-xs font-normal capitalize">
-            {t('cases:case_detail.files_count', {
-              count: files.length,
-            })}
-          </span>
-        </div>
-      </Collapsible.Title>
-      <Collapsible.Content>
-        <FilesList files={files} />
-      </Collapsible.Content>
-    </Collapsible.Container>
-  );
-}
-
 const columnHelper = createColumnHelper<CaseFile>();
 
-function FilesList({ files }: { files: CaseFile[] }) {
+export function FilesList({ files }: { files: CaseFile[] }) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
 

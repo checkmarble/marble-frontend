@@ -12,7 +12,7 @@ import {
 import { cx } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
-import { Accordion, Avatar, Collapsible } from 'ui-design-system';
+import { Accordion, Avatar } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 import { casesI18n } from './cases-i18n';
@@ -24,49 +24,31 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
   const language = useFormatLanguage();
 
   return (
-    <Collapsible.Container className="bg-grey-00 max-h-[70dvh]">
-      <Collapsible.Title>
-        <div className="flex flex-1 items-center justify-between">
-          <span className="text-grey-100 text-m font-bold capitalize">
-            {t('cases:case_detail.history')}
-          </span>
-          <span className="text-grey-25 text-xs font-normal capitalize">
-            {t('cases:case_detail.events_count', {
-              count: events.length,
-            })}
-          </span>
-        </div>
-      </Collapsible.Title>
-      <Collapsible.Content className="overflow-y-auto">
-        <Accordion.Container className="relative z-0">
-          <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
-          {events.map((event) => {
-            const Icon = getEventIcon(event);
-            const Title = getEventTitle(event, t);
-            const Detail = getEventDetail(event);
-            return (
-              <Accordion.Item key={event.id} value={event.id}>
-                <Accordion.Title className="flex w-full flex-row items-center">
-                  <span className="mr-2">{Icon}</span>
-                  <span className="line-clamp-1 flex-1 text-start">
-                    {Title}
-                  </span>
-                  <span className="text-s text-grey-25 mx-4 font-normal">
-                    {formatDateRelative(event.createdAt, {
-                      language,
-                    })}
-                  </span>
-                  <Accordion.Arrow />
-                </Accordion.Title>
-                <Accordion.Content className="ml-8 mt-2">
-                  {Detail}
-                </Accordion.Content>
-              </Accordion.Item>
-            );
-          })}
-        </Accordion.Container>
-      </Collapsible.Content>
-    </Collapsible.Container>
+    <Accordion.Container className="relative z-0">
+      <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
+      {events.map((event) => {
+        const Icon = getEventIcon(event);
+        const Title = getEventTitle(event, t);
+        const Detail = getEventDetail(event);
+        return (
+          <Accordion.Item key={event.id} value={event.id}>
+            <Accordion.Title className="flex w-full flex-row items-center">
+              <span className="mr-2">{Icon}</span>
+              <span className="line-clamp-1 flex-1 text-start">{Title}</span>
+              <span className="text-s text-grey-25 mx-4 font-normal">
+                {formatDateRelative(event.createdAt, {
+                  language,
+                })}
+              </span>
+              <Accordion.Arrow />
+            </Accordion.Title>
+            <Accordion.Content className="ml-8 mt-2">
+              {Detail}
+            </Accordion.Content>
+          </Accordion.Item>
+        );
+      })}
+    </Accordion.Container>
   );
 }
 
