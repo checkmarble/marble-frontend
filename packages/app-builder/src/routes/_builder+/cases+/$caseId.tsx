@@ -18,7 +18,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   useLoaderData,
@@ -37,7 +37,16 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { user, cases, inbox } = await authService.isAuthenticated(request, {
+  const {
+    user,
+    cases,
+    inbox,
+    dataModelRepository,
+    apiClient,
+    decision,
+    scenario,
+    editor,
+  } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -46,7 +55,49 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const caseDetail = await cases.getCase({ caseId });
     const currentInbox = await inbox.getInbox(caseDetail.inboxId);
 
-    return json({ caseDetail, inbox: currentInbox, user });
+    const dataModelPromise = dataModelRepository.getDataModel();
+    const customListsPromise = apiClient
+      .listCustomLists()
+      .then(({ custom_lists }) => custom_lists);
+
+    const decisionsDetailPromise = Promise.all(
+      caseDetail.decisions.map(async ({ id }) => {
+        const decisionDetail = await decision.getDecisionById(id);
+        const pivotsPromise = dataModelRepository.listPivots({});
+        const rulesPromise = scenario
+          .getScenarioIteration({
+            iterationId: decisionDetail.scenario.scenarioIterationId,
+          })
+          .then((iteration) => iteration.rules);
+        const accessorsPromise = editor.listAccessors({
+          scenarioId: decisionDetail.scenario.id,
+        });
+        const operatorsPromise = editor.listOperators({
+          scenarioId: decisionDetail.scenario.id,
+        });
+
+        return {
+          decisionId: id,
+          ruleExecutions: decisionDetail.rules,
+          triggerObjectType: decisionDetail.triggerObjectType,
+          pivots: await pivotsPromise,
+          rules: await rulesPromise,
+          accessors: await accessorsPromise,
+          operators: await operatorsPromise,
+        };
+      }),
+    );
+
+    return defer({
+      caseDetail,
+      inbox: currentInbox,
+      user,
+      caseDecisionsPromise: Promise.all([
+        dataModelPromise,
+        customListsPromise,
+        decisionsDetailPromise,
+      ]),
+    });
   } catch (error) {
     // On purpusely catch 403 errors to display a 404 page
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
@@ -59,7 +110,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function CasePage() {
   const { t } = useTranslation(handle.i18n);
-  const { caseDetail, inbox, user } = useLoaderData<typeof loader>();
+  const { caseDetail, inbox, user, caseDecisionsPromise } =
+    useLoaderData<typeof loader>();
   const language = useFormatLanguage();
 
   return (
@@ -100,10 +152,12 @@ export default function CasePage() {
                     })}
                   </span>
                 </div>
-
                 <CollapsibleV2.Content>
                   <div className="mt-4">
-                    <CaseDecisions decisions={caseDetail.decisions} />
+                    <CaseDecisions
+                      decisions={caseDetail.decisions}
+                      caseDecisionsPromise={caseDecisionsPromise}
+                    />
                   </div>
                 </CollapsibleV2.Content>
               </CollapsibleV2.Provider>

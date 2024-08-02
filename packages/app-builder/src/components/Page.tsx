@@ -2,7 +2,7 @@ import { Link, useNavigate } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { ScrollAreaV2, Tooltip } from 'ui-design-system';
+import { Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 function PageContainer({ className, ...props }: React.ComponentProps<'div'>) {
@@ -46,16 +46,17 @@ function PageHeader({ className, ...props }: React.ComponentProps<'div'>) {
 
 function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <ScrollAreaV2 className="size-full" type="auto">
+    // eslint-disable-next-line tailwindcss/no-custom-classname
+    <div className="scrollbar-gutter-stable size-full overflow-y-scroll">
       <div
         className={clsx(
           'flex flex-1 flex-col',
-          'gap-4 p-4 lg:gap-6 lg:p-6',
+          'gap-4 p-4 pr-[calc(1rem-var(--scrollbar-width))] lg:gap-6 lg:p-6 lg:pr-[calc(1.5rem-var(--scrollbar-width))]',
           className,
         )}
         {...props}
       />
-    </ScrollAreaV2>
+    </div>
   );
 }
 
