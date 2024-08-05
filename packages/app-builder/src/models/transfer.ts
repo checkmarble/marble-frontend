@@ -1,3 +1,5 @@
+import { adaptCurrency } from '@app-builder/utils/currencies';
+import { type Currency } from 'dinero.js';
 import {
   type TransferDataDto,
   type TransferDto,
@@ -15,7 +17,7 @@ export interface TransferData {
   beneficiaryIban: string;
   beneficiaryName: string;
   createdAt: string;
-  currency: string;
+  currency: Currency<number>;
   label: string;
   senderAccountId: string;
   senderAccountType: 'physical_person' | 'moral_person';
@@ -38,7 +40,7 @@ export function adaptTransferData(
     beneficiaryIban: transferDataDto.beneficiary_iban,
     beneficiaryName: transferDataDto.beneficiary_name,
     createdAt: transferDataDto.created_at,
-    currency: transferDataDto.currency,
+    currency: adaptCurrency(transferDataDto.currency),
     label: transferDataDto.label,
     senderAccountId: transferDataDto.sender_account_id,
     senderAccountType: transferDataDto.sender_account_type,

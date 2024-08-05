@@ -1,5 +1,5 @@
 import { type Transfer } from '@app-builder/models/transfer';
-import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import { formatCurrency, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -33,11 +33,16 @@ export function TransfersList({ className, transfers }: TransfersListProps) {
         id: 'value',
         header: 'Value',
         size: 100,
-        cell: ({ getValue }) => (
-          <span>{formatNumber(getValue(), { language })}</span>
+        cell: ({ getValue, row }) => (
+          <span>
+            {formatCurrency(getValue(), {
+              language,
+              currency: row.original.data.currency,
+            })}
+          </span>
         ),
       }),
-      columnHelper.accessor((row) => row.data.currency, {
+      columnHelper.accessor((row) => row.data.currency.code, {
         id: 'currency',
         header: 'Currency',
         size: 50,

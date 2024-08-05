@@ -1,9 +1,10 @@
 import {
+  formatCurrency,
   formatDateTime,
-  formatNumber,
   useFormatLanguage,
 } from '@app-builder/utils/format';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
+import { type Currency } from 'dinero.js';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Callout } from '../Callout';
@@ -14,7 +15,7 @@ interface TransferDataProps {
   beneficiaryIban: string;
   beneficiaryName: string;
   createdAt: string;
-  currency: string;
+  currency: Currency<number>;
   label: string;
   senderAccountId: string;
   senderAccountType: string;
@@ -60,17 +61,18 @@ export function TransferData(props: TransferDataProps) {
           {t('transfercheck:transfer_detail.transfer_data.label')}
         </span>
         <span className="text-grey-100 text-s">{props.label}</span>
-
         <span className="text-grey-50 text-s first-letter:capitalize">
           {t('transfercheck:transfer_detail.transfer_data.currency')}
         </span>
-        <span className="text-grey-100 text-s">{props.currency}</span>
-
+        <span className="text-grey-100 text-s">{props.currency.code}</span>
         <span className="text-grey-50 text-s first-letter:capitalize">
           {t('transfercheck:transfer_detail.transfer_data.value')}
         </span>
         <span className="text-grey-100 text-s">
-          {formatNumber(props.value, { language })}
+          {formatCurrency(props.value, {
+            language,
+            currency: props.currency,
+          })}
         </span>
       </div>
 
