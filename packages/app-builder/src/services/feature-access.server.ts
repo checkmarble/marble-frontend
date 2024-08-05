@@ -296,6 +296,24 @@ export function makeFeatureAccessService({
     }) => {
       return permissions.canEditInboxes;
     },
+    isReadSnoozeAvailable: async ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      const licenseEntitlements = await getLicenseEntitlements();
+      if (!licenseEntitlements.ruleSnoozing) return false;
+      return permissions.canReadSnoozes;
+    },
+    isCreateSnoozeAvailable: async ({
+      permissions,
+    }: {
+      permissions: UserPermissions;
+    }) => {
+      const licenseEntitlements = await getLicenseEntitlements();
+      if (!licenseEntitlements.ruleSnoozing) return false;
+      return permissions.canCreateSnoozes;
+    },
   };
 }
 
