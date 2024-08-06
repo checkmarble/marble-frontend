@@ -35,8 +35,6 @@ export const SchemaMenuMenuPopover = React.forwardRef<
       ref={ref}
       modal
       unmountOnHide={false}
-      // necessary to prevent arrow key to move reactflow viewport
-      onKeyDown={(e) => e.stopPropagation()}
       className={clsx('flex flex-col gap-2 p-2', className)}
       {...props}
     />
