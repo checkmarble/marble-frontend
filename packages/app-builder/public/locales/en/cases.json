@@ -5,6 +5,7 @@
   "case.tags": "Tags",
   "case.contributors": "Contributors",
   "case.decisions": "Decisions",
+  "case.decision_detail": "Decision detail",
   "case.files": "Files",
   "case.file.name": "File name",
   "case.file.extension": "Extension",

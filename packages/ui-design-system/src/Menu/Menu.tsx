@@ -85,6 +85,9 @@ export const MenuButton = React.forwardRef<HTMLDivElement, MenuButtonProps>(
     return (
       <Ariakit.MenuButton
         ref={ref}
+        onClick={(e: React.SyntheticEvent) => {
+          e.stopPropagation();
+        }}
         {...props}
         render={parent ? <MenuItem render={render} /> : render}
       />
@@ -103,6 +106,12 @@ export const MenuPopover = React.forwardRef<HTMLDivElement, MenuProps>(
           portal
           overlap
           unmountOnHide
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+          hideOnInteractOutside={(event) => {
+            event.stopPropagation();
+            return true;
+          }}
           gutter={8}
           {...props}
           className={clsx(
