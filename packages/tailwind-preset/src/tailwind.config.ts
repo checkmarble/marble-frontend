@@ -199,5 +199,41 @@ export default {
     function ({ addVariant }: PluginAPI) {
       addVariant('not-last', '&>*:not(:last-child)');
     },
+    function ({ addBase, addUtilities }: PluginAPI) {
+      addBase({
+        '*': {
+          '--scrollbar-color-thumb': 'rgb(193, 192, 200)',
+          '--scrollbar-color-track': 'transparent',
+          '--scrollbar-width': '6px',
+        },
+        '@supports (scrollbar-width: auto)': {
+          '*': {
+            'scrollbar-color':
+              'var(--scrollbar-color-thumb) var(--scrollbar-color-track)',
+            'scrollbar-width': 'thin',
+            '--scrollbar-width': '10px',
+          },
+        },
+        '@supports selector(::-webkit-scrollbar)': {
+          '*::-webkit-scrollbar-thumb': {
+            background: 'var(--scrollbar-color-thumb)',
+            'border-radius': '9999px',
+          },
+          '*::-webkit-scrollbar-track': {
+            background: 'var(--scrollbar-color-track)',
+          },
+          '*::-webkit-scrollbar': {
+            width: 'var(--scrollbar-width)',
+            height: 'var(--scrollbar-width)',
+          },
+        },
+      });
+
+      addUtilities({
+        '.scrollbar-gutter-stable': {
+          'scrollbar-gutter': 'stable',
+        },
+      });
+    },
   ],
 } satisfies Config;
