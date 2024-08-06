@@ -12,6 +12,7 @@ import {
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -23,6 +24,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import {
+  Button,
   CollapsibleV2,
   MenuButton,
   MenuItem,
@@ -308,7 +310,7 @@ function DecisionDetail({
                   </Tag>
                 </CollapsibleV2.Title>
                 <CollapsibleV2.Content className="col-span-full">
-                  <div className="flex flex-col gap-4 px-2">
+                  <div className="flex flex-col gap-2 px-2">
                     {ruleExecution.description ? (
                       <Callout variant="outlined">
                         {ruleExecution.description}
@@ -330,6 +332,16 @@ function DecisionDetail({
                         rules: decisionDetail.rules,
                       }}
                     />
+
+                    <AddRuleSnooze
+                      decisionId={decision.id}
+                      ruleId={ruleExecution.ruleId}
+                    >
+                      <Button className="w-fit">
+                        <Icon icon="plus" className="size-5" />
+                        {t('cases:case_detail.add_rule_snooze')}
+                      </Button>
+                    </AddRuleSnooze>
                   </div>
                 </CollapsibleV2.Content>
               </CollapsibleV2.Provider>
