@@ -28,6 +28,8 @@
   "case_detail.decisions_count_one": "{{count}} decision",
   "case_detail.decisions_count_other": "{{count}} decisions",
   "case_detail.no_decisions": "Add a decision from the <Link>decision list</Link> to start the investigation",
+  "case_detail.pivot_values": "Pivot values",
+  "case_detail.rules_execution": "Rules execution",
   "case_detail.files_count_one": "{{count}} file",
   "case_detail.files_count_other": "{{count}} files",
   "case_detail.no_files": "<Button>Add your first file</Button> to the case to keep track of your investigation",

@@ -12,13 +12,16 @@ import {
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
+import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { Await, Link } from '@remix-run/react';
 import { type CustomList } from 'marble-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import {
   CollapsibleV2,
   MenuButton,
@@ -30,6 +33,7 @@ import {
 import { Icon } from 'ui-icons';
 
 import { Callout } from '../Callout';
+import { PivotType } from '../Data/SelectedPivot';
 import {
   getRuleExecutionStatusColor,
   getRuleExecutionStatusLabel,
@@ -127,14 +131,14 @@ export function CaseDecisions({
                 <DecisionActions decision={row} />
               </div>
               <CollapsibleV2.Content className="col-span-full">
-                <div className="bg-purple-02 border-t-grey-10 border-t py-4">
+                <div className="bg-purple-02 border-t-grey-10 border-t">
                   <React.Suspense fallback={t('common:loading')}>
                     <Await resolve={caseDecisionsPromise}>
                       {([dataModel, customLists, decisionsDetail]) => {
                         return (
                           <DecisionDetail
                             key={row.id}
-                            decisionId={row.id}
+                            decision={row}
                             decisionsDetail={decisionsDetail}
                             dataModel={dataModel}
                             customLists={customLists}
@@ -184,78 +188,155 @@ function DecisionActions({ decision }: { decision: Decision }) {
 }
 
 function DecisionDetail({
-  decisionId,
+  decision,
   decisionsDetail,
   dataModel,
   customLists,
 }: {
-  decisionId: string;
+  decision: Decision;
   decisionsDetail: DecisionsDetail[];
   dataModel: TableModel[];
   customLists: CustomList[];
 }) {
   const { t } = useTranslation(casesI18n);
+  const getCopyToClipboardProps = useGetCopyToClipboard();
   const decisionDetail = React.useMemo(
-    () => decisionsDetail.find((detail) => decisionId === detail.decisionId),
-    [decisionId, decisionsDetail],
+    () => decisionsDetail.find((detail) => decision.id === detail.decisionId),
+    [decision.id, decisionsDetail],
   );
   if (!decisionDetail) {
     return null;
   }
 
+  const pivotValues = R.pipe(
+    decision.pivotValues,
+    R.map(({ id, value }) => {
+      if (!id || !value) return null;
+      const pivot = decisionDetail.pivots.find((p) => p.id === id);
+      if (!pivot) return null;
+      return {
+        pivot,
+        value,
+      };
+    }),
+    R.filter(R.isNonNullish),
+  );
+
   return (
-    <div className="grid grid-cols-[max-content_1fr_max-content_max-content] gap-x-2 gap-y-4">
-      {decisionDetail.ruleExecutions.map((ruleExecution) => {
-        const isHit = isRuleExecutionHit(ruleExecution);
+    <div className="flex flex-col gap-6 p-4">
+      <div>
+        <div className="text-grey-50 text-s mb-1 capitalize">
+          {t('cases:case_detail.pivot_values')}
+        </div>
+        <div className="border-grey-10 overflow-hidden rounded border">
+          <table className="bg-grey-00 w-full table-auto border-collapse">
+            <thead>
+              <tr className="bg-grey-02 text-grey-50 min-h-8 text-xs font-semibold">
+                <td className="px-4 py-2">
+                  {t('decisions:pivot_detail.type')}
+                </td>
+                <td className="px-4 py-2">
+                  {t('decisions:pivot_detail.definition')}
+                </td>
+                <td className="px-4 py-2">
+                  {t('decisions:pivot_detail.pivot_value')}
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {pivotValues.map((pivotValue) => {
+                return (
+                  <tr
+                    key={pivotValue.pivot.id}
+                    className="border-grey-10 border-t"
+                  >
+                    <td className="px-4 py-1">
+                      <PivotType type={pivotValue.pivot.type} />
+                    </td>
+                    <td className="text-grey-100 text-s break-all px-4 py-2">
+                      {getPivotDisplayValue(pivotValue.pivot)}
+                    </td>
+                    <td
+                      className="px-4 py-2"
+                      {...getCopyToClipboardProps(pivotValue.value)}
+                    >
+                      <div className="group flex h-full cursor-pointer flex-row items-center gap-2">
+                        <span className="text-grey-50 group-hover:text-grey-100 select-none break-all text-xs font-normal transition-colors">
+                          {pivotValue.value}
+                        </span>
+                        <Icon
+                          icon="duplicate"
+                          className="group-hover:text-grey-100 size-4 shrink-0 text-transparent transition-colors"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-        return (
-          <CollapsibleV2.Provider key={ruleExecution.ruleId}>
-            <CollapsibleV2.Title className="group col-span-full grid grid-cols-subgrid items-center rounded border border-transparent pl-2 pr-4 outline-none transition-colors focus-visible:border-purple-100">
-              <Icon
-                icon="arrow-2-up"
-                aria-hidden
-                className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
-              />
-              <div className="text-s flex items-center gap-2 font-semibold">
-                {ruleExecution.name}
-              </div>
-              {isHit ? <Score score={ruleExecution.scoreModifier} /> : null}
-              <Tag
-                border="square"
-                size="big"
-                color={getRuleExecutionStatusColor(ruleExecution)}
-                className="col-start-4 capitalize"
-              >
-                {getRuleExecutionStatusLabel(t, ruleExecution)}
-              </Tag>
-            </CollapsibleV2.Title>
-            <CollapsibleV2.Content className="col-span-full">
-              <div className="flex flex-col gap-4 px-4">
-                {ruleExecution.description ? (
-                  <Callout variant="outlined">
-                    {ruleExecution.description}
-                  </Callout>
-                ) : null}
+      <div>
+        <div className="text-grey-50 text-s capitalize">
+          {t('cases:case_detail.rules_execution')}
+        </div>
+        <div className="-mx-2 grid grid-cols-[max-content_1fr_max-content_max-content] gap-2">
+          {decisionDetail.ruleExecutions.map((ruleExecution) => {
+            const isHit = isRuleExecutionHit(ruleExecution);
 
-                <RuleExecutionDetail
-                  key={ruleExecution.ruleId}
-                  ruleExecution={ruleExecution}
-                  triggerObjectType={decisionDetail.triggerObjectType}
-                  astRuleData={{
-                    dataModel,
-                    customLists,
-                    databaseAccessors:
-                      decisionDetail.accessors.databaseAccessors,
-                    payloadAccessors: decisionDetail.accessors.payloadAccessors,
-                    operators: decisionDetail.operators,
-                    rules: decisionDetail.rules,
-                  }}
-                />
-              </div>
-            </CollapsibleV2.Content>
-          </CollapsibleV2.Provider>
-        );
-      })}
+            return (
+              <CollapsibleV2.Provider key={ruleExecution.ruleId}>
+                <CollapsibleV2.Title className="group col-span-full grid grid-cols-subgrid items-center rounded border border-transparent px-2 outline-none transition-colors focus-visible:border-purple-100">
+                  <Icon
+                    icon="arrow-2-up"
+                    aria-hidden
+                    className="-mx-2 size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
+                  />
+                  <div className="text-s flex items-center gap-2 font-semibold">
+                    {ruleExecution.name}
+                  </div>
+                  {isHit ? <Score score={ruleExecution.scoreModifier} /> : null}
+                  <Tag
+                    border="square"
+                    size="big"
+                    color={getRuleExecutionStatusColor(ruleExecution)}
+                    className="col-start-4 capitalize"
+                  >
+                    {getRuleExecutionStatusLabel(t, ruleExecution)}
+                  </Tag>
+                </CollapsibleV2.Title>
+                <CollapsibleV2.Content className="col-span-full">
+                  <div className="flex flex-col gap-4 px-2">
+                    {ruleExecution.description ? (
+                      <Callout variant="outlined">
+                        {ruleExecution.description}
+                      </Callout>
+                    ) : null}
+
+                    <RuleExecutionDetail
+                      key={ruleExecution.ruleId}
+                      ruleExecution={ruleExecution}
+                      triggerObjectType={decisionDetail.triggerObjectType}
+                      astRuleData={{
+                        dataModel,
+                        customLists,
+                        databaseAccessors:
+                          decisionDetail.accessors.databaseAccessors,
+                        payloadAccessors:
+                          decisionDetail.accessors.payloadAccessors,
+                        operators: decisionDetail.operators,
+                        rules: decisionDetail.rules,
+                      }}
+                    />
+                  </div>
+                </CollapsibleV2.Content>
+              </CollapsibleV2.Provider>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
