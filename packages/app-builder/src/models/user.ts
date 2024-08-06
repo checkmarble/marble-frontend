@@ -32,6 +32,8 @@ function NewPermissionsList() {
     canDeleteUser: 'MARBLE_USER_DELETE',
     canReadApiKey: 'APIKEY_READ',
     canCreateApiKey: 'APIKEY_CREATE',
+    canReadSnoozes: 'READ_SNOOZES',
+    canCreateSnoozes: 'CREATE_SNOOZE',
   } as const;
 }
 
