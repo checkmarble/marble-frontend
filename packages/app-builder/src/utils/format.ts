@@ -4,6 +4,7 @@ import { type Options as ConstrueOptions } from 'cronstrue/dist/options';
 import { add } from 'date-fns/add';
 import { formatDistanceStrict } from 'date-fns/formatDistanceStrict';
 import { formatRelative } from 'date-fns/formatRelative';
+import { type Currency, dinero, toDecimal } from 'dinero.js';
 import { useMemo } from 'react';
 import { Temporal } from 'temporal-polyfill';
 
@@ -38,10 +39,36 @@ export function formatDateTime(
 }
 
 export function formatNumber(
-  number: number,
-  { language, ...options }: { language: string } & Intl.NumberFormatOptions,
+  number: Parameters<Intl.NumberFormat['format']>[0],
+  {
+    language,
+    ...options
+  }: {
+    language: string;
+    // For currency, use formatCurrency
+    style?: 'decimal' | 'percent';
+  } & Omit<Intl.NumberFormatOptions, 'currency' | 'style'>,
 ) {
   return Intl.NumberFormat(language, options).format(number);
+}
+
+export function formatCurrency(
+  amount: number,
+  {
+    currency,
+    ...options
+  }: { language: string; currency: Currency<number> } & Omit<
+    Intl.NumberFormatOptions,
+    'currency' | 'style'
+  >,
+) {
+  const decimal = toDecimal(dinero({ amount, currency }));
+  // @ts-expect-error toDecimal return string instead of `${number}`
+  return formatNumber(decimal, {
+    style: 'currency',
+    currency: currency.code,
+    ...options,
+  });
 }
 
 export function formatSchedule(

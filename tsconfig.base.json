@@ -9,7 +9,7 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "noImplicitOverride": true,
