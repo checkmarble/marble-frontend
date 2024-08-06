@@ -247,6 +247,22 @@ export type ScheduledExecution = {
     started_at: string;
     status: "pending" | "processing" | "success" | "failure";
 };
+export type RuleSnoozeDto = {
+    id: string;
+    rule_id: string;
+    pivot_value: string;
+    starts_at: string;
+    ends_at: string;
+    created_by_user: string;
+};
+export type SnoozesOfDecisionDto = {
+    decision_id: string;
+    rule_snoozes: RuleSnoozeDto[];
+};
+export type SnoozeDecisionInputDto = {
+    rule_id: string;
+    duration: string;
+};
 export type UploadLog = {
     started_at: string;
     finished_at: string;
@@ -386,6 +402,15 @@ export type ScenarioValidationDto = {
     decision: {
         errors: ScenarioValidationErrorDto[];
     };
+};
+export type RuleSnoozeInformationDto = {
+    rule_id: string;
+    snooze_group_id: string;
+    has_snoozes_active: boolean;
+};
+export type SnoozesOfIterationDto = {
+    iteration_id: string;
+    rule_snoozes: RuleSnoozeInformationDto[];
 };
 export type UpdateScenarioIterationRuleBodyDto = {
     displayOrder?: number;
@@ -1062,6 +1087,52 @@ export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Get active snoozes for a decision
+ */
+export function getDecisionActiveSnoozes(decisionId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            snoozes: SnoozesOfDecisionDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/decisions/${encodeURIComponent(decisionId)}/active-snoozes`, {
+        ...opts
+    }));
+}
+/**
+ * Create a snooze for a decision
+ */
+export function createSnoozeForDecision(decisionId: string, snoozeDecisionInputDto: SnoozeDecisionInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            snoozes: SnoozesOfDecisionDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/decisions/${encodeURIComponent(decisionId)}/snooze`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: snoozeDecisionInputDto
+    })));
+}
+/**
  * Ingest some data
  */
 export function createIngestion(objectType: string, body: object, opts?: Oazapfts.RequestOpts) {
@@ -1498,6 +1569,28 @@ export function validateScenarioIteration(scenarioIterationId: string, body?: {
         method: "POST",
         body
     })));
+}
+/**
+ * Get active snoozes for a scenario iteration
+ */
+export function getScenarioIterationActiveSnoozes(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            snoozes: SnoozesOfIterationDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/active-snoozes`, {
+        ...opts
+    }));
 }
 /**
  * Commit a scenario iteration
