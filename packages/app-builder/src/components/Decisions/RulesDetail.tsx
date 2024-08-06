@@ -112,7 +112,7 @@ export function RulesDetail({
   );
 }
 
-function RuleExecutionDetail({
+export function RuleExecutionDetail({
   ruleExecution,
   triggerObjectType,
   astRuleData,
@@ -244,7 +244,7 @@ function RuleFormula({
   );
 }
 
-function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
+export function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
   if (isRuleExecutionHit(ruleExecution)) {
     return 'green';
   }
@@ -254,7 +254,7 @@ function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
   return 'grey';
 }
 
-function getRuleExecutionStatusLabel(
+export function getRuleExecutionStatusLabel(
   t: TFunction<typeof decisionsI18n>,
   ruleExecution: RuleExecution,
 ) {
