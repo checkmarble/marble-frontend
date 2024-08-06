@@ -10,6 +10,11 @@ import {
   type FiltersWithPagination,
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
+import {
+  adaptSnoozesOfDecision,
+  type SnoozeDecisionInput,
+  type SnoozesOfDecision,
+} from '@app-builder/models/rule-snooze';
 import { add } from 'date-fns/add';
 import { type Outcome } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
@@ -42,6 +47,11 @@ export interface DecisionRepository {
     args: DecisionFiltersWithPagination,
   ): Promise<PaginatedResponse<Decision>>;
   getDecisionById(id: string): Promise<DecisionDetail>;
+  getDecisionActiveSnoozes(decisionId: string): Promise<SnoozesOfDecision>;
+  createSnoozeForDecision(
+    decisionId: string,
+    snoozeDecisionInput: SnoozeDecisionInput,
+  ): Promise<SnoozesOfDecision>;
 }
 
 export function makeGetDecisionRepository() {
@@ -93,6 +103,21 @@ export function makeGetDecisionRepository() {
         lhs.name.localeCompare(rhs.name),
       );
       return decision;
+    },
+    getDecisionActiveSnoozes: async (decisionId) => {
+      const { snoozes } =
+        await marbleCoreApiClient.getDecisionActiveSnoozes(decisionId);
+      return adaptSnoozesOfDecision(snoozes);
+    },
+    createSnoozeForDecision: async (decisionId, snoozeDecisionInput) => {
+      const { snoozes } = await marbleCoreApiClient.createSnoozeForDecision(
+        decisionId,
+        {
+          rule_id: snoozeDecisionInput.ruleId,
+          duration: snoozeDecisionInput.duration,
+        },
+      );
+      return adaptSnoozesOfDecision(snoozes);
     },
   });
 }
