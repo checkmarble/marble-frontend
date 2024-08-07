@@ -193,13 +193,7 @@ function AddRuleSnoozeContent({
               className="row-span-full grid grid-rows-subgrid gap-2"
             >
               <FormLabel>{t('cases:case_detail.duration_value')}</FormLabel>
-              <FormInput
-                type="number"
-                className="w-full"
-                placeholder={t(
-                  'scenarios:create_scenario.description_placeholder',
-                )}
-              />
+              <FormInput type="number" className="w-full" />
               <FormErrorOrDescription />
             </FormField>
 

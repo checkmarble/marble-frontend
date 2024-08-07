@@ -9,6 +9,7 @@ import {
 import {
   isRuleExecutionError,
   isRuleExecutionHit,
+  isRuleExecutionSnoozed,
   type RuleExecution,
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
@@ -263,6 +264,9 @@ export function getRuleExecutionStatusLabel(
   }
   if (isRuleExecutionError(ruleExecution)) {
     return t('decisions:rules.status.error');
+  }
+  if (isRuleExecutionSnoozed(ruleExecution)) {
+    return t('decisions:rules.status.snoozed');
   }
   return t('decisions:rules.status.no_hit');
 }
