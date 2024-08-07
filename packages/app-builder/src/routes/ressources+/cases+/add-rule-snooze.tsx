@@ -9,6 +9,7 @@ import {
   adaptDateTimeFieldCodes,
   durationUnits,
 } from '@app-builder/models/duration';
+import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { serverServices } from '@app-builder/services/init.server';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -67,7 +68,9 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(
       submission.reply({
         fieldErrors: {
-          durationValue: [t('cases:case_detail.errors.max_duration')],
+          durationValue: [
+            t('cases:case_detail.add_rule_snooze.errors.max_duration'),
+          ],
         },
       }),
     );
@@ -82,16 +85,23 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(submission.reply());
   } catch (error) {
     const session = await getSession(request);
-    const t = await getFixedT(request, ['common']);
+    const t = await getFixedT(request, ['common', 'cases']);
 
-    const formError = t('common:errors.unknown');
+    let message: string;
+    if (isStatusConflictHttpError(error)) {
+      message = t(
+        'cases:case_detail.add_rule_snooze.errors.duplicate_rule_snooze',
+      );
+    } else {
+      message = t('common:errors.unknown');
+    }
 
     setToastMessage(session, {
       type: 'error',
-      message: formError,
+      message,
     });
 
-    return json(submission.reply({ formErrors: [formError] }), {
+    return json(submission.reply({ formErrors: [message] }), {
       headers: { 'Set-Cookie': await commitSession(session) },
     });
   }
@@ -192,7 +202,9 @@ function AddRuleSnoozeContent({
               name={fields.durationValue.name}
               className="row-span-full grid grid-rows-subgrid gap-2"
             >
-              <FormLabel>{t('cases:case_detail.duration_value')}</FormLabel>
+              <FormLabel>
+                {t('cases:case_detail.add_rule_snooze.duration_value')}
+              </FormLabel>
               <FormInput type="number" className="w-full" />
               <FormErrorOrDescription />
             </FormField>
@@ -201,7 +213,9 @@ function AddRuleSnoozeContent({
               name={fields.durationUnit.name}
               className="row-span-full grid grid-rows-subgrid gap-2"
             >
-              <FormLabel>{t('cases:case_detail.duration_unit')}</FormLabel>
+              <FormLabel>
+                {t('cases:case_detail.add_rule_snooze.duration_unit')}
+              </FormLabel>
               <FormSelect.Default
                 className="h-10 w-full"
                 options={durationUnits}
