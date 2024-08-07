@@ -247,59 +247,61 @@ function DecisionDetail({
 
   return (
     <div className="flex flex-col gap-6 p-4">
-      <div>
-        <div className="text-grey-50 text-s mb-1 capitalize">
-          {t('cases:case_detail.pivot_values')}
-        </div>
-        <div className="border-grey-10 overflow-hidden rounded border">
-          <table className="bg-grey-00 w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-grey-02 min-h-8">
-                <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
-                  {t('decisions:pivot_detail.type')}
-                </th>
-                <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
-                  {t('decisions:pivot_detail.definition')}
-                </th>
-                <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
-                  {t('decisions:pivot_detail.pivot_value')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {pivotValues.map((pivotValue) => {
-                return (
-                  <tr
-                    key={pivotValue.pivot.id}
-                    className="border-grey-10 border-t"
-                  >
-                    <td className="px-4 py-1">
-                      <PivotType type={pivotValue.pivot.type} />
-                    </td>
-                    <td className="text-grey-100 text-s break-all px-4 py-2">
-                      {getPivotDisplayValue(pivotValue.pivot)}
-                    </td>
-                    <td
-                      className="px-4 py-2"
-                      {...getCopyToClipboardProps(pivotValue.value)}
+      {pivotValues.length > 0 ? (
+        <div>
+          <div className="text-grey-50 text-s mb-1 capitalize">
+            {t('cases:case_detail.pivot_values')}
+          </div>
+          <div className="border-grey-10 overflow-hidden rounded border">
+            <table className="bg-grey-00 w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-grey-02 min-h-8">
+                  <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
+                    {t('decisions:pivot_detail.type')}
+                  </th>
+                  <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
+                    {t('decisions:pivot_detail.definition')}
+                  </th>
+                  <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
+                    {t('decisions:pivot_detail.pivot_value')}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {pivotValues.map((pivotValue) => {
+                  return (
+                    <tr
+                      key={pivotValue.pivot.id}
+                      className="border-grey-10 border-t"
                     >
-                      <div className="group flex h-full cursor-pointer flex-row items-center gap-2">
-                        <span className="text-grey-50 group-hover:text-grey-100 select-none break-all text-xs font-normal transition-colors">
-                          {pivotValue.value}
-                        </span>
-                        <Icon
-                          icon="duplicate"
-                          className="group-hover:text-grey-100 size-4 shrink-0 text-transparent transition-colors"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      <td className="px-4 py-1">
+                        <PivotType type={pivotValue.pivot.type} />
+                      </td>
+                      <td className="text-grey-100 text-s break-all px-4 py-2">
+                        {getPivotDisplayValue(pivotValue.pivot)}
+                      </td>
+                      <td
+                        className="px-4 py-2"
+                        {...getCopyToClipboardProps(pivotValue.value)}
+                      >
+                        <div className="group flex h-full cursor-pointer flex-row items-center gap-2">
+                          <span className="text-grey-50 group-hover:text-grey-100 select-none break-all text-xs font-normal transition-colors">
+                            {pivotValue.value}
+                          </span>
+                          <Icon
+                            icon="duplicate"
+                            className="group-hover:text-grey-100 size-4 shrink-0 text-transparent transition-colors"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div>
         <div className="text-grey-50 text-s capitalize">
@@ -328,7 +330,7 @@ function DecisionDetail({
                     border="square"
                     size="big"
                     color={getRuleExecutionStatusColor(ruleExecution)}
-                    className="col-start-4 capitalize"
+                    className="col-start-4 min-w-14 capitalize"
                   >
                     {getRuleExecutionStatusLabel(t, ruleExecution)}
                   </Tag>
@@ -357,7 +359,8 @@ function DecisionDetail({
                       }}
                     />
 
-                    {featureAccess.isReadSnoozeAvailable ? (
+                    {featureAccess.isReadSnoozeAvailable &&
+                    pivotValues.length > 0 ? (
                       <RuleSnoozes
                         ruleSnoozes={ruleSnoozes}
                         pivotValues={pivotValues}
