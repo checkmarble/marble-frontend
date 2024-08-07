@@ -11,6 +11,7 @@ import {
   type RuleExecution,
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
+import { type RuleSnooze } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
@@ -56,6 +57,7 @@ interface DecisionsDetail {
     payloadAccessors: PayloadAstNode[];
   };
   operators: OperatorFunction[];
+  ruleSnoozes: RuleSnooze[];
 }
 
 export function CaseDecisions({
@@ -64,7 +66,15 @@ export function CaseDecisions({
 }: {
   decisions: Decision[];
   caseDecisionsPromise: Promise<
-    [TableModel[], CustomList[], DecisionsDetail[]]
+    [
+      TableModel[],
+      CustomList[],
+      DecisionsDetail[],
+      {
+        isReadSnoozeAvailable: boolean;
+        isCreateSnoozeAvailable: boolean;
+      },
+    ]
   >;
 }) {
   const { t } = useTranslation(casesI18n);
@@ -136,7 +146,12 @@ export function CaseDecisions({
                 <div className="bg-purple-02 border-t-grey-10 border-t">
                   <React.Suspense fallback={t('common:loading')}>
                     <Await resolve={caseDecisionsPromise}>
-                      {([dataModel, customLists, decisionsDetail]) => {
+                      {([
+                        dataModel,
+                        customLists,
+                        decisionsDetail,
+                        featureAccess,
+                      ]) => {
                         return (
                           <DecisionDetail
                             key={row.id}
@@ -144,6 +159,7 @@ export function CaseDecisions({
                             decisionsDetail={decisionsDetail}
                             dataModel={dataModel}
                             customLists={customLists}
+                            featureAccess={featureAccess}
                           />
                         );
                       }}
@@ -194,11 +210,16 @@ function DecisionDetail({
   decisionsDetail,
   dataModel,
   customLists,
+  featureAccess,
 }: {
   decision: Decision;
   decisionsDetail: DecisionsDetail[];
   dataModel: TableModel[];
   customLists: CustomList[];
+  featureAccess: {
+    isReadSnoozeAvailable: boolean;
+    isCreateSnoozeAvailable: boolean;
+  };
 }) {
   const { t } = useTranslation(casesI18n);
   const getCopyToClipboardProps = useGetCopyToClipboard();
@@ -233,16 +254,16 @@ function DecisionDetail({
         <div className="border-grey-10 overflow-hidden rounded border">
           <table className="bg-grey-00 w-full table-auto border-collapse">
             <thead>
-              <tr className="bg-grey-02 text-grey-50 min-h-8 text-xs font-semibold">
-                <td className="px-4 py-2">
+              <tr className="bg-grey-02 min-h-8">
+                <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
                   {t('decisions:pivot_detail.type')}
-                </td>
-                <td className="px-4 py-2">
+                </th>
+                <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
                   {t('decisions:pivot_detail.definition')}
-                </td>
-                <td className="px-4 py-2">
+                </th>
+                <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
                   {t('decisions:pivot_detail.pivot_value')}
-                </td>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -287,6 +308,9 @@ function DecisionDetail({
         <div className="-mx-2 grid grid-cols-[max-content_1fr_max-content_max-content] gap-2">
           {decisionDetail.ruleExecutions.map((ruleExecution) => {
             const isHit = isRuleExecutionHit(ruleExecution);
+            const ruleSnoozes = decisionDetail.ruleSnoozes.filter(
+              (snooze) => snooze.ruleId === ruleExecution.ruleId,
+            );
 
             return (
               <CollapsibleV2.Provider key={ruleExecution.ruleId}>
@@ -333,15 +357,17 @@ function DecisionDetail({
                       }}
                     />
 
-                    <AddRuleSnooze
-                      decisionId={decision.id}
-                      ruleId={ruleExecution.ruleId}
-                    >
-                      <Button className="w-fit">
-                        <Icon icon="plus" className="size-5" />
-                        {t('cases:case_detail.add_rule_snooze')}
-                      </Button>
-                    </AddRuleSnooze>
+                    {featureAccess.isReadSnoozeAvailable ? (
+                      <RuleSnoozes
+                        ruleSnoozes={ruleSnoozes}
+                        pivotValues={pivotValues}
+                        isCreateSnoozeAvailable={
+                          featureAccess.isCreateSnoozeAvailable
+                        }
+                        decisionId={decision.id}
+                        ruleId={ruleExecution.ruleId}
+                      />
+                    ) : null}
                   </div>
                 </CollapsibleV2.Content>
               </CollapsibleV2.Provider>
@@ -349,6 +375,92 @@ function DecisionDetail({
           })}
         </div>
       </div>
+    </div>
+  );
+}
+
+function RuleSnoozes({
+  ruleSnoozes,
+  pivotValues,
+  isCreateSnoozeAvailable,
+  decisionId,
+  ruleId,
+}: {
+  ruleSnoozes: RuleSnooze[];
+  pivotValues: {
+    pivot: Pivot;
+    value: string;
+  }[];
+  isCreateSnoozeAvailable: boolean;
+  decisionId: string;
+  ruleId: string;
+}) {
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
+  const getCopyToClipboardProps = useGetCopyToClipboard();
+
+  return (
+    <div className="border-grey-10 overflow-hidden rounded border">
+      <table className="bg-grey-00 w-full table-fixed border-collapse">
+        <thead>
+          <tr className="bg-grey-02 min-h-8">
+            <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
+              {t('decisions:pivot_value')}
+            </th>
+            <th className="text-grey-50 px-4 py-2 text-left text-xs font-semibold">
+              {t('cases:case_detail.add_rule_snooze')}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {pivotValues.map(({ pivot, value }) => {
+            const snooze = ruleSnoozes.find(
+              (snooze) => snooze.pivotValue === value,
+            );
+            return (
+              <tr key={pivot.id} className="border-grey-10 border-t">
+                <td className="px-4 py-2" {...getCopyToClipboardProps(value)}>
+                  <div className="group flex h-full cursor-pointer flex-row items-center gap-2">
+                    <span className="text-grey-50 group-hover:text-grey-100 select-none break-all text-xs font-normal transition-colors">
+                      {value}
+                    </span>
+                    <Icon
+                      icon="duplicate"
+                      className="group-hover:text-grey-100 size-4 shrink-0 text-transparent transition-colors"
+                    />
+                  </div>
+                </td>
+                {snooze ? (
+                  <td className="px-4 py-2">
+                    <div className="grid w-fit grid-cols-[1fr_max-content_1fr] gap-1">
+                      <span className="text-grey-100 text-s text-right">
+                        {formatDateTime(snooze.startsAt, { language })}
+                      </span>
+                      <span className="text-s self-center">→</span>
+                      <span className="text-grey-100 text-s">
+                        {formatDateTime(snooze.endsAt, { language })}
+                      </span>
+                    </div>
+                  </td>
+                ) : isCreateSnoozeAvailable ? (
+                  <td className="px-4 py-1">
+                    <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
+                      <Button className="h-8 w-fit">
+                        <Icon icon="plus" className="size-5" />
+                        {t('cases:case_detail.add_rule_snooze')}
+                      </Button>
+                    </AddRuleSnooze>
+                  </td>
+                ) : (
+                  <td className="text-s px-4 py-2">
+                    {t('cases:case_detail.add_rule_snooze.no_access')}
+                  </td>
+                )}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

@@ -38,7 +38,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, featureAccessService } = serverServices;
   const {
     user,
     cases,
@@ -62,6 +62,18 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       .listCustomLists()
       .then(({ custom_lists }) => custom_lists);
 
+    const featureAccessPromise = Promise.all([
+      featureAccessService.isReadSnoozeAvailable({
+        permissions: user.permissions,
+      }),
+      featureAccessService.isCreateSnoozeAvailable({
+        permissions: user.permissions,
+      }),
+    ]).then(([isReadSnoozeAvailable, isCreateSnoozeAvailable]) => ({
+      isReadSnoozeAvailable,
+      isCreateSnoozeAvailable,
+    }));
+
     const decisionsDetailPromise = Promise.all(
       caseDetail.decisions.map(async ({ id }) => {
         const decisionDetail = await decision.getDecisionById(id);
@@ -78,6 +90,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
           scenarioId: decisionDetail.scenario.id,
         });
 
+        const ruleSnoozesPromise = decision
+          .getDecisionActiveSnoozes(id)
+          .then(({ ruleSnoozes }) => ruleSnoozes);
+
         return {
           decisionId: id,
           ruleExecutions: decisionDetail.rules,
@@ -86,6 +102,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
           rules: await rulesPromise,
           accessors: await accessorsPromise,
           operators: await operatorsPromise,
+          ruleSnoozes: await ruleSnoozesPromise,
         };
       }),
     );
@@ -98,6 +115,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         dataModelPromise,
         customListsPromise,
         decisionsDetailPromise,
+        featureAccessPromise,
       ]),
     });
   } catch (error) {

@@ -79,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     await decision.createSnoozeForDecision(decisionId, {
       ruleId,
-      duration: duration.toString(),
+      duration,
     });
 
     return json(submission.reply());

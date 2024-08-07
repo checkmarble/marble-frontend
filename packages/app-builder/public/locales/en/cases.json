@@ -69,6 +69,7 @@
   "case_detail.add_rule_snooze.errors.max_duration": "The maximum duration is 180 days",
   "case_detail.add_rule_snooze.errors.duplicate_rule_snooze": "A snooze rule with this pivot value already exists for this rule",
   "case_detail.add_rule_snooze": "Snooze",
+  "case_detail.add_rule_snooze.no_access": "You don't have the permission to snooze this rule",
   "filters.date_range.title": "creation date is:",
   "change_status_modal.title": "Change Case’s status",
   "change_status_modal.description.from": "from <Status>{{status}}</Status>",
