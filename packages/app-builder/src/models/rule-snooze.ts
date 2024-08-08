@@ -16,7 +16,7 @@ export interface RuleSnooze {
   createdFromDecisionId?: string;
 }
 
-function adaptRuleSnooze(dto: RuleSnoozeDto): RuleSnooze {
+export function adaptRuleSnooze(dto: RuleSnoozeDto): RuleSnooze {
   return {
     id: dto.id,
     pivotValue: dto.pivot_value,

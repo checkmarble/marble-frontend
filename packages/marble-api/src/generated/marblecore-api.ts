@@ -2733,3 +2733,25 @@ export function deleteWebhook(webhookId: string, opts?: Oazapfts.RequestOpts) {
         method: "DELETE"
     }));
 }
+/**
+ * Get a rule snooze by id
+ */
+export function getRuleSnooze(ruleSnoozeId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            snooze: RuleSnoozeDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/rule-snoozes/${encodeURIComponent(ruleSnoozeId)}`, {
+        ...opts
+    }));
+}

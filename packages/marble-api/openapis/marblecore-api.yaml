@@ -40,6 +40,8 @@ tags:
     description: Operations about tags.
   - name: Webhooks
     description: Operations about webhooks.
+  - name: RuleSnoozes
+    description: Operations about rule snoozes.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
@@ -3177,6 +3179,40 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /rule-snoozes/{rule_snooze_id}:
+    get:
+      tags:
+        - RuleSnoozes
+      summary: Get a rule snooze by id
+      operationId: getRuleSnooze
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: rule_snooze_id
+          description: ID of the rule snooze that needs to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The rule snooze corresponding to the provided `rule_snooze_id`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - snooze
+                properties:
+                  snooze:
+                    $ref: '#/components/schemas/RuleSnoozeDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
 components:
   parameters:
     start_date:
