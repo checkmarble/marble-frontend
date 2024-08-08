@@ -24,7 +24,7 @@ export function makeLicenseServerService({
           dataEnrichment: false,
           userRoles: false,
           webhooks: false,
-          ruleSnooze: false,
+          ruleSnoozes: false,
         };
       });
 

@@ -302,7 +302,7 @@ export function makeFeatureAccessService({
       permissions: UserPermissions;
     }) => {
       const licenseEntitlements = await getLicenseEntitlements();
-      if (!licenseEntitlements.ruleSnooze) return false;
+      if (!licenseEntitlements.ruleSnoozes) return false;
       return permissions.canReadSnoozes;
     },
     isCreateSnoozeAvailable: async ({
@@ -311,7 +311,7 @@ export function makeFeatureAccessService({
       permissions: UserPermissions;
     }) => {
       const licenseEntitlements = await getLicenseEntitlements();
-      if (!licenseEntitlements.ruleSnooze) return false;
+      if (!licenseEntitlements.ruleSnoozes) return false;
       return permissions.canCreateSnoozes;
     },
   };

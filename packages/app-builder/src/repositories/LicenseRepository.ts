@@ -24,7 +24,7 @@ export function getLicenseRepository(
             dataEnrichment: true,
             userRoles: true,
             webhooks: true,
-            ruleSnooze: true,
+            ruleSnoozes: true,
           },
         });
       }
