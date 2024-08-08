@@ -8,6 +8,7 @@ import { CaseContributors } from '@app-builder/components/Cases/CaseContributors
 import { CaseDecisions } from '@app-builder/components/Cases/CaseDecisions';
 import { FilesList } from '@app-builder/components/Cases/CaseFiles';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
+import { type CaseDetail } from '@app-builder/models/cases';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
 import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
@@ -21,13 +22,14 @@ import { fromParams } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
+  Link,
   useLoaderData,
   useNavigate,
   useRouteError,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -153,12 +155,31 @@ export default function CasePage() {
                   </span>
                 </div>
                 <CollapsibleV2.Content>
-                  <div className="mt-4">
-                    <CaseDecisions
-                      decisions={caseDetail.decisions}
-                      caseDecisionsPromise={caseDecisionsPromise}
-                    />
-                  </div>
+                  {caseDetail.decisions.length > 0 ? (
+                    <div className="mt-4">
+                      <CaseDecisions
+                        decisions={caseDetail.decisions}
+                        caseDecisionsPromise={caseDecisionsPromise}
+                      />
+                    </div>
+                  ) : (
+                    <div className="px-2 pt-2">
+                      <span className="text-grey-50 text-s whitespace-pre">
+                        <Trans
+                          t={t}
+                          i18nKey="cases:case_detail.no_decisions"
+                          components={{
+                            Link: (
+                              <Link
+                                className="text-purple-50 hover:text-purple-100 hover:underline"
+                                to={getRoute('/decisions/')}
+                              />
+                            ),
+                          }}
+                        />
+                      </span>
+                    </div>
+                  )}
                 </CollapsibleV2.Content>
               </CollapsibleV2.Provider>
             </div>
@@ -183,9 +204,25 @@ export default function CasePage() {
                 </div>
 
                 <CollapsibleV2.Content>
-                  <div className="mt-4">
-                    <FilesList files={caseDetail.files} />
-                  </div>
+                  {caseDetail.files.length > 0 ? (
+                    <div className="mt-4">
+                      <FilesList files={caseDetail.files} />
+                    </div>
+                  ) : (
+                    <div className="px-2 pt-2">
+                      <span className="text-grey-50 text-s whitespace-pre">
+                        <Trans
+                          t={t}
+                          i18nKey="cases:case_detail.no_files"
+                          components={{
+                            Button: (
+                              <AddYourFirstFile caseDetail={caseDetail} />
+                            ),
+                          }}
+                        />
+                      </span>
+                    </div>
+                  )}
                 </CollapsibleV2.Content>
               </CollapsibleV2.Provider>
             </div>
@@ -257,6 +294,22 @@ export default function CasePage() {
         </div>
       </div>
     </Page.Container>
+  );
+}
+
+function AddYourFirstFile({
+  children,
+  caseDetail,
+}: {
+  children?: React.ReactNode;
+  caseDetail: CaseDetail;
+}) {
+  return (
+    <UploadFile caseDetail={caseDetail}>
+      <button className="text-purple-50 hover:text-purple-100 hover:underline">
+        {children}
+      </button>
+    </UploadFile>
   );
 }
 
