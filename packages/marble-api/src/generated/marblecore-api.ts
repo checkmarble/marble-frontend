@@ -194,6 +194,7 @@ export type InboxChangedEventDto = {
 export type RuleSnoozeCreatedDto = {
     event_type: "rule_snooze_created";
 } & CaseEventDtoBase & {
+    additional_note: string;
     resource_id: string;
     resource_type: string;
     user_id: string;

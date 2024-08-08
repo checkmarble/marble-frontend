@@ -4019,10 +4019,13 @@ components:
         - $ref: '#/components/schemas/CaseEventDto'
         - type: object
           required:
+            - additional_note
             - resource_type
             - resource_id
             - user_id
           properties:
+            additional_note:
+              type: string
             resource_id:
               type: string
               format: uuid
