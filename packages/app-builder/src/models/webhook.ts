@@ -15,6 +15,7 @@ export const eventTypes = [
   'case.tags_updated',
   'case.comment_created',
   'case.file_created',
+  'case.rule_snooze_created',
   'decision.created',
 ] as const;
 type EventType = (typeof eventTypes)[number];
