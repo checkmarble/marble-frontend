@@ -280,6 +280,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/add-comment.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/add-rule-snooze",
+        "path": "ressources/cases/add-rule-snooze",
+        "file": "routes/ressources+/cases+/add-rule-snooze.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/add-to-case",
         "path": "ressources/cases/add-to-case",
         "file": "routes/ressources+/cases+/add-to-case.tsx"

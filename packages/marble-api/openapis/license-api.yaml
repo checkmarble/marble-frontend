@@ -58,6 +58,8 @@ components:
               type: boolean
             webhooks:
               type: boolean
+            rule_snoozes:
+              type: boolean
           required:
             - sso
             - workflows
@@ -65,6 +67,7 @@ components:
             - data_enrichment
             - user_roles
             - webhooks
+            - rule_snoozes
       required:
         - license_validation_code
         - license_entitlements

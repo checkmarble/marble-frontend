@@ -94,6 +94,7 @@ export type DecisionDto = {
         [key: string]: any;
     };
     trigger_object_type: string;
+    scheduled_execution_id?: string;
 };
 export type CreateDecisionBody = {
     scenario_id: string;
@@ -125,6 +126,7 @@ export type RuleExecutionDto = {
     error?: Error;
     description: string;
     name: string;
+    outcome: "hit" | "no_hit" | "snoozed" | "error";
     result: boolean;
     rule_id: string;
     score_modifier: number;

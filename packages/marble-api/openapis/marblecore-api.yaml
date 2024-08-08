@@ -3718,6 +3718,7 @@ components:
       required:
         - description
         - name
+        - outcome
         - result
         - rule_id
         - score_modifier
@@ -3728,6 +3729,9 @@ components:
           type: string
         name:
           type: string
+        outcome:
+          type: string
+          enum: ['hit', 'no_hit', 'snoozed', 'error']
         result:
           type: boolean
         rule_id:
@@ -3783,6 +3787,9 @@ components:
           additionalProperties: true
         trigger_object_type:
           type: string
+        scheduled_execution_id:
+          type: string
+          format: uuid
       required:
         - id
         - created_at
