@@ -4,6 +4,7 @@ import {
   type SnoozesOfDecisionDto,
   type SnoozesOfIterationDto,
 } from 'marble-api';
+import { type Temporal } from 'temporal-polyfill';
 
 export interface RuleSnooze {
   id: string;
@@ -41,7 +42,7 @@ export function adaptSnoozesOfDecision(
 
 export interface SnoozeDecisionInput {
   ruleId: string;
-  duration: string;
+  duration: Temporal.Duration;
 }
 
 export interface RuleSnoozeInformation {
