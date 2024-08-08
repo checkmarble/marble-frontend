@@ -47,6 +47,7 @@
   "case_detail.history.event_title.name_updated": "New name: <Name>{{name}}</Name>",
   "case_detail.history.event_title.tags_updated": "Tags updated",
   "case_detail.history.event_title.inbox_changed": "Inbox changed",
+  "case_detail.history.event_title.rule_snooze_created": "Rule snooze created",
   "case_detail.history.event_title.status_updated": "New status: <Status>{{status}}</Status>",
   "case_detail.history.event_title.file_added": "File added: <Name>{{name}}</Name>",
   "case_detail.history.event_detail.added_by": "Added by: <Avatar/> <User>{{user}}</User>",

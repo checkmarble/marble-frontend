@@ -107,6 +107,7 @@ export function getEventIcon(event: CaseEvent) {
         />
       );
     case 'decision_added':
+    case 'rule_snooze_created':
       return (
         <EventIcon
           className="border-grey-10 bg-grey-00 text-grey-100 border"
@@ -254,6 +255,12 @@ export function getEventTitle(
         </span>
       );
     }
+    case 'rule_snooze_created':
+      return (
+        <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
+          {t('cases:case_detail.history.event_title.rule_snooze_created')}
+        </span>
+      );
   }
 }
 
@@ -328,6 +335,9 @@ export function getEventDetail(event: CaseEvent) {
       return <Author userId={event.userId} type="added_by" />;
     }
     case 'file_added': {
+      return <Author userId={event.userId} type="added_by" />;
+    }
+    case 'rule_snooze_created': {
       return <Author userId={event.userId} type="added_by" />;
     }
     case 'name_updated':

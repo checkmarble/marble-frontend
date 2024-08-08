@@ -191,7 +191,14 @@ export type InboxChangedEventDto = {
     new_value: string;
     user_id: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto;
+export type RuleSnoozeCreatedDto = {
+    event_type: "rule_snooze_created";
+} & CaseEventDtoBase & {
+    resource_id: string;
+    resource_type: string;
+    user_id: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;

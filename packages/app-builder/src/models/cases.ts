@@ -121,6 +121,11 @@ export interface InboxChangedEvent extends CaseEventBase {
   newInboxId: string;
   userId: string;
 }
+export interface CaseEventCreated extends CaseEventBase {
+  eventType: 'rule_snooze_created';
+  ruleSnoozeId: string;
+  userId: string;
+}
 
 export type CaseEvent =
   | CaseCreatedEvent
@@ -130,7 +135,8 @@ export type CaseEvent =
   | NameUpdatedEvent
   | CaseTagsUpdatedEvent
   | FileAddedEvent
-  | InboxChangedEvent;
+  | InboxChangedEvent
+  | CaseEventCreated;
 
 export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
   const caseEvent = {
@@ -203,6 +209,14 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
         eventType: 'inbox_changed',
         newInboxId: caseEventDto.new_value,
         userId: caseEventDto.user_id,
+      };
+    }
+    case 'rule_snooze_created': {
+      return {
+        ...caseEvent,
+        eventType: 'rule_snooze_created',
+        userId: caseEventDto.user_id,
+        ruleSnoozeId: caseEventDto.resource_id,
       };
     }
     default:
