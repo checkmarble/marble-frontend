@@ -4012,6 +4012,7 @@ components:
           tags_updated: '#/components/schemas/CaseTagsUpdatedEventDto'
           file_added: '#/components/schemas/FileAddedEventDto'
           inbox_changed: '#/components/schemas/InboxChangedEventDto'
+          rule_snooze_created: '#/components/schemas/RuleSnoozeCreatedDto'
       required:
         - id
         - case_id
@@ -4205,6 +4206,26 @@ components:
             new_value:
               type: string
               format: uuid
+            user_id:
+              type: string
+              format: uuid
+    RuleSnoozeCreatedDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - additional_note
+            - resource_type
+            - resource_id
+            - user_id
+          properties:
+            additional_note:
+              type: string
+            resource_id:
+              type: string
+              format: uuid
+            resource_type:
+              type: string
             user_id:
               type: string
               format: uuid

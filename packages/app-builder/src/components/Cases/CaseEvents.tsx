@@ -12,6 +12,7 @@ import {
 import { cx } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
+import { assertNever } from 'typescript-utils';
 import { Accordion, Avatar } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
@@ -122,6 +123,15 @@ export function getEventIcon(event: CaseEvent) {
           icon="attachment"
         />
       );
+    case 'rule_snooze_created':
+      return (
+        <EventIcon
+          className="border-grey-10 bg-grey-00 text-grey-100 border"
+          icon="snooze"
+        />
+      );
+    default:
+      assertNever('[CaseEvent] unknown event:', eventType);
   }
 }
 
@@ -236,6 +246,14 @@ export function getEventTitle(
         </span>
       );
     }
+    case 'rule_snooze_created':
+      return (
+        <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
+          {t('cases:case_detail.history.event_title.rule_snooze_created')}
+        </span>
+      );
+    default:
+      assertNever('[CaseEvent] unknown event:', eventType);
   }
 }
 
@@ -317,6 +335,11 @@ export function getEventDetail(event: CaseEvent) {
     case 'inbox_changed': {
       return <Author userId={event.userId} type="edited_by" />;
     }
+    case 'rule_snooze_created': {
+      return <Author userId={event.userId} type="added_by" />;
+    }
+    default:
+      assertNever('[CaseEvent] unknown event:', eventType);
   }
 }
 
