@@ -5,6 +5,7 @@ import {
   type Decision,
   type DecisionDetail,
 } from '@app-builder/models/decision';
+import { adaptGoTimeDuration } from '@app-builder/models/duration';
 import {
   adaptPagination,
   type FiltersWithPagination,
@@ -114,7 +115,7 @@ export function makeGetDecisionRepository() {
         decisionId,
         {
           rule_id: snoozeDecisionInput.ruleId,
-          duration: snoozeDecisionInput.duration,
+          duration: adaptGoTimeDuration(snoozeDecisionInput.duration),
         },
       );
       return adaptSnoozesOfDecision(snoozes);
