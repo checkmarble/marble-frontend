@@ -11,7 +11,10 @@ import {
   type RuleExecution,
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
-import { type RuleSnooze } from '@app-builder/models/rule-snooze';
+import {
+  type RuleSnooze,
+  type RuleSnoozeWithRuleId,
+} from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
@@ -57,7 +60,7 @@ interface DecisionsDetail {
     payloadAccessors: PayloadAstNode[];
   };
   operators: OperatorFunction[];
-  ruleSnoozes: RuleSnooze[];
+  ruleSnoozes: RuleSnoozeWithRuleId[];
 }
 
 export function CaseDecisions({

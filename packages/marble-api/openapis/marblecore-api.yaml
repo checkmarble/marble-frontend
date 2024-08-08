@@ -3816,9 +3816,6 @@ components:
         id:
           type: string
           format: uuid
-        rule_id:
-          type: string
-          format: uuid
         pivot_value:
           type: string
         starts_at:
@@ -3830,13 +3827,25 @@ components:
         created_by_user:
           type: string
           format: uuid
+        created_from_decision_id:
+          type: string
+          format: uuid
       required:
         - id
-        - rule_id
         - pivot_value
         - starts_at
         - ends_at
         - created_by_user
+    RuleSnoozeWithRuleIdDto:
+      allOf:
+        - $ref: '#/components/schemas/RuleSnoozeDto'
+        - type: object
+          properties:
+            rule_id:
+              type: string
+              format: uuid
+          required:
+            - rule_id
     SnoozesOfDecisionDto:
       type: object
       properties:
@@ -3846,7 +3855,7 @@ components:
         rule_snoozes:
           type: array
           items:
-            $ref: '#/components/schemas/RuleSnoozeDto'
+            $ref: '#/components/schemas/RuleSnoozeWithRuleIdDto'
       required:
         - decision_id
         - rule_snoozes
@@ -3857,6 +3866,8 @@ components:
           type: string
           format: uuid
         duration:
+          type: string
+        comment:
           type: string
       required:
         - rule_id

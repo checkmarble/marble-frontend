@@ -259,19 +259,23 @@ export type ScheduledExecution = {
 };
 export type RuleSnoozeDto = {
     id: string;
-    rule_id: string;
     pivot_value: string;
     starts_at: string;
     ends_at: string;
     created_by_user: string;
+    created_from_decision_id?: string;
+};
+export type RuleSnoozeWithRuleIdDto = RuleSnoozeDto & {
+    rule_id: string;
 };
 export type SnoozesOfDecisionDto = {
     decision_id: string;
-    rule_snoozes: RuleSnoozeDto[];
+    rule_snoozes: RuleSnoozeWithRuleIdDto[];
 };
 export type SnoozeDecisionInputDto = {
     rule_id: string;
     duration: string;
+    comment?: string;
 };
 export type UploadLog = {
     started_at: string;

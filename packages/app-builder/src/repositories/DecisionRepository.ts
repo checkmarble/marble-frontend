@@ -116,6 +116,7 @@ export function makeGetDecisionRepository() {
         {
           rule_id: snoozeDecisionInput.ruleId,
           duration: adaptGoTimeDuration(snoozeDecisionInput.duration),
+          comment: snoozeDecisionInput.comment,
         },
       );
       return adaptSnoozesOfDecision(snoozes);
