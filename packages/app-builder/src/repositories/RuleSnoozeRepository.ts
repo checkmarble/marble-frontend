@@ -1,11 +1,11 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
-  adaptRuleSnooze,
-  type RuleSnooze,
+  adaptRuleSnoozeWithRuleId,
+  type RuleSnoozeWithRuleId,
 } from '@app-builder/models/rule-snooze';
 
 export interface RuleSnoozeRepository {
-  getRuleSnooze(ruleSnoozeId: string): Promise<RuleSnooze>;
+  getRuleSnooze(ruleSnoozeId: string): Promise<RuleSnoozeWithRuleId>;
 }
 
 export function makeGetRuleSnoozeRepository() {
@@ -13,7 +13,11 @@ export function makeGetRuleSnoozeRepository() {
     getRuleSnooze: async (ruleSnoozeId) => {
       const { snooze } = await marbleCoreApiClient.getRuleSnooze(ruleSnoozeId);
 
-      return adaptRuleSnooze(snooze);
+      // TODO: remove this when the new API is fixed
+      return adaptRuleSnoozeWithRuleId({
+        rule_id: '13617a88-6cda-4648-805e-b468ae4812f8',
+        ...snooze,
+      });
     },
   });
 }

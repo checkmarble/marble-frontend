@@ -431,12 +431,12 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
         className="text-grey-100 text-s"
         {...(isLoading
           ? {}
-          : getCopyToClipboardProps(data.ruleSnooze.pivotValue))}
+          : getCopyToClipboardProps(data.ruleSnoozeDetail.pivotValue))}
       >
         {isLoading ? (
           <Spinner className="size-4" />
         ) : (
-          <CopyPivotValue>{data.ruleSnooze.pivotValue}</CopyPivotValue>
+          <CopyPivotValue>{data.ruleSnoozeDetail.pivotValue}</CopyPivotValue>
         )}
       </span>
       <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
@@ -447,16 +447,51 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
       <span className="text-grey-100 text-s">
         {isLoading ? (
           <Spinner className="size-4" />
-        ) : data.ruleSnooze.createdFromDecisionId ? (
+        ) : data.ruleSnoozeDetail.createdFrom ? (
           <Link
             className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
             to={getRoute('/decisions/:decisionId', {
-              decisionId: fromUUID(data.ruleSnooze.createdFromDecisionId),
+              decisionId: fromUUID(
+                data.ruleSnoozeDetail.createdFrom.decisionId,
+              ),
             })}
           >
             {t(
               'cases:case_detail.history.event_detail.rule_snooze_created.decision_detail',
             )}
+          </Link>
+        ) : (
+          '-'
+        )}
+      </span>
+      <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
+        {t(
+          'cases:case_detail.history.event_detail.rule_snooze_created.created_from_rule',
+        )}
+      </span>
+      <span className="text-grey-100 text-s">
+        {isLoading ? (
+          <Spinner className="size-4" />
+        ) : data.ruleSnoozeDetail.createdFrom ? (
+          <Link
+            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
+            to={getRoute(
+              '/scenarios/:scenarioId/i/:iterationId/rules/:ruleId',
+              {
+                scenarioId: fromUUID(
+                  data.ruleSnoozeDetail.createdFrom.scenarioId,
+                ),
+                iterationId: fromUUID(
+                  data.ruleSnoozeDetail.createdFrom.scenarioIterationId,
+                ),
+                ruleId: fromUUID(data.ruleSnoozeDetail.createdFrom.ruleId),
+              },
+            )}
+          >
+            {data.ruleSnoozeDetail.createdFrom.ruleName ??
+              t(
+                'cases:case_detail.history.event_detail.rule_snooze_created.rule_detail',
+              )}
           </Link>
         ) : (
           '-'
@@ -472,13 +507,13 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
           <span className="text-grey-100 text-s text-right">
             {isLoading
               ? '--/--/----'
-              : formatDateTime(data.ruleSnooze.startsAt, { language })}
+              : formatDateTime(data.ruleSnoozeDetail.startsAt, { language })}
           </span>
           <span className="text-s self-center">→</span>
           <span className="text-grey-100 text-s">
             {isLoading
               ? '--/--/----'
-              : formatDateTime(data.ruleSnooze.endsAt, { language })}
+              : formatDateTime(data.ruleSnoozeDetail.endsAt, { language })}
           </span>
         </div>
       </span>
