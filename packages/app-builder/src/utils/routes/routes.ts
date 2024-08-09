@@ -375,6 +375,11 @@ export const routes = [
         "file": "routes/ressources+/lists+/value_delete.tsx"
       },
       {
+        "id": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId",
+        "path": "ressources/rule-snoozes/read/:ruleSnoozeId",
+        "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate",
         "path": "ressources/scenarios/:scenarioId/:iterationId/activate",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate.tsx"

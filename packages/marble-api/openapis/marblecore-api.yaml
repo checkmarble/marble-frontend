@@ -40,6 +40,8 @@ tags:
     description: Operations about tags.
   - name: Webhooks
     description: Operations about webhooks.
+  - name: RuleSnoozes
+    description: Operations about rule snoozes.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
@@ -3177,6 +3179,40 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /rule-snoozes/{rule_snooze_id}:
+    get:
+      tags:
+        - RuleSnoozes
+      summary: Get a rule snooze by id
+      operationId: getRuleSnooze
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: rule_snooze_id
+          description: ID of the rule snooze that needs to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The rule snooze corresponding to the provided `rule_snooze_id`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - snooze
+                properties:
+                  snooze:
+                    $ref: '#/components/schemas/RuleSnoozeDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
 components:
   parameters:
     start_date:
@@ -3816,9 +3852,6 @@ components:
         id:
           type: string
           format: uuid
-        rule_id:
-          type: string
-          format: uuid
         pivot_value:
           type: string
         starts_at:
@@ -3830,13 +3863,25 @@ components:
         created_by_user:
           type: string
           format: uuid
+        created_from_decision_id:
+          type: string
+          format: uuid
       required:
         - id
-        - rule_id
         - pivot_value
         - starts_at
         - ends_at
         - created_by_user
+    RuleSnoozeWithRuleIdDto:
+      allOf:
+        - $ref: '#/components/schemas/RuleSnoozeDto'
+        - type: object
+          properties:
+            rule_id:
+              type: string
+              format: uuid
+          required:
+            - rule_id
     SnoozesOfDecisionDto:
       type: object
       properties:
@@ -3846,7 +3891,7 @@ components:
         rule_snoozes:
           type: array
           items:
-            $ref: '#/components/schemas/RuleSnoozeDto'
+            $ref: '#/components/schemas/RuleSnoozeWithRuleIdDto'
       required:
         - decision_id
         - rule_snoozes
@@ -3857,6 +3902,8 @@ components:
           type: string
           format: uuid
         duration:
+          type: string
+        comment:
           type: string
       required:
         - rule_id
@@ -4012,6 +4059,7 @@ components:
           tags_updated: '#/components/schemas/CaseTagsUpdatedEventDto'
           file_added: '#/components/schemas/FileAddedEventDto'
           inbox_changed: '#/components/schemas/InboxChangedEventDto'
+          rule_snooze_created: '#/components/schemas/RuleSnoozeCreatedDto'
       required:
         - id
         - case_id
@@ -4205,6 +4253,26 @@ components:
             new_value:
               type: string
               format: uuid
+            user_id:
+              type: string
+              format: uuid
+    RuleSnoozeCreatedDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - additional_note
+            - resource_type
+            - resource_id
+            - user_id
+          properties:
+            additional_note:
+              type: string
+            resource_id:
+              type: string
+              format: uuid
+            resource_type:
+              type: string
             user_id:
               type: string
               format: uuid

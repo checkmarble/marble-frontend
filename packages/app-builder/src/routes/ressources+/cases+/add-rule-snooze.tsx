@@ -3,6 +3,7 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { FormTextArea } from '@app-builder/components/Form/FormTextArea';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import {
@@ -31,6 +32,7 @@ import { z } from 'zod';
 const addRuleSnoozeFormSchema = z.object({
   decisionId: z.string(),
   ruleId: z.string(),
+  comment: z.string().optional(),
   durationValue: z.number().min(1),
   durationUnit: z.enum(durationUnits),
 });
@@ -54,7 +56,8 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(submission.reply());
   }
 
-  const { decisionId, ruleId, durationUnit, durationValue } = submission.value;
+  const { decisionId, ruleId, comment, durationUnit, durationValue } =
+    submission.value;
   const duration = Temporal.Duration.from({
     [durationUnit]: durationValue,
   });
@@ -80,6 +83,7 @@ export async function action({ request }: ActionFunctionArgs) {
     await decision.createSnoozeForDecision(decisionId, {
       ruleId,
       duration,
+      comment,
     });
 
     return json(submission.reply());
@@ -196,6 +200,21 @@ function AddRuleSnoozeContent({
               type: 'hidden',
             })}
           />
+
+          <FormField
+            name={fields.comment.name}
+            className="row-span-full grid grid-rows-subgrid gap-2"
+          >
+            <FormLabel>
+              {t('cases:case_detail.add_rule_snooze.comment.label')}
+            </FormLabel>
+            <FormTextArea
+              className="w-full"
+              placeholder={t(
+                'cases:case_detail.add_rule_snooze.comment.placeholder',
+              )}
+            />
+          </FormField>
 
           <div className="grid w-full grid-cols-2 grid-rows-[repeat(3,_max-content)] gap-2">
             <FormField
