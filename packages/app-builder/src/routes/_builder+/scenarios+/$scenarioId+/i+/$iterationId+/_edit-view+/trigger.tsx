@@ -15,19 +15,13 @@ import {
   createDecisionDocHref,
   executeAScenarioDocHref,
 } from '@app-builder/services/documentation-href';
-import {
-  useCurrentScenarioIteration,
-  useEditorMode,
-} from '@app-builder/services/editor';
+import { useEditorMode } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   useAstBuilder,
 } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
-import {
-  useCurrentScenarioValidation,
-  useGetScenarioErrorMessage,
-} from '@app-builder/services/validation';
+import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
@@ -42,6 +36,11 @@ import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Collapsible, Tooltip } from 'ui-design-system';
+
+import {
+  useCurrentScenarioIteration,
+  useCurrentScenarioValidation,
+} from '../_layout';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
