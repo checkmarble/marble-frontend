@@ -1,6 +1,7 @@
 import {
   type RuleSnoozeDto,
   type RuleSnoozeInformationDto,
+  type RuleSnoozeWithRuleIdDto,
   type SnoozesOfDecisionDto,
   type SnoozesOfIterationDto,
 } from 'marble-api';
@@ -8,27 +9,40 @@ import { type Temporal } from 'temporal-polyfill';
 
 export interface RuleSnooze {
   id: string;
-  ruleId: string;
   pivotValue: string;
   startsAt: string;
   endsAt: string;
   createdByUser: string;
+  createdFromDecisionId?: string;
 }
 
-function adaptRuleSnooze(dto: RuleSnoozeDto): RuleSnooze {
+export function adaptRuleSnooze(dto: RuleSnoozeDto): RuleSnooze {
   return {
     id: dto.id,
-    ruleId: dto.rule_id,
     pivotValue: dto.pivot_value,
     startsAt: dto.starts_at,
     endsAt: dto.ends_at,
     createdByUser: dto.created_by_user,
+    createdFromDecisionId: dto.created_from_decision_id,
+  };
+}
+
+export interface RuleSnoozeWithRuleId extends RuleSnooze {
+  ruleId: string;
+}
+
+export function adaptRuleSnoozeWithRuleId(
+  dto: RuleSnoozeWithRuleIdDto,
+): RuleSnoozeWithRuleId {
+  return {
+    ...adaptRuleSnooze(dto),
+    ruleId: dto.rule_id,
   };
 }
 
 export interface SnoozesOfDecision {
   decisionId: string;
-  ruleSnoozes: RuleSnooze[];
+  ruleSnoozes: RuleSnoozeWithRuleId[];
 }
 
 export function adaptSnoozesOfDecision(
@@ -36,13 +50,14 @@ export function adaptSnoozesOfDecision(
 ): SnoozesOfDecision {
   return {
     decisionId: dto.decision_id,
-    ruleSnoozes: dto.rule_snoozes.map(adaptRuleSnooze),
+    ruleSnoozes: dto.rule_snoozes.map(adaptRuleSnoozeWithRuleId),
   };
 }
 
 export interface SnoozeDecisionInput {
   ruleId: string;
   duration: Temporal.Duration;
+  comment?: string;
 }
 
 export interface RuleSnoozeInformation {

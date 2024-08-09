@@ -11,7 +11,10 @@ import {
   type RuleExecution,
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
-import { type RuleSnooze } from '@app-builder/models/rule-snooze';
+import {
+  type RuleSnooze,
+  type RuleSnoozeWithRuleId,
+} from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
@@ -45,6 +48,7 @@ import {
 } from '../Decisions';
 import { Score } from '../Decisions/Score';
 import { casesI18n } from './cases-i18n';
+import { CopyPivotValue } from './PivotValue';
 
 interface DecisionsDetail {
   decisionId: string;
@@ -57,7 +61,7 @@ interface DecisionsDetail {
     payloadAccessors: PayloadAstNode[];
   };
   operators: OperatorFunction[];
-  ruleSnoozes: RuleSnooze[];
+  ruleSnoozes: RuleSnoozeWithRuleId[];
 }
 
 export function CaseDecisions({
@@ -284,15 +288,7 @@ function DecisionDetail({
                         className="px-4 py-2"
                         {...getCopyToClipboardProps(pivotValue.value)}
                       >
-                        <div className="group flex h-full cursor-pointer flex-row items-center gap-2">
-                          <span className="text-grey-50 group-hover:text-grey-100 select-none break-all text-xs font-normal transition-colors">
-                            {pivotValue.value}
-                          </span>
-                          <Icon
-                            icon="duplicate"
-                            className="group-hover:text-grey-100 size-4 shrink-0 text-transparent transition-colors"
-                          />
-                        </div>
+                        <CopyPivotValue>{pivotValue.value}</CopyPivotValue>
                       </td>
                     </tr>
                   );
@@ -423,15 +419,7 @@ function RuleSnoozes({
             return (
               <tr key={pivot.id} className="border-grey-10 border-t">
                 <td className="px-4 py-2" {...getCopyToClipboardProps(value)}>
-                  <div className="group flex h-full cursor-pointer flex-row items-center gap-2">
-                    <span className="text-grey-50 group-hover:text-grey-100 select-none break-all text-xs font-normal transition-colors">
-                      {value}
-                    </span>
-                    <Icon
-                      icon="duplicate"
-                      className="group-hover:text-grey-100 size-4 shrink-0 text-transparent transition-colors"
-                    />
-                  </div>
+                  <CopyPivotValue>{value}</CopyPivotValue>
                 </td>
                 {snooze ? (
                   <td className="px-4 py-2">

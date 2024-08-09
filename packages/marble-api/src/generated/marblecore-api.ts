@@ -193,7 +193,15 @@ export type InboxChangedEventDto = {
     new_value: string;
     user_id: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto;
+export type RuleSnoozeCreatedDto = {
+    event_type: "rule_snooze_created";
+} & CaseEventDtoBase & {
+    additional_note: string;
+    resource_id: string;
+    resource_type: string;
+    user_id: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
@@ -251,19 +259,23 @@ export type ScheduledExecution = {
 };
 export type RuleSnoozeDto = {
     id: string;
-    rule_id: string;
     pivot_value: string;
     starts_at: string;
     ends_at: string;
     created_by_user: string;
+    created_from_decision_id?: string;
+};
+export type RuleSnoozeWithRuleIdDto = RuleSnoozeDto & {
+    rule_id: string;
 };
 export type SnoozesOfDecisionDto = {
     decision_id: string;
-    rule_snoozes: RuleSnoozeDto[];
+    rule_snoozes: RuleSnoozeWithRuleIdDto[];
 };
 export type SnoozeDecisionInputDto = {
     rule_id: string;
     duration: string;
+    comment?: string;
 };
 export type UploadLog = {
     started_at: string;
@@ -2720,5 +2732,27 @@ export function deleteWebhook(webhookId: string, opts?: Oazapfts.RequestOpts) {
     }>(`/webhooks/${encodeURIComponent(webhookId)}`, {
         ...opts,
         method: "DELETE"
+    }));
+}
+/**
+ * Get a rule snooze by id
+ */
+export function getRuleSnooze(ruleSnoozeId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            snooze: RuleSnoozeDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/rule-snoozes/${encodeURIComponent(ruleSnoozeId)}`, {
+        ...opts
     }));
 }
