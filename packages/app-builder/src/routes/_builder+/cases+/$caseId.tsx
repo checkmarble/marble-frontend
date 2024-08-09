@@ -245,7 +245,9 @@ export default function CasePage() {
               </CollapsibleV2.Provider>
             </div>
             <div>
-              <CollapsibleV2.Provider>
+              <CollapsibleV2.Provider
+                defaultOpen={caseDetail.events.length > 0}
+              >
                 <div className="group flex flex-1 items-center gap-2">
                   <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
                     <Icon

@@ -6,10 +6,7 @@ import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { FormTextArea } from '@app-builder/components/Form/FormTextArea';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
-import {
-  adaptDateTimeFieldCodes,
-  durationUnits,
-} from '@app-builder/models/duration';
+import { adaptDateTimeFieldCodes } from '@app-builder/models/duration';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { serverServices } from '@app-builder/services/init.server';
 import { useFormatLanguage } from '@app-builder/utils/format';
@@ -29,12 +26,14 @@ import { Temporal } from 'temporal-polyfill';
 import { Button, ModalV2 } from 'ui-design-system';
 import { z } from 'zod';
 
+const durationUnitOptions = ['days', 'weeks', 'hours'] as const;
+
 const addRuleSnoozeFormSchema = z.object({
   decisionId: z.string(),
   ruleId: z.string(),
   comment: z.string().optional(),
   durationValue: z.number().min(1),
-  durationUnit: z.enum(durationUnits),
+  durationUnit: z.enum(durationUnitOptions),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -237,9 +236,9 @@ function AddRuleSnoozeContent({
               </FormLabel>
               <FormSelect.Default
                 className="h-10 w-full"
-                options={durationUnits}
+                options={durationUnitOptions}
               >
-                {durationUnits.map((unit) => (
+                {durationUnitOptions.map((unit) => (
                   <FormSelect.DefaultItem key={unit} value={unit}>
                     {dateTimeFieldNames.of(adaptDateTimeFieldCodes(unit))}
                   </FormSelect.DefaultItem>

@@ -7,6 +7,8 @@ import {
 } from 'marble-api';
 import { type Temporal } from 'temporal-polyfill';
 
+import { type DecisionDetail } from './decision';
+
 export interface RuleSnooze {
   id: string;
   pivotValue: string;
@@ -37,6 +39,45 @@ export function adaptRuleSnoozeWithRuleId(
   return {
     ...adaptRuleSnooze(dto),
     ruleId: dto.rule_id,
+  };
+}
+
+export interface RuleSnoozeDetail {
+  id: string;
+  pivotValue: string;
+  startsAt: string;
+  endsAt: string;
+  createdByUser: string;
+  createdFrom?: {
+    decisionId: string;
+    ruleId: string;
+    ruleName?: string;
+    scenarioId: string;
+    scenarioIterationId: string;
+  };
+}
+
+export function adaptRuleSnoozeDetail(
+  ruleSnoozeWithRuleId: RuleSnoozeWithRuleId,
+  decisionDetail: DecisionDetail | null,
+): RuleSnoozeDetail {
+  return {
+    id: ruleSnoozeWithRuleId.id,
+    pivotValue: ruleSnoozeWithRuleId.pivotValue,
+    startsAt: ruleSnoozeWithRuleId.startsAt,
+    endsAt: ruleSnoozeWithRuleId.endsAt,
+    createdByUser: ruleSnoozeWithRuleId.createdByUser,
+    createdFrom: decisionDetail
+      ? {
+          decisionId: decisionDetail.id,
+          ruleId: ruleSnoozeWithRuleId.ruleId,
+          ruleName: decisionDetail.rules.find(
+            (rule) => rule.ruleId === ruleSnoozeWithRuleId.ruleId,
+          )?.name,
+          scenarioId: decisionDetail.scenario.id,
+          scenarioIterationId: decisionDetail.scenario.scenarioIterationId,
+        }
+      : undefined,
   };
 }
 
