@@ -9,7 +9,7 @@ export const durationUnits = [
   'minutes',
   'seconds',
 ] as const;
-type DurationUnit = (typeof durationUnits)[number];
+export type DurationUnit = (typeof durationUnits)[number];
 
 // Source https://tc39.es/ecma402/#table-validcodefordatetimefield
 type DateTimeFieldCode =
