@@ -64,6 +64,8 @@
   "case_detail.history.event_detail.rule_snooze_created.pivot_value": "pivot value",
   "case_detail.history.event_detail.rule_snooze_created.created_from_decision": "decision",
   "case_detail.history.event_detail.rule_snooze_created.decision_detail": "decision detail",
+  "case_detail.history.event_detail.rule_snooze_created.created_from_rule": "rule",
+  "case_detail.history.event_detail.rule_snooze_created.rule_detail": "rule detail",
   "case_detail.history.event_detail.rule_snooze_created.valid_from": "valid from",
   "case_detail.add_a_comment.label": "Comment",
   "case_detail.add_a_comment.placeholder": "Write a note",

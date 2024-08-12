@@ -264,6 +264,7 @@ export type RuleSnoozeDto = {
     ends_at: string;
     created_by_user: string;
     created_from_decision_id?: string;
+    created_from_rule_id: string;
 };
 export type RuleSnoozeWithRuleIdDto = RuleSnoozeDto & {
     rule_id: string;

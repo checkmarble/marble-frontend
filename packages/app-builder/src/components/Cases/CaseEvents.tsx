@@ -20,7 +20,7 @@ import { cx } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
-import { Accordion, Avatar } from 'ui-design-system';
+import { Avatar, CollapsibleV2 } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 import { Spinner } from '../Spinner';
@@ -34,31 +34,38 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
   const language = useFormatLanguage();
 
   return (
-    <Accordion.Container className="relative z-0">
+    <div className="relative z-0 flex flex-col gap-4 lg:gap-6">
       <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
       {events.map((event) => {
-        const Icon = getEventIcon(event);
+        const EventIcon = getEventIcon(event);
         const Title = getEventTitle(event, t);
         const Detail = getEventDetail(event);
+        const defaultOpen = getDefaultOpen(event);
         return (
-          <Accordion.Item key={event.id} value={event.id}>
-            <Accordion.Title className="flex w-full flex-row items-center">
-              <span className="mr-2">{Icon}</span>
-              <span className="line-clamp-1 flex-1 text-start">{Title}</span>
-              <span className="text-s text-grey-25 mx-4 font-normal">
-                {formatDateRelative(event.createdAt, {
-                  language,
-                })}
-              </span>
-              <Accordion.Arrow />
-            </Accordion.Title>
-            <Accordion.Content className="ml-8 mt-2">
-              {Detail}
-            </Accordion.Content>
-          </Accordion.Item>
+          <div key={event.id}>
+            <CollapsibleV2.Provider defaultOpen={defaultOpen}>
+              <CollapsibleV2.Title className="group flex w-full flex-row items-center">
+                <span className="mr-2">{EventIcon}</span>
+                <span className="line-clamp-1 flex-1 text-start">{Title}</span>
+                <span className="text-s text-grey-25 mx-4 font-normal">
+                  {formatDateRelative(event.createdAt, {
+                    language,
+                  })}
+                </span>
+                <Icon
+                  icon="arrow-2-down"
+                  aria-hidden
+                  className="size-6 rounded transition-transform group-aria-expanded:rotate-180"
+                />
+              </CollapsibleV2.Title>
+              <CollapsibleV2.Content className="ml-8 mt-2">
+                {Detail}
+              </CollapsibleV2.Content>
+            </CollapsibleV2.Provider>
+          </div>
         );
       })}
-    </Accordion.Container>
+    </div>
   );
 }
 
@@ -141,6 +148,17 @@ export function getEventIcon(event: CaseEvent) {
       );
     default:
       assertNever('[CaseEvent] unknown event:', eventType);
+  }
+}
+
+export function getDefaultOpen(event: CaseEvent) {
+  const { eventType } = event;
+  switch (eventType) {
+    case 'comment_added':
+    case 'rule_snooze_created':
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -431,12 +449,12 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
         className="text-grey-100 text-s"
         {...(isLoading
           ? {}
-          : getCopyToClipboardProps(data.ruleSnooze.pivotValue))}
+          : getCopyToClipboardProps(data.ruleSnoozeDetail.pivotValue))}
       >
         {isLoading ? (
           <Spinner className="size-4" />
         ) : (
-          <CopyPivotValue>{data.ruleSnooze.pivotValue}</CopyPivotValue>
+          <CopyPivotValue>{data.ruleSnoozeDetail.pivotValue}</CopyPivotValue>
         )}
       </span>
       <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
@@ -447,11 +465,11 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
       <span className="text-grey-100 text-s">
         {isLoading ? (
           <Spinner className="size-4" />
-        ) : data.ruleSnooze.createdFromDecisionId ? (
+        ) : data.ruleSnoozeDetail.createdFromDecisionId ? (
           <Link
             className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
             to={getRoute('/decisions/:decisionId', {
-              decisionId: fromUUID(data.ruleSnooze.createdFromDecisionId),
+              decisionId: fromUUID(data.ruleSnoozeDetail.createdFromDecisionId),
             })}
           >
             {t(
@@ -464,6 +482,37 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
       </span>
       <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
         {t(
+          'cases:case_detail.history.event_detail.rule_snooze_created.created_from_rule',
+        )}
+      </span>
+      <span className="text-grey-100 text-s">
+        {isLoading ? (
+          <Spinner className="size-4" />
+        ) : (
+          <Link
+            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
+            to={getRoute(
+              '/scenarios/:scenarioId/i/:iterationId/rules/:ruleId',
+              {
+                scenarioId: fromUUID(
+                  data.ruleSnoozeDetail.createdFromRule.scenarioId,
+                ),
+                iterationId: fromUUID(
+                  data.ruleSnoozeDetail.createdFromRule.scenarioIterationId,
+                ),
+                ruleId: fromUUID(data.ruleSnoozeDetail.createdFromRule.ruleId),
+              },
+            )}
+          >
+            {data.ruleSnoozeDetail.createdFromRule.ruleName ??
+              t(
+                'cases:case_detail.history.event_detail.rule_snooze_created.rule_detail',
+              )}
+          </Link>
+        )}
+      </span>
+      <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
+        {t(
           'cases:case_detail.history.event_detail.rule_snooze_created.valid_from',
         )}
       </span>
@@ -472,13 +521,13 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
           <span className="text-grey-100 text-s text-right">
             {isLoading
               ? '--/--/----'
-              : formatDateTime(data.ruleSnooze.startsAt, { language })}
+              : formatDateTime(data.ruleSnoozeDetail.startsAt, { language })}
           </span>
           <span className="text-s self-center">→</span>
           <span className="text-grey-100 text-s">
             {isLoading
               ? '--/--/----'
-              : formatDateTime(data.ruleSnooze.endsAt, { language })}
+              : formatDateTime(data.ruleSnoozeDetail.endsAt, { language })}
           </span>
         </div>
       </span>

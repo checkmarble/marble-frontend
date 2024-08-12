@@ -12,7 +12,6 @@ export function makeGetRuleSnoozeRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): RuleSnoozeRepository => ({
     getRuleSnooze: async (ruleSnoozeId) => {
       const { snooze } = await marbleCoreApiClient.getRuleSnooze(ruleSnoozeId);
-
       return adaptRuleSnooze(snooze);
     },
   });
