@@ -3866,12 +3866,16 @@ components:
         created_from_decision_id:
           type: string
           format: uuid
+        created_from_rule_id:
+          type: string
+          format: uuid
       required:
         - id
         - pivot_value
         - starts_at
         - ends_at
         - created_by_user
+        - created_from_rule_id
     RuleSnoozeWithRuleIdDto:
       allOf:
         - $ref: '#/components/schemas/RuleSnoozeDto'
