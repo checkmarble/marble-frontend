@@ -23,21 +23,14 @@ import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$sc
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
 import { useRuleValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
-import {
-  useCurrentScenarioIterationRule,
-  useEditorMode,
-  useRuleGroups,
-} from '@app-builder/services/editor';
+import { useEditorMode } from '@app-builder/services/editor';
 import {
   adaptAstNodeFromEditorViewModel,
   type EditorNodeViewModel,
   useAstBuilder,
 } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
-import {
-  useCurrentRuleValidationRule,
-  useGetScenarioErrorMessage,
-} from '@app-builder/services/validation';
+import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -72,6 +65,12 @@ import {
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
+
+import {
+  useCurrentRuleValidationRule,
+  useCurrentScenarioIterationRule,
+  useRuleGroups,
+} from './_layout';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
