@@ -7,8 +7,6 @@ import {
 } from 'marble-api';
 import { type Temporal } from 'temporal-polyfill';
 
-import { type DecisionDetail } from './decision';
-
 export interface RuleSnooze {
   id: string;
   pivotValue: string;
