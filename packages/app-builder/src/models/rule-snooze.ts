@@ -16,6 +16,7 @@ export interface RuleSnooze {
   endsAt: string;
   createdByUser: string;
   createdFromDecisionId?: string;
+  createdFromRuleId: string;
 }
 
 export function adaptRuleSnooze(dto: RuleSnoozeDto): RuleSnooze {
@@ -26,6 +27,7 @@ export function adaptRuleSnooze(dto: RuleSnoozeDto): RuleSnooze {
     endsAt: dto.ends_at,
     createdByUser: dto.created_by_user,
     createdFromDecisionId: dto.created_from_decision_id,
+    createdFromRuleId: dto.created_from_rule_id,
   };
 }
 
@@ -48,36 +50,12 @@ export interface RuleSnoozeDetail {
   startsAt: string;
   endsAt: string;
   createdByUser: string;
-  createdFrom?: {
-    decisionId: string;
+  createdFromDecisionId?: string;
+  createdFromRule: {
     ruleId: string;
-    ruleName?: string;
+    ruleName: string;
     scenarioId: string;
     scenarioIterationId: string;
-  };
-}
-
-export function adaptRuleSnoozeDetail(
-  ruleSnoozeWithRuleId: RuleSnoozeWithRuleId,
-  decisionDetail: DecisionDetail | null,
-): RuleSnoozeDetail {
-  return {
-    id: ruleSnoozeWithRuleId.id,
-    pivotValue: ruleSnoozeWithRuleId.pivotValue,
-    startsAt: ruleSnoozeWithRuleId.startsAt,
-    endsAt: ruleSnoozeWithRuleId.endsAt,
-    createdByUser: ruleSnoozeWithRuleId.createdByUser,
-    createdFrom: decisionDetail
-      ? {
-          decisionId: decisionDetail.id,
-          ruleId: ruleSnoozeWithRuleId.ruleId,
-          ruleName: decisionDetail.rules.find(
-            (rule) => rule.ruleId === ruleSnoozeWithRuleId.ruleId,
-          )?.name,
-          scenarioId: decisionDetail.scenario.id,
-          scenarioIterationId: decisionDetail.scenario.scenarioIterationId,
-        }
-      : undefined,
   };
 }
 

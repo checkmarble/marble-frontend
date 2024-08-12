@@ -465,13 +465,11 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
       <span className="text-grey-100 text-s">
         {isLoading ? (
           <Spinner className="size-4" />
-        ) : data.ruleSnoozeDetail.createdFrom ? (
+        ) : data.ruleSnoozeDetail.createdFromDecisionId ? (
           <Link
             className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
             to={getRoute('/decisions/:decisionId', {
-              decisionId: fromUUID(
-                data.ruleSnoozeDetail.createdFrom.decisionId,
-              ),
+              decisionId: fromUUID(data.ruleSnoozeDetail.createdFromDecisionId),
             })}
           >
             {t(
@@ -490,29 +488,27 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
       <span className="text-grey-100 text-s">
         {isLoading ? (
           <Spinner className="size-4" />
-        ) : data.ruleSnoozeDetail.createdFrom ? (
+        ) : (
           <Link
             className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
             to={getRoute(
               '/scenarios/:scenarioId/i/:iterationId/rules/:ruleId',
               {
                 scenarioId: fromUUID(
-                  data.ruleSnoozeDetail.createdFrom.scenarioId,
+                  data.ruleSnoozeDetail.createdFromRule.scenarioId,
                 ),
                 iterationId: fromUUID(
-                  data.ruleSnoozeDetail.createdFrom.scenarioIterationId,
+                  data.ruleSnoozeDetail.createdFromRule.scenarioIterationId,
                 ),
-                ruleId: fromUUID(data.ruleSnoozeDetail.createdFrom.ruleId),
+                ruleId: fromUUID(data.ruleSnoozeDetail.createdFromRule.ruleId),
               },
             )}
           >
-            {data.ruleSnoozeDetail.createdFrom.ruleName ??
+            {data.ruleSnoozeDetail.createdFromRule.ruleName ??
               t(
                 'cases:case_detail.history.event_detail.rule_snooze_created.rule_detail',
               )}
           </Link>
-        ) : (
-          '-'
         )}
       </span>
       <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
