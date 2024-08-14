@@ -76,7 +76,12 @@ function initServerServices() {
     sessionStorageRepositoryOptions: {
       maxAge: Number(getServerEnv('SESSION_MAX_AGE')),
       secrets: [getServerEnv('SESSION_SECRET')],
-      secure: getServerEnv('NODE_ENV') !== 'development',
+      secure:
+        getServerEnv('ENV') !== 'development'
+          ? // Outside of development, we always want to set secure cookies
+            true
+          : // User agent only allows secure cookies to be set on secure connections (useful for people deploying Docker compose outside localhost and whithout SSL)
+            new URL(getServerEnv('MARBLE_APP_DOMAIN')).protocol === 'https:',
     },
   });
 
