@@ -21,6 +21,7 @@ import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, ModalV2 } from 'ui-design-system';
 import { z } from 'zod';
 
@@ -78,9 +79,10 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export function CreateScenario({ children }: { children: React.ReactElement }) {
+  const hydrated = useHydrated();
   return (
     <ModalV2.Root>
-      <ModalV2.Trigger render={children} />
+      <ModalV2.Trigger render={children} disabled={!hydrated} />
       <ModalV2.Content>
         <CreateScenarioContent />
       </ModalV2.Content>

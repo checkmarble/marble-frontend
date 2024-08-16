@@ -24,7 +24,7 @@ import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { Form, useActionData } from '@remix-run/react';
 import { type Namespace, type TFunction } from 'i18next';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
-import React from 'react';
+import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Collapsible } from 'ui-design-system';

@@ -15,3 +15,7 @@ packages-licenses.json
 
 # ui-design-system
 /packages/ui-design-system/storybook-static/
+
+# tests
+/packages/tests/playwright-report
+/packages/tests/test-results
