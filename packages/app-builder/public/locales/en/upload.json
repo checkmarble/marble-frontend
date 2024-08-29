@@ -13,6 +13,7 @@
   "past_uploads": "Past uploads",
   "upload_status": "Status",
   "lines_processed": "Records received",
+  "num_rows_ingested": "Number of records ingested",
   "started_at": "Started at",
   "finished_at": "Completed at",
   "status_success": "Complete",

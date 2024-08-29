@@ -252,6 +252,7 @@ export type UploadLog = {
     finished_at: string;
     status: string;
     lines_processed: number;
+    num_rows_ingested: number;
 };
 export type CustomList = {
     id: string;

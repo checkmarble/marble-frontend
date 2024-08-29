@@ -4644,6 +4644,7 @@ components:
         - finished_at
         - status
         - lines_processed
+        - num_rows_ingested
       properties:
         started_at:
           type: string
@@ -4654,6 +4655,8 @@ components:
         status:
           type: string
         lines_processed:
+          type: integer
+        num_rows_ingested:
           type: integer
     Pagination:
       type: object
