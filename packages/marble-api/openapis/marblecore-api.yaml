@@ -4654,6 +4654,7 @@ components:
           format: date-time
         status:
           type: string
+          enum: ['success', 'failure', 'progressing', 'pending']
         lines_processed:
           type: integer
         num_rows_ingested:
