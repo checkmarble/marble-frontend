@@ -250,7 +250,7 @@ export type ScheduledExecution = {
 export type UploadLog = {
     started_at: string;
     finished_at: string;
-    status: string;
+    status: "success" | "failure" | "progressing" | "pending";
     lines_processed: number;
     num_rows_ingested: number;
 };
