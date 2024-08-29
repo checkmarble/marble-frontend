@@ -349,12 +349,22 @@ const getStatusIcon = (status: string) => {
   if (status === 'success') {
     return <Icon icon="tick" className="size-6 text-green-100" />;
   }
+  if (status === 'failure') {
+    return <Icon icon="cross" className="size-6 text-red-100" />;
+  }
   return <Icon icon="restart-alt" className="text-grey-50 size-6" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['upload']> => {
+  console.log(status);
   if (status === 'success') {
     return 'upload:status_success';
+  }
+  if (status === 'failure') {
+    return 'upload:status_failure';
+  }
+  if (status === 'processing') {
+    return 'upload:status_processing';
   }
   return 'upload:status_pending';
 };
