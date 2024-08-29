@@ -245,7 +245,7 @@ export type ScheduledExecution = {
     scenario_name: string;
     scenario_trigger_object_type: string;
     started_at: string;
-    status: string;
+    status: "pending" | "processing" | "success" | "failure";
 };
 export type UploadLog = {
     started_at: string;

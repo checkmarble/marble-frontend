@@ -12,5 +12,6 @@
   "errors.downloading_decisions_link.unknown": "An unknown error as occured while generating the download link. Please try again later.",
   "status_pending": "Pending",
   "status_success": "Success",
-  "status_failure": "Failure"
+  "status_failure": "Failure",
+  "status_processing": "Processing"
 }

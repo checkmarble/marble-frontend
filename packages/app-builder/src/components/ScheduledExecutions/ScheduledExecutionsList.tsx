@@ -1,4 +1,8 @@
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatDateTime,
+  formatNumber,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
@@ -34,9 +38,12 @@ export function ScheduledExecutionsList({
         size: 200,
       }),
       columnHelper.accessor(
-        (s) => (s.status == 'success' ? s.number_of_created_decisions : '0'),
+        (s) => (s.status == 'success' ? s.number_of_created_decisions : 0),
         {
           id: 'number-of-created-decisions',
+          cell: ({ getValue }) => (
+            <span>{formatNumber(getValue(), { language })}</span>
+          ),
           header: t('scheduledExecution:number_of_created_decisions'),
           size: 100,
         },
@@ -126,6 +133,9 @@ const getStatusTKey = (status: string): ParseKeys<['scheduledExecution']> => {
   }
   if (status === 'failure') {
     return 'scheduledExecution:status_failure';
+  }
+  if (status === 'processing') {
+    return 'scheduledExecution:status_processing';
   }
   return 'scheduledExecution:status_pending';
 };
