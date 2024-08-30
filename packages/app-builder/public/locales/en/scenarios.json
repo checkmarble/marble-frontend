@@ -130,6 +130,7 @@
   "validation.decision.score_review_threshold_required": "Required",
   "validation.decision.score_reject_threshold_required": "Required",
   "validation.decision.score_reject_review_thresholds_missmatch": "Reject threshold must be greater than review threshold",
+  "validation.decision.formula_must_return_boolean": "The formula must return a boolean",
   "validation.evaluation_error.undefined_function_one": "required",
   "validation.evaluation_error.undefined_function_other": "{{count}} required",
   "validation.evaluation_error.wrong_number_of_arguments": "wrong number of arguments",

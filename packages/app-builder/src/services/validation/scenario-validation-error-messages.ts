@@ -281,6 +281,8 @@ export function useGetScenarioErrorMessage() {
           return t(
             'scenarios:validation.decision.score_reject_review_thresholds_missmatch',
           );
+        case 'FORMULA_MUST_RETURN_BOOLEAN':
+          return t('scenarios:validation.decision.formula_must_return_boolean');
         default:
           return evaluationErrorCode;
       }
