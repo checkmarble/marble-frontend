@@ -371,7 +371,6 @@ const getStatusIcon = (status: string) => {
 };
 
 const getStatusTKey = (status: string): ParseKeys<['upload']> => {
-  console.log(status);
   if (status === 'success') {
     return 'upload:status_success';
   }
