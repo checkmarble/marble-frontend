@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "type-check": "npx tsc --noEmit",
+    "type-check": "pnpm exec tsc --noEmit",
     "generate-icons": "tsx scripts/generate.ts"
   },
   "devDependencies": {

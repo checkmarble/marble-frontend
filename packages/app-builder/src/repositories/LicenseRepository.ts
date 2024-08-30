@@ -25,7 +25,7 @@ export function getLicenseRepository(
             userRoles: true,
             // In dev environment (like docker-compose), webhooks are disabled since we do not have Convoy dedicated for dev
             webhooks: false,
-            ruleSnoozing: true,
+            ruleSnoozes: true,
           },
         });
       }
