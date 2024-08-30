@@ -183,6 +183,7 @@ function DisplayReturnValuesSwitch() {
   const { t } = useTranslation(decisionsI18n);
   const [displayReturnValues, setDisplayReturnValues] =
     useDisplayReturnValues();
+
   return (
     <div className="flex flex-row justify-between gap-2">
       <label htmlFor="displayReturnValues" className="select-none">
