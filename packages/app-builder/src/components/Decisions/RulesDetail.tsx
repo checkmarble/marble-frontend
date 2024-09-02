@@ -162,7 +162,7 @@ export function RuleExecutionDetail({
             }}
           />
         </div>
-        <DisplayReturnValuesSwitch />
+        {ruleExecution.evaluation ? <DisplayReturnValuesSwitch /> : null}
       </div>
 
       <RuleFormula
