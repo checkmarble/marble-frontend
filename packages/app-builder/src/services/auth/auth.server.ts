@@ -15,6 +15,7 @@ import {
 import { type AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
 import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
+import { type CustomListsRepository } from '@app-builder/repositories/CustomListRepository';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
 import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
@@ -47,6 +48,7 @@ interface AuthenticatedInfo {
   editor: EditorRepository;
   decision: DecisionRepository;
   cases: CaseRepository;
+  customListsRepository: CustomListsRepository;
   dataModelRepository: DataModelRepository;
   apiKey: ApiKeyRepository;
   analytics: AnalyticsRepository;
@@ -114,6 +116,9 @@ interface MakeAuthenticationServerServiceArgs {
     marbleCoreApiClient: MarbleCoreApi,
   ) => DecisionRepository;
   getCaseRepository: (marbleCoreApiClient: MarbleCoreApi) => CaseRepository;
+  getCustomListRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => CustomListsRepository;
   getOrganizationRepository: (
     marbleCoreApiClient: MarbleCoreApi,
     organizationId: string,
@@ -159,6 +164,7 @@ export function makeAuthenticationServerService({
   getEditorRepository,
   getDecisionRepository,
   getCaseRepository,
+  getCustomListRepository,
   getOrganizationRepository,
   getScenarioRepository,
   getScenarioIterationRuleRepository,
@@ -332,6 +338,7 @@ export function makeAuthenticationServerService({
       editor: getEditorRepository(marbleCoreApiClient),
       decision: getDecisionRepository(marbleCoreApiClient),
       cases: getCaseRepository(marbleCoreApiClient),
+      customListsRepository: getCustomListRepository(marbleCoreApiClient),
       scenario: getScenarioRepository(marbleCoreApiClient),
       scenarioIterationRuleRepository:
         getScenarioIterationRuleRepository(marbleCoreApiClient),

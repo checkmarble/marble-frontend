@@ -4367,8 +4367,8 @@ components:
         - id
         - name
         - description
-        - createdAt
-        - updatedAt
+        - created_at
+        - updated_at
       properties:
         id:
           type: string
@@ -4377,10 +4377,10 @@ components:
           type: string
         description:
           type: string
-        createdAt:
+        created_at:
           type: string
           format: date-time
-        updatedAt:
+        updated_at:
           type: string
           format: date-time
     CustomListValue:
@@ -4398,6 +4398,8 @@ components:
       allOf:
         - $ref: '#/components/schemas/CustomList'
         - type: object
+          required:
+            - values
           properties:
             values:
               type: array

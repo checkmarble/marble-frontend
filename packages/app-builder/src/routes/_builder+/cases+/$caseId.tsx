@@ -44,7 +44,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     cases,
     inbox,
     dataModelRepository,
-    apiClient,
+    customListsRepository,
     decision,
     scenario,
     editor,
@@ -58,9 +58,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const currentInbox = await inbox.getInbox(caseDetail.inboxId);
 
     const dataModelPromise = dataModelRepository.getDataModel();
-    const customListsPromise = apiClient
-      .listCustomLists()
-      .then(({ custom_lists }) => custom_lists);
+    const customListsPromise = customListsRepository.listCustomLists();
 
     const featureAccessPromise = Promise.all([
       featureAccessService.isReadSnoozeAvailable({
@@ -119,7 +117,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       ]),
     });
   } catch (error) {
-    // On purpusely catch 403 errors to display a 404 page
+    // On purpuse catch 403 errors to display a 404 page
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
       throw new Response(null, { status: 404, statusText: 'Not Found' });
     } else {

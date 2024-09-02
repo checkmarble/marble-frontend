@@ -48,10 +48,16 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { user, apiClient, editor, organization, dataModelRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const {
+    user,
+    apiClient,
+    customListsRepository,
+    editor,
+    organization,
+    dataModelRepository,
+  } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
@@ -70,7 +76,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       scenarioId,
     }),
     dataModelRepository.getDataModel(),
-    apiClient.listCustomLists(),
+    customListsRepository.listCustomLists(),
     organization.getCurrentOrganization(),
     apiClient.listScheduledExecutions({
       scenarioId,
@@ -86,7 +92,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     payloadAccessors: accessors.payloadAccessors,
     operators,
     dataModel,
-    customLists: customLists.custom_lists,
+    customLists,
     organization: currentOrganization,
     scheduledExecutions: scheduledExecutions.scheduled_executions,
   });

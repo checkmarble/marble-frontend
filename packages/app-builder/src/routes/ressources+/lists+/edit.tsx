@@ -31,7 +31,7 @@ const editListFormSchema = z.object({
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { customListsRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -46,7 +46,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
   const { listId, name, description } = parsedForm.data;
-  await apiClient.updateCustomList(listId, {
+  await customListsRepository.updateCustomList(listId, {
     name: name,
     description: description,
   });

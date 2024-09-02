@@ -1,4 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { type CustomList } from '@app-builder/models/custom-list';
 import { CreateList } from '@app-builder/routes/ressources+/lists+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -12,7 +13,6 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
-import { type CustomList } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
@@ -20,13 +20,16 @@ import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { user, apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  const { custom_lists } = await apiClient.listCustomLists();
+  const { user, customListsRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
+  const customLists = await customListsRepository.listCustomLists();
 
   return json({
-    customList: custom_lists,
+    customLists,
     isCreateListAvailable: featureAccessService.isCreateListAvailable(user),
   });
 }
@@ -39,7 +42,7 @@ const columnHelper = createColumnHelper<CustomList>();
 
 export default function ListsPage() {
   const { t } = useTranslation(handle.i18n);
-  const { customList, isCreateListAvailable } = useLoaderData<typeof loader>();
+  const { customLists, isCreateListAvailable } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
 
@@ -63,7 +66,7 @@ export default function ListsPage() {
 
   const { table, isEmpty, getBodyProps, rows, getContainerProps } =
     useVirtualTable({
-      data: customList,
+      data: customLists,
       columns,
       columnResizeMode: 'onChange',
       getCoreRowModel: getCoreRowModel(),

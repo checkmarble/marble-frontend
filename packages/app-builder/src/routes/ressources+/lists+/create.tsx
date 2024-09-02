@@ -32,7 +32,7 @@ const createListFormSchema = z.object({
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { customListsRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -49,13 +49,13 @@ export async function action({ request }: ActionFunctionArgs) {
   const { name, description } = parsedForm.data;
 
   try {
-    const result = await apiClient.createCustomList({
+    const result = await customListsRepository.createCustomList({
       name: name,
       description: description,
     });
 
     return redirect(
-      getRoute('/lists/:listId', { listId: fromUUID(result.custom_list.id) }),
+      getRoute('/lists/:listId', { listId: fromUUID(result.id) }),
     );
   } catch (error) {
     if (isStatusConflictHttpError(error)) {

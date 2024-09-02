@@ -4,11 +4,11 @@ import {
   type DataModel,
   type PayloadAstNode,
 } from '@app-builder/models';
+import { type CustomList } from '@app-builder/models/custom-list';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { OptionsProvider } from '@app-builder/services/ast-node/options';
 import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
-import { type CustomList } from 'marble-api';
 
 import { AggregationEditModal } from './AstBuilderNode/AggregationEdit';
 import { FuzzyMatchComparatorEditModal } from './AstBuilderNode/FuzzyMatchComparatorEdit/Modal';

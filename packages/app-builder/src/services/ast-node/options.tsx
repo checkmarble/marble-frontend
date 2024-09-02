@@ -8,6 +8,7 @@ import {
   NewFuzzyMatchComparatorAstNode,
   type PayloadAstNode,
 } from '@app-builder/models/ast-node';
+import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type DataModel,
   type EnumValue,
@@ -34,7 +35,6 @@ import {
   sortTwoLineOperandOperatorFunctions,
 } from '@app-builder/models/editable-operators';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type CustomList } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

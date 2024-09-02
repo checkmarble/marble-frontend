@@ -1,5 +1,4 @@
 import { type ParseKeys, type TFunction } from 'i18next';
-import { type CustomList } from 'marble-api';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
 import { type IconName } from 'ui-icons';
@@ -30,6 +29,7 @@ import {
   type TimeNowAstNode,
   type UndefinedAstNode,
 } from './ast-node';
+import { type CustomList } from './custom-list';
 import {
   type DataModel,
   type DataModelField,

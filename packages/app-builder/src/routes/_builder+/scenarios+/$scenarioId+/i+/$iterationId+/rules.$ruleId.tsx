@@ -16,6 +16,7 @@ import {
   NewEmptyRuleAstNode,
   type PayloadAstNode,
 } from '@app-builder/models';
+import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
@@ -41,7 +42,6 @@ import {
 } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { type CustomList } from 'marble-api';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import {
@@ -78,7 +78,7 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient, editor, dataModelRepository } =
+  const { customListsRepository, editor, dataModelRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -94,14 +94,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 
   const dataModelPromise = dataModelRepository.getDataModel();
-  const { custom_lists } = await apiClient.listCustomLists();
+  const customLists = await customListsRepository.listCustomLists();
 
   return json({
     databaseAccessors: (await accessorsPromise).databaseAccessors,
     payloadAccessors: (await accessorsPromise).payloadAccessors,
     operators: await operatorsPromise,
     dataModel: await dataModelPromise,
-    customLists: custom_lists,
+    customLists,
   });
 }
 
