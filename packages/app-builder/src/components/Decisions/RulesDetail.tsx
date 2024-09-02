@@ -6,6 +6,7 @@ import {
   type DataModel,
   type PayloadAstNode,
 } from '@app-builder/models';
+import { type CustomList } from '@app-builder/models/custom-list';
 import {
   isRuleExecutionError,
   isRuleExecutionHit,
@@ -23,7 +24,6 @@ import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { Await } from '@remix-run/react';
 import { type TFunction } from 'i18next';
-import { type CustomList } from 'marble-api';
 import { Suspense, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Accordion, Collapsible, Switch, Tag } from 'ui-design-system';

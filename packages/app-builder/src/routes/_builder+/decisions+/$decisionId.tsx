@@ -40,10 +40,15 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { decision, editor, apiClient, scenario, dataModelRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const {
+    decision,
+    editor,
+    customListsRepository,
+    scenario,
+    dataModelRepository,
+  } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
   const parsedParam = await parseParamsSafe(
     params,
     z.object({ decisionId: shortUUIDSchema }),
@@ -69,21 +74,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         scenarioId: currentDecision.scenario.id,
       }),
       dataModelRepository.getDataModel(),
-      apiClient.listCustomLists(),
+      customListsRepository.listCustomLists(),
     ]).then(
-      ([
-        scenarioIteration,
-        operators,
-        accessors,
-        dataModel,
-        { custom_lists },
-      ]) => ({
+      ([scenarioIteration, operators, accessors, dataModel, customLists]) => ({
         rules: scenarioIteration.rules,
         databaseAccessors: accessors.databaseAccessors,
         payloadAccessors: accessors.payloadAccessors,
         operators,
         dataModel,
-        customLists: custom_lists,
+        customLists,
       }),
     );
 

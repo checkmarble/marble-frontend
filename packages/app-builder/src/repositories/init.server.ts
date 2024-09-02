@@ -5,6 +5,7 @@ import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/trans
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';
 import { makeGetCaseRepository } from './CaseRepository';
+import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
 import { makeGetDecisionRepository } from './DecisionRepository';
 import { makeGetEditorRepository } from './EditorRepository';
@@ -54,6 +55,7 @@ export function makeServerRepositories({
     getEditorRepository: makeGetEditorRepository(),
     getDecisionRepository: makeGetDecisionRepository(),
     getCaseRepository: makeGetCaseRepository(),
+    getCustomListRepository: makeGetCustomListRepository(),
     getScenarioRepository: makeGetScenarioRepository(),
     getScenarioIterationRuleRepository:
       makeGetScenarioIterationRuleRepository(),

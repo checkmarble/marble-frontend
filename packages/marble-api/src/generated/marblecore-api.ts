@@ -289,8 +289,8 @@ export type CustomList = {
     id: string;
     name: string;
     description: string;
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
 };
 export type CreateCustomListBody = {
     name: string;
@@ -301,7 +301,7 @@ export type CustomListValue = {
     value: string;
 };
 export type CustomListWithValues = CustomList & {
-    values?: CustomListValue[];
+    values: CustomListValue[];
 };
 export type UpdateCustomListBody = {
     name: string;

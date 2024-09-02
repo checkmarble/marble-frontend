@@ -23,15 +23,18 @@ import { Icon } from 'ui-icons';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { user, apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { user, customListsRepository } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
 
   const listId = fromParams(params, 'listId');
-  const { custom_list } = await apiClient.getCustomList(listId);
+  const customList = await customListsRepository.getCustomList(listId);
 
   return json({
-    customList: custom_list,
+    customList: customList,
     listFeatureAccess: {
       isCreateListValueAvailable:
         featureAccessService.isCreateListValueAvailable(user),
@@ -173,81 +176,3 @@ export function ErrorBoundary() {
   captureRemixErrorBoundaryError(error);
   return <ErrorComponent error={error} />;
 }
-
-// Correspond to this part of the UI : https://www.figma.com/file/JW6QvnhBtdZDcKvLdg9s5T/Marble-Portal?node-id=6377%3A53150&mode=dev
-//
-// const MAX_SCENARIOS = 4;
-// function ScenariosList({ scenarios }: { scenarios: string[] }) {
-//   const { t } = useTranslation(handle.i18n);
-
-//   return (
-//     <>
-//       <div className="flex flex-row gap-2">
-//         <Scenarios height="24px" width="24px" className="flex-shrink-0" />
-//         <p className="text-m text-grey-100 font-semibold">
-//           {t('lists:used_in_scenarios')}
-//         </p>
-//       </div>
-//       <div className="flex flex-wrap gap-2">
-//         {scenarios.slice(0, MAX_SCENARIOS).map((scenario) => (
-//           <div
-//             key={scenario}
-//             className="border-grey-10 text-s text-grey-100 flex h-10 items-center rounded border px-4 align-middle font-medium"
-//           >
-//             {scenario}
-//           </div>
-//         ))}
-//         {scenarios.length > MAX_SCENARIOS && (
-//           <Dialog.Root>
-//             <Dialog.Trigger asChild>
-//               <Button variant="secondary">
-//                 {t('lists:other_scenarios', {
-//                   count: scenarios.length - MAX_SCENARIOS,
-//                 })}
-//               </Button>
-//             </Dialog.Trigger>
-//             <Dialog.Portal>
-//               <Dialog.Overlay className="bg-grey-100 animate-overlayShow fixed inset-0 items-center justify-center bg-opacity-40" />
-//               <Dialog.Content className="bg-grey-00 fixed left-1/2 top-1/2 flex w-full max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-lg p-6">
-//                 <Dialog.Title className="flex flex-row gap-2">
-//                   <Scenarios
-//                     height="24px"
-//                     width="24px"
-//                     className="flex-shrink-0"
-//                   />
-//                   <p className="text-m text-grey-100 flex-1 font-semibold">
-//                     {t('lists:used_in_scenarios')}
-//                   </p>
-//                   <Dialog.Close aria-label="Close">
-//                     <Cross
-//                       height="24px"
-//                       width="24px"
-//                       className="flex-shrink-0"
-//                     />
-//                   </Dialog.Close>
-//                 </Dialog.Title>
-//                 <ScrollArea.Root>
-//                   <ScrollArea.Viewport className="max-h-72">
-//                     <div className="flex flex-col gap-2 pr-4">
-//                       {scenarios.map((scenario) => (
-//                         <div
-//                           key={scenario}
-//                           className="border-grey-10 text-s text-grey-100 flex h-14 items-center rounded border px-4 align-middle font-medium"
-//                         >
-//                           {scenario}
-//                         </div>
-//                       ))}
-//                     </div>
-//                   </ScrollArea.Viewport>
-//                   <ScrollArea.Scrollbar>
-//                     <ScrollArea.Thumb />
-//                   </ScrollArea.Scrollbar>
-//                 </ScrollArea.Root>
-//               </Dialog.Content>
-//             </Dialog.Portal>
-//           </Dialog.Root>
-//         )}
-//       </div>
-//     </>
-//   );
-// }

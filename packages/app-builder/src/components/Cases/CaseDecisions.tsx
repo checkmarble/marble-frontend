@@ -4,6 +4,7 @@ import {
   type Pivot,
   type TableModel,
 } from '@app-builder/models';
+import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type Decision,
   type DecisionDetail,
@@ -23,7 +24,6 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { Await, Link } from '@remix-run/react';
-import { type CustomList } from 'marble-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';

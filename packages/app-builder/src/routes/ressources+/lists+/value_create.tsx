@@ -30,7 +30,7 @@ const addValueFormSchema = z.object({
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { customListsRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const parsedForm = await parseFormSafe(request, addValueFormSchema);
@@ -44,7 +44,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
   const { listId, value } = parsedForm.data;
-  await apiClient.createCustomListValue(listId, {
+  await customListsRepository.createCustomListValue(listId, {
     value: value,
   });
   return json({

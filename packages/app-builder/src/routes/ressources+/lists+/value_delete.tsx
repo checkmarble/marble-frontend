@@ -21,7 +21,7 @@ const deleteValueFormSchema = z.object({
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { customListsRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const parsedForm = await parseFormSafe(request, deleteValueFormSchema);
@@ -35,7 +35,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
   const { listId, listValueId } = parsedForm.data;
-  await apiClient.deleteCustomListValue(listId, listValueId);
+  await customListsRepository.deleteCustomListValue(listId, listValueId);
 
   return json({
     success: true as const,
