@@ -5,6 +5,8 @@ import {
   type Outcome,
   type RuleExecutionDto,
 } from 'marble-api';
+import invariant from 'tiny-invariant';
+import { assertNever } from 'typescript-utils';
 
 import { adaptCase, type Case } from './cases';
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
@@ -29,6 +31,7 @@ export interface Decision {
   score: number;
   triggerObject: Record<string, unknown>;
   triggerObjectType: string;
+  scheduledExecutionId?: string;
 }
 
 interface RuleExecutionCore {
@@ -39,40 +42,51 @@ interface RuleExecutionCore {
 }
 
 export interface RuleExecutionNoHit extends RuleExecutionCore {
-  status: 'no_hit';
+  outcome: 'no_hit';
 }
 
 export function isRuleExecutionNoHit(
   ruleExecution: RuleExecution,
 ): ruleExecution is RuleExecutionNoHit {
-  return ruleExecution.status === 'no_hit';
+  return ruleExecution.outcome === 'no_hit';
 }
 
 export interface RuleExecutionHit extends RuleExecutionCore {
-  status: 'hit';
+  outcome: 'hit';
   scoreModifier: number;
 }
 
 export function isRuleExecutionHit(
   ruleExecution: RuleExecution,
 ): ruleExecution is RuleExecutionHit {
-  return ruleExecution.status === 'hit';
+  return ruleExecution.outcome === 'hit';
 }
 
 export interface RuleExecutionError extends RuleExecutionCore {
-  status: 'error';
+  outcome: 'error';
   error: Error;
 }
 
 export function isRuleExecutionError(
   ruleExecution: RuleExecution,
 ): ruleExecution is RuleExecutionError {
-  return ruleExecution.status === 'error';
+  return ruleExecution.outcome === 'error';
+}
+
+export interface RuleExecutionSnoozed extends RuleExecutionCore {
+  outcome: 'snoozed';
+}
+
+export function isRuleExecutionSnoozed(
+  ruleExecution: RuleExecution,
+): ruleExecution is RuleExecutionError {
+  return ruleExecution.outcome === 'snoozed';
 }
 
 export type RuleExecution =
   | RuleExecutionNoHit
   | RuleExecutionHit
+  | RuleExecutionSnoozed
   | RuleExecutionError;
 
 export interface DecisionDetail extends Decision {
@@ -99,6 +113,7 @@ export function adaptDecision(dto: DecisionDto): Decision {
     },
     score: dto.score,
     case: dto.case ? adaptCase(dto.case) : undefined,
+    scheduledExecutionId: dto.scheduled_execution_id,
   };
 }
 
@@ -111,24 +126,40 @@ function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
       ? adaptNodeEvaluation(dto.rule_evaluation)
       : undefined,
   };
-  if (dto.result) {
-    return {
-      ...ruleExecution,
-      status: 'hit',
-      scoreModifier: dto.score_modifier,
-    };
+  switch (dto.outcome) {
+    case 'hit': {
+      return {
+        ...ruleExecution,
+        outcome: 'hit',
+        scoreModifier: dto.score_modifier,
+      };
+    }
+    case 'error': {
+      invariant(
+        dto.error,
+        '[RuleExecutionDto] error is missing for error outcome',
+      );
+      return {
+        ...ruleExecution,
+        outcome: 'error',
+        error: dto.error,
+      };
+    }
+    case 'snoozed': {
+      return {
+        ...ruleExecution,
+        outcome: 'snoozed',
+      };
+    }
+    case 'no_hit': {
+      return {
+        ...ruleExecution,
+        outcome: 'no_hit',
+      };
+    }
+    default:
+      assertNever('[RuleExecutionDto] unknown outcome:', dto.outcome);
   }
-  if (dto.error) {
-    return {
-      ...ruleExecution,
-      status: 'error',
-      error: dto.error,
-    };
-  }
-  return {
-    ...ruleExecution,
-    status: 'no_hit',
-  };
 }
 
 export function adaptDecisionDetail(dto: DecisionDetailDto): DecisionDetail {

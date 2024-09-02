@@ -69,6 +69,7 @@ export const iconNames = [
   'smallarrow-left',
   'smallarrow-right',
   'smallarrow-up',
+  'snooze',
   'stop',
   'string',
   'tick',

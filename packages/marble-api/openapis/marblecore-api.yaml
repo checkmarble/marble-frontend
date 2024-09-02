@@ -40,6 +40,8 @@ tags:
     description: Operations about tags.
   - name: Webhooks
     description: Operations about webhooks.
+  - name: RuleSnoozes
+    description: Operations about rule snoozes.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
@@ -765,6 +767,81 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /decisions/{decisionId}/active-snoozes:
+    get:
+      tags:
+        - Decisions
+      summary: Get active snoozes for a decision
+      operationId: getDecisionActiveSnoozes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: decisionId
+          description: ID of the decision that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The active snoozes for the decision corresponding to the provided `decisionId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - snoozes
+                properties:
+                  snoozes:
+                    $ref: '#/components/schemas/SnoozesOfDecisionDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /decisions/{decisionId}/snooze:
+    post:
+      tags:
+        - Decisions
+      summary: Create a snooze for a decision
+      operationId: createSnoozeForDecision
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: decisionId
+          description: ID of the decision that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Snooze object that needs to be added to the database'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnoozeDecisionInputDto'
+        required: true
+      responses:
+        '200':
+          description: The active snoozes for the decision corresponding to the provided `decisionId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - snoozes
+                properties:
+                  snoozes:
+                    $ref: '#/components/schemas/SnoozesOfDecisionDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /ingestion/{objectType}:
     post:
       tags:
@@ -1403,6 +1480,40 @@ paths:
                 properties:
                   scenario_validation:
                     $ref: '#/components/schemas/ScenarioValidationDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /scenario-iterations/{scenarioIterationId}/active-snoozes:
+    get:
+      tags:
+        - Scenario Iterations
+      summary: Get active snoozes for a scenario iteration
+      operationId: getScenarioIterationActiveSnoozes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioIterationId
+          description: ID of the scenario iteration
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The active snoozes for the scenario iteration corresponding to the provided `scenarioIterationId`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - snoozes
+                properties:
+                  snoozes:
+                    $ref: '#/components/schemas/SnoozesOfIterationDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -3068,6 +3179,40 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+  /rule-snoozes/{rule_snooze_id}:
+    get:
+      tags:
+        - RuleSnoozes
+      summary: Get a rule snooze by id
+      operationId: getRuleSnooze
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: rule_snooze_id
+          description: ID of the rule snooze that needs to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The rule snooze corresponding to the provided `rule_snooze_id`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - snooze
+                properties:
+                  snooze:
+                    $ref: '#/components/schemas/RuleSnoozeDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
 components:
   parameters:
     start_date:
@@ -3609,6 +3754,7 @@ components:
       required:
         - description
         - name
+        - outcome
         - result
         - rule_id
         - score_modifier
@@ -3619,6 +3765,9 @@ components:
           type: string
         name:
           type: string
+        outcome:
+          type: string
+          enum: ['hit', 'no_hit', 'snoozed', 'error']
         result:
           type: boolean
         rule_id:
@@ -3674,6 +3823,9 @@ components:
           additionalProperties: true
         trigger_object_type:
           type: string
+        scheduled_execution_id:
+          type: string
+          format: uuid
       required:
         - id
         - created_at
@@ -3694,6 +3846,100 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/RuleExecutionDto'
+    RuleSnoozeDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        pivot_value:
+          type: string
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        created_by_user:
+          type: string
+          format: uuid
+        created_from_decision_id:
+          type: string
+          format: uuid
+        created_from_rule_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - pivot_value
+        - starts_at
+        - ends_at
+        - created_by_user
+        - created_from_rule_id
+    RuleSnoozeWithRuleIdDto:
+      allOf:
+        - $ref: '#/components/schemas/RuleSnoozeDto'
+        - type: object
+          properties:
+            rule_id:
+              type: string
+              format: uuid
+          required:
+            - rule_id
+    SnoozesOfDecisionDto:
+      type: object
+      properties:
+        decision_id:
+          type: string
+          format: uuid
+        rule_snoozes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuleSnoozeWithRuleIdDto'
+      required:
+        - decision_id
+        - rule_snoozes
+    SnoozeDecisionInputDto:
+      type: object
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        duration:
+          type: string
+        comment:
+          type: string
+      required:
+        - rule_id
+        - duration
+    RuleSnoozeInformationDto:
+      type: object
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        snooze_group_id:
+          type: string
+          format: uuid
+        has_snoozes_active:
+          type: boolean
+      required:
+        - rule_id
+        - snooze_group_id
+        - has_snoozes_active
+    SnoozesOfIterationDto:
+      type: object
+      properties:
+        iteration_id:
+          type: string
+          format: uuid
+        rule_snoozes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuleSnoozeInformationDto'
+      required:
+        - iteration_id
+        - rule_snoozes
     CaseStatusDto:
       type: string
       enum: ['open', 'investigating', 'discarded', 'resolved']
@@ -3817,6 +4063,7 @@ components:
           tags_updated: '#/components/schemas/CaseTagsUpdatedEventDto'
           file_added: '#/components/schemas/FileAddedEventDto'
           inbox_changed: '#/components/schemas/InboxChangedEventDto'
+          rule_snooze_created: '#/components/schemas/RuleSnoozeCreatedDto'
       required:
         - id
         - case_id
@@ -4010,6 +4257,26 @@ components:
             new_value:
               type: string
               format: uuid
+            user_id:
+              type: string
+              format: uuid
+    RuleSnoozeCreatedDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - additional_note
+            - resource_type
+            - resource_id
+            - user_id
+          properties:
+            additional_note:
+              type: string
+            resource_id:
+              type: string
+              format: uuid
+            resource_type:
+              type: string
             user_id:
               type: string
               format: uuid

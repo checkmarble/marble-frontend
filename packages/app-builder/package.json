@@ -101,6 +101,7 @@
     "remix-i18next": "^6.1.0",
     "remix-utils": "^7.6.0",
     "short-uuid": "^5.2.0",
+    "spin-delay": "^2.0.1",
     "swagger-ui-react": "^5.17.14",
     "temporal-polyfill": "^0.2.5",
     "tiny-invariant": "^1.3.3",

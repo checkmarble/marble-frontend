@@ -280,6 +280,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/add-comment.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/add-rule-snooze",
+        "path": "ressources/cases/add-rule-snooze",
+        "file": "routes/ressources+/cases+/add-rule-snooze.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/add-to-case",
         "path": "ressources/cases/add-to-case",
         "file": "routes/ressources+/cases+/add-to-case.tsx"
@@ -368,6 +373,11 @@ export const routes = [
         "id": "routes/ressources+/lists+/value_delete",
         "path": "ressources/lists/value_delete",
         "file": "routes/ressources+/lists+/value_delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId",
+        "path": "ressources/rule-snoozes/read/:ruleSnoozeId",
+        "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate",

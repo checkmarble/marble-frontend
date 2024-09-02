@@ -9,6 +9,7 @@ import {
 import {
   isRuleExecutionError,
   isRuleExecutionHit,
+  isRuleExecutionSnoozed,
   type RuleExecution,
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
@@ -112,7 +113,7 @@ export function RulesDetail({
   );
 }
 
-function RuleExecutionDetail({
+export function RuleExecutionDetail({
   ruleExecution,
   triggerObjectType,
   astRuleData,
@@ -182,6 +183,7 @@ function DisplayReturnValuesSwitch() {
   const { t } = useTranslation(decisionsI18n);
   const [displayReturnValues, setDisplayReturnValues] =
     useDisplayReturnValues();
+
   return (
     <div className="flex flex-row justify-between gap-2">
       <label htmlFor="displayReturnValues" className="select-none">
@@ -244,7 +246,7 @@ function RuleFormula({
   );
 }
 
-function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
+export function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
   if (isRuleExecutionHit(ruleExecution)) {
     return 'green';
   }
@@ -254,7 +256,7 @@ function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
   return 'grey';
 }
 
-function getRuleExecutionStatusLabel(
+export function getRuleExecutionStatusLabel(
   t: TFunction<typeof decisionsI18n>,
   ruleExecution: RuleExecution,
 ) {
@@ -263,6 +265,9 @@ function getRuleExecutionStatusLabel(
   }
   if (isRuleExecutionError(ruleExecution)) {
     return t('decisions:rules.status.error');
+  }
+  if (isRuleExecutionSnoozed(ruleExecution)) {
+    return t('decisions:rules.status.snoozed');
   }
   return t('decisions:rules.status.no_hit');
 }

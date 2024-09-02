@@ -2,71 +2,70 @@ import {
   type CaseEvent,
   type CaseTagsUpdatedEvent,
   type CommentAddedEvent,
+  type RuleSnoozeCreated,
 } from '@app-builder/models/cases';
+import { useGetRuleSnoozeFetcher } from '@app-builder/routes/ressources+/rule-snoozes+/read.$ruleSnoozeId';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import {
   formatDateRelative,
+  formatDateTime,
   useFormatLanguage,
 } from '@app-builder/utils/format';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUID } from '@app-builder/utils/short-uuid';
+import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
+import { Link } from '@remix-run/react';
 import { cx } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
-import { Accordion, Avatar, Collapsible } from 'ui-design-system';
+import { assertNever } from 'typescript-utils';
+import { Avatar, CollapsibleV2 } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
+import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping, caseStatusVariants } from './CaseStatus';
 import { CaseTags } from './CaseTags';
+import { CopyPivotValue } from './PivotValue';
 
 export function CaseEvents({ events }: { events: CaseEvent[] }) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
 
   return (
-    <Collapsible.Container className="bg-grey-00">
-      <Collapsible.Title>
-        <div className="flex flex-1 items-center justify-between">
-          <span className="text-grey-100 text-m font-bold capitalize">
-            {t('cases:case_detail.history')}
-          </span>
-          <span className="text-grey-25 text-xs font-normal capitalize">
-            {t('cases:case_detail.events_count', {
-              count: events.length,
-            })}
-          </span>
-        </div>
-      </Collapsible.Title>
-      <Collapsible.ScrollableContent className="max-h-[70dvh]">
-        <Accordion.Container className="relative z-0">
-          <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
-          {events.map((event) => {
-            const Icon = getEventIcon(event);
-            const Title = getEventTitle(event, t);
-            const Detail = getEventDetail(event);
-            return (
-              <Accordion.Item key={event.id} value={event.id}>
-                <Accordion.Title className="flex w-full flex-row items-center">
-                  <span className="mr-2">{Icon}</span>
-                  <span className="line-clamp-1 flex-1 text-start">
-                    {Title}
-                  </span>
-                  <span className="text-s text-grey-25 mx-4 font-normal">
-                    {formatDateRelative(event.createdAt, {
-                      language,
-                    })}
-                  </span>
-                  <Accordion.Arrow />
-                </Accordion.Title>
-                <Accordion.Content className="ml-8 mt-2">
-                  {Detail}
-                </Accordion.Content>
-              </Accordion.Item>
-            );
-          })}
-        </Accordion.Container>
-      </Collapsible.ScrollableContent>
-    </Collapsible.Container>
+    <div className="relative z-0 flex flex-col gap-4 lg:gap-6">
+      <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
+      {events.map((event) => {
+        const EventIcon = getEventIcon(event);
+        const Title = getEventTitle(event, t);
+        const Detail = getEventDetail(event);
+        const defaultOpen = getDefaultOpen(event);
+        return (
+          <div key={event.id}>
+            <CollapsibleV2.Provider defaultOpen={defaultOpen}>
+              <CollapsibleV2.Title className="group flex w-full flex-row items-center">
+                <span className="mr-2">{EventIcon}</span>
+                <span className="line-clamp-1 flex-1 text-start">{Title}</span>
+                <span className="text-s text-grey-25 mx-4 font-normal">
+                  {formatDateRelative(event.createdAt, {
+                    language,
+                  })}
+                </span>
+                <Icon
+                  icon="arrow-2-down"
+                  aria-hidden
+                  className="size-6 rounded transition-transform group-aria-expanded:rotate-180"
+                />
+              </CollapsibleV2.Title>
+              <CollapsibleV2.Content className="ml-8 mt-2">
+                {Detail}
+              </CollapsibleV2.Content>
+            </CollapsibleV2.Provider>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -140,6 +139,26 @@ export function getEventIcon(event: CaseEvent) {
           icon="attachment"
         />
       );
+    case 'rule_snooze_created':
+      return (
+        <EventIcon
+          className="border-grey-10 bg-grey-00 text-grey-100 border"
+          icon="snooze"
+        />
+      );
+    default:
+      assertNever('[CaseEvent] unknown event:', eventType);
+  }
+}
+
+export function getDefaultOpen(event: CaseEvent) {
+  const { eventType } = event;
+  switch (eventType) {
+    case 'comment_added':
+    case 'rule_snooze_created':
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -254,6 +273,14 @@ export function getEventTitle(
         </span>
       );
     }
+    case 'rule_snooze_created':
+      return (
+        <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
+          {t('cases:case_detail.history.event_title.rule_snooze_created')}
+        </span>
+      );
+    default:
+      assertNever('[CaseEvent] unknown event:', eventType);
   }
 }
 
@@ -269,7 +296,7 @@ function Author({
   const user = getOrgUserById(userId);
 
   return (
-    <div className="text-grey-100 text-s font-semibold">
+    <div className="text-grey-100 text-s flex items-center gap-1 whitespace-pre font-semibold">
       <Trans
         t={t}
         i18nKey={`cases:case_detail.history.event_detail.${type}`}
@@ -321,6 +348,9 @@ export function getEventDetail(event: CaseEvent) {
     case 'tags_updated': {
       return <TagsUpdatedEventDetail event={event} />;
     }
+    case 'rule_snooze_created': {
+      return <RuleSnoozeCreatedDetail event={event} />;
+    }
     case 'decision_added': {
       if (!event.userId) {
         return <ByWorkflow type="added_by_workflow" />;
@@ -335,6 +365,8 @@ export function getEventDetail(event: CaseEvent) {
     case 'inbox_changed': {
       return <Author userId={event.userId} type="edited_by" />;
     }
+    default:
+      assertNever('[CaseEvent] unknown event:', eventType);
   }
 }
 
@@ -371,6 +403,134 @@ function TagsUpdatedEventDetail({ event }: { event: CaseTagsUpdatedEvent }) {
           />
         </div>
       )}
+    </div>
+  );
+}
+
+function RuleSnoozeCreatedDetail({ event }: { event: RuleSnoozeCreated }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <Author userId={event.userId} type="added_by" />
+      {event.comment ? (
+        <div className="text-s text-grey-100 border-grey-10 whitespace-break-spaces rounded border p-2 font-normal">
+          {event.comment}
+        </div>
+      ) : null}
+      <RuleSnoozeDetail ruleSnoozeId={event.ruleSnoozeId} />
+    </div>
+  );
+}
+
+function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
+  const { state, data } = useGetRuleSnoozeFetcher({
+    ruleSnoozeId,
+  });
+  const { t } = useTranslation(casesI18n);
+  const getCopyToClipboardProps = useGetCopyToClipboard();
+  const language = useFormatLanguage();
+
+  const isError = data?.success === false;
+  const isLoading = state === 'loading' || !data;
+
+  if (isError) {
+    return (
+      <div className="text-s text-red-100">{t('common:errors.unknown')}</div>
+    );
+  }
+
+  return (
+    <div className="grid w-full grid-cols-[max-content_1fr] gap-2">
+      <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
+        {t(
+          'cases:case_detail.history.event_detail.rule_snooze_created.pivot_value',
+        )}
+      </span>
+      <span
+        className="text-grey-100 text-s"
+        {...(isLoading
+          ? {}
+          : getCopyToClipboardProps(data.ruleSnoozeDetail.pivotValue))}
+      >
+        {isLoading ? (
+          <Spinner className="size-4" />
+        ) : (
+          <CopyPivotValue>{data.ruleSnoozeDetail.pivotValue}</CopyPivotValue>
+        )}
+      </span>
+      <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
+        {t(
+          'cases:case_detail.history.event_detail.rule_snooze_created.created_from_decision',
+        )}
+      </span>
+      <span className="text-grey-100 text-s">
+        {isLoading ? (
+          <Spinner className="size-4" />
+        ) : data.ruleSnoozeDetail.createdFromDecisionId ? (
+          <Link
+            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
+            to={getRoute('/decisions/:decisionId', {
+              decisionId: fromUUID(data.ruleSnoozeDetail.createdFromDecisionId),
+            })}
+          >
+            {t(
+              'cases:case_detail.history.event_detail.rule_snooze_created.decision_detail',
+            )}
+          </Link>
+        ) : (
+          '-'
+        )}
+      </span>
+      <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
+        {t(
+          'cases:case_detail.history.event_detail.rule_snooze_created.created_from_rule',
+        )}
+      </span>
+      <span className="text-grey-100 text-s">
+        {isLoading ? (
+          <Spinner className="size-4" />
+        ) : (
+          <Link
+            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
+            to={getRoute(
+              '/scenarios/:scenarioId/i/:iterationId/rules/:ruleId',
+              {
+                scenarioId: fromUUID(
+                  data.ruleSnoozeDetail.createdFromRule.scenarioId,
+                ),
+                iterationId: fromUUID(
+                  data.ruleSnoozeDetail.createdFromRule.scenarioIterationId,
+                ),
+                ruleId: fromUUID(data.ruleSnoozeDetail.createdFromRule.ruleId),
+              },
+            )}
+          >
+            {data.ruleSnoozeDetail.createdFromRule.ruleName ??
+              t(
+                'cases:case_detail.history.event_detail.rule_snooze_created.rule_detail',
+              )}
+          </Link>
+        )}
+      </span>
+      <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
+        {t(
+          'cases:case_detail.history.event_detail.rule_snooze_created.valid_from',
+        )}
+      </span>
+      <span className="text-grey-100 text-s">
+        <div className="grid w-fit grid-cols-[1fr_max-content_1fr] gap-1">
+          <span className="text-grey-100 text-s text-right">
+            {isLoading
+              ? '--/--/----'
+              : formatDateTime(data.ruleSnoozeDetail.startsAt, { language })}
+          </span>
+          <span className="text-s self-center">→</span>
+          <span className="text-grey-100 text-s">
+            {isLoading
+              ? '--/--/----'
+              : formatDateTime(data.ruleSnoozeDetail.endsAt, { language })}
+          </span>
+        </div>
+      </span>
     </div>
   );
 }

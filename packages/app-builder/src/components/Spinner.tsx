@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { useSpinDelay } from 'spin-delay';
 import { Icon, type IconName } from 'ui-icons';
 
 interface SpinnerProps {
@@ -31,7 +32,8 @@ export function LoadingIcon({
   icon: IconName;
   loading: boolean;
 }) {
-  return loading ? (
+  const showSpinner = useSpinDelay(loading);
+  return showSpinner ? (
     <Spinner className={className} />
   ) : (
     <Icon icon={icon} className={className} />

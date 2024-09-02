@@ -2,15 +2,20 @@ import {
   type EditorMode,
   EditorModeContextProvider,
 } from '@app-builder/services/editor';
-import { CurrentScenarioIterationContextProvider } from '@app-builder/services/editor/current-scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
-import { CurrentScenarioValidationContextProvider } from '@app-builder/services/validation/current-scenario-validation';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromParams } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { findRuleValidation } from '@app-builder/services/validation';
+import { getRoute, type RouteID } from '@app-builder/utils/routes';
+import { fromParams, useParam } from '@app-builder/utils/short-uuid';
+import {
+  json,
+  type LoaderFunctionArgs,
+  type SerializeFrom,
+} from '@remix-run/node';
+import { Outlet, useLoaderData, useRouteLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
+import React from 'react';
 import * as R from 'remeda';
+import invariant from 'tiny-invariant';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,
@@ -49,16 +54,59 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function CurrentScenarioIterationProvider() {
-  const { editorMode, scenarioIteration, scenarioValidation } =
-    useLoaderData<typeof loader>();
+  const { editorMode, scenarioIteration } = useLoaderData<typeof loader>();
 
   return (
-    <CurrentScenarioIterationContextProvider value={scenarioIteration}>
-      <CurrentScenarioValidationContextProvider value={scenarioValidation}>
-        <EditorModeContextProvider value={editorMode}>
-          <Outlet key={scenarioIteration.id} />
-        </EditorModeContextProvider>
-      </CurrentScenarioValidationContextProvider>
-    </CurrentScenarioIterationContextProvider>
+    <EditorModeContextProvider value={editorMode}>
+      <Outlet key={scenarioIteration.id} />
+    </EditorModeContextProvider>
   );
 }
+
+function useCurrentScenarioIterationData() {
+  return useRouteLoaderData(
+    'routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout' satisfies RouteID,
+  ) as SerializeFrom<typeof loader>;
+}
+
+export function useCurrentScenarioIteration() {
+  const { scenarioIteration } = useCurrentScenarioIterationData();
+  return scenarioIteration;
+}
+
+export function useCurrentScenarioIterationRule() {
+  const ruleId = useParam('ruleId');
+  const scenarioIteration = useCurrentScenarioIteration();
+
+  const rule = scenarioIteration.rules.find((rule) => rule.id === ruleId);
+
+  invariant(rule, `No rule corresponding to ${ruleId}`);
+
+  return rule;
+}
+
+export const useRuleGroups = () => {
+  const { rules } = useCurrentScenarioIteration();
+
+  return React.useMemo(
+    () =>
+      R.pipe(
+        rules,
+        R.map((rule) => rule.ruleGroup),
+        R.filter((val) => !R.isEmpty(val)),
+        R.unique(),
+      ),
+    [rules],
+  );
+};
+
+export function useCurrentScenarioValidation() {
+  const { scenarioValidation } = useCurrentScenarioIterationData();
+  return scenarioValidation;
+}
+
+export const useCurrentRuleValidationRule = () => {
+  const ruleId = useParam('ruleId');
+  const scenarioValidation = useCurrentScenarioValidation();
+  return findRuleValidation(scenarioValidation, ruleId);
+};

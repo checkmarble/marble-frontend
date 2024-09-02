@@ -12,6 +12,7 @@ import { makeGetInboxRepository } from './InboxRepository';
 import { getLicenseRepository } from './LicenseRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
 import { makeGetPartnerRepository } from './PartnerRepository';
+import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
 import { makeGetScenarioRepository } from './ScenarioRepository';
 import {
@@ -64,6 +65,7 @@ export function makeServerRepositories({
     getPartnerRepository: makeGetPartnerRepository(),
     getTransferAlertRepository: makeGetTransferAlertRepository(),
     getWebhookRepository: makeGetWebhookRepository(),
+    getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     licenseRepository: getLicenseRepository(licenseAPIClient, devEnvironment),
   };
 }

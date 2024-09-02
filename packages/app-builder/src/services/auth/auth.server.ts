@@ -21,6 +21,7 @@ import { type EditorRepository } from '@app-builder/repositories/EditorRepositor
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { type PartnerRepository } from '@app-builder/repositories/PartnerRepository';
+import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type TransferAlertRepository } from '@app-builder/repositories/TransferAlertRepository';
@@ -53,6 +54,7 @@ interface AuthenticatedInfo {
   partnerRepository: PartnerRepository;
   transferAlertRepository: TransferAlertRepository;
   webhookRepository: WebhookRepository;
+  ruleSnoozeRepository: RuleSnoozeRepository;
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   scenarioIterationRuleRepository: ScenarioIterationRuleRepository;
@@ -142,6 +144,9 @@ interface MakeAuthenticationServerServiceArgs {
   getWebhookRepository: (
     marbleCoreApiClient: MarbleCoreApi,
   ) => WebhookRepository;
+  getRuleSnoozeRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => RuleSnoozeRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   csrfService: CSRF;
 }
@@ -164,6 +169,7 @@ export function makeAuthenticationServerService({
   getPartnerRepository,
   getTransferAlertRepository,
   getWebhookRepository,
+  getRuleSnoozeRepository,
   authSessionService,
   csrfService,
 }: MakeAuthenticationServerServiceArgs) {
@@ -343,6 +349,7 @@ export function makeAuthenticationServerService({
         user.partnerId,
       ),
       webhookRepository: getWebhookRepository(marbleCoreApiClient),
+      ruleSnoozeRepository: getRuleSnoozeRepository(marbleCoreApiClient),
       user,
       inbox: getInboxRepository(marbleCoreApiClient),
     };
