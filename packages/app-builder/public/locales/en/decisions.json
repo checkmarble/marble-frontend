@@ -44,6 +44,7 @@
   "rules.status.hit": "hit",
   "rules.status.error": "error",
   "rules.status.no_hit": "no hit",
+  "rules.status.snoozed": "snoozed",
   "rules.description": "Description",
   "rules.error.not_found": "The associated rule info could not be found. Please try again or contact your admin.",
   "rules.show_contextual_values": "Show contextual values"

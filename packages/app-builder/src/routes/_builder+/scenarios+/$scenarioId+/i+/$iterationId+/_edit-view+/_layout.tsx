@@ -15,7 +15,6 @@ import {
   hasDecisionErrors,
   hasRulesErrors,
   hasTriggerErrors,
-  useCurrentScenarioValidation,
 } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, useParam } from '@app-builder/utils/short-uuid';
@@ -26,6 +25,8 @@ import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+import { useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,

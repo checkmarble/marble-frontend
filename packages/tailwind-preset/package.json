@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "type-check": "npx tsc --noEmit"
+    "type-check": "pnpm exec tsc --noEmit"
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",

@@ -9,6 +9,10 @@ import {
   type ScenarioValidation,
 } from '@app-builder/models';
 import {
+  adaptSnoozesOfIteration,
+  type SnoozesOfIteration,
+} from '@app-builder/models/rule-snooze';
+import {
   adaptScenario,
   adaptScenarioCreateInputDto,
   adaptScenarioUpdateInputDto,
@@ -71,6 +75,9 @@ export interface ScenarioRepository {
     publicationAction: 'publish' | 'unpublish';
     scenarioIterationId: string;
   }): Promise<void>;
+  getScenarioIterationActiveSnoozes(
+    scenarioIterationId: string,
+  ): Promise<SnoozesOfIteration>;
 }
 
 export function makeGetScenarioRepository() {
@@ -193,6 +200,13 @@ export function makeGetScenarioRepository() {
         }
         throw error;
       }
+    },
+    getScenarioIterationActiveSnoozes: async (scenarioIterationId) => {
+      const { snoozes } =
+        await marbleCoreApiClient.getScenarioIterationActiveSnoozes(
+          scenarioIterationId,
+        );
+      return adaptSnoozesOfIteration(snoozes);
     },
   });
 }

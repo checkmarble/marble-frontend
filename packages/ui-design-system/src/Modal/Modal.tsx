@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { forwardRef } from 'react';
 
 const modalContentClassnames = cva(
-  'bg-grey-00 fixed left-1/2 top-1/2 flex h-fit w-full -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg drop-shadow-xl overflow-hidden',
+  'bg-grey-00 fixed left-1/2 top-[10vh] flex h-fit w-full -translate-x-1/2 flex-col rounded-lg drop-shadow-xl overflow-hidden',
   {
     variants: {
       size: {

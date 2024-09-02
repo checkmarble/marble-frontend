@@ -12,9 +12,12 @@
   "results": "Results",
   "past_uploads": "Past uploads",
   "upload_status": "Status",
-  "lines_processed": "Records processed",
+  "lines_processed": "Records received",
+  "num_rows_ingested": "Number of records ingested",
   "started_at": "Started at",
   "finished_at": "Completed at",
   "status_success": "Complete",
-  "status_pending": "Processing"
+  "status_pending": "Pending",
+  "status_processing": "Processing",
+  "status_failure": "Failed"
 }

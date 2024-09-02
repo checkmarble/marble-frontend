@@ -15,15 +15,9 @@ import {
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { scenarioDecisionDocHref } from '@app-builder/services/documentation-href';
-import {
-  useCurrentScenarioIteration,
-  useEditorMode,
-} from '@app-builder/services/editor';
+import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
-import {
-  useCurrentScenarioValidation,
-  useGetScenarioErrorMessage,
-} from '@app-builder/services/validation';
+import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -38,6 +32,11 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Collapsible, Input } from 'ui-design-system';
 import * as z from 'zod';
+
+import {
+  useCurrentScenarioIteration,
+  useCurrentScenarioValidation,
+} from '../_layout';
 
 export const handle = {
   i18n: [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace,

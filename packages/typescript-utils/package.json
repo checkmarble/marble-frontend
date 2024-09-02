@@ -10,7 +10,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "type-check": "npx tsc --noEmit"
+    "type-check": "pnpm exec tsc --noEmit"
   },
   "author": "",
   "license": "ISC"

@@ -5,7 +5,11 @@ import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatDateTime,
+  formatNumber,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -304,7 +308,18 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
       }),
       columnHelper.accessor((row) => row.lines_processed, {
         id: 'upload.lines_processed',
+        cell: ({ getValue }) => (
+          <span>{formatNumber(getValue(), { language })}</span>
+        ),
         header: t('upload:lines_processed'),
+        size: 200,
+      }),
+      columnHelper.accessor((row) => row.num_rows_ingested, {
+        id: 'upload.num_rows_ingested',
+        cell: ({ getValue }) => (
+          <span>{formatNumber(getValue(), { language })}</span>
+        ),
+        header: t('upload:num_rows_ingested'),
         size: 200,
       }),
       columnHelper.accessor((row) => row.status, {
@@ -349,12 +364,21 @@ const getStatusIcon = (status: string) => {
   if (status === 'success') {
     return <Icon icon="tick" className="size-6 text-green-100" />;
   }
+  if (status === 'failure') {
+    return <Icon icon="cross" className="size-6 text-red-100" />;
+  }
   return <Icon icon="restart-alt" className="text-grey-50 size-6" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['upload']> => {
   if (status === 'success') {
     return 'upload:status_success';
+  }
+  if (status === 'failure') {
+    return 'upload:status_failure';
+  }
+  if (status === 'processing') {
+    return 'upload:status_processing';
   }
   return 'upload:status_pending';
 };

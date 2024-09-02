@@ -23,6 +23,7 @@ export type LicenseValidationDto = {
         data_enrichment: boolean;
         user_roles: boolean;
         webhooks: boolean;
+        rule_snoozes: boolean;
     };
 };
 /**

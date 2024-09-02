@@ -16,7 +16,6 @@ import { serverServices } from '@app-builder/services/init.server';
 import {
   findRuleValidation,
   hasRuleErrors,
-  useCurrentScenarioValidation,
   useGetScenarioErrorMessage,
 } from '@app-builder/services/validation';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
@@ -36,6 +35,8 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Input, Table, Tag, useVirtualTable } from 'ui-design-system';
+
+import { useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,
