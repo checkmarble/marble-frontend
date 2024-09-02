@@ -113,7 +113,7 @@ export function CaseDecisions({
                   <Icon
                     icon="smallarrow-up"
                     aria-hidden
-                    className="size-6 transition-transform duration-200 group-aria-expanded:rotate-180"
+                    className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
                   />
                 </CollapsibleV2.Title>
                 <time dateTime={row.createdAt}>
