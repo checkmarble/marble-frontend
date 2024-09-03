@@ -438,13 +438,13 @@ export type UpdateScenarioIterationRuleBodyDto = {
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
     id: string;
-    createdAt: string;
-    scenarioIterationId: string;
-    publicationAction: PublicationAction;
+    created_at: string;
+    scenario_iteration_id: string;
+    publication_action: PublicationAction;
 };
 export type CreateScenarioPublicationBody = {
-    scenarioIterationId: string;
-    publicationAction: PublicationAction;
+    scenario_iteration_id: string;
+    publication_action: PublicationAction;
 };
 export type ScenarioPublicationStatusDto = {
     preparation_status: "required" | "ready_to_activate";
@@ -1747,10 +1747,9 @@ export function deleteScenarioIterationRule(ruleId: string, opts?: Oazapfts.Requ
 /**
  * List scenario publications
  */
-export function listScenarioPublications({ scenarioId, scenarioIterationId, publicationAction }: {
+export function listScenarioPublications({ scenarioId, scenarioIterationId }: {
     scenarioId?: string;
     scenarioIterationId?: string;
-    publicationAction?: PublicationAction;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -1765,9 +1764,8 @@ export function listScenarioPublications({ scenarioId, scenarioIterationId, publ
         status: 404;
         data: string;
     }>(`/scenario-publications${QS.query(QS.explode({
-        scenarioId,
-        scenarioIterationId,
-        publicationAction
+        scenario_id: scenarioId,
+        scenario_iteration_id: scenarioIterationId
     }))}`, {
         ...opts
     }));

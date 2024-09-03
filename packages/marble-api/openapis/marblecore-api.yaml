@@ -1727,26 +1727,20 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: scenarioId
+        - name: scenario_id
           description: ID of the scenario returned publications should be linked to
           in: query
           required: false
           schema:
             type: string
             format: uuid
-        - name: scenarioIterationId
+        - name: scenario_iteration_id
           description: ID of the scenario iteration returned publications should be linked to
           in: query
           required: false
           schema:
             type: string
             format: uuid
-        - name: publicationAction
-          description: publication action to return
-          in: query
-          required: false
-          schema:
-            $ref: '#/components/schemas/PublicationAction'
       responses:
         '200':
           description: Scenario publications corresponding to filters
@@ -4745,31 +4739,31 @@ components:
       type: object
       required:
         - id
-        - createdAt
-        - scenarioIterationId
-        - publicationAction
+        - created_at
+        - scenario_iteration_id
+        - publication_action
       properties:
         id:
           type: string
           format: uuid
-        createdAt:
+        created_at:
           type: string
           format: date-time
-        scenarioIterationId:
+        scenario_iteration_id:
           type: string
           format: uuid
-        publicationAction:
+        publication_action:
           $ref: '#/components/schemas/PublicationAction'
     CreateScenarioPublicationBody:
       type: object
       required:
-        - scenarioIterationId
-        - publicationAction
+        - scenario_iteration_id
+        - publication_action
       properties:
-        scenarioIterationId:
+        scenario_iteration_id:
           type: string
           format: uuid
-        publicationAction:
+        publication_action:
           $ref: '#/components/schemas/PublicationAction'
     PublicationAction:
       type: string

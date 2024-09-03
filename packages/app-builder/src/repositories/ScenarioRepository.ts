@@ -29,7 +29,9 @@ import {
   type UpdateScenarioIterationBody,
 } from '@app-builder/models/scenario-iteration';
 import {
+  adaptCreateScenarioPublicationBodyDto,
   adaptScenarioPublicationStatus,
+  type CreateScenarioPublicationBody,
   type ScenarioPublicationStatus,
 } from '@app-builder/models/scenario-publication';
 import { findRuleValidation } from '@app-builder/services/validation/scenario-validation';
@@ -77,10 +79,7 @@ export interface ScenarioRepository {
     iterationId: string;
   }): Promise<ScenarioPublicationStatus>;
   startPublicationPreparation(args: { iterationId: string }): Promise<void>;
-  createScenarioPublication(args: {
-    publicationAction: 'publish' | 'unpublish';
-    scenarioIterationId: string;
-  }): Promise<void>;
+  createScenarioPublication(args: CreateScenarioPublicationBody): Promise<void>;
   getScenarioIterationActiveSnoozes(
     scenarioIterationId: string,
   ): Promise<SnoozesOfIteration>;
@@ -194,7 +193,9 @@ export function makeGetScenarioRepository() {
     },
     createScenarioPublication: async (args) => {
       try {
-        await marbleCoreApiClient.createScenarioPublication(args);
+        await marbleCoreApiClient.createScenarioPublication(
+          adaptCreateScenarioPublicationBodyDto(args),
+        );
       } catch (error) {
         if (isStatusBadRequestHttpError(error) && isMarbleError(error)) {
           const errorCode = error.data.error_code;
