@@ -28,15 +28,15 @@ export interface Scenario {
 export function adaptScenario(dto: ScenarioDto): Scenario {
   return {
     id: dto.id,
-    createdAt: dto.createdAt,
+    createdAt: dto.created_at,
     decisionToCaseInboxId: dto.decision_to_case_inbox_id,
     decisionToCaseOutcomes: dto.decision_to_case_outcomes,
     decisionToCaseWorkflowType: dto.decision_to_case_workflow_type,
     description: dto.description,
-    liveVersionId: dto.liveVersionId,
+    liveVersionId: dto.live_version_id,
     name: dto.name,
     organizationId: dto.organization_id,
-    triggerObjectType: dto.triggerObjectType,
+    triggerObjectType: dto.trigger_object_type,
   };
 }
 
@@ -52,7 +52,7 @@ export function adaptScenarioCreateInputDto(
   return {
     name: input.name,
     description: input.description ?? '',
-    triggerObjectType: input.triggerObjectType,
+    trigger_object_type: input.triggerObjectType,
   };
 }
 

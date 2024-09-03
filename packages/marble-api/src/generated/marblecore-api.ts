@@ -312,20 +312,20 @@ export type CreateCustomListValueBody = {
 };
 export type ScenarioDto = {
     id: string;
-    createdAt: string;
+    created_at: string;
     decision_to_case_inbox_id?: string;
     decision_to_case_outcomes: Outcome[];
     decision_to_case_workflow_type: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
     description: string;
-    liveVersionId?: string;
+    live_version_id?: string;
     name: string;
     organization_id: string;
-    triggerObjectType: string;
+    trigger_object_type: string;
 };
 export type ScenarioCreateInputDto = {
     description: string;
     name: string;
-    triggerObjectType: string;
+    trigger_object_type: string;
 };
 export type ScenarioUpdateInputDto = {
     decision_to_case_inbox_id?: string;
