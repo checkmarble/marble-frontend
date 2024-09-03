@@ -23,16 +23,16 @@ export function adaptScenarioIterationRule(
 ): ScenarioIterationRule {
   return {
     id: dto.id,
-    scenarioIterationId: dto.scenarioIterationId,
-    displayOrder: dto.displayOrder,
+    scenarioIterationId: dto.scenario_iteration_id,
+    displayOrder: dto.display_order,
     name: dto.name,
     description: dto.description,
     ruleGroup: dto.rule_group,
     formula: dto.formula_ast_expression
       ? adaptAstNode(dto.formula_ast_expression)
       : null,
-    scoreModifier: dto.scoreModifier,
-    createdAt: dto.createdAt,
+    scoreModifier: dto.score_modifier,
+    createdAt: dto.created_at,
   };
 }
 
@@ -50,13 +50,13 @@ export function adaptCreateScenarioIterationRuleBodyDto(
   input: CreateScenarioIterationRuleInput,
 ): CreateScenarioIterationRuleBodyDto {
   return {
-    scenarioIterationId: input.scenarioIterationId,
-    displayOrder: input.displayOrder,
+    scenario_iteration_id: input.scenarioIterationId,
+    display_order: input.displayOrder,
     name: input.name,
     description: input.description,
     rule_group: input.ruleGroup,
     formula_ast_expression: input.formula ? adaptNodeDto(input.formula) : null,
-    scoreModifier: input.scoreModifier,
+    score_modifier: input.scoreModifier,
   };
 }
 
@@ -74,13 +74,13 @@ export function adaptUpdateScenarioIterationRuleBodyDto(
   input: UpdateScenarioIterationRuleInput,
 ): UpdateScenarioIterationRuleBodyDto {
   return {
-    displayOrder: input.displayOrder,
+    display_order: input.displayOrder,
     name: input.name,
     description: input.description,
     rule_group: input.ruleGroup,
     formula_ast_expression: input.formula
       ? adaptNodeDto(input.formula)
       : input.formula,
-    scoreModifier: input.scoreModifier,
+    score_modifier: input.scoreModifier,
   };
 }

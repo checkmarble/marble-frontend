@@ -350,13 +350,13 @@ export type NodeDto = {
     };
 };
 export type CreateScenarioIterationRuleBodyDto = {
-    scenarioIterationId: string;
-    displayOrder: number;
+    scenario_iteration_id: string;
+    display_order: number;
     name: string;
     description: string;
     rule_group: string;
     formula_ast_expression: (NodeDto) | null;
-    scoreModifier: number;
+    score_modifier: number;
 };
 export type CreateScenarioIterationBody = {
     scenarioId: string;
@@ -369,14 +369,14 @@ export type CreateScenarioIterationBody = {
 };
 export type ScenarioIterationRuleDto = {
     id: string;
-    scenarioIterationId: string;
-    displayOrder: number;
+    scenario_iteration_id: string;
+    display_order: number;
     name: string;
     description: string;
     rule_group: string;
     formula_ast_expression: (NodeDto) | null;
-    scoreModifier: number;
-    createdAt: string;
+    score_modifier: number;
+    created_at: string;
 };
 export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
@@ -428,12 +428,12 @@ export type SnoozesOfIterationDto = {
     rule_snoozes: RuleSnoozeInformationDto[];
 };
 export type UpdateScenarioIterationRuleBodyDto = {
-    displayOrder?: number;
+    display_order?: number;
     name?: string;
     description?: string;
     rule_group?: string;
     formula_ast_expression?: (NodeDto) | null;
-    scoreModifier?: number;
+    score_modifier?: number;
 };
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
