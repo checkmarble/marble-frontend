@@ -4432,7 +4432,7 @@ components:
         id:
           type: string
           format: uuid
-        createdAt:
+        created_at:
           type: string
           format: date-time
         decision_to_case_inbox_id:
@@ -4447,7 +4447,7 @@ components:
           enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
         description:
           type: string
-        liveVersionId:
+        live_version_id:
           type: string
           format: uuid
         name:
@@ -4455,17 +4455,17 @@ components:
         organization_id:
           type: string
           format: uuid
-        triggerObjectType:
+        trigger_object_type:
           type: string
       required:
         - id
-        - createdAt
+        - created_at
         - decision_to_case_outcomes
         - decision_to_case_workflow_type
         - description
         - name
         - organization_id
-        - triggerObjectType
+        - trigger_object_type
     ScenarioCreateInputDto:
       type: object
       properties:
@@ -4473,12 +4473,12 @@ components:
           type: string
         name:
           type: string
-        triggerObjectType:
+        trigger_object_type:
           type: string
       required:
         - description
         - name
-        - triggerObjectType
+        - trigger_object_type
     ScenarioUpdateInputDto:
       type: object
       properties:
