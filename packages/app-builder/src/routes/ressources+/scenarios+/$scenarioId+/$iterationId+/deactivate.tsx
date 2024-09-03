@@ -29,7 +29,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   await csrfService.validate(request);
@@ -44,7 +44,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   try {
-    await apiClient.createScenarioPublication({
+    await scenario.createScenarioPublication({
       publicationAction: 'unpublish',
       scenarioIterationId: iterationId,
     });
