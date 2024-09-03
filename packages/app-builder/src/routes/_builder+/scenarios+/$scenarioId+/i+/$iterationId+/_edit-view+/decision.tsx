@@ -86,7 +86,7 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const t = await i18nextService.getFixedT(request, 'scenarios');
@@ -106,9 +106,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   try {
     const iterationId = fromParams(params, 'iterationId');
     const { thresholds } = parsedForm.data;
-    await apiClient.updateScenarioIteration(iterationId, {
-      body: thresholds,
-    });
+    await scenario.updateScenarioIteration(iterationId, thresholds);
 
     setToastMessage(session, {
       type: 'success',

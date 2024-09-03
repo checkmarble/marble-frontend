@@ -1,10 +1,11 @@
 import {
   type ScenarioIterationDto,
   type ScenarioIterationWithBodyDto,
+  type UpdateScenarioIterationBody as UpdateScenarioIterationBodyDto,
 } from 'marble-api';
 import * as R from 'remeda';
 
-import { adaptAstNode, type AstNode } from './ast-node';
+import { adaptAstNode, adaptNodeDto, type AstNode } from './ast-node';
 import {
   adaptScenarioIterationRule,
   type ScenarioIterationRule,
@@ -31,6 +32,28 @@ export interface ScenarioIteration {
   trigger: AstNode | null;
 }
 
+export interface UpdateScenarioIterationBody {
+  triggerConditionAstExpression?: AstNode | null;
+  scoreReviewThreshold?: number;
+  scoreRejectThreshold?: number;
+  schedule?: string;
+}
+
+export function adaptUpdateScenarioIterationBody(
+  input: UpdateScenarioIterationBody,
+): UpdateScenarioIterationBodyDto {
+  return {
+    body: {
+      trigger_condition_ast_expression: input.triggerConditionAstExpression
+        ? adaptNodeDto(input.triggerConditionAstExpression)
+        : null,
+      score_review_threshold: input.scoreReviewThreshold,
+      score_reject_threshold: input.scoreRejectThreshold,
+      schedule: input.schedule,
+    },
+  };
+}
+
 export function adaptScenarioIteration(
   scenarioIterationWithBody: ScenarioIterationWithBodyDto,
 ): ScenarioIteration {
@@ -39,12 +62,12 @@ export function adaptScenarioIteration(
 
   return {
     id: scenarioIterationWithBody.id,
-    scenarioId: scenarioIterationWithBody.scenarioId,
+    scenarioId: scenarioIterationWithBody.scenario_id,
     version: scenarioIterationWithBody.version,
-    createdAt: scenarioIterationWithBody.createdAt,
-    updatedAt: scenarioIterationWithBody.updatedAt,
-    scoreReviewThreshold: scenarioIterationWithBody.body.scoreReviewThreshold,
-    scoreRejectThreshold: scenarioIterationWithBody.body.scoreRejectThreshold,
+    createdAt: scenarioIterationWithBody.created_at,
+    updatedAt: scenarioIterationWithBody.updated_at,
+    scoreReviewThreshold: scenarioIterationWithBody.body.score_review_threshold,
+    scoreRejectThreshold: scenarioIterationWithBody.body.score_reject_threshold,
     rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),
     schedule: scenarioIterationWithBody.body.schedule,
     trigger: triggerDto ? adaptAstNode(triggerDto) : null,
@@ -56,10 +79,10 @@ export function adaptScenarioIterationSummary(
 ): ScenarioIterationSummary {
   return {
     id: dto.id,
-    scenarioId: dto.scenarioId,
+    scenarioId: dto.scenario_id,
     version: dto.version,
-    createdAt: dto.createdAt,
-    updatedAt: dto.updatedAt,
+    createdAt: dto.created_at,
+    updatedAt: dto.updated_at,
   };
 }
 

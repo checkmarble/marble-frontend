@@ -336,10 +336,10 @@ export type ScenarioUpdateInputDto = {
 };
 export type ScenarioIterationDto = {
     id: string;
-    scenarioId: string;
+    scenario_id: string;
     version: number | null;
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
 };
 export type NodeDto = {
     name?: string;
@@ -359,11 +359,11 @@ export type CreateScenarioIterationRuleBodyDto = {
     score_modifier: number;
 };
 export type CreateScenarioIterationBody = {
-    scenarioId: string;
+    scenario_id: string;
     body?: {
         trigger_condition_ast_expression?: (NodeDto) | null;
-        scoreReviewThreshold?: number;
-        scoreRejectThreshold?: number;
+        score_review_threshold?: number;
+        score_reject_threshold?: number;
         rules?: CreateScenarioIterationRuleBodyDto[];
     };
 };
@@ -381,8 +381,8 @@ export type ScenarioIterationRuleDto = {
 export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
         trigger_condition_ast_expression?: (NodeDto) | null;
-        scoreReviewThreshold?: number;
-        scoreRejectThreshold?: number;
+        score_review_threshold?: number;
+        score_reject_threshold?: number;
         rules: ScenarioIterationRuleDto[];
         schedule?: string;
     };
@@ -390,8 +390,8 @@ export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
 export type UpdateScenarioIterationBody = {
     body?: {
         trigger_condition_ast_expression?: (NodeDto) | null;
-        scoreReviewThreshold?: number;
-        scoreRejectThreshold?: number;
+        score_review_threshold?: number;
+        score_reject_threshold?: number;
         schedule?: string;
     };
 };
@@ -1446,7 +1446,7 @@ export function listScenarioIterations({ scenarioId }: {
         status: 404;
         data: string;
     }>(`/scenario-iterations${QS.query(QS.explode({
-        scenarioId
+        scenario_id: scenarioId
     }))}`, {
         ...opts
     }));
