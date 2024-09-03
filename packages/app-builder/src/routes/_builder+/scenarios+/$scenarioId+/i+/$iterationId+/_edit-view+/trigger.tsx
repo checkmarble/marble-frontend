@@ -4,11 +4,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
-import {
-  adaptNodeDto,
-  type AstNode,
-  NewEmptyTriggerAstNode,
-} from '@app-builder/models';
+import { type AstNode, NewEmptyTriggerAstNode } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import {
@@ -104,7 +100,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
   const session = await getSession(request);
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { apiClient, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -119,15 +115,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
 
     if (action === 'save') {
-      const { astNode, schedule } = payload as {
+      const { astNode: triggerConditionAstExpression, schedule } = payload as {
         astNode: AstNode;
         schedule: string;
       };
-      await apiClient.updateScenarioIteration(iterationId, {
-        body: {
-          trigger_condition_ast_expression: adaptNodeDto(astNode),
-          schedule,
-        },
+      await scenario.updateScenarioIteration(iterationId, {
+        triggerConditionAstExpression,
+        schedule,
       });
 
       setToastMessage(session, {

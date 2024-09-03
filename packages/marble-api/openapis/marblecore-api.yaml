@@ -1264,7 +1264,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: scenarioId
+        - name: scenario_id
           description: ID of the scenario returned iterations should be linked to
           in: query
           required: false
@@ -4506,24 +4506,24 @@ components:
       type: object
       required:
         - id
-        - scenarioId
+        - scenario_id
         - version
-        - createdAt
-        - updatedAt
+        - created_at
+        - updated_at
       properties:
         id:
           type: string
           format: uuid
-        scenarioId:
+        scenario_id:
           type: string
           format: uuid
         version:
           type: integer
           nullable: true
-        createdAt:
+        created_at:
           type: string
           format: date-time
-        updatedAt:
+        updated_at:
           type: string
           format: date-time
     ScenarioIterationWithBodyDto:
@@ -4542,10 +4542,10 @@ components:
                   nullable: true
                   allOf:
                     - $ref: '#/components/schemas/NodeDto'
-                scoreReviewThreshold:
+                score_review_threshold:
                   type: integer
                   minimum: 0
-                scoreRejectThreshold:
+                score_reject_threshold:
                   type: integer
                   minimum: 0
                 rules:
@@ -4557,9 +4557,9 @@ components:
     CreateScenarioIterationBody:
       type: object
       required:
-        - scenarioId
+        - scenario_id
       properties:
-        scenarioId:
+        scenario_id:
           type: string
           format: uuid
         body:
@@ -4569,10 +4569,10 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/NodeDto'
-            scoreReviewThreshold:
+            score_review_threshold:
               type: integer
               minimum: 0
-            scoreRejectThreshold:
+            score_reject_threshold:
               type: integer
               minimum: 0
             rules:
@@ -4589,10 +4589,10 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/NodeDto'
-            scoreReviewThreshold:
+            score_review_threshold:
               type: integer
               minimum: 0
-            scoreRejectThreshold:
+            score_reject_threshold:
               type: integer
               minimum: 0
             schedule:
