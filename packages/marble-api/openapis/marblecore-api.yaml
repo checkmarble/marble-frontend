@@ -4603,10 +4603,10 @@ components:
         id:
           type: string
           format: uuid
-        scenarioIterationId:
+        scenario_iteration_id:
           type: string
           format: uuid
-        displayOrder:
+        display_order:
           type: integer
         name:
           type: string
@@ -4618,21 +4618,21 @@ components:
           nullable: true
           oneOf:
             - $ref: '#/components/schemas/NodeDto'
-        scoreModifier:
+        score_modifier:
           type: integer
-        createdAt:
+        created_at:
           type: string
           format: date-time
       required:
         - id
-        - scenarioIterationId
-        - displayOrder
+        - scenario_iteration_id
+        - display_order
         - name
         - description
         - rule_group
         - formula_ast_expression
-        - scoreModifier
-        - createdAt
+        - score_modifier
+        - created_at
     ScenarioValidationDto:
       type: object
       required:
@@ -4687,10 +4687,10 @@ components:
     CreateScenarioIterationRuleBodyDto:
       type: object
       properties:
-        scenarioIterationId:
+        scenario_iteration_id:
           type: string
           format: uuid
-        displayOrder:
+        display_order:
           type: integer
         name:
           type: string
@@ -4702,20 +4702,20 @@ components:
           nullable: true
           oneOf:
             - $ref: '#/components/schemas/NodeDto'
-        scoreModifier:
+        score_modifier:
           type: integer
       required:
-        - scenarioIterationId
-        - displayOrder
+        - scenario_iteration_id
+        - display_order
         - name
         - description
         - rule_group
         - formula_ast_expression
-        - scoreModifier
+        - score_modifier
     UpdateScenarioIterationRuleBodyDto:
       type: object
       properties:
-        displayOrder:
+        display_order:
           type: integer
         name:
           type: string
@@ -4727,7 +4727,7 @@ components:
           nullable: true
           oneOf:
             - $ref: '#/components/schemas/NodeDto'
-        scoreModifier:
+        score_modifier:
           type: integer
     ScenarioPublicationStatusDto:
       type: object
