@@ -285,25 +285,25 @@ export type UploadLog = {
     lines_processed: number;
     num_rows_ingested: number;
 };
-export type CustomList = {
+export type CustomListDto = {
     id: string;
     name: string;
     description: string;
     created_at: string;
     updated_at: string;
 };
-export type CreateCustomListBody = {
+export type CreateCustomListBodyDto = {
     name: string;
     description: string;
 };
-export type CustomListValue = {
+export type CustomListValueDto = {
     id: string;
     value: string;
 };
-export type CustomListWithValues = CustomList & {
-    values: CustomListValue[];
+export type CustomListWithValuesDto = CustomListDto & {
+    values: CustomListValueDto[];
 };
-export type UpdateCustomListBody = {
+export type UpdateCustomListBodyDto = {
     name: string;
     description: string;
 };
@@ -1195,7 +1195,7 @@ export function listCustomLists(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            custom_lists: CustomList[];
+            custom_lists: CustomListDto[];
         };
     } | {
         status: 401;
@@ -1210,11 +1210,11 @@ export function listCustomLists(opts?: Oazapfts.RequestOpts) {
 /**
  * Create a custom list
  */
-export function createCustomList(createCustomListBody: CreateCustomListBody, opts?: Oazapfts.RequestOpts) {
+export function createCustomList(createCustomListBodyDto: CreateCustomListBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            custom_list: CustomList;
+            custom_list: CustomListDto;
         };
     } | {
         status: 401;
@@ -1228,7 +1228,7 @@ export function createCustomList(createCustomListBody: CreateCustomListBody, opt
     }>("/custom-lists", oazapfts.json({
         ...opts,
         method: "POST",
-        body: createCustomListBody
+        body: createCustomListBodyDto
     })));
 }
 /**
@@ -1238,7 +1238,7 @@ export function getCustomList(customListId: string, opts?: Oazapfts.RequestOpts)
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            custom_list: CustomListWithValues;
+            custom_list: CustomListWithValuesDto;
         };
     } | {
         status: 401;
@@ -1256,11 +1256,11 @@ export function getCustomList(customListId: string, opts?: Oazapfts.RequestOpts)
 /**
  * Update a custom list
  */
-export function updateCustomList(customListId: string, updateCustomListBody: UpdateCustomListBody, opts?: Oazapfts.RequestOpts) {
+export function updateCustomList(customListId: string, updateCustomListBodyDto: UpdateCustomListBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            custom_list: CustomList;
+            custom_list: CustomListDto;
         };
     } | {
         status: 401;
@@ -1274,7 +1274,7 @@ export function updateCustomList(customListId: string, updateCustomListBody: Upd
     }>(`/custom-lists/${encodeURIComponent(customListId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: updateCustomListBody
+        body: updateCustomListBodyDto
     })));
 }
 /**
@@ -1283,7 +1283,7 @@ export function updateCustomList(customListId: string, updateCustomListBody: Upd
 export function deleteCustomList(customListId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CustomList;
+        data: CustomListDto;
     } | {
         status: 401;
         data: string;
@@ -1305,7 +1305,7 @@ export function createCustomListValue(customListId: string, createCustomListValu
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            custom_list_value: CustomListValue;
+            custom_list_value: CustomListValueDto;
         };
     } | {
         status: 401;
@@ -1331,7 +1331,7 @@ export function createCustomListValue(customListId: string, createCustomListValu
 export function deleteCustomListValue(customListId: string, customListValueId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CustomListValue;
+        data: CustomListValueDto;
     } | {
         status: 401;
         data: string;
