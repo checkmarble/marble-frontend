@@ -924,7 +924,7 @@ paths:
                   custom_lists:
                     type: array
                     items:
-                      $ref: '#/components/schemas/CustomList'
+                      $ref: '#/components/schemas/CustomListDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -941,7 +941,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateCustomListBody'
+              $ref: '#/components/schemas/CreateCustomListBodyDto'
         required: true
       responses:
         '200':
@@ -954,7 +954,7 @@ paths:
                   - custom_list
                 properties:
                   custom_list:
-                    $ref: '#/components/schemas/CustomList'
+                    $ref: '#/components/schemas/CustomListDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -988,7 +988,7 @@ paths:
                   - custom_list
                 properties:
                   custom_list:
-                    $ref: '#/components/schemas/CustomListWithValues'
+                    $ref: '#/components/schemas/CustomListWithValuesDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1015,7 +1015,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCustomListBody'
+              $ref: '#/components/schemas/UpdateCustomListBodyDto'
         required: true
       responses:
         '200':
@@ -1026,7 +1026,7 @@ paths:
                 type: object
                 properties:
                   custom_list:
-                    $ref: '#/components/schemas/CustomList'
+                    $ref: '#/components/schemas/CustomListDto'
                 required:
                   - custom_list
         '401':
@@ -1056,7 +1056,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomList'
+                $ref: '#/components/schemas/CustomListDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1097,7 +1097,7 @@ paths:
                   - custom_list_value
                 properties:
                   custom_list_value:
-                    $ref: '#/components/schemas/CustomListValue'
+                    $ref: '#/components/schemas/CustomListValueDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1135,7 +1135,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomListValue'
+                $ref: '#/components/schemas/CustomListValueDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -4355,7 +4355,7 @@ components:
           type: object
         object_type:
           type: string
-    CustomList:
+    CustomListDto:
       type: object
       required:
         - id
@@ -4377,7 +4377,7 @@ components:
         updated_at:
           type: string
           format: date-time
-    CustomListValue:
+    CustomListValueDto:
       type: object
       required:
         - id
@@ -4388,9 +4388,9 @@ components:
           format: uuid
         value:
           type: string
-    CustomListWithValues:
+    CustomListWithValuesDto:
       allOf:
-        - $ref: '#/components/schemas/CustomList'
+        - $ref: '#/components/schemas/CustomListDto'
         - type: object
           required:
             - values
@@ -4398,8 +4398,8 @@ components:
             values:
               type: array
               items:
-                $ref: '#/components/schemas/CustomListValue'
-    CreateCustomListBody:
+                $ref: '#/components/schemas/CustomListValueDto'
+    CreateCustomListBodyDto:
       type: object
       required:
         - name
@@ -4409,7 +4409,7 @@ components:
           type: string
         description:
           type: string
-    UpdateCustomListBody:
+    UpdateCustomListBodyDto:
       type: object
       required:
         - name

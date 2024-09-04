@@ -1,9 +1,9 @@
 import {
-  type CreateCustomListBody as CreateCustomListBodyDto,
-  type CustomList as CustomListDto,
-  type CustomListValue as CustomListValueDto,
-  type CustomListWithValues as CustomListWithValuesDto,
-  type UpdateCustomListBody as UpdateCustomListBodyDto,
+  type CreateCustomListBodyDto,
+  type CustomListDto,
+  type CustomListValueDto,
+  type CustomListWithValuesDto,
+  type UpdateCustomListBodyDto,
 } from 'marble-api';
 
 export interface CustomList {
