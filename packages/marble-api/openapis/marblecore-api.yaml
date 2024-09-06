@@ -143,6 +143,15 @@ paths:
             items:
               type: string
               format: uuid
+        - name: inbox_id[]
+          description: inbox IDs used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
         - name: scheduled_execution_id[]
           description: scheduled execution IDs used to filter the list
           in: query
