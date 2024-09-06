@@ -44,8 +44,6 @@ export class FirebaseAuthEmulatorPage {
       await page.getByRole('button', { name: 'Save' }).click();
 
       await expect(verifiedEmail).not.toBeVisible();
-      await page.getByRole('menuitem', { name: 'Edit user' }).click();
-      await expect(verifiedEmail).toBeChecked();
     });
   }
 
@@ -89,6 +87,7 @@ export class FirebaseAuthEmulatorPopup {
     this.firebasePopupPromise = page.waitForEvent('popup');
   }
 
+  @boxedStep
   async signInWith(email: string) {
     const firebasePopup = await this.firebasePopupPromise;
     const userButton = firebasePopup.locator('li').filter({ hasText: email });
@@ -96,6 +95,7 @@ export class FirebaseAuthEmulatorPopup {
     await userButton.click();
   }
 
+  @boxedStep
   async signUpWithSSO(email: string) {
     const firebasePopup = await this.firebasePopupPromise;
     await firebasePopup

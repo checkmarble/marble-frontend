@@ -8,19 +8,25 @@ The `marble-front/tests` package is designed to provide a comprehensive set of e
 
 To get started with running the tests in this package, follow these steps:
 
-> **Note:** The tests in this package are designed to be run against a local test environment. Steps 1 and 2 are manual steps that will be automated in the future.
+1. Install Playwright (if you have not already done so):
 
-1. Create the test organisation (if it does not already exist):
+   ```bash
+   pnpm --filter tests exec playwright install
+   ```
+
+2. Create the test organisation (if it does not already exist):
    1. Open the backoffice application
    2. Create a new organisation with the name `e2e`. Do not forget to check "init with demo data"
    3. Create a new admin user on this org with the email `admin@e2e.com`
-2. Start a local test environment:
+3. Start a local test environment:
    1. start the Firebase emulator suite
    2. start the backend normally
    3. start the front-end application normally
-3. Run the tests using :
+4. Run the tests using :
    1. the command `pnpm --filter tests test`, for cmd line "fast" run
    2. the command `pnpm --filter tests test:ui`, to open the browser and see the tests running
+
+> **Note:** The tests in this package are designed to be run against a local test environment. Steps 2 and 3 are manual steps that will be automated in the future.
 
 ## Contributing
 

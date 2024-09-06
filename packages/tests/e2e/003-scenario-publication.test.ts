@@ -88,7 +88,7 @@ test('create and activate a valid scenario', async ({ page, authenticate }) => {
   await scenarioIterationPage.goto('decision');
 
   await scenarioIterationPage.setScoreReviewThreshold(10);
-  await scenarioIterationPage.setScoreRejectThreshold(40);
+  await scenarioIterationPage.setScoreDeclineThreshold(40);
   await scenarioIterationPage.saveDecisionOutcome();
 
   await scenarioIterationPage.commitVersion();

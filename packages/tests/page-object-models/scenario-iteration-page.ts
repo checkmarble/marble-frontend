@@ -120,9 +120,9 @@ export class ScenarioIterationPage {
   }
 
   @boxedStep
-  async setScoreRejectThreshold(threshold: number) {
+  async setScoreDeclineThreshold(threshold: number) {
     await this.page
-      .getByLabel('Score reject threshold')
+      .getByLabel('Score decline threshold')
       .fill(threshold.toString());
   }
 
