@@ -4,6 +4,7 @@ import { type IconName } from 'ui-icons';
 export const decisionFilterNames = [
   'dateRange',
   'scenarioId',
+  'inboxId',
   'outcome',
   'triggerObject',
   'hasCase',
@@ -18,6 +19,8 @@ export function getFilterIcon(filterName: DecisionFilterName): IconName {
       return 'calendar-month';
     case 'scenarioId':
       return 'scenarios';
+    case 'inboxId':
+      return 'inbox';
     case 'outcome':
       return 'category';
     case 'triggerObject':
@@ -37,6 +40,8 @@ export function getFilterTKey(filterName: DecisionFilterName) {
       return 'decisions:created_at';
     case 'scenarioId':
       return 'decisions:scenario.name';
+    case 'inboxId':
+      return 'decisions:filters.inbox';
     case 'outcome':
       return 'decisions:outcome';
     case 'triggerObject':
