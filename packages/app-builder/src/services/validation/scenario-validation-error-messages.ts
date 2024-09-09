@@ -275,7 +275,7 @@ export function useGetScenarioErrorMessage() {
           );
         case 'SCORE_REJECT_THRESHOLD_REQUIRED':
           return t(
-            'scenarios:validation.decision.score_reject_threshold_required',
+            'scenarios:validation.decision.score_decline_threshold_required',
           );
         case 'SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH':
           return t(

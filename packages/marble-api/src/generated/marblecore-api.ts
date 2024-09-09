@@ -363,7 +363,7 @@ export type CreateScenarioIterationBody = {
     body?: {
         trigger_condition_ast_expression?: (NodeDto) | null;
         score_review_threshold?: number;
-        score_reject_threshold?: number;
+        score_decline_threshold?: number;
         rules?: CreateScenarioIterationRuleBodyDto[];
     };
 };
@@ -382,7 +382,7 @@ export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
         trigger_condition_ast_expression?: (NodeDto) | null;
         score_review_threshold?: number;
-        score_reject_threshold?: number;
+        score_decline_threshold?: number;
         rules: ScenarioIterationRuleDto[];
         schedule?: string;
     };
@@ -391,7 +391,7 @@ export type UpdateScenarioIterationBody = {
     body?: {
         trigger_condition_ast_expression?: (NodeDto) | null;
         score_review_threshold?: number;
-        score_reject_threshold?: number;
+        score_decline_threshold?: number;
         schedule?: string;
     };
 };
