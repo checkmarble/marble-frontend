@@ -5,32 +5,28 @@ import {
   scenarioI18n,
 } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import {
-  FormControl,
-  FormError,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
+import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
+import { FormField } from '@app-builder/components/Form/FormField';
+import { FormInput } from '@app-builder/components/Form/FormInput';
+import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { scenarioDecisionDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
-import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { FormProvider, getFormProps, useForm } from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
-import { useSubmit } from '@remix-run/react';
+import { Form, useActionData } from '@remix-run/react';
 import { type Namespace, type TFunction } from 'i18next';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
-import { useEffect } from 'react';
-import { Form, FormProvider, useForm } from 'react-hook-form';
+import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Collapsible, Input } from 'ui-design-system';
+import { Button, Collapsible } from 'ui-design-system';
 import * as z from 'zod';
 
 import {
@@ -85,56 +81,49 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { authService, i18nextService } = serverServices;
+  const {
+    authService,
+    i18nextService: { getFixedT },
+  } = serverServices;
   const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  const t = await i18nextService.getFixedT(request, 'scenarios');
-  const parsedForm = await parseFormSafe(request, getFormSchema(t));
-  if (!parsedForm.success) {
-    parsedForm.error.flatten((issue) => issue);
+  const t = await getFixedT(request, ['common', 'scenarios']);
+  const formData = await request.formData();
+  const submission = parseWithZod(formData, {
+    schema: getFormSchema(t),
+  });
 
-    return json({
-      success: false as const,
-      values: parsedForm.formData,
-      error: parsedForm.error.format(),
-    });
+  if (submission.status !== 'success') {
+    return json(submission.reply());
   }
+
   const { getSession, commitSession } = serverServices.toastSessionService;
   const session = await getSession(request);
 
   try {
     const iterationId = fromParams(params, 'iterationId');
-    const { thresholds } = parsedForm.data;
+    const { thresholds } = submission.value;
     await scenario.updateScenarioIteration(iterationId, thresholds);
 
     setToastMessage(session, {
       type: 'success',
-      messageKey: 'common:success.save',
+      message: t('common:success.save'),
     });
 
-    return json(
-      {
-        success: true as const,
-        error: null,
-        values: parsedForm.data,
-      },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return json(submission.reply(), {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
   } catch (error) {
+    const message = t('common:errors.unknown');
     setToastMessage(session, {
       type: 'error',
-      messageKey: 'common:errors.unknown',
+      message,
     });
 
-    return json(
-      {
-        success: false as const,
-        error: null,
-        values: parsedForm.data,
-      },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return json(submission.reply({ formErrors: [message] }), {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
   }
 }
 
@@ -172,130 +161,108 @@ function ScoreThresholdsForm() {
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
+  const lastResult = useActionData<typeof action>();
   const editorMode = useEditorMode();
 
-  const submit = useSubmit();
-  const formMethods = useForm<z.infer<ReturnType<typeof getFormSchema>>>({
-    resolver: zodResolver(getFormSchema(t)),
-    defaultValues: {
+  const schema = React.useMemo(() => getFormSchema(t), [t]);
+
+  const [form, fields] = useForm({
+    shouldValidate: 'onInput',
+    defaultValue: {
       thresholds: {
-        scoreReviewThreshold: 0,
-        scoreDeclineThreshold: 0,
+        scoreReviewThreshold,
+        scoreDeclineThreshold,
       },
     },
-    values: {
-      thresholds: {
-        scoreReviewThreshold: scoreReviewThreshold ?? 0,
-        scoreDeclineThreshold: scoreDeclineThreshold ?? 0,
-      },
+    lastResult,
+    constraint: getZodConstraint(schema),
+    onValidate({ formData }) {
+      return parseWithZod(formData, {
+        schema,
+      });
     },
-    disabled: editorMode === 'view',
   });
-  const {
-    control,
-    trigger,
-    watch,
-    formState: { errors },
-  } = formMethods;
+  const disabled = editorMode === 'view';
 
-  const thresholds = watch('thresholds');
-  useEffect(() => {
-    void trigger();
-  }, [
-    thresholds.scoreDeclineThreshold,
-    thresholds.scoreReviewThreshold,
-    trigger,
-  ]);
-
-  const thresholdsError = errors.thresholds?.root?.message;
   const serverErrors = R.pipe(
     scenarioValidation.decision.errors,
     R.filter((error) => !conflictingWithSchemaValidationErrors.includes(error)),
     R.map(getScenarioErrorMessage),
   );
   const evaluationErrors = R.pipe(
-    [thresholdsError, ...serverErrors],
+    [...(fields.thresholds.errors ?? []), ...serverErrors],
     R.filter(R.isString),
   );
 
+  const thresholds = fields.thresholds.getFieldset();
+
   return (
-    <Form
-      control={control}
-      onSubmit={({ formData }): void => {
-        submit(formData, { method: 'POST' });
-      }}
-      className="flex flex-col gap-2"
-    >
-      <FormProvider {...formMethods}>
+    <FormProvider context={form.context}>
+      <Form
+        className="flex flex-col gap-2"
+        method="POST"
+        {...getFormProps(form)}
+      >
         <div className="grid grid-cols-[min-content_auto] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
           <Outcome border="square" size="big" outcome="approve" />
           <FormField
-            control={control}
-            name="thresholds.scoreReviewThreshold"
-            render={({ field }) => (
-              <FormItem className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
-                <FormLabel className="sr-only">
-                  {t('scenarios:decision.score_based.score_review_threshold')}
-                </FormLabel>
-                <FormControl>
-                  <Trans
-                    t={t}
-                    i18nKey="scenarios:decision.score_based.approve_condition"
-                    components={{
-                      ReviewThreshold: (
-                        <Input
-                          type="number"
-                          className="relative w-fit"
-                          {...field}
-                        />
-                      ),
-                    }}
-                    shouldUnescape
+            name={thresholds.scoreReviewThreshold.name}
+            className="flex flex-row flex-wrap items-center gap-1 lg:gap-2"
+          >
+            <FormLabel className="sr-only">
+              {t('scenarios:decision.score_based.score_review_threshold')}
+            </FormLabel>
+            <Trans
+              t={t}
+              i18nKey="scenarios:decision.score_based.approve_condition"
+              components={{
+                ReviewThreshold: (
+                  <FormInput
+                    type="number"
+                    className="relative w-fit"
+                    disabled={disabled}
                   />
-                </FormControl>
-                <FormError className={style.errorMessage} />
-              </FormItem>
-            )}
-          />
+                ),
+              }}
+              shouldUnescape
+            />
+            <FormErrorOrDescription errorClassName={style.errorMessage} />
+          </FormField>
 
           <Outcome border="square" size="big" outcome="review" />
           {t('scenarios:decision.score_based.review_condition', {
             replace: {
               reviewThreshold:
-                thresholds.scoreReviewThreshold ?? scoreReviewThreshold,
+                thresholds.scoreReviewThreshold.value ?? scoreReviewThreshold,
               declineThreshold:
-                thresholds.scoreDeclineThreshold ?? scoreDeclineThreshold,
+                thresholds.scoreDeclineThreshold.value ?? scoreDeclineThreshold,
             },
           })}
 
           <Outcome border="square" size="big" outcome="decline" />
           <FormField
-            control={control}
-            name="thresholds.scoreDeclineThreshold"
-            render={({ field }) => (
-              <FormItem className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
-                <FormLabel className="sr-only">
-                  {t('scenarios:decision.score_based.score_decline_threshold')}
-                </FormLabel>
-                <FormControl>
-                  <Trans
-                    t={t}
-                    i18nKey="scenarios:decision.score_based.decline_condition"
-                    components={{
-                      DeclineThreshold: (
-                        <Input
-                          type="number"
-                          className="relative w-fit"
-                          {...field}
-                        />
-                      ),
-                    }}
+            name={thresholds.scoreDeclineThreshold.name}
+            className="flex flex-row flex-wrap items-center gap-1 lg:gap-2"
+          >
+            <FormLabel className="sr-only">
+              {t('scenarios:decision.score_based.score_reject_threshold')}
+            </FormLabel>
+            <Trans
+              t={t}
+              i18nKey="scenarios:decision.score_based.decline_condition"
+              components={{
+                DeclineThreshold: (
+                  <FormInput
+                    type="number"
+                    className="relative w-fit"
+                    disabled={disabled}
                   />
-                </FormControl>
-                <FormError className={style.errorMessage} />
-              </FormItem>
-            )}
-          />
+                ),
+              }}
+              shouldUnescape
+            />
+            <FormErrorOrDescription errorClassName={style.errorMessage} />
+          </FormField>
         </div>
 
         {editorMode === 'edit' ? (
@@ -306,8 +273,8 @@ function ScoreThresholdsForm() {
         ) : (
           <EvaluationErrors errors={evaluationErrors} />
         )}
-      </FormProvider>
-    </Form>
+      </Form>
+    </FormProvider>
   );
 }
 
