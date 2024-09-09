@@ -36,7 +36,7 @@ export type DecisionFilters = {
   outcome?: Outcome[];
   pivotValue?: string;
   scenarioId?: string[];
-  inboxId?: string[];
+  caseInboxId?: string[];
   scheduledExecutionId?: string[];
   triggerObject?: string[];
 };
@@ -65,7 +65,7 @@ export function makeGetDecisionRepository() {
       outcome,
       pivotValue,
       scenarioId,
-      inboxId,
+      caseInboxId,
       scheduledExecutionId,
       triggerObject,
       ...rest
@@ -88,7 +88,7 @@ export function makeGetDecisionRepository() {
         outcome,
         pivotValue,
         scenarioId,
-        inboxId,
+        caseInboxId,
         scheduledExecutionId,
         triggerObject,
         startDate,
