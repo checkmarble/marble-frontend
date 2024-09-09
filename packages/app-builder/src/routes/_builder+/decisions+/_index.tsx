@@ -43,7 +43,7 @@ export const handle = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { decision, scenario, dataModelRepository } =
+  const { decision, scenario, dataModelRepository, inbox } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -58,13 +58,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/decisions/'));
   }
 
-  const [decisionsData, scenarios, pivots] = await Promise.all([
+  const [decisionsData, scenarios, pivots, inboxes] = await Promise.all([
     decision.listDecisions({
       ...parsedFilterQuery.data,
       ...parsedPaginationQuery.data,
     }),
     scenario.listScenarios(),
     dataModelRepository.listPivots({}),
+    inbox.listInboxes(),
   ]);
 
   return json({
@@ -72,6 +73,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     scenarios,
     filters: parsedFilterQuery.data,
     hasPivots: pivots.length > 0,
+    inboxes,
   });
 }
 
@@ -82,6 +84,7 @@ export default function Decisions() {
     filters,
     scenarios,
     hasPivots,
+    inboxes,
   } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
@@ -111,6 +114,7 @@ export default function Decisions() {
                 : {},
               pivotValue: decisionFilters.pivotValue || null,
               scenarioId: decisionFilters.scenarioId ?? [],
+              inboxId: decisionFilters.inboxId ?? [],
               hasCase: decisionFilters?.hasCase ?? null,
               offsetId: pagination?.offsetId || null,
               next: pagination?.next || null,
@@ -146,6 +150,7 @@ export default function Decisions() {
               submitDecisionFilters={navigateDecisionList}
               filterValues={filters}
               hasPivots={hasPivots}
+              inboxes={inboxes}
             >
               <div className="flex justify-between gap-4">
                 <SearchById />

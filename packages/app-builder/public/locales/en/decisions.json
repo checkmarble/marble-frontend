@@ -7,6 +7,7 @@
   "trigger_object.type": "Trigger object",
   "pivot_value": "Pivot value",
   "filters.has_case": "Presence of a case",
+  "filters.inbox": "Inbox",
   "filters.pivot_value": "Pivot value",
   "filters.date_range.title": "creation date is:",
   "score": "Score",
