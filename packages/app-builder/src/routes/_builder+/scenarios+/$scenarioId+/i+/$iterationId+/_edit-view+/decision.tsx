@@ -62,18 +62,18 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
             ),
           })
           .int(),
-        scoreRejectThreshold: z.coerce
+        scoreDeclineThreshold: z.coerce
           .number({
             required_error: t(
-              'scenarios:validation.decision.score_reject_threshold_required',
+              'scenarios:validation.decision.score_decline_threshold_required',
             ),
           })
           .int(),
       }),
     })
     .refine(
-      ({ thresholds: { scoreReviewThreshold, scoreRejectThreshold } }) => {
-        return scoreRejectThreshold >= scoreReviewThreshold;
+      ({ thresholds: { scoreReviewThreshold, scoreDeclineThreshold } }) => {
+        return scoreDeclineThreshold >= scoreReviewThreshold;
       },
       {
         message: t(
@@ -166,7 +166,7 @@ export default function Decision() {
 
 function ScoreThresholdsForm() {
   const { t } = useTranslation(handle.i18n);
-  const { scoreRejectThreshold, scoreReviewThreshold } =
+  const { scoreDeclineThreshold, scoreReviewThreshold } =
     useCurrentScenarioIteration();
 
   const scenarioValidation = useCurrentScenarioValidation();
@@ -180,13 +180,13 @@ function ScoreThresholdsForm() {
     defaultValues: {
       thresholds: {
         scoreReviewThreshold: 0,
-        scoreRejectThreshold: 0,
+        scoreDeclineThreshold: 0,
       },
     },
     values: {
       thresholds: {
         scoreReviewThreshold: scoreReviewThreshold ?? 0,
-        scoreRejectThreshold: scoreRejectThreshold ?? 0,
+        scoreDeclineThreshold: scoreDeclineThreshold ?? 0,
       },
     },
     disabled: editorMode === 'view',
@@ -202,7 +202,7 @@ function ScoreThresholdsForm() {
   useEffect(() => {
     void trigger();
   }, [
-    thresholds.scoreRejectThreshold,
+    thresholds.scoreDeclineThreshold,
     thresholds.scoreReviewThreshold,
     trigger,
   ]);
@@ -263,26 +263,26 @@ function ScoreThresholdsForm() {
             replace: {
               reviewThreshold:
                 thresholds.scoreReviewThreshold ?? scoreReviewThreshold,
-              rejectThreshold:
-                thresholds.scoreRejectThreshold ?? scoreRejectThreshold,
+              declineThreshold:
+                thresholds.scoreDeclineThreshold ?? scoreDeclineThreshold,
             },
           })}
 
           <Outcome border="square" size="big" outcome="decline" />
           <FormField
             control={control}
-            name="thresholds.scoreRejectThreshold"
+            name="thresholds.scoreDeclineThreshold"
             render={({ field }) => (
               <FormItem className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
                 <FormLabel className="sr-only">
-                  {t('scenarios:decision.score_based.score_reject_threshold')}
+                  {t('scenarios:decision.score_based.score_decline_threshold')}
                 </FormLabel>
                 <FormControl>
                   <Trans
                     t={t}
                     i18nKey="scenarios:decision.score_based.decline_condition"
                     components={{
-                      RejectThreshold: (
+                      DeclineThreshold: (
                         <Input
                           type="number"
                           className="relative w-fit"

@@ -4539,7 +4539,7 @@ components:
                 score_review_threshold:
                   type: integer
                   minimum: 0
-                score_reject_threshold:
+                score_decline_threshold:
                   type: integer
                   minimum: 0
                 rules:
@@ -4566,7 +4566,7 @@ components:
             score_review_threshold:
               type: integer
               minimum: 0
-            score_reject_threshold:
+            score_decline_threshold:
               type: integer
               minimum: 0
             rules:
@@ -4586,7 +4586,7 @@ components:
             score_review_threshold:
               type: integer
               minimum: 0
-            score_reject_threshold:
+            score_decline_threshold:
               type: integer
               minimum: 0
             schedule:
