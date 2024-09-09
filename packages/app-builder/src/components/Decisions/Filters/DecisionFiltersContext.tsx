@@ -1,3 +1,4 @@
+import { type Inbox } from '@app-builder/models/inbox';
 import { type Scenario } from '@app-builder/models/scenario';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
@@ -27,6 +28,7 @@ export const decisionFiltersSchema = z.object({
   outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
   pivotValue: z.string().optional(),
   scenarioId: z.array(z.string()).optional(),
+  inboxId: z.array(z.string()).optional(),
   triggerObject: z.array(z.string()).optional(),
 });
 
@@ -36,6 +38,7 @@ interface DecisionFiltersContextValue {
   hasPivots: boolean;
   filterValues: DecisionFilters;
   scenarios: Scenario[];
+  inboxes: Inbox[];
   submitDecisionFilters: () => void;
   onDecisionFilterClose: () => void;
 }
@@ -50,6 +53,7 @@ export type DecisionFiltersForm = {
   outcome: Exclude<Outcome, 'null' | 'unknown'>[];
   pivotValue: string | null;
   scenarioId: string[];
+  inboxId: string[];
   triggerObject: string[];
 };
 const emptyDecisionFilters: DecisionFiltersForm = {
@@ -58,6 +62,7 @@ const emptyDecisionFilters: DecisionFiltersForm = {
   outcome: [],
   pivotValue: null,
   scenarioId: [],
+  inboxId: [],
   triggerObject: [],
 };
 
@@ -89,12 +94,14 @@ export function DecisionFiltersProvider({
   hasPivots,
   filterValues,
   scenarios,
+  inboxes,
   submitDecisionFilters: _submitDecisionFilters,
   children,
 }: {
   hasPivots: boolean;
   filterValues: DecisionFilters;
   scenarios: Scenario[];
+  inboxes: Inbox[];
   submitDecisionFilters: (filterValues: DecisionFilters) => void;
   children: React.ReactNode;
 }) {
@@ -125,12 +132,14 @@ export function DecisionFiltersProvider({
       filterValues,
       scenarios,
       hasPivots,
+      inboxes,
     }),
     [
       filterValues,
       hasPivots,
       onDecisionFilterClose,
       scenarios,
+      inboxes,
       submitDecisionFilters,
     ],
   );
@@ -190,6 +199,16 @@ export function useScenarioFilter() {
   const selectedScenarioIds = field.value;
   const setSelectedScenarioIds = field.onChange;
   return { scenarios, selectedScenarioIds, setSelectedScenarioIds };
+}
+
+export function useInboxFilter() {
+  const { inboxes } = useDecisionFiltersContext();
+  const { field } = useController<DecisionFiltersForm, 'inboxId'>({
+    name: 'inboxId',
+  });
+  const selectedInboxIds = field.value;
+  const setSelectedInboxIds = field.onChange;
+  return { inboxes, selectedInboxIds, setSelectedInboxIds };
 }
 
 export function useTriggerObjectFilter() {
