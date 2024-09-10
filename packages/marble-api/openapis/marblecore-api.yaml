@@ -127,7 +127,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/Outcome'
+              $ref: '#/components/schemas/OutcomeDto'
         - name: pivot_value
           description: decision pivot value used to filter the list
           in: query
@@ -152,6 +152,14 @@ paths:
             items:
               type: string
               format: uuid
+        - name: review_status[]
+          description: decision review statuses used to filter the list
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
         - name: scheduled_execution_id[]
           description: scheduled execution IDs used to filter the list
           in: query
@@ -3749,9 +3757,9 @@ components:
           type: integer
         message:
           type: string
-    Outcome:
+    OutcomeDto:
       type: string
-      enum: ['approve', 'review', 'decline', 'null', 'unknown']
+      enum: ['approve', 'review', 'decline', 'block_and_review', 'unknown']
     RuleExecutionDto:
       type: object
       required:
@@ -3794,11 +3802,14 @@ components:
         error:
           $ref: '#/components/schemas/Error'
         outcome:
-          $ref: '#/components/schemas/Outcome'
+          $ref: '#/components/schemas/OutcomeDto'
         pivot_values:
           type: array
           items:
             $ref: '#/components/schemas/PivotValueDto'
+        review_status:
+          type: string
+          enum: ['pending', 'approve', 'decline']
         scenario:
           type: object
           properties:
@@ -4006,7 +4017,7 @@ components:
                   trigger_object_type:
                     type: string
                   outcome:
-                    $ref: '#/components/schemas/Outcome'
+                    $ref: '#/components/schemas/OutcomeDto'
                   pivot_values:
                     type: array
                     items:
@@ -4485,7 +4496,7 @@ components:
         decision_to_case_outcomes:
           type: array
           items:
-            $ref: '#/components/schemas/Outcome'
+            $ref: '#/components/schemas/OutcomeDto'
         decision_to_case_workflow_type:
           type: string
           enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
@@ -4532,7 +4543,7 @@ components:
         decision_to_case_outcomes:
           type: array
           items:
-            $ref: '#/components/schemas/Outcome'
+            $ref: '#/components/schemas/OutcomeDto'
         decision_to_case_workflow_type:
           type: string
           enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
@@ -4583,6 +4594,9 @@ components:
                 score_review_threshold:
                   type: integer
                   minimum: 0
+                score_block_and_review_threshold:
+                  type: integer
+                  minimum: 0
                 score_decline_threshold:
                   type: integer
                   minimum: 0
@@ -4610,6 +4624,9 @@ components:
             score_review_threshold:
               type: integer
               minimum: 0
+            score_block_and_review_threshold:
+              type: integer
+              minimum: 0
             score_decline_threshold:
               type: integer
               minimum: 0
@@ -4628,6 +4645,9 @@ components:
               allOf:
                 - $ref: '#/components/schemas/NodeDto'
             score_review_threshold:
+              type: integer
+              minimum: 0
+            score_block_and_review_threshold:
               type: integer
               minimum: 0
             score_decline_threshold:
@@ -4889,9 +4909,8 @@ components:
         - TRIGGER_CONDITION_REQUIRED
         - RULE_FORMULA_REQUIRED
         - FORMULA_MUST_RETURN_BOOLEAN
-        - SCORE_REVIEW_THRESHOLD_REQUIRED
-        - SCORE_REJECT_THRESHOLD_REQUIRED
-        - SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH
+        - SCORE_THRESHOLD_MISSING
+        - SCORE_THRESHOLDS_MISMATCH
     EvaluationErrorDto:
       type: object
       required:
