@@ -114,7 +114,7 @@ export default function Decisions() {
                 : {},
               pivotValue: decisionFilters.pivotValue || null,
               scenarioId: decisionFilters.scenarioId ?? [],
-              inboxId: decisionFilters.inboxId ?? [],
+              caseInboxId: decisionFilters.caseInboxId ?? [],
               hasCase: decisionFilters?.hasCase ?? null,
               offsetId: pagination?.offsetId || null,
               next: pagination?.next || null,

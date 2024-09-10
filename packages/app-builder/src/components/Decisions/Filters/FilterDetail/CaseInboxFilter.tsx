@@ -3,11 +3,12 @@ import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { useInboxFilter } from '../DecisionFiltersContext';
+import { useCaseInboxFilter } from '../DecisionFiltersContext';
 
-export function InboxFilter() {
+export function CaseInboxFilter() {
   const [value, setSearchValue] = useState('');
-  const { inboxes, selectedInboxIds, setSelectedInboxIds } = useInboxFilter();
+  const { inboxes, selectedCaseInboxIds, setSelectedCaseInboxIds } =
+    useCaseInboxFilter();
   const searchValue = useDeferredValue(value);
 
   const matches = useMemo(
@@ -20,8 +21,8 @@ export function InboxFilter() {
       <SelectWithCombobox.Root
         open
         onSearchValueChange={setSearchValue}
-        selectedValue={selectedInboxIds}
-        onSelectedValueChange={setSelectedInboxIds}
+        selectedValue={selectedCaseInboxIds}
+        onSelectedValueChange={setSelectedCaseInboxIds}
       >
         <SelectWithCombobox.Combobox render={<Input />} autoSelect autoFocus />
         <SelectWithCombobox.ComboboxList className="max-h-40">
