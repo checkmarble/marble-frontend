@@ -4058,6 +4058,7 @@ components:
           file_added: '#/components/schemas/FileAddedEventDto'
           inbox_changed: '#/components/schemas/InboxChangedEventDto'
           rule_snooze_created: '#/components/schemas/RuleSnoozeCreatedDto'
+          decision_reviewed: '#/components/schemas/DecisionReviewedEventDto'
       required:
         - id
         - case_id
@@ -4271,6 +4272,40 @@ components:
               format: uuid
             resource_type:
               type: string
+            user_id:
+              type: string
+              format: uuid
+    DecisionReviewedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - additional_note
+            - new_value
+            - previous_value
+            - resource_id
+            - resource_type
+            - user_id
+          properties:
+            additional_note:
+              type: string
+              description: The note added by the user to justify the review
+            new_value:
+              type: string
+              format: uuid
+              description: The new review_status of the decision
+              enum: ['approve', 'decline']
+            previous_value:
+              type: string
+              format: uuid
+              description: The previous review_status of the decision
+            resource_id:
+              type: string
+              format: uuid
+              description: The id of the decision being reviewed
+            resource_type:
+              type: string
+              enum: ['decision']
             user_id:
               type: string
               format: uuid

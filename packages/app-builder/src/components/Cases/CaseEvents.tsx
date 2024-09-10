@@ -2,7 +2,8 @@ import {
   type CaseEvent,
   type CaseTagsUpdatedEvent,
   type CommentAddedEvent,
-  type RuleSnoozeCreated,
+  type DecisionReviewedEvent,
+  type RuleSnoozeCreatedEvent,
 } from '@app-builder/models/cases';
 import { useGetRuleSnoozeFetcher } from '@app-builder/routes/ressources+/rule-snoozes+/read.$ruleSnoozeId';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -23,6 +24,7 @@ import { assertNever } from 'typescript-utils';
 import { Avatar, CollapsibleV2 } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
+import { Outcome } from '../Decisions/Outcome';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping, caseStatusVariants } from './CaseStatus';
@@ -146,6 +148,13 @@ export function getEventIcon(event: CaseEvent) {
           icon="snooze"
         />
       );
+    case 'decision_reviewed':
+      return (
+        <EventIcon
+          className="border-grey-10 bg-grey-00 text-grey-100 border"
+          icon="case-manager"
+        />
+      );
     default:
       assertNever('[CaseEvent] unknown event:', eventType);
   }
@@ -156,6 +165,7 @@ export function getDefaultOpen(event: CaseEvent) {
   switch (eventType) {
     case 'comment_added':
     case 'rule_snooze_created':
+    case 'decision_reviewed':
       return true;
     default:
       return false;
@@ -279,6 +289,12 @@ export function getEventTitle(
           {t('cases:case_detail.history.event_title.rule_snooze_created')}
         </span>
       );
+    case 'decision_reviewed':
+      return (
+        <span className="text-s text-grey-100 font-semibold first-letter:capitalize">
+          {t('cases:case_detail.history.event_title.decision_reviewed')}
+        </span>
+      );
     default:
       assertNever('[CaseEvent] unknown event:', eventType);
   }
@@ -289,7 +305,7 @@ function Author({
   type,
 }: {
   userId: string;
-  type: 'added_by' | 'edited_by';
+  type: 'added_by' | 'edited_by' | 'reviewed_by';
 }) {
   const { t } = useTranslation(casesI18n);
   const { getOrgUserById } = useOrganizationUsers();
@@ -351,6 +367,9 @@ export function getEventDetail(event: CaseEvent) {
     case 'rule_snooze_created': {
       return <RuleSnoozeCreatedDetail event={event} />;
     }
+    case 'decision_reviewed': {
+      return <DecisionReviewedEventDetail event={event} />;
+    }
     case 'decision_added': {
       if (!event.userId) {
         return <ByWorkflow type="added_by_workflow" />;
@@ -383,6 +402,58 @@ function CommentAddedEventDetail({ event }: { event: CommentAddedEvent }) {
   );
 }
 
+function DecisionReviewedEventDetail({
+  event,
+}: {
+  event: DecisionReviewedEvent;
+}) {
+  const { t } = useTranslation(casesI18n);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Author userId={event.userId} type="reviewed_by" />
+      <div className="grid w-full grid-cols-[max-content_1fr] items-center gap-2">
+        <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
+          {t(
+            'cases:case_detail.history.event_detail.decision_reviewed.review_comment',
+          )}
+        </span>
+        <span className="text-s text-grey-100 whitespace-break-spaces font-normal">
+          {event.reviewComment}
+        </span>
+        <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
+          {t(
+            'cases:case_detail.history.event_detail.decision_reviewed.final_status',
+          )}
+        </span>
+        <Outcome
+          border="square"
+          size="small"
+          outcome={event.finalStatus}
+          className="w-fit"
+        />
+        <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
+          {t(
+            'cases:case_detail.history.event_detail.rule_snooze_created.created_from_decision',
+          )}
+        </span>
+        <span className="text-grey-100 text-s">
+          <Link
+            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
+            to={getRoute('/decisions/:decisionId', {
+              decisionId: fromUUID(event.decisionId),
+            })}
+          >
+            {t(
+              'cases:case_detail.history.event_detail.rule_snooze_created.decision_detail',
+            )}
+          </Link>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function TagsUpdatedEventDetail({ event }: { event: CaseTagsUpdatedEvent }) {
   const { t } = useTranslation(casesI18n);
   return (
@@ -407,7 +478,7 @@ function TagsUpdatedEventDetail({ event }: { event: CaseTagsUpdatedEvent }) {
   );
 }
 
-function RuleSnoozeCreatedDetail({ event }: { event: RuleSnoozeCreated }) {
+function RuleSnoozeCreatedDetail({ event }: { event: RuleSnoozeCreatedEvent }) {
   return (
     <div className="flex flex-col gap-2">
       <Author userId={event.userId} type="added_by" />
