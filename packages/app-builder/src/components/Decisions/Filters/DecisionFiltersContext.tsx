@@ -1,4 +1,5 @@
 import { type Inbox } from '@app-builder/models/inbox';
+import { type Outcome } from '@app-builder/models/outcome';
 import { type Scenario } from '@app-builder/models/scenario';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
@@ -6,7 +7,6 @@ import {
   type DateRangeFilterForm,
   dateRangeSchema,
 } from '@app-builder/utils/schema/filterSchema';
-import { type Outcome } from 'marble-api';
 import { useCallback, useMemo } from 'react';
 import {
   FormProvider,
@@ -25,7 +25,9 @@ export const decisionFiltersSchema = z.object({
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
     .optional(),
-  outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
+  outcome: z
+    .array(z.enum(['approve', 'review', 'block_and_review', 'decline']))
+    .optional(),
   pivotValue: z.string().optional(),
   scenarioId: z.array(z.string()).optional(),
   caseInboxId: z.array(z.string()).optional(),

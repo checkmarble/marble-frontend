@@ -43,9 +43,8 @@ export const handle = {
  * The form schema is responsible for displaying the error message.
  */
 const conflictingWithSchemaValidationErrors: string[] = [
-  'SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH',
-  'SCORE_REJECT_THRESHOLD_REQUIRED',
-  'SCORE_REVIEW_THRESHOLD_REQUIRED',
+  'SCORE_THRESHOLDS_MISMATCH',
+  'SCORE_THRESHOLD_MISSING',
 ] satisfies ScenarioValidationErrorCodeDto[];
 function getFormSchema(t: TFunction<typeof handle.i18n>) {
   return z
@@ -53,16 +52,12 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
       thresholds: z.object({
         scoreReviewThreshold: z.coerce
           .number({
-            required_error: t(
-              'scenarios:validation.decision.score_review_threshold_required',
-            ),
+            message: t('scenarios:validation.decision.score_threshold_missing'),
           })
           .int(),
         scoreDeclineThreshold: z.coerce
           .number({
-            required_error: t(
-              'scenarios:validation.decision.score_decline_threshold_required',
-            ),
+            message: t('scenarios:validation.decision.score_threshold_missing'),
           })
           .int(),
       }),
@@ -72,9 +67,7 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
         return scoreDeclineThreshold >= scoreReviewThreshold;
       },
       {
-        message: t(
-          'scenarios:validation.decision.score_reject_review_thresholds_missmatch',
-        ),
+        message: t('scenarios:validation.decision.score_thresholds_mismatch'),
         path: ['thresholds'],
       },
     );
@@ -245,7 +238,7 @@ function ScoreThresholdsForm() {
             className="flex flex-row flex-wrap items-center gap-1 lg:gap-2"
           >
             <FormLabel className="sr-only">
-              {t('scenarios:decision.score_based.score_reject_threshold')}
+              {t('scenarios:decision.score_based.score_decline_threshold')}
             </FormLabel>
             <Trans
               t={t}

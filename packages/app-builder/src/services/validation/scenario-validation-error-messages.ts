@@ -269,18 +269,10 @@ export function useGetScenarioErrorMessage() {
           return t('scenarios:validation.decision.trigger_condition_required');
         case 'RULE_FORMULA_REQUIRED':
           return t('scenarios:validation.decision.rule_formula_required');
-        case 'SCORE_REVIEW_THRESHOLD_REQUIRED':
-          return t(
-            'scenarios:validation.decision.score_review_threshold_required',
-          );
-        case 'SCORE_REJECT_THRESHOLD_REQUIRED':
-          return t(
-            'scenarios:validation.decision.score_decline_threshold_required',
-          );
-        case 'SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH':
-          return t(
-            'scenarios:validation.decision.score_reject_review_thresholds_missmatch',
-          );
+        case 'SCORE_THRESHOLD_MISSING':
+          return t('scenarios:validation.decision.score_threshold_missing');
+        case 'SCORE_THRESHOLDS_MISMATCH':
+          return t('scenarios:validation.decision.score_thresholds_mismatch');
         case 'FORMULA_MUST_RETURN_BOOLEAN':
           return t('scenarios:validation.decision.formula_must_return_boolean');
         default:

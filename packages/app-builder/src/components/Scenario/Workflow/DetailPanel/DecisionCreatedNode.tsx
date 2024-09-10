@@ -1,8 +1,8 @@
 import { Callout } from '@app-builder/components/Callout';
 import { Outcome, useOutcomes } from '@app-builder/components/Decisions';
 import { Highlight } from '@app-builder/components/Highlight';
+import { type Outcome as OutcomeT } from '@app-builder/models/outcome';
 import { type Scenario } from '@app-builder/models/scenario';
-import { type Outcome as OutcomeT } from 'marble-api';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';

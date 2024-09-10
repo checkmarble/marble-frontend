@@ -2,14 +2,19 @@ import {
   type DecisionDetailDto,
   type DecisionDto,
   type Error,
-  type Outcome,
   type RuleExecutionDto,
 } from 'marble-api';
 import invariant from 'tiny-invariant';
 import { assertNever } from 'typescript-utils';
+import * as z from 'zod';
 
 import { adaptCase, type Case } from './cases';
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
+import { type Outcome } from './outcome';
+
+export const reviewStatusSchema = z.enum(['pending', 'approve', 'rejecte']);
+
+export type ReviewStatus = z.infer<typeof reviewStatusSchema>;
 
 export interface Decision {
   case?: Case;

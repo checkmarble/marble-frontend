@@ -1,12 +1,12 @@
 import { CaseStatus, decisionsI18n, Outcome } from '@app-builder/components';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
+import { type Outcome as TOutcome } from '@app-builder/models/outcome';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type Outcome as TOutcome } from 'marble-api';
 import {
   useCallback,
   useImperativeHandle,
