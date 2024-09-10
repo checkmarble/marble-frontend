@@ -18,6 +18,7 @@ import {
 } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
+import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -181,31 +182,58 @@ export function CaseDecisions({
 
 function DecisionActions({ decision }: { decision: Decision }) {
   const { t } = useTranslation(casesI18n);
+
+  const [openReviewDecision, setOpenReviewDecision] = React.useState(false);
+
+  const withReviewDecision =
+    decision.reviewStatus === 'pending' &&
+    decision.outcome === 'block_and_review';
+
   return (
-    <MenuRoot>
-      <MenuButton
-        render={
-          <button className="hover:bg-purple-05 active:bg-purple-10 rounded">
-            <Icon icon="more-menu" className="size-6" />
-            <span className="sr-only">{t('common:more_options')}</span>
-          </button>
-        }
-      />
-      <MenuPopover modal className="flex flex-col gap-2 p-2">
-        <MenuItem
-          className="data-[active-item]:bg-purple-05 group flex flex-row gap-2 rounded p-2 outline-none"
+    <>
+      <MenuRoot>
+        <MenuButton
           render={
-            <Link
-              to={getRoute('/decisions/:decisionId', {
-                decisionId: fromUUID(decision.id),
-              })}
-            />
+            <button className="hover:bg-purple-05 active:bg-purple-10 rounded">
+              <Icon icon="more-menu" className="size-6" />
+              <span className="sr-only">{t('common:more_options')}</span>
+            </button>
           }
-        >
-          {t('cases:case.decision_detail')}
-        </MenuItem>
-      </MenuPopover>
-    </MenuRoot>
+        />
+        <MenuPopover modal className="flex flex-col gap-2 p-2">
+          <MenuItem
+            className="data-[active-item]:bg-purple-05 group flex flex-row gap-2 rounded p-2 outline-none"
+            render={
+              <Link
+                to={getRoute('/decisions/:decisionId', {
+                  decisionId: fromUUID(decision.id),
+                })}
+              />
+            }
+          >
+            {t('cases:case.decision_detail')}
+          </MenuItem>
+          {withReviewDecision ? (
+            <MenuItem
+              className="data-[active-item]:bg-purple-05 group flex flex-row gap-2 rounded p-2 outline-none"
+              onClick={() => {
+                setOpenReviewDecision(true);
+              }}
+            >
+              {t('cases:case_detail.review_decision.title')}
+            </MenuItem>
+          ) : null}
+        </MenuPopover>
+      </MenuRoot>
+      {withReviewDecision ? (
+        <ReviewDecisionModal
+          decisionId={decision.id}
+          reviewStatus={decision.reviewStatus}
+          open={openReviewDecision}
+          setOpen={setOpenReviewDecision}
+        />
+      ) : null}
+    </>
   );
 }
 
