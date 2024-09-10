@@ -7,11 +7,12 @@ import {
   type CaseTagDto,
   type CreateCaseBodyDto,
   type Error,
-  type Outcome,
   type UpdateCaseBodyDto,
 } from 'marble-api';
 import * as R from 'remeda';
 import { assertNever } from 'typescript-utils';
+
+import { type Outcome } from './outcome';
 
 export const caseStatuses = [
   'open',

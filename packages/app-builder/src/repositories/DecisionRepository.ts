@@ -4,8 +4,10 @@ import {
   adaptDecisionDetail,
   type Decision,
   type DecisionDetail,
+  type ReviewStatus,
 } from '@app-builder/models/decision';
 import { adaptGoTimeDuration } from '@app-builder/models/duration';
+import { type Outcome } from '@app-builder/models/outcome';
 import {
   adaptPagination,
   type FiltersWithPagination,
@@ -17,7 +19,6 @@ import {
   type SnoozesOfDecision,
 } from '@app-builder/models/rule-snooze';
 import { add } from 'date-fns/add';
-import { type Outcome } from 'marble-api';
 import { Temporal } from 'temporal-polyfill';
 
 export type DecisionFilters = {
@@ -37,6 +38,7 @@ export type DecisionFilters = {
   pivotValue?: string;
   scenarioId?: string[];
   caseInboxId?: string[];
+  reviewStatus?: ReviewStatus[];
   scheduledExecutionId?: string[];
   triggerObject?: string[];
 };
@@ -66,6 +68,7 @@ export function makeGetDecisionRepository() {
       pivotValue,
       scenarioId,
       caseInboxId,
+      reviewStatus,
       scheduledExecutionId,
       triggerObject,
       ...rest
@@ -92,6 +95,7 @@ export function makeGetDecisionRepository() {
         scheduledExecutionId,
         triggerObject,
         startDate,
+        reviewStatus,
         ...rest,
       });
 

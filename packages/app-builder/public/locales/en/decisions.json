@@ -15,6 +15,7 @@
   "created_at": "Date",
   "outcome.approve": "Approve",
   "outcome.review": "Review",
+  "outcome.block_and_review": "Block and Review",
   "outcome.decline": "Decline",
   "outcome.null": "Null",
   "outcome.unknown": "Unknown",

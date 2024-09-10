@@ -1,6 +1,6 @@
+import { type Outcome } from '@app-builder/models/outcome';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
-import { type Outcome } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag, type TagProps } from 'ui-design-system';
@@ -17,8 +17,11 @@ const outcomeMapping: Record<
 > = {
   approve: { color: 'green', tKey: 'decisions:outcome.approve' },
   review: { color: 'yellow', tKey: 'decisions:outcome.review' },
+  block_and_review: {
+    color: 'orange',
+    tKey: 'decisions:outcome.block_and_review',
+  },
   decline: { color: 'red', tKey: 'decisions:outcome.decline' },
-  null: { color: 'grey', tKey: 'decisions:outcome.null' },
   unknown: { color: 'grey', tKey: 'decisions:outcome.unknown' },
 };
 
