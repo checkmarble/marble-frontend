@@ -12,7 +12,7 @@ import { adaptCase, type Case } from './cases';
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
 import { type Outcome } from './outcome';
 
-export const reviewStatusSchema = z.enum(['pending', 'approve', 'rejecte']);
+export const reviewStatusSchema = z.enum(['pending', 'approve', 'decline']);
 
 export type ReviewStatus = z.infer<typeof reviewStatusSchema>;
 

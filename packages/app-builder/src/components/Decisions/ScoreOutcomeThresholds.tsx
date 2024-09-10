@@ -13,10 +13,9 @@ export function ScoreOutcomeThresholds({
 }: ScoreOutcomeThresholdsProps) {
   const { t } = useTranslation(['decisions']);
 
-  const showReviewOutcome =
-    scoreBlockAndReviewThreshold - scoreReviewThreshold > 0;
+  const showReviewOutcome = scoreBlockAndReviewThreshold > scoreReviewThreshold;
   const showBlockAndReviewOutcome =
-    scoreDeclineThreshold - scoreBlockAndReviewThreshold > 0;
+    scoreDeclineThreshold > scoreBlockAndReviewThreshold;
 
   return (
     <div className="relative flex h-[70px] w-full flex-row">
