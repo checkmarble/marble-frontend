@@ -201,7 +201,22 @@ export type RuleSnoozeCreatedDto = {
     resource_type: string;
     user_id: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto;
+export type DecisionReviewedEventDto = {
+    event_type: "decision_reviewed";
+} & CaseEventDtoBase & {
+    /** The note added by the user to justify the review */
+    additional_note: string;
+    /** The new review_status of the decision */
+    new_value: "approve" | "decline";
+    /** The previous review_status of the decision */
+    previous_value: string;
+    /** The id of the decision being reviewed */
+    resource_id: string;
+    /** Must take the value 'decision' */
+    resource_type: string;
+    user_id: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;

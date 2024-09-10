@@ -121,11 +121,18 @@ export interface InboxChangedEvent extends CaseEventBase {
   newInboxId: string;
   userId: string;
 }
-export interface RuleSnoozeCreated extends CaseEventBase {
+export interface RuleSnoozeCreatedEvent extends CaseEventBase {
   eventType: 'rule_snooze_created';
   ruleSnoozeId: string;
   userId: string;
   comment: string;
+}
+export interface DecisionReviewedEvent extends CaseEventBase {
+  eventType: 'decision_reviewed';
+  userId: string;
+  reviewComment: string;
+  finalStatus: 'approve' | 'decline';
+  decisionId: string;
 }
 
 export type CaseEvent =
@@ -137,7 +144,8 @@ export type CaseEvent =
   | CaseTagsUpdatedEvent
   | FileAddedEvent
   | InboxChangedEvent
-  | RuleSnoozeCreated;
+  | RuleSnoozeCreatedEvent
+  | DecisionReviewedEvent;
 
 export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
   const caseEvent = {
@@ -219,6 +227,16 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
         userId: caseEventDto.user_id,
         ruleSnoozeId: caseEventDto.resource_id,
         comment: caseEventDto.additional_note,
+      };
+    }
+    case 'decision_reviewed': {
+      return {
+        ...caseEvent,
+        decisionId: caseEventDto.resource_id,
+        eventType: 'decision_reviewed',
+        reviewComment: caseEventDto.additional_note,
+        finalStatus: caseEventDto.new_value,
+        userId: caseEventDto.user_id,
       };
     }
     default:
