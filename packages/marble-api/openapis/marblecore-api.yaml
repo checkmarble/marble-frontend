@@ -159,7 +159,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
+              $ref: '#/components/schemas/ReviewStatusDto'
         - name: scheduled_execution_id[]
           description: scheduled execution IDs used to filter the list
           in: query
@@ -572,6 +572,51 @@ paths:
                     type: string
                     format: uri
                     description: Signed url to download the case file's content
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /cases/review_decision:
+    post:
+      tags:
+        - Tags
+      summary: Review a decision
+      operationId: reviewDecision
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Tag object that needs to be added to the database
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                decision_id:
+                  type: string
+                  format: uuid
+                review_comment:
+                  type: string
+                review_status:
+                  $ref: '#/components/schemas/ReviewStatusDto'
+              required:
+                - decision_id
+                - review_comment
+                - review_status
+        required: true
+      responses:
+        '200':
+          description: The updated case with the reviewed decision
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - case
+                properties:
+                  case:
+                    $ref: '#/components/schemas/CaseDetailDto'
+        '400':
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -3760,6 +3805,9 @@ components:
     OutcomeDto:
       type: string
       enum: ['approve', 'review', 'decline', 'block_and_review', 'unknown']
+    ReviewStatusDto:
+      type: string
+      enum: ['pending', 'approve', 'decline']
     RuleExecutionDto:
       type: object
       required:
@@ -3808,8 +3856,7 @@ components:
           items:
             $ref: '#/components/schemas/PivotValueDto'
         review_status:
-          type: string
-          enum: ['pending', 'approve', 'decline']
+          $ref: '#/components/schemas/ReviewStatusDto'
         scenario:
           type: object
           properties:
@@ -5130,6 +5177,13 @@ components:
       scheme: bearer
       bearerFormat: JWT
   responses:
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Bad Request
     '401':
       description: Unauthorized
       content:

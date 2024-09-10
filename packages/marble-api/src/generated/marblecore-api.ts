@@ -35,6 +35,7 @@ export type CredentialsDto = {
     };
 };
 export type OutcomeDto = "approve" | "review" | "decline" | "block_and_review" | "unknown";
+export type ReviewStatusDto = "pending" | "approve" | "decline";
 export type PaginationCount = {
     value: number;
     is_max_count: boolean;
@@ -82,7 +83,7 @@ export type DecisionDto = {
     error?: Error;
     outcome: OutcomeDto;
     pivot_values: PivotValueDto[];
-    review_status?: "pending" | "approve" | "decline";
+    review_status?: ReviewStatusDto;
     scenario: {
         id: string;
         description: string;
@@ -708,7 +709,7 @@ export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, s
     pivotValue?: string;
     scenarioId?: string[];
     caseInboxId?: string[];
-    reviewStatus?: string[];
+    reviewStatus?: ReviewStatusDto[];
     scheduledExecutionId?: string[];
     startDate?: string;
     triggerObject?: string[];
@@ -976,6 +977,34 @@ export function downloadCaseFile(caseFileId: string, opts?: Oazapfts.RequestOpts
     }>(`/cases/files/$${encodeURIComponent(caseFileId)}/download_link`, {
         ...opts
     }));
+}
+/**
+ * Review a decision
+ */
+export function reviewDecision(body: {
+    decision_id: string;
+    review_comment: string;
+    review_status: ReviewStatusDto;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetailDto;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/cases/review_decision", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
 }
 /**
  * List tags
