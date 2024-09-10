@@ -143,7 +143,7 @@ paths:
             items:
               type: string
               format: uuid
-        - name: inbox_id[]
+        - name: case_inbox_id[]
           description: inbox IDs used to filter the list
           in: query
           required: false

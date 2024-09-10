@@ -28,7 +28,7 @@ export const decisionFiltersSchema = z.object({
   outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
   pivotValue: z.string().optional(),
   scenarioId: z.array(z.string()).optional(),
-  inboxId: z.array(z.string()).optional(),
+  caseInboxId: z.array(z.string()).optional(),
   triggerObject: z.array(z.string()).optional(),
 });
 
@@ -53,7 +53,7 @@ export type DecisionFiltersForm = {
   outcome: Exclude<Outcome, 'null' | 'unknown'>[];
   pivotValue: string | null;
   scenarioId: string[];
-  inboxId: string[];
+  caseInboxId: string[];
   triggerObject: string[];
 };
 const emptyDecisionFilters: DecisionFiltersForm = {
@@ -62,7 +62,7 @@ const emptyDecisionFilters: DecisionFiltersForm = {
   outcome: [],
   pivotValue: null,
   scenarioId: [],
-  inboxId: [],
+  caseInboxId: [],
   triggerObject: [],
 };
 
@@ -201,14 +201,18 @@ export function useScenarioFilter() {
   return { scenarios, selectedScenarioIds, setSelectedScenarioIds };
 }
 
-export function useInboxFilter() {
+export function useCaseInboxFilter() {
   const { inboxes } = useDecisionFiltersContext();
-  const { field } = useController<DecisionFiltersForm, 'inboxId'>({
-    name: 'inboxId',
+  const { field } = useController<DecisionFiltersForm, 'caseInboxId'>({
+    name: 'caseInboxId',
   });
-  const selectedInboxIds = field.value;
-  const setSelectedInboxIds = field.onChange;
-  return { inboxes, selectedInboxIds, setSelectedInboxIds };
+  const selectedCaseInboxIds = field.value;
+  const setSelectedCaseInboxIds = field.onChange;
+  return {
+    inboxes,
+    selectedCaseInboxIds,
+    setSelectedCaseInboxIds,
+  };
 }
 
 export function useTriggerObjectFilter() {
