@@ -44,7 +44,13 @@ export const caseStatusVariants = cva(undefined, {
   ],
 });
 
-export function CaseStatus({ status }: { status: CaseStatus }) {
+export function CaseStatus({
+  status,
+  className,
+}: {
+  status: CaseStatus;
+  className?: string;
+}) {
   const { t } = useTranslation(casesI18n);
   const { color, tKey } = caseStatusMapping[status];
 
@@ -53,7 +59,8 @@ export function CaseStatus({ status }: { status: CaseStatus }) {
       <div
         className={cx(
           caseStatusVariants({ color, variant: 'contained' }),
-          'text-s flex size-6 items-center justify-center rounded font-semibold capitalize',
+          'text-s flex size-6 shrink-0 items-center justify-center rounded font-semibold capitalize',
+          className,
         )}
       >
         {t(tKey)[0]}

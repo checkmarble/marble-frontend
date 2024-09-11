@@ -4069,6 +4069,8 @@ components:
                     type: array
                     items:
                       $ref: '#/components/schemas/PivotValueDto'
+                  review_status:
+                    $ref: '#/components/schemas/ReviewStatusDto'
                   scenario:
                     type: object
                     required:

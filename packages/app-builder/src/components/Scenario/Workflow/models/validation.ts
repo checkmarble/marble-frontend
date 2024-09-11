@@ -1,4 +1,4 @@
-import { outcomeSchema } from '@app-builder/models/outcome';
+import { knownOutcomes } from '@app-builder/models/outcome';
 import {
   type Scenario,
   type ScenarioUpdateWorkflowInput,
@@ -109,7 +109,7 @@ export function adaptNodeChecklistVM(
 
 export const decisionCreatedTriggerSchema = z.object({
   scenarioId: z.string(),
-  outcomes: z.array(outcomeSchema).nonempty(),
+  outcomes: z.array(z.enum(knownOutcomes)).nonempty(),
 });
 export type ValidDecisionCreatedTrigger = z.infer<
   typeof decisionCreatedTriggerSchema

@@ -1,4 +1,4 @@
-import { type Outcome } from '@app-builder/models/outcome';
+import { knownOutcomes, type Outcome } from '@app-builder/models/outcome';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { useMemo } from 'react';
@@ -25,13 +25,12 @@ const outcomeMapping: Record<
   unknown: { color: 'grey', tKey: 'decisions:outcome.unknown' },
 };
 
-const outcomes = ['approve', 'review', 'decline'] satisfies Outcome[];
 export function useOutcomes() {
   const { t } = useTranslation(decisionsI18n);
 
   return useMemo(
     () =>
-      outcomes.map((outcome) => ({
+      knownOutcomes.map((outcome) => ({
         value: outcome,
         label: t(outcomeMapping[outcome].tKey),
       })),
@@ -39,13 +38,13 @@ export function useOutcomes() {
   );
 }
 
-export function Outcome({ outcome, ...tagProps }: OutcomeProps) {
+export function Outcome({ outcome, className, ...tagProps }: OutcomeProps) {
   const { t } = useTranslation(decisionsI18n);
 
   const { color, tKey } = outcomeMapping[outcome] ?? outcomeMapping.unknown;
 
   return (
-    <Tag {...tagProps} color={color}>
+    <Tag {...tagProps} color={color} className={clsx('text-center', className)}>
       {t(tKey)}
     </Tag>
   );
