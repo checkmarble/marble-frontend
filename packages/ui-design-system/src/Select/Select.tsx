@@ -62,7 +62,7 @@ function SelectViewport({
 }
 
 export const selectTrigger = cva(
-  'text-s text-grey-100 flex min-h-[40px] min-w-[40px] items-center justify-between border font-medium outline-none radix-state-open:border-purple-100 radix-state-open:text-purple-100 radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
+  'text-s text-grey-100 flex min-h-10 min-w-10 items-center justify-between border font-medium outline-none radix-state-open:border-purple-100 radix-state-open:text-purple-100 radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50',
   {
     variants: {
       backgroundColor: {
@@ -197,7 +197,7 @@ const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(
 const SelectDefaultItem = forwardRef<HTMLDivElement, SelectItemProps>(
   function SelectDefaultItem({ children, className, ...props }, ref) {
     return (
-      <SelectItem ref={ref} className={clsx('h-10', className)} {...props}>
+      <SelectItem ref={ref} className={clsx('min-h-10', className)} {...props}>
         <Select.ItemText>{children}</Select.ItemText>
       </SelectItem>
     );

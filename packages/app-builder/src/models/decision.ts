@@ -11,7 +11,8 @@ import { adaptCase, type Case } from './cases';
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
 import { type Outcome } from './outcome';
 
-export const reviewStatuses = ['pending', 'approve', 'decline'] as const;
+export const nonPendingReviewStatuses = ['approve', 'decline'] as const;
+export const reviewStatuses = ['pending', ...nonPendingReviewStatuses] as const;
 export type ReviewStatus = (typeof reviewStatuses)[number];
 
 export interface Decision {

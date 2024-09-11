@@ -6,12 +6,10 @@ import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { FormTextArea } from '@app-builder/components/Form/FormTextArea';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
-import {
-  type ReviewStatus,
-  reviewStatuses,
-} from '@app-builder/models/decision';
+import { nonPendingReviewStatuses } from '@app-builder/models/decision';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
+import type * as Ariakit from '@ariakit/react';
 import {
   FormProvider,
   getFormProps,
@@ -29,7 +27,7 @@ import { z } from 'zod';
 const reviewDecisionSchema = z.object({
   decisionId: z.string(),
   reviewComment: z.string(),
-  reviewStatus: z.enum(reviewStatuses),
+  reviewStatus: z.enum(nonPendingReviewStatuses),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -74,33 +72,23 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export function ReviewDecisionModal({
   decisionId,
-  reviewStatus,
-  open,
-  setOpen,
+  store,
 }: {
   decisionId: string;
-  reviewStatus?: ReviewStatus;
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  store: Ariakit.DialogStore;
 }) {
   return (
-    <ModalV2.Content open={open} onClose={() => setOpen(false)}>
-      <ReviewDecisionContent
-        setOpen={setOpen}
-        decisionId={decisionId}
-        reviewStatus={reviewStatus}
-      />
+    <ModalV2.Content store={store}>
+      <ReviewDecisionContent setOpen={store.setOpen} decisionId={decisionId} />
     </ModalV2.Content>
   );
 }
 
 function ReviewDecisionContent({
   decisionId,
-  reviewStatus,
   setOpen,
 }: {
   decisionId: string;
-  reviewStatus?: ReviewStatus;
   setOpen: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);
@@ -116,7 +104,7 @@ function ReviewDecisionContent({
     shouldRevalidate: 'onInput',
     defaultValue: {
       decisionId,
-      reviewStatus,
+      reviewStatus: 'approve',
     },
     lastResult: fetcher.data,
     constraint: getZodConstraint(reviewDecisionSchema),
@@ -131,7 +119,7 @@ function ReviewDecisionContent({
     <FormProvider context={form.context}>
       <fetcher.Form
         method="post"
-        action={getRoute('/ressources/cases/add-rule-snooze')}
+        action={getRoute('/ressources/cases/review-decision')}
         {...getFormProps(form)}
       >
         <ModalV2.Title>
@@ -153,12 +141,13 @@ function ReviewDecisionContent({
             </FormLabel>
             <FormSelect.Default
               className="h-10 w-full"
-              options={reviewStatuses}
+              options={nonPendingReviewStatuses}
             >
-              {reviewStatuses.map((reviewStatus) => (
+              {nonPendingReviewStatuses.map((reviewStatus) => (
                 <FormSelect.DefaultItem key={reviewStatus} value={reviewStatus}>
                   <ReviewStatusTag
                     border="square"
+                    size="big"
                     reviewStatus={reviewStatus}
                   />
                 </FormSelect.DefaultItem>

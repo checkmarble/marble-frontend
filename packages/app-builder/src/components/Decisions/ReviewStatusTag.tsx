@@ -28,7 +28,7 @@ export function ReviewStatusTag({ reviewStatus, ...tagProps }: OutcomeProps) {
 
   return (
     <Tag {...tagProps} color={color}>
-      {t(tKey)}
+      <span className="text-center capitalize">{t(tKey)}</span>
     </Tag>
   );
 }
