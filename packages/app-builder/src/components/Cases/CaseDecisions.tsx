@@ -36,6 +36,7 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
+  ModalV2,
   Tag,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
