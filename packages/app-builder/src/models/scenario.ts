@@ -5,7 +5,7 @@ import {
 } from 'marble-api';
 import * as z from 'zod';
 
-import { type Outcome, outcomeSchema } from './outcome';
+import { type Outcome, outcomes } from './outcome';
 
 type DecisionToCaseWorkflowType =
   | 'DISABLED'
@@ -62,12 +62,12 @@ export const scenarioUpdateWorkflowInputSchema = z.discriminatedUnion(
     z.object({
       decisionToCaseWorkflowType: z.literal('CREATE_CASE'),
       decisionToCaseInboxId: z.string(),
-      decisionToCaseOutcomes: z.array(outcomeSchema),
+      decisionToCaseOutcomes: z.array(z.enum(outcomes)),
     }),
     z.object({
       decisionToCaseWorkflowType: z.literal('ADD_TO_CASE_IF_POSSIBLE'),
       decisionToCaseInboxId: z.string(),
-      decisionToCaseOutcomes: z.array(outcomeSchema),
+      decisionToCaseOutcomes: z.array(z.enum(outcomes)),
     }),
     z.object({
       decisionToCaseWorkflowType: z.literal('DISABLED'),

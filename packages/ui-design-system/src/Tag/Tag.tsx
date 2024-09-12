@@ -31,8 +31,8 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
           rounded: border === 'square',
         },
         {
-          'h-6 px-2 text-xs font-medium': size === 'small',
-          'text-s h-8 px-2 font-semibold': size === 'big',
+          'min-h-6 px-2 text-xs font-medium': size === 'small',
+          'text-s min-h-8 px-2 font-semibold': size === 'big',
         },
         className,
       )}

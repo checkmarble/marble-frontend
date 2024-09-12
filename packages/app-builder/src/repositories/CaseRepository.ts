@@ -9,6 +9,7 @@ import {
   type CaseStatus,
   type CaseUpdateBody,
 } from '@app-builder/models/cases';
+import { type ReviewStatus } from '@app-builder/models/decision';
 import {
   adaptPagination,
   type FiltersWithPagination,
@@ -56,6 +57,11 @@ export interface CaseRepository {
   addDecisionsToCase(args: {
     caseId: string;
     decisionIds: string[];
+  }): Promise<CaseDetail>;
+  reviewDecision(args: {
+    decisionId: string;
+    reviewComment: string;
+    reviewStatus: ReviewStatus;
   }): Promise<CaseDetail>;
 }
 
@@ -116,6 +122,14 @@ export function makeGetCaseRepository() {
     addDecisionsToCase: async ({ caseId, decisionIds }) => {
       const result = await marbleCoreApiClient.addDecisionsToCase(caseId, {
         decision_ids: decisionIds,
+      });
+      return adaptCaseDetail(result.case);
+    },
+    reviewDecision: async ({ reviewComment, decisionId, reviewStatus }) => {
+      const result = await marbleCoreApiClient.reviewDecision({
+        decision_id: decisionId,
+        review_comment: reviewComment,
+        review_status: reviewStatus,
       });
       return adaptCaseDetail(result.case);
     },

@@ -190,7 +190,10 @@ export function DecisionsList({
         cell: ({ getValue, row }) =>
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-1">
-              <CaseStatus status={row.original.case.status} />
+              <CaseStatus
+                className="isolate"
+                status={row.original.case.status}
+              />
               <Link
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUID(row.original.case.id),
@@ -238,7 +241,12 @@ export function DecisionsList({
         header: t('decisions:outcome'),
         size: 100,
         cell: ({ getValue }) => (
-          <Outcome border="square" size="big" outcome={getValue()} />
+          <Outcome
+            border="square"
+            size="big"
+            className="w-full"
+            outcome={getValue()}
+          />
         ),
       }),
     ],
