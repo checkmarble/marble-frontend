@@ -1,5 +1,9 @@
+import {
+  type ReviewStatus,
+  reviewStatuses,
+} from '@app-builder/models/decision';
 import { type Inbox } from '@app-builder/models/inbox';
-import { type Outcome } from '@app-builder/models/outcome';
+import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { type Scenario } from '@app-builder/models/scenario';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
@@ -25,8 +29,13 @@ export const decisionFiltersSchema = z.object({
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
     .optional(),
-  outcome: z
-    .array(z.enum(['approve', 'review', 'block_and_review', 'decline']))
+  outcomeAndReviewStatus: z
+    .array(
+      z.object({
+        outcome: z.enum(knownOutcomes),
+        reviewStatus: z.enum(reviewStatuses).optional(),
+      }),
+    )
     .optional(),
   pivotValue: z.string().optional(),
   scenarioId: z.array(z.string()).optional(),
@@ -52,7 +61,10 @@ const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
 export type DecisionFiltersForm = {
   dateRange: DateRangeFilterForm;
   hasCase: boolean | null;
-  outcome: Exclude<Outcome, 'null' | 'unknown'>[];
+  outcomeAndReviewStatus: {
+    outcome: KnownOutcome;
+    reviewStatus?: ReviewStatus;
+  }[];
   pivotValue: string | null;
   scenarioId: string[];
   caseInboxId: string[];
@@ -61,7 +73,7 @@ export type DecisionFiltersForm = {
 const emptyDecisionFilters: DecisionFiltersForm = {
   dateRange: null,
   hasCase: null,
-  outcome: [],
+  outcomeAndReviewStatus: [],
   pivotValue: null,
   scenarioId: [],
   caseInboxId: [],
@@ -174,13 +186,16 @@ export function useHasCaseFilter() {
   return { selectedHasCase, setSelectedHasCase };
 }
 
-export function useOutcomeFilter() {
-  const { field } = useController<DecisionFiltersForm, 'outcome'>({
-    name: 'outcome',
+export function useOutcomeAndReviewStatusFilter() {
+  const { field } = useController<
+    DecisionFiltersForm,
+    'outcomeAndReviewStatus'
+  >({
+    name: 'outcomeAndReviewStatus',
   });
-  const selectedOutcomes = field.value;
-  const setSelectedOutcomes = field.onChange;
-  return { selectedOutcomes, setSelectedOutcomes };
+  const selectedOutcomeAndReviewStatus = field.value;
+  const setOutcomeAndReviewStatus = field.onChange;
+  return { selectedOutcomeAndReviewStatus, setOutcomeAndReviewStatus };
 }
 
 export function usePivotValueFilter() {

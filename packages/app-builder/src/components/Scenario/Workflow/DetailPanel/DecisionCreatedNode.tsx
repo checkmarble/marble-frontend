@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
-import { Outcome, useOutcomes } from '@app-builder/components/Decisions';
+import { OutcomeTag, useOutcomes } from '@app-builder/components/Decisions';
 import { Highlight } from '@app-builder/components/Highlight';
-import { type Outcome as OutcomeT } from '@app-builder/models/outcome';
+import { type Outcome } from '@app-builder/models/outcome';
 import { type Scenario } from '@app-builder/models/scenario';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
@@ -116,8 +116,8 @@ function SelectOutcomes({
   selectedOutcomes,
   onSelectedOutcomesChange,
 }: {
-  selectedOutcomes: OutcomeT[];
-  onSelectedOutcomesChange: (outcomes: OutcomeT[]) => void;
+  selectedOutcomes: Outcome[];
+  onSelectedOutcomesChange: (outcomes: Outcome[]) => void;
 }) {
   const { t } = useTranslation(workflowI18n);
   const [value, setSearchValue] = React.useState('');
@@ -142,7 +142,7 @@ function SelectOutcomes({
         {selectedOutcomes.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {selectedOutcomes.map((outcome) => (
-              <Outcome
+              <OutcomeTag
                 key={outcome}
                 outcome={outcome}
                 border="square"
@@ -169,7 +169,7 @@ function SelectOutcomes({
                 key={outcome.value}
                 value={outcome.value}
               >
-                <Outcome
+                <OutcomeTag
                   outcome={outcome.value}
                   border="square"
                   size="big"

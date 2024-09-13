@@ -4,7 +4,7 @@ import { type DecisionFilterName } from '../filters';
 import { CaseInboxFilter } from './CaseInboxFilter';
 import { DecisionsDateRangeFilter } from './DecisionsDateRangeFilter';
 import { HasCaseFilter } from './HasCaseFilter';
-import { OutcomeFilter } from './OutcomeFilter';
+import { OutcomeAndReviewStatusFilter } from './OutcomeAndReviewStatusFilter';
 import { PivotValueFilter } from './PivotValueFilter';
 import { ScenarioFilter } from './ScenarioFilter';
 import { TriggerObjectFilter } from './TriggerObjectFilter';
@@ -21,8 +21,8 @@ export function FilterDetail({
       return <ScenarioFilter />;
     case 'caseInboxId':
       return <CaseInboxFilter />;
-    case 'outcome':
-      return <OutcomeFilter />;
+    case 'outcomeAndReviewStatus':
+      return <OutcomeAndReviewStatusFilter />;
     case 'triggerObject':
       return <TriggerObjectFilter />;
     case 'hasCase':

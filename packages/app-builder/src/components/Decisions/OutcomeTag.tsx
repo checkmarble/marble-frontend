@@ -7,7 +7,7 @@ import { Tag, type TagProps } from 'ui-design-system';
 
 import { decisionsI18n } from './decisions-i18n';
 
-export interface OutcomeProps extends Omit<TagProps, 'color'> {
+export interface OutcomeTagProps extends Omit<TagProps, 'color'> {
   outcome: Outcome;
 }
 
@@ -38,7 +38,11 @@ export function useOutcomes() {
   );
 }
 
-export function Outcome({ outcome, className, ...tagProps }: OutcomeProps) {
+export function OutcomeTag({
+  outcome,
+  className,
+  ...tagProps
+}: OutcomeTagProps) {
   const { t } = useTranslation(decisionsI18n);
 
   const { color, tKey } = outcomeMapping[outcome] ?? outcomeMapping.unknown;
