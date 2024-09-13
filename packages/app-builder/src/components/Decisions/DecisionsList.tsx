@@ -1,5 +1,6 @@
-import { CaseStatus, decisionsI18n, OutcomeTag } from '@app-builder/components';
+import { CaseStatus, decisionsI18n } from '@app-builder/components';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
+import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -15,8 +16,9 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, Table, Tooltip, useVirtualTable } from 'ui-design-system';
+import { Checkbox, Table, Tooltip, useTable } from 'ui-design-system';
 
+import { OutcomeAndReviewStatus } from './OutcomeAndReviewStatus';
 import { Score } from './Score';
 
 type Column =
@@ -49,6 +51,7 @@ export interface DecisionViewModel {
   }[];
   score: number;
   outcome: Outcome;
+  reviewStatus?: ReviewStatus;
 }
 
 type DecisionsListProps = {
@@ -164,7 +167,7 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.scenario.version, {
         id: 'scenario_version',
         header: 'Vi',
-        size: 50,
+        size: 40,
         cell: ({ getValue, row }) => (
           <Link
             to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
@@ -233,27 +236,32 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.score, {
         id: 'score',
         header: t('decisions:score'),
-        size: 100,
+        size: 80,
         cell: ({ getValue }) => <Score score={getValue()} />,
       }),
-      columnHelper.accessor((row) => row.outcome, {
-        id: 'outcome',
-        header: t('decisions:outcome'),
-        size: 100,
-        cell: ({ getValue }) => (
-          <OutcomeTag
-            border="square"
-            size="big"
-            className="w-full"
-            outcome={getValue()}
-          />
-        ),
-      }),
+      columnHelper.accessor(
+        (row) => ({ outcome: row.outcome, reviewStatus: row.reviewStatus }),
+        {
+          id: 'outcome',
+          header: t('decisions:outcome'),
+          size: 150,
+          cell: ({ getValue }) => {
+            const { outcome, reviewStatus } = getValue();
+            return (
+              <OutcomeAndReviewStatus
+                outcome={outcome}
+                className="my-2 w-full"
+                reviewStatus={reviewStatus}
+              />
+            );
+          },
+        },
+      ),
     ],
     [t, selectable, language],
   );
 
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: decisions,
     columns,
     state: {

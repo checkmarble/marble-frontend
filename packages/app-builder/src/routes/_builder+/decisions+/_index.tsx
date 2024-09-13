@@ -1,5 +1,6 @@
 import {
   CursorPaginationButtons,
+  type DecisionFilters,
   DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
@@ -16,7 +17,6 @@ import {
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
 import { type PaginationParams } from '@app-builder/models/pagination';
-import { type DecisionFiltersWithPagination } from '@app-builder/repositories/DecisionRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -58,9 +58,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/decisions/'));
   }
 
+  const { outcomeAndReviewStatus, ...filters } = parsedFilterQuery.data;
   const [decisionsData, scenarios, pivots, inboxes] = await Promise.all([
     decision.listDecisions({
-      ...parsedFilterQuery.data,
+      outcome: outcomeAndReviewStatus?.map(({ outcome }) => outcome),
+      reviewStatus: outcomeAndReviewStatus
+        ?.map(({ reviewStatus }) => reviewStatus)
+        .filter((reviewStatus) => reviewStatus !== undefined),
+      ...filters,
       ...parsedPaginationQuery.data,
     }),
     scenario.listScenarios(),
@@ -89,16 +94,14 @@ export default function Decisions() {
 
   const navigate = useNavigate();
   const navigateDecisionList = useCallback(
-    (
-      decisionFilters: DecisionFiltersWithPagination,
-      pagination?: PaginationParams,
-    ) => {
+    (decisionFilters: DecisionFilters, pagination?: PaginationParams) => {
       navigate(
         {
           pathname: getRoute('/decisions/'),
           search: qs.stringify(
             {
-              outcome: decisionFilters.outcome ?? [],
+              outcomeAndReviewStatus:
+                decisionFilters.outcomeAndReviewStatus ?? [],
               triggerObject: decisionFilters.triggerObject ?? [],
               dateRange: decisionFilters.dateRange
                 ? decisionFilters.dateRange.type === 'static'
