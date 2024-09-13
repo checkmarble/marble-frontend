@@ -11,7 +11,7 @@ import {
   type DateRangeFilterForm,
   dateRangeSchema,
 } from '@app-builder/utils/schema/filterSchema';
-import { useCallback, useMemo } from 'react';
+import * as React from 'react';
 import {
   FormProvider,
   useController,
@@ -30,12 +30,10 @@ export const decisionFiltersSchema = z.object({
     .transform((val) => val === 'true')
     .optional(),
   outcomeAndReviewStatus: z
-    .array(
-      z.object({
-        outcome: z.enum(knownOutcomes),
-        reviewStatus: z.enum(reviewStatuses).optional(),
-      }),
-    )
+    .object({
+      outcome: z.enum(knownOutcomes),
+      reviewStatus: z.enum(reviewStatuses).optional(),
+    })
     .optional(),
   pivotValue: z.string().optional(),
   scenarioId: z.array(z.string()).optional(),
@@ -64,7 +62,7 @@ export type DecisionFiltersForm = {
   outcomeAndReviewStatus: {
     outcome: KnownOutcome;
     reviewStatus?: ReviewStatus;
-  }[];
+  } | null;
   pivotValue: string | null;
   scenarioId: string[];
   caseInboxId: string[];
@@ -73,7 +71,7 @@ export type DecisionFiltersForm = {
 const emptyDecisionFilters: DecisionFiltersForm = {
   dateRange: null,
   hasCase: null,
-  outcomeAndReviewStatus: [],
+  outcomeAndReviewStatus: null,
   pivotValue: null,
   scenarioId: [],
   caseInboxId: [],
@@ -128,6 +126,7 @@ export function DecisionFiltersProvider({
     const formValues = formMethods.getValues();
     _submitDecisionFilters({
       ...formValues,
+      outcomeAndReviewStatus: formValues.outcomeAndReviewStatus ?? undefined,
       dateRange: formValues.dateRange ?? undefined,
       hasCase: formValues.hasCase ?? undefined,
       pivotValue: formValues.pivotValue ?? undefined,
@@ -139,7 +138,7 @@ export function DecisionFiltersProvider({
     }
   });
 
-  const value = useMemo(
+  const value = React.useMemo(
     () => ({
       submitDecisionFilters,
       onDecisionFilterClose,
@@ -237,7 +236,7 @@ export function useTriggerObjectFilter() {
   const { field } = useController<DecisionFiltersForm, 'triggerObject'>({
     name: 'triggerObject',
   });
-  const triggerObjects = useMemo(
+  const triggerObjects = React.useMemo(
     () =>
       R.pipe(
         scenarios,
@@ -278,7 +277,7 @@ export function useClearFilter() {
   const { submitDecisionFilters } = useDecisionFiltersContext();
   const { setValue } = useFormContext<DecisionFiltersForm>();
 
-  return useCallback(
+  return React.useCallback(
     (filterName: DecisionFilterName) => {
       setValue(filterName, emptyDecisionFilters[filterName]);
       submitDecisionFilters();

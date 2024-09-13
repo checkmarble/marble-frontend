@@ -61,10 +61,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { outcomeAndReviewStatus, ...filters } = parsedFilterQuery.data;
   const [decisionsData, scenarios, pivots, inboxes] = await Promise.all([
     decision.listDecisions({
-      outcome: outcomeAndReviewStatus?.map(({ outcome }) => outcome),
-      reviewStatus: outcomeAndReviewStatus
-        ?.map(({ reviewStatus }) => reviewStatus)
-        .filter((reviewStatus) => reviewStatus !== undefined),
+      outcome: outcomeAndReviewStatus?.outcome
+        ? [outcomeAndReviewStatus.outcome]
+        : [],
+      reviewStatus: outcomeAndReviewStatus?.reviewStatus
+        ? [outcomeAndReviewStatus.reviewStatus]
+        : [],
       ...filters,
       ...parsedPaginationQuery.data,
     }),

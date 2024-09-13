@@ -1,8 +1,10 @@
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type KnownOutcome } from '@app-builder/models/outcome';
 import { matchSorter } from '@app-builder/utils/search';
+import * as Ariakit from '@ariakit/react';
 import * as React from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import {
   OutcomeAndReviewStatus,
@@ -25,17 +27,16 @@ export function OutcomeAndReviewStatusFilter() {
     [deferredValue, outcomeAndReviewStatus],
   );
 
-  const selectedValue = React.useMemo(
-    () =>
-      selectedOutcomeAndReviewStatus.map(({ outcome, reviewStatus }) =>
-        getValue(outcome, reviewStatus),
-      ),
-    [selectedOutcomeAndReviewStatus],
-  );
+  const selectedValue = selectedOutcomeAndReviewStatus
+    ? getValue(
+        selectedOutcomeAndReviewStatus.outcome,
+        selectedOutcomeAndReviewStatus.reviewStatus,
+      )
+    : undefined;
 
   const onSelectedValueChange = React.useCallback(
-    (value: string[]) => {
-      setOutcomeAndReviewStatus(value.map(parseValue));
+    (value: string) => {
+      setOutcomeAndReviewStatus(parseValue(value));
     },
     [setOutcomeAndReviewStatus],
   );
@@ -60,6 +61,9 @@ export function OutcomeAndReviewStatusFilter() {
                   outcome={outcomeValue}
                   reviewStatus={reviewStatusValue}
                 />
+                <Ariakit.SelectItemCheck className="shrink-0 text-purple-100">
+                  <Icon icon="tick" className="size-5" />
+                </Ariakit.SelectItemCheck>
               </SelectWithCombobox.ComboboxItem>
             );
           })}
@@ -76,7 +80,10 @@ function getValue(outcome: KnownOutcome, reviewStatus?: ReviewStatus) {
 function parseValue(value: string) {
   const [outcome, reviewStatus] = value.split('-');
   return {
-    outcome: outcome as KnownOutcome,
-    reviewStatus: reviewStatus as ReviewStatus,
+    outcome: outcome,
+    reviewStatus: reviewStatus || undefined,
+  } as {
+    outcome: KnownOutcome;
+    reviewStatus?: ReviewStatus;
   };
 }
