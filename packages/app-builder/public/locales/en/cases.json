@@ -87,6 +87,7 @@
   "case_detail.review_decision.comment.label": "Comment",
   "case_detail.review_decision.comment.placeholder": "Explain why you are choosing this review status",
   "case_detail.review_decision.review_status.label": "Review status",
+  "case_detail.review_decision.review_status.placeholder": "Select a review status",
   "case_detail.review_decision": "Review",
   "filters.date_range.title": "creation date is:",
   "change_status_modal.title": "Change Case’s status",

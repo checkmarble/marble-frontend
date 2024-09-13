@@ -104,7 +104,6 @@ function ReviewDecisionContent({
     shouldRevalidate: 'onInput',
     defaultValue: {
       decisionId,
-      reviewStatus: 'approve',
     },
     lastResult: fetcher.data,
     constraint: getZodConstraint(reviewDecisionSchema),
@@ -142,6 +141,9 @@ function ReviewDecisionContent({
             <FormSelect.Default
               className="h-10 w-full"
               options={nonPendingReviewStatuses}
+              placeholder={t(
+                'cases:case_detail.review_decision.review_status.placeholder',
+              )}
             >
               {nonPendingReviewStatuses.map((reviewStatus) => (
                 <FormSelect.DefaultItem key={reviewStatus} value={reviewStatus}>
@@ -169,6 +171,7 @@ function ReviewDecisionContent({
                 'cases:case_detail.review_decision.comment.placeholder',
               )}
             />
+            <FormErrorOrDescription />
           </FormField>
 
           <div className="flex flex-1 flex-row gap-2">
