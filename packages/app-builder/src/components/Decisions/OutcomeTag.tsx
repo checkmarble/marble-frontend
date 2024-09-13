@@ -65,6 +65,7 @@ export const OutcomePanel = ({ outcome }: { outcome: Outcome }) => {
         {
           'bg-green-10': color === 'green',
           'bg-yellow-10': color === 'yellow',
+          'bg-orange-10': color === 'orange',
           'bg-red-10': color === 'red',
         },
       )}
@@ -73,15 +74,17 @@ export const OutcomePanel = ({ outcome }: { outcome: Outcome }) => {
         className={clsx('text-s', {
           'text-green-50': color === 'green',
           'text-yellow-50': color === 'yellow',
+          'text-orange-50': color === 'orange',
           'text-red-50': color === 'red',
         })}
       >
         {t('decisions:outcome')}
       </div>
       <div
-        className={clsx('text-l font-semibold capitalize', {
+        className={clsx('text-l text-center font-semibold capitalize', {
           'text-green-100': color === 'green',
           'text-yellow-100': color === 'yellow',
+          'text-orange-100': color === 'orange',
           'text-red-100': color === 'red',
         })}
       >
