@@ -24,7 +24,7 @@ import { assertNever } from 'typescript-utils';
 import { Avatar, CollapsibleV2 } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
-import { Outcome } from '../Decisions/Outcome';
+import { ReviewStatusTag } from '../Decisions/ReviewStatusTag';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping, caseStatusVariants } from './CaseStatus';
@@ -426,10 +426,10 @@ function DecisionReviewedEventDetail({
             'cases:case_detail.history.event_detail.decision_reviewed.final_status',
           )}
         </span>
-        <Outcome
+        <ReviewStatusTag
           border="square"
           size="small"
-          outcome={event.finalStatus}
+          reviewStatus={event.finalStatus}
           className="w-fit"
         />
         <span className="text-grey-100 text-s font-semibold first-letter:capitalize">
