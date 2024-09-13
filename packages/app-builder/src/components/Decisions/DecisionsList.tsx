@@ -1,6 +1,6 @@
-import { CaseStatus, decisionsI18n, Outcome } from '@app-builder/components';
+import { CaseStatus, decisionsI18n, OutcomeTag } from '@app-builder/components';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
-import { type Outcome as TOutcome } from '@app-builder/models/outcome';
+import { type Outcome } from '@app-builder/models/outcome';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -48,7 +48,7 @@ export interface DecisionViewModel {
     value?: string;
   }[];
   score: number;
-  outcome: TOutcome;
+  outcome: Outcome;
 }
 
 type DecisionsListProps = {
@@ -241,7 +241,7 @@ export function DecisionsList({
         header: t('decisions:outcome'),
         size: 100,
         cell: ({ getValue }) => (
-          <Outcome
+          <OutcomeTag
             border="square"
             size="big"
             className="w-full"

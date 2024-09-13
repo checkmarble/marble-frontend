@@ -2,7 +2,7 @@ import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { Outcome, useOutcomes } from '../../Outcome';
+import { OutcomeTag, useOutcomes } from '../../OutcomeTag';
 import { useOutcomeFilter } from '../DecisionFiltersContext';
 
 export function OutcomeFilter() {
@@ -32,7 +32,7 @@ export function OutcomeFilter() {
                 key={outcome.value}
                 value={outcome.value}
               >
-                <Outcome
+                <OutcomeTag
                   outcome={outcome.value}
                   border="square"
                   size="big"

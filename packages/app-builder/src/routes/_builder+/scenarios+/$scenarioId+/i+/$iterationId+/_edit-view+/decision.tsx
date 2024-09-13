@@ -1,7 +1,7 @@
 import {
   Callout,
   decisionsI18n,
-  Outcome,
+  OutcomeTag,
   scenarioI18n,
 } from '@app-builder/components';
 import { ScoreOutcomeThresholds } from '@app-builder/components/Decisions/ScoreOutcomeThresholds';
@@ -245,7 +245,7 @@ function EditScoreThresholds() {
         {...getFormProps(form)}
       >
         <div className="grid grid-cols-[max-content_auto] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
-          <Outcome border="square" size="big" outcome="approve" />
+          <OutcomeTag border="square" size="big" outcome="approve" />
           <FormField
             name={fields.scoreReviewThreshold.name}
             className="flex flex-row flex-wrap items-center gap-1 lg:gap-2"
@@ -266,7 +266,7 @@ function EditScoreThresholds() {
             <FormErrorOrDescription errorClassName={style.errorMessage} />
           </FormField>
 
-          <Outcome border="square" size="big" outcome="review" />
+          <OutcomeTag border="square" size="big" outcome="review" />
           <FormField
             name={fields.scoreBlockAndReviewThreshold.name}
             className="flex flex-row flex-wrap items-center gap-1 lg:gap-2"
@@ -296,7 +296,7 @@ function EditScoreThresholds() {
             <FormErrorOrDescription errorClassName={style.errorMessage} />
           </FormField>
 
-          <Outcome border="square" size="big" outcome="block_and_review" />
+          <OutcomeTag border="square" size="big" outcome="block_and_review" />
           <FormField
             name={fields.scoreDeclineThreshold.name}
             className="flex flex-row flex-wrap items-center gap-1 lg:gap-2"
@@ -324,7 +324,7 @@ function EditScoreThresholds() {
             <FormErrorOrDescription errorClassName={style.errorMessage} />
           </FormField>
 
-          <Outcome border="square" size="big" outcome="decline" />
+          <OutcomeTag border="square" size="big" outcome="decline" />
           {t('scenarios:decision.score_based.decline_condition', {
             replace: {
               declineThreshold,

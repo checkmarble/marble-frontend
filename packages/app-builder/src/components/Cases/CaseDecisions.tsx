@@ -45,7 +45,7 @@ import { PivotType } from '../Data/SelectedPivot';
 import {
   getRuleExecutionStatusColor,
   getRuleExecutionStatusLabel,
-  Outcome,
+  OutcomeTag,
   RuleExecutionDetail,
 } from '../Decisions';
 import { ReviewStatusTag } from '../Decisions/ReviewStatusTag';
@@ -185,7 +185,7 @@ export function CaseDecisions({
 function OutcomeAndReviewStatus({ decision }: { decision: Decision }) {
   const reviewDecisionModalStore = Ariakit.useDialogStore();
   if (decision.outcome !== 'block_and_review') {
-    return <Outcome border="square" size="big" outcome={decision.outcome} />;
+    return <OutcomeTag border="square" size="big" outcome={decision.outcome} />;
   }
 
   if (
@@ -195,7 +195,7 @@ function OutcomeAndReviewStatus({ decision }: { decision: Decision }) {
     return (
       <>
         <Ariakit.DialogDisclosure store={reviewDecisionModalStore}>
-          <Outcome
+          <OutcomeTag
             border="square"
             size="big"
             outcome="block_and_review"
@@ -212,7 +212,7 @@ function OutcomeAndReviewStatus({ decision }: { decision: Decision }) {
 
   return (
     <div className="relative flex flex-col gap-2">
-      <Outcome
+      <OutcomeTag
         className="opacity-20"
         border="square"
         size="big"

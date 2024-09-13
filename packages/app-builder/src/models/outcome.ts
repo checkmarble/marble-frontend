@@ -4,6 +4,7 @@ export const knownOutcomes = [
   'block_and_review',
   'decline',
 ] as const;
-export const outcomes = [...knownOutcomes, 'unknown'] as const;
+export type KnownOutcome = (typeof knownOutcomes)[number];
 
+export const outcomes = [...knownOutcomes, 'unknown'] as const;
 export type Outcome = (typeof outcomes)[number];
