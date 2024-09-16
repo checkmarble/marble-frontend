@@ -31,3 +31,9 @@ export const webhooksSetupDocHref =
 
 export const webhooksEventsDocHref =
   'https://docs.checkmarble.com/docs/available-events-and-webhooks-format';
+
+export const ruleSnoozesDocHref =
+  'https://docs.checkmarble.com/docs/rule-snoozes';
+
+export const blockingReviewDocHref =
+  'https://docs.checkmarble.com/docs/blocking-review';
