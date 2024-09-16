@@ -34,7 +34,8 @@ export type CredentialsDto = {
         permissions: string[];
     };
 };
-export type Outcome = "approve" | "review" | "decline" | "null" | "unknown";
+export type OutcomeDto = "approve" | "review" | "decline" | "block_and_review" | "unknown";
+export type ReviewStatusDto = "pending" | "approve" | "decline";
 export type PaginationCount = {
     value: number;
     is_max_count: boolean;
@@ -80,8 +81,9 @@ export type DecisionDto = {
     "case"?: CaseDto;
     created_at: string;
     error?: Error;
-    outcome: Outcome;
+    outcome: OutcomeDto;
     pivot_values: PivotValueDto[];
+    review_status?: ReviewStatusDto;
     scenario: {
         id: string;
         description: string;
@@ -231,8 +233,9 @@ export type CaseDetailDto = CaseDto & {
             [key: string]: any;
         };
         trigger_object_type: string;
-        outcome: Outcome;
+        outcome: OutcomeDto;
         pivot_values: PivotValueDto[];
+        review_status?: ReviewStatusDto;
         scenario: {
             id: string;
             name: string;
@@ -329,7 +332,7 @@ export type ScenarioDto = {
     id: string;
     created_at: string;
     decision_to_case_inbox_id?: string;
-    decision_to_case_outcomes: Outcome[];
+    decision_to_case_outcomes: OutcomeDto[];
     decision_to_case_workflow_type: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
     description: string;
     live_version_id?: string;
@@ -344,7 +347,7 @@ export type ScenarioCreateInputDto = {
 };
 export type ScenarioUpdateInputDto = {
     decision_to_case_inbox_id?: string;
-    decision_to_case_outcomes?: Outcome[];
+    decision_to_case_outcomes?: OutcomeDto[];
     decision_to_case_workflow_type?: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
     description?: string;
     name?: string;
@@ -378,6 +381,7 @@ export type CreateScenarioIterationBody = {
     body?: {
         trigger_condition_ast_expression?: (NodeDto) | null;
         score_review_threshold?: number;
+        score_block_and_review_threshold?: number;
         score_decline_threshold?: number;
         rules?: CreateScenarioIterationRuleBodyDto[];
     };
@@ -397,6 +401,7 @@ export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
         trigger_condition_ast_expression?: (NodeDto) | null;
         score_review_threshold?: number;
+        score_block_and_review_threshold?: number;
         score_decline_threshold?: number;
         rules: ScenarioIterationRuleDto[];
         schedule?: string;
@@ -406,11 +411,12 @@ export type UpdateScenarioIterationBody = {
     body?: {
         trigger_condition_ast_expression?: (NodeDto) | null;
         score_review_threshold?: number;
+        score_block_and_review_threshold?: number;
         score_decline_threshold?: number;
         schedule?: string;
     };
 };
-export type ScenarioValidationErrorCodeDto = "DATA_MODEL_NOT_FOUND" | "TRIGGER_OBJECT_NOT_FOUND" | "TRIGGER_CONDITION_REQUIRED" | "RULE_FORMULA_REQUIRED" | "FORMULA_MUST_RETURN_BOOLEAN" | "SCORE_REVIEW_THRESHOLD_REQUIRED" | "SCORE_REJECT_THRESHOLD_REQUIRED" | "SCORE_REJECT_REVIEW_THRESHOLDS_MISSMATCH";
+export type ScenarioValidationErrorCodeDto = "DATA_MODEL_NOT_FOUND" | "TRIGGER_OBJECT_NOT_FOUND" | "TRIGGER_CONDITION_REQUIRED" | "RULE_FORMULA_REQUIRED" | "FORMULA_MUST_RETURN_BOOLEAN" | "SCORE_THRESHOLD_MISSING" | "SCORE_THRESHOLDS_MISMATCH";
 export type ScenarioValidationErrorDto = {
     error: ScenarioValidationErrorCodeDto;
     message: string;
@@ -711,13 +717,15 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
 /**
  * List decisions
  */
-export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, scenarioId, scheduledExecutionId, startDate, triggerObject, limit, next, offsetId, order, previous, sorting }: {
+export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, scenarioId, caseInboxId, reviewStatus, scheduledExecutionId, startDate, triggerObject, limit, next, offsetId, order, previous, sorting }: {
     caseId?: string[];
     endDate?: string;
     hasCase?: boolean;
-    outcome?: Outcome[];
+    outcome?: OutcomeDto[];
     pivotValue?: string;
     scenarioId?: string[];
+    caseInboxId?: string[];
+    reviewStatus?: ReviewStatusDto[];
     scheduledExecutionId?: string[];
     startDate?: string;
     triggerObject?: string[];
@@ -746,6 +754,8 @@ export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, s
         "outcome[]": outcome,
         pivot_value: pivotValue,
         "scenario_id[]": scenarioId,
+        "case_inbox_id[]": caseInboxId,
+        "review_status[]": reviewStatus,
         "scheduled_execution_id[]": scheduledExecutionId,
         start_date: startDate,
         "trigger_object[]": triggerObject,
@@ -983,6 +993,34 @@ export function downloadCaseFile(caseFileId: string, opts?: Oazapfts.RequestOpts
     }>(`/cases/files/$${encodeURIComponent(caseFileId)}/download_link`, {
         ...opts
     }));
+}
+/**
+ * Review a decision
+ */
+export function reviewDecision(body: {
+    decision_id: string;
+    review_comment: string;
+    review_status: ReviewStatusDto;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            "case": CaseDetailDto;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/cases/review_decision", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
 }
 /**
  * List tags

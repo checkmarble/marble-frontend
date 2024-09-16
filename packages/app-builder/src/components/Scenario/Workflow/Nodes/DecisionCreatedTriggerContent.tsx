@@ -1,4 +1,4 @@
-import { Outcome } from '@app-builder/components/Decisions';
+import { OutcomeTag } from '@app-builder/components/Decisions';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -42,7 +42,12 @@ export function DecisionCreatedTriggerContent({
       </p>
       <p className="inline-flex flex-row gap-1">
         {data.outcomes.map((outcome) => (
-          <Outcome key={outcome} outcome={outcome} border="square" size="big" />
+          <OutcomeTag
+            key={outcome}
+            outcome={outcome}
+            border="square"
+            size="big"
+          />
         ))}
       </p>
     </div>

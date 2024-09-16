@@ -1,12 +1,13 @@
-import { CaseStatus, decisionsI18n, Outcome } from '@app-builder/components';
+import { CaseStatus, decisionsI18n } from '@app-builder/components';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
+import { type ReviewStatus } from '@app-builder/models/decision';
+import { type Outcome } from '@app-builder/models/outcome';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type Outcome as TOutcome } from 'marble-api';
 import {
   useCallback,
   useImperativeHandle,
@@ -15,8 +16,9 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, Table, Tooltip, useVirtualTable } from 'ui-design-system';
+import { Checkbox, Table, Tooltip, useTable } from 'ui-design-system';
 
+import { OutcomeAndReviewStatus } from './OutcomeAndReviewStatus';
 import { Score } from './Score';
 
 type Column =
@@ -48,7 +50,8 @@ export interface DecisionViewModel {
     value?: string;
   }[];
   score: number;
-  outcome: TOutcome;
+  outcome: Outcome;
+  reviewStatus?: ReviewStatus;
 }
 
 type DecisionsListProps = {
@@ -164,7 +167,7 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.scenario.version, {
         id: 'scenario_version',
         header: 'Vi',
-        size: 50,
+        size: 40,
         cell: ({ getValue, row }) => (
           <Link
             to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
@@ -190,7 +193,10 @@ export function DecisionsList({
         cell: ({ getValue, row }) =>
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-1">
-              <CaseStatus status={row.original.case.status} />
+              <CaseStatus
+                className="isolate"
+                status={row.original.case.status}
+              />
               <Link
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUID(row.original.case.id),
@@ -230,22 +236,32 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.score, {
         id: 'score',
         header: t('decisions:score'),
-        size: 100,
+        size: 80,
         cell: ({ getValue }) => <Score score={getValue()} />,
       }),
-      columnHelper.accessor((row) => row.outcome, {
-        id: 'outcome',
-        header: t('decisions:outcome'),
-        size: 100,
-        cell: ({ getValue }) => (
-          <Outcome border="square" size="big" outcome={getValue()} />
-        ),
-      }),
+      columnHelper.accessor(
+        (row) => ({ outcome: row.outcome, reviewStatus: row.reviewStatus }),
+        {
+          id: 'outcome',
+          header: t('decisions:outcome'),
+          size: 150,
+          cell: ({ getValue }) => {
+            const { outcome, reviewStatus } = getValue();
+            return (
+              <OutcomeAndReviewStatus
+                outcome={outcome}
+                className="my-2 w-full"
+                reviewStatus={reviewStatus}
+              />
+            );
+          },
+        },
+      ),
     ],
     [t, selectable, language],
   );
 
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: decisions,
     columns,
     state: {

@@ -315,6 +315,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/edit-tags.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/review-decision",
+        "path": "ressources/cases/review-decision",
+        "file": "routes/ressources+/cases+/review-decision.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/upload-file",
         "path": "ressources/cases/upload-file",
         "file": "routes/ressources+/cases+/upload-file.tsx"

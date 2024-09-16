@@ -1,11 +1,10 @@
-import * as z from 'zod';
-
-export const outcomeSchema = z.enum([
+export const knownOutcomes = [
   'approve',
   'review',
+  'block_and_review',
   'decline',
-  'null',
-  'unknown',
-]);
+] as const;
+export type KnownOutcome = (typeof knownOutcomes)[number];
 
-export type Outcome = z.infer<typeof outcomeSchema>;
+export const outcomes = [...knownOutcomes, 'unknown'] as const;
+export type Outcome = (typeof outcomes)[number];

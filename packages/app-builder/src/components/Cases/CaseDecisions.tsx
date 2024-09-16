@@ -18,11 +18,13 @@ import {
 } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
+import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
+import * as Ariakit from '@ariakit/react';
 import { Await, Link } from '@remix-run/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,9 +45,9 @@ import { PivotType } from '../Data/SelectedPivot';
 import {
   getRuleExecutionStatusColor,
   getRuleExecutionStatusLabel,
-  Outcome,
   RuleExecutionDetail,
 } from '../Decisions';
+import { OutcomeAndReviewStatus } from '../Decisions/OutcomeAndReviewStatus';
 import { Score } from '../Decisions/Score';
 import { casesI18n } from './cases-i18n';
 import { CopyPivotValue } from './PivotValue';
@@ -143,7 +145,7 @@ export function CaseDecisions({
                 </Link>
                 <div>{row.triggerObjectType}</div>
                 <Score score={row.score} />
-                <Outcome border="square" size="big" outcome={row.outcome} />
+                <OutcomeAndReviewStatusWithModal decision={row} />
                 <DecisionActions decision={row} />
               </div>
               <CollapsibleV2.Content className="col-span-full">
@@ -179,33 +181,92 @@ export function CaseDecisions({
   );
 }
 
+function isPendingBlockAndReview(decision: Decision) {
+  return (
+    decision.reviewStatus === 'pending' &&
+    decision.outcome === 'block_and_review'
+  );
+}
+
+function OutcomeAndReviewStatusWithModal({ decision }: { decision: Decision }) {
+  const reviewDecisionModalStore = Ariakit.useDialogStore();
+  const withReviewDecisionModal = isPendingBlockAndReview(decision);
+
+  if (withReviewDecisionModal) {
+    return (
+      <>
+        <Ariakit.DialogDisclosure store={reviewDecisionModalStore}>
+          <OutcomeAndReviewStatus
+            outcome={decision.outcome}
+            reviewStatus={decision.reviewStatus}
+            className="hover:bg-orange-25 transition-colors"
+          />
+        </Ariakit.DialogDisclosure>
+        <ReviewDecisionModal
+          decisionId={decision.id}
+          store={reviewDecisionModalStore}
+        />
+      </>
+    );
+  }
+  return (
+    <OutcomeAndReviewStatus
+      outcome={decision.outcome}
+      reviewStatus={decision.reviewStatus}
+    />
+  );
+}
+
 function DecisionActions({ decision }: { decision: Decision }) {
   const { t } = useTranslation(casesI18n);
+
+  const reviewDecisionModalStore = Ariakit.useDialogStore();
+
+  const withReviewDecisionModal = isPendingBlockAndReview(decision);
+
   return (
-    <MenuRoot>
-      <MenuButton
-        render={
-          <button className="hover:bg-purple-05 active:bg-purple-10 rounded">
-            <Icon icon="more-menu" className="size-6" />
-            <span className="sr-only">{t('common:more_options')}</span>
-          </button>
-        }
-      />
-      <MenuPopover modal className="flex flex-col gap-2 p-2">
-        <MenuItem
-          className="data-[active-item]:bg-purple-05 group flex flex-row gap-2 rounded p-2 outline-none"
+    <>
+      <MenuRoot>
+        <MenuButton
           render={
-            <Link
-              to={getRoute('/decisions/:decisionId', {
-                decisionId: fromUUID(decision.id),
-              })}
-            />
+            <button className="hover:bg-purple-05 active:bg-purple-10 rounded">
+              <Icon icon="more-menu" className="size-6" />
+              <span className="sr-only">{t('common:more_options')}</span>
+            </button>
           }
-        >
-          {t('cases:case.decision_detail')}
-        </MenuItem>
-      </MenuPopover>
-    </MenuRoot>
+        />
+        <MenuPopover modal className="flex flex-col gap-2 p-2">
+          <MenuItem
+            className="data-[active-item]:bg-purple-05 group flex flex-row gap-2 rounded p-2 outline-none"
+            render={
+              <Link
+                to={getRoute('/decisions/:decisionId', {
+                  decisionId: fromUUID(decision.id),
+                })}
+              />
+            }
+          >
+            {t('cases:case.decision_detail')}
+          </MenuItem>
+          {withReviewDecisionModal ? (
+            <MenuItem
+              className="data-[active-item]:bg-purple-05 group flex flex-row gap-2 rounded p-2 outline-none"
+              render={
+                <Ariakit.DialogDisclosure store={reviewDecisionModalStore} />
+              }
+            >
+              {t('cases:case_detail.review_decision.title')}
+            </MenuItem>
+          ) : null}
+        </MenuPopover>
+      </MenuRoot>
+      {withReviewDecisionModal ? (
+        <ReviewDecisionModal
+          decisionId={decision.id}
+          store={reviewDecisionModalStore}
+        />
+      ) : null}
+    </>
   );
 }
 

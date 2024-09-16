@@ -7,11 +7,13 @@ import {
   type CaseTagDto,
   type CreateCaseBodyDto,
   type Error,
-  type Outcome,
   type UpdateCaseBodyDto,
 } from 'marble-api';
 import * as R from 'remeda';
 import { assertNever } from 'typescript-utils';
+
+import { type ReviewStatus } from './decision';
+import { type Outcome } from './outcome';
 
 export const caseStatuses = [
   'open',
@@ -271,6 +273,7 @@ export interface CaseDetail extends Case {
       id?: string;
       value?: string;
     }[];
+    reviewStatus?: ReviewStatus;
     scenario: {
       id: string;
       name: string;
@@ -294,6 +297,7 @@ export function adaptCaseDetail(dto: CaseDetailDto): CaseDetail {
       triggerObject: decisionDto.trigger_object,
       triggerObjectType: decisionDto.trigger_object_type,
       outcome: decisionDto.outcome,
+      reviewStatus: decisionDto.review_status,
       pivotValues: decisionDto.pivot_values.map(
         ({ pivot_id, pivot_value }) => ({
           id: pivot_id ?? undefined,

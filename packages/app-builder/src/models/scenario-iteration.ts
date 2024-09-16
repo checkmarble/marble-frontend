@@ -26,6 +26,7 @@ export interface ScenarioIteration {
   createdAt: string;
   updatedAt: string;
   scoreReviewThreshold?: number;
+  scoreBlockAndReviewThreshold?: number;
   scoreDeclineThreshold?: number;
   rules: ScenarioIterationRule[];
   schedule?: string;
@@ -35,6 +36,7 @@ export interface ScenarioIteration {
 export interface UpdateScenarioIterationBody {
   triggerConditionAstExpression?: AstNode | null;
   scoreReviewThreshold?: number;
+  scoreBlockAndReviewThreshold?: number;
   scoreDeclineThreshold?: number;
   schedule?: string;
 }
@@ -48,6 +50,7 @@ export function adaptUpdateScenarioIterationBody(
         ? adaptNodeDto(input.triggerConditionAstExpression)
         : null,
       score_review_threshold: input.scoreReviewThreshold,
+      score_block_and_review_threshold: input.scoreBlockAndReviewThreshold,
       score_decline_threshold: input.scoreDeclineThreshold,
       schedule: input.schedule,
     },
@@ -67,6 +70,8 @@ export function adaptScenarioIteration(
     createdAt: scenarioIterationWithBody.created_at,
     updatedAt: scenarioIterationWithBody.updated_at,
     scoreReviewThreshold: scenarioIterationWithBody.body.score_review_threshold,
+    scoreBlockAndReviewThreshold:
+      scenarioIterationWithBody.body.score_block_and_review_threshold,
     scoreDeclineThreshold:
       scenarioIterationWithBody.body.score_decline_threshold,
     rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),

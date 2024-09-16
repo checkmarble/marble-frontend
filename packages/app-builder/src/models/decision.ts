@@ -2,7 +2,6 @@ import {
   type DecisionDetailDto,
   type DecisionDto,
   type Error,
-  type Outcome,
   type RuleExecutionDto,
 } from 'marble-api';
 import invariant from 'tiny-invariant';
@@ -10,6 +9,11 @@ import { assertNever } from 'typescript-utils';
 
 import { adaptCase, type Case } from './cases';
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
+import { type Outcome } from './outcome';
+
+export const nonPendingReviewStatuses = ['approve', 'decline'] as const;
+export const reviewStatuses = ['pending', ...nonPendingReviewStatuses] as const;
+export type ReviewStatus = (typeof reviewStatuses)[number];
 
 export interface Decision {
   case?: Case;
@@ -17,6 +21,7 @@ export interface Decision {
   error?: Error;
   id: string;
   outcome: Outcome;
+  reviewStatus?: ReviewStatus;
   pivotValues: {
     id?: string;
     value?: string;
@@ -104,6 +109,7 @@ export function adaptDecision(dto: DecisionDto): Decision {
       value: pivot_value ?? undefined,
     })),
     outcome: dto.outcome,
+    reviewStatus: dto.review_status,
     scenario: {
       id: dto.scenario.id,
       name: dto.scenario.name,

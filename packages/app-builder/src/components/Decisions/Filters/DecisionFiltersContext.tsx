@@ -1,3 +1,9 @@
+import {
+  type ReviewStatus,
+  reviewStatuses,
+} from '@app-builder/models/decision';
+import { type Inbox } from '@app-builder/models/inbox';
+import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { type Scenario } from '@app-builder/models/scenario';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
@@ -5,8 +11,7 @@ import {
   type DateRangeFilterForm,
   dateRangeSchema,
 } from '@app-builder/utils/schema/filterSchema';
-import { type Outcome } from 'marble-api';
-import { useCallback, useMemo } from 'react';
+import * as React from 'react';
 import {
   FormProvider,
   useController,
@@ -24,9 +29,15 @@ export const decisionFiltersSchema = z.object({
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
     .optional(),
-  outcome: z.array(z.enum(['approve', 'review', 'decline'])).optional(),
+  outcomeAndReviewStatus: z
+    .object({
+      outcome: z.enum(knownOutcomes),
+      reviewStatus: z.enum(reviewStatuses).optional(),
+    })
+    .optional(),
   pivotValue: z.string().optional(),
   scenarioId: z.array(z.string()).optional(),
+  caseInboxId: z.array(z.string()).optional(),
   triggerObject: z.array(z.string()).optional(),
 });
 
@@ -36,6 +47,7 @@ interface DecisionFiltersContextValue {
   hasPivots: boolean;
   filterValues: DecisionFilters;
   scenarios: Scenario[];
+  inboxes: Inbox[];
   submitDecisionFilters: () => void;
   onDecisionFilterClose: () => void;
 }
@@ -47,17 +59,22 @@ const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
 export type DecisionFiltersForm = {
   dateRange: DateRangeFilterForm;
   hasCase: boolean | null;
-  outcome: Exclude<Outcome, 'null' | 'unknown'>[];
+  outcomeAndReviewStatus: {
+    outcome: KnownOutcome;
+    reviewStatus?: ReviewStatus;
+  } | null;
   pivotValue: string | null;
   scenarioId: string[];
+  caseInboxId: string[];
   triggerObject: string[];
 };
 const emptyDecisionFilters: DecisionFiltersForm = {
   dateRange: null,
   hasCase: null,
-  outcome: [],
+  outcomeAndReviewStatus: null,
   pivotValue: null,
   scenarioId: [],
+  caseInboxId: [],
   triggerObject: [],
 };
 
@@ -89,12 +106,14 @@ export function DecisionFiltersProvider({
   hasPivots,
   filterValues,
   scenarios,
+  inboxes,
   submitDecisionFilters: _submitDecisionFilters,
   children,
 }: {
   hasPivots: boolean;
   filterValues: DecisionFilters;
   scenarios: Scenario[];
+  inboxes: Inbox[];
   submitDecisionFilters: (filterValues: DecisionFilters) => void;
   children: React.ReactNode;
 }) {
@@ -107,6 +126,7 @@ export function DecisionFiltersProvider({
     const formValues = formMethods.getValues();
     _submitDecisionFilters({
       ...formValues,
+      outcomeAndReviewStatus: formValues.outcomeAndReviewStatus ?? undefined,
       dateRange: formValues.dateRange ?? undefined,
       hasCase: formValues.hasCase ?? undefined,
       pivotValue: formValues.pivotValue ?? undefined,
@@ -118,19 +138,21 @@ export function DecisionFiltersProvider({
     }
   });
 
-  const value = useMemo(
+  const value = React.useMemo(
     () => ({
       submitDecisionFilters,
       onDecisionFilterClose,
       filterValues,
       scenarios,
       hasPivots,
+      inboxes,
     }),
     [
       filterValues,
       hasPivots,
       onDecisionFilterClose,
       scenarios,
+      inboxes,
       submitDecisionFilters,
     ],
   );
@@ -163,13 +185,16 @@ export function useHasCaseFilter() {
   return { selectedHasCase, setSelectedHasCase };
 }
 
-export function useOutcomeFilter() {
-  const { field } = useController<DecisionFiltersForm, 'outcome'>({
-    name: 'outcome',
+export function useOutcomeAndReviewStatusFilter() {
+  const { field } = useController<
+    DecisionFiltersForm,
+    'outcomeAndReviewStatus'
+  >({
+    name: 'outcomeAndReviewStatus',
   });
-  const selectedOutcomes = field.value;
-  const setSelectedOutcomes = field.onChange;
-  return { selectedOutcomes, setSelectedOutcomes };
+  const selectedOutcomeAndReviewStatus = field.value;
+  const setOutcomeAndReviewStatus = field.onChange;
+  return { selectedOutcomeAndReviewStatus, setOutcomeAndReviewStatus };
 }
 
 export function usePivotValueFilter() {
@@ -192,12 +217,26 @@ export function useScenarioFilter() {
   return { scenarios, selectedScenarioIds, setSelectedScenarioIds };
 }
 
+export function useCaseInboxFilter() {
+  const { inboxes } = useDecisionFiltersContext();
+  const { field } = useController<DecisionFiltersForm, 'caseInboxId'>({
+    name: 'caseInboxId',
+  });
+  const selectedCaseInboxIds = field.value;
+  const setSelectedCaseInboxIds = field.onChange;
+  return {
+    inboxes,
+    selectedCaseInboxIds,
+    setSelectedCaseInboxIds,
+  };
+}
+
 export function useTriggerObjectFilter() {
   const { scenarios } = useDecisionFiltersContext();
   const { field } = useController<DecisionFiltersForm, 'triggerObject'>({
     name: 'triggerObject',
   });
-  const triggerObjects = useMemo(
+  const triggerObjects = React.useMemo(
     () =>
       R.pipe(
         scenarios,
@@ -238,7 +277,7 @@ export function useClearFilter() {
   const { submitDecisionFilters } = useDecisionFiltersContext();
   const { setValue } = useFormContext<DecisionFiltersForm>();
 
-  return useCallback(
+  return React.useCallback(
     (filterName: DecisionFilterName) => {
       setValue(filterName, emptyDecisionFilters[filterName]);
       submitDecisionFilters();
