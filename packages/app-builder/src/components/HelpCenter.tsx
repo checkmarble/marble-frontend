@@ -1,11 +1,14 @@
 import {
+  blockingReviewDocHref,
   executeAScenarioDocHref,
   pivotValuesDocHref,
+  ruleSnoozesDocHref,
   scenarioDecisionDocHref,
   webhooksEventsDocHref,
   webhooksSetupDocHref,
 } from '@app-builder/services/documentation-href';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import { useComposedRefs } from '@app-builder/utils/hooks/use-compose-refs';
 import { getRoute } from '@app-builder/utils/routes';
 import * as Ariakit from '@ariakit/react';
 import { useLocation } from '@remix-run/react';
@@ -139,18 +142,13 @@ function HelpCenterContent({
             {categories.map((category) => {
               const resourcesLength = matches[category]?.length ?? 0;
               return (
-                <Ariakit.Tab
+                <CategoryTab
                   key={category}
-                  ref={(element) => {
-                    if (category === defaultTab) element?.scrollIntoView();
-                  }}
                   id={category}
-                  className="aria-selected:bg-purple-10 aria-selected:border-purple-10 text-grey-100 bg-grey-05 border-grey-05 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize aria-selected:text-purple-100 data-[active-item]:border-purple-100"
-                  accessibleWhenDisabled={false}
                   disabled={resourcesLength === 0}
                 >
                   {category} {formatNumber(resourcesLength, { language })}
-                </Ariakit.Tab>
+                </CategoryTab>
               );
             })}
           </div>
@@ -230,6 +228,29 @@ function HelpCenterContent({
   );
 }
 
+const CategoryTab = React.forwardRef<HTMLButtonElement, Ariakit.TabProps>(
+  function CategoryTab(props, ref) {
+    const internalRef = React.useRef<HTMLButtonElement>(null);
+    const composedRef = useComposedRefs(ref, internalRef);
+    // Scroll to the selected tab on first render only
+    React.useEffect(() => {
+      if (!internalRef.current) return;
+      const isSelected =
+        internalRef.current.getAttribute('aria-selected') === 'true';
+      if (isSelected) internalRef.current.scrollIntoView();
+    }, []);
+
+    return (
+      <Ariakit.Tab
+        ref={composedRef}
+        className="aria-selected:bg-purple-10 aria-selected:border-purple-10 text-grey-100 bg-grey-05 border-grey-05 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize aria-selected:text-purple-100 data-[active-item]:border-purple-100"
+        accessibleWhenDisabled={false}
+        {...props}
+      />
+    );
+  },
+);
+
 export function useMarbleCoreResources() {
   const { t } = useTranslation(['common', 'navigation']);
 
@@ -245,6 +266,8 @@ export function useMarbleCoreResources() {
       return t('navigation:data');
     if (location.pathname.startsWith(getRoute('/settings')))
       return t('navigation:settings');
+    if (location.pathname.startsWith(getRoute('/cases/')))
+      return t('navigation:caseManager');
 
     return t('navigation:scenarios');
   }, [location.pathname, t]);
@@ -277,7 +300,7 @@ export function useMarbleCoreResources() {
         },
         {
           label: 'Scenario Decision',
-          tags: ['Outcome', 'Approve', 'Review', 'Decline'],
+          tags: ['Outcome', 'Approve', 'Review', 'Block and Review', 'Decline'],
           href: scenarioDecisionDocHref,
         },
         {
@@ -383,6 +406,26 @@ export function useMarbleCoreResources() {
           label: 'Available events',
           tags: ['Format', 'Payload'],
           href: webhooksEventsDocHref,
+        },
+      ],
+      [t('navigation:caseManager')]: [
+        {
+          label: 'Rule snoozes',
+          href: ruleSnoozesDocHref,
+        },
+        {
+          label: 'Blocking Review',
+          href: blockingReviewDocHref,
+        },
+        {
+          label: 'Review a blocked decision',
+          tags: ['Block and Review'],
+          href: 'https://docs.checkmarble.com/docs/blocking-review#manually-review-a-blocked-decision',
+        },
+        {
+          label: 'List all blocked decision pending for reviews',
+          tags: ['Block and Review'],
+          href: 'https://docs.checkmarble.com/docs/blocking-review#list-all-blocked-decisions-pending-for-reviews',
         },
       ],
     }),

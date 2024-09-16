@@ -1,3 +1,5 @@
+import { Callout } from '@app-builder/components';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
@@ -8,6 +10,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { adaptDateTimeFieldCodes } from '@app-builder/models/duration';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
+import { ruleSnoozesDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -21,7 +24,7 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Button, ModalV2 } from 'ui-design-system';
 import { z } from 'zod';
@@ -189,6 +192,17 @@ function AddRuleSnoozeContent({
           {t('cases:case_detail.add_rule_snooze.title')}
         </ModalV2.Title>
         <div className="flex flex-col gap-6 p-6">
+          <ModalV2.Description render={<Callout variant="outlined" />}>
+            <p className="whitespace-pre text-wrap">
+              <Trans
+                t={t}
+                i18nKey="cases:case_detail.add_rule_snooze.callout"
+                components={{
+                  DocLink: <ExternalLink href={ruleSnoozesDocHref} />,
+                }}
+              />
+            </p>
+          </ModalV2.Description>
           <input
             {...getInputProps(fields.decisionId, {
               type: 'hidden',
