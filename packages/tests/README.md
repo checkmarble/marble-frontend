@@ -19,7 +19,7 @@ To get started with running the tests in this package, follow these steps:
    2. Create a new organisation with the name `e2e`. Do not forget to check "init with demo data"
    3. Create a new admin user on this org with the email `admin@e2e.com`
 3. Start a local test environment:
-   1. start the Firebase emulator suite
+   1. start the Firebase emulator suite (look at the backend README.md for more information)
    2. start the backend normally
    3. start the front-end application normally
 4. Run the tests using :
