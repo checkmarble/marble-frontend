@@ -1,3 +1,4 @@
+import { type ScheduledExecution } from '@app-builder/models/decision';
 import {
   formatDateTime,
   formatNumber,
@@ -6,7 +7,6 @@ import {
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
-import { type ScheduledExecution } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
@@ -27,18 +27,18 @@ export function ScheduledExecutionsList({
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor((s) => s.scenario_name, {
+      columnHelper.accessor((s) => s.scenarioName, {
         id: 'scenario-name',
         header: t('scheduledExecution:scenario_name'),
         size: 200,
       }),
-      columnHelper.accessor((s) => s.scenario_trigger_object_type, {
+      columnHelper.accessor((s) => s.scenarioTriggerObjectType, {
         id: 'scenario-trigger_object_type',
         header: t('scheduledExecution:scenario_trigger_object_type'),
         size: 200,
       }),
       columnHelper.accessor(
-        (s) => (s.status == 'success' ? s.number_of_created_decisions : 0),
+        (s) => (s.status == 'success' ? s.numberOfCreatedDecisions : 0),
         {
           id: 'number-of-created-decisions',
           cell: ({ getValue }) => (
@@ -60,13 +60,13 @@ export function ScheduledExecutionsList({
         header: t('scheduledExecution:status'),
         size: 150,
       }),
-      columnHelper.accessor((s) => formatDateTime(s.started_at, { language }), {
+      columnHelper.accessor((s) => formatDateTime(s.startedAt, { language }), {
         id: 'created_at',
         header: t('scheduledExecution:created_at'),
         size: 200,
         cell: ({ getValue, cell }) => {
           return (
-            <time dateTime={cell.row.original.started_at}>{getValue()}</time>
+            <time dateTime={cell.row.original.startedAt}>{getValue()}</time>
           );
         },
       }),
@@ -75,7 +75,7 @@ export function ScheduledExecutionsList({
         header: '',
         size: 200,
         cell: (cell) => {
-          if (cell.row.original.number_of_created_decisions > 0) {
+          if (cell.row.original.numberOfCreatedDecisions > 0) {
             return (
               <ScheduledExecutionDetails
                 scheduleExecutionId={cell.row.original.id}
