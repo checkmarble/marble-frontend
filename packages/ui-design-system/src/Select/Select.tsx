@@ -62,7 +62,7 @@ function SelectViewport({
 }
 
 export const selectTrigger = cva(
-  'text-s text-grey-100 flex min-h-10 min-w-10 items-center justify-between border font-medium outline-none radix-state-open:border-purple-100 radix-state-open:text-purple-100 radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50 radix-placeholder:text-grey-25',
+  'text-s text-grey-100 flex min-h-10 min-w-10 items-center justify-between border font-medium outline-none radix-state-open:border-purple-100 radix-state-open:text-purple-100 radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50 radix-placeholder:text-grey-25 radix-placeholder:radix-state-open:text-grey-25',
   {
     variants: {
       backgroundColor: {
@@ -156,7 +156,7 @@ const SelectValue = forwardRef<HTMLDivElement, SelectValueProps>(
 
 const SelectArrow = () => (
   <SelectIcon
-    className="group-radix-state-open:rotate-180 size-6 shrink-0"
+    className="group-radix-state-open:rotate-180 text-grey-100 size-6 shrink-0"
     asChild
   >
     <Icon icon="arrow-2-down" />
