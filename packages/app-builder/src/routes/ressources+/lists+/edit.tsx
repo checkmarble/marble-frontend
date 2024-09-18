@@ -15,6 +15,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, HiddenInputs, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -87,11 +88,12 @@ export function EditList({
       setIsOpen(false);
     }
   }, [fetcher.data?.success, fetcher.state]);
+  const hydrated = useHydrated();
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
-        <Button variant="secondary">
+        <Button variant="secondary" disabled={!hydrated}>
           <Icon icon="edit" className="size-6" />
           <p>{t('lists:edit_list.button')}</p>
         </Button>

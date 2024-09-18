@@ -5,6 +5,7 @@ import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -36,11 +37,12 @@ export async function action({ request }: ActionFunctionArgs) {
 export function DeleteList({ listId }: { listId: string }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
+  const hydrated = useHydrated();
 
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button color="red" className="w-fit">
+        <Button color="red" className="w-fit" disabled={!hydrated}>
           <Icon icon="delete" className="size-6" />
           <p>{t('lists:delete_list.button')}</p>
         </Button>

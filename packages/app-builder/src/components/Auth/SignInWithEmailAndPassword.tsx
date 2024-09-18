@@ -25,6 +25,7 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Input } from 'ui-design-system';
 import * as z from 'zod';
 
@@ -76,6 +77,7 @@ function SignInWithEmailAndPasswordForm({
 }) {
   const { t } = useTranslation(['auth', 'common']);
   const { control } = useFormContext<EmailAndPasswordFormValues>();
+  const hydrated = useHydrated();
   return (
     <form noValidate className="flex w-full flex-col gap-4" {...props}>
       <FormField
@@ -85,7 +87,12 @@ function SignInWithEmailAndPasswordForm({
           <FormItem className="flex flex-col items-start gap-2">
             <FormLabel>{t('auth:sign_in.email')}</FormLabel>
             <FormControl>
-              <Input className="w-full" type="email" {...field} />
+              <Input
+                disabled={!hydrated}
+                className="w-full"
+                type="email"
+                {...field}
+              />
             </FormControl>
             <FormError />
           </FormItem>
@@ -102,6 +109,7 @@ function SignInWithEmailAndPasswordForm({
                 className="w-full"
                 type="password"
                 autoComplete="current-password"
+                disabled={!hydrated}
                 {...field}
               />
             </FormControl>
@@ -114,7 +122,7 @@ function SignInWithEmailAndPasswordForm({
         name="credentials"
         render={() => <FormError />}
       />
-      <Button type="submit">
+      <Button type="submit" disabled={!hydrated}>
         {loading ? <Spinner className="size-4" /> : t('auth:sign_in')}
       </Button>
     </form>

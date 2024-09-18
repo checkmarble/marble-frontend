@@ -17,6 +17,7 @@ import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -86,6 +87,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export function CreateList() {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
+  const hydrated = useHydrated();
 
   const formMethods = useForm<z.infer<typeof createListFormSchema>>({
     progressive: true,
@@ -100,7 +102,7 @@ export function CreateList() {
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button>
+        <Button disabled={!hydrated}>
           <Icon icon="plus" className="size-6" />
           {t('lists:create_list.title')}
         </Button>

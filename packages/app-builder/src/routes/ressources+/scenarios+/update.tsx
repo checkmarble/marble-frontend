@@ -18,7 +18,8 @@ import { useFetcher, useNavigation } from '@remix-run/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { redirectBack } from 'remix-utils/redirect-back';
-import { Button, Modal } from 'ui-design-system';
+import { useHydrated } from 'remix-utils/use-hydrated';
+import { Button, ModalV2 } from 'ui-design-system';
 import { z } from 'zod';
 
 const updateScenarioFormSchema = z.object({
@@ -75,10 +76,11 @@ export function UpdateScenario({
   children,
   defaultValue,
 }: {
-  children: React.ReactNode;
+  children: React.ReactElement;
   defaultValue: UpdateScenarioForm;
 }) {
   const [open, setOpen] = React.useState(false);
+  const hydrated = useHydrated();
 
   const navigation = useNavigation();
   React.useEffect(() => {
@@ -88,12 +90,12 @@ export function UpdateScenario({
   }, [navigation.state]);
 
   return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>{children}</Modal.Trigger>
-      <Modal.Content>
+    <ModalV2.Root open={open} setOpen={setOpen}>
+      <ModalV2.Trigger render={children} disabled={!hydrated} />
+      <ModalV2.Content>
         <UpdateScenarioContent defaultValue={defaultValue} />
-      </Modal.Content>
-    </Modal.Root>
+      </ModalV2.Content>
+    </ModalV2.Root>
   );
 }
 
@@ -124,7 +126,7 @@ function UpdateScenarioContent({
         action={getRoute('/ressources/scenarios/update')}
         {...getFormProps(form)}
       >
-        <Modal.Title>{t('scenarios:update_scenario.title')}</Modal.Title>
+        <ModalV2.Title>{t('scenarios:update_scenario.title')}</ModalV2.Title>
         <div className="flex flex-col gap-6 p-6">
           <input
             {...getInputProps(fields.scenarioId, { type: 'hidden' })}
@@ -155,11 +157,11 @@ function UpdateScenarioContent({
             <FormErrorOrDescription />
           </FormField>
           <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
+            <ModalV2.Close
+              render={<Button className="flex-1" variant="secondary" />}
+            >
+              {t('common:cancel')}
+            </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">
               {t('common:save')}
             </Button>

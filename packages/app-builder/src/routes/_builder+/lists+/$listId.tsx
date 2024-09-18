@@ -87,6 +87,7 @@ export default function Lists() {
                     tabIndex={-1}
                   >
                     <Icon icon="delete" className="size-6 shrink-0" />
+                    <span className="sr-only">{t('common:delete')}</span>
                   </button>
                 </DeleteListValue>
               ) : null}
