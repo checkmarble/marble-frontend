@@ -355,6 +355,11 @@ export const routes = [
         "file": "routes/ressources+/data+/editTable.tsx"
       },
       {
+        "id": "routes/ressources+/decisions+/list-scheduled-execution",
+        "path": "ressources/decisions/list-scheduled-execution",
+        "file": "routes/ressources+/decisions+/list-scheduled-execution.tsx"
+      },
+      {
         "id": "routes/ressources+/lists+/create",
         "path": "ressources/lists/create",
         "file": "routes/ressources+/lists+/create.tsx"

@@ -9,6 +9,7 @@ export const decisionFilterNames = [
   'caseInboxId',
   'hasCase',
   'pivotValue',
+  'scheduledExecutionId',
 ] as const;
 
 export type DecisionFilterName = (typeof decisionFilterNames)[number];
@@ -29,6 +30,8 @@ export function getFilterIcon(filterName: DecisionFilterName): IconName {
       return 'case-manager';
     case 'pivotValue':
       return 'tree-schema';
+    case 'scheduledExecutionId':
+      return 'scheduled-execution';
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
   }
@@ -50,6 +53,8 @@ export function getFilterTKey(filterName: DecisionFilterName) {
       return 'decisions:filters.has_case';
     case 'pivotValue':
       return 'decisions:filters.pivot_value';
+    case 'scheduledExecutionId':
+      return 'decisions:filters.scheduled_execution';
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
   }

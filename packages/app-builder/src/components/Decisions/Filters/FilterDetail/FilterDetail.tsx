@@ -7,6 +7,7 @@ import { HasCaseFilter } from './HasCaseFilter';
 import { OutcomeAndReviewStatusFilter } from './OutcomeAndReviewStatusFilter';
 import { PivotValueFilter } from './PivotValueFilter';
 import { ScenarioFilter } from './ScenarioFilter';
+import { ScheduledExecutionFilter } from './ScheduledExecutionFilter';
 import { TriggerObjectFilter } from './TriggerObjectFilter';
 
 export function FilterDetail({
@@ -29,6 +30,8 @@ export function FilterDetail({
       return <HasCaseFilter />;
     case 'pivotValue':
       return <PivotValueFilter />;
+    case 'scheduledExecutionId':
+      return <ScheduledExecutionFilter />;
     default:
       assertNever('[DecisionFilter] unknown filter:', filterName);
   }
