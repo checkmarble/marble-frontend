@@ -19,14 +19,14 @@ export const handle = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
+  const { decision } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const { scheduled_executions } = await apiClient.listScheduledExecutions({});
+  const scheduledExecutions = await decision.listScheduledExecutions();
 
   return json({
-    scheduledExecutions: scheduled_executions,
+    scheduledExecutions,
   });
 }
 

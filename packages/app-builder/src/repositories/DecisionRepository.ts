@@ -2,9 +2,11 @@ import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptDecision,
   adaptDecisionDetail,
+  adaptScheduledExecution,
   type Decision,
   type DecisionDetail,
   type ReviewStatus,
+  type ScheduledExecution,
 } from '@app-builder/models/decision';
 import { adaptGoTimeDuration } from '@app-builder/models/duration';
 import { type Outcome } from '@app-builder/models/outcome';
@@ -50,6 +52,9 @@ export interface DecisionRepository {
   listDecisions(
     args: DecisionFiltersWithPagination,
   ): Promise<PaginatedResponse<Decision>>;
+  listScheduledExecutions(args?: {
+    scenarioId?: string;
+  }): Promise<ScheduledExecution[]>;
   getDecisionById(id: string): Promise<DecisionDetail>;
   getDecisionActiveSnoozes(decisionId: string): Promise<SnoozesOfDecision>;
   createSnoozeForDecision(
@@ -111,6 +116,11 @@ export function makeGetDecisionRepository() {
         lhs.name.localeCompare(rhs.name),
       );
       return decision;
+    },
+    listScheduledExecutions: async (args = {}) => {
+      const { scheduled_executions } =
+        await marbleCoreApiClient.listScheduledExecutions(args);
+      return scheduled_executions.map(adaptScheduledExecution);
     },
     getDecisionActiveSnoozes: async (decisionId) => {
       const { snoozes } =

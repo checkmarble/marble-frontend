@@ -1,17 +1,21 @@
+import { type ScheduledExecution } from '@app-builder/models/decision';
 import {
   formatDateTime,
   formatNumber,
   useFormatLanguage,
 } from '@app-builder/utils/format';
+import { getRoute } from '@app-builder/utils/routes';
+import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
-import { type ScheduledExecution } from 'marble-api';
+import qs from 'qs';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { type DecisionFilters } from '../Decisions';
 import { scheduledExecutionI18n } from './scheduledExecution-i18n';
 import { ScheduledExecutionDetails } from './ScheduledExecutionDetails';
 
@@ -27,27 +31,43 @@ export function ScheduledExecutionsList({
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor((s) => s.scenario_name, {
+      columnHelper.accessor((s) => s.scenarioName, {
         id: 'scenario-name',
         header: t('scheduledExecution:scenario_name'),
         size: 200,
       }),
-      columnHelper.accessor((s) => s.scenario_trigger_object_type, {
+      columnHelper.accessor((s) => s.scenarioTriggerObjectType, {
         id: 'scenario-trigger_object_type',
         header: t('scheduledExecution:scenario_trigger_object_type'),
         size: 200,
       }),
-      columnHelper.accessor(
-        (s) => (s.status == 'success' ? s.number_of_created_decisions : 0),
-        {
-          id: 'number-of-created-decisions',
-          cell: ({ getValue }) => (
-            <span>{formatNumber(getValue(), { language })}</span>
-          ),
-          header: t('scheduledExecution:number_of_created_decisions'),
-          size: 100,
+      columnHelper.accessor((s) => s.numberOfCreatedDecisions, {
+        id: 'number-of-created-decisions',
+        cell: ({ row, getValue }) => {
+          const numberOfCreatedDecisions = getValue();
+          const formattedNumber = formatNumber(numberOfCreatedDecisions, {
+            language,
+          });
+          if (
+            row.original.status === 'success' &&
+            numberOfCreatedDecisions > 0
+          ) {
+            return (
+              <Link
+                to={getDecisionRoute({
+                  scheduledExecutionId: [row.original.id],
+                })}
+                className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
+              >
+                {formattedNumber}
+              </Link>
+            );
+          }
+          return <span>{formattedNumber}</span>;
         },
-      ),
+        header: t('scheduledExecution:number_of_created_decisions'),
+        size: 100,
+      }),
       columnHelper.accessor((s) => s.status, {
         id: 'status',
 
@@ -60,13 +80,13 @@ export function ScheduledExecutionsList({
         header: t('scheduledExecution:status'),
         size: 150,
       }),
-      columnHelper.accessor((s) => formatDateTime(s.started_at, { language }), {
+      columnHelper.accessor((s) => formatDateTime(s.startedAt, { language }), {
         id: 'created_at',
         header: t('scheduledExecution:created_at'),
         size: 200,
         cell: ({ getValue, cell }) => {
           return (
-            <time dateTime={cell.row.original.started_at}>{getValue()}</time>
+            <time dateTime={cell.row.original.startedAt}>{getValue()}</time>
           );
         },
       }),
@@ -75,7 +95,7 @@ export function ScheduledExecutionsList({
         header: '',
         size: 200,
         cell: (cell) => {
-          if (cell.row.original.number_of_created_decisions > 0) {
+          if (cell.row.original.numberOfCreatedDecisions > 0) {
             return (
               <ScheduledExecutionDetails
                 scheduleExecutionId={cell.row.original.id}
@@ -139,3 +159,9 @@ const getStatusTKey = (status: string): ParseKeys<['scheduledExecution']> => {
   }
   return 'scheduledExecution:status_pending';
 };
+
+function getDecisionRoute(
+  decisionFilters: Pick<DecisionFilters, 'scheduledExecutionId'>,
+) {
+  return `${getRoute('/decisions/')}?${qs.stringify(decisionFilters)}`;
+}

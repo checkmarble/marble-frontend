@@ -3,6 +3,7 @@ import {
   type DecisionDto,
   type Error,
   type RuleExecutionDto,
+  type ScheduledExecutionDto,
 } from 'marble-api';
 import invariant from 'tiny-invariant';
 import { assertNever } from 'typescript-utils';
@@ -37,6 +38,37 @@ export interface Decision {
   triggerObject: Record<string, unknown>;
   triggerObjectType: string;
   scheduledExecutionId?: string;
+}
+
+export interface ScheduledExecution {
+  id: string;
+  /** Whether the execution was manual or not */
+  manual: boolean;
+  status: 'pending' | 'processing' | 'success' | 'failure';
+  numberOfCreatedDecisions: number;
+  scenarioId: string;
+  scenarioIterationId: string;
+  scenarioName: string;
+  scenarioTriggerObjectType: string;
+  startedAt: string;
+  finishedAt: string | null;
+}
+
+export function adaptScheduledExecution(
+  dto: ScheduledExecutionDto,
+): ScheduledExecution {
+  return {
+    id: dto.id,
+    manual: dto.manual,
+    status: dto.status,
+    numberOfCreatedDecisions: dto.number_of_created_decisions,
+    scenarioId: dto.scenario_id,
+    scenarioIterationId: dto.scenario_iteration_id,
+    scenarioName: dto.scenario_name,
+    scenarioTriggerObjectType: dto.scenario_trigger_object_type,
+    startedAt: dto.started_at,
+    finishedAt: dto.finished_at,
+  };
 }
 
 interface RuleExecutionCore {

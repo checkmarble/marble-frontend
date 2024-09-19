@@ -37,6 +37,7 @@ export const decisionFiltersSchema = z.object({
     .optional(),
   pivotValue: z.string().optional(),
   scenarioId: z.array(z.string()).optional(),
+  scheduledExecutionId: z.array(z.string().uuid()).optional(),
   caseInboxId: z.array(z.string()).optional(),
   triggerObject: z.array(z.string()).optional(),
 });
@@ -65,6 +66,7 @@ export type DecisionFiltersForm = {
   } | null;
   pivotValue: string | null;
   scenarioId: string[];
+  scheduledExecutionId: string[];
   caseInboxId: string[];
   triggerObject: string[];
 };
@@ -74,6 +76,7 @@ const emptyDecisionFilters: DecisionFiltersForm = {
   outcomeAndReviewStatus: null,
   pivotValue: null,
   scenarioId: [],
+  scheduledExecutionId: [],
   caseInboxId: [],
   triggerObject: [],
 };
@@ -215,6 +218,18 @@ export function useScenarioFilter() {
   const selectedScenarioIds = field.value;
   const setSelectedScenarioIds = field.onChange;
   return { scenarios, selectedScenarioIds, setSelectedScenarioIds };
+}
+
+export function useScheduledExecutionFilter() {
+  const { field } = useController<DecisionFiltersForm, 'scheduledExecutionId'>({
+    name: 'scheduledExecutionId',
+  });
+  const selectedScheduledExecutionIds = field.value;
+  const setSelectedScheduledExecutionIds = field.onChange;
+  return {
+    selectedScheduledExecutionIds,
+    setSelectedScheduledExecutionIds,
+  };
 }
 
 export function useCaseInboxFilter() {
