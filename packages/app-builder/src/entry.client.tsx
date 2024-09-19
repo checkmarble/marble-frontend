@@ -36,8 +36,7 @@ Sentry.init({
   // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
   tracePropagationTargets: [
     getClientEnv('MARBLE_APP_DOMAIN'),
-    getClientEnv('MARBLE_API_DOMAIN_CLIENT'),
-    getClientEnv('MARBLE_API_DOMAIN_SERVER'),
+    getClientEnv('MARBLE_API_DOMAIN'),
   ],
 
   // Capture Replay for 10% of all sessions,

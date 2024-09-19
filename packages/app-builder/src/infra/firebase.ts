@@ -31,20 +31,26 @@ export type FirebaseClientWrapper = {
   logout: typeof signOut;
 };
 
-export function initializeFirebaseClient({
-  firebaseOptions,
-  authEmulatorHost,
-}: {
-  firebaseOptions: FirebaseOptions;
-  authEmulatorHost?: string;
-}): FirebaseClientWrapper {
-  const app = initializeApp(firebaseOptions);
+export type FirebaseConfig =
+  | {
+      withEmulator: false;
+      options: FirebaseOptions;
+    }
+  | {
+      withEmulator: true;
+      authEmulatorUrl: string;
+      options: FirebaseOptions;
+    };
+
+export function initializeFirebaseClient(
+  config: FirebaseConfig,
+): FirebaseClientWrapper {
+  const app = initializeApp(config.options);
 
   const clientAuth = getAuth(app);
 
-  if (authEmulatorHost && !('emulator' in clientAuth.config)) {
-    const url = new URL('http://' + authEmulatorHost);
-    connectAuthEmulator(clientAuth, url.toString());
+  if (config.withEmulator) {
+    connectAuthEmulator(clientAuth, config.authEmulatorUrl);
   }
 
   const googleAuthProvider = new GoogleAuthProvider();
@@ -55,7 +61,7 @@ export function initializeFirebaseClient({
   return {
     app,
     clientAuth,
-    isFirebaseEmulator: 'emulator' in clientAuth.config,
+    isFirebaseEmulator: config.withEmulator,
     googleAuthProvider,
     microsoftAuthProvider,
     signInWithOAuth: signInWithPopup,
