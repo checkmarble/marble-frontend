@@ -229,7 +229,7 @@ export function useSendPasswordResetEmail({
 export function useBackendInfo({
   authenticationClientRepository,
 }: AuthenticationClientService) {
-  const backendUrl = getClientEnv('MARBLE_API_DOMAIN_CLIENT');
+  const backendUrl = getClientEnv('MARBLE_API_DOMAIN');
 
   const getAccessToken = async () => {
     try {

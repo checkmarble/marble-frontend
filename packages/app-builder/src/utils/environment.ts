@@ -1,32 +1,23 @@
+import { type FirebaseConfig } from '@app-builder/infra/firebase';
 import * as z from 'zod';
 
 /**
- * The separation in three types are here
- * to help you to know where to define your env vars.
+ * To:
  *
- * 1.Create a new environment :
- *   - add ServerPublicEnvVarName to the list of public env vars
- *   - add ServerSecretEnvVarName to the list of secret env vars
+ * 1. Identify the required environment variables for deploying a new environment:
+ *    - Include `PublicEnvVars` in the list of public environment variables.
+ *    - Incorporate `SecretEnvVars` in the list of secret environment variables.
  *
- * 2. Add a new env var :
- *   - edit the appropriate list of env vars (dev, public, secret...)
- *   - if necessary, update build_and_deploy.yaml (to inject the new env var)
- *   - update existing environment
+ * 2. Create a new environment variable for use in the code:
+ *    - Update the relevant lists of environment variables (public, secret, etc.).
+ *    - If necessary, modify `build_and_deploy.yaml` to inject the new environment variable.
+ *    - Ensure the existing environment is updated accordingly.
  */
-
-/**
- * These variables are defined only for development
- * They are useless for other envs
- */
-const DevServerEnvVarNameSchema = z.object({
-  FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
-});
-type DevServerEnvVarName = z.infer<typeof DevServerEnvVarNameSchema>;
 
 /**
  * List of all public env vars to defined on each deployed environments
  */
-const ServerPublicEnvVarNameSchema = z.object({
+const PublicEnvVarsSchema = z.object({
   ENV: z.string(),
   NODE_ENV: z.string(),
   SESSION_MAX_AGE: z.string(),
@@ -34,6 +25,7 @@ const ServerPublicEnvVarNameSchema = z.object({
   MARBLE_API_DOMAIN_SERVER: z.string(),
   MARBLE_APP_DOMAIN: z.string(),
 
+  FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
   FIREBASE_API_KEY: z.string(),
   FIREBASE_APP_ID: z.string(),
   FIREBASE_AUTH_DOMAIN: z.string(),
@@ -48,37 +40,32 @@ const ServerPublicEnvVarNameSchema = z.object({
 
   CHATLIO_WIDGET_ID: z.string().optional(),
 });
-type ServerPublicEnvVarName = z.infer<typeof ServerPublicEnvVarNameSchema>;
+type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
 /**
  * List of all secret env vars to defined on each deployed environments
  */
-const ServerSecretEnvVarNameSchema = z.object({
+const SecretEnvVarsSchema = z.object({
   SESSION_SECRET: z.string(),
   LICENSE_KEY: z.string(),
 });
-type ServerSecretEnvVarName = z.infer<typeof ServerSecretEnvVarNameSchema>;
+type SecretEnvVars = z.infer<typeof SecretEnvVarsSchema>;
 
-type ServerEnvVarName = DevServerEnvVarName &
-  ServerPublicEnvVarName &
-  ServerSecretEnvVarName;
+const EnvVarsSchema = PublicEnvVarsSchema.merge(SecretEnvVarsSchema);
+type EnvVars = PublicEnvVars & SecretEnvVars;
+
+function getEnv<K extends keyof EnvVars>(envVarName: K) {
+  // eslint-disable-next-line no-restricted-properties
+  return process.env[envVarName] as EnvVars[K];
+}
 
 /**
  * Used to check that all env vars are defined according to the schema
  * This is called at the beginning of the server and is only used for improved DX
  */
-export function checkServerEnv() {
-  let ServerEnvVarNameSchema = ServerPublicEnvVarNameSchema.merge(
-    ServerSecretEnvVarNameSchema,
-  );
+export function checkEnv() {
   // eslint-disable-next-line no-restricted-properties
-  if (process.env.NODE_ENV === 'development') {
-    ServerEnvVarNameSchema = ServerEnvVarNameSchema.merge(
-      DevServerEnvVarNameSchema,
-    );
-  }
-  // eslint-disable-next-line no-restricted-properties
-  const result = ServerEnvVarNameSchema.safeParse(process.env);
+  const result = EnvVarsSchema.safeParse(process.env);
   if (!result.success) {
     const { _errors, ...rest } = result.error.format();
     const formatted = Object.entries(rest)
@@ -90,42 +77,62 @@ export function checkServerEnv() {
 }
 
 /**
- * Used to access env vars inside loaders/actions code
+ * Server env vars, access it using getServerEnv('MY_ENV_VAR')
  */
-export function getServerEnv<K extends keyof ServerEnvVarName>(
-  serverEnvVarName: K,
-) {
-  // eslint-disable-next-line no-restricted-properties
-  return process.env[serverEnvVarName] as ServerEnvVarName[K];
+interface ServerEnvVars {
+  ENV: string;
+  NODE_ENV: string;
+  SESSION_MAX_AGE: string;
+  MARBLE_API_DOMAIN_CLIENT: string;
+  MARBLE_API_DOMAIN_SERVER: string;
+  MARBLE_APP_DOMAIN: string;
+  FIREBASE_CONFIG: FirebaseConfig;
+  SENTRY_DSN?: string;
+  SENTRY_ENVIRONMENT?: string;
+  SEGMENT_WRITE_KEY?: string;
+  CHATLIO_WIDGET_ID?: string;
+  SESSION_SECRET: string;
+  LICENSE_KEY: string;
 }
 
 /**
- * Browser env vars :
- * - define browser env vars here
- * - access it using getClientEnv('MY_ENV_VAR')
+ * Used to access env vars inside loaders/actions code
+ */
+export function getServerEnv<K extends keyof ServerEnvVars>(
+  serverEnvVarName: K,
+) {
+  if (serverEnvVarName === 'FIREBASE_CONFIG') {
+    return parseFirebaseConfigFromEnv() as ServerEnvVars[K];
+  }
+  // eslint-disable-next-line no-restricted-properties
+  return getEnv(serverEnvVarName) as ServerEnvVars[K];
+}
+
+/**
+ * Browser env vars, access it using getClientEnv('MY_ENV_VAR')
+ *
  * https://remix.run/docs/en/main/guides/envvars
  */
-export function getClientEnvVars() {
+interface ClientEnvVars {
+  ENV: string;
+  FIREBASE_CONFIG: FirebaseConfig;
+  MARBLE_API_DOMAIN: string;
+  MARBLE_APP_DOMAIN: string;
+  SENTRY_DSN?: string;
+  SENTRY_ENVIRONMENT?: string;
+  CHATLIO_WIDGET_ID?: string;
+}
+export function getClientEnvVars(): ClientEnvVars {
   return {
     ENV: getServerEnv('ENV'),
-    FIREBASE_AUTH_EMULATOR_HOST: getServerEnv('FIREBASE_AUTH_EMULATOR_HOST'),
-    FIREBASE_OPTIONS: {
-      apiKey: getServerEnv('FIREBASE_API_KEY'),
-      authDomain: getServerEnv('FIREBASE_AUTH_DOMAIN'),
-      projectId: getServerEnv('FIREBASE_PROJECT_ID'),
-      storageBucket: getServerEnv('FIREBASE_STORAGE_BUCKET'),
-      messagingSenderId: getServerEnv('FIREBASE_MESSAGING_SENDER_ID'),
-      appId: getServerEnv('FIREBASE_APP_ID'),
-    },
-    MARBLE_API_DOMAIN_SERVER: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
-    MARBLE_API_DOMAIN_CLIENT: getServerEnv('MARBLE_API_DOMAIN_CLIENT'),
+    FIREBASE_CONFIG: getServerEnv('FIREBASE_CONFIG'),
+    MARBLE_API_DOMAIN: getServerEnv('MARBLE_API_DOMAIN_CLIENT'),
     MARBLE_APP_DOMAIN: getServerEnv('MARBLE_APP_DOMAIN'),
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
     CHATLIO_WIDGET_ID: getServerEnv('CHATLIO_WIDGET_ID'),
   };
 }
-type ClientEnvVars = ReturnType<typeof getClientEnvVars>;
 
 /**
  * Used to access env vars inside components code (SSR and CSR)
@@ -147,4 +154,38 @@ export function getClientEnv<K extends keyof ClientEnvVars>(
   }
 
   return clientEnv[clientEnvVarName];
+}
+
+function parseFirebaseConfigFromEnv(): FirebaseConfig {
+  const options: FirebaseConfig['options'] = {
+    apiKey: getEnv('FIREBASE_API_KEY'),
+    authDomain: getEnv('FIREBASE_AUTH_DOMAIN'),
+    projectId: getEnv('FIREBASE_PROJECT_ID'),
+    storageBucket: getEnv('FIREBASE_STORAGE_BUCKET'),
+    messagingSenderId: getEnv('FIREBASE_MESSAGING_SENDER_ID'),
+    appId: getEnv('FIREBASE_APP_ID'),
+  };
+
+  const firebaseAuthEmulatorHost = getEnv('FIREBASE_AUTH_EMULATOR_HOST');
+  if (!firebaseAuthEmulatorHost) {
+    return {
+      withEmulator: false as const,
+      options,
+    };
+  }
+
+  try {
+    const authEmulatorUrl = new URL(
+      'http://' + firebaseAuthEmulatorHost,
+    ).toString();
+    return {
+      withEmulator: true as const,
+      authEmulatorUrl,
+      options,
+    };
+  } catch (e) {
+    throw new Error(
+      `Invalid FIREBASE_AUTH_EMULATOR_HOST: ${firebaseAuthEmulatorHost}`,
+    );
+  }
 }

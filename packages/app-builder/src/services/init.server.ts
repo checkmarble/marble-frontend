@@ -5,7 +5,7 @@ import {
   makeServerRepositories,
   type ServerRepositories,
 } from '@app-builder/repositories/init.server';
-import { checkServerEnv, getServerEnv } from '@app-builder/utils/environment';
+import { checkEnv, getServerEnv } from '@app-builder/utils/environment';
 import { CSRF } from 'remix-utils/csrf/server';
 
 import { makeAuthenticationServerService } from './auth/auth.server';
@@ -50,10 +50,9 @@ function makeServerServices(repositories: ServerRepositories) {
 }
 
 function initServerServices() {
-  checkServerEnv();
+  checkEnv();
 
-  const devEnvironment =
-    getServerEnv('FIREBASE_AUTH_EMULATOR_HOST') !== undefined;
+  const devEnvironment = getServerEnv('FIREBASE_CONFIG').withEmulator;
 
   const { getMarbleCoreAPIClientWithAuth } = initializeMarbleCoreAPIClient({
     baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
