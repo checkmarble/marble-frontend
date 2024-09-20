@@ -9,8 +9,6 @@
   "trigger.run_scenario.description.api_execution": "<strong>API Execution</strong>: Send the trigger object via API (see our docs <DocLink>here</DocLink>)",
   "trigger.run_scenario.description.api_execution.scenario_id": "You’ll need the <ScenarioIdLabel>scenario_id</ScenarioIdLabel>: <ScenarioIdValue>{{scenarioId}}</ScenarioIdValue>",
   "trigger.run_scenario.description.batch_execution": "<strong>Batch Execution</strong>: Run automatically or manually on ingested data.",
-  "trigger.run_scenario.description.batch_execution.push_to_s3": "Decisions will be pushed to your S3 bucket.",
-  "trigger.run_scenario.description.batch_execution.configure_your_s3": "Decisions can be pushed to an S3 bucket (contact Marble to set up).",
   "trigger.schedule_scenario.option": "Run this scenario on a schedule",
   "trigger.schedule_scenario.frequency_label": "Run",
   "trigger.schedule_scenario.schedule_detail_daily_label": "at",

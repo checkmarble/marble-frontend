@@ -275,15 +275,6 @@ export default function Trigger() {
                   />
                   <ul className="list-outside space-y-1 pl-4">
                     <li>
-                      {organization.exportScheduledExecutionS3
-                        ? t(
-                            'scenarios:trigger.run_scenario.description.batch_execution.push_to_s3',
-                          )
-                        : t(
-                            'scenarios:trigger.run_scenario.description.batch_execution.configure_your_s3',
-                          )}
-                    </li>
-                    <li>
                       <ScheduleOption
                         schedule={schedule}
                         setSchedule={setSchedule}
