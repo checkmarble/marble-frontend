@@ -371,25 +371,6 @@ export type NodeDto = {
         [key: string]: NodeDto;
     };
 };
-export type CreateScenarioIterationRuleBodyDto = {
-    scenario_iteration_id: string;
-    display_order: number;
-    name: string;
-    description: string;
-    rule_group: string;
-    formula_ast_expression: (NodeDto) | null;
-    score_modifier: number;
-};
-export type CreateScenarioIterationBody = {
-    scenario_id: string;
-    body?: {
-        trigger_condition_ast_expression?: (NodeDto) | null;
-        score_review_threshold?: number;
-        score_block_and_review_threshold?: number;
-        score_decline_threshold?: number;
-        rules?: CreateScenarioIterationRuleBodyDto[];
-    };
-};
 export type ScenarioIterationRuleDto = {
     id: string;
     scenario_iteration_id: string;
@@ -409,6 +390,25 @@ export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
         score_decline_threshold?: number;
         rules: ScenarioIterationRuleDto[];
         schedule?: string;
+    };
+};
+export type CreateScenarioIterationRuleBodyDto = {
+    scenario_iteration_id: string;
+    display_order: number;
+    name: string;
+    description: string;
+    rule_group: string;
+    formula_ast_expression: (NodeDto) | null;
+    score_modifier: number;
+};
+export type CreateScenarioIterationBody = {
+    scenario_id: string;
+    body?: {
+        trigger_condition_ast_expression?: (NodeDto) | null;
+        score_review_threshold?: number;
+        score_block_and_review_threshold?: number;
+        score_decline_threshold?: number;
+        rules?: CreateScenarioIterationRuleBodyDto[];
     };
 };
 export type UpdateScenarioIterationBody = {
@@ -1491,7 +1491,7 @@ export function listScenarioIterations({ scenarioId }: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioIterationDto[];
+        data: ScenarioIterationWithBodyDto[];
     } | {
         status: 401;
         data: string;
