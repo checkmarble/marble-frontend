@@ -22,10 +22,8 @@ import {
 } from '@app-builder/models/scenario';
 import {
   adaptScenarioIteration,
-  adaptScenarioIterationSummary,
   adaptUpdateScenarioIterationBody,
   type ScenarioIteration,
-  type ScenarioIterationSummary,
   type UpdateScenarioIterationBody,
 } from '@app-builder/models/scenario-iteration';
 import {
@@ -61,7 +59,7 @@ export interface ScenarioRepository {
   }): Promise<ScenarioIteration>;
   listScenarioIterations(args: {
     scenarioId: string;
-  }): Promise<ScenarioIterationSummary[]>;
+  }): Promise<ScenarioIteration[]>;
   validate(args: { iterationId: string }): Promise<ScenarioValidation>;
   validateTrigger(args: {
     iterationId: string;
@@ -138,7 +136,7 @@ export function makeGetScenarioRepository() {
       const dtos = await marbleCoreApiClient.listScenarioIterations({
         scenarioId,
       });
-      return dtos.map(adaptScenarioIterationSummary);
+      return dtos.map(adaptScenarioIteration);
     },
     validate: async ({ iterationId }) => {
       const { scenario_validation } =
