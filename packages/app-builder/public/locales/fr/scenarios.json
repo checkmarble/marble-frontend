@@ -187,7 +187,7 @@
   "trigger.run_scenario.description": "Il existe deux manières d'exécuter un scénario (<DocLink>en savoir plus</DocLink>)",
   "trigger.run_scenario.description.api_execution": "<strong>Exécution de l'API</strong> : envoyez l'objet déclencheur via l'API (voir notre documentation <DocLink>ici</DocLink>)",
   "trigger.run_scenario.description.api_execution.scenario_id": "Vous aurez besoin du <ScenarioIdLabel>scenario_id</ScenarioIdLabel> : <ScenarioIdValue>{{scenarioId}}</ScenarioIdValue>",
-  "trigger.run_scenario.description.batch_execution": "<strong>Exécution par lots</strong> : exécution automatique ou manuelle sur les données ingérées.",
+  "trigger.run_scenario.description.batch_execution": "<strong>Exécution par lots</strong> : exécution périodique ou manuelle sur les données ingérées.",
   "trigger.schedule_scenario.export_location_warning": "Contactez Marble pour configurer l’emplacement d’exportation des décisions.",
   "trigger.schedule_scenario.frequency_daily": "tous les jours",
   "trigger.schedule_scenario.frequency_label": "Exécution",
