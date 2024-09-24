@@ -24,7 +24,6 @@
   "errors.firebase_network_error": "A network error occured. Try to log in again.",
   "errors.too_many_requests": "Too many requests. Please try again later.",
   "cancel": "Cancel",
-  "display": "Display",
   "save": "Save",
   "delete": "Delete",
   "close": "Close",
