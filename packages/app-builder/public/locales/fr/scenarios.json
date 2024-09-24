@@ -163,7 +163,7 @@
   "edit_operand.operator_type.function_other": "Fonctions",
   "edit_operand.operator_type.list_one": "Liste",
   "edit_operand.operator_type.list_other": "Listes",
-  "edit_operand.placeholder": "Sélectionnez un opérande...",
+  "edit_operand.placeholder": "Sélectionnez une valeur...",
   "edit_operand.result_one": "Résultat",
   "edit_operand.result_other": "Résultats",
   "edit_operand.search.placeholder": "Sélectionner ou créer un opérande",
