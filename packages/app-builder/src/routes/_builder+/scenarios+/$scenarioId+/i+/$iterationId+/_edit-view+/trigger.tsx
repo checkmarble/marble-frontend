@@ -49,7 +49,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     apiClient,
     customListsRepository,
     editor,
-    organization,
     dataModelRepository,
   } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
@@ -57,27 +56,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const [
-    operators,
-    accessors,
-    dataModel,
-    customLists,
-    currentOrganization,
-    scheduledExecutions,
-  ] = await Promise.all([
-    editor.listOperators({
-      scenarioId,
-    }),
-    editor.listAccessors({
-      scenarioId,
-    }),
-    dataModelRepository.getDataModel(),
-    customListsRepository.listCustomLists(),
-    organization.getCurrentOrganization(),
-    apiClient.listScheduledExecutions({
-      scenarioId,
-    }),
-  ]);
+  const [operators, accessors, dataModel, customLists, scheduledExecutions] =
+    await Promise.all([
+      editor.listOperators({
+        scenarioId,
+      }),
+      editor.listAccessors({
+        scenarioId,
+      }),
+      dataModelRepository.getDataModel(),
+      customListsRepository.listCustomLists(),
+      apiClient.listScheduledExecutions({
+        scenarioId,
+      }),
+    ]);
 
   return json({
     featureAccess: {
@@ -89,7 +81,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     operators,
     dataModel,
     customLists,
-    organization: currentOrganization,
     scheduledExecutions: scheduledExecutions.scheduled_executions,
   });
 }
@@ -165,7 +156,6 @@ export default function Trigger() {
     operators,
     dataModel,
     customLists,
-    organization,
     scheduledExecutions,
   } = useLoaderData<typeof loader>();
 
