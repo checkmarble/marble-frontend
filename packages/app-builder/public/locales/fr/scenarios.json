@@ -177,7 +177,7 @@
   "logical_operator.and_button": "Condition",
   "logical_operator.or_button": "Groupe",
   "nest": "imbriquer",
-  "no_scheduled": "Ce scénario n'est pas planifié.",
+  "no_scheduled": "Ce scénario n'est pas exécuté de manière périodique.",
   "operator.contains": "contient",
   "operator.contains_any_of": "contient l'un des",
   "operator.contains_none_of": "ne contient aucun des",
