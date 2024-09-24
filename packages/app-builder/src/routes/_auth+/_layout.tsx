@@ -4,6 +4,8 @@ import { Outlet } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Logo } from 'ui-icons';
 
+import { LanguagePicker } from '../ressources+/user+/language';
+
 export const handle = {
   i18n: authI18n,
 };
@@ -41,15 +43,18 @@ export default function AuthLayout() {
           </div>
         </div>
         <div className="flex w-full max-w-96 flex-col items-center justify-center">
-          <div className="bg-grey-00 flex h-fit w-full flex-col items-center rounded-lg p-5 text-center sm:p-10">
+          <div className="bg-grey-00 relative flex h-fit w-full flex-col items-center rounded-lg px-5 text-center sm:px-10">
             <Logo
               logo="logo-standard"
-              className="text-grey-100 mb-6 size-full max-h-20 max-w-60"
+              className="text-grey-100 mb-6 mt-5 size-full max-h-20 max-w-60 sm:mt-10"
               preserveAspectRatio="xMinYMid meet"
               aria-labelledby="marble"
             />
 
             <Outlet />
+            <div className="my-5">
+              <LanguagePicker />
+            </div>
           </div>
         </div>
       </div>
