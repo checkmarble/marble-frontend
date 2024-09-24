@@ -49,7 +49,7 @@
   "case_detail.files_count_other": "{{count}} fichiers",
   "case_detail.history": "Historique",
   "case_detail.history.event_detail.added_by": "Ajouté par : <Avatar/> <User>{{user}}</User>",
-  "case_detail.history.event_detail.added_by_workflow": "Ajouté par une automatisation",
+  "case_detail.history.event_detail.added_by_workflow": "Ajouté automatiquement",
   "case_detail.history.event_detail.case_tags.new": "Nouvelles étiquettes: <CaseTags/>",
   "case_detail.history.event_detail.case_tags.none": "Toutes les étiquettes ont été supprimées",
   "case_detail.history.event_detail.decision_reviewed.final_status": "Statut final",
