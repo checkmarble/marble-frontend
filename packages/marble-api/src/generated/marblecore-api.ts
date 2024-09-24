@@ -606,7 +606,6 @@ export type UpdateUser = {
 export type OrganizationDto = {
     id: string;
     name: string;
-    export_scheduled_execution_s3?: string;
 };
 export type CreateOrganizationBodyDto = {
     name: string;

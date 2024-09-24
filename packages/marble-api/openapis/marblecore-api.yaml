@@ -3340,8 +3340,6 @@ components:
           format: uuid
         name:
           type: string
-        export_scheduled_execution_s3:
-          type: string
     CreateOrganizationBodyDto:
       type: object
       required:
