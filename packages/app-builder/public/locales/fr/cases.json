@@ -55,7 +55,7 @@
   "case_detail.history.event_detail.decision_reviewed.final_status": "Statut final",
   "case_detail.history.event_detail.decision_reviewed.review_comment": "Commentaire de révision",
   "case_detail.history.event_detail.edited_by": "Edité par : <Avatar/> <User>{{user}}</User>",
-  "case_detail.history.event_detail.edited_by_workflow": "Modifié par une automatisation",
+  "case_detail.history.event_detail.edited_by_workflow": "Modifié automatiquement",
   "case_detail.history.event_detail.reviewed_by": "Révisé par : <Avatar/> <User>{{user}}</User>",
   "case_detail.history.event_detail.rule_snooze_created.created_from_decision": "décision",
   "case_detail.history.event_detail.rule_snooze_created.created_from_rule": "règle",
