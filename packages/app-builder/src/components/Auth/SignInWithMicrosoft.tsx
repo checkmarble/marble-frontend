@@ -27,16 +27,16 @@ function SignInWithMicrosoftButton({
 
   return (
     <button
-      className="bg-grey-00 hover:bg-grey-05 active:bg-grey-10 relative flex h-10 w-full items-center gap-3 border border-[#8C8C8C] p-px transition disabled:cursor-wait"
+      className="bg-grey-00 hover:bg-grey-05 active:bg-grey-10 relative flex h-10 w-full items-center border border-[#8C8C8C] p-px transition disabled:cursor-wait"
       onClick={() => {
         void onClick?.();
       }}
       disabled={loading}
     >
-      <div className="flex h-full w-10 items-center justify-center">
+      <div className="flex h-full w-10 shrink-0 items-center justify-center">
         <Logo logo="microsoft-logo" className="size-6" />
       </div>
-      <span className="text-s w-full whitespace-nowrap px-8 text-center align-middle font-semibold text-[#5E5E5E]">
+      <span className="text-s w-full whitespace-nowrap text-center align-middle font-semibold text-[#5E5E5E]">
         {t('auth:sign_in.microsoft')}
       </span>
       <span className="absolute right-0 mx-2 size-4">

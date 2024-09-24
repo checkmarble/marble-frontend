@@ -1,0 +1,17 @@
+{
+  "created_at": "Créé à",
+  "download_decisions": "Télécharger les décisions",
+  "downloading_decisions": "Téléchargement des décisions...",
+  "errors.downloading_decisions_link.auth_error": "Une erreur d'authentification s'est produite lors de la génération du lien de téléchargement. \nVous devrez peut-être vous reconnecter.",
+  "errors.downloading_decisions_link.unknown": "Une erreur inconnue s'est produite lors de la génération du lien de téléchargement. \nVeuillez réessayer plus tard.",
+  "finished_at": "Terminé à",
+  "number_of_created_decisions": "Décisions",
+  "scenario_name": "Nom du scénario",
+  "scenario_trigger_object_type": "Objet déclencheur",
+  "started_at": "Commencé à",
+  "status": "Statut",
+  "status_failure": "Échec",
+  "status_pending": "En attente",
+  "status_processing": "En cours",
+  "status_success": "Succès"
+}
