@@ -22,7 +22,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
 ENV NODE_ENV=production
 RUN pnpm deploy --filter=app-builder --prod /prod/app-builder
 
-FROM base AS app-builder
+FROM gcr.io/distroless/nodejs20-debian11 AS app-builder
 ENV NODE_ENV=production
 ENV PORT=${PORT:-8080}
 RUN apt-get update && apt-get install -y curl
