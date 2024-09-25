@@ -314,7 +314,7 @@ function DecisionDetail({
     <div className="flex flex-col gap-6 p-4">
       {pivotValues.length > 0 ? (
         <div>
-          <div className="text-grey-50 text-s mb-1 capitalize">
+          <div className="text-grey-50 text-s mb-1 first-letter:capitalize">
             {t('cases:case_detail.pivot_values')}
           </div>
           <div className="border-grey-10 overflow-hidden rounded border">
@@ -361,7 +361,7 @@ function DecisionDetail({
       ) : null}
 
       <div>
-        <div className="text-grey-50 text-s capitalize">
+        <div className="text-grey-50 text-s first-letter:capitalize">
           {t('cases:case_detail.rules_execution')}
         </div>
         <div className="-mx-2 grid grid-cols-[max-content_1fr_max-content_max-content] gap-2">

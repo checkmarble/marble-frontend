@@ -1,7 +1,7 @@
 {
   "create_field.button_accept": "Créer un champ",
   "create_field.description_placeholder": "Description du champ",
-  "create_field.is_enum.subtitle": "Il faut un nombre limité de valeurs distinctes, comme un code de statut",
+  "create_field.is_enum.subtitle": "Il prend un nombre limité de valeurs distinctes, comme un code de statut",
   "create_field.is_enum.title": "Ce champ est une valeur énumérée",
   "create_field.name_placeholder": "Nom du champ",
   "create_field.option_optional": "Facultatif",

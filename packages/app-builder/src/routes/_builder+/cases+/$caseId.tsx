@@ -160,7 +160,7 @@ export default function CasePage() {
                       aria-hidden
                       className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
                     />
-                    <span className="text-m mx-2 font-bold capitalize">
+                    <span className="text-m mx-2 font-bold first-letter:capitalize">
                       {t('cases:case.decisions')}
                     </span>
                   </CollapsibleV2.Title>
@@ -287,7 +287,7 @@ export default function CasePage() {
         <div className="bg-grey-00 border-l-grey-10 flex h-full min-w-52 max-w-64 flex-col gap-4 border-l p-4">
           <EditCaseName caseId={caseDetail.id} name={caseDetail.name} />
           <div className="flex flex-col gap-2">
-            <div className="text-s text-grey-25 capitalize">
+            <div className="text-s text-grey-25 first-letter:capitalize">
               {t('cases:case.date')}
             </div>
             <time dateTime={caseDetail.createdAt}>
@@ -304,7 +304,7 @@ export default function CasePage() {
             user={user}
           />
           <div className="flex flex-col gap-2">
-            <div className="text-s text-grey-25 capitalize">
+            <div className="text-s text-grey-25 first-letter:capitalize">
               {t('cases:case.contributors')}
             </div>
             <CaseContributors contributors={caseDetail.contributors} />

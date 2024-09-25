@@ -128,7 +128,7 @@ export default function WebhookDetail() {
 }
 
 const WebhookLabel = ({ children }: { children: React.ReactNode }) => (
-  <span className="font-semibold capitalize">{children}</span>
+  <span className="font-semibold first-letter:capitalize">{children}</span>
 );
 
 const WebhookValue = ({ children }: { children: React.ReactNode }) => {

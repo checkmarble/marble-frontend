@@ -135,7 +135,7 @@ export function EditCaseTags({
           name={fields.caseTagIds.name}
           className="flex flex-col gap-2"
         >
-          <FormLabel className="text-grey-25 text-s capitalize">
+          <FormLabel className="text-grey-25 text-s first-letter:capitalize">
             {t('cases:case.tags')}
           </FormLabel>
           <FormSelectWithCombobox.Control

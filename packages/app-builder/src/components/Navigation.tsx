@@ -87,7 +87,7 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
       to={to}
     >
       <Icon className="size-6 shrink-0" />
-      <span className="capitalize">{t(labelTKey)}</span>
+      <span className="first-letter:capitalize">{t(labelTKey)}</span>
     </NavLink>
   );
 }

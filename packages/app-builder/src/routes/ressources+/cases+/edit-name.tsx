@@ -69,7 +69,7 @@ export function EditCaseName(defaultValue: z.infer<typeof schema>) {
           key={fields.caseId.key}
         />
         <FormField name={fields.name.name} className="flex flex-col gap-2">
-          <FormLabel className="text-grey-25 text-s capitalize">
+          <FormLabel className="text-grey-25 text-s first-letter:capitalize">
             {t('cases:case.name')}
           </FormLabel>
           <FormInput type="text" autoComplete="off" onBlur={submitOnBlur} />

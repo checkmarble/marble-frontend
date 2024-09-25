@@ -72,5 +72,5 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
 }
 
 const DetailLabel = ({ children }: { children: React.ReactNode }) => (
-  <div className="font-semibold capitalize">{children}</div>
+  <div className="font-semibold first-letter:capitalize">{children}</div>
 );
