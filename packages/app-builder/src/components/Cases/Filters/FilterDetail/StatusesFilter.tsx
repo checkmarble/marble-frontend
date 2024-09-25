@@ -31,6 +31,7 @@ export function StatusesFilter() {
               <SelectWithCombobox.ComboboxItem
                 key={status.value}
                 value={status.value}
+                className="align-baseline"
               >
                 <CaseStatus status={status.value} />
                 <span className="text-grey-100 text-s font-normal first-letter:capitalize">

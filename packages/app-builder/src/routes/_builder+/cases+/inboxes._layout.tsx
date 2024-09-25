@@ -41,7 +41,7 @@ export default function Cases() {
         {t('navigation:caseManager')}
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
-        <div className="border-r-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] flex-col border-r p-4">
+        <div className="border-r-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col border-r p-4">
           <div className="flex flex-row items-center gap-2">
             <Icon icon="inbox" className="size-5" />
             <p className="font-bold">{t('cases:case.inboxes')}</p>

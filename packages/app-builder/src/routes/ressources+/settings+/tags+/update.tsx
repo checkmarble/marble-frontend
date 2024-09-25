@@ -121,7 +121,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
         method="PATCH"
         {...getFormProps(form)}
       >
-        <Modal.Title>{t('settings:tags.new_tag')}</Modal.Title>
+        <Modal.Title>{t('settings:tags.update_tag')}</Modal.Title>
         <div className="flex flex-col gap-6 p-6">
           <div className="flex gap-2">
             <input

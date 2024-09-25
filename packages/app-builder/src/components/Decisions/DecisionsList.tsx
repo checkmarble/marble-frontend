@@ -192,7 +192,7 @@ export function DecisionsList({
         size: 150,
         cell: ({ getValue, row }) =>
           row.original.case ? (
-            <div className="flex w-fit flex-row items-center justify-center gap-1">
+            <div className="flex w-fit flex-row items-center justify-center gap-1 align-baseline">
               <CaseStatus
                 className="isolate"
                 status={row.original.case.status}

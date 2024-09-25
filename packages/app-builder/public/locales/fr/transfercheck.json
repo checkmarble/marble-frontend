@@ -48,7 +48,7 @@
   "transfer_detail.transfer_data.description": "Voici l'identifiant de transfert associé au système d'information source <TransferIdLabel>transfer_id</TransferIdLabel> : <TransferIdValue>{{transferId}}</TransferIdValue>",
   "transfer_detail.transfer_data.device": "Appareil",
   "transfer_detail.transfer_data.ip": "IP",
-  "transfer_detail.transfer_data.label": "Étiquette",
+  "transfer_detail.transfer_data.label": "Label",
   "transfer_detail.transfer_data.name": "Nom",
   "transfer_detail.transfer_data.requested_at": "Demandé à",
   "transfer_detail.transfer_data.sender": "Expéditeur",

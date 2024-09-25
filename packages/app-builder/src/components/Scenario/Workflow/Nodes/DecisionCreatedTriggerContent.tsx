@@ -21,7 +21,7 @@ export function DecisionCreatedTriggerContent({
   if (!selectedScenario || data.outcomes.length === 0) {
     return (
       <div className="flex flex-col gap-1">
-        <p className="max-w-64 whitespace-pre-wrap">
+        <p className="whitespace-pre-wrap">
           {t('workflows:trigger_node.decision_created.empty_content')}
         </p>
       </div>
@@ -30,7 +30,7 @@ export function DecisionCreatedTriggerContent({
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="max-w-64 whitespace-pre-wrap">
+      <p className="whitespace-pre-wrap">
         <Trans
           t={t}
           i18nKey="workflows:trigger_node.decision_created.content"
