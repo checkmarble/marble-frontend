@@ -123,7 +123,7 @@ export function CreateCase() {
             control={control}
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel className="text-xs capitalize">
+                <FormLabel className="text-xs first-letter:capitalize">
                   {t('cases:case.name')}
                 </FormLabel>
                 <FormControl>
@@ -141,7 +141,7 @@ export function CreateCase() {
             control={control}
             render={({ field }) => (
               <FormItem className="flex flex-1 flex-col gap-2">
-                <FormLabel className="text-xs capitalize">
+                <FormLabel className="text-xs first-letter:capitalize">
                   {t('cases:case.new_case.select_inbox')}
                 </FormLabel>
                 <FormControl>

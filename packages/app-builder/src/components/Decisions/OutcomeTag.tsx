@@ -81,12 +81,15 @@ export const OutcomePanel = ({ outcome }: { outcome: Outcome }) => {
         {t('decisions:outcome')}
       </div>
       <div
-        className={clsx('text-l text-center font-semibold capitalize', {
-          'text-green-100': color === 'green',
-          'text-yellow-100': color === 'yellow',
-          'text-orange-100': color === 'orange',
-          'text-red-100': color === 'red',
-        })}
+        className={clsx(
+          'text-l text-center font-semibold first-letter:capitalize',
+          {
+            'text-green-100': color === 'green',
+            'text-yellow-100': color === 'yellow',
+            'text-orange-100': color === 'orange',
+            'text-red-100': color === 'red',
+          },
+        )}
       >
         {t(tKey)}
       </div>

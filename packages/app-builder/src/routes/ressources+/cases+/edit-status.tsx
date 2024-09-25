@@ -126,7 +126,7 @@ export function EditCaseStatus({
             >
               <Modal.Trigger asChild>
                 <DropdownMenu.Item
-                  className="radix-highlighted:bg-purple-05 flex flex-row gap-2 rounded p-2 outline-none transition-colors"
+                  className="radix-highlighted:bg-purple-05 flex flex-row items-center gap-2 rounded p-2 align-baseline outline-none transition-colors"
                   onSelect={(event) => {
                     handleDialogItemSelect();
                     event.preventDefault();

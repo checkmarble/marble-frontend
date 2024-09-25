@@ -20,7 +20,7 @@ export function AddToCaseIfPossibleActionContent({
   if (!selectedInbox) {
     return (
       <div className="flex flex-col gap-1">
-        <p className="max-w-64 whitespace-pre-wrap">
+        <p className="whitespace-pre-wrap">
           {t('workflows:action_node.add_to_case_if_possible.empty_content')}
         </p>
       </div>
@@ -29,7 +29,7 @@ export function AddToCaseIfPossibleActionContent({
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="max-w-64 whitespace-pre-wrap">
+      <p className="whitespace-pre-wrap">
         <Trans
           t={t}
           i18nKey="workflows:action_node.add_to_case_if_possible.content"

@@ -16,7 +16,7 @@ import {
 } from '../WorkflowProvider';
 
 export function NodeRoot({ children }: { children: React.ReactNode }) {
-  return <div className="group relative min-w-72">{children}</div>;
+  return <div className="group relative min-w-72 max-w-96">{children}</div>;
 }
 
 export function AddNodeButton({

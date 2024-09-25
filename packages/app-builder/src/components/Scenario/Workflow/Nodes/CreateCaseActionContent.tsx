@@ -16,7 +16,7 @@ export function CreateCaseActionContent({ data }: { data: CreateCaseAction }) {
   if (!selectedInbox) {
     return (
       <div className="flex flex-col gap-1">
-        <p className="max-w-64 whitespace-pre-wrap">
+        <p className="whitespace-pre-wrap">
           {t('workflows:action_node.create_case.empty_content')}
         </p>
       </div>
@@ -25,7 +25,7 @@ export function CreateCaseActionContent({ data }: { data: CreateCaseAction }) {
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="max-w-64 whitespace-pre-wrap">
+      <p className="whitespace-pre-wrap">
         <Trans
           t={t}
           i18nKey="workflows:action_node.create_case.content"

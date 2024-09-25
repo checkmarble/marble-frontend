@@ -179,7 +179,7 @@ export function AddToCase() {
             control={control}
             render={({ field: { value, onChange, ...rest } }) => (
               <FormItem className="flex items-center gap-2">
-                <FormLabel className="text-xs capitalize">
+                <FormLabel className="text-xs first-letter:capitalize">
                   {t('decisions:add_to_case.create_new_case')}
                 </FormLabel>
                 <FormControl>
@@ -222,7 +222,7 @@ const NewCaseFields = ({
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col gap-2">
-            <FormLabel className="text-xs capitalize">
+            <FormLabel className="text-xs first-letter:capitalize">
               {t('decisions:add_to_case.new_case.new_case_name')}
             </FormLabel>
             <FormControl>
@@ -236,7 +236,7 @@ const NewCaseFields = ({
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-1 flex-col gap-2">
-            <FormLabel className="text-xs capitalize">
+            <FormLabel className="text-xs first-letter:capitalize">
               {t('decisions:add_to_case.new_case.select_inbox')}
             </FormLabel>
             <FormControl>
@@ -279,7 +279,7 @@ const AddToCaseFields = ({ control }: { control: Control<AddToCaseForm> }) => {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col gap-2">
-            <FormLabel className="text-xs capitalize">
+            <FormLabel className="text-xs first-letter:capitalize">
               {t('decisions:add_to_case.new_case.case_id.label')}
             </FormLabel>
             <FormControl>
