@@ -1,9 +1,8 @@
-FROM node:22-slim AS base
+FROM node:22-slim AS build
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-FROM base AS build
 ARG SENTRY_ORG
 ENV SENTRY_ORG=$SENTRY_ORG
 ARG SENTRY_PROJECT
@@ -22,11 +21,12 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
 ENV NODE_ENV=production
 RUN pnpm deploy --filter=app-builder --prod /prod/app-builder
 
-FROM base AS app-builder
+FROM gcr.io/distroless/nodejs22-debian12 AS app-builder
 ENV NODE_ENV=production
 ENV PORT=${PORT:-8080}
-RUN apt-get update && apt-get install -y curl
-COPY --from=build /prod/app-builder /prod/app-builder
+COPY --from=build /prod/app-builder/node_modules /prod/app-builder/node_modules
+COPY --from=build /prod/app-builder/build /prod/app-builder/build
 WORKDIR /prod/app-builder
+USER nonroot
 EXPOSE $PORT
-CMD [ "pnpm", "start"]
+CMD ["./node_modules/@remix-run/serve/dist/cli.js", "./build/server/index.js"]
