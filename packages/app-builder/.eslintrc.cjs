@@ -21,6 +21,8 @@ module.exports = {
             message: 'Use getServerEnv(...) instead',
           },
         ],
+        // In Remix, throwing responses is a common pattern : https://remix.run/docs/en/main/guides/errors#error-sanitization
+        '@typescript-eslint/only-throw-error': 'off',
       },
     },
   ],

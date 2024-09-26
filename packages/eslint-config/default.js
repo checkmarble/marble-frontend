@@ -82,9 +82,14 @@ module.exports = {
           'error',
           {
             argsIgnorePattern: '^_',
+            caughtErrors: 'none',
             destructuredArrayIgnorePattern: '^_',
             ignoreRestSiblings: true,
           },
+        ],
+        '@typescript-eslint/no-empty-object-type': [
+          'error',
+          { allowWithName: 'Props$' },
         ],
       },
     },

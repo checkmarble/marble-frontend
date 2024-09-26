@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker/locale/en';
+import { fakerEN } from '@faker-js/faker';
 import { type Meta, type StoryFn } from '@storybook/react';
 import {
   type ColumnDef,
@@ -17,9 +17,9 @@ const Template: StoryFn<StoryProps> = ({ count }: StoryProps) => {
   const data = useMemo(
     () =>
       Array.from({ length: count }).map(() => ({
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        description: faker.lorem.sentences(),
+        firstName: fakerEN.person.firstName(),
+        lastName: fakerEN.person.lastName(),
+        description: fakerEN.lorem.sentences(),
       })),
     [count],
   );

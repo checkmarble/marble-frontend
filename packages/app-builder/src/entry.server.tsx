@@ -75,6 +75,7 @@ function handleBotRequest(
         pipe(body);
       },
       onShellError(error: unknown) {
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject(error);
       },
       onError(error: unknown) {
@@ -117,6 +118,7 @@ function handleBrowserRequest(
         pipe(body);
       },
       onShellError(error: unknown) {
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject(error);
       },
       onError(error: unknown) {

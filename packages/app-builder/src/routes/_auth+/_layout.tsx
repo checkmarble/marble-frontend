@@ -1,7 +1,8 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
-import { Player } from '@lottiefiles/react-lottie-player';
+import { LottiePlayer } from '@app-builder/components/LottiePlayer.client';
 import { Outlet } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
+import { ClientOnly } from 'remix-utils/client-only';
 import { Logo } from 'ui-icons';
 
 import { LanguagePicker } from '../ressources+/user+/language';
@@ -32,14 +33,18 @@ export default function AuthLayout() {
             </p>
           </div>
           <div className="relative flex flex-1 flex-col justify-start [&>*]:absolute [&>*]:h-full">
-            <Player
-              src="/img/lottie/login_hero.json"
-              loop
-              direction={1}
-              autoplay
-              renderer="svg"
-              className="size-full"
-            />
+            <ClientOnly>
+              {() => (
+                <LottiePlayer
+                  src="/img/lottie/login_hero.json"
+                  loop
+                  direction={1}
+                  autoplay
+                  renderer="svg"
+                  className="size-full"
+                />
+              )}
+            </ClientOnly>
           </div>
         </div>
         <div className="flex w-full max-w-96 flex-col items-center justify-center">
