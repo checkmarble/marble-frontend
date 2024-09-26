@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { type AuthSession } from '@app-builder/models';
 import { type AuthStorageRepository } from '@app-builder/repositories/SessionStorageRepositories/AuthStorageRepository';
 import { type EntryContext } from '@remix-run/node';
-import { createInstance, type InitOptions, type Namespace } from 'i18next';
+import { createInstance, type FlatNamespace, type InitOptions } from 'i18next';
 import Backend from 'i18next-fs-backend';
 import { initReactI18next } from 'react-i18next';
 import { RemixI18Next } from 'remix-i18next/server';
@@ -67,9 +67,11 @@ export function makeI18nextServerService({
 
   return {
     getLocale: (request: Request) => remixI18next.getLocale(request),
-    getFixedT: <N extends Namespace>(
+    getFixedT: <
+      N extends FlatNamespace | readonly [FlatNamespace, ...FlatNamespace[]],
+    >(
       request: Request,
-      namespaces?: N,
+      namespaces: N,
       options?: Omit<InitOptions, 'react'>,
     ) => remixI18next.getFixedT(request, namespaces, options),
     getI18nextServerInstance,

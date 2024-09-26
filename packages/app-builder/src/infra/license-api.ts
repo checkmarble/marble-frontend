@@ -1,10 +1,6 @@
 import { licenseApi } from 'marble-api';
 import * as R from 'remeda';
-
-type FunctionKeys<T> = {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  [P in keyof T]: T[P] extends Function ? P : never;
-}[keyof T];
+import { type FunctionKeys } from 'typescript-utils';
 
 export type LicenseApi = {
   [P in FunctionKeys<typeof licenseApi>]: (typeof licenseApi)[P];

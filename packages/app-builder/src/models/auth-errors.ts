@@ -1,8 +1,6 @@
 import { isMarbleError, isUnauthorizedHttpError } from './http-errors';
 
-const authErrors = ['NoAccount', 'Unknown'] as const;
-
-export type AuthErrors = (typeof authErrors)[number];
+export type AuthErrors = 'NoAccount' | 'Unknown';
 
 export function adaptAuthErrors(error: unknown): AuthErrors {
   if (isUnauthorizedHttpError(error) && isMarbleError(error)) {

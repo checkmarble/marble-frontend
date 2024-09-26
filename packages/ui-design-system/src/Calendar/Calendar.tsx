@@ -1,15 +1,19 @@
 import { clsx } from 'clsx';
 import {
   type DateRange,
+  DayFlag,
   DayPicker,
-  type DayPickerRangeProps,
-  type DayPickerSingleProps,
+  type PropsBase,
+  type PropsRange,
+  type PropsSingle,
+  SelectionState,
+  UI,
 } from 'react-day-picker';
 import { Icon } from 'ui-icons';
 
 import { CtaClassName } from '../Button/Button';
 
-export type CalendarProps = DayPickerSingleProps | DayPickerRangeProps;
+export type CalendarProps = PropsBase & (PropsSingle | PropsRange);
 
 export type { DateRange };
 
@@ -24,47 +28,57 @@ export function Calendar({
       showOutsideDays={showOutsideDays}
       fixedWeeks={fixedWeeks}
       classNames={{
-        months: 'flex gap-4',
-        month: 'flex flex-col gap-4',
-        caption: 'bloc relative text-center',
-        caption_label:
+        [UI.Months]: 'relative flex gap-4 w-fit',
+        [UI.Month]: 'flex flex-col gap-4',
+        [UI.MonthCaption]: 'bloc text-center',
+        [UI.CaptionLabel]:
           'text-grey-100 text-s font-medium capitalize items-center whitespace-nowrap h-10 flex justify-center',
-        nav: 'absolute inset-0',
-        nav_button: clsx(
+        [UI.Nav]: 'absolute top-0 left-0 right-0',
+        [UI.PreviousMonthButton]: clsx(
           CtaClassName({
             variant: 'secondary',
             color: 'grey',
           }),
-          'size-10',
+          'size-10 absolute left-0',
         ),
-        nav_button_previous: 'absolute left-0',
-        nav_button_next: 'absolute right-0',
-        nav_icon: 'absolute m-auto size-5',
-        table: 'w-full border-none',
-        head_row: 'flex w-full',
-        head_cell:
-          'flex items-center justify-center h-12 w-12 text-xs font-semibold text-grey-100',
-        tbody: 'border-none',
-        row: 'flex w-full',
-        cell: 'flex p-0 text-grey-100',
-        day: 'h-12 w-12 text-s font-medium relative outline-1 outline-purple-100',
-        day_selected: clsx(
+        [UI.NextMonthButton]: clsx(
+          CtaClassName({
+            variant: 'secondary',
+            color: 'grey',
+          }),
+          'size-10 absolute right-0',
+        ),
+        [UI.Chevron]: 'absolute m-auto size-5',
+        [UI.MonthGrid]: 'w-full border-none',
+        [UI.Weekdays]: 'flex w-full',
+        [UI.Weekday]:
+          'flex items-center justify-center size-12 text-xs font-semibold text-grey-100',
+        [UI.Weeks]: 'border-none',
+        [UI.Week]: 'flex w-full',
+        [UI.Day]: 'flex p-0',
+        [UI.DayButton]:
+          'size-12 text-s font-medium outline-1 outline-purple-100',
+        [SelectionState.selected]: clsx(
           'transition-colors',
           props.mode === 'single' && 'rounded bg-purple-100 text-grey-00 ',
         ),
-        day_range_start: 'text-grey-00 bg-purple-100 rounded-s',
-        day_range_end: 'text-grey-00 bg-purple-100 rounded-e',
-        day_range_middle: 'text-purple-100 bg-purple-05',
-        day_outside: 'text-grey-25',
-        day_disabled: 'text-grey-10',
-        day_today:
-          'after:absolute after:bottom-0 after:left-0 after:right-0 after:content-["."] after:text-l',
-        day_hidden: 'invisible',
+        [SelectionState.range_start]: 'text-grey-00 bg-purple-100 rounded-s',
+        [SelectionState.range_end]: 'text-grey-00 bg-purple-100 rounded-e',
+        [SelectionState.range_middle]: 'text-purple-100 bg-purple-05',
+        [DayFlag.outside]: 'text-grey-25',
+        [DayFlag.disabled]: 'text-grey-10',
+        [DayFlag.today]:
+          'after:absolute after:bottom-0 after:left-0 after:right-0 after:content-["."] after:text-l after:text-center relative after:pointer-events-none',
+        [DayFlag.hidden]: 'invisible',
         ...classNames,
       }}
       components={{
-        IconLeft: (props) => <Icon icon="arrow-left" {...props} />,
-        IconRight: (props) => <Icon icon="arrow-right" {...props} />,
+        Chevron: (props) => (
+          <Icon
+            icon={props.orientation === 'left' ? 'arrow-left' : 'arrow-right'}
+            {...props}
+          />
+        ),
       }}
       {...props}
     />

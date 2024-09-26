@@ -1,7 +1,7 @@
 import { mkdir, readdir, readFile, rm, writeFile } from 'fs/promises';
 import ora from 'ora';
 import { basename, join } from 'path';
-import prettier from 'prettier';
+import * as prettier from 'prettier';
 import { type Stream } from 'stream';
 import SVGSpriter from 'svg-sprite';
 

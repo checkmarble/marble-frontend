@@ -20,7 +20,8 @@ export type GetPathParams<
   ? Head extends `:${infer Name}`
     ? { [K in Name]: string } & GetPathParams<Path, Tail>
     : GetPathParams<Path, Tail>
-  : {}; // eslint-disable-line @typescript-eslint/ban-types
+  : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    {};
 
 export function getRoute<Path extends RoutePath>(
   path: Path,
