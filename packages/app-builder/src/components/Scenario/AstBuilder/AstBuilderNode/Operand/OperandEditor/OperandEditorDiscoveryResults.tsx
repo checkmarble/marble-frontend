@@ -18,7 +18,6 @@ import {
   MenuGroupLabel,
   MenuPopover,
   MenuRoot,
-  ScrollAreaV2,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -98,20 +97,18 @@ function Submenu({
           className="size-5 shrink-0"
         />
       </MenuButton>
-      <MenuPopover className="max-h-64 w-64 flex-col" gutter={16}>
+      <MenuPopover className="max-h-64 w-96 flex-col" gutter={16}>
         <MenuContent>
-          <ScrollAreaV2 type="auto">
-            <div className="flex flex-col gap-2 p-2">
-              {options.map((option) => (
-                <OperandOption
-                  key={option.displayName}
-                  editableAstNode={option}
-                  searchValue={searchValue}
-                  onClick={() => onClick(option)}
-                />
-              ))}
-            </div>
-          </ScrollAreaV2>
+          <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pr-[calc(0.5rem-var(--scrollbar-width))]">
+            {options.map((option) => (
+              <OperandOption
+                key={option.displayName}
+                editableAstNode={option}
+                searchValue={searchValue}
+                onClick={() => onClick(option)}
+              />
+            ))}
+          </div>
         </MenuContent>
       </MenuPopover>
     </MenuRoot>
@@ -166,7 +163,7 @@ const FieldGroupGetter: GroupGetter = ({
         operandType={operandType}
         count={count}
         className="min-h-10 p-2"
-        renderLabel={<MenuGroupLabel />}
+        renderLabel={<MenuGroupLabel render={<span />} />}
       />
       {fieldByPathOptions.map(([path, subOptions]) => (
         <Submenu
@@ -200,7 +197,7 @@ function OperandDiscoveryTitle({
   return (
     <div
       className={clsx(
-        'flex select-none flex-row items-center gap-1 truncate',
+        'flex select-none flex-row items-center gap-1',
         className,
       )}
     >
@@ -212,16 +209,13 @@ function OperandDiscoveryTitle({
         />
       ) : null}
       {tKey ? (
-        <span className="flex w-full items-baseline gap-1 truncate">
-          <Ariakit.Role.span
-            className="text-grey-100 text-m flex items-baseline truncate whitespace-pre font-semibold"
-            render={renderLabel}
-          >
+        <span className="text-grey-100 text-m flex-1 items-baseline break-all">
+          <Ariakit.Role.span className="font-semibold" render={renderLabel}>
             {t(tKey, {
               count: count,
             })}
           </Ariakit.Role.span>
-          <span className="text-grey-25 text-xs font-medium">{count}</span>
+          <span className="text-grey-25 text-xs font-medium">{` ${count}`}</span>
         </span>
       ) : null}
     </div>
@@ -232,21 +226,19 @@ function FieldByPathLabel({ path, count }: { path: string; count: number }) {
   const { t } = useTranslation('scenarios');
 
   return (
-    <div className="flex select-none flex-row items-baseline gap-1 truncate pl-9">
-      <span className="text-grey-100 text-s flex items-baseline truncate whitespace-pre">
-        <Trans
-          t={t}
-          i18nKey="edit_operand.operator_discovery.from"
-          components={{
-            Path: <span className="truncate font-semibold" />,
-          }}
-          values={{
-            path,
-          }}
-        />
-      </span>
-      <span className="text-grey-25 text-xs font-medium">{count}</span>
-    </div>
+    <span className="text-grey-100 text-s select-none items-baseline break-all pl-9">
+      <Trans
+        t={t}
+        i18nKey="edit_operand.operator_discovery.from"
+        components={{
+          Path: <span className="font-semibold" />,
+        }}
+        values={{
+          path,
+        }}
+      />
+      <span className="text-grey-25 text-xs font-medium">{` ${count}`}</span>
+    </span>
   );
 }
 

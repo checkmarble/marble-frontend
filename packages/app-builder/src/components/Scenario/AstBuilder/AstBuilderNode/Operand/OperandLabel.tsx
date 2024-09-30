@@ -241,7 +241,7 @@ const selectDisplayText = cva(
         value: 'text-grey-100',
       },
       size: {
-        long: 'hyphens-auto [overflow-wrap:anywhere]',
+        long: 'break-all',
         short: '',
       },
     },

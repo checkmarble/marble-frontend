@@ -48,7 +48,7 @@ function MenuItemLabel({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={clsx(
-        'text-grey-100 text-s w-full overflow-hidden text-ellipsis text-start font-normal',
+        'text-grey-100 text-s w-full break-all text-start font-normal',
         className,
       )}
       {...props}
@@ -107,7 +107,7 @@ export function OperandOption({
       <OperandInfos
         gutter={24}
         shift={-8}
-        className="size-5 shrink-0 text-transparent transition-colors group-data-[active-item]:text-purple-50 group-data-[active-item]:hover:text-purple-100"
+        className="size-5 shrink-0 text-transparent group-data-[active-item]:text-purple-50 group-data-[active-item]:hover:text-purple-100"
         editableAstNode={editableAstNode}
       />
     </MenuItemContainer>
