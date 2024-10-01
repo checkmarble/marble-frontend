@@ -19,7 +19,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
       export SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN && \
       pnpm --filter=app-builder run build
 ENV NODE_ENV=production
-RUN pnpm deploy --filter=app-builder --prod /prod/app-builder
+RUN pnpm --filter=app-builder --prod deploy /prod/app-builder
 
 FROM gcr.io/distroless/nodejs22-debian12 AS app-builder
 ENV NODE_ENV=production
