@@ -1,7 +1,6 @@
 import { resolve } from 'node:path';
 
-import { type AuthSession } from '@app-builder/models';
-import { type AuthStorageRepository } from '@app-builder/repositories/SessionStorageRepositories/AuthStorageRepository';
+import { type LngStorageRepository } from '@app-builder/repositories/SessionStorageRepositories/LngStorageRepository';
 import { type EntryContext } from '@remix-run/node';
 import { createInstance, type FlatNamespace, type InitOptions } from 'i18next';
 import Backend from 'i18next-fs-backend';
@@ -10,14 +9,12 @@ import { RemixI18Next } from 'remix-i18next/server';
 
 import { i18nConfig } from './i18n-config';
 
-export function makeI18nextServerService({
-  authStorage,
-}: AuthStorageRepository) {
+export function makeI18nextServerService({ lngStorage }: LngStorageRepository) {
   const remixI18next = new RemixI18Next({
     detection: {
       supportedLanguages: i18nConfig.supportedLngs,
       fallbackLanguage: i18nConfig.fallbackLng,
-      sessionStorage: authStorage,
+      sessionStorage: lngStorage,
     },
     // This is the configuration for i18next used
     // when translating messages server-side only
@@ -61,8 +58,11 @@ export function makeI18nextServerService({
     return instance;
   }
 
-  function setLanguage(session: AuthSession, language: string) {
+  async function setLanguage(request: Request, language: string) {
+    const session = await lngStorage.getSession(request.headers.get('cookie'));
     session.set('lng', language);
+    const cookie = await lngStorage.commitSession(session);
+    return { cookie };
   }
 
   return {

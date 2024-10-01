@@ -16,28 +16,20 @@ const formSchema = z.object({
 });
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { i18nextService, authSessionService, toastSessionService } =
-    serverServices;
+  const { i18nextService, toastSessionService } = serverServices;
 
   try {
     const { preferredLanguage } = await parseForm(request, formSchema);
-    const authSession = await authSessionService.getSession(request);
 
-    // const user = await authenticator.isAuthenticated(request);
-    // if (user)
-    //   await usersApi.putUsersUserId({
-    //     userId: user.id,
-    //     userPreferences: {
-    //       preferredLanguage,
-    //     },
-    //   });
-
-    i18nextService.setLanguage(authSession, preferredLanguage);
+    const { cookie } = await i18nextService.setLanguage(
+      request,
+      preferredLanguage,
+    );
 
     return redirectBack(request, {
       fallback: getRoute('/scenarios/'),
       headers: {
-        'Set-Cookie': await authSessionService.commitSession(authSession),
+        'Set-Cookie': cookie,
       },
     });
   } catch (error) {

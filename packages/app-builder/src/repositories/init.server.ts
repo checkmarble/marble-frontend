@@ -19,6 +19,7 @@ import { makeGetScenarioRepository } from './ScenarioRepository';
 import {
   getAuthStorageRepository,
   getCsrfCookie,
+  getLngStorageRepository,
   getToastStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepositories';
@@ -46,6 +47,9 @@ export function makeServerRepositories({
     ),
     csrfCookie: getCsrfCookie(sessionStorageRepositoryOptions),
     toastStorageRepository: getToastStorageRepository(
+      sessionStorageRepositoryOptions,
+    ),
+    lngStorageRepository: getLngStorageRepository(
       sessionStorageRepositoryOptions,
     ),
     getMarbleCoreAPIClientWithAuth,

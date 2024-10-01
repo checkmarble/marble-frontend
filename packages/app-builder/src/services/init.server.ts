@@ -39,9 +39,7 @@ function makeServerServices(repositories: ServerRepositories) {
       authSessionService,
       csrfService,
     }),
-    i18nextService: makeI18nextServerService({
-      authStorage: repositories.authStorageRepository.authStorage,
-    }),
+    i18nextService: makeI18nextServerService(repositories.lngStorageRepository),
     licenseService,
     featureAccessService: makeFeatureAccessService({
       getLicenseEntitlements: licenseService.getLicenseEntitlements,

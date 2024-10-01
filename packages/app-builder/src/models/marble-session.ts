@@ -5,7 +5,7 @@ import { type CreatedApiKey } from './api-keys';
 import { type AuthErrors } from './auth-errors';
 import { type CurrentUser } from './user';
 
-export type AuthData = { authToken: Token; lng: string; user: CurrentUser };
+export type AuthData = { authToken: Token; user: CurrentUser };
 export type AuthFlashData = {
   authError: { message: AuthErrors };
   createdApiKey: CreatedApiKey;
