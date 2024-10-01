@@ -70,7 +70,7 @@ export function OperandEditor({
           />
         }
       />
-      <MenuPopover className="w-80 flex-col">
+      <MenuPopover className="w-96 flex-col">
         <OperandEditorContent
           onSave={onSave}
           operandViewModel={operandViewModel}
@@ -163,24 +163,22 @@ function OperandEditorContent({
         }
       />
       <MenuContent>
-        <ScrollAreaV2 type="auto">
-          <div className="flex flex-col gap-2 p-2">
-            {searchValue === '' ? (
-              <OperandEditorDiscoveryResults
-                options={options}
-                searchValue={searchValue}
-                onClick={onClick}
-              />
-            ) : (
-              <OperandEditorSearchResults
-                searchValue={searchValue}
-                constantOptions={constantOptions}
-                matchOptions={matchOptions}
-                onClick={onClick}
-              />
-            )}
-          </div>
-        </ScrollAreaV2>
+        <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pr-[calc(0.5rem-var(--scrollbar-width))]">
+          {searchValue === '' ? (
+            <OperandEditorDiscoveryResults
+              options={options}
+              searchValue={searchValue}
+              onClick={onClick}
+            />
+          ) : (
+            <OperandEditorSearchResults
+              searchValue={searchValue}
+              constantOptions={constantOptions}
+              matchOptions={matchOptions}
+              onClick={onClick}
+            />
+          )}
+        </div>
         {bottomOptions.length > 0 ? (
           <BottomOptions options={bottomOptions} />
         ) : null}

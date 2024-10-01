@@ -115,7 +115,7 @@ export const MenuPopover = React.forwardRef<HTMLDivElement, MenuProps>(
           gutter={8}
           {...props}
           className={clsx(
-            'bg-grey-00 border-grey-10 flex max-h-[min(var(--popover-available-height),_300px)] -translate-y-1 overflow-hidden rounded border opacity-0 shadow-md outline-none transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
+            'bg-grey-00 border-grey-10 flex max-h-[min(var(--popover-available-height),_400px)] -translate-y-1 overflow-hidden rounded border opacity-0 shadow-md outline-none transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
             props.className,
           )}
         />

@@ -24,7 +24,6 @@ import * as Ariakit from '@ariakit/react';
 import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
-import { ScrollAreaV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
@@ -60,22 +59,20 @@ export function OperandInfos({
         gutter={gutter}
         shift={shift}
         portal
-        className="bg-grey-00 border-grey-10 flex max-h-[400px] overflow-y-auto overflow-x-hidden rounded border shadow-md"
+        className="bg-grey-00 border-grey-10 flex max-h-[min(var(--popover-available-height),_400px)] max-w-[var(--popover-available-width)] rounded border shadow-md"
       >
-        <ScrollAreaV2>
-          <div className="flex flex-col gap-2 p-4">
-            <div className="flex flex-col gap-1">
-              <TypeInfos
-                operandType={editableAstNode.operandType}
-                dataType={editableAstNode.dataType}
-              />
-              <p className="text-grey-100 text-s text-ellipsis hyphens-auto font-normal">
-                {editableAstNode.displayName}
-              </p>
-            </div>
-            <OperandDescription editableAstNode={editableAstNode} />
+        <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-auto p-4 pr-[calc(1rem-var(--scrollbar-width))]">
+          <div className="flex flex-col gap-1">
+            <TypeInfos
+              operandType={editableAstNode.operandType}
+              dataType={editableAstNode.dataType}
+            />
+            <p className="text-grey-100 text-s text-ellipsis hyphens-auto font-normal">
+              {editableAstNode.displayName}
+            </p>
           </div>
-        </ScrollAreaV2>
+          <OperandDescription editableAstNode={editableAstNode} />
+        </div>
       </Ariakit.Hovercard>
     </Ariakit.HovercardProvider>
   );
