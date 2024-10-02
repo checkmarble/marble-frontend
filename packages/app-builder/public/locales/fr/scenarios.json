@@ -245,5 +245,6 @@
   "validation.evaluation_error.payload_field_not_found_other": "{{count}} champs de l'objet déclencheur introuvables",
   "validation.evaluation_error.undefined_function_one": "requis",
   "validation.evaluation_error.undefined_function_other": "{{count}} requis",
-  "validation.evaluation_error.wrong_number_of_arguments": "mauvais nombre d'arguments"
+  "validation.evaluation_error.wrong_number_of_arguments": "mauvais nombre d'arguments",
+  "custom_list.unknown": "Liste inconnue"
 }

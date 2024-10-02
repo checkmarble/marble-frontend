@@ -3,6 +3,7 @@ import { type EditableAstNode } from '@app-builder/models/editable-ast-node';
 import { useAdaptEditableAstNode } from '@app-builder/services/ast-node/options';
 import { useFormatReturnValue } from '@app-builder/services/ast-node/return-value';
 import {
+  adaptAstNodeFromEditorViewModel,
   type EditorNodeViewModel,
   getValidationStatus,
 } from '@app-builder/services/editor/ast-editor';
@@ -29,10 +30,10 @@ export function Operand({
   const formatReturnValue = useFormatReturnValue();
 
   if (!editableAstNode) {
+    const astNode = adaptAstNodeFromEditorViewModel(operandViewModel);
     return (
       <Default
-        editorNodeViewModel={operandViewModel}
-        type={viewOnly ? 'viewer' : 'editor'}
+        astNode={astNode}
         validationStatus={getValidationStatus(operandViewModel)}
       />
     );
@@ -43,7 +44,7 @@ export function Operand({
       <OperandLabel
         editableAstNode={editableAstNode}
         validationStatus={getValidationStatus(operandViewModel)}
-        type="viewer"
+        interactionMode="viewer"
         returnValue={formatReturnValue(operandViewModel.returnValue)}
       />
     );

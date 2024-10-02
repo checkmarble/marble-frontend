@@ -1,8 +1,7 @@
 import { type OperandViewModel } from '@app-builder/components/Scenario/AstBuilder/AstBuilderNode/Operand';
 import {
   type DatabaseAccessAstNode,
-  isDatabaseAccess,
-  isPayload,
+  isDataAccessorAstNode,
   NewAggregatorAstNode,
   NewConstantAstNode,
   NewFuzzyMatchComparatorAstNode,
@@ -12,8 +11,6 @@ import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type DataModel,
   type EnumValue,
-  findDataModelField,
-  findDataModelTable,
   findDataModelTableByName,
   type TableModel,
 } from '@app-builder/models/data-model';
@@ -39,6 +36,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { adaptAstNodeFromEditorViewModel } from '../editor/ast-editor';
+import { getDataAccessorAstNodeField } from '../editor/getDataAccessorAstNodeField';
 
 const DatabaseAccessors =
   createSimpleContext<DatabaseAccessAstNode[]>('DatabaseAccessors');
@@ -232,26 +230,14 @@ function getEnumOptionsFromNeighbour({
     return [];
   }
   const neighbourNode = adaptAstNodeFromEditorViewModel(neighbourNodeViewModel);
-  if (isPayload(neighbourNode)) {
-    const field = findDataModelField({
-      table: triggerObjectTable,
-      fieldName: neighbourNode.children[0].constant,
+  if (isDataAccessorAstNode(neighbourNode)) {
+    const field = getDataAccessorAstNodeField(neighbourNode, {
+      triggerObjectTable,
+      dataModel,
     });
     return field.isEnum ? (field.values ?? []) : [];
   }
 
-  if (isDatabaseAccess(neighbourNode)) {
-    const table = findDataModelTable({
-      dataModel,
-      tableName: neighbourNode.namedChildren.tableName.constant,
-      path: neighbourNode.namedChildren.path.constant,
-    });
-    const field = findDataModelField({
-      table: table,
-      fieldName: neighbourNode.namedChildren.fieldName.constant,
-    });
-    return field.isEnum ? (field.values ?? []) : [];
-  }
   return [];
 }
 

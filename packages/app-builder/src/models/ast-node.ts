@@ -430,6 +430,14 @@ export function isFunctionAstNode(node: AstNode): node is FunctionAstNode {
   );
 }
 
+export type DataAccessorAstNode = DatabaseAccessAstNode | PayloadAstNode;
+
+export function isDataAccessorAstNode(
+  node: AstNode,
+): node is DataAccessorAstNode {
+  return isDatabaseAccess(node) || isPayload(node);
+}
+
 export interface OrAndGroupAstNode {
   name: 'Or';
   constant: undefined;
