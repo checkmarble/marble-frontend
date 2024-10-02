@@ -27,7 +27,7 @@ const operandContainerClassnames = cva(
   ],
   {
     variants: {
-      type: {
+      interactionMode: {
         viewer: 'bg-grey-02',
         editor:
           'bg-grey-00 aria-expanded:bg-purple-05 aria-expanded:border-purple-100',
@@ -40,41 +40,41 @@ const operandContainerClassnames = cva(
     },
     compoundVariants: [
       {
-        type: 'editor',
+        interactionMode: 'editor',
         validationStatus: 'valid',
         className:
           'border enabled:aria-[expanded=false]:border-grey-10 enabled:aria-[expanded=false]:focus:border-purple-100',
       },
       {
-        type: 'editor',
+        interactionMode: 'editor',
         validationStatus: 'error',
         className:
           'border enabled:aria-[expanded=false]:border-red-100 enabled:aria-[expanded=false]:focus:border-purple-100',
       },
       {
-        type: 'editor',
+        interactionMode: 'editor',
         validationStatus: 'light-error',
         className:
           'border enabled:aria-[expanded=false]:border-red-25 enabled:aria-[expanded=false]:focus:border-purple-100',
       },
       {
-        type: 'viewer',
+        interactionMode: 'viewer',
         validationStatus: 'valid',
         className: 'border border-grey-02',
       },
       {
-        type: 'viewer',
+        interactionMode: 'viewer',
         validationStatus: 'error',
         className: 'border border-red-100',
       },
       {
-        type: 'viewer',
+        interactionMode: 'viewer',
         validationStatus: 'light-error',
         className: 'border border-red-25',
       },
     ],
     defaultVariants: {
-      type: 'viewer',
+      interactionMode: 'viewer',
       validationStatus: 'valid',
     },
   },
@@ -93,7 +93,7 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
       editableAstNode,
       validationStatus,
       placeholder,
-      type,
+      interactionMode,
       returnValue,
       ...props
     },
@@ -142,7 +142,7 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
       children = (
         <>
           <TypeInfos
-            type={type}
+            interactionMode={interactionMode}
             operandType={editableAstNode.operandType}
             dataType={editableAstNode.dataType}
           />
@@ -169,10 +169,10 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
         ref={ref}
         {...props}
         className={operandContainerClassnames({
-          type,
+          interactionMode,
           validationStatus,
         })}
-        render={type === 'editor' ? <button /> : <div />}
+        render={interactionMode === 'editor' ? <button /> : <div />}
       >
         {children}
       </Ariakit.Role>
@@ -184,7 +184,7 @@ const typeInfosClassnames = cva(
   'flex items-center justify-center rounded-sm p-1 text-grey-100',
   {
     variants: {
-      type: {
+      interactionMode: {
         viewer: 'bg-grey-10',
         editor:
           'bg-grey-02 group-aria-expanded:bg-purple-10 group-aria-expanded:text-purple-100',
@@ -198,7 +198,7 @@ interface TypeInfosProps extends VariantProps<typeof typeInfosClassnames> {
   dataType: DataType;
 }
 
-export function TypeInfos({ operandType, dataType, type }: TypeInfosProps) {
+function TypeInfos({ operandType, dataType, interactionMode }: TypeInfosProps) {
   const { t } = useTranslation('scenarios');
   const typeInfos = [
     {
@@ -219,7 +219,7 @@ export function TypeInfos({ operandType, dataType, type }: TypeInfosProps) {
       {typeInfos.map(({ icon, tKey }) => {
         if (!icon) return null;
         return (
-          <div key={tKey} className={typeInfosClassnames({ type })}>
+          <div key={tKey} className={typeInfosClassnames({ interactionMode })}>
             <Icon
               icon={icon}
               className="size-4 shrink-0"

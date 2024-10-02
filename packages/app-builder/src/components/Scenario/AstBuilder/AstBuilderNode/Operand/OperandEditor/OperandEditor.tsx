@@ -64,7 +64,7 @@ export function OperandEditor({
         render={
           <OperandLabel
             editableAstNode={editableAstNode}
-            type="editor"
+            interactionMode="editor"
             validationStatus={getValidationStatus(operandViewModel)}
             placeholder={t('edit_operand.placeholder')}
           />

@@ -242,7 +242,10 @@ function AggregatorDescription({
               type="text"
             />
             <div className="flex items-center gap-1">
-              {/* TODO: replace with OperandLable for consistency */}
+              {/* TODO: replace with OperandLable for consistency, 
+              we may need to change the AggregatorEditableAstNode to register a valid Payload node (instead of the shorthand Constant) 
+              but it can be cumbersome for api compatibility (notably when getting the astNode from the server)
+              */}
               <p className="bg-grey-02 whitespace-nowrap p-2 text-right">
                 {fieldName?.constant ?? '...'}
               </p>
@@ -254,7 +257,7 @@ function AggregatorDescription({
               />
               <OperandLabel
                 editableAstNode={valueEditableAstNode}
-                type="viewer"
+                interactionMode="viewer"
               />
             </div>
           </Fragment>

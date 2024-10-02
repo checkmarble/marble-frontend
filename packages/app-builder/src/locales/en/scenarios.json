@@ -227,6 +227,7 @@
   "edit_date.date": "Date",
   "enum_options": "Options:",
   "nest": "Nest",
+  "custom_list.unknown": "Unknown list",
   "edit_fuzzy_match.string_similarity": "String similarity",
   "edit_fuzzy_match.fuzzy_match": "match",
   "edit_fuzzy_match.fuzzy_match_any_of": "match any of",
