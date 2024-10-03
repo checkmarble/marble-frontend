@@ -17,7 +17,6 @@ import { Icon } from 'ui-icons';
 
 import { type DecisionFilters } from '../Decisions';
 import { scheduledExecutionI18n } from './scheduledExecution-i18n';
-import { ScheduledExecutionDetails } from './ScheduledExecutionDetails';
 
 const columnHelper = createColumnHelper<ScheduledExecution>();
 
@@ -48,10 +47,7 @@ export function ScheduledExecutionsList({
           const formattedNumber = formatNumber(numberOfCreatedDecisions, {
             language,
           });
-          if (
-            row.original.status === 'success' &&
-            numberOfCreatedDecisions > 0
-          ) {
+          if (numberOfCreatedDecisions > 0) {
             return (
               <Link
                 to={getDecisionRoute({
@@ -68,6 +64,40 @@ export function ScheduledExecutionsList({
         header: t('scheduledExecution:number_of_created_decisions'),
         size: 100,
       }),
+      columnHelper.accessor((s) => s.numberOfEvaluatedDecisions, {
+        id: 'number-of-evaluated-decisions',
+        cell: ({ getValue }) => {
+          const numberOfEvaluatedDecisions = getValue();
+          return (
+            <span>
+              {formatNumber(numberOfEvaluatedDecisions, {
+                language,
+              })}
+            </span>
+          );
+        },
+        header: t('scheduledExecution:number_of_evaluated_decisions'),
+        size: 100,
+      }),
+      columnHelper.accessor((s) => s.numberOfPlannedDecisions, {
+        id: 'number-of-planned-decisions',
+        cell: ({ getValue }) => {
+          const numberOfPlannedDecisions = getValue();
+          if (numberOfPlannedDecisions === null) {
+            return null;
+          }
+
+          return (
+            <span>
+              {formatNumber(numberOfPlannedDecisions, {
+                language,
+              })}
+            </span>
+          );
+        },
+        header: t('scheduledExecution:number_of_planned_decisions'),
+        size: 100,
+      }),
       columnHelper.accessor((s) => s.status, {
         id: 'status',
 
@@ -78,33 +108,34 @@ export function ScheduledExecutionsList({
           </div>
         ),
         header: t('scheduledExecution:status'),
-        size: 150,
+        size: 100,
       }),
       columnHelper.accessor((s) => formatDateTime(s.startedAt, { language }), {
         id: 'created_at',
         header: t('scheduledExecution:created_at'),
-        size: 200,
+        size: 100,
         cell: ({ getValue, cell }) => {
           return (
             <time dateTime={cell.row.original.startedAt}>{getValue()}</time>
           );
         },
       }),
-      columnHelper.display({
-        id: 'download',
-        header: '',
-        size: 200,
-        cell: (cell) => {
-          if (cell.row.original.numberOfCreatedDecisions > 0) {
-            return (
-              <ScheduledExecutionDetails
-                scheduleExecutionId={cell.row.original.id}
-              />
-            );
-          }
-          return null;
-        },
-      }),
+      // columnHelper.display({
+      //   id: 'download',
+      //   header: '',
+      //   size: 200,
+      //   cell: (cell) => {
+      //     const value = cell.row.original.numberOfCreatedDecisions;
+      //     if (value != null && value > 0) {
+      //       return (
+      //         <ScheduledExecutionDetails
+      //           scheduleExecutionId={cell.row.original.id}
+      //         />
+      //       );
+      //     }
+      //     return null;
+      //   },
+      // }),
     ],
     [language, t],
   );
@@ -141,7 +172,7 @@ const getStatusIcon = (status: string) => {
   if (status === 'success') {
     return <Icon icon="tick" className="size-6 shrink-0 text-green-100" />;
   }
-  if (status === 'failure') {
+  if (status === 'failure' || status === 'partial_failure') {
     return <Icon icon="cross" className="size-6 shrink-0 text-red-100" />;
   }
   return <Icon icon="restart-alt" className="text-grey-50 size-6 shrink-0" />;
@@ -153,6 +184,9 @@ const getStatusTKey = (status: string): ParseKeys<['scheduledExecution']> => {
   }
   if (status === 'failure') {
     return 'scheduledExecution:status_failure';
+  }
+  if (status === 'partial_failure') {
+    return 'scheduledExecution:status_partial_failure';
   }
   if (status === 'processing') {
     return 'scheduledExecution:status_processing';
