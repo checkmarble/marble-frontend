@@ -7,8 +7,6 @@
   "case.file.added_date": "Ajouté le",
   "case.file.download": "Télécharger",
   "case.file.downloading": "Téléchargement...",
-  "case.file.errors.downloading_decisions_link.auth_error": "Une erreur d'authentification s'est produite lors de la génération du lien de téléchargement. \nReconnectez vous avant de réessayer.",
-  "case.file.errors.downloading_decisions_link.unknown": "Une erreur inconnue s'est produite lors de la génération du lien de téléchargement. \nVeuillez réessayer plus tard.",
   "case.file.extension": "Extension",
   "case.file.name": "Nom de fichier",
   "case.files": "Fichiers",

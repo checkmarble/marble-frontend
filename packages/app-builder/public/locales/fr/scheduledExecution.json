@@ -1,9 +1,5 @@
 {
   "created_at": "Créé à",
-  "download_decisions": "Télécharger les décisions",
-  "downloading_decisions": "Téléchargement des décisions...",
-  "errors.downloading_decisions_link.auth_error": "Une erreur d'authentification s'est produite lors de la génération du lien de téléchargement. \nVous devrez peut-être vous reconnecter.",
-  "errors.downloading_decisions_link.unknown": "Une erreur inconnue s'est produite lors de la génération du lien de téléchargement. \nVeuillez réessayer plus tard.",
   "finished_at": "Terminé à",
   "number_of_created_decisions": "Décisions créées",
   "number_of_evaluated_decisions": "Décisions évaluées",

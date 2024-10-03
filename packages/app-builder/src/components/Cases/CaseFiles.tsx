@@ -90,13 +90,9 @@ function FileLink({ caseFileId }: { caseFileId: string }) {
           // Already downloading, do nothing
           return;
         } else if (e instanceof AuthRequestError) {
-          toast.error(
-            t('cases:case.file.errors.downloading_decisions_link.auth_error'),
-          );
+          toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
         } else {
-          toast.error(
-            t('cases:case.file.errors.downloading_decisions_link.unknown'),
-          );
+          toast.error(t('cases:case.file.errors.downloading_link.unknown'));
         }
       },
     },
