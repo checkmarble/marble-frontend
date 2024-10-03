@@ -120,22 +120,6 @@ export function ScheduledExecutionsList({
           );
         },
       }),
-      // columnHelper.display({
-      //   id: 'download',
-      //   header: '',
-      //   size: 200,
-      //   cell: (cell) => {
-      //     const value = cell.row.original.numberOfCreatedDecisions;
-      //     if (value != null && value > 0) {
-      //       return (
-      //         <ScheduledExecutionDetails
-      //           scheduleExecutionId={cell.row.original.id}
-      //         />
-      //       );
-      //     }
-      //     return null;
-      //   },
-      // }),
     ],
     [language, t],
   );
