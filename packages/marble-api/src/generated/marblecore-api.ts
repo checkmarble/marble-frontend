@@ -266,13 +266,18 @@ export type ScheduledExecutionDto = {
     id: string;
     /** Whether the execution was manual or not */
     manual: boolean;
+    /** Number of decisions who were created (matched the trigger condition) */
     number_of_created_decisions: number;
+    /** Number of decisions who were executed (even if they did not match the trigger condition) */
+    number_of_evaluated_decisions: number;
+    /** Number of decisions who have been planned (using the preliminary filter of ingsted entities in the DB). Null before the execution initial filter has run. */
+    number_of_planned_decisions: number | null;
     scenario_id: string;
     scenario_iteration_id: string;
     scenario_name: string;
     scenario_trigger_object_type: string;
     started_at: string;
-    status: "pending" | "processing" | "success" | "failure";
+    status: "pending" | "processing" | "success" | "failure" | "partial_failure";
 };
 export type RuleSnoozeDto = {
     id: string;

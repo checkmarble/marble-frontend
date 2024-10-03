@@ -44,8 +44,10 @@ export interface ScheduledExecution {
   id: string;
   /** Whether the execution was manual or not */
   manual: boolean;
-  status: 'pending' | 'processing' | 'success' | 'failure';
+  status: 'pending' | 'processing' | 'success' | 'failure' | 'partial_failure';
   numberOfCreatedDecisions: number;
+  numberOfEvaluatedDecisions: number;
+  numberOfPlannedDecisions: number | null;
   scenarioId: string;
   scenarioIterationId: string;
   scenarioName: string;
@@ -62,6 +64,8 @@ export function adaptScheduledExecution(
     manual: dto.manual,
     status: dto.status,
     numberOfCreatedDecisions: dto.number_of_created_decisions,
+    numberOfEvaluatedDecisions: dto.number_of_evaluated_decisions,
+    numberOfPlannedDecisions: dto.number_of_planned_decisions,
     scenarioId: dto.scenario_id,
     scenarioIterationId: dto.scenario_iteration_id,
     scenarioName: dto.scenario_name,
