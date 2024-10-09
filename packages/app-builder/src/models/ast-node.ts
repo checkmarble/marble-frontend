@@ -245,7 +245,7 @@ export function NewTimeAddAstNode(
   };
 }
 
-const timeNowAstNodeName = 'TimeNow';
+export const timeNowAstNodeName = 'TimeNow';
 export interface TimeNowAstNode {
   name: typeof timeNowAstNodeName;
   constant?: undefined;
@@ -291,7 +291,7 @@ export function NewFuzzyMatchAstNode({
   };
 }
 
-const fuzzyMatchAnyOfAstNodeName = 'FuzzyMatchAnyOf';
+export const fuzzyMatchAnyOfAstNodeName = 'FuzzyMatchAnyOf';
 export interface FuzzyMatchAnyOfAstNode {
   name: typeof fuzzyMatchAnyOfAstNodeName;
   constant?: undefined;
@@ -413,21 +413,31 @@ export function isFuzzyMatchComparator(
   return isFuzzyMatch(firstChild) || isFuzzyMatchAnyOf(firstChild);
 }
 
-type FunctionAstNode =
+type EditableAstNode =
   | AggregationAstNode
   | TimeAddAstNode
-  | TimeNowAstNode
   | FuzzyMatchComparatorAstNode;
 
-// TODO(EditableAstNode): heavy link to EditableAstNode operandType = 'Function'
-// Function is considered a special type of operand which require modal to edit
-export function isFunctionAstNode(node: AstNode): node is FunctionAstNode {
-  return (
-    isAggregation(node) ||
-    isTimeAdd(node) ||
-    isTimeNow(node) ||
-    isFuzzyMatchComparator(node)
-  );
+/**
+ * Check if the node is editable in a dedicated modal
+ * @param node
+ * @returns
+ */
+export function isEditableAstNode(node: AstNode): node is EditableAstNode {
+  return isAggregation(node) || isTimeAdd(node) || isFuzzyMatchComparator(node);
+}
+
+type LeafOperandAstNode = EditableAstNode | TimeNowAstNode;
+
+/**
+ * Check if the node is considered as leaf operand
+ * @param node
+ * @returns
+ */
+export function isLeafOperandAstNode(
+  node: AstNode,
+): node is LeafOperandAstNode {
+  return isEditableAstNode(node) || isTimeNow(node);
 }
 
 export type DataAccessorAstNode = DatabaseAccessAstNode | PayloadAstNode;
@@ -438,26 +448,26 @@ export function isDataAccessorAstNode(
   return isDatabaseAccess(node) || isPayload(node);
 }
 
-export interface OrAndGroupAstNode {
-  name: 'Or';
-  constant: undefined;
-  children: {
-    name: 'And';
-    constant: undefined;
-    children: AstNode[];
-    namedChildren: Record<string, never>;
-  }[];
-  namedChildren: Record<string, never>;
-}
+export type KnownOperandAstNode =
+  | UndefinedAstNode
+  | ConstantAstNode
+  | CustomListAccessAstNode
+  | DatabaseAccessAstNode
+  | LeafOperandAstNode;
 
-export function isOrAndGroup(astNode: AstNode): astNode is OrAndGroupAstNode {
-  if (astNode.name !== 'Or') {
-    return false;
-  }
-  for (const child of astNode.children) {
-    if (child.name !== 'And') {
-      return false;
-    }
-  }
-  return true;
+/**
+ * Check if the node is handled in the Operand UI
+ * @param node
+ * @returns
+ */
+export function isKnownOperandAstNode(
+  node: AstNode,
+): node is KnownOperandAstNode {
+  return (
+    isUndefinedAstNode(node) ||
+    isConstant(node) ||
+    isCustomListAccess(node) ||
+    isDataAccessorAstNode(node) ||
+    isLeafOperandAstNode(node)
+  );
 }

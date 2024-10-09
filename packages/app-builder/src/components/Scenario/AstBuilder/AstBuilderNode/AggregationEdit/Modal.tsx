@@ -8,21 +8,18 @@ import {
   NewConstantAstNode,
 } from '@app-builder/models';
 import {
+  type AggregationAstNodeViewModel,
+  type AstNodeViewModel,
+} from '@app-builder/models/ast-node-view-model';
+import {
   type AggregatorOperator,
   aggregatorOperators,
 } from '@app-builder/models/editable-operators';
-import {
-  computeValidationForNamedChildren,
-  type EvaluationError,
-} from '@app-builder/models/node-evaluation';
-import { useDataModel } from '@app-builder/services/ast-node/options';
+import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
-import {
-  adaptAstNodeFromEditorViewModel,
-  type ConstantEditorNodeViewModel,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
+import { useDataModel } from '@app-builder/services/editor/options';
+import { computeValidationForNamedChildren } from '@app-builder/services/validation/ast-node-validation';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
@@ -43,7 +40,6 @@ export const handle = {
 };
 
 export interface AggregationViewModel {
-  nodeId: string;
   label: string;
   aggregator: AggregatorOperator;
   aggregatedField: DataModelField | null;
@@ -57,7 +53,7 @@ export interface AggregationViewModel {
 export interface FilterViewModel {
   operator: string | null;
   filteredField: DataModelField | null;
-  value: EditorNodeViewModel;
+  value: AstNodeViewModel;
   errors: {
     filter: EvaluationError[];
     operator: EvaluationError[];
@@ -66,73 +62,8 @@ export interface FilterViewModel {
   };
 }
 
-export interface AggregationEditorNodeViewModel {
-  nodeId: string;
-  funcName: typeof aggregationAstNodeName;
-  constant: undefined;
-  errors: EvaluationError[];
-  children: [];
-  namedChildren: {
-    aggregator: ConstantEditorNodeViewModel<
-      string,
-      AggregationEditorNodeViewModel
-    >;
-    tableName: ConstantEditorNodeViewModel<
-      string,
-      AggregationEditorNodeViewModel
-    >;
-    fieldName: ConstantEditorNodeViewModel<
-      string,
-      AggregationEditorNodeViewModel
-    >;
-    label: ConstantEditorNodeViewModel<string, AggregationEditorNodeViewModel>;
-    filters?: AggregationFiltersEditorNodeViewModel;
-  };
-  parent: EditorNodeViewModel;
-}
-
-interface AggregationFiltersEditorNodeViewModel {
-  nodeId: string;
-  funcName: 'List';
-  constant: undefined;
-  errors: EvaluationError[];
-  children: AggregationFilterEditorNodeViewModel[];
-  namedChildren: Record<string, never>;
-  parent: AggregationEditorNodeViewModel;
-}
-
-interface AggregationFilterEditorNodeViewModel {
-  nodeId: string;
-  funcName: 'Filter';
-  constant: undefined;
-  errors: EvaluationError[];
-  children: [];
-  namedChildren: {
-    tableName: ConstantEditorNodeViewModel<
-      string | null,
-      AggregationFilterEditorNodeViewModel
-    >;
-    fieldName: ConstantEditorNodeViewModel<
-      string | null,
-      AggregationFilterEditorNodeViewModel
-    >;
-    operator: ConstantEditorNodeViewModel<
-      string | null,
-      AggregationFilterEditorNodeViewModel
-    >;
-    value: EditorNodeViewModel;
-  };
-  parent: AggregationFiltersEditorNodeViewModel;
-}
-
-export const isAggregationEditorNodeViewModel = (
-  vm: EditorNodeViewModel,
-): vm is AggregationEditorNodeViewModel => {
-  return vm.funcName === aggregationAstNodeName;
-};
-
 export const adaptAggregationViewModel = (
-  vm: AggregationEditorNodeViewModel,
+  vm: AggregationAstNodeViewModel,
 ): AggregationViewModel => {
   const aggregatedField: DataModelField = {
     tableName: vm.namedChildren.tableName.constant,
@@ -142,7 +73,6 @@ export const adaptAggregationViewModel = (
     vm.namedChildren.filters?.children.map(adaptFilterViewModel) ?? [];
 
   return {
-    nodeId: vm.nodeId,
     label: vm.namedChildren.label.constant ?? '',
     // No guard here: we prefer to display an unhandled operator to a default one
     aggregator: vm.namedChildren.aggregator.constant as AggregatorOperator,
@@ -160,7 +90,7 @@ export const adaptAggregationViewModel = (
 };
 
 function adaptFilterViewModel(
-  filterVM: AggregationFilterEditorNodeViewModel,
+  filterVM: AggregationAstNodeViewModel['namedChildren']['filters']['children'][number],
 ): FilterViewModel {
   return {
     operator: filterVM.namedChildren.operator.constant,
@@ -199,7 +129,7 @@ export const adaptAggregationAstNode = (
         fieldName: NewConstantAstNode({
           constant: filter.filteredField?.fieldName ?? null,
         }),
-        value: adaptAstNodeFromEditorViewModel(filter.value),
+        value: filter.value,
       },
     }),
   );

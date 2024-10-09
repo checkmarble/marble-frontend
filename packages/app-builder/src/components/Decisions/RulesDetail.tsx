@@ -16,11 +16,11 @@ import {
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import {
   DisplayReturnValuesProvider,
   useDisplayReturnValues,
-} from '@app-builder/services/ast-node/return-value';
-import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
+} from '@app-builder/services/editor/return-value';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { Await } from '@remix-run/react';
 import { type TFunction } from 'i18next';
@@ -239,7 +239,7 @@ function RuleFormula({
         setOperator={astEditor.setOperator}
         appendChild={astEditor.appendChild}
         remove={astEditor.remove}
-        editorNodeViewModel={astEditor.editorNodeViewModel}
+        astNodeVM={astEditor.astNodeVM}
         viewOnly={true}
       />
     </Paper.Container>

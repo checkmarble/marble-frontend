@@ -1,29 +1,30 @@
 import {
+  type AggregationAstNode,
+  type AstNode,
+  type CustomListAccessAstNode,
+  type DataAccessorAstNode,
   type DataType,
   getDataTypeIcon,
   getDataTypeTKey,
+  isAggregation,
+  isCustomListAccess,
+  isDataAccessorAstNode,
+  isTimeAdd,
 } from '@app-builder/models';
+import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import {
-  adaptEditableAstNode,
-  AggregatorEditableAstNode,
-  ConstantEditableAstNode,
-  CustomListEditableAstNode,
-  DatabaseAccessEditableAstNode,
-  type EditableAstNode,
-  FuzzyMatchComparatorEditableAstNode,
   getOperandTypeIcon,
   getOperandTypeTKey,
   type OperandType,
-  PayloadAccessorsEditableAstNode,
-  TimeAddEditableAstNode,
-  TimeNowEditableAstNode,
-  UndefinedEditableAstNode,
-} from '@app-builder/models/editable-ast-node';
-import { type OperatorFunction } from '@app-builder/models/editable-operators';
+} from '@app-builder/models/operand-type';
+import {
+  useCustomListAccessCustomList,
+  useDataAccessorAstNodeField,
+  useGetAstNodeOption,
+} from '@app-builder/services/editor/options';
 import * as Ariakit from '@ariakit/react';
 import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
-import { assertNever } from 'typescript-utils';
 import { Icon } from 'ui-icons';
 
 import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
@@ -36,14 +37,20 @@ interface OperandInfosProps {
   className?: string;
   gutter?: number;
   shift?: number;
-  editableAstNode: EditableAstNode;
+  astNode: AstNode;
+  dataType: DataType;
+  operandType: OperandType;
+  displayName: string;
 }
 
 export function OperandInfos({
   className,
   gutter,
   shift,
-  editableAstNode,
+  astNode,
+  dataType,
+  operandType,
+  displayName,
 }: OperandInfosProps) {
   return (
     <Ariakit.HovercardProvider
@@ -63,15 +70,12 @@ export function OperandInfos({
       >
         <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-auto p-4 pr-[calc(1rem-var(--scrollbar-width))]">
           <div className="flex flex-col gap-1">
-            <TypeInfos
-              operandType={editableAstNode.operandType}
-              dataType={editableAstNode.dataType}
-            />
+            <TypeInfos operandType={operandType} dataType={dataType} />
             <p className="text-grey-100 text-s text-ellipsis hyphens-auto font-normal">
-              {editableAstNode.displayName}
+              {displayName}
             </p>
           </div>
-          <OperandDescription editableAstNode={editableAstNode} />
+          <OperandDescription astNode={astNode} />
         </div>
       </Ariakit.Hovercard>
     </Ariakit.HovercardProvider>
@@ -116,42 +120,25 @@ function TypeInfos({
   );
 }
 
-function OperandDescription({
-  editableAstNode,
-}: {
-  editableAstNode: EditableAstNode;
-}) {
+function OperandDescription({ astNode }: { astNode: AstNode }) {
   const { t } = useTranslation(['scenarios']);
 
-  if (editableAstNode instanceof AggregatorEditableAstNode) {
-    return <AggregatorDescription editableAstNode={editableAstNode} />;
+  if (isAggregation(astNode)) {
+    return <AggregatorDescription astNode={astNode} />;
   }
-  if (editableAstNode instanceof CustomListEditableAstNode) {
-    const { description } = editableAstNode.customList;
-    return <Description description={description} />;
+  if (isCustomListAccess(astNode)) {
+    return <CustomListAccessDescription astNode={astNode} />;
   }
-  if (
-    editableAstNode instanceof DatabaseAccessEditableAstNode ||
-    editableAstNode instanceof PayloadAccessorsEditableAstNode
-  ) {
-    return <DataAccessorDescription editableAstNode={editableAstNode} />;
+  if (isDataAccessorAstNode(astNode)) {
+    return <DataAccessorDescription astNode={astNode} />;
   }
-  if (editableAstNode instanceof TimeNowEditableAstNode) {
+  if (isTimeAdd(astNode)) {
     return (
       <Description description={t('scenarios:edit_date.now.description')} />
     );
   }
-  if (
-    editableAstNode instanceof ConstantEditableAstNode ||
-    editableAstNode instanceof UndefinedEditableAstNode ||
-    editableAstNode instanceof TimeAddEditableAstNode ||
-    // TODO: implement description like AggregatorDescription
-    editableAstNode instanceof FuzzyMatchComparatorEditableAstNode
-  ) {
-    return null;
-  }
 
-  assertNever('[OperandDescription] unknown editableAstNode:', editableAstNode);
+  return null;
 }
 
 function Description({ description }: { description: string }) {
@@ -163,15 +150,23 @@ function Description({ description }: { description: string }) {
   );
 }
 
-function DataAccessorDescription({
-  editableAstNode,
+function CustomListAccessDescription({
+  astNode,
 }: {
-  editableAstNode:
-    | PayloadAccessorsEditableAstNode
-    | DatabaseAccessEditableAstNode;
+  astNode: CustomListAccessAstNode;
+}) {
+  const customList = useCustomListAccessCustomList(astNode);
+  if (!customList) return null;
+  return <Description description={customList.description} />;
+}
+
+function DataAccessorDescription({
+  astNode,
+}: {
+  astNode: DataAccessorAstNode;
 }) {
   const { t } = useTranslation(['scenarios']);
-  const { description, values, isEnum } = editableAstNode.field;
+  const { description, values, isEnum } = useDataAccessorAstNodeField(astNode);
 
   return (
     <>
@@ -203,14 +198,9 @@ function DataAccessorDescription({
   );
 }
 
-function AggregatorDescription({
-  editableAstNode,
-}: {
-  editableAstNode: AggregatorEditableAstNode;
-}) {
-  const { t } = useTranslation(['common', 'scenarios']);
-  const { aggregator, tableName, fieldName, filters } =
-    editableAstNode.astNode.namedChildren;
+function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
+  const getAstNodeOption = useGetAstNodeOption();
+  const { aggregator, tableName, fieldName, filters } = astNode.namedChildren;
   if (
     !tableName.constant &&
     !fieldName.constant &&
@@ -228,13 +218,6 @@ function AggregatorDescription({
       <span className="font-bold">{aggregatedFieldName}</span>
       {filters.children.map((filter, index) => {
         const { operator, fieldName, value } = filter.namedChildren;
-        const valueEditableAstNode = adaptEditableAstNode(t, value, {
-          dataModel: editableAstNode.dataModel,
-          triggerObjectTable: editableAstNode.triggerObjectTable,
-          customLists: editableAstNode.customLists,
-          enumOptions: [],
-        });
-        if (!valueEditableAstNode) return null;
         return (
           <Fragment key={`filter_${index}`}>
             <LogicalOperatorLabel
@@ -245,6 +228,10 @@ function AggregatorDescription({
               {/* TODO: replace with OperandLable for consistency, 
               we may need to change the AggregatorEditableAstNode to register a valid Payload node (instead of the shorthand Constant) 
               but it can be cumbersome for api compatibility (notably when getting the astNode from the server)
+              
+              Should be stringified as a "payload access" with :
+              - a field name (string) = fieldName?.constant
+              - a table name (string) = tableName?.constant
               */}
               <p className="bg-grey-02 whitespace-nowrap p-2 text-right">
                 {fieldName?.constant ?? '...'}
@@ -256,8 +243,8 @@ function AggregatorDescription({
                 viewOnly
               />
               <OperandLabel
-                editableAstNode={valueEditableAstNode}
                 interactionMode="viewer"
+                {...getAstNodeOption(value)}
               />
             </div>
           </Fragment>

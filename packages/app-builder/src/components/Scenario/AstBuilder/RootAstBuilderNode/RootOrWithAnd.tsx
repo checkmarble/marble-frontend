@@ -4,24 +4,12 @@ import {
   NewAstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
-import {
-  type EvaluationError,
-  separateChildrenErrors,
-} from '@app-builder/models/node-evaluation';
+import { type RootOrWithAndAstNodeViewModel } from '@app-builder/models/ast-node-view-model';
 import {
   adaptBooleanReturnValue,
   useDisplayReturnValues,
-} from '@app-builder/services/ast-node/return-value';
-import {
-  type EditorNodeViewModel,
-  findArgumentIndexErrorsFromParent,
-  hasArgumentIndexErrorsFromParent,
-} from '@app-builder/services/editor/ast-editor';
-import {
-  adaptEvaluationErrorViewModels,
-  useGetNodeEvaluationErrorMessage,
-  useGetOrAndNodeEvaluationErrorMessage,
-} from '@app-builder/services/validation';
+} from '@app-builder/services/editor/return-value';
+import { useRootAstBuilderValidation } from '@app-builder/services/validation/ast-node-validation';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,42 +17,8 @@ import { Tag } from 'ui-design-system';
 
 import { EvaluationErrors } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
-import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
-
-export interface RootOrWithAndViewModel {
-  orNodeId: string;
-  orErrors: EvaluationError[];
-  ands: {
-    nodeId: string;
-    errors: EvaluationError[];
-    children: EditorNodeViewModel[];
-  }[];
-}
-
-export function adaptRootOrWithAndViewModel(
-  viewModel: EditorNodeViewModel,
-): RootOrWithAndViewModel | null {
-  if (viewModel.funcName !== 'Or') {
-    return null;
-  }
-  for (const child of viewModel.children) {
-    if (child.funcName !== 'And') {
-      return null;
-    }
-  }
-
-  return {
-    orNodeId: viewModel.nodeId,
-    orErrors: viewModel.errors,
-    ands: viewModel.children.map((andNode) => ({
-      nodeId: andNode.nodeId,
-      errors: andNode.errors,
-      children: andNode.children,
-    })),
-  };
-}
 
 function NewAndChild() {
   return NewUndefinedAstNode({
@@ -84,45 +38,34 @@ export function RootOrWithAnd({
   setOperator,
   appendChild,
   remove,
-  rootOrWithAndViewModel,
+  astNodeVM,
   viewOnly,
 }: {
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
-  rootOrWithAndViewModel: RootOrWithAndViewModel;
+  astNodeVM: RootOrWithAndAstNodeViewModel;
   viewOnly?: boolean;
 }) {
   const { t } = useTranslation(['common']);
-  const getOrAndNodeEvaluationErrorMessage =
-    useGetOrAndNodeEvaluationErrorMessage();
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+  const { getOrAndErrorMessages, getOrAndChildValidation } =
+    useRootAstBuilderValidation();
 
   function appendOrChild() {
-    appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
+    appendChild(astNodeVM.nodeId, NewOrChild());
   }
 
-  const { nodeErrors: orNodeErrors } = separateChildrenErrors(
-    rootOrWithAndViewModel.orErrors,
-  );
-  const orErrorMessages = adaptEvaluationErrorViewModels(orNodeErrors).map(
-    getOrAndNodeEvaluationErrorMessage,
-  );
+  const orErrorMessages = getOrAndErrorMessages(astNodeVM);
 
   const [displayReturnValues] = useDisplayReturnValues();
 
   return (
     <div className="grid grid-cols-[40px_1fr_max-content] gap-2">
-      {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
+      {astNodeVM.children.map((andChild, childIndex) => {
         const isFirstChild = childIndex === 0;
-        const { nodeErrors: andNodeErrors } = separateChildrenErrors(
-          andChild.errors,
-        );
 
-        const andErrorMessages = adaptEvaluationErrorViewModels(
-          andNodeErrors,
-        ).map(getOrAndNodeEvaluationErrorMessage);
+        const andErrorMessages = getOrAndErrorMessages(andChild);
 
         function appendAndChild() {
           appendChild(andChild.nodeId, NewAndChild());
@@ -150,10 +93,8 @@ export function RootOrWithAnd({
             ) : null}
 
             {andChild.children.map((child, childIndex) => {
-              const errorMessages = adaptEvaluationErrorViewModels([
-                ...computeLineErrors(child),
-                ...findArgumentIndexErrorsFromParent(child),
-              ]).map(getNodeEvaluationErrorMessage);
+              const { errorMessages, hasArgumentIndexErrorsFromParent } =
+                getOrAndChildValidation(child);
 
               const childBooleanReturnValue = adaptBooleanReturnValue(
                 child.returnValue,
@@ -191,9 +132,7 @@ export function RootOrWithAnd({
                     operator={childIndex === 0 ? 'if' : 'and'}
                     type="text"
                     validationStatus={
-                      hasArgumentIndexErrorsFromParent(child)
-                        ? 'error'
-                        : 'valid'
+                      hasArgumentIndexErrorsFromParent ? 'error' : 'valid'
                     }
                   />
                   <div
@@ -205,7 +144,7 @@ export function RootOrWithAnd({
                     <AstBuilderNode
                       setOperand={setOperand}
                       setOperator={setOperator}
-                      editorNodeViewModel={child}
+                      astNodeVM={child}
                       viewOnly={viewOnly}
                       root
                     />

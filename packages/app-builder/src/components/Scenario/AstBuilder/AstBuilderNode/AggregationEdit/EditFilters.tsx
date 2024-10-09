@@ -3,11 +3,14 @@ import { scenarioI18n } from '@app-builder/components/Scenario';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
+  adaptAstNodeViewModel,
+  type AstNodeViewModel,
+} from '@app-builder/models/ast-node-view-model';
+import {
   filterOperators,
   isFilterOperator,
 } from '@app-builder/models/editable-operators';
-import { useOperandOptions } from '@app-builder/services/ast-node/options';
-import { adaptEditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
+import { useOperandOptions } from '@app-builder/services/editor/options';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
@@ -20,7 +23,7 @@ import { Icon } from 'ui-icons';
 
 import { RemoveButton } from '../../RemoveButton';
 import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
-import { Operand, type OperandViewModel } from '../Operand';
+import { Operand } from '../Operand';
 import { Operator } from '../Operator';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { type FilterViewModel } from './Modal';
@@ -74,7 +77,7 @@ export function EditFilters({
       {
         operator: null,
         filteredField: null,
-        value: adaptEditorNodeViewModel({ ast: NewUndefinedAstNode() }),
+        value: adaptAstNodeViewModel({ ast: NewUndefinedAstNode() }),
         errors: newFilterValidation(),
       },
     ]);
@@ -141,7 +144,7 @@ export function EditFilters({
                     filterValue={filter.value}
                     onSave={(astNode) =>
                       onFilterChange(
-                        { value: adaptEditorNodeViewModel({ ast: astNode }) },
+                        { value: adaptAstNodeViewModel({ ast: astNode }) },
                         filterIndex,
                       )
                     }
@@ -176,15 +179,11 @@ function FilterValue({
   filterValue,
   onSave,
 }: {
-  filterValue: OperandViewModel;
+  filterValue: AstNodeViewModel;
   onSave: (astNode: AstNode) => void;
 }) {
   const filterOptions = useOperandOptions({ operandViewModel: filterValue });
   return (
-    <Operand
-      operandViewModel={filterValue}
-      onSave={onSave}
-      options={filterOptions}
-    />
+    <Operand astNodeVM={filterValue} onSave={onSave} options={filterOptions} />
   );
 }

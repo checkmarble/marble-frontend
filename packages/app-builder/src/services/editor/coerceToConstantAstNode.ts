@@ -1,21 +1,18 @@
-import { NewConstantAstNode } from '@app-builder/models';
-import { ConstantEditableAstNode } from '@app-builder/models/editable-ast-node';
-import { type TFunction } from 'i18next';
+import { type ConstantAstNode, NewConstantAstNode } from '@app-builder/models';
 import * as R from 'remeda';
 
-export interface CoerceToConstantEditableAstNodeOptions {
+export interface CoerceToConstantAstNodeOptions {
   booleans: { true: string[]; false: string[] };
 }
 
-export function coerceToConstantEditableAstNode(
-  t: TFunction<['common']>,
+export function coerceToConstantAstNode(
   search: string,
-  options: CoerceToConstantEditableAstNodeOptions,
-): ConstantEditableAstNode[] {
+  options: CoerceToConstantAstNodeOptions,
+): ConstantAstNode[] {
   const { isCoerceableToBoolean, coerceToBoolean } = getBooleanCoercionLogic(
     options.booleans,
   );
-  const results: ConstantEditableAstNode[] = [];
+  const results: ConstantAstNode[] = [];
 
   const searchLowerCase = search.trim().toLocaleLowerCase();
   if (searchLowerCase.length === 0) {
@@ -28,22 +25,22 @@ export function coerceToConstantEditableAstNode(
     const astNode = NewConstantAstNode({
       constant: parsedNumber,
     });
-    results.push(new ConstantEditableAstNode(t, astNode, []));
+    results.push(astNode);
   }
 
   if (isCoerceableToBoolean(searchLowerCase)) {
     const astNode = NewConstantAstNode({
       constant: coerceToBoolean(searchLowerCase),
     });
-    results.push(new ConstantEditableAstNode(t, astNode, []));
+    results.push(astNode);
   }
 
-  results.push(...coerceToConstantArray(t, search));
+  results.push(...coerceToConstantArray(search));
 
   const astNode = NewConstantAstNode({
     constant: search,
   });
-  results.push(new ConstantEditableAstNode(t, astNode, []));
+  results.push(astNode);
 
   return results;
 }
@@ -54,10 +51,7 @@ const isStringArray = /^\[(\s*"?(\w+)"?\s*,?)*(\s*|\])$/;
 const captureNumbers = /(?:\s*(?<numbers>\d+(\.\d+)?)\s*,?)/g;
 const captureStrings = /(?:\s*"?(?<strings>(\w|\s)*\w)"?\s*,?)/g;
 
-function coerceToConstantArray(
-  t: TFunction<['common']>,
-  search: string,
-): ConstantEditableAstNode[] {
+function coerceToConstantArray(search: string): ConstantAstNode[] {
   const trimSearch = search.trim();
 
   if (isNumberArray.test(trimSearch)) {
@@ -71,7 +65,7 @@ function coerceToConstantArray(
           constant,
         }),
     );
-    return [new ConstantEditableAstNode(t, astNode, [])];
+    return [astNode];
   }
 
   if (isStringArray.test(trimSearch)) {
@@ -84,14 +78,14 @@ function coerceToConstantArray(
           constant,
         }),
     );
-    return [new ConstantEditableAstNode(t, astNode, [])];
+    return [astNode];
   }
 
   return [];
 }
 
 function getBooleanCoercionLogic(
-  options: CoerceToConstantEditableAstNodeOptions['booleans'],
+  options: CoerceToConstantAstNodeOptions['booleans'],
 ) {
   const sanitizedOptions = {
     true: options.true.map((value) => value.trim().toLocaleLowerCase()),

@@ -1,47 +1,15 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
-import {
-  type EvaluationError,
-  separateChildrenErrors,
-} from '@app-builder/models/node-evaluation';
-import { useTriggerObjectTable } from '@app-builder/services/ast-node/options';
-import {
-  type EditorNodeViewModel,
-  findArgumentIndexErrorsFromParent,
-  hasArgumentIndexErrorsFromParent,
-} from '@app-builder/services/editor/ast-editor';
-import {
-  adaptEvaluationErrorViewModels,
-  useGetNodeEvaluationErrorMessage,
-  useGetOrAndNodeEvaluationErrorMessage,
-} from '@app-builder/services/validation';
+import { type RootAndAstNodeViewModel } from '@app-builder/models/ast-node-view-model';
+import { useTriggerObjectTable } from '@app-builder/services/editor/options';
+import { useRootAstBuilderValidation } from '@app-builder/services/validation/ast-node-validation';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
 import { EvaluationErrors } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
-import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
-
-export interface RootAndViewModel {
-  nodeId: string;
-  errors: EvaluationError[];
-  children: EditorNodeViewModel[];
-}
-
-export function adaptRootAndViewModel(
-  viewModel: EditorNodeViewModel,
-): RootAndViewModel | null {
-  if (viewModel.funcName !== 'And') {
-    return null;
-  }
-  return {
-    nodeId: viewModel.nodeId,
-    errors: viewModel.errors,
-    children: viewModel.children,
-  };
-}
 
 function NewAndChild() {
   return NewUndefinedAstNode({
@@ -57,32 +25,25 @@ export function RootAnd({
   setOperator,
   appendChild,
   remove,
-  rootAndViewModel,
+  astNodeVM,
   viewOnly,
 }: {
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
-  rootAndViewModel: RootAndViewModel;
+  astNodeVM: RootAndAstNodeViewModel;
   viewOnly?: boolean;
 }) {
   const triggerObjectTable = useTriggerObjectTable();
 
-  const getOrAndNodeEvaluationErrorMessage =
-    useGetOrAndNodeEvaluationErrorMessage();
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+  const { getOrAndErrorMessages, getOrAndChildValidation } =
+    useRootAstBuilderValidation();
 
-  const { nodeErrors: andNodeErrors } = separateChildrenErrors(
-    rootAndViewModel.errors,
-  );
-
-  const andErrorMessages = adaptEvaluationErrorViewModels(andNodeErrors).map(
-    getOrAndNodeEvaluationErrorMessage,
-  );
+  const andErrorMessages = getOrAndErrorMessages(astNodeVM);
 
   function appendAndChild() {
-    appendChild(rootAndViewModel.nodeId, NewAndChild());
+    appendChild(astNodeVM.nodeId, NewAndChild());
   }
 
   /**
@@ -106,15 +67,12 @@ export function RootAnd({
         <div className="text-s bg-grey-02 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
           {triggerObjectTable.name}
         </div>
-        {rootAndViewModel.children.map((child, childIndex) => {
+        {astNodeVM.children.map((child, childIndex) => {
           const isFirstCondition = childIndex === 0;
-          const isLastCondition =
-            childIndex === rootAndViewModel.children.length - 1;
+          const isLastCondition = childIndex === astNodeVM.children.length - 1;
 
-          const errorMessages = adaptEvaluationErrorViewModels([
-            ...computeLineErrors(child),
-            ...findArgumentIndexErrorsFromParent(child),
-          ]).map((error) => getNodeEvaluationErrorMessage(error));
+          const { errorMessages, hasArgumentIndexErrorsFromParent } =
+            getOrAndChildValidation(child);
 
           return (
             <Fragment key={`condition_${child.nodeId}`}>
@@ -139,7 +97,7 @@ export function RootAnd({
                 className="col-start-3"
                 type="contained"
                 validationStatus={
-                  hasArgumentIndexErrorsFromParent(child) ? 'error' : 'valid'
+                  hasArgumentIndexErrorsFromParent ? 'error' : 'valid'
                 }
               />
 
@@ -152,7 +110,7 @@ export function RootAnd({
                 <AstBuilderNode
                   setOperand={setOperand}
                   setOperator={setOperator}
-                  editorNodeViewModel={child}
+                  astNodeVM={child}
                   viewOnly={viewOnly}
                   root
                 />
