@@ -1,16 +1,20 @@
 import { type AstNode } from '@app-builder/models';
-import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
+import {
+  type AstNodeViewModel,
+  isRootAndAstNodeViewModel,
+  isRootOrWithAndAstNodeViewModel,
+} from '@app-builder/models/ast-node-view-model';
 
 import { AstBuilderNode } from '../AstBuilderNode';
-import { adaptRootAndViewModel, RootAnd } from './RootAnd';
-import { adaptRootOrWithAndViewModel, RootOrWithAnd } from './RootOrWithAnd';
+import { RootAnd } from './RootAnd';
+import { RootOrWithAnd } from './RootOrWithAnd';
 
 interface RootAstBuilderNodeProps {
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
-  editorNodeViewModel: EditorNodeViewModel;
+  astNodeVM: AstNodeViewModel;
   viewOnly?: boolean;
 }
 
@@ -24,33 +28,30 @@ export function RootAstBuilderNode({
   setOperator,
   appendChild,
   remove,
-  editorNodeViewModel,
+  astNodeVM,
   viewOnly,
 }: RootAstBuilderNodeProps) {
-  const rootOrWithAndViewModel =
-    adaptRootOrWithAndViewModel(editorNodeViewModel);
-  if (rootOrWithAndViewModel) {
+  if (isRootOrWithAndAstNodeViewModel(astNodeVM)) {
     return (
       <RootOrWithAnd
         setOperand={setOperand}
         setOperator={setOperator}
         appendChild={appendChild}
         remove={remove}
-        rootOrWithAndViewModel={rootOrWithAndViewModel}
+        astNodeVM={astNodeVM}
         viewOnly={viewOnly}
       />
     );
   }
 
-  const rootAndViewModel = adaptRootAndViewModel(editorNodeViewModel);
-  if (rootAndViewModel) {
+  if (isRootAndAstNodeViewModel(astNodeVM)) {
     return (
       <RootAnd
         setOperand={setOperand}
         setOperator={setOperator}
         appendChild={appendChild}
         remove={remove}
-        rootAndViewModel={rootAndViewModel}
+        astNodeVM={astNodeVM}
         viewOnly={viewOnly}
       />
     );
@@ -59,7 +60,7 @@ export function RootAstBuilderNode({
   // Fallback to the generic AstBuilderNode
   return (
     <AstBuilderNode
-      editorNodeViewModel={editorNodeViewModel}
+      astNodeVM={astNodeVM}
       setOperand={setOperand}
       setOperator={setOperator}
       viewOnly={viewOnly}

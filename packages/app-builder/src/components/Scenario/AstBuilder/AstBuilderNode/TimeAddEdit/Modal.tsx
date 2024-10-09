@@ -7,25 +7,22 @@ import {
   NewTimeAddAstNode,
   NewUndefinedAstNode,
   type TimeAddAstNode,
-  timeAddAstNodeName,
   type TimestampFieldAstNode,
 } from '@app-builder/models';
+import {
+  adaptAstNodeFromViewModel,
+  type AstNodeViewModel,
+  type TimeAddAstNodeViewModel,
+} from '@app-builder/models/ast-node-view-model';
 import {
   isTimeAddOperator,
   type TimeAddOperator,
   timeAddOperators,
 } from '@app-builder/models/editable-operators';
-import {
-  computeValidationForNamedChildren,
-  type EvaluationError,
-} from '@app-builder/models/node-evaluation';
+import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { dateDocHref } from '@app-builder/services/documentation-href';
-import {
-  adaptAstNodeFromEditorViewModel,
-  type ConstantEditorNodeViewModel,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
+import { computeValidationForNamedChildren } from '@app-builder/services/validation/ast-node-validation';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
@@ -42,7 +39,7 @@ import { TimestampField } from './TimestampField';
 
 export interface TimeAddViewModal {
   nodeId: string;
-  timestampField: EditorNodeViewModel | null;
+  timestampField: AstNodeViewModel;
   sign: TimeAddOperator;
   duration: string;
   durationUnit: DurationUnit;
@@ -53,30 +50,10 @@ export interface TimeAddViewModal {
   };
 }
 
-export const isTimeAddEditorNodeViewModel = (
-  vm: EditorNodeViewModel,
-): vm is TimeAddEditorNodeViewModel => {
-  return vm.funcName === timeAddAstNodeName;
-};
-
-export interface TimeAddEditorNodeViewModel {
-  nodeId: string;
-  funcName: typeof timeAddAstNodeName;
-  constant: undefined;
-  errors: EvaluationError[];
-  children: [];
-  namedChildren: {
-    timestampField: EditorNodeViewModel;
-    sign: ConstantEditorNodeViewModel<string, TimeAddEditorNodeViewModel>;
-    duration: ConstantEditorNodeViewModel<string, TimeAddEditorNodeViewModel>;
-  };
-  parent: TimeAddEditorNodeViewModel;
-}
-
 export const defaultISO8601Duration = 'PT0S';
-export const adaptTimeAddViewModal = (
-  vm: TimeAddEditorNodeViewModel,
-): TimeAddViewModal => {
+export function adaptTimeAddViewModal(
+  vm: TimeAddAstNodeViewModel,
+): TimeAddViewModal {
   const iso8601Duration =
     vm.namedChildren.duration.constant !== ''
       ? vm.namedChildren.duration.constant
@@ -102,13 +79,13 @@ export const adaptTimeAddViewModal = (
       duration: computeValidationForNamedChildren(vm, 'duration'),
     },
   };
-};
+}
 
-const adaptTimeAddAstNode = (
+function adaptTimeAddAstNode(
   timeAddViewModel: TimeAddViewModal,
-): TimeAddAstNode => {
+): TimeAddAstNode {
   const timestampFieldAstNode = timeAddViewModel.timestampField
-    ? adaptAstNodeFromEditorViewModel(timeAddViewModel.timestampField)
+    ? adaptAstNodeFromViewModel(timeAddViewModel.timestampField)
     : NewUndefinedAstNode();
   const signAstNode = NewConstantAstNode({
     constant: timeAddViewModel.sign,
@@ -126,7 +103,7 @@ const adaptTimeAddAstNode = (
     signAstNode,
     durationAstNode,
   );
-};
+}
 
 export interface TimeAddEditModalProps {
   initialValue: TimeAddViewModal;
@@ -206,7 +183,7 @@ function TimeAddEditModalContent({
           </Callout>
           <div className="flex gap-2">
             <TimestampField
-              value={value.timestampField}
+              astNodeVM={value.timestampField}
               onChange={(timestampField) =>
                 setValue({
                   ...value,
@@ -217,8 +194,6 @@ function TimeAddEditModalContent({
                   },
                 })
               }
-              errors={value.errors.timestampField}
-              className="grow"
             />
             <Operator
               operators={timeAddOperators}

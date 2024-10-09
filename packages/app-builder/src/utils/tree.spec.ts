@@ -1,17 +1,15 @@
 import { vi } from 'vitest';
 
-import { type EditorNodeViewModel } from './ast-editor';
-import { findAndReplaceNode } from './FindAndReplaceNode';
+import { findAndReplaceNode, type Tree } from './tree';
 
 describe('findAndReplaceNode', () => {
-  const rootNode = helperMakeEditorViewModel('root');
-  const first_child = helperMakeEditorViewModel('first_child', rootNode);
-  const second_child = helperMakeEditorViewModel('second_child', rootNode);
+  const rootNode = helperMakeTree('root');
+  const first_child = helperMakeTree('first_child', rootNode);
+  const second_child = helperMakeTree('second_child', rootNode);
   rootNode.children = [first_child, second_child];
 
-  const newNode = helperMakeEditorViewModel('newNode', rootNode);
-
   it('replace the node with the given id', () => {
+    const newNode = helperMakeTree('newNode');
     const callback = vi.fn(() => newNode);
 
     const result = findAndReplaceNode('first_child', callback, rootNode);
@@ -25,8 +23,10 @@ describe('findAndReplaceNode', () => {
   });
 
   it('remove the node with the given id when callback return null', () => {
-    // const callback = jest.fn(() => newNode);
-    const result = findAndReplaceNode('second_child', () => null, rootNode);
+    const callback = vi.fn(() => null);
+    const result = findAndReplaceNode('second_child', callback, rootNode);
+
+    expect(callback).toHaveBeenCalledTimes(1);
 
     expect(result).toStrictEqual({
       ...rootNode,
@@ -35,14 +35,9 @@ describe('findAndReplaceNode', () => {
   });
 });
 
-function helperMakeEditorViewModel(
-  nodeId: string,
-  parent?: EditorNodeViewModel,
-): EditorNodeViewModel {
+function helperMakeTree(nodeId: string, parent?: Tree<unknown>): Tree<unknown> {
   return {
     nodeId,
-    funcName: 'funcName',
-    errors: [],
     children: [],
     parent: parent || null,
     namedChildren: {},

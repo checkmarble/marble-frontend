@@ -1,38 +1,15 @@
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
-  type AstNode,
-  isFunctionAstNode,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
-import {
-  isTwoLineOperandOperatorFunction,
-  type TwoLineOperandOperatorFunction,
-} from '@app-builder/models/editable-operators';
-import {
-  type EvaluationError,
-  separateChildrenErrors,
-} from '@app-builder/models/node-evaluation';
-import { useTwoLineOperandOperatorFunctions } from '@app-builder/services/ast-node/options';
-import {
-  adaptAstNodeFromEditorViewModel,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
-import { hasExactlyTwoElements } from '@app-builder/utils/array';
+  type AstNodeViewModel,
+  isTwoLineOperandAstNodeViewModel,
+  type TwoLineOperandAstNodeViewModel,
+} from '@app-builder/models/ast-node-view-model';
+import { useTwoLineOperandOperatorFunctions } from '@app-builder/services/editor/options';
 import { useTranslation } from 'react-i18next';
 import { Switch } from 'ui-design-system';
 
 import { AstBuilderNode } from './AstBuilderNode';
-import { type OperandViewModel } from './Operand';
 import { Operator } from './Operator';
-
-interface TwoOperandsLineViewModel {
-  left: OperandViewModel;
-  operator: {
-    nodeId: string;
-    funcName: TwoLineOperandOperatorFunction;
-    errors: EvaluationError[];
-  };
-  right: OperandViewModel;
-}
 
 function NewNestedChild(node: AstNode) {
   return NewUndefinedAstNode({
@@ -49,25 +26,27 @@ export function TwoOperandsLine({
 }: {
   setOperand: (nodeId: string, operandAst: AstNode) => void;
   setOperator: (nodeId: string, name: string) => void;
-  twoOperandsViewModel: TwoOperandsLineViewModel;
+  twoOperandsViewModel: TwoLineOperandAstNodeViewModel;
   viewOnly?: boolean;
   root?: boolean;
 }) {
   const { t } = useTranslation(['scenarios']);
-  function addNestedChild(child: EditorNodeViewModel) {
-    setOperand(
-      child.nodeId,
-      NewNestedChild(adaptAstNodeFromEditorViewModel(child)),
-    );
+  function addNestedChild(child: AstNodeViewModel) {
+    setOperand(child.nodeId, NewNestedChild(child));
   }
 
-  function removeNestedChild(child: EditorNodeViewModel) {
+  function removeNestedChild(child: AstNodeViewModel) {
     const nestedChild = child.children[0];
     if (!nestedChild) return;
-    setOperand(child.nodeId, adaptAstNodeFromEditorViewModel(nestedChild));
+    setOperand(child.nodeId, nestedChild);
   }
 
   const operators = useTwoLineOperandOperatorFunctions();
+
+  const left = twoOperandsViewModel.children[0];
+  const right = twoOperandsViewModel.children[1];
+
+  const isNestedRight = isTwoLineOperandAstNodeViewModel(right);
 
   return (
     <div className="flex justify-between gap-2">
@@ -76,27 +55,29 @@ export function TwoOperandsLine({
         <AstBuilderNode
           setOperand={setOperand}
           setOperator={setOperator}
-          editorNodeViewModel={twoOperandsViewModel.left}
+          astNodeVM={left}
           onSave={(astNode) => {
-            setOperand(twoOperandsViewModel.left.nodeId, astNode);
+            setOperand(left.nodeId, astNode);
           }}
           viewOnly={viewOnly}
         />
         <Operator
-          value={twoOperandsViewModel.operator.funcName}
+          value={twoOperandsViewModel.name}
           setValue={(operator: (typeof operators)[number]) => {
-            setOperator(twoOperandsViewModel.operator.nodeId, operator);
+            setOperator(twoOperandsViewModel.nodeId, operator);
           }}
-          errors={twoOperandsViewModel.operator.errors}
+          validationStatus={
+            twoOperandsViewModel.errors?.length > 0 ? 'error' : 'valid'
+          }
           viewOnly={viewOnly}
           operators={operators}
         />
         <AstBuilderNode
           setOperand={setOperand}
           setOperator={setOperator}
-          editorNodeViewModel={twoOperandsViewModel.right}
+          astNodeVM={right}
           onSave={(astNode) => {
-            setOperand(twoOperandsViewModel.right.nodeId, astNode);
+            setOperand(right.nodeId, astNode);
           }}
           viewOnly={viewOnly}
         />
@@ -109,11 +90,9 @@ export function TwoOperandsLine({
           </label>
           <Switch
             id="nest"
-            checked={isNested(twoOperandsViewModel)}
+            checked={isNestedRight}
             onCheckedChange={(checked) =>
-              checked
-                ? addNestedChild(twoOperandsViewModel.right)
-                : removeNestedChild(twoOperandsViewModel.right)
+              checked ? addNestedChild(right) : removeNestedChild(right)
             }
           />
         </div>
@@ -121,46 +100,3 @@ export function TwoOperandsLine({
     </div>
   );
 }
-
-export function adaptTwoOperandsLineViewModel(
-  vm: EditorNodeViewModel,
-): TwoOperandsLineViewModel | null {
-  if (isFunctionAstNode(adaptAstNodeFromEditorViewModel(vm))) return null;
-
-  if (!hasExactlyTwoElements(vm.children)) return null;
-  if (Object.keys(vm.namedChildren).length > 0) return null;
-  if (vm.funcName == null || !isTwoLineOperandOperatorFunction(vm.funcName))
-    return null;
-
-  const left = vm.children[0];
-  const right = vm.children[1];
-  return {
-    left,
-    operator: {
-      nodeId: vm.nodeId,
-      funcName: vm.funcName,
-      errors: vm.errors,
-    },
-    right,
-  };
-}
-
-function isNested(twoOperandsViewModel: TwoOperandsLineViewModel) {
-  return adaptTwoOperandsLineViewModel(twoOperandsViewModel.right) !== null;
-}
-
-export const computeLineErrors = (
-  viewModel: EditorNodeViewModel,
-): EvaluationError[] => {
-  const astNode = adaptAstNodeFromEditorViewModel(viewModel);
-  if (isFunctionAstNode(astNode)) {
-    const { nodeErrors } = separateChildrenErrors(viewModel.errors);
-    return nodeErrors;
-  } else {
-    return [
-      ...viewModel.errors,
-      ...viewModel.children.flatMap(computeLineErrors),
-      ...Object.values(viewModel.namedChildren).flatMap(computeLineErrors),
-    ];
-  }
-};

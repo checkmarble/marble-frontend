@@ -6,11 +6,14 @@ import {
   NewFuzzyMatchComparatorAstNode,
 } from '@app-builder/models';
 import {
+  adaptAstNodeFromViewModel,
+  type FuzzyMatchComparatorAstNodeViewModel,
+} from '@app-builder/models/ast-node-view-model';
+import {
   type FuzzyMatchAlgorithm,
   isEditableFuzzyMatchAlgorithm,
 } from '@app-builder/models/fuzzy-match';
 import { fuzzyMatchingDocHref } from '@app-builder/services/documentation-href';
-import { adaptAstNodeFromEditorViewModel } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import {
   adaptEvaluationErrorViewModels,
@@ -31,13 +34,9 @@ import {
   useLeftOptions,
   useRightOptions,
 } from './FuzzyMatchComparatorEdit.hook';
-import {
-  type FuzzyMatchComparatorEditorNodeViewModel,
-  type FuzzyMatchEditorNodeViewModel,
-} from './FuzzyMatchComparatorEdit.types';
 
 export interface FuzzyMatchComparatorEditModalProps {
-  initialValue: FuzzyMatchComparatorEditorNodeViewModel;
+  initialValue: FuzzyMatchComparatorAstNodeViewModel;
   onSave: (astNode: AstNode) => void;
 }
 
@@ -78,7 +77,7 @@ export function FuzzyMatchComparatorEditModal({
           <CopyPasteASTContextProvider>
             {fuzzyMatchComparatorEditModalProps ? (
               <FuzzyMatchComparatorEditModalContent
-                initialFuzzyMatchComparatorEditorNodeViewModel={
+                initialFuzzyMatchComparatorAstNodeViewModel={
                   fuzzyMatchComparatorEditModalProps.initialValue
                 }
                 onSave={(astNode: AstNode) => {
@@ -95,10 +94,10 @@ export function FuzzyMatchComparatorEditModal({
 }
 
 function FuzzyMatchComparatorEditModalContent({
-  initialFuzzyMatchComparatorEditorNodeViewModel,
+  initialFuzzyMatchComparatorAstNodeViewModel,
   onSave,
 }: {
-  initialFuzzyMatchComparatorEditorNodeViewModel: FuzzyMatchComparatorEditorNodeViewModel;
+  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
@@ -117,21 +116,21 @@ function FuzzyMatchComparatorEditModalContent({
     funcName,
     errors,
   } = useFuzzyMatchComparatorEditState(
-    initialFuzzyMatchComparatorEditorNodeViewModel,
+    initialFuzzyMatchComparatorAstNodeViewModel,
   );
 
   const leftOptions = useLeftOptions(
-    initialFuzzyMatchComparatorEditorNodeViewModel,
+    initialFuzzyMatchComparatorAstNodeViewModel,
   );
   const rightOptions = useRightOptions(
-    initialFuzzyMatchComparatorEditorNodeViewModel,
+    initialFuzzyMatchComparatorAstNodeViewModel,
   );
 
   const handleSave = () => {
     const fuzzyMatchComparatorAstNode = NewFuzzyMatchComparatorAstNode({
       funcName,
-      left: adaptAstNodeFromEditorViewModel(left),
-      right: adaptAstNodeFromEditorViewModel(right),
+      left: adaptAstNodeFromViewModel(left),
+      right: adaptAstNodeFromViewModel(right),
       algorithm: algorithm.value,
       threshold: threshold.value,
     });
@@ -181,18 +180,14 @@ function FuzzyMatchComparatorEditModalContent({
             {t('scenarios:edit_fuzzy_match.operands.label')}
           </p>
           <div className="flex gap-2">
-            <Operand
-              operandViewModel={left}
-              onSave={setLeft}
-              options={leftOptions}
-            />
+            <Operand astNodeVM={left} onSave={setLeft} options={leftOptions} />
             <div className="border-grey-10 bg-grey-02 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
               <span className="text-s text-grey-100 font-medium">
                 {t(funcNameTKeys[funcName])}
               </span>
             </div>
             <Operand
-              operandViewModel={right}
+              astNodeVM={right}
               onSave={setRight}
               options={rightOptions}
             />
@@ -229,7 +224,7 @@ const funcNameTKeys = {
   FuzzyMatch: 'scenarios:edit_fuzzy_match.fuzzy_match',
   FuzzyMatchAnyOf: 'scenarios:edit_fuzzy_match.fuzzy_match_any_of',
 } satisfies Record<
-  FuzzyMatchEditorNodeViewModel['funcName'],
+  ReturnType<typeof useFuzzyMatchComparatorEditState>['funcName'],
   ParseKeys<['scenarios']>
 >;
 

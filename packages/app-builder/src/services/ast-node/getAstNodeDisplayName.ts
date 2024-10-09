@@ -1,7 +1,6 @@
 import {
   type AggregationAstNode,
   type AstNode,
-  type ConstantType,
   type FuzzyMatchComparatorAstNode,
   isAggregation,
   isConstant,
@@ -23,10 +22,14 @@ import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
 
+import { formatConstant } from './formatConstant';
+import { getCustomListAccessCustomList } from './getCustomListAccessCustomList';
+
 type TFunctionDisplayName = TFunction<['common', 'scenarios'], undefined>;
 
 interface AstNodeStringifierContext {
   t: TFunctionDisplayName;
+  language: string;
   customLists: CustomList[];
 }
 
@@ -35,14 +38,11 @@ export function getAstNodeDisplayName(
   context: AstNodeStringifierContext,
 ): string {
   if (isConstant(astNode)) {
-    return getConstantDisplayName(astNode.constant, context);
+    return formatConstant(astNode.constant, context);
   }
 
   if (isCustomListAccess(astNode)) {
-    const customList = R.pipe(
-      context.customLists,
-      R.find(({ id }) => id === astNode.namedChildren.customListId.constant),
-    );
+    const customList = getCustomListAccessCustomList(astNode, context);
     return customList?.name ?? context.t('scenarios:custom_list.unknown');
   }
 
@@ -100,37 +100,6 @@ export function getAstNodeDisplayName(
   );
 
   return `${astNode.name}(${args})`;
-}
-
-function getConstantDisplayName(
-  constant: ConstantType,
-  context: { t: TFunctionDisplayName },
-): string {
-  if (R.isNullish(constant)) return '';
-
-  if (R.isArray(constant)) {
-    return `[${constant.map((constant) => getConstantDisplayName(constant, context)).join(', ')}]`;
-  }
-
-  if (R.isString(constant)) {
-    //TODO(combobox): handle Timestamp here, if we do manipulate them as ISOstring
-    return `"${constant.toString()}"`;
-  }
-
-  if (R.isNumber(constant)) {
-    return constant.toString();
-  }
-
-  if (R.isBoolean(constant)) {
-    return context.t(`common:${constant}`);
-  }
-
-  // Handle other cases when needed
-  return JSON.stringify(
-    R.mapValues(constant, (constant) =>
-      getConstantDisplayName(constant, context),
-    ),
-  );
 }
 
 function getTimeAddDisplayName(

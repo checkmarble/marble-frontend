@@ -1,11 +1,15 @@
 import {
-  DatabaseAccessEditableAstNode,
-  type EditableAstNode,
+  type AstNode,
+  type DataType,
+  isDatabaseAccess,
+  isPayload,
+} from '@app-builder/models';
+import {
   getOperandTypeIcon,
   getOperandTypeTKey,
   type OperandType,
-  PayloadAccessorsEditableAstNode,
-} from '@app-builder/models/editable-ast-node';
+} from '@app-builder/models/operand-type';
+import { useTriggerObjectTable } from '@app-builder/services/editor/options';
 import * as Ariakit from '@ariakit/react';
 import clsx from 'clsx';
 import { type FunctionComponent, useMemo } from 'react';
@@ -25,9 +29,14 @@ import { OperandOption } from './OperandMenuItem';
 
 type GroupGetter = FunctionComponent<{
   operandType: OperandType;
-  options: EditableAstNode[];
+  options: {
+    astNode: AstNode;
+    displayName: string;
+    dataType: DataType;
+    operandType: OperandType;
+  }[];
   searchValue: string;
-  onClick: (option: EditableAstNode) => void;
+  onClick: (option: AstNode) => void;
 }>;
 
 /**
@@ -40,9 +49,14 @@ type OperandEditorDiscoveryResultsConfig = Partial<
 >;
 
 interface OperandEditorDiscoveryResultsProps {
-  options: EditableAstNode[];
+  options: {
+    astNode: AstNode;
+    displayName: string;
+    dataType: DataType;
+    operandType: OperandType;
+  }[];
   searchValue: string;
-  onClick: (option: EditableAstNode) => void;
+  onClick: (option: AstNode) => void;
   discoveryResultsConfig?: OperandEditorDiscoveryResultsConfig;
 }
 
@@ -84,8 +98,13 @@ function Submenu({
 }: {
   searchValue: string;
   children: React.ReactNode;
-  options: EditableAstNode[];
-  onClick: (option: EditableAstNode) => void;
+  options: {
+    astNode: AstNode;
+    displayName: string;
+    dataType: DataType;
+    operandType: OperandType;
+  }[];
+  onClick: (option: AstNode) => void;
 }) {
   return (
     <MenuRoot>
@@ -103,9 +122,12 @@ function Submenu({
             {options.map((option) => (
               <OperandOption
                 key={option.displayName}
-                editableAstNode={option}
+                astNode={option.astNode}
+                dataType={option.dataType}
+                operandType={option.operandType}
+                displayName={option.displayName}
                 searchValue={searchValue}
-                onClick={() => onClick(option)}
+                onClick={() => onClick(option.astNode)}
               />
             ))}
           </div>
@@ -138,21 +160,23 @@ const FieldGroupGetter: GroupGetter = ({
   options,
   onClick,
 }) => {
+  const triggerObjectTable = useTriggerObjectTable();
   const fieldByPathOptions = useMemo(() => {
     return R.pipe(
       options,
       R.groupBy((option) => {
-        if (
-          option instanceof PayloadAccessorsEditableAstNode ||
-          option instanceof DatabaseAccessEditableAstNode
-        ) {
-          return option.getFieldGroupName();
+        if (isDatabaseAccess(option.astNode)) {
+          const { path, tableName } = option.astNode.namedChildren;
+          return [tableName.constant, ...path.constant].join('.');
+        }
+        if (isPayload(option.astNode)) {
+          return triggerObjectTable.name;
         }
       }),
       R.mapValues((value) => R.sortBy(value, (o) => o.displayName)),
       R.entries(),
     );
-  }, [options]);
+  }, [options, triggerObjectTable.name]);
 
   const count = options.length;
   if (count === 0) return null;

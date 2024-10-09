@@ -1,5 +1,10 @@
 import { type AstNode } from '@app-builder/models';
 import {
+  adaptAstNodeViewModel,
+  type AstNodeViewModel,
+  type FuzzyMatchComparatorAstNodeViewModel,
+} from '@app-builder/models/ast-node-view-model';
+import {
   adaptFuzzyMatchComparatorLevel,
   adaptFuzzyMatchComparatorThreshold,
   defaultEditableFuzzyMatchAlgorithm,
@@ -9,16 +14,12 @@ import {
 } from '@app-builder/models/fuzzy-match';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import {
-  useAdaptEditableAstNode,
+  useDataModel,
   useOperandOptions,
-} from '@app-builder/services/ast-node/options';
-import {
-  adaptEditorNodeViewModel,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
-import { useMemo, useReducer } from 'react';
-
-import { type FuzzyMatchComparatorEditorNodeViewModel } from './FuzzyMatchComparatorEdit.types';
+  useTriggerObjectTable,
+} from '@app-builder/services/editor/options';
+import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
+import * as React from 'react';
 
 type EditFuzzyMatchComparatorState = {
   algorithm: { value: FuzzyMatchAlgorithm; errors: EvaluationError[] };
@@ -34,8 +35,8 @@ type EditFuzzyMatchComparatorState = {
         level: FuzzyMatchComparatorLevel;
         errors: EvaluationError[];
       };
-  left: EditorNodeViewModel;
-  right: EditorNodeViewModel;
+  left: AstNodeViewModel;
+  right: AstNodeViewModel;
   errors: EvaluationError[];
   funcName: 'FuzzyMatch' | 'FuzzyMatchAnyOf';
 };
@@ -54,12 +55,12 @@ type EditFuzzyMatchComparatorAction =
     }
   | {
       type: 'setLeft';
-      payload: { left: EditorNodeViewModel };
+      payload: { left: AstNodeViewModel };
     }
   | {
       type: 'setRight';
       payload: {
-        right: EditorNodeViewModel;
+        right: AstNodeViewModel;
         funcName: 'FuzzyMatch' | 'FuzzyMatchAnyOf';
       };
     };
@@ -118,20 +119,19 @@ function editFuzzyMatchComparatorReducer(
 }
 
 function adaptEditFuzzyMatchComparatorState(
-  initialFuzzyMatchComparatorEditorNodeViewModel: FuzzyMatchComparatorEditorNodeViewModel,
+  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
 ): EditFuzzyMatchComparatorState {
   const algorithmNode =
-    initialFuzzyMatchComparatorEditorNodeViewModel.children[0].namedChildren
+    initialFuzzyMatchComparatorAstNodeViewModel.children[0].namedChildren
       .algorithm;
 
-  const thresholdNode =
-    initialFuzzyMatchComparatorEditorNodeViewModel.children[1];
+  const thresholdNode = initialFuzzyMatchComparatorAstNodeViewModel.children[1];
   const initialThreshold =
     thresholdNode.constant ?? defaultFuzzyMatchComparatorThreshold;
   const initialLevel = adaptFuzzyMatchComparatorLevel(initialThreshold);
 
   const fuzzyMatchNode =
-    initialFuzzyMatchComparatorEditorNodeViewModel.children[0];
+    initialFuzzyMatchComparatorAstNodeViewModel.children[0];
 
   return {
     algorithm: {
@@ -154,20 +154,20 @@ function adaptEditFuzzyMatchComparatorState(
     left: fuzzyMatchNode.children[0],
     right: fuzzyMatchNode.children[1],
     errors: fuzzyMatchNode.errors,
-    funcName: fuzzyMatchNode.funcName,
+    funcName: fuzzyMatchNode.name,
   };
 }
 
 export function useFuzzyMatchComparatorEditState(
-  initialFuzzyMatchComparatorEditorNodeViewModel: FuzzyMatchComparatorEditorNodeViewModel,
+  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
 ) {
-  const [state, dispatch] = useReducer(
+  const [state, dispatch] = React.useReducer(
     editFuzzyMatchComparatorReducer,
-    initialFuzzyMatchComparatorEditorNodeViewModel,
+    initialFuzzyMatchComparatorAstNodeViewModel,
     adaptEditFuzzyMatchComparatorState,
   );
-
-  const adaptEditableAstNode = useAdaptEditableAstNode();
+  const dataModel = useDataModel();
+  const triggerObjectTable = useTriggerObjectTable();
 
   return {
     algorithm: state.algorithm,
@@ -186,7 +186,7 @@ export function useFuzzyMatchComparatorEditState(
       dispatch({
         type: 'setLeft',
         payload: {
-          left: adaptEditorNodeViewModel({
+          left: adaptAstNodeViewModel({
             ast,
           }),
         },
@@ -194,7 +194,7 @@ export function useFuzzyMatchComparatorEditState(
     },
     right: state.right,
     setRight: (ast: AstNode) => {
-      const right = adaptEditorNodeViewModel({
+      const right = adaptAstNodeViewModel({
         ast,
       });
       dispatch({
@@ -202,7 +202,10 @@ export function useFuzzyMatchComparatorEditState(
         payload: {
           right,
           funcName:
-            adaptEditableAstNode(right)?.dataType === 'String'
+            getAstNodeDataType(right, {
+              dataModel,
+              triggerObjectTable,
+            }) === 'String'
               ? 'FuzzyMatch'
               : 'FuzzyMatchAnyOf',
         },
@@ -214,26 +217,26 @@ export function useFuzzyMatchComparatorEditState(
 }
 
 export function useLeftOptions(
-  initialFuzzyMatchComparatorEditorNodeViewModel: FuzzyMatchComparatorEditorNodeViewModel,
+  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
 ) {
   const options = useOperandOptions({
-    operandViewModel:
-      initialFuzzyMatchComparatorEditorNodeViewModel.children[0].children[0],
+    astNodeVM:
+      initialFuzzyMatchComparatorAstNodeViewModel.children[0].children[0],
   });
-  return useMemo(
+  return React.useMemo(
     () => options.filter((option) => option.dataType === 'String'),
     [options],
   );
 }
 
 export function useRightOptions(
-  initialFuzzyMatchComparatorEditorNodeViewModel: FuzzyMatchComparatorEditorNodeViewModel,
+  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
 ) {
   const options = useOperandOptions({
-    operandViewModel:
-      initialFuzzyMatchComparatorEditorNodeViewModel.children[0].children[1],
+    astNodeVM:
+      initialFuzzyMatchComparatorAstNodeViewModel.children[0].children[1],
   });
-  return useMemo(
+  return React.useMemo(
     () =>
       options.filter(
         (option) =>

@@ -1,16 +1,16 @@
 import {
+  type AstNode,
   type DataType,
   getDataTypeIcon,
   getDataTypeTKey,
+  isUndefinedAstNode,
 } from '@app-builder/models';
 import {
-  type EditableAstNode,
   getOperandTypeIcon,
   getOperandTypeTKey,
   type OperandType,
-  UndefinedEditableAstNode,
-} from '@app-builder/models/editable-ast-node';
-import { useDisplayReturnValues } from '@app-builder/services/ast-node/return-value';
+} from '@app-builder/models/operand-type';
+import { useDisplayReturnValues } from '@app-builder/services/editor/return-value';
 import * as Ariakit from '@ariakit/react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
@@ -82,27 +82,33 @@ const operandContainerClassnames = cva(
 
 interface OperandLabelProps
   extends VariantProps<typeof operandContainerClassnames> {
-  editableAstNode: EditableAstNode;
+  astNode: AstNode;
+  dataType: DataType;
+  operandType: OperandType;
+  displayName: string;
   placeholder?: string;
   returnValue?: string;
 }
 
+// TODO: split this comp in separate components for use in Editor, Viewer and ReturnValues
 export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
   function OperandLabel(
     {
-      editableAstNode,
-      validationStatus,
+      astNode,
       placeholder,
       interactionMode,
       returnValue,
+      dataType,
+      operandType,
+      displayName,
+      validationStatus,
       ...props
     },
     ref,
   ) {
     const { t } = useTranslation(['scenarios']);
 
-    const shouldDisplayPlaceholder =
-      editableAstNode instanceof UndefinedEditableAstNode;
+    const shouldDisplayPlaceholder = isUndefinedAstNode(astNode);
     const [displayReturnValues] = useDisplayReturnValues();
     const shouldDisplayReturnValue =
       displayReturnValues && returnValue !== undefined;
@@ -111,9 +117,8 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
     if (shouldDisplayPlaceholder) {
       children = (
         <span
-          className={selectDisplayText({
+          className={operandDisplayName({
             type: 'placeholder',
-            size: placeholder && placeholder.length > 20 ? 'long' : 'short',
           })}
         >
           {placeholder ?? t('scenarios:edit_operand.placeholder')}
@@ -122,19 +127,15 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
     } else if (shouldDisplayReturnValue) {
       children = (
         <>
-          <span
-            className={selectDisplayText({
-              type: 'value',
-              size: returnValue.length > 20 ? 'long' : 'short',
-            })}
-          >
-            {returnValue}
-          </span>
+          <span className={operandDisplayName()}>{returnValue}</span>
           <OperandInfos
             gutter={16}
             shift={-16}
             className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
-            editableAstNode={editableAstNode}
+            astNode={astNode}
+            dataType={dataType}
+            operandType={operandType}
+            displayName={displayName}
           />
         </>
       );
@@ -143,22 +144,18 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
         <>
           <TypeInfos
             interactionMode={interactionMode}
-            operandType={editableAstNode.operandType}
-            dataType={editableAstNode.dataType}
+            operandType={operandType}
+            dataType={dataType}
           />
-          <span
-            className={selectDisplayText({
-              type: 'value',
-              size: editableAstNode.displayName.length > 20 ? 'long' : 'short',
-            })}
-          >
-            {editableAstNode.displayName}
-          </span>
+          <span className={operandDisplayName()}>{displayName}</span>
           <OperandInfos
             gutter={16}
             shift={-16}
             className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
-            editableAstNode={editableAstNode}
+            astNode={astNode}
+            dataType={dataType}
+            operandType={operandType}
+            displayName={displayName}
           />
         </>
       );
@@ -232,18 +229,17 @@ function TypeInfos({ operandType, dataType, interactionMode }: TypeInfosProps) {
   );
 }
 
-const selectDisplayText = cva(
-  'text-s font-medium group-aria-expanded:text-purple-100',
+const operandDisplayName = cva(
+  'text-s font-medium group-aria-expanded:text-purple-100 break-all',
   {
     variants: {
       type: {
         placeholder: 'text-grey-25',
         value: 'text-grey-100',
       },
-      size: {
-        long: 'break-all',
-        short: '',
-      },
+    },
+    defaultVariants: {
+      type: 'value',
     },
   },
 );

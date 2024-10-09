@@ -11,14 +11,12 @@ import * as R from 'remeda';
 
 import { getDataAccessorAstNodeField } from './getDataAccessorAstNodeField';
 
-interface AstNodeDataTypeContext {
-  triggerObjectTable: TableModel;
-  dataModel: DataModel;
-}
-
 export function getAstNodeDataType(
   astNode: AstNode,
-  context: AstNodeDataTypeContext,
+  context: {
+    triggerObjectTable: TableModel;
+    dataModel: DataModel;
+  },
 ): DataType {
   if (isConstant(astNode)) {
     const { constant } = astNode;

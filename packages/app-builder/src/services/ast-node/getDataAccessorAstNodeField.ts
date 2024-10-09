@@ -10,14 +10,12 @@ import {
 } from '@app-builder/models';
 import { assertNever } from 'typescript-utils';
 
-interface AstNodeOperandTypeContext {
-  triggerObjectTable: TableModel;
-  dataModel: DataModel;
-}
-
 export function getDataAccessorAstNodeField(
   astNode: DataAccessorAstNode,
-  context: AstNodeOperandTypeContext,
+  context: {
+    triggerObjectTable: TableModel;
+    dataModel: DataModel;
+  },
 ): DataModelField {
   if (isPayload(astNode)) {
     return findDataModelField({

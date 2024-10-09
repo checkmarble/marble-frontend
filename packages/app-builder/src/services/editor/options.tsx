@@ -1,0 +1,280 @@
+import {
+  type AstNode,
+  type CustomListAccessAstNode,
+  type DataAccessorAstNode,
+  type DatabaseAccessAstNode,
+  NewAggregatorAstNode,
+  NewConstantAstNode,
+  NewCustomListAstNode,
+  NewFuzzyMatchComparatorAstNode,
+  NewTimeAddAstNode,
+  NewTimeNowAstNode,
+  type PayloadAstNode,
+} from '@app-builder/models/ast-node';
+import { type AstNodeViewModel } from '@app-builder/models/ast-node-view-model';
+import { type CustomList } from '@app-builder/models/custom-list';
+import {
+  type DataModel,
+  type DataModelField,
+  type DataType,
+  type EnumValue,
+  findDataModelTableByName,
+  type TableModel,
+} from '@app-builder/models/data-model';
+import {
+  aggregatorOperators,
+  isTwoLineOperandOperatorFunction,
+  type OperatorFunction,
+  sortTwoLineOperandOperatorFunctions,
+} from '@app-builder/models/editable-operators';
+import { type OperandType } from '@app-builder/models/operand-type';
+import { createSimpleContext } from '@app-builder/utils/create-context';
+import { useFormatLanguage } from '@app-builder/utils/format';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { getAstNodeDataType } from '../ast-node/getAstNodeDataType';
+import { getAstNodeDisplayName } from '../ast-node/getAstNodeDisplayName';
+
+import { getCustomListAccessCustomList } from '../ast-node/getCustomListAccessCustomList';
+import { getDataAccessorAstNodeField } from '../ast-node/getDataAccessorAstNodeField';
+import { getEnumValuesFromNeighbour } from './getEnumOptionsFromNeighbour';
+import { getAstNodeOperandType } from '../ast-node/getAstNodeOperandType';
+
+const DatabaseAccessors =
+  createSimpleContext<DatabaseAccessAstNode[]>('DatabaseAccessors');
+
+const PayloadAccessors =
+  createSimpleContext<PayloadAstNode[]>('PayloadAccessors');
+
+const DataModelContext = createSimpleContext<DataModel>('DataModel');
+
+const CustomLists = createSimpleContext<CustomList[]>('CustomLists');
+
+const OperatorFunctions =
+  createSimpleContext<OperatorFunction[]>('OperatorFunctions');
+
+const TriggerObjectTable =
+  createSimpleContext<TableModel>('TriggerObjectTable');
+
+const GetAstNodeDataTypeContext = createSimpleContext<
+  (astNode: AstNode) => DataType
+>('GetAstNodeDataTypeContext');
+
+const GetAstNodeDisplayNameContext = createSimpleContext<
+  (astNode: AstNode) => string
+>('GetAstNodeDisplayNameContext');
+
+const GetAstNodeOperandTypeContext = createSimpleContext<
+  (
+    astNode: AstNode,
+    context?: {
+      enumValues?: EnumValue[];
+    },
+  ) => OperandType
+>('GetAstNodeOperandTypeContext');
+
+export const useDatabaseAccessors = DatabaseAccessors.useValue;
+export const usePayloadAccessors = PayloadAccessors.useValue;
+export const useDataModel = DataModelContext.useValue;
+export const useCustomLists = CustomLists.useValue;
+export const useOperatorFunctions = OperatorFunctions.useValue;
+export const useTriggerObjectTable = TriggerObjectTable.useValue;
+export const useGetAstNodeDataType = GetAstNodeDataTypeContext.useValue;
+export const useGetAstNodeDisplayName = GetAstNodeDisplayNameContext.useValue;
+export const useGetAstNodeOperandType = GetAstNodeOperandTypeContext.useValue;
+
+export function OptionsProvider({
+  children,
+  databaseAccessors,
+  payloadAccessors,
+  operators,
+  dataModel,
+  customLists,
+  triggerObjectType,
+}: {
+  children: React.ReactNode;
+  databaseAccessors: DatabaseAccessAstNode[];
+  payloadAccessors: PayloadAstNode[];
+  operators: OperatorFunction[];
+  dataModel: DataModel;
+  customLists: CustomList[];
+  triggerObjectType: string;
+}) {
+  const { t } = useTranslation(['common', 'scenarios']);
+  const language = useFormatLanguage();
+  const triggerObjectTable = React.useMemo(
+    () =>
+      findDataModelTableByName({
+        dataModel: dataModel,
+        tableName: triggerObjectType,
+      }),
+    [dataModel, triggerObjectType],
+  );
+
+  const getAstNodeDataTypeValue = React.useCallback(
+    (astNode: AstNode) =>
+      getAstNodeDataType(astNode, { triggerObjectTable, dataModel }),
+    [dataModel, triggerObjectTable],
+  );
+
+  const getAstNodeOperandTypeValue = React.useCallback(
+    (
+      astNode: AstNode,
+      context: {
+        enumValues?: EnumValue[];
+      } = {},
+    ) =>
+      getAstNodeOperandType(astNode, {
+        triggerObjectTable,
+        dataModel,
+        ...context,
+      }),
+    [dataModel, triggerObjectTable],
+  );
+
+  const getAstNodeDisplayNameValue = React.useCallback(
+    (astNode: AstNode) =>
+      getAstNodeDisplayName(astNode, { t, language, customLists }),
+    [t, language, customLists],
+  );
+
+  return (
+    <DatabaseAccessors.Provider value={databaseAccessors}>
+      <PayloadAccessors.Provider value={payloadAccessors}>
+        <DataModelContext.Provider value={dataModel}>
+          <CustomLists.Provider value={customLists}>
+            <OperatorFunctions.Provider value={operators}>
+              <TriggerObjectTable.Provider value={triggerObjectTable}>
+                <GetAstNodeDataTypeContext.Provider
+                  value={getAstNodeDataTypeValue}
+                >
+                  <GetAstNodeDisplayNameContext.Provider
+                    value={getAstNodeDisplayNameValue}
+                  >
+                    <GetAstNodeOperandTypeContext.Provider
+                      value={getAstNodeOperandTypeValue}
+                    >
+                      {children}
+                    </GetAstNodeOperandTypeContext.Provider>
+                  </GetAstNodeDisplayNameContext.Provider>
+                </GetAstNodeDataTypeContext.Provider>
+              </TriggerObjectTable.Provider>
+            </OperatorFunctions.Provider>
+          </CustomLists.Provider>
+        </DataModelContext.Provider>
+      </PayloadAccessors.Provider>
+    </DatabaseAccessors.Provider>
+  );
+}
+
+export function useEnumValuesFromNeighbour(astNodeVM: AstNodeViewModel) {
+  const dataModel = useDataModel();
+  const triggerObjectTable = useTriggerObjectTable();
+
+  return React.useMemo(() => {
+    return getEnumValuesFromNeighbour(astNodeVM, {
+      dataModel,
+      triggerObjectTable,
+    });
+  }, [astNodeVM, dataModel, triggerObjectTable]);
+}
+
+export function useGetAstNodeOption() {
+  const getAstNodeDataType = useGetAstNodeDataType();
+  const getAstNodeOperandType = useGetAstNodeOperandType();
+  const getAstNodeDisplayName = useGetAstNodeDisplayName();
+
+  return React.useCallback(
+    (
+      astNode: AstNode,
+      context: {
+        enumValues?: EnumValue[];
+      } = {},
+    ) => {
+      return {
+        astNode,
+        dataType: getAstNodeDataType(astNode),
+        operandType: getAstNodeOperandType(astNode, context),
+        displayName: getAstNodeDisplayName(astNode),
+      };
+    },
+    [getAstNodeDataType, getAstNodeOperandType, getAstNodeDisplayName],
+  );
+}
+
+export function useTimestampFieldOptions() {
+  const databaseAccessors = useDatabaseAccessors();
+  const payloadAccessors = usePayloadAccessors();
+  const getAstNodeOption = useGetAstNodeOption();
+
+  return React.useMemo(() => {
+    return [NewTimeNowAstNode(), ...databaseAccessors, ...payloadAccessors]
+      .map((astNode) => getAstNodeOption(astNode))
+      .filter(({ dataType }) => dataType == 'Timestamp');
+  }, [databaseAccessors, payloadAccessors, getAstNodeOption]);
+}
+
+export function useOperandOptions(astNodeVM: AstNodeViewModel) {
+  const databaseAccessors = useDatabaseAccessors();
+  const payloadAccessors = usePayloadAccessors();
+  const customLists = useCustomLists();
+  const enumValues = useEnumValuesFromNeighbour(astNodeVM);
+  const getAstNodeOption = useGetAstNodeOption();
+
+  return React.useMemo(() => {
+    return [
+      ...databaseAccessors,
+      ...payloadAccessors,
+      ...customLists.map(({ id }) => NewCustomListAstNode(id)),
+      ...aggregatorOperators.map((aggregator) =>
+        NewAggregatorAstNode(aggregator),
+      ),
+      NewFuzzyMatchComparatorAstNode({ funcName: 'FuzzyMatch' }),
+      NewTimeAddAstNode(),
+      NewTimeNowAstNode(),
+      ...enumValues.map((enumValue) =>
+        NewConstantAstNode({ constant: enumValue }),
+      ),
+    ].map((astNode) => getAstNodeOption(astNode, { enumValues }));
+  }, [
+    customLists,
+    databaseAccessors,
+    enumValues,
+    getAstNodeOption,
+    payloadAccessors,
+  ]);
+}
+
+export function useTwoLineOperandOperatorFunctions() {
+  const operators = useOperatorFunctions();
+  return React.useMemo(
+    () =>
+      operators
+        .filter(isTwoLineOperandOperatorFunction)
+        .sort(sortTwoLineOperandOperatorFunctions),
+    [operators],
+  );
+}
+
+export function useCustomListAccessCustomList(
+  astNode: CustomListAccessAstNode,
+) {
+  const customLists = useCustomLists();
+  return React.useMemo(
+    () => getCustomListAccessCustomList(astNode, { customLists }),
+    [astNode, customLists],
+  );
+}
+
+export function useDataAccessorAstNodeField(
+  astNodeVM: DataAccessorAstNode,
+): DataModelField {
+  const dataModel = useDataModel();
+  const triggerObjectTable = useTriggerObjectTable();
+  return React.useMemo(
+    () =>
+      getDataAccessorAstNodeField(astNodeVM, { dataModel, triggerObjectTable }),
+    [astNodeVM, dataModel, triggerObjectTable],
+  );
+}

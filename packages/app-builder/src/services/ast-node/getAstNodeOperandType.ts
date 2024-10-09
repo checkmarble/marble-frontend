@@ -1,28 +1,36 @@
 import {
   type AstNode,
+  type DataModel,
   type EnumValue,
+  isAggregation,
   isConstant,
   isCustomListAccess,
   isDataAccessorAstNode,
-  isFunctionAstNode,
+  isFuzzyMatchComparator,
+  isTimeAdd,
+  isTimeNow,
   isUndefinedAstNode,
+  type TableModel,
 } from '@app-builder/models';
-import { type OperandType } from '@app-builder/models/editable-ast-node';
+import { type OperandType } from '@app-builder/models/operand-type';
 import * as R from 'remeda';
-
-interface AstNodeOperandTypeContext {
-  enumOptions: EnumValue[];
-}
 
 export function getAstNodeOperandType(
   astNode: AstNode,
-  context: AstNodeOperandTypeContext,
+  context: {
+    triggerObjectTable: TableModel;
+    dataModel: DataModel;
+    // To distinguish between Enum and Constant operands
+    enumValues?: EnumValue[];
+  },
 ): OperandType {
   if (isConstant(astNode)) {
     const { constant } = astNode;
     if (
+      R.isDefined(context.enumValues) &&
+      context.enumValues.length > 0 &&
       (R.isNumber(constant) || R.isString(constant)) &&
-      context.enumOptions.includes(constant)
+      context.enumValues.includes(constant)
     ) {
       return 'Enum';
     }
@@ -37,7 +45,12 @@ export function getAstNodeOperandType(
     return 'Field';
   }
 
-  if (isFunctionAstNode(astNode)) {
+  if (
+    isAggregation(astNode) ||
+    isTimeAdd(astNode) ||
+    isTimeNow(astNode) ||
+    isFuzzyMatchComparator(astNode)
+  ) {
     return 'Function';
   }
 
