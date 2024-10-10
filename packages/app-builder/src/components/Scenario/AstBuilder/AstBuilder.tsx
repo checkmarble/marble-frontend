@@ -10,7 +10,6 @@ import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import { OptionsProvider } from '@app-builder/services/editor/options';
 
-import { AggregationEditModal } from './AstBuilderNode/AggregationEdit';
 import { RootAstBuilderNode } from './RootAstBuilderNode';
 
 interface AstBuilderProps {
@@ -42,16 +41,14 @@ export function AstBuilder({
   return (
     <OptionsProvider {...options}>
       <CopyPasteASTContextProvider>
-        <AggregationEditModal>
-          <RootAstBuilderNode
-            setOperand={setOperand}
-            setOperator={setOperator}
-            appendChild={appendChild}
-            remove={remove}
-            astNodeVM={astNodeVM}
-            viewOnly={viewOnly}
-          />
-        </AggregationEditModal>
+        <RootAstBuilderNode
+          setOperand={setOperand}
+          setOperator={setOperator}
+          appendChild={appendChild}
+          remove={remove}
+          astNodeVM={astNodeVM}
+          viewOnly={viewOnly}
+        />
       </CopyPasteASTContextProvider>
     </OptionsProvider>
   );
