@@ -54,7 +54,7 @@ export const Modal = {
   Title: ModalTitle,
 };
 
-interface ModalContentV2Props
+export interface ModalContentV2Props
   extends Ariakit.DialogProps,
     VariantProps<typeof modalContentClassnames> {}
 

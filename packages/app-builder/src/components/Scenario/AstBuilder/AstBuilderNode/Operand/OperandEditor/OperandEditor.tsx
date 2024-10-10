@@ -1,6 +1,8 @@
 import {
   type AstNode,
   type DataType,
+  type EditableAstNode,
+  isEditableAstNode,
   isUndefinedAstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
@@ -13,7 +15,7 @@ import {
 } from '@app-builder/services/editor/options';
 import { type ValidationStatus } from '@app-builder/services/validation/ast-node-validation';
 import { matchSorter } from 'match-sorter';
-import { useMemo, useState } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -24,11 +26,13 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
+  ModalV2,
   ScrollAreaV2,
 } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 import { OperandLabel } from '../OperandLabel';
+import { OperandEditModal } from './OperandEditModal/OperandEditModal';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
 import { OperandEditorSearchResults } from './OperandEditorSearchResults';
 
@@ -58,44 +62,79 @@ export function OperandEditor({
     displayName: string;
   }[];
 }) {
-  const [searchValue, setSearchValue] = useState('');
+  const [initialEditableAstNode, setInitialEditableAstNode] =
+    React.useState<EditableAstNode | null>(null);
+  const [searchValue, setSearchValue] = React.useState('');
+
+  const onOptionClick = React.useCallback(
+    (astNode: AstNode) => {
+      if (isEditableAstNode(astNode)) {
+        setInitialEditableAstNode(astNode);
+      } else {
+        onSave(astNode);
+      }
+    },
+    [onSave],
+  );
+
+  const bottomOptions = useBottomActions({
+    astNode,
+    onSave,
+    onEdit: setInitialEditableAstNode,
+  });
 
   return (
-    <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
-      <MenuButton
-        render={
-          <OperandLabel
-            interactionMode="editor"
-            astNode={astNode}
-            placeholder={placeholder}
-            dataType={dataType}
-            operandType={operandType}
-            displayName={displayName}
-            returnValue={returnValue}
-            validationStatus={validationStatus}
-          />
-        }
-      />
-      <MenuPopover className="w-96 flex-col">
-        <OperandEditorContent
-          onSave={onSave}
-          astNode={astNode}
-          searchValue={searchValue}
-          options={options}
+    <ModalV2.Root
+      open={initialEditableAstNode !== null}
+      setOpen={(open) => {
+        if (!open) setInitialEditableAstNode(null);
+      }}
+    >
+      <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
+        <MenuButton
+          render={
+            <OperandLabel
+              interactionMode="editor"
+              astNode={astNode}
+              placeholder={placeholder}
+              dataType={dataType}
+              operandType={operandType}
+              displayName={displayName}
+              returnValue={returnValue}
+              validationStatus={validationStatus}
+            />
+          }
         />
-      </MenuPopover>
-    </MenuRoot>
+        <MenuPopover className="w-96 flex-col">
+          <OperandEditorContent
+            onOptionClick={onOptionClick}
+            initialBottomOptions={bottomOptions}
+            searchValue={searchValue}
+            options={options}
+          />
+        </MenuPopover>
+      </MenuRoot>
+      {initialEditableAstNode ? (
+        <OperandEditModal
+          initialEditableAstNode={initialEditableAstNode}
+          onSave={(astNode) => {
+            onSave(astNode);
+            setInitialEditableAstNode(null);
+          }}
+        />
+      ) : null}
+    </ModalV2.Root>
   );
 }
 
 function OperandEditorContent({
-  onSave,
-  astNode,
+  initialBottomOptions,
+  onOptionClick,
   searchValue,
   options,
 }: {
-  onSave: (astNode: AstNode) => void;
-  astNode: AstNode;
+  initialBottomOptions: BottomOptionProps[];
+  onOptionClick: (astNode: AstNode) => void;
   searchValue: string;
   options: {
     astNode: AstNode;
@@ -105,53 +144,8 @@ function OperandEditorContent({
   }[];
 }) {
   const { t } = useTranslation('scenarios');
-
-  // const editAggregation = useEditAggregation();
-  // const editTimeAdd = useEditTimeAdd();
-  // const fuzzyMatchComparatorEdit = useFuzzyMatchComparatorEdit();
-
-  // const onClick = useCallback(
-  //   (newSelection: AstNode) => {
-  //     if (isAggregation(editorNodeViewModel)) {
-  //       editAggregation({
-  //         initialAggregation: adaptAggregationViewModel({
-  //           ...editorNodeViewModel,
-  //           nodeId: operandViewModel.nodeId,
-  //         }),
-  //         onSave,
-  //       });
-  //     } else if (isTimeAddNodeViewModel(editorNodeViewModel)) {
-  //       editTimeAdd({
-  //         initialValue: adaptTimeAddViewModal({
-  //           ...editorNodeViewModel,
-  //           nodeId: operandViewModel.nodeId,
-  //         }),
-  //         onSave,
-  //       });
-  //     } else if (
-  //       isFuzzyMatchComparatorEditorNodeViewModel(editorNodeViewModel)
-  //     ) {
-  //       fuzzyMatchComparatorEdit({
-  //         initialValue: editorNodeViewModel,
-  //         onSave,
-  //       });
-  //     } else {
-  //       onSave(newSelection.astNode);
-  //     }
-  //   },
-  //   [
-  //     editAggregation,
-  //     editTimeAdd,
-  //     fuzzyMatchComparatorEdit,
-  //     onSave,
-  //     operandViewModel.nodeId,
-  //   ],
-  // );
-
-  const bottomOptions = useBottomActions({
-    astNode,
-    onSave,
-  });
+  // Local copy of the bottomOptions to avoid the content to flicker during closing animation
+  const [bottomOptions] = React.useState(initialBottomOptions);
 
   const { constantOptions, matchOptions } = useMatchOptions({
     options,
@@ -176,14 +170,14 @@ function OperandEditorContent({
             <OperandEditorDiscoveryResults
               options={options}
               searchValue={searchValue}
-              onClick={onSave}
+              onClick={onOptionClick}
             />
           ) : (
             <OperandEditorSearchResults
               searchValue={searchValue}
               constantOptions={constantOptions}
               matchOptions={matchOptions}
-              onClick={onSave}
+              onClick={onOptionClick}
             />
           )}
         </div>
@@ -231,12 +225,15 @@ function BottomOptions({ options }: { options: BottomOptionProps[] }) {
 function useBottomActions({
   astNode,
   onSave,
+  onEdit,
 }: {
   astNode: AstNode;
   onSave: (astNode: AstNode) => void;
+  onEdit: (astNode: EditableAstNode) => void;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
-  const copyPasteAST = useOptionalCopyPasteAST();
+  // Local copy of the astNode to avoid the content to flicker during closing animation
+  const [copyPasteAST] = React.useState(useOptionalCopyPasteAST());
 
   const bottomOptions: BottomOptionProps[] = [];
 
@@ -250,17 +247,15 @@ function useBottomActions({
     });
   }
 
-  // TODO(modal): add a single edit that shoudl add a modal, the modal is responsible for handling factory based on the AstNode type
-
-  // if (isEditableAstNode(astNode)) {
-  //   bottomOptions.push({
-  //     icon: 'edit',
-  //     label: t('common:edit'),
-  //     onSelect: () => {
-  //       onSave(adaptAstNodeFromEditorViewModel(astNode));
-  //     },
-  //   });
-  // }
+  if (isEditableAstNode(astNode)) {
+    bottomOptions.push({
+      icon: 'edit',
+      label: t('common:edit'),
+      onSelect: () => {
+        onEdit(astNode);
+      },
+    });
+  }
 
   if (!isUndefinedAstNode(astNode) && copyPasteAST) {
     bottomOptions.push({
@@ -303,7 +298,7 @@ function useMatchOptions({
   const { t } = useTranslation(['common', 'scenarios']);
   const getAstNodeDisplayName = useGetAstNodeDisplayName();
   const getAstNodeDataType = useGetAstNodeDataType();
-  const constantOptions = useMemo(() => {
+  const constantOptions = React.useMemo(() => {
     const constantAstNodes = coerceToConstantAstNode(searchValue, {
       // Accept english and localized values for booleans
       // They will be coerced to the localized value
@@ -319,7 +314,7 @@ function useMatchOptions({
     }));
   }, [getAstNodeDataType, getAstNodeDisplayName, searchValue, t]);
 
-  const matchOptions = useMemo(() => {
+  const matchOptions = React.useMemo(() => {
     return matchSorter(options, searchValue, {
       keys: ['displayName'],
     });

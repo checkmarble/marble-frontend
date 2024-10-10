@@ -225,6 +225,7 @@
   "edit_date.now": "Now",
   "edit_date.now.description": "The time when the scenario is run",
   "edit_date.date": "Date",
+  "edit_date.field_is_not_supported": "Invalid timestamp field",
   "enum_options": "Options:",
   "nest": "Nest",
   "custom_list.unknown": "Unknown list",
