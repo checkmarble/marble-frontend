@@ -12,7 +12,6 @@ import { OptionsProvider } from '@app-builder/services/editor/options';
 
 import { AggregationEditModal } from './AstBuilderNode/AggregationEdit';
 import { FuzzyMatchComparatorEditModal } from './AstBuilderNode/FuzzyMatchComparatorEdit/Modal';
-import { TimeAddEditModal } from './AstBuilderNode/TimeAddEdit/Modal';
 import { RootAstBuilderNode } from './RootAstBuilderNode';
 
 interface AstBuilderProps {
@@ -44,22 +43,20 @@ export function AstBuilder({
   return (
     <OptionsProvider {...options}>
       <CopyPasteASTContextProvider>
-        <TimeAddEditModal>
-          <AggregationEditModal>
-            <FuzzyMatchComparatorEditModal>
-              <AggregationEditModal>
-                <RootAstBuilderNode
-                  setOperand={setOperand}
-                  setOperator={setOperator}
-                  appendChild={appendChild}
-                  remove={remove}
-                  astNodeVM={astNodeVM}
-                  viewOnly={viewOnly}
-                />
-              </AggregationEditModal>
-            </FuzzyMatchComparatorEditModal>
-          </AggregationEditModal>
-        </TimeAddEditModal>
+        <AggregationEditModal>
+          <FuzzyMatchComparatorEditModal>
+            <AggregationEditModal>
+              <RootAstBuilderNode
+                setOperand={setOperand}
+                setOperator={setOperator}
+                appendChild={appendChild}
+                remove={remove}
+                astNodeVM={astNodeVM}
+                viewOnly={viewOnly}
+              />
+            </AggregationEditModal>
+          </FuzzyMatchComparatorEditModal>
+        </AggregationEditModal>
       </CopyPasteASTContextProvider>
     </OptionsProvider>
   );

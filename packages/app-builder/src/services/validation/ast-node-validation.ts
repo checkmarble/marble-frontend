@@ -1,12 +1,13 @@
-import * as React from 'react';
 import { isLeafOperandAstNode } from '@app-builder/models';
 import {
   type AstNodeViewModel,
   type ValidationViewModel,
 } from '@app-builder/models/ast-node-view-model';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
+import * as React from 'react';
 import * as R from 'remeda';
 import invariant from 'tiny-invariant';
+
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
@@ -129,6 +130,7 @@ export function findArgumentIndexErrorsFromParent(
   const childIndex = viewModel.parent.children.findIndex(
     (child) => child.nodeId == viewModel.nodeId,
   );
+  if (childIndex == -1) return [];
   const parentErrors = getAstNodeEvaluationErrors(viewModel.parent);
   return parentErrors.filter((error) => error.argumentIndex == childIndex);
 }
@@ -163,17 +165,22 @@ export function getValidationStatus(
 
 export type ValidationStatus = 'valid' | 'error' | 'light-error';
 
+/**
+ * Flatten the errors of the node and its children, stopping the recursion when the node is a "leaf"
+ * @param viewModel
+ * @returns the errors of the node and its children
+ */
 export function computeLineErrors(
   viewModel: AstNodeViewModel,
 ): EvaluationError[] {
+  const errors = getAstNodeEvaluationErrors(viewModel);
   // Stop the recursion if the node is a leaf
   if (isLeafOperandAstNode(viewModel)) {
-    const errors = getAstNodeEvaluationErrors(viewModel);
     const { nodeErrors } = separateChildrenErrors(errors);
     return nodeErrors;
   } else {
     return [
-      ...viewModel.errors,
+      ...errors,
       ...viewModel.children.flatMap(computeLineErrors),
       ...Object.values(viewModel.namedChildren).flatMap(computeLineErrors),
     ];

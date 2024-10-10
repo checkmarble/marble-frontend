@@ -5,6 +5,8 @@ import {
   isConstant,
   isDataAccessorAstNode,
   isFuzzyMatchComparator,
+  isTimeAdd,
+  isTimeNow,
   type TableModel,
 } from '@app-builder/models';
 import * as R from 'remeda';
@@ -51,6 +53,10 @@ export function getAstNodeDataType(
 
   if (isFuzzyMatchComparator(astNode)) {
     return 'Bool';
+  }
+
+  if (isTimeNow(astNode) || isTimeAdd(astNode)) {
+    return 'Timestamp';
   }
 
   return 'unknown';

@@ -35,11 +35,10 @@ import { useTranslation } from 'react-i18next';
 
 import { getAstNodeDataType } from '../ast-node/getAstNodeDataType';
 import { getAstNodeDisplayName } from '../ast-node/getAstNodeDisplayName';
-
+import { getAstNodeOperandType } from '../ast-node/getAstNodeOperandType';
 import { getCustomListAccessCustomList } from '../ast-node/getCustomListAccessCustomList';
 import { getDataAccessorAstNodeField } from '../ast-node/getDataAccessorAstNodeField';
 import { getEnumValuesFromNeighbour } from './getEnumOptionsFromNeighbour';
-import { getAstNodeOperandType } from '../ast-node/getAstNodeOperandType';
 
 const DatabaseAccessors =
   createSimpleContext<DatabaseAccessAstNode[]>('DatabaseAccessors');
@@ -209,7 +208,12 @@ export function useTimestampFieldOptions() {
   const getAstNodeOption = useGetAstNodeOption();
 
   return React.useMemo(() => {
-    return [NewTimeNowAstNode(), ...databaseAccessors, ...payloadAccessors]
+    return [
+      NewTimeNowAstNode(),
+      NewTimeAddAstNode(),
+      ...databaseAccessors,
+      ...payloadAccessors,
+    ]
       .map((astNode) => getAstNodeOption(astNode))
       .filter(({ dataType }) => dataType == 'Timestamp');
   }, [databaseAccessors, payloadAccessors, getAstNodeOption]);

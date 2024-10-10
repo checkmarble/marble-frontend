@@ -5,15 +5,10 @@ import {
   type AstNode,
   NewConstantAstNode,
   NewTimeAddAstNode,
-  NewUndefinedAstNode,
   type TimeAddAstNode,
   type TimestampFieldAstNode,
 } from '@app-builder/models';
-import {
-  adaptAstNodeFromViewModel,
-  type AstNodeViewModel,
-  type TimeAddAstNodeViewModel,
-} from '@app-builder/models/ast-node-view-model';
+import { type TimeAddAstNodeViewModel } from '@app-builder/models/ast-node-view-model';
 import {
   isTimeAddOperator,
   type TimeAddOperator,
@@ -21,25 +16,23 @@ import {
 } from '@app-builder/models/editable-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { dateDocHref } from '@app-builder/services/documentation-href';
-import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
-import { computeValidationForNamedChildren } from '@app-builder/services/validation/ast-node-validation';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { createSimpleContext } from '@app-builder/utils/create-context';
-import { useCallback, useState } from 'react';
+import { computeValidationForNamedChildren } from '@app-builder/services/validation/ast-node-validation';
+import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 
-import { Operator } from '../Operator';
+import { Operator } from '../../../../Operator';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
 import { TimestampField } from './TimestampField';
 
 export interface TimeAddViewModal {
   nodeId: string;
-  timestampField: AstNodeViewModel;
+  timestampField: TimestampFieldAstNode;
   sign: TimeAddOperator;
   duration: string;
   durationUnit: DurationUnit;
@@ -84,82 +77,35 @@ export function adaptTimeAddViewModal(
 function adaptTimeAddAstNode(
   timeAddViewModel: TimeAddViewModal,
 ): TimeAddAstNode {
-  const timestampFieldAstNode = timeAddViewModel.timestampField
-    ? adaptAstNodeFromViewModel(timeAddViewModel.timestampField)
-    : NewUndefinedAstNode();
   const signAstNode = NewConstantAstNode({
     constant: timeAddViewModel.sign,
   });
-  const temporalDuration = adaptTemporalDurationFromDurationAndUnit({
-    duration: parseInt(timeAddViewModel.duration),
-    durationUnit: timeAddViewModel.durationUnit,
+  const temporalDuration = Temporal.Duration.from({
+    [timeAddViewModel.durationUnit]: parseInt(timeAddViewModel.duration),
   });
   const durationAstNode = NewConstantAstNode({
     constant: temporalDuration.toString(),
   });
 
   return NewTimeAddAstNode(
-    timestampFieldAstNode as TimestampFieldAstNode,
+    timeAddViewModel.timestampField,
     signAstNode,
     durationAstNode,
   );
 }
 
-export interface TimeAddEditModalProps {
-  initialValue: TimeAddViewModal;
-  onSave: (astNode: AstNode) => void;
-}
-
-const TimeAddEditModalContext =
-  createSimpleContext<(timeAddProps: TimeAddEditModalProps) => void>(
-    'TimeAddEditModal',
-  );
-
-export const useEditTimeAdd = TimeAddEditModalContext.useValue;
-
-export function TimeAddEditModal({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState<boolean>(false);
-  const [timeAddEditModalProps, setValueEditModalProps] =
-    useState<TimeAddEditModalProps>();
-
-  const editTimeAdd = useCallback((dateProps: TimeAddEditModalProps) => {
-    setValueEditModalProps(dateProps);
-    setOpen(true);
-  }, []);
-
-  return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <TimeAddEditModalContext.Provider value={editTimeAdd}>
-        {children}
-        <ModalV2.Content>
-          {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
-          <CopyPasteASTContextProvider>
-            {timeAddEditModalProps ? (
-              <TimeAddEditModalContent
-                initialValue={timeAddEditModalProps.initialValue}
-                onSave={(astNode: AstNode) => {
-                  timeAddEditModalProps.onSave(astNode);
-                  setOpen(false);
-                }}
-              />
-            ) : null}
-          </CopyPasteASTContextProvider>
-        </ModalV2.Content>
-      </TimeAddEditModalContext.Provider>
-    </ModalV2.Root>
-  );
-}
-
-function TimeAddEditModalContent({
-  initialValue,
+export function TimeAddEdit({
+  initialAstNodeVM,
   onSave,
 }: {
-  initialValue: TimeAddViewModal;
+  initialAstNodeVM: TimeAddAstNodeViewModel;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
-  const [value, setValue] = useState<TimeAddViewModal>(() => initialValue);
+  const [value, setValue] = React.useState<TimeAddViewModal>(() =>
+    adaptTimeAddViewModal(initialAstNodeVM),
+  );
 
   const handleSave = () => {
     onSave(adaptTimeAddAstNode(value));
@@ -183,7 +129,7 @@ function TimeAddEditModalContent({
           </Callout>
           <div className="flex gap-2">
             <TimestampField
-              astNodeVM={value.timestampField}
+              astNode={value.timestampField}
               onChange={(timestampField) =>
                 setValue({
                   ...value,
@@ -193,6 +139,9 @@ function TimeAddEditModalContent({
                     timestampField: [],
                   },
                 })
+              }
+              validationStatus={
+                value.errors.timestampField.length > 0 ? 'error' : 'valid'
               }
             />
             <Operator
@@ -208,7 +157,9 @@ function TimeAddEditModalContent({
                   },
                 })
               }
-              errors={value.errors.sign}
+              validationStatus={
+                value.errors.sign.length > 0 ? 'error' : 'valid'
+              }
             />
             <Input
               value={value.duration ?? undefined}
@@ -288,14 +239,4 @@ const adaptDurationAndUnitFromTemporalDuration = (
     duration: temporalDuration.total('day'),
     durationUnit: 'days',
   };
-};
-
-const adaptTemporalDurationFromDurationAndUnit = ({
-  duration,
-  durationUnit,
-}: {
-  duration: number;
-  durationUnit: DurationUnit;
-}): Temporal.Duration => {
-  return Temporal.Duration.from({ [durationUnit]: duration });
 };

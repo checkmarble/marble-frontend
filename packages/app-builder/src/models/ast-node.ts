@@ -219,10 +219,21 @@ export interface TimeAddAstNode {
   };
 }
 export type TimestampFieldAstNode =
-  | DatabaseAccessAstNode
-  | PayloadAstNode
+  | DataAccessorAstNode
   | TimeNowAstNode
+  | TimeAddAstNode
   | UndefinedAstNode;
+
+export function isTimestampFieldAstNode(
+  node: AstNode,
+): node is TimestampFieldAstNode {
+  return (
+    isDataAccessorAstNode(node) ||
+    isTimeNow(node) ||
+    isTimeAdd(node) ||
+    isUndefinedAstNode(node)
+  );
+}
 
 export function NewTimeAddAstNode(
   timestampFieldAstNode: TimestampFieldAstNode = NewUndefinedAstNode(),
@@ -413,7 +424,7 @@ export function isFuzzyMatchComparator(
   return isFuzzyMatch(firstChild) || isFuzzyMatchAnyOf(firstChild);
 }
 
-type EditableAstNode =
+export type EditableAstNode =
   | AggregationAstNode
   | TimeAddAstNode
   | FuzzyMatchComparatorAstNode;
