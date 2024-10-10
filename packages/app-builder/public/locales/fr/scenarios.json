@@ -71,7 +71,7 @@
   "create_rule.default_name": "Nouvelle règle",
   "create_scenario.callout": "Un scénario identifie un certain type de risque, déclenché par un événement spécifique (<DocLink>en savoir plus</DocLink>)",
   "create_scenario.no_trigger_object": "Aucun objet déclencheur. \nModifiez votre modèle de données pour en ajouter un.",
-  "decision.score_based.score_block_and_review_condition": "Lorsque {{blockAndReviewThreshold}} ≤ score",
+  "decision.score_based.score_block_and_review_condition": "Lorsque {{blockAndReviewThreshold}} ≤ score &lt; <DeclineThreshold />",
   "decision.score_based.score_block_and_review_threshold": "Seuil de score pour \"bloquer et vérifier\"",
   "decision.score_based.score_decline_threshold": "Seuil de score pour \"refuser\"",
   "decision.score_based.score_review_threshold": "Seuil de score pour \"à vérifier\"",
