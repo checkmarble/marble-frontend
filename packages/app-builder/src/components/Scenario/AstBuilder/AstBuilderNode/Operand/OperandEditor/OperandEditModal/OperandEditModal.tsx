@@ -1,6 +1,7 @@
 import {
   type AstNode,
   type EditableAstNode,
+  isAggregation,
   isFuzzyMatchComparator,
   isTimeAdd,
 } from '@app-builder/models';
@@ -10,6 +11,7 @@ import * as React from 'react';
 import { assertNever } from 'typescript-utils';
 import { type ModalContentV2Props, ModalV2 } from 'ui-design-system';
 
+import { AggregationEdit } from './AggregationEdit/AggregationEdit';
 import { FuzzyMatchComparatorEdit } from './FuzzyMatchComparatorEdit/FuzzyMatchComparatorEdit';
 import { TimeAddEdit } from './TimeAddEdit/TimeAddEdit';
 
@@ -49,6 +51,18 @@ export function OperandEditModal({
       <OperandEditModalContent size="medium">
         <FuzzyMatchComparatorEdit
           initialFuzzyMatchComparatorAstNodeViewModel={adaptAstNodeViewModel({
+            ast: initialEditableAstNode,
+          })}
+          onSave={onSave}
+        />
+      </OperandEditModalContent>
+    );
+  }
+  if (isAggregation(initialEditableAstNode)) {
+    return (
+      <OperandEditModalContent size="large">
+        <AggregationEdit
+          initialAstNodeVM={adaptAstNodeViewModel({
             ast: initialEditableAstNode,
           })}
           onSave={onSave}

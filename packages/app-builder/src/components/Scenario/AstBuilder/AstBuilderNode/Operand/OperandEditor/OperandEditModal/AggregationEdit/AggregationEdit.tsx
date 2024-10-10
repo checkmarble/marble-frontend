@@ -17,21 +17,19 @@ import {
 } from '@app-builder/models/editable-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
-import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import { useDataModel } from '@app-builder/services/editor/options';
-import { computeValidationForNamedChildren } from '@app-builder/services/validation/ast-node-validation';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { createSimpleContext } from '@app-builder/utils/create-context';
+import { computeValidationForNamedChildren } from '@app-builder/services/validation/ast-node-validation';
 import { type Namespace } from 'i18next';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 import { Logo } from 'ui-icons';
 
-import { Operator } from '../Operator';
+import { Operator } from '../../../../Operator';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
 
@@ -160,69 +158,17 @@ export const adaptAggregationAstNode = (
   };
 };
 
-export interface AggregationEditModalProps {
-  initialAggregation: AggregationViewModel;
-  onSave: (astNode: AstNode) => void;
-}
-
-const AggregationEditModalContext = createSimpleContext<
-  (agregationProps: AggregationEditModalProps) => void
->('AggregationEditModal');
-
-export const useEditAggregation = AggregationEditModalContext.useValue;
-
-export function AggregationEditModal({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [open, onOpenChange] = useState<boolean>(false);
-  const [aggregation, setAggregation] = useState<AggregationViewModel>();
-  const onSaveRef = useRef<(astNode: AstNode) => void>();
-
-  const editAgregation = useCallback(
-    (aggregationProps: AggregationEditModalProps) => {
-      setAggregation(aggregationProps.initialAggregation);
-      onSaveRef.current = aggregationProps.onSave;
-      onOpenChange(true);
-    },
-    [],
-  );
-
-  return (
-    <ModalV2.Root open={open} setOpen={onOpenChange}>
-      <AggregationEditModalContext.Provider value={editAgregation}>
-        {children}
-        <ModalV2.Content size="large" unmountOnHide>
-          {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
-          <CopyPasteASTContextProvider>
-            {aggregation ? (
-              <AggregationEditModalContent
-                aggregation={aggregation}
-                setAggregation={setAggregation}
-                onSave={(astNode) => {
-                  onSaveRef.current?.(astNode);
-                  onOpenChange(false);
-                }}
-              />
-            ) : null}
-          </CopyPasteASTContextProvider>
-        </ModalV2.Content>
-      </AggregationEditModalContext.Provider>
-    </ModalV2.Root>
-  );
-}
-
-function AggregationEditModalContent({
-  aggregation,
-  setAggregation,
+export function AggregationEdit({
+  initialAstNodeVM,
   onSave,
 }: {
-  aggregation: AggregationViewModel;
-  setAggregation: (aggregation: AggregationViewModel) => void;
+  initialAstNodeVM: AggregationAstNodeViewModel;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(handle.i18n);
+  const [aggregation, setAggregation] = useState(() =>
+    adaptAggregationViewModel(initialAstNodeVM),
+  );
 
   const dataModel = useDataModel();
   const dataModelFieldOptions = useMemo(
@@ -313,7 +259,9 @@ function AggregationEditModalContent({
                       },
                     })
                   }
-                  errors={aggregation.errors.aggregator}
+                  validationStatus={
+                    aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'
+                  }
                   operators={aggregatorOperators}
                 />
                 <EvaluationErrors
