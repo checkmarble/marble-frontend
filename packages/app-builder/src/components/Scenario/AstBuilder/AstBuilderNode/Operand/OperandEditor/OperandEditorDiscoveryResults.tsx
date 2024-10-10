@@ -16,12 +16,12 @@ import { type FunctionComponent, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import {
-  MenuButton,
   MenuContent,
   MenuGroup,
   MenuGroupLabel,
   MenuPopover,
-  MenuRoot,
+  SubMenuButton,
+  SubMenuRoot,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -107,15 +107,15 @@ function Submenu({
   onClick: (option: AstNode) => void;
 }) {
   return (
-    <MenuRoot>
-      <MenuButton className="data-[active-item]:bg-purple-05 flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2 outline-none">
+    <SubMenuRoot>
+      <SubMenuButton className="data-[active-item]:bg-purple-05 flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2 outline-none">
         {children}
         <Icon
           aria-hidden="true"
           icon="arrow-right"
           className="size-5 shrink-0"
         />
-      </MenuButton>
+      </SubMenuButton>
       <MenuPopover className="max-h-64 w-96 flex-col" gutter={16}>
         <MenuContent>
           <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pr-[calc(0.5rem-var(--scrollbar-width))]">
@@ -133,7 +133,7 @@ function Submenu({
           </div>
         </MenuContent>
       </MenuPopover>
-    </MenuRoot>
+    </SubMenuRoot>
   );
 }
 
