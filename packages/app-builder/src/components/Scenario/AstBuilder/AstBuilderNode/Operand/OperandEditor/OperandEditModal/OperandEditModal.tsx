@@ -1,6 +1,7 @@
 import {
   type AstNode,
   type EditableAstNode,
+  isFuzzyMatchComparator,
   isTimeAdd,
 } from '@app-builder/models';
 import { adaptAstNodeViewModel } from '@app-builder/models/ast-node-view-model';
@@ -9,6 +10,7 @@ import * as React from 'react';
 import { assertNever } from 'typescript-utils';
 import { type ModalContentV2Props, ModalV2 } from 'ui-design-system';
 
+import { FuzzyMatchComparatorEdit } from './FuzzyMatchComparatorEdit/FuzzyMatchComparatorEdit';
 import { TimeAddEdit } from './TimeAddEdit/TimeAddEdit';
 
 const OperandEditModalContent = React.forwardRef<
@@ -32,9 +34,21 @@ export function OperandEditModal({
 }) {
   if (isTimeAdd(initialEditableAstNode)) {
     return (
-      <OperandEditModalContent>
+      <OperandEditModalContent size="small">
         <TimeAddEdit
           initialAstNodeVM={adaptAstNodeViewModel({
+            ast: initialEditableAstNode,
+          })}
+          onSave={onSave}
+        />
+      </OperandEditModalContent>
+    );
+  }
+  if (isFuzzyMatchComparator(initialEditableAstNode)) {
+    return (
+      <OperandEditModalContent size="medium">
+        <FuzzyMatchComparatorEdit
+          initialFuzzyMatchComparatorAstNodeViewModel={adaptAstNodeViewModel({
             ast: initialEditableAstNode,
           })}
           onSave={onSave}
