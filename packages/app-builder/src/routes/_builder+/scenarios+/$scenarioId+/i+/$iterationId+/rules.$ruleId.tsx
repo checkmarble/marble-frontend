@@ -16,6 +16,10 @@ import {
   NewEmptyRuleAstNode,
   type PayloadAstNode,
 } from '@app-builder/models';
+import {
+  adaptAstNodeFromViewModel,
+  type AstNodeViewModel,
+} from '@app-builder/models/ast-node-view-model';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
@@ -25,11 +29,7 @@ import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenario
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
 import { useRuleValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import { useEditorMode } from '@app-builder/services/editor';
-import {
-  adaptAstNodeFromEditorViewModel,
-  type EditorNodeViewModel,
-  useAstBuilder,
-} from '@app-builder/services/editor/ast-editor';
+import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
@@ -248,7 +248,7 @@ export default function RuleDetail() {
           setOperator={astEditor.setOperator}
           appendChild={astEditor.appendChild}
           remove={astEditor.remove}
-          editorNodeViewModel={astEditor.editorNodeViewModel}
+          astNodeVM={astEditor.astNodeVM}
           rule={rule}
         />
       ) : (
@@ -258,7 +258,7 @@ export default function RuleDetail() {
           setOperator={astEditor.setOperator}
           appendChild={astEditor.appendChild}
           remove={astEditor.remove}
-          editorNodeViewModel={astEditor.editorNodeViewModel}
+          astNodeVM={astEditor.astNodeVM}
           rule={rule}
           scenarioId={scenarioId}
         />
@@ -273,7 +273,7 @@ function RuleViewContent({
   setOperator,
   appendChild,
   remove,
-  editorNodeViewModel,
+  astNodeVM,
   rule,
 }: {
   options: {
@@ -288,7 +288,7 @@ function RuleViewContent({
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
-  editorNodeViewModel: EditorNodeViewModel;
+  astNodeVM: AstNodeViewModel;
   rule: ScenarioIterationRule;
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -323,7 +323,7 @@ function RuleViewContent({
             setOperator={setOperator}
             appendChild={appendChild}
             remove={remove}
-            editorNodeViewModel={editorNodeViewModel}
+            astNodeVM={astNodeVM}
             viewOnly={true}
           />
         </Paper.Container>
@@ -338,7 +338,7 @@ function RuleEditContent({
   setOperator,
   appendChild,
   remove,
-  editorNodeViewModel,
+  astNodeVM,
   rule,
   scenarioId,
 }: {
@@ -354,7 +354,7 @@ function RuleEditContent({
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
-  editorNodeViewModel: EditorNodeViewModel;
+  astNodeVM: AstNodeViewModel;
   rule: ScenarioIterationRule;
   scenarioId: string;
 }) {
@@ -395,7 +395,7 @@ function RuleEditContent({
     const values = formMethods.getValues();
     fetcher.submit(
       {
-        astNode: adaptAstNodeFromEditorViewModel(editorNodeViewModel),
+        astNode: adaptAstNodeFromViewModel(astNodeVM),
         formValues: values,
       },
       {
@@ -489,7 +489,7 @@ function RuleEditContent({
               setOperator={setOperator}
               appendChild={appendChild}
               remove={remove}
-              editorNodeViewModel={editorNodeViewModel}
+              astNodeVM={astNodeVM}
             />
 
             <EvaluationErrors

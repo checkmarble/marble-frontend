@@ -144,7 +144,7 @@ function DateRangeFilterFromNowPicker({
       <div className="flex flex-col gap-1">
         {fromNowDurations.map((duration) => (
           <button
-            key={duration.toString()}
+            key={duration}
             onClick={() => {
               onFromNowSelect(duration);
             }}

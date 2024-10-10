@@ -4,15 +4,12 @@ import {
   type DataModel,
   type PayloadAstNode,
 } from '@app-builder/models';
+import { type AstNodeViewModel } from '@app-builder/models/ast-node-view-model';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
-import { OptionsProvider } from '@app-builder/services/ast-node/options';
-import { type EditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
+import { OptionsProvider } from '@app-builder/services/editor/options';
 
-import { AggregationEditModal } from './AstBuilderNode/AggregationEdit';
-import { FuzzyMatchComparatorEditModal } from './AstBuilderNode/FuzzyMatchComparatorEdit/Modal';
-import { TimeAddEditModal } from './AstBuilderNode/TimeAddEdit/Modal';
 import { RootAstBuilderNode } from './RootAstBuilderNode';
 
 interface AstBuilderProps {
@@ -28,7 +25,7 @@ interface AstBuilderProps {
   setOperator: (nodeId: string, name: string) => void;
   appendChild: (nodeId: string, childAst: AstNode) => void;
   remove: (nodeId: string) => void;
-  editorNodeViewModel: EditorNodeViewModel;
+  astNodeVM: AstNodeViewModel;
   viewOnly?: boolean;
 }
 
@@ -38,28 +35,20 @@ export function AstBuilder({
   setOperator,
   appendChild,
   remove,
-  editorNodeViewModel,
+  astNodeVM,
   viewOnly,
 }: AstBuilderProps) {
   return (
     <OptionsProvider {...options}>
       <CopyPasteASTContextProvider>
-        <TimeAddEditModal>
-          <AggregationEditModal>
-            <FuzzyMatchComparatorEditModal>
-              <AggregationEditModal>
-                <RootAstBuilderNode
-                  setOperand={setOperand}
-                  setOperator={setOperator}
-                  appendChild={appendChild}
-                  remove={remove}
-                  editorNodeViewModel={editorNodeViewModel}
-                  viewOnly={viewOnly}
-                />
-              </AggregationEditModal>
-            </FuzzyMatchComparatorEditModal>
-          </AggregationEditModal>
-        </TimeAddEditModal>
+        <RootAstBuilderNode
+          setOperand={setOperand}
+          setOperator={setOperator}
+          appendChild={appendChild}
+          remove={remove}
+          astNodeVM={astNodeVM}
+          viewOnly={viewOnly}
+        />
       </CopyPasteASTContextProvider>
     </OptionsProvider>
   );

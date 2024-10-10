@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Select, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { operatorContainerClassnames } from '../Operator';
+import { operatorContainerClassnames } from '../../../../Operator';
 
 interface EditAlgorithmProps {
   algorithm: FuzzyMatchAlgorithm;
