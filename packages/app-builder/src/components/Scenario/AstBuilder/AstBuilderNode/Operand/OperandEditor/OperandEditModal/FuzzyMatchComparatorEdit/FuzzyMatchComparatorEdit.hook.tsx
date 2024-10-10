@@ -13,12 +13,12 @@ import {
   type FuzzyMatchComparatorLevel,
 } from '@app-builder/models/fuzzy-match';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
+import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import {
   useDataModel,
   useOperandOptions,
   useTriggerObjectTable,
 } from '@app-builder/services/editor/options';
-import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import * as React from 'react';
 
 type EditFuzzyMatchComparatorState = {
@@ -219,10 +219,9 @@ export function useFuzzyMatchComparatorEditState(
 export function useLeftOptions(
   initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
 ) {
-  const options = useOperandOptions({
-    astNodeVM:
-      initialFuzzyMatchComparatorAstNodeViewModel.children[0].children[0],
-  });
+  const options = useOperandOptions(
+    initialFuzzyMatchComparatorAstNodeViewModel.children[0].children[0],
+  );
   return React.useMemo(
     () => options.filter((option) => option.dataType === 'String'),
     [options],
@@ -232,10 +231,9 @@ export function useLeftOptions(
 export function useRightOptions(
   initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
 ) {
-  const options = useOperandOptions({
-    astNodeVM:
-      initialFuzzyMatchComparatorAstNodeViewModel.children[0].children[1],
-  });
+  const options = useOperandOptions(
+    initialFuzzyMatchComparatorAstNodeViewModel.children[0].children[1],
+  );
   return React.useMemo(
     () =>
       options.filter(

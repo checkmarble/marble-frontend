@@ -14,18 +14,16 @@ import {
   isEditableFuzzyMatchAlgorithm,
 } from '@app-builder/models/fuzzy-match';
 import { fuzzyMatchingDocHref } from '@app-builder/services/documentation-href';
-import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
+import { useGetAstNodeOption } from '@app-builder/services/editor/options';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type ParseKeys } from 'i18next';
-import { useCallback, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
 
-import { Operand } from '../Operand';
+import { Operand } from '../../../Operand';
 import { EditAlgorithm } from './EditAlgorithm';
 import { EditLevel } from './EditLevel';
 import { EditThreshold } from './EditThreshold';
@@ -35,65 +33,7 @@ import {
   useRightOptions,
 } from './FuzzyMatchComparatorEdit.hook';
 
-export interface FuzzyMatchComparatorEditModalProps {
-  initialValue: FuzzyMatchComparatorAstNodeViewModel;
-  onSave: (astNode: AstNode) => void;
-}
-
-const FuzzyMatchComparatorEditModalContext = createSimpleContext<
-  (timeAddProps: FuzzyMatchComparatorEditModalProps) => void
->('FuzzyMatchComparatorEditModalContext');
-
-export const useFuzzyMatchComparatorEdit =
-  FuzzyMatchComparatorEditModalContext.useValue;
-
-export function FuzzyMatchComparatorEditModal({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [open, onOpenChange] = useState<boolean>(false);
-  const [
-    fuzzyMatchComparatorEditModalProps,
-    setFuzzyMatchComparatorEditModalProps,
-  ] = useState<FuzzyMatchComparatorEditModalProps>();
-
-  const fuzzyMatchComparatorEdit = useCallback(
-    (props: FuzzyMatchComparatorEditModalProps) => {
-      setFuzzyMatchComparatorEditModalProps(props);
-      onOpenChange(true);
-    },
-    [],
-  );
-
-  return (
-    <ModalV2.Root open={open} setOpen={onOpenChange}>
-      <FuzzyMatchComparatorEditModalContext.Provider
-        value={fuzzyMatchComparatorEdit}
-      >
-        {children}
-        <ModalV2.Content size="medium" unmountOnHide>
-          {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
-          <CopyPasteASTContextProvider>
-            {fuzzyMatchComparatorEditModalProps ? (
-              <FuzzyMatchComparatorEditModalContent
-                initialFuzzyMatchComparatorAstNodeViewModel={
-                  fuzzyMatchComparatorEditModalProps.initialValue
-                }
-                onSave={(astNode: AstNode) => {
-                  fuzzyMatchComparatorEditModalProps.onSave(astNode);
-                  onOpenChange(false);
-                }}
-              />
-            ) : null}
-          </CopyPasteASTContextProvider>
-        </ModalV2.Content>
-      </FuzzyMatchComparatorEditModalContext.Provider>
-    </ModalV2.Root>
-  );
-}
-
-function FuzzyMatchComparatorEditModalContent({
+export function FuzzyMatchComparatorEdit({
   initialFuzzyMatchComparatorAstNodeViewModel,
   onSave,
 }: {
@@ -125,6 +65,7 @@ function FuzzyMatchComparatorEditModalContent({
   const rightOptions = useRightOptions(
     initialFuzzyMatchComparatorAstNodeViewModel,
   );
+  const getAstNodeOption = useGetAstNodeOption();
 
   const handleSave = () => {
     const fuzzyMatchComparatorAstNode = NewFuzzyMatchComparatorAstNode({
@@ -180,14 +121,20 @@ function FuzzyMatchComparatorEditModalContent({
             {t('scenarios:edit_fuzzy_match.operands.label')}
           </p>
           <div className="flex gap-2">
-            <Operand astNodeVM={left} onSave={setLeft} options={leftOptions} />
+            <Operand
+              {...getAstNodeOption(left)}
+              validationStatus={left.errors.length > 0 ? 'error' : 'valid'}
+              onSave={setLeft}
+              options={leftOptions}
+            />
             <div className="border-grey-10 bg-grey-02 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
               <span className="text-s text-grey-100 font-medium">
                 {t(funcNameTKeys[funcName])}
               </span>
             </div>
             <Operand
-              astNodeVM={right}
+              {...getAstNodeOption(right)}
+              validationStatus={right.errors.length > 0 ? 'error' : 'valid'}
               onSave={setRight}
               options={rightOptions}
             />
