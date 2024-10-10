@@ -311,7 +311,7 @@ function RuleSnoozeDetail() {
     (snooze) => snooze.hasSnoozesActive,
   );
 
-  if (hasSnoozesActive) {
+  if (!hasSnoozesActive) {
     return (
       <p className="text-grey-50 text-s first-letter:capitalize">
         {t('scenarios:deployment_modal.activate.without_rule_snooze')}
