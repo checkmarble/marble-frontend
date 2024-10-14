@@ -14,6 +14,7 @@ import {
   type ShouldRevalidateFunctionArgs,
   useLoaderData,
   useRouteError,
+  useRouteLoaderData,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
 import { type Namespace } from 'i18next';
@@ -118,78 +119,72 @@ export const meta: MetaFunction = () => [
   },
 ];
 
-export function ErrorBoundary() {
-  const error = useRouteError();
-  captureRemixErrorBoundaryError(error);
+export function Layout({ children }: { children: React.ReactNode }) {
+  const loaderData = useRouteLoaderData<typeof loader>('root');
 
-  return (
-    <html lang="en">
-      <head>
-        <Meta />
-        <Links />
-      </head>
-      <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
-        <div className="from-purple-10 to-grey-02 flex size-full flex-col items-center bg-gradient-to-r">
-          <div className="flex size-full flex-col items-center bg-no-repeat">
-            <div className="flex h-full max-h-80 flex-col justify-center">
-              <Link to={getRoute('/sign-in')}>
-                <Logo
-                  logo="logo-standard"
-                  className="h-10 w-auto text-[#080525]"
-                  preserveAspectRatio="xMinYMid meet"
-                  aria-labelledby="marble"
-                />
-              </Link>
-            </div>
-            <div className="bg-grey-00 mb-10 flex shrink-0 rounded-2xl p-10 text-center shadow-md">
-              <ErrorComponent error={error} />
-            </div>
-          </div>
-        </div>
-        <ScrollRestoration />
-        <Scripts />
-      </body>
-    </html>
-  );
-}
-
-function App() {
-  const { locale, ENV, toastMessage, csrf, segmentScript } =
-    useLoaderData<typeof loader>();
-
-  const { i18n } = useTranslation(handle.i18n);
-
-  useChangeLanguage(locale);
-
+  const { i18n } = useTranslation();
   useSegmentPageTracking();
 
   return (
-    <html lang={locale} dir={i18n.dir()}>
+    <html lang={loaderData?.locale ?? 'en'} dir={i18n.dir()}>
       <head>
         <Meta />
         <Links />
-        {segmentScript ? <SegmentScript script={segmentScript} /> : null}
+        {loaderData?.segmentScript ? (
+          <SegmentScript script={loaderData.segmentScript} />
+        ) : null}
         <ExternalScripts />
       </head>
       <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
-        <AuthenticityTokenProvider token={csrf}>
-          <Tooltip.Provider>
-            <Outlet />
-          </Tooltip.Provider>
+        <AuthenticityTokenProvider token={loaderData?.csrf ?? ''}>
+          <Tooltip.Provider>{children}</Tooltip.Provider>
         </AuthenticityTokenProvider>
         <script
           dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(ENV)}`,
+            __html: `window.ENV = ${JSON.stringify(loaderData?.ENV ?? {})}`,
           }}
         />
         <ScrollRestoration />
         <Scripts />
         <ClientOnly>
-          {() => <MarbleToaster toastMessage={toastMessage} />}
+          {() => <MarbleToaster toastMessage={loaderData?.toastMessage} />}
         </ClientOnly>
       </body>
     </html>
   );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  captureRemixErrorBoundaryError(error);
+
+  return (
+    <div className="from-purple-10 to-grey-02 flex size-full flex-col items-center bg-gradient-to-r">
+      <div className="flex size-full flex-col items-center bg-no-repeat">
+        <div className="flex h-full max-h-80 flex-col justify-center">
+          <Link to={getRoute('/sign-in')}>
+            <Logo
+              logo="logo-standard"
+              className="h-10 w-auto text-[#080525]"
+              preserveAspectRatio="xMinYMid meet"
+              aria-labelledby="marble"
+            />
+          </Link>
+        </div>
+        <div className="bg-grey-00 mb-10 flex shrink-0 rounded-2xl p-10 text-center shadow-md">
+          <ErrorComponent error={error} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const { locale } = useLoaderData<typeof loader>();
+
+  useChangeLanguage(locale);
+
+  return <Outlet />;
 }
 
 export default withSentry(App);

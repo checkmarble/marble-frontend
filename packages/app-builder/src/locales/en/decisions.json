@@ -21,7 +21,6 @@
   "outcome.review": "Review",
   "outcome.block_and_review": "Block and Review",
   "outcome.decline": "Decline",
-  "outcome.null": "Null",
   "outcome.unknown": "Unknown",
   "review_status.pending": "pending",
   "review_status.approve": "approve",
