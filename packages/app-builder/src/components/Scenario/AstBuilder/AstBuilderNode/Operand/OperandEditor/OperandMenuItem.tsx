@@ -1,9 +1,11 @@
 import { Highlight } from '@app-builder/components/Highlight';
-import { getConstantDataTypeTKey, getDataTypeIcon } from '@app-builder/models';
 import {
-  type ConstantEditableAstNode,
-  type EditableAstNode,
-} from '@app-builder/models/editable-ast-node';
+  type AstNode,
+  type DataType,
+  getConstantDataTypeTKey,
+  getDataTypeIcon,
+} from '@app-builder/models';
+import { type OperandType } from '@app-builder/models/operand-type';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { MenuItem } from 'ui-design-system';
@@ -57,24 +59,21 @@ function MenuItemLabel({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 export function CoercedConstantOption({
-  constantEditableAstNode,
+  displayName,
+  dataType,
   onClick,
 }: {
-  constantEditableAstNode: ConstantEditableAstNode;
-  onClick: (option: EditableAstNode) => void;
+  displayName: string;
+  dataType: DataType;
+  onClick: () => void;
 }) {
   const { t } = useTranslation('scenarios');
-  const dataTypeIcon = getDataTypeIcon(constantEditableAstNode.dataType);
-  const constantDataTypeTKey = getConstantDataTypeTKey(
-    constantEditableAstNode.dataType,
-  );
+  const dataTypeIcon = getDataTypeIcon(dataType);
+  const constantDataTypeTKey = getConstantDataTypeTKey(dataType);
 
   return (
-    <MenuItemContainer
-      onClick={() => onClick(constantEditableAstNode)}
-      leftIcon={dataTypeIcon}
-    >
-      <MenuItemLabel>{constantEditableAstNode.displayName}</MenuItemLabel>
+    <MenuItemContainer onClick={onClick} leftIcon={dataTypeIcon}>
+      <MenuItemLabel>{displayName}</MenuItemLabel>
       {constantDataTypeTKey ? (
         <span className="text-s shrink-0 font-semibold text-purple-100">
           {t(constantDataTypeTKey)}
@@ -86,29 +85,38 @@ export function CoercedConstantOption({
 
 export function OperandOption({
   searchValue,
-  editableAstNode,
+  astNode,
+  dataType,
+  operandType,
+  displayName,
   onClick,
 }: {
   searchValue: string;
-  editableAstNode: EditableAstNode;
-  onClick: (option: EditableAstNode) => void;
+  astNode: AstNode;
+  dataType: DataType;
+  operandType: OperandType;
+  displayName: string;
+  onClick: () => void;
 }) {
-  const dataTypeIcon = getDataTypeIcon(editableAstNode.dataType);
+  const dataTypeIcon = getDataTypeIcon(dataType);
 
   return (
     <MenuItemContainer
-      onClick={() => onClick(editableAstNode)}
+      onClick={onClick}
       className="group"
       leftIcon={dataTypeIcon}
     >
       <MenuItemLabel>
-        <Highlight text={editableAstNode.displayName} query={searchValue} />
+        <Highlight text={displayName} query={searchValue} />
       </MenuItemLabel>
       <OperandInfos
         gutter={24}
         shift={-8}
         className="size-5 shrink-0 text-transparent group-data-[active-item]:text-purple-50 group-data-[active-item]:hover:text-purple-100"
-        editableAstNode={editableAstNode}
+        astNode={astNode}
+        dataType={dataType}
+        operandType={operandType}
+        displayName={displayName}
       />
     </MenuItemContainer>
   );

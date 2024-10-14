@@ -1,16 +1,20 @@
 import {
-  type EditorNodeViewModel,
-  findArgumentNameErrorsFromParent,
-} from '@app-builder/services/editor/ast-editor';
-import {
   type EvaluationErrorCodeDto,
   type EvaluationErrorDto,
   type NodeEvaluationDto,
 } from 'marble-api';
 import * as R from 'remeda';
-import invariant from 'tiny-invariant';
 
-import type { ConstantType } from './ast-node';
+import { type ConstantType } from './ast-node';
+
+export type ReturnValue =
+  | {
+      value: ConstantType;
+      isOmitted: false;
+    }
+  | {
+      isOmitted: true;
+    };
 
 export type EvaluationErrorCode = EvaluationErrorCodeDto | 'FUNCTION_ERROR';
 
@@ -29,14 +33,7 @@ export function isUndefinedFunctionError(evaluationError: {
 }
 
 export interface NodeEvaluation {
-  returnValue:
-    | {
-        value: ConstantType;
-        isOmitted: false;
-      }
-    | {
-        isOmitted: true;
-      };
+  returnValue: ReturnValue;
   errors: EvaluationError[];
   children: NodeEvaluation[];
   namedChildren: Record<string, NodeEvaluation>;
@@ -72,49 +69,5 @@ export function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
     namedChildren: dto.named_children
       ? R.mapValues(dto.named_children, adaptNodeEvaluation)
       : {},
-  };
-}
-
-export const computeValidationForNamedChildren = (
-  editorNodeViewModel: EditorNodeViewModel,
-  namedArgumentKey: string | string[],
-): EvaluationError[] => {
-  let namedArgumentKeys = namedArgumentKey;
-  if (typeof namedArgumentKey === 'string') {
-    namedArgumentKeys = [namedArgumentKey];
-  }
-  const errors: EvaluationError[] = [];
-  for (const key of namedArgumentKeys) {
-    const namedChild = editorNodeViewModel.namedChildren[key];
-    invariant(namedChild, `${key} is not a valid named argument key`);
-
-    errors.push(...namedChild.errors);
-    errors.push(...findArgumentNameErrorsFromParent(namedChild));
-  }
-  return errors;
-};
-
-/**
- * Separate errors into 3 categories:
- * - childrenErrors: errors that are related to a child node
- * - namedChildrenErrors: errors that are related to a named child node
- * - nodeErrors: errors that are related to the node itself
- */
-export function separateChildrenErrors(errors: EvaluationError[]) {
-  const [childrenErrors, nonChildrenErrors] = R.partition(errors, (error) => {
-    return error.argumentIndex != undefined;
-  });
-
-  const [namedChildrenErrors, nodeErrors] = R.partition(
-    nonChildrenErrors,
-    (error) => {
-      return error.argumentName != undefined;
-    },
-  );
-
-  return {
-    childrenErrors,
-    namedChildrenErrors,
-    nodeErrors,
   };
 }

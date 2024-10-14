@@ -1,18 +1,29 @@
 import { scenarioI18n } from '@app-builder/components';
 import {
-  type ConstantEditableAstNode,
-  type EditableAstNode,
-} from '@app-builder/models/editable-ast-node';
+  type AstNode,
+  type ConstantAstNode,
+  type DataType,
+} from '@app-builder/models';
+import { type OperandType } from '@app-builder/models/operand-type';
 import { useTranslation } from 'react-i18next';
 import { MenuGroup, MenuGroupLabel } from 'ui-design-system';
 
 import { CoercedConstantOption, OperandOption } from './OperandMenuItem';
 
 interface OperandEditorSearchResultsProps {
-  constantOptions: ConstantEditableAstNode[];
-  matchOptions: EditableAstNode[];
+  constantOptions: {
+    astNode: ConstantAstNode;
+    displayName: string;
+    dataType: DataType;
+  }[];
+  matchOptions: {
+    astNode: AstNode;
+    displayName: string;
+    dataType: DataType;
+    operandType: OperandType;
+  }[];
   searchValue: string;
-  onClick: (option: EditableAstNode) => void;
+  onClick: (option: AstNode) => void;
 }
 
 export function OperandEditorSearchResults({
@@ -31,8 +42,11 @@ export function OperandEditorSearchResults({
           {constantOptions.map((constant) => (
             <CoercedConstantOption
               key={constant.displayName}
-              constantEditableAstNode={constant}
-              onClick={onClick}
+              displayName={constant.displayName}
+              dataType={constant.dataType}
+              onClick={() => {
+                onClick(constant.astNode);
+              }}
             />
           ))}
         </MenuGroup>
@@ -54,8 +68,13 @@ export function OperandEditorSearchResults({
           <OperandOption
             key={option.displayName}
             searchValue={searchValue}
-            editableAstNode={option}
-            onClick={onClick}
+            astNode={option.astNode}
+            dataType={option.dataType}
+            operandType={option.operandType}
+            displayName={option.displayName}
+            onClick={() => {
+              onClick(option.astNode);
+            }}
           />
         ))}
       </MenuGroup>

@@ -13,6 +13,8 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
+  SubMenuButton,
+  SubMenuRoot,
 } from './Menu';
 
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple', 'pear'];
@@ -123,11 +125,11 @@ function renderNestedItems(items: typeof groceries, group?: string) {
       ) : (
         <Fragment>
           <MenuSeparator className="my-2" />
-          <MenuRoot>
-            <MenuButton className="data-[active-item]:bg-purple-05 flex flex-row justify-between gap-2 rounded p-2 outline-none">
+          <SubMenuRoot>
+            <SubMenuButton className="data-[active-item]:bg-purple-05 flex flex-row justify-between gap-2 rounded p-2 outline-none">
               <span>{item.label}</span>
               <span>{'>'}</span>
-            </MenuButton>
+            </SubMenuButton>
             <MenuPopover className="flex flex-col gap-2 p-2" gutter={16}>
               <MenuContent>
                 <ScrollAreaV2 type="auto">
@@ -135,7 +137,7 @@ function renderNestedItems(items: typeof groceries, group?: string) {
                 </ScrollAreaV2>
               </MenuContent>
             </MenuPopover>
-          </MenuRoot>
+          </SubMenuRoot>
         </Fragment>
       );
 
