@@ -1,13 +1,11 @@
-import { resolve } from 'node:path';
-
 import { type LngStorageRepository } from '@app-builder/repositories/SessionStorageRepositories/LngStorageRepository';
 import { type EntryContext } from '@remix-run/node';
 import { createInstance, type FlatNamespace, type InitOptions } from 'i18next';
-import Backend from 'i18next-fs-backend';
 import { initReactI18next } from 'react-i18next';
 import { RemixI18Next } from 'remix-i18next/server';
 
 import { i18nConfig } from './i18n-config';
+import { resources } from './resources/resources.server';
 
 export function makeI18nextServerService({ lngStorage }: LngStorageRepository) {
   const remixI18next = new RemixI18Next({
@@ -20,14 +18,8 @@ export function makeI18nextServerService({ lngStorage }: LngStorageRepository) {
     // when translating messages server-side only
     i18next: {
       ...i18nConfig,
-      backend: {
-        loadPath: resolve('./public/locales/{{lng}}/{{ns}}.json'),
-      },
+      resources,
     },
-    // The i18next plugins you want RemixI18next to use for `i18n.getFixedT` inside loaders and actions.
-    // E.g. The Backend plugin for loading translations from the file system
-    // Tip: You could pass `resources` to the `i18next` configuration and avoid a backend here
-    plugins: [Backend],
   });
 
   async function getI18nextServerInstance(
@@ -43,17 +35,12 @@ export function makeI18nextServerService({ lngStorage }: LngStorageRepository) {
     // And here we detect what namespaces the routes about to render want to use
     const ns = remixI18next.getRouteNamespaces(remixContext);
 
-    await instance
-      .use(initReactI18next)
-      .use(Backend)
-      .init({
-        ...i18nConfig,
-        lng,
-        ns,
-        backend: {
-          loadPath: resolve('./public/locales/{{lng}}/{{ns}}.json'),
-        },
-      });
+    await instance.use(initReactI18next).init({
+      ...i18nConfig,
+      resources,
+      lng,
+      ns,
+    });
 
     return instance;
   }

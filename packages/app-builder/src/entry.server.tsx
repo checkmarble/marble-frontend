@@ -29,7 +29,11 @@ export default async function handleRequest(
 
   const App = (
     <I18nextProvider i18n={i18n}>
-      <RemixServer context={remixContext} url={request.url} />
+      <RemixServer
+        context={remixContext}
+        url={request.url}
+        abortDelay={ABORT_DELAY}
+      />
     </I18nextProvider>
   );
 
