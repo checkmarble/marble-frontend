@@ -11,8 +11,8 @@
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
-    "@types/node": "22.7.2",
-    "@types/react": "18.3.9",
+    "@types/node": "22.7.5",
+    "@types/react": "18.3.11",
     "@types/svg-sprite": "^0.0.39",
     "ora": "^8.1.0",
     "react": "18.3.1",
