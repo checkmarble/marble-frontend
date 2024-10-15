@@ -5,11 +5,10 @@ import { useNavigation, useRevalidator } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import * as reactDropzone from 'react-dropzone';
-import * as R from 'remeda';
-const { useDropzone } = reactDropzone;
+import { useDropzone } from 'react-dropzone-esm';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { Button, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
