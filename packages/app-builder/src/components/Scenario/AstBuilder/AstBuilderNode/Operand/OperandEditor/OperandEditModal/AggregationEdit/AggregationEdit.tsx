@@ -201,7 +201,7 @@ export function AggregationEdit({
           </div>
         </div>
       </ModalV2.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex max-h-[70dvh] flex-col gap-6 overflow-auto p-6">
         <div className="flex flex-1 flex-col gap-4">
           <Callout variant="outlined">
             <ModalV2.Description className="whitespace-pre text-wrap">

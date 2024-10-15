@@ -20,7 +20,15 @@ const OperandEditModalContent = React.forwardRef<
   ModalContentV2Props
 >(function OperandEditModalContent({ children, ...props }, ref) {
   return (
-    <ModalV2.Content ref={ref} {...props}>
+    <ModalV2.Content
+      ref={ref}
+      hideOnInteractOutside={(event) => {
+        event.stopPropagation();
+        // Prevent people from loosing their work by clicking accidentally outside the modal
+        return false;
+      }}
+      {...props}
+    >
       {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
       <CopyPasteASTContextProvider>{children}</CopyPasteASTContextProvider>
     </ModalV2.Content>

@@ -53,11 +53,15 @@ export function EditFilters({
 }) {
   const { t } = useTranslation(scenarioI18n);
 
-  const filteredDataModalFieldOptions = aggregatedField?.tableName
-    ? dataModelFieldOptions.filter(
-        ({ tableName }) => tableName == aggregatedField?.tableName,
-      )
-    : dataModelFieldOptions;
+  const filteredDataModalFieldOptions = useMemo(
+    () =>
+      aggregatedField?.tableName
+        ? dataModelFieldOptions.filter(
+            ({ tableName }) => tableName == aggregatedField?.tableName,
+          )
+        : dataModelFieldOptions,
+    [aggregatedField?.tableName, dataModelFieldOptions],
+  );
 
   const onFilterChange = (
     newFieldValue: Partial<FilterViewModel>,
