@@ -13,6 +13,7 @@ import {
   isFilterOperator,
 } from '@app-builder/models/editable-operators';
 import {
+  useDefaultCoerceToConstant,
   useGetAstNodeOption,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
@@ -194,6 +195,7 @@ function FilterValue({
   onSave: (astNode: AstNode) => void;
 }) {
   const filterOptions = useOperandOptions(filterValue);
+  const coerceToConstant = useDefaultCoerceToConstant();
   const getAstNodeOption = useGetAstNodeOption();
 
   const operandProps = useMemo(() => {
@@ -203,5 +205,12 @@ function FilterValue({
     };
   }, [filterValue, getAstNodeOption]);
 
-  return <Operand {...operandProps} onSave={onSave} options={filterOptions} />;
+  return (
+    <Operand
+      {...operandProps}
+      onSave={onSave}
+      options={filterOptions}
+      coerceToConstant={coerceToConstant}
+    />
+  );
 }

@@ -38,6 +38,7 @@ import { getAstNodeDisplayName } from '../ast-node/getAstNodeDisplayName';
 import { getAstNodeOperandType } from '../ast-node/getAstNodeOperandType';
 import { getCustomListAccessCustomList } from '../ast-node/getCustomListAccessCustomList';
 import { getDataAccessorAstNodeField } from '../ast-node/getDataAccessorAstNodeField';
+import { coerceToConstantAstNode } from './coerceToConstantAstNode';
 import { getEnumValuesFromNeighbour } from './getEnumOptionsFromNeighbour';
 
 const DatabaseAccessors =
@@ -280,5 +281,29 @@ export function useDataAccessorAstNodeField(
     () =>
       getDataAccessorAstNodeField(astNodeVM, { dataModel, triggerObjectTable }),
     [astNodeVM, dataModel, triggerObjectTable],
+  );
+}
+
+export function useDefaultCoerceToConstant() {
+  const { t } = useTranslation(['common', 'scenarios']);
+  const getAstNodeDisplayName = useGetAstNodeDisplayName();
+  const getAstNodeDataType = useGetAstNodeDataType();
+  return React.useCallback(
+    (searchValue: string) => {
+      const constantAstNodes = coerceToConstantAstNode(searchValue, {
+        // Accept english and localized values for booleans
+        // They will be coerced to the localized value
+        booleans: {
+          true: ['true', t('common:true')],
+          false: ['false', t('common:false')],
+        },
+      });
+      return constantAstNodes.map((astNode) => ({
+        astNode,
+        displayName: getAstNodeDisplayName(astNode),
+        dataType: getAstNodeDataType(astNode),
+      }));
+    },
+    [getAstNodeDataType, getAstNodeDisplayName, t],
   );
 }

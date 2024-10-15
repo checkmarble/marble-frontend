@@ -14,7 +14,6 @@ import {
   isEditableFuzzyMatchAlgorithm,
 } from '@app-builder/models/fuzzy-match';
 import { fuzzyMatchingDocHref } from '@app-builder/services/documentation-href';
-import { useGetAstNodeOption } from '@app-builder/services/editor/options';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
@@ -23,15 +22,12 @@ import { type ParseKeys } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
 
-import { Operand } from '../../../Operand';
 import { EditAlgorithm } from './EditAlgorithm';
 import { EditLevel } from './EditLevel';
 import { EditThreshold } from './EditThreshold';
-import {
-  useFuzzyMatchComparatorEditState,
-  useLeftOptions,
-  useRightOptions,
-} from './FuzzyMatchComparatorEdit.hook';
+import { useFuzzyMatchComparatorEditState } from './FuzzyMatchComparatorEdit.hook';
+import { LeftOperand } from './LeftOperand';
+import { RightOperand } from './RightOperand';
 
 export function FuzzyMatchComparatorEdit({
   initialFuzzyMatchComparatorAstNodeViewModel,
@@ -58,14 +54,6 @@ export function FuzzyMatchComparatorEdit({
   } = useFuzzyMatchComparatorEditState(
     initialFuzzyMatchComparatorAstNodeViewModel,
   );
-
-  const leftOptions = useLeftOptions(
-    initialFuzzyMatchComparatorAstNodeViewModel,
-  );
-  const rightOptions = useRightOptions(
-    initialFuzzyMatchComparatorAstNodeViewModel,
-  );
-  const getAstNodeOption = useGetAstNodeOption();
 
   const handleSave = () => {
     const fuzzyMatchComparatorAstNode = NewFuzzyMatchComparatorAstNode({
@@ -121,22 +109,20 @@ export function FuzzyMatchComparatorEdit({
             {t('scenarios:edit_fuzzy_match.operands.label')}
           </p>
           <div className="flex gap-2">
-            <Operand
-              {...getAstNodeOption(left)}
+            <LeftOperand
+              left={left}
               validationStatus={left.errors.length > 0 ? 'error' : 'valid'}
-              onSave={setLeft}
-              options={leftOptions}
+              onChange={setLeft}
             />
             <div className="border-grey-10 bg-grey-02 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
               <span className="text-s text-grey-100 font-medium">
                 {t(funcNameTKeys[funcName])}
               </span>
             </div>
-            <Operand
-              {...getAstNodeOption(right)}
+            <RightOperand
+              right={right}
               validationStatus={right.errors.length > 0 ? 'error' : 'valid'}
-              onSave={setRight}
-              options={rightOptions}
+              onChange={setRight}
             />
           </div>
           <EvaluationErrors

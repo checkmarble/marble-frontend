@@ -20,6 +20,8 @@ interface MenuProviderProps {
   onSearch?: (value: string) => void;
   children: React.ReactNode;
   isSubmenu: boolean;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
 }
 
 function MenuProvider({
@@ -27,11 +29,15 @@ function MenuProvider({
   searchValue,
   onSearch,
   isSubmenu,
+  open,
+  setOpen,
 }: MenuProviderProps) {
   const withCombobox = searchValue !== undefined || onSearch !== undefined;
 
   const element = (
     <Ariakit.MenuProvider
+      open={withCombobox ? undefined : open}
+      setOpen={withCombobox ? undefined : setOpen}
       showTimeout={0}
       placement={isSubmenu ? 'right-start' : 'bottom-start'}
       /**
@@ -59,6 +65,8 @@ function MenuProvider({
   if (withCombobox) {
     return (
       <Ariakit.ComboboxProvider
+        open={open}
+        setOpen={setOpen}
         resetValueOnHide
         value={searchValue}
         setValue={onSearch}
@@ -101,32 +109,12 @@ function MenuProvider({
  *    </MenuPopover>
  *  </MenuRoot>
  */
-export function MenuRoot({
-  children,
-  searchValue,
-  onSearch,
-}: Omit<MenuProviderProps, 'isSubmenu'>) {
-  return (
-    <MenuProvider
-      searchValue={searchValue}
-      onSearch={onSearch}
-      isSubmenu={false}
-    >
-      {children}
-    </MenuProvider>
-  );
+export function MenuRoot(props: Omit<MenuProviderProps, 'isSubmenu'>) {
+  return <MenuProvider {...props} isSubmenu={false} />;
 }
 
-export function SubMenuRoot({
-  children,
-  searchValue,
-  onSearch,
-}: Omit<MenuProviderProps, 'isSubmenu'>) {
-  return (
-    <MenuProvider searchValue={searchValue} onSearch={onSearch} isSubmenu>
-      {children}
-    </MenuProvider>
-  );
+export function SubMenuRoot(props: Omit<MenuProviderProps, 'isSubmenu'>) {
+  return <MenuProvider {...props} isSubmenu />;
 }
 
 export interface CoreMenuButtonProps

@@ -1,6 +1,4 @@
 import {
-  type AstNode,
-  type EditableAstNode,
   isAggregation,
   isFuzzyMatchComparator,
   isTimeAdd,
@@ -11,6 +9,11 @@ import * as React from 'react';
 import { assertNever } from 'typescript-utils';
 import { type ModalContentV2Props, ModalV2 } from 'ui-design-system';
 
+import {
+  useEditModalOpen,
+  useInitialEditableAstNode,
+  useOperandEditorActions,
+} from '../OperandEditorProvider';
 import { AggregationEdit } from './AggregationEdit/AggregationEdit';
 import { FuzzyMatchComparatorEdit } from './FuzzyMatchComparatorEdit/FuzzyMatchComparatorEdit';
 import { TimeAddEdit } from './TimeAddEdit/TimeAddEdit';
@@ -19,6 +22,8 @@ const OperandEditModalContent = React.forwardRef<
   HTMLDivElement,
   ModalContentV2Props
 >(function OperandEditModalContent({ children, ...props }, ref) {
+  const { onEditClose } = useOperandEditorActions();
+  const editModalOpen = useEditModalOpen();
   return (
     <ModalV2.Content
       ref={ref}
@@ -27,6 +32,8 @@ const OperandEditModalContent = React.forwardRef<
         // Prevent people from loosing their work by clicking accidentally outside the modal
         return false;
       }}
+      open={editModalOpen}
+      onClose={onEditClose}
       {...props}
     >
       {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
@@ -35,13 +42,13 @@ const OperandEditModalContent = React.forwardRef<
   );
 });
 
-export function OperandEditModal({
-  initialEditableAstNode,
-  onSave,
-}: {
-  initialEditableAstNode: EditableAstNode;
-  onSave: (astNode: AstNode) => void;
-}) {
+export function OperandEditModal() {
+  const { onEditSave } = useOperandEditorActions();
+  const initialEditableAstNode = useInitialEditableAstNode();
+  if (initialEditableAstNode === null) {
+    return null;
+  }
+
   if (isTimeAdd(initialEditableAstNode)) {
     return (
       <OperandEditModalContent size="small">
@@ -49,7 +56,7 @@ export function OperandEditModal({
           initialAstNodeVM={adaptAstNodeViewModel({
             ast: initialEditableAstNode,
           })}
-          onSave={onSave}
+          onSave={onEditSave}
         />
       </OperandEditModalContent>
     );
@@ -61,7 +68,7 @@ export function OperandEditModal({
           initialFuzzyMatchComparatorAstNodeViewModel={adaptAstNodeViewModel({
             ast: initialEditableAstNode,
           })}
-          onSave={onSave}
+          onSave={onEditSave}
         />
       </OperandEditModalContent>
     );
@@ -73,7 +80,7 @@ export function OperandEditModal({
           initialAstNodeVM={adaptAstNodeViewModel({
             ast: initialEditableAstNode,
           })}
-          onSave={onSave}
+          onSave={onEditSave}
         />
       </OperandEditModalContent>
     );

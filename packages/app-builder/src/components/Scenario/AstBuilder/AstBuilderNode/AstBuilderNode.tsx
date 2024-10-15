@@ -4,6 +4,7 @@ import {
   isTwoLineOperandAstNodeViewModel,
 } from '@app-builder/models/ast-node-view-model';
 import {
+  useDefaultCoerceToConstant,
   useEnumValuesFromNeighbour,
   useGetAstNodeOption,
   useOperandOptions,
@@ -67,6 +68,7 @@ export function OperandBuilderNode({
   const getAstNodeOption = useGetAstNodeOption();
 
   const options = useOperandOptions(astNodeVM);
+  const coerceToConstant = useDefaultCoerceToConstant();
 
   const operandProps = React.useMemo(() => {
     return {
@@ -80,6 +82,7 @@ export function OperandBuilderNode({
       viewOnly={viewOnly}
       onSave={onSave}
       options={options}
+      coerceToConstant={coerceToConstant}
       {...operandProps}
     />
   );

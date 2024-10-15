@@ -25,6 +25,7 @@ import {
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { useOperandEditorActions, useOptions } from './OperandEditorProvider';
 import { OperandOption } from './OperandMenuItem';
 
 type GroupGetter = FunctionComponent<{
@@ -35,7 +36,6 @@ type GroupGetter = FunctionComponent<{
     dataType: DataType;
     operandType: OperandType;
   }[];
-  searchValue: string;
   onClick: (option: AstNode) => void;
 }>;
 
@@ -49,23 +49,14 @@ type OperandEditorDiscoveryResultsConfig = Partial<
 >;
 
 interface OperandEditorDiscoveryResultsProps {
-  options: {
-    astNode: AstNode;
-    displayName: string;
-    dataType: DataType;
-    operandType: OperandType;
-  }[];
-  searchValue: string;
-  onClick: (option: AstNode) => void;
   discoveryResultsConfig?: OperandEditorDiscoveryResultsConfig;
 }
 
 export function OperandEditorDiscoveryResults({
-  options,
-  searchValue,
-  onClick,
   discoveryResultsConfig = defaultDiscoveryResultsConfig,
 }: OperandEditorDiscoveryResultsProps) {
+  const options = useOptions();
+  const { onOptionClick } = useOperandEditorActions();
   const optionsGroups = useMemo(() => {
     return R.pipe(
       options,
@@ -82,8 +73,7 @@ export function OperandEditorDiscoveryResults({
           key={operandType}
           operandType={operandType}
           options={optionsGroups[operandType] ?? []}
-          searchValue={searchValue}
-          onClick={onClick}
+          onClick={onOptionClick}
         />
       );
     }),
@@ -91,12 +81,10 @@ export function OperandEditorDiscoveryResults({
 }
 
 function Submenu({
-  searchValue,
   children,
   options,
   onClick,
 }: {
-  searchValue: string;
   children: React.ReactNode;
   options: {
     astNode: AstNode;
@@ -126,7 +114,6 @@ function Submenu({
                 dataType={option.dataType}
                 operandType={option.operandType}
                 displayName={option.displayName}
-                searchValue={searchValue}
                 onClick={() => onClick(option.astNode)}
               />
             ))}
@@ -137,29 +124,19 @@ function Submenu({
   );
 }
 
-const FlatGroupGetter: GroupGetter = ({
-  operandType,
-  searchValue,
-  options,
-  onClick,
-}) => {
+const FlatGroupGetter: GroupGetter = ({ operandType, options, onClick }) => {
   const count = options.length;
 
   if (count === 0) return null;
 
   return (
-    <Submenu options={options} onClick={onClick} searchValue={searchValue}>
+    <Submenu options={options} onClick={onClick}>
       <OperandDiscoveryTitle operandType={operandType} count={count} />
     </Submenu>
   );
 };
 
-const FieldGroupGetter: GroupGetter = ({
-  operandType,
-  searchValue,
-  options,
-  onClick,
-}) => {
+const FieldGroupGetter: GroupGetter = ({ operandType, options, onClick }) => {
   const triggerObjectTable = useTriggerObjectTable();
   const fieldByPathOptions = useMemo(() => {
     return R.pipe(
@@ -190,12 +167,7 @@ const FieldGroupGetter: GroupGetter = ({
         renderLabel={<MenuGroupLabel render={<span />} />}
       />
       {fieldByPathOptions.map(([path, subOptions]) => (
-        <Submenu
-          key={path}
-          searchValue={searchValue}
-          options={subOptions}
-          onClick={onClick}
-        >
+        <Submenu key={path} options={subOptions} onClick={onClick}>
           <FieldByPathLabel path={path} count={subOptions.length} />
         </Submenu>
       ))}

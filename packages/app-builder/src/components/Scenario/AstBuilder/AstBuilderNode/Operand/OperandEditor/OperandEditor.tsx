@@ -1,32 +1,24 @@
 import {
   type AstNode,
+  type ConstantAstNode,
+  type ConstantType,
   type DataType,
-  type EditableAstNode,
-  isEditableAstNode,
-  isUndefinedAstNode,
-  NewUndefinedAstNode,
 } from '@app-builder/models';
 import { type OperandType } from '@app-builder/models/operand-type';
-import { coerceToConstantAstNode } from '@app-builder/services/editor';
-import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
-import {
-  useGetAstNodeDataType,
-  useGetAstNodeDisplayName,
-} from '@app-builder/services/editor/options';
 import { type ValidationStatus } from '@app-builder/services/validation/ast-node-validation';
-import { matchSorter } from 'match-sorter';
+import { useCallbackRef } from '@app-builder/utils/hooks';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
   Input,
   MenuButton,
+  type MenuButtonProps,
   MenuCombobox,
   MenuContent,
   MenuItem,
   MenuPopover,
   MenuRoot,
-  ModalV2,
   ScrollAreaV2,
 } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
@@ -34,6 +26,13 @@ import { Icon, type IconName } from 'ui-icons';
 import { OperandLabel } from '../OperandLabel';
 import { OperandEditModal } from './OperandEditModal/OperandEditModal';
 import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
+import {
+  OperandEditorProvider,
+  useBottomOptions,
+  useOperandEditorActions,
+  useOperandEditorOpen,
+  useSearchValue,
+} from './OperandEditorProvider';
 import { OperandEditorSearchResults } from './OperandEditorSearchResults';
 
 export function OperandEditor({
@@ -46,6 +45,7 @@ export function OperandEditor({
   onSave,
   validationStatus,
   options,
+  coerceToConstant,
 }: {
   astNode: AstNode;
   dataType: DataType;
@@ -61,96 +61,42 @@ export function OperandEditor({
     operandType: OperandType;
     displayName: string;
   }[];
+  coerceToConstant?: (searchValue: string) => {
+    astNode: ConstantAstNode<ConstantType>;
+    displayName: string;
+    dataType: DataType;
+  }[];
 }) {
-  const [initialEditableAstNode, setInitialEditableAstNode] =
-    React.useState<EditableAstNode | null>(null);
-  const [searchValue, setSearchValue] = React.useState('');
-
-  const onOptionClick = React.useCallback(
-    (astNode: AstNode) => {
-      if (isEditableAstNode(astNode)) {
-        setInitialEditableAstNode(astNode);
-      } else {
-        onSave(astNode);
-      }
-    },
-    [onSave],
-  );
-
-  const bottomOptions = useBottomActions({
-    astNode,
-    onSave,
-    onEdit: setInitialEditableAstNode,
-  });
-
   return (
-    <ModalV2.Root
-      open={initialEditableAstNode !== null}
-      setOpen={(open) => {
-        if (!open) setInitialEditableAstNode(null);
-      }}
-    >
-      <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
-        <MenuButton
-          render={
-            <OperandLabel
-              interactionMode="editor"
-              astNode={astNode}
-              placeholder={placeholder}
-              dataType={dataType}
-              operandType={operandType}
-              displayName={displayName}
-              returnValue={returnValue}
-              validationStatus={validationStatus}
-            />
-          }
+    <OperandEditorProvider onSave={onSave}>
+      <OperandMenu
+        astNode={astNode}
+        options={options}
+        coerceToConstant={coerceToConstant}
+      >
+        <OperandMenuButton
+          astNode={astNode}
+          placeholder={placeholder}
+          dataType={dataType}
+          operandType={operandType}
+          displayName={displayName}
+          returnValue={returnValue}
+          validationStatus={validationStatus}
         />
         <MenuPopover className="w-96 flex-col">
-          <OperandEditorContent
-            onOptionClick={onOptionClick}
-            initialBottomOptions={bottomOptions}
-            searchValue={searchValue}
-            options={options}
-          />
+          <OperandEditorContent />
         </MenuPopover>
-      </MenuRoot>
-      {initialEditableAstNode ? (
-        <OperandEditModal
-          initialEditableAstNode={initialEditableAstNode}
-          onSave={(astNode) => {
-            onSave(astNode);
-            setInitialEditableAstNode(null);
-          }}
-        />
-      ) : null}
-    </ModalV2.Root>
+      </OperandMenu>
+      <OperandEditModal />
+    </OperandEditorProvider>
   );
 }
 
-function OperandEditorContent({
-  initialBottomOptions,
-  onOptionClick,
-  searchValue,
-  options,
-}: {
-  initialBottomOptions: BottomOptionProps[];
-  onOptionClick: (astNode: AstNode) => void;
-  searchValue: string;
-  options: {
-    astNode: AstNode;
-    dataType: DataType;
-    operandType: OperandType;
-    displayName: string;
-  }[];
-}) {
+function OperandEditorContent() {
   const { t } = useTranslation('scenarios');
-  // Local copy of the bottomOptions to avoid the content to flicker during closing animation
-  const [bottomOptions] = React.useState(initialBottomOptions);
 
-  const { constantOptions, matchOptions } = useMatchOptions({
-    options,
-    searchValue,
-  });
+  const bottomOptions = useBottomOptions();
+  const searchValue = useSearchValue();
 
   return (
     <>
@@ -167,18 +113,9 @@ function OperandEditorContent({
       <MenuContent>
         <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pr-[calc(0.5rem-var(--scrollbar-width))]">
           {searchValue === '' ? (
-            <OperandEditorDiscoveryResults
-              options={options}
-              searchValue={searchValue}
-              onClick={onOptionClick}
-            />
+            <OperandEditorDiscoveryResults />
           ) : (
-            <OperandEditorSearchResults
-              searchValue={searchValue}
-              constantOptions={constantOptions}
-              matchOptions={matchOptions}
-              onClick={onOptionClick}
-            />
+            <OperandEditorSearchResults />
           )}
         </div>
         {bottomOptions.length > 0 ? (
@@ -222,103 +159,87 @@ function BottomOptions({ options }: { options: BottomOptionProps[] }) {
   );
 }
 
-function useBottomActions({
+function OperandMenu({
+  children,
   astNode,
-  onSave,
-  onEdit,
-}: {
-  astNode: AstNode;
-  onSave: (astNode: AstNode) => void;
-  onEdit: (astNode: EditableAstNode) => void;
-}) {
-  const { t } = useTranslation(['common', 'scenarios']);
-  // Local copy of the astNode to avoid the content to flicker during closing animation
-  const [copyPasteAST] = React.useState(useOptionalCopyPasteAST());
-
-  const bottomOptions: BottomOptionProps[] = [];
-
-  if (!isUndefinedAstNode(astNode)) {
-    bottomOptions.push({
-      icon: 'restart-alt',
-      label: t('scenarios:edit_operand.clear_operand'),
-      onSelect: () => {
-        onSave(NewUndefinedAstNode());
-      },
-    });
-  }
-
-  if (isEditableAstNode(astNode)) {
-    bottomOptions.push({
-      icon: 'edit',
-      label: t('common:edit'),
-      onSelect: () => {
-        onEdit(astNode);
-      },
-    });
-  }
-
-  if (!isUndefinedAstNode(astNode) && copyPasteAST) {
-    bottomOptions.push({
-      icon: 'copy',
-      label: t('common:copy'),
-      onSelect: () => {
-        copyPasteAST.setAst(astNode);
-      },
-    });
-  }
-
-  if (copyPasteAST) {
-    const { ast } = copyPasteAST;
-    if (ast) {
-      bottomOptions.push({
-        icon: 'clipboard-document',
-        label: t('common:paste'),
-        onSelect: () => {
-          onSave(ast);
-        },
-      });
-    }
-  }
-
-  return bottomOptions;
-}
-
-function useMatchOptions({
   options,
-  searchValue,
+  coerceToConstant,
 }: {
+  children: React.ReactNode;
+  astNode: AstNode;
   options: {
     astNode: AstNode;
     dataType: DataType;
     operandType: OperandType;
     displayName: string;
   }[];
-  searchValue: string;
+  coerceToConstant?: (searchValue: string) => {
+    astNode: ConstantAstNode<ConstantType>;
+    displayName: string;
+    dataType: DataType;
+  }[];
 }) {
-  const { t } = useTranslation(['common', 'scenarios']);
-  const getAstNodeDisplayName = useGetAstNodeDisplayName();
-  const getAstNodeDataType = useGetAstNodeDataType();
-  const constantOptions = React.useMemo(() => {
-    const constantAstNodes = coerceToConstantAstNode(searchValue, {
-      // Accept english and localized values for booleans
-      // They will be coerced to the localized value
-      booleans: {
-        true: ['true', t('common:true')],
-        false: ['false', t('common:false')],
-      },
-    });
-    return constantAstNodes.map((astNode) => ({
-      astNode,
-      displayName: getAstNodeDisplayName(astNode),
-      dataType: getAstNodeDataType(astNode),
-    }));
-  }, [getAstNodeDataType, getAstNodeDisplayName, searchValue, t]);
+  const searchValue = useSearchValue();
+  const operandEditorOpen = useOperandEditorOpen();
+  const { setOperandEditorOpen, onSearch } = useOperandEditorActions();
+  const setOpen = useCallbackRef((open: boolean) => {
+    setOperandEditorOpen(open, astNode, options, coerceToConstant);
+  });
 
-  const matchOptions = React.useMemo(() => {
-    return matchSorter(options, searchValue, {
-      keys: ['displayName'],
-    });
-  }, [searchValue, options]);
-
-  return { constantOptions, matchOptions };
+  return (
+    <MenuRoot
+      open={operandEditorOpen}
+      searchValue={searchValue}
+      onSearch={onSearch}
+      setOpen={setOpen}
+    >
+      {children}
+    </MenuRoot>
+  );
 }
+
+interface OperandMenuButtonProps extends MenuButtonProps {
+  astNode: AstNode;
+  dataType: DataType;
+  operandType: OperandType;
+  displayName: string;
+  placeholder?: string;
+  returnValue?: string;
+  validationStatus: ValidationStatus;
+}
+
+const OperandMenuButton = React.forwardRef<
+  HTMLDivElement,
+  OperandMenuButtonProps
+>(function OperandMenuButton(
+  {
+    astNode,
+    placeholder,
+    dataType,
+    operandType,
+    displayName,
+    returnValue,
+    validationStatus,
+    ...props
+  },
+  ref,
+) {
+  return (
+    <MenuButton
+      ref={ref}
+      {...props}
+      render={
+        <OperandLabel
+          interactionMode="editor"
+          astNode={astNode}
+          placeholder={placeholder}
+          dataType={dataType}
+          operandType={operandType}
+          displayName={displayName}
+          returnValue={returnValue}
+          validationStatus={validationStatus}
+        />
+      }
+    />
+  );
+});

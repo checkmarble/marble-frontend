@@ -16,7 +16,6 @@ import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import {
   useDataModel,
-  useOperandOptions,
   useTriggerObjectTable,
 } from '@app-builder/services/editor/options';
 import * as React from 'react';
@@ -214,34 +213,4 @@ export function useFuzzyMatchComparatorEditState(
     funcName: state.funcName,
     errors: [...state.errors, ...state.left.errors, ...state.right.errors],
   };
-}
-
-export function useLeftOptions(
-  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
-) {
-  const options = useOperandOptions(
-    initialFuzzyMatchComparatorAstNodeViewModel.children[0].children[0],
-  );
-  return React.useMemo(
-    () => options.filter((option) => option.dataType === 'String'),
-    [options],
-  );
-}
-
-export function useRightOptions(
-  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
-) {
-  const options = useOperandOptions(
-    initialFuzzyMatchComparatorAstNodeViewModel.children[0].children[1],
-  );
-  return React.useMemo(
-    () =>
-      options.filter(
-        (option) =>
-          option.operandType === 'CustomList' ||
-          option.dataType === 'String[]' ||
-          option.dataType === 'String',
-      ),
-    [options],
-  );
 }

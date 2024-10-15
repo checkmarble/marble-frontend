@@ -4,6 +4,7 @@ import {
   type TimestampFieldAstNode,
 } from '@app-builder/models';
 import {
+  useDefaultCoerceToConstant,
   useGetAstNodeOption,
   useTimestampFieldOptions,
 } from '@app-builder/services/editor/options';
@@ -25,6 +26,15 @@ export function TimestampField({
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const options = useTimestampFieldOptions();
+  const defaultCoerceToConstant = useDefaultCoerceToConstant();
+  const coerceToConstant = React.useCallback(
+    (searchValue: string) =>
+      defaultCoerceToConstant(searchValue).filter(
+        ({ dataType }) => dataType === 'Timestamp',
+      ),
+    [defaultCoerceToConstant],
+  );
+
   const getAstNodeOption = useGetAstNodeOption();
 
   const onSave = React.useCallback(
@@ -50,6 +60,7 @@ export function TimestampField({
       placeholder={t('scenarios:edit_date.select_a_field')}
       onSave={onSave}
       options={options}
+      coerceToConstant={coerceToConstant}
       validationStatus={validationStatus}
       {...operandProps}
     />

@@ -1,38 +1,21 @@
 import { scenarioI18n } from '@app-builder/components';
-import {
-  type AstNode,
-  type ConstantAstNode,
-  type DataType,
-} from '@app-builder/models';
-import { type OperandType } from '@app-builder/models/operand-type';
 import { useTranslation } from 'react-i18next';
 import { MenuGroup, MenuGroupLabel } from 'ui-design-system';
 
+import {
+  useCoercedConstantOptions,
+  useMatchOptions,
+  useOperandEditorActions,
+  useSearchValue,
+} from './OperandEditorProvider';
 import { CoercedConstantOption, OperandOption } from './OperandMenuItem';
 
-interface OperandEditorSearchResultsProps {
-  constantOptions: {
-    astNode: ConstantAstNode;
-    displayName: string;
-    dataType: DataType;
-  }[];
-  matchOptions: {
-    astNode: AstNode;
-    displayName: string;
-    dataType: DataType;
-    operandType: OperandType;
-  }[];
-  searchValue: string;
-  onClick: (option: AstNode) => void;
-}
-
-export function OperandEditorSearchResults({
-  constantOptions,
-  matchOptions,
-  searchValue,
-  onClick,
-}: OperandEditorSearchResultsProps) {
+export function OperandEditorSearchResults() {
   const { t } = useTranslation(scenarioI18n);
+  const searchValue = useSearchValue();
+  const constantOptions = useCoercedConstantOptions();
+  const matchOptions = useMatchOptions();
+  const { onOptionClick } = useOperandEditorActions();
 
   return (
     <>
@@ -45,7 +28,7 @@ export function OperandEditorSearchResults({
               displayName={constant.displayName}
               dataType={constant.dataType}
               onClick={() => {
-                onClick(constant.astNode);
+                onOptionClick(constant.astNode);
               }}
             />
           ))}
@@ -73,7 +56,7 @@ export function OperandEditorSearchResults({
             operandType={option.operandType}
             displayName={option.displayName}
             onClick={() => {
-              onClick(option.astNode);
+              onOptionClick(option.astNode);
             }}
           />
         ))}

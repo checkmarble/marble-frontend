@@ -1,5 +1,7 @@
 import {
   type AstNode,
+  type ConstantAstNode,
+  type ConstantType,
   type DataType,
   isKnownOperandAstNode,
 } from '@app-builder/models';
@@ -21,6 +23,7 @@ export function Operand({
   viewOnly,
   validationStatus,
   options,
+  coerceToConstant,
 }: {
   astNode: AstNode;
   dataType: DataType;
@@ -36,6 +39,11 @@ export function Operand({
     dataType: DataType;
     operandType: OperandType;
     displayName: string;
+  }[];
+  coerceToConstant?: (searchValue: string) => {
+    astNode: ConstantAstNode<ConstantType>;
+    displayName: string;
+    dataType: DataType;
   }[];
 }) {
   if (!isKnownOperandAstNode(astNode)) {
@@ -72,6 +80,7 @@ export function Operand({
       validationStatus={validationStatus}
       onSave={onSave}
       options={options}
+      coerceToConstant={coerceToConstant}
     />
   );
 }

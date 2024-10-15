@@ -91,7 +91,7 @@ export function OperandOption({
   displayName,
   onClick,
 }: {
-  searchValue: string;
+  searchValue?: string;
   astNode: AstNode;
   dataType: DataType;
   operandType: OperandType;
@@ -107,7 +107,11 @@ export function OperandOption({
       leftIcon={dataTypeIcon}
     >
       <MenuItemLabel>
-        <Highlight text={displayName} query={searchValue} />
+        {searchValue ? (
+          <Highlight text={displayName} query={searchValue} />
+        ) : (
+          displayName
+        )}
       </MenuItemLabel>
       <OperandInfos
         gutter={24}
