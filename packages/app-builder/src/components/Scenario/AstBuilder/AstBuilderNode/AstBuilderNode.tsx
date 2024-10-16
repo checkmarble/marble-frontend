@@ -14,6 +14,7 @@ import * as React from 'react';
 
 import { Operand } from './Operand';
 import { TwoOperandsLine } from './TwoOperandsLine';
+import { useFormatReturnValue } from '@app-builder/services/editor/return-value';
 
 interface AstBuilderNodeProps {
   setOperand: (nodeId: string, operandAst: AstNode) => void;
@@ -69,10 +70,12 @@ export function OperandBuilderNode({
 
   const options = useOperandOptions(astNodeVM);
   const coerceToConstant = useDefaultCoerceToConstant();
+  const formatReturnValue = useFormatReturnValue();
 
   const operandProps = React.useMemo(() => {
     return {
       ...getAstNodeOption(astNodeVM, { enumValues }),
+      returnValue: formatReturnValue(astNodeVM.returnValue),
       validationStatus: getValidationStatus(astNodeVM),
     };
   }, [astNodeVM, enumValues, getAstNodeOption]);
