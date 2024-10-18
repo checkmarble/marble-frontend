@@ -1,30 +1,23 @@
-import { isLeafOperandAstNode } from '@app-builder/models';
-import {
-  type AstNodeViewModel,
-  type ValidationViewModel,
-} from '@app-builder/models/ast-node-view-model';
+import { type AstNode, isLeafOperandAstNode } from '@app-builder/models';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
-import * as React from 'react';
+import { type PathSegment, type Tree } from '@app-builder/utils/tree';
 import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 
-import {
-  adaptEvaluationErrorViewModels,
-  useGetNodeEvaluationErrorMessage,
-  useGetOrAndNodeEvaluationErrorMessage,
-} from './scenario-validation-error-messages';
+export type AstNodeErrors = Tree<{ errors: EvaluationError[] }>;
 
 export function getAstNodeEvaluationErrors(
-  astNodeVM: AstNodeViewModel,
+  astNode: AstNode,
+  astNodeErrors: AstNodeErrors,
 ): EvaluationError[] {
   const errors: EvaluationError[] = [];
-  if (astNodeVM.errors) {
-    errors.push(...astNodeVM.errors);
+  if (astNodeErrors.errors) {
+    errors.push(...astNodeErrors.errors);
   }
 
   // In case of a leaf node, we create an aggregated error if the node has nested errors,
   // to help the user understand that the node is invalid
-  if (isLeafOperandAstNode(astNodeVM) && hasNestedErrors(astNodeVM)) {
+  if (isLeafOperandAstNode(astNode) && hasNestedErrors(astNodeErrors)) {
     errors.push({ error: 'FUNCTION_ERROR', message: 'function has error' });
   }
 
@@ -70,18 +63,15 @@ export function separateChildrenErrors(errors: EvaluationError[]) {
  * - ✅ { errors: [], children: { errors: [{...}]} }
  * - ✅ { errors: [], namedChildren: { errors: [{...}] } }
  */
-function hasNestedErrors(
-  validationVM: ValidationViewModel,
-  root = true,
-): boolean {
+function hasNestedErrors(astNodeErrors: AstNodeErrors, root = true): boolean {
   let errors: EvaluationError[];
   if (root) {
     const { namedChildrenErrors, nodeErrors } = separateChildrenErrors(
-      validationVM.errors,
+      astNodeErrors.errors,
     );
     errors = [...namedChildrenErrors, ...nodeErrors];
   } else {
-    errors = validationVM.errors;
+    errors = astNodeErrors.errors;
   }
 
   if (errors.length > 0) {
@@ -89,8 +79,8 @@ function hasNestedErrors(
   }
 
   const children = [
-    ...validationVM.children,
-    ...Object.values(validationVM.namedChildren),
+    ...astNodeErrors.children,
+    ...Object.values(astNodeErrors.namedChildren),
   ];
   if (
     children.some((childValidation) => hasNestedErrors(childValidation, false))
@@ -101,8 +91,11 @@ function hasNestedErrors(
   return false;
 }
 
+// TODO: should be removed. Depending on the use case, we should use computeLineErrors or alike function (ex: when we have a "TwoLineOperandAstNode" like comp in a modal)
+// Ex: if you nest variables, this function is "wrong" because it doesn't separate children errors like computeLineErrors
 export function computeValidationForNamedChildren(
-  viewModel: AstNodeViewModel,
+  astNode: AstNode,
+  astNodeErrors: AstNodeErrors,
   namedArgumentKey: string | string[],
 ): EvaluationError[] {
   let namedArgumentKeys = namedArgumentKey;
@@ -110,55 +103,63 @@ export function computeValidationForNamedChildren(
     namedArgumentKeys = [namedArgumentKey];
   }
   const errors: EvaluationError[] = [];
+  const parentErrors = getAstNodeEvaluationErrors(astNode, astNodeErrors);
   for (const key of namedArgumentKeys) {
-    const namedChild = viewModel.namedChildren[key];
+    const namedChild = astNode.namedChildren[key];
     invariant(
       namedChild,
-      `${key} is not a valid named argument key of ${viewModel.name}`,
+      `${key} is not a valid named argument key of ${astNode.name}`,
     );
-
-    errors.push(...getAstNodeEvaluationErrors(namedChild));
-    errors.push(...findArgumentNameErrorsFromParent(namedChild));
+    const namedChildValidation = astNodeErrors.namedChildren[key];
+    if (namedChildValidation) {
+      errors.push(
+        ...getAstNodeEvaluationErrors(namedChild, namedChildValidation),
+      );
+    }
+    errors.push(
+      ...findArgumentErrorsFromParent(
+        {
+          type: 'namedChildren',
+          key,
+        },
+        parentErrors,
+      ),
+    );
   }
   return errors;
 }
 
-export function findArgumentIndexErrorsFromParent(
-  viewModel: AstNodeViewModel,
+export function findArgumentErrorsFromParent(
+  pathSegment: PathSegment,
+  parentErrors: EvaluationError[],
 ): EvaluationError[] {
-  if (!viewModel.parent) return [];
-  const childIndex = viewModel.parent.children.findIndex(
-    (child) => child.nodeId == viewModel.nodeId,
-  );
-  if (childIndex == -1) return [];
-  const parentErrors = getAstNodeEvaluationErrors(viewModel.parent);
-  return parentErrors.filter((error) => error.argumentIndex == childIndex);
-}
-
-export function findArgumentNameErrorsFromParent(
-  viewModel: AstNodeViewModel,
-): EvaluationError[] {
-  if (!viewModel.parent) return [];
-  const namedChild = R.pipe(
-    R.entries(viewModel.parent.namedChildren),
-    R.find(([_, child]) => child.nodeId == viewModel.nodeId),
-  );
-  if (!namedChild) return [];
-  const parentErrors = getAstNodeEvaluationErrors(viewModel.parent);
-  return parentErrors.filter((error) => error.argumentName == namedChild[0]);
+  switch (pathSegment.type) {
+    case 'children': {
+      return parentErrors.filter(
+        (error) => error.argumentIndex == pathSegment.index,
+      );
+    }
+    case 'namedChildren':
+      return parentErrors.filter(
+        (error) => error.argumentName == pathSegment.key,
+      );
+  }
 }
 
 export function getValidationStatus(
-  viewModel: AstNodeViewModel,
+  evaluationErrors: EvaluationError[],
+  parentEvaluationErrors?: EvaluationError[],
+  pathSegment?: PathSegment,
 ): ValidationStatus {
-  const errors = getAstNodeEvaluationErrors(viewModel);
-  if (errors.length > 0) return 'error';
+  if (evaluationErrors.length > 0) return 'error';
 
-  if (
-    findArgumentIndexErrorsFromParent(viewModel).length > 0 ||
-    findArgumentNameErrorsFromParent(viewModel).length > 0
-  )
-    return 'light-error';
+  if (pathSegment && parentEvaluationErrors) {
+    const argumentErrors = findArgumentErrorsFromParent(
+      pathSegment,
+      parentEvaluationErrors,
+    );
+    if (argumentErrors.length > 0) return 'light-error';
+  }
 
   return 'valid';
 }
@@ -171,60 +172,27 @@ export type ValidationStatus = 'valid' | 'error' | 'light-error';
  * @returns the errors of the node and its children
  */
 export function computeLineErrors(
-  viewModel: AstNodeViewModel,
+  astNode: AstNode,
+  astNodeErrors: AstNodeErrors,
 ): EvaluationError[] {
-  const errors = getAstNodeEvaluationErrors(viewModel);
+  const errors = getAstNodeEvaluationErrors(astNode, astNodeErrors);
   // Stop the recursion if the node is a leaf
-  if (isLeafOperandAstNode(viewModel)) {
+  if (isLeafOperandAstNode(astNode)) {
     const { nodeErrors } = separateChildrenErrors(errors);
     return nodeErrors;
   } else {
     return [
       ...errors,
-      ...viewModel.children.flatMap(computeLineErrors),
-      ...Object.values(viewModel.namedChildren).flatMap(computeLineErrors),
+      ...astNode.children.flatMap((child, index) => {
+        const childValidation = astNodeErrors.children[index];
+        if (!childValidation) return [];
+        return computeLineErrors(child, childValidation);
+      }),
+      ...Object.entries(astNode.namedChildren).flatMap(([key, namedChild]) => {
+        const namedChildValidation = astNodeErrors.namedChildren[key];
+        if (!namedChildValidation) return [];
+        return computeLineErrors(namedChild, namedChildValidation);
+      }),
     ];
   }
-}
-
-export function useRootAstBuilderValidation() {
-  const getOrAndNodeEvaluationErrorMessage =
-    useGetOrAndNodeEvaluationErrorMessage();
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
-
-  const getOrAndErrorMessages = React.useCallback(
-    (astNodeVM: AstNodeViewModel) => {
-      const { nodeErrors } = separateChildrenErrors(
-        getAstNodeEvaluationErrors(astNodeVM),
-      );
-      return adaptEvaluationErrorViewModels(nodeErrors).map(
-        getOrAndNodeEvaluationErrorMessage,
-      );
-    },
-    [getOrAndNodeEvaluationErrorMessage],
-  );
-
-  const getOrAndChildValidation = React.useCallback(
-    (astNodeVM: AstNodeViewModel) => {
-      const argumentIndexErrorsFromParent =
-        findArgumentIndexErrorsFromParent(astNodeVM);
-
-      const errorMessages = adaptEvaluationErrorViewModels([
-        ...computeLineErrors(astNodeVM),
-        ...argumentIndexErrorsFromParent,
-      ]).map((error) => getNodeEvaluationErrorMessage(error));
-
-      return {
-        errorMessages,
-        hasArgumentIndexErrorsFromParent:
-          argumentIndexErrorsFromParent.length > 0,
-      };
-    },
-    [getNodeEvaluationErrorMessage],
-  );
-
-  return {
-    getOrAndErrorMessages,
-    getOrAndChildValidation,
-  };
 }

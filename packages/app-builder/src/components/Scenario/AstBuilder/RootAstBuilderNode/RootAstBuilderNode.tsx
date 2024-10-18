@@ -1,20 +1,11 @@
-import { type AstNode } from '@app-builder/models';
-import {
-  type AstNodeViewModel,
-  isRootAndAstNodeViewModel,
-  isRootOrWithAndAstNodeViewModel,
-} from '@app-builder/models/ast-node-view-model';
+import { isAndAstNode, isOrWithAndAstNode } from '@app-builder/models';
+import { useRootAstNode } from '@app-builder/services/editor/ast-editor';
 
 import { AstBuilderNode } from '../AstBuilderNode';
 import { RootAnd } from './RootAnd';
 import { RootOrWithAnd } from './RootOrWithAnd';
 
 interface RootAstBuilderNodeProps {
-  setOperand: (nodeId: string, operandAst: AstNode) => void;
-  setOperator: (nodeId: string, name: string) => void;
-  appendChild: (nodeId: string, childAst: AstNode) => void;
-  remove: (nodeId: string) => void;
-  astNodeVM: AstNodeViewModel;
   viewOnly?: boolean;
 }
 
@@ -23,48 +14,18 @@ interface RootAstBuilderNodeProps {
  *
  * This is necessary to avoid the recursive call of AstBuilderNode that could trigger a root specific layout for any child node.
  */
-export function RootAstBuilderNode({
-  setOperand,
-  setOperator,
-  appendChild,
-  remove,
-  astNodeVM,
-  viewOnly,
-}: RootAstBuilderNodeProps) {
-  if (isRootOrWithAndAstNodeViewModel(astNodeVM)) {
-    return (
-      <RootOrWithAnd
-        setOperand={setOperand}
-        setOperator={setOperator}
-        appendChild={appendChild}
-        remove={remove}
-        astNodeVM={astNodeVM}
-        viewOnly={viewOnly}
-      />
-    );
+export function RootAstBuilderNode({ viewOnly }: RootAstBuilderNodeProps) {
+  const astNode = useRootAstNode();
+  if (isOrWithAndAstNode(astNode)) {
+    return <RootOrWithAnd path="root" astNode={astNode} viewOnly={viewOnly} />;
   }
 
-  if (isRootAndAstNodeViewModel(astNodeVM)) {
-    return (
-      <RootAnd
-        setOperand={setOperand}
-        setOperator={setOperator}
-        appendChild={appendChild}
-        remove={remove}
-        astNodeVM={astNodeVM}
-        viewOnly={viewOnly}
-      />
-    );
+  if (isAndAstNode(astNode)) {
+    return <RootAnd path="root" astNode={astNode} viewOnly={viewOnly} />;
   }
 
   // Fallback to the generic AstBuilderNode
   return (
-    <AstBuilderNode
-      astNodeVM={astNodeVM}
-      setOperand={setOperand}
-      setOperator={setOperator}
-      viewOnly={viewOnly}
-      root
-    />
+    <AstBuilderNode path="root" astNode={astNode} viewOnly={viewOnly} root />
   );
 }

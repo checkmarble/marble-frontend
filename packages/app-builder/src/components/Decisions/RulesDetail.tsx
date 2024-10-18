@@ -16,7 +16,7 @@ import {
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
-import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
+import { useAstNodeEditor } from '@app-builder/services/editor/ast-editor';
 import {
   DisplayReturnValuesProvider,
   useDisplayReturnValues,
@@ -28,7 +28,7 @@ import { Suspense, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Accordion, Collapsible, Switch, Tag } from 'ui-design-system';
 
-import { AstBuilder } from '../Scenario/AstBuilder';
+import { AstBuilder } from '../Scenario/AstBuilder/AstBuilder';
 
 export function RulesDetail({
   ruleExecutions,
@@ -217,13 +217,10 @@ function RuleFormula({
   customLists: CustomList[];
   triggerObjectType: string;
 }) {
-  const astEditor = useAstBuilder({
-    backendAst: formula,
-    backendEvaluation: evaluation,
-    localEvaluation: null,
-    onValidate: () => {},
+  const astEditorStore = useAstNodeEditor({
+    initialAstNode: formula,
+    initialEvaluation: evaluation,
   });
-
   return (
     <Paper.Container scrollable={false} className="bg-grey-00">
       <AstBuilder
@@ -235,11 +232,7 @@ function RuleFormula({
           customLists,
           triggerObjectType,
         }}
-        setOperand={astEditor.setOperand}
-        setOperator={astEditor.setOperator}
-        appendChild={astEditor.appendChild}
-        remove={astEditor.remove}
-        astNodeVM={astEditor.astNodeVM}
+        astEditorStore={astEditorStore}
         viewOnly={true}
       />
     </Paper.Container>

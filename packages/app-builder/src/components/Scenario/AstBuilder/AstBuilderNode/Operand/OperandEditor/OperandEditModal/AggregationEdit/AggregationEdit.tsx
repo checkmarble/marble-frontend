@@ -8,10 +8,6 @@ import {
   NewConstantAstNode,
 } from '@app-builder/models';
 import {
-  type AggregationAstNodeViewModel,
-  type AstNodeViewModel,
-} from '@app-builder/models/ast-node-view-model';
-import {
   type AggregatorOperator,
   aggregatorOperators,
 } from '@app-builder/models/editable-operators';
@@ -22,7 +18,10 @@ import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { computeValidationForNamedChildren } from '@app-builder/services/validation/ast-node-validation';
+import {
+  type AstNodeErrors,
+  computeValidationForNamedChildren,
+} from '@app-builder/services/validation/ast-node-validation';
 import { type Namespace } from 'i18next';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -51,7 +50,7 @@ export interface AggregationViewModel {
 export interface FilterViewModel {
   operator: string | null;
   filteredField: DataModelField | null;
-  value: AstNodeViewModel;
+  value: { astNode: AstNode; astNodeErrors?: AstNodeErrors };
   errors: {
     filter: EvaluationError[];
     operator: EvaluationError[];
@@ -61,50 +60,91 @@ export interface FilterViewModel {
 }
 
 export const adaptAggregationViewModel = (
-  vm: AggregationAstNodeViewModel,
+  initialAggregationAstNode: AggregationAstNode,
+  initialAstNodeErrors: AstNodeErrors,
 ): AggregationViewModel => {
   const aggregatedField: DataModelField = {
-    tableName: vm.namedChildren.tableName.constant,
-    fieldName: vm.namedChildren.fieldName.constant,
+    tableName: initialAggregationAstNode.namedChildren.tableName.constant,
+    fieldName: initialAggregationAstNode.namedChildren.fieldName.constant,
   };
-  const filters =
-    vm.namedChildren.filters?.children.map(adaptFilterViewModel) ?? [];
+  const initialFiltersAstNodeErrors = initialAstNodeErrors.namedChildren[
+    'filters'
+  ] ?? {
+    errors: [],
+    children: [],
+    namedChildren: {},
+  };
+  const filters = initialAggregationAstNode.namedChildren.filters.children.map(
+    (filterAstNode, index) => {
+      const initialFilterAstNodeErrors = initialFiltersAstNodeErrors.children[
+        index
+      ] ?? {
+        errors: [],
+        children: [],
+        namedChildren: {},
+      };
+      return adaptFilterViewModel(filterAstNode, initialFilterAstNodeErrors);
+    },
+  );
 
   return {
-    label: vm.namedChildren.label.constant ?? '',
+    label: initialAggregationAstNode.namedChildren.label.constant ?? '',
     // No guard here: we prefer to display an unhandled operator to a default one
-    aggregator: vm.namedChildren.aggregator.constant as AggregatorOperator,
+    aggregator: initialAggregationAstNode.namedChildren.aggregator
+      .constant as AggregatorOperator,
     aggregatedField,
     filters,
     errors: {
-      label: computeValidationForNamedChildren(vm, 'label'),
-      aggregator: computeValidationForNamedChildren(vm, 'aggregator'),
-      aggregatedField: computeValidationForNamedChildren(vm, [
-        'tableName',
-        'fieldName',
-      ]),
+      label: computeValidationForNamedChildren(
+        initialAggregationAstNode,
+        initialAstNodeErrors,
+        'label',
+      ),
+      aggregator: computeValidationForNamedChildren(
+        initialAggregationAstNode,
+        initialAstNodeErrors,
+        'aggregator',
+      ),
+      aggregatedField: computeValidationForNamedChildren(
+        initialAggregationAstNode,
+        initialAstNodeErrors,
+        ['tableName', 'fieldName'],
+      ),
     },
   };
 };
 
 function adaptFilterViewModel(
-  filterVM: AggregationAstNodeViewModel['namedChildren']['filters']['children'][number],
+  filterAstNode: AggregationAstNode['namedChildren']['filters']['children'][number],
+  initialAstNodeErrors: AstNodeErrors,
 ): FilterViewModel {
   return {
-    operator: filterVM.namedChildren.operator.constant,
+    operator: filterAstNode.namedChildren.operator.constant,
     filteredField: {
-      tableName: filterVM.namedChildren.tableName?.constant,
-      fieldName: filterVM.namedChildren.fieldName?.constant,
+      tableName: filterAstNode.namedChildren.tableName?.constant,
+      fieldName: filterAstNode.namedChildren.fieldName?.constant,
     },
-    value: filterVM.namedChildren.value,
+    value: {
+      astNode: filterAstNode.namedChildren.value,
+      astNodeErrors: initialAstNodeErrors.namedChildren['value'],
+    },
     errors: {
-      filter: filterVM.errors,
-      operator: computeValidationForNamedChildren(filterVM, 'operator'),
-      filteredField: computeValidationForNamedChildren(filterVM, [
-        'tableName',
-        'fieldName',
-      ]),
-      value: computeValidationForNamedChildren(filterVM, 'value'),
+      filter: initialAstNodeErrors.errors,
+      operator: computeValidationForNamedChildren(
+        filterAstNode,
+        initialAstNodeErrors,
+        'operator',
+      ),
+      filteredField: computeValidationForNamedChildren(
+        filterAstNode,
+        initialAstNodeErrors,
+        ['tableName', 'fieldName'],
+      ),
+      value: computeValidationForNamedChildren(
+        filterAstNode,
+        initialAstNodeErrors,
+        'value',
+      ),
     },
   };
 }
@@ -127,7 +167,7 @@ export const adaptAggregationAstNode = (
         fieldName: NewConstantAstNode({
           constant: filter.filteredField?.fieldName ?? null,
         }),
-        value: filter.value,
+        value: filter.value.astNode,
       },
     }),
   );
@@ -159,15 +199,17 @@ export const adaptAggregationAstNode = (
 };
 
 export function AggregationEdit({
-  initialAstNodeVM,
+  initialAggregationAstNode,
+  initialAstNodeErrors,
   onSave,
 }: {
-  initialAstNodeVM: AggregationAstNodeViewModel;
+  initialAggregationAstNode: AggregationAstNode;
+  initialAstNodeErrors: AstNodeErrors;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(handle.i18n);
   const [aggregation, setAggregation] = useState(() =>
-    adaptAggregationViewModel(initialAstNodeVM),
+    adaptAggregationViewModel(initialAggregationAstNode, initialAstNodeErrors),
   );
 
   const dataModel = useDataModel();

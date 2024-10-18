@@ -1,36 +1,37 @@
 import {
+  type AstNode,
   type DataModel,
   type EnumValue,
   isDataAccessorAstNode,
   type TableModel,
 } from '@app-builder/models';
-import { type AstNodeViewModel } from '@app-builder/models/ast-node-view-model';
 
 import { getDataAccessorAstNodeField } from '../ast-node/getDataAccessorAstNodeField';
 
 export function getEnumValuesFromNeighbour(
-  astNodeVM: AstNodeViewModel,
+  parentAstNode: AstNode,
+  childIndex: number,
   context: {
     triggerObjectTable: TableModel;
     dataModel: DataModel;
   },
 ): EnumValue[] {
-  if (!astNodeVM.parent) {
+  if (parentAstNode.name !== '=') {
     return [];
   }
-  if (astNodeVM.parent.name !== '=') {
-    return [];
-  }
-  const neighbourNodeViewModel = astNodeVM.parent.children.find(
-    (child) => child.nodeId !== astNodeVM.nodeId,
-  );
-  if (!neighbourNodeViewModel) {
-    return [];
-  }
-  if (isDataAccessorAstNode(neighbourNodeViewModel)) {
-    const field = getDataAccessorAstNodeField(neighbourNodeViewModel, context);
-    return field.isEnum ? (field.values ?? []) : [];
+  const neighbourNodes = [
+    ...parentAstNode.children.slice(0, childIndex),
+    ...parentAstNode.children.slice(childIndex + 1),
+  ];
+  const enumValues = [];
+  for (const neighbourNode of neighbourNodes) {
+    if (isDataAccessorAstNode(neighbourNode)) {
+      const field = getDataAccessorAstNodeField(neighbourNode, context);
+      if (field.isEnum) {
+        enumValues.push(...(field.values ?? []));
+      }
+    }
   }
 
-  return [];
+  return enumValues;
 }

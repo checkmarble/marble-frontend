@@ -3,12 +3,9 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
+  type FuzzyMatchComparatorAstNode,
   NewFuzzyMatchComparatorAstNode,
 } from '@app-builder/models';
-import {
-  adaptAstNodeFromViewModel,
-  type FuzzyMatchComparatorAstNodeViewModel,
-} from '@app-builder/models/ast-node-view-model';
 import {
   type FuzzyMatchAlgorithm,
   isEditableFuzzyMatchAlgorithm,
@@ -18,6 +15,7 @@ import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
+import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import { type ParseKeys } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
@@ -30,10 +28,12 @@ import { LeftOperand } from './LeftOperand';
 import { RightOperand } from './RightOperand';
 
 export function FuzzyMatchComparatorEdit({
-  initialFuzzyMatchComparatorAstNodeViewModel,
+  initialFuzzyMatchComparatorAstNode,
+  initialAstNodeErrors,
   onSave,
 }: {
-  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel;
+  initialFuzzyMatchComparatorAstNode: FuzzyMatchComparatorAstNode;
+  initialAstNodeErrors: AstNodeErrors;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
@@ -52,14 +52,15 @@ export function FuzzyMatchComparatorEdit({
     funcName,
     errors,
   } = useFuzzyMatchComparatorEditState(
-    initialFuzzyMatchComparatorAstNodeViewModel,
+    initialFuzzyMatchComparatorAstNode,
+    initialAstNodeErrors,
   );
 
   const handleSave = () => {
     const fuzzyMatchComparatorAstNode = NewFuzzyMatchComparatorAstNode({
       funcName,
-      left: adaptAstNodeFromViewModel(left),
-      right: adaptAstNodeFromViewModel(right),
+      left: left.astNode,
+      right: right.astNode,
       algorithm: algorithm.value,
       threshold: threshold.value,
     });
@@ -110,8 +111,13 @@ export function FuzzyMatchComparatorEdit({
           </p>
           <div className="flex gap-2">
             <LeftOperand
-              left={left}
-              validationStatus={left.errors.length > 0 ? 'error' : 'valid'}
+              astNode={left.astNode}
+              astNodeErrors={left.astNodeErrors}
+              validationStatus={
+                (left.astNodeErrors?.errors ?? []).length > 0
+                  ? 'error'
+                  : 'valid'
+              }
               onChange={setLeft}
             />
             <div className="border-grey-10 bg-grey-02 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
@@ -120,8 +126,13 @@ export function FuzzyMatchComparatorEdit({
               </span>
             </div>
             <RightOperand
-              right={right}
-              validationStatus={right.errors.length > 0 ? 'error' : 'valid'}
+              astNode={right.astNode}
+              astNodeErrors={right.astNodeErrors}
+              validationStatus={
+                (right.astNodeErrors?.errors ?? []).length > 0
+                  ? 'error'
+                  : 'valid'
+              }
               onChange={setRight}
             />
           </div>

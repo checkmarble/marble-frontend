@@ -3,7 +3,6 @@ import {
   isFuzzyMatchComparator,
   isTimeAdd,
 } from '@app-builder/models';
-import { adaptAstNodeViewModel } from '@app-builder/models/ast-node-view-model';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import * as React from 'react';
 import { assertNever } from 'typescript-utils';
@@ -11,6 +10,7 @@ import { type ModalContentV2Props, ModalV2 } from 'ui-design-system';
 
 import {
   useEditModalOpen,
+  useInitialAstNodeErrors,
   useInitialEditableAstNode,
   useOperandEditorActions,
 } from '../OperandEditorProvider';
@@ -45,6 +45,7 @@ const OperandEditModalContent = React.forwardRef<
 export function OperandEditModal() {
   const { onEditSave } = useOperandEditorActions();
   const initialEditableAstNode = useInitialEditableAstNode();
+  const initialAstNodeErrors = useInitialAstNodeErrors();
   if (initialEditableAstNode === null) {
     return null;
   }
@@ -53,9 +54,8 @@ export function OperandEditModal() {
     return (
       <OperandEditModalContent size="small">
         <TimeAddEdit
-          initialAstNodeVM={adaptAstNodeViewModel({
-            ast: initialEditableAstNode,
-          })}
+          timeAddAstNode={initialEditableAstNode}
+          astNodeErrors={initialAstNodeErrors}
           onSave={onEditSave}
         />
       </OperandEditModalContent>
@@ -65,9 +65,8 @@ export function OperandEditModal() {
     return (
       <OperandEditModalContent size="medium">
         <FuzzyMatchComparatorEdit
-          initialFuzzyMatchComparatorAstNodeViewModel={adaptAstNodeViewModel({
-            ast: initialEditableAstNode,
-          })}
+          initialFuzzyMatchComparatorAstNode={initialEditableAstNode}
+          initialAstNodeErrors={initialAstNodeErrors}
           onSave={onEditSave}
         />
       </OperandEditModalContent>
@@ -77,9 +76,8 @@ export function OperandEditModal() {
     return (
       <OperandEditModalContent size="large">
         <AggregationEdit
-          initialAstNodeVM={adaptAstNodeViewModel({
-            ast: initialEditableAstNode,
-          })}
+          initialAggregationAstNode={initialEditableAstNode}
+          initialAstNodeErrors={initialAstNodeErrors}
           onSave={onEditSave}
         />
       </OperandEditModalContent>

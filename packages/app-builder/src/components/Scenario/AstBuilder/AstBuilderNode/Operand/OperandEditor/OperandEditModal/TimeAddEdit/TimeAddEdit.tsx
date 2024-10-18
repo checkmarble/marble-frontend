@@ -8,7 +8,6 @@ import {
   type TimeAddAstNode,
   type TimestampFieldAstNode,
 } from '@app-builder/models';
-import { type TimeAddAstNodeViewModel } from '@app-builder/models/ast-node-view-model';
 import {
   isTimeAddOperator,
   type TimeAddOperator,
@@ -20,7 +19,10 @@ import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { computeValidationForNamedChildren } from '@app-builder/services/validation/ast-node-validation';
+import {
+  type AstNodeErrors,
+  computeValidationForNamedChildren,
+} from '@app-builder/services/validation/ast-node-validation';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
@@ -31,8 +33,10 @@ import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
 import { TimestampField } from './TimestampField';
 
 export interface TimeAddViewModal {
-  nodeId: string;
-  timestampField: TimestampFieldAstNode;
+  timestampField: {
+    astNode: TimestampFieldAstNode;
+    astNodeErrors?: AstNodeErrors;
+  };
   sign: TimeAddOperator;
   duration: string;
   durationUnit: DurationUnit;
@@ -45,31 +49,46 @@ export interface TimeAddViewModal {
 
 export const defaultISO8601Duration = 'PT0S';
 export function adaptTimeAddViewModal(
-  vm: TimeAddAstNodeViewModel,
+  timeAddAstNode: TimeAddAstNode,
+  astNodeErrors: AstNodeErrors,
 ): TimeAddViewModal {
   const iso8601Duration =
-    vm.namedChildren.duration.constant !== ''
-      ? vm.namedChildren.duration.constant
+    timeAddAstNode.namedChildren.duration.constant !== ''
+      ? timeAddAstNode.namedChildren.duration.constant
       : defaultISO8601Duration;
   const temporalDuration =
     Temporal.Duration.from(iso8601Duration).round('seconds');
   const { duration, durationUnit } =
     adaptDurationAndUnitFromTemporalDuration(temporalDuration);
 
-  const sign = isTimeAddOperator(vm.namedChildren.sign.constant)
-    ? vm.namedChildren.sign.constant
+  const sign = isTimeAddOperator(timeAddAstNode.namedChildren.sign.constant)
+    ? timeAddAstNode.namedChildren.sign.constant
     : '+';
 
   return {
-    nodeId: vm.nodeId,
-    timestampField: vm.namedChildren.timestampField,
+    timestampField: {
+      astNode: timeAddAstNode.namedChildren.timestampField,
+      astNodeErrors: astNodeErrors.namedChildren['timestampField'],
+    },
     sign,
     duration: duration.toString(),
     durationUnit,
     errors: {
-      timestampField: computeValidationForNamedChildren(vm, 'timestampField'),
-      sign: computeValidationForNamedChildren(vm, 'sign'),
-      duration: computeValidationForNamedChildren(vm, 'duration'),
+      timestampField: computeValidationForNamedChildren(
+        timeAddAstNode,
+        astNodeErrors,
+        'timestampField',
+      ),
+      sign: computeValidationForNamedChildren(
+        timeAddAstNode,
+        astNodeErrors,
+        'sign',
+      ),
+      duration: computeValidationForNamedChildren(
+        timeAddAstNode,
+        astNodeErrors,
+        'duration',
+      ),
     },
   };
 }
@@ -88,23 +107,25 @@ function adaptTimeAddAstNode(
   });
 
   return NewTimeAddAstNode(
-    timeAddViewModel.timestampField,
+    timeAddViewModel.timestampField.astNode,
     signAstNode,
     durationAstNode,
   );
 }
 
 export function TimeAddEdit({
-  initialAstNodeVM,
+  timeAddAstNode,
+  astNodeErrors,
   onSave,
 }: {
-  initialAstNodeVM: TimeAddAstNodeViewModel;
+  timeAddAstNode: TimeAddAstNode;
+  astNodeErrors: AstNodeErrors;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   const [value, setValue] = React.useState<TimeAddViewModal>(() =>
-    adaptTimeAddViewModal(initialAstNodeVM),
+    adaptTimeAddViewModal(timeAddAstNode, astNodeErrors),
   );
 
   const handleSave = () => {
@@ -115,25 +136,33 @@ export function TimeAddEdit({
     <>
       <ModalV2.Title>{t('scenarios:edit_date.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
-        <div className="flex flex-col gap-4">
-          <Callout variant="outlined">
-            <ModalV2.Description className="whitespace-pre text-wrap">
-              <Trans
-                t={t}
-                i18nKey="scenarios:edit_date.description"
-                components={{
-                  DocLink: <ExternalLink href={dateDocHref} />,
-                }}
-              />
-            </ModalV2.Description>
-          </Callout>
+        <Callout variant="outlined">
+          <ModalV2.Description className="whitespace-pre text-wrap">
+            <Trans
+              t={t}
+              i18nKey="scenarios:edit_date.description"
+              components={{
+                DocLink: <ExternalLink href={dateDocHref} />,
+              }}
+            />
+          </ModalV2.Description>
+        </Callout>
+        <div className="flex flex-col gap-2">
           <div className="flex gap-2">
             <TimestampField
-              astNode={value.timestampField}
+              astNode={value.timestampField.astNode}
+              astNodeErrors={value.timestampField.astNodeErrors}
               onChange={(timestampField) =>
                 setValue({
                   ...value,
-                  timestampField,
+                  timestampField: {
+                    astNode: timestampField,
+                    astNodeErrors: {
+                      errors: [],
+                      children: [],
+                      namedChildren: {},
+                    },
+                  },
                   errors: {
                     ...value.errors,
                     timestampField: [],

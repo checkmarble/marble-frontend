@@ -10,6 +10,7 @@ import {
 } from '@app-builder/models';
 import { type OperandType } from '@app-builder/models/operand-type';
 import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
+import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { matchSorter } from 'match-sorter';
@@ -29,6 +30,7 @@ type OperandEditorState = {
    * The initial ast node that was clicked to open the operand editor
    */
   initialAstNode: AstNode;
+  initialAstNodeErrors: AstNodeErrors;
   options: {
     astNode: AstNode;
     dataType: DataType;
@@ -64,6 +66,7 @@ interface OperandEditorActions {
       displayName: string;
       dataType: DataType;
     }[],
+    astNodeErrors?: AstNodeErrors,
   ) => void;
 }
 
@@ -75,7 +78,7 @@ const OperandEditorContext = createSimpleContext<StoreApi<OperandEditorStore>>(
   'OperandEditorContext',
 );
 
-interface WorkflowProviderProps {
+interface OperandEditorProviderProps {
   children: React.ReactNode;
   onSave: (astNode: AstNode) => void;
 }
@@ -83,7 +86,7 @@ interface WorkflowProviderProps {
 export function OperandEditorProvider({
   children,
   onSave,
-}: WorkflowProviderProps) {
+}: OperandEditorProviderProps) {
   const onSaveCallbackRef = useCallbackRef(onSave);
 
   const [store] = React.useState(() =>
@@ -123,11 +126,22 @@ export function OperandEditorProvider({
             searchValue,
           });
         },
-        setOperandEditorOpen(open, astNode, options, coerceToConstant) {
+        setOperandEditorOpen(
+          open,
+          astNode,
+          options,
+          coerceToConstant,
+          evaluationErrors,
+        ) {
           if (open) {
             set({
               operandEditorOpen: true,
               initialAstNode: astNode,
+              initialAstNodeErrors: evaluationErrors ?? {
+                errors: [],
+                children: [],
+                namedChildren: {},
+              },
               options,
               coerceToConstant,
             });
@@ -154,6 +168,11 @@ function createInitialState(): OperandEditorState {
     initialEditableAstNode: null,
     operandEditorOpen: false,
     initialAstNode: NewUndefinedAstNode(),
+    initialAstNodeErrors: {
+      errors: [],
+      children: [],
+      namedChildren: {},
+    },
     searchValue: '',
     options: [],
   };
@@ -176,6 +195,10 @@ export function useEditModalOpen() {
 
 export function useInitialEditableAstNode() {
   return useOperandEditorStore((state) => state.initialEditableAstNode);
+}
+
+export function useInitialAstNodeErrors() {
+  return useOperandEditorStore((state) => state.initialAstNodeErrors);
 }
 
 export function useInitialAstNode() {

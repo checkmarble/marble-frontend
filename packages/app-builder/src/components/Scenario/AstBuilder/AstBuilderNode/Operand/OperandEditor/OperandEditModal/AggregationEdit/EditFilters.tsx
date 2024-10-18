@@ -5,10 +5,6 @@ import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilde
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
-  adaptAstNodeViewModel,
-  type AstNodeViewModel,
-} from '@app-builder/models/ast-node-view-model';
-import {
   filterOperators,
   isFilterOperator,
 } from '@app-builder/models/editable-operators';
@@ -21,7 +17,10 @@ import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { getValidationStatus } from '@app-builder/services/validation/ast-node-validation';
+import {
+  type AstNodeErrors,
+  type ValidationStatus,
+} from '@app-builder/services/validation/ast-node-validation';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Fragment } from 'react/jsx-runtime';
@@ -87,7 +86,7 @@ export function EditFilters({
       {
         operator: null,
         filteredField: null,
-        value: adaptAstNodeViewModel({ ast: NewUndefinedAstNode() }),
+        value: { astNode: NewUndefinedAstNode() },
         errors: newFilterValidation(),
       },
     ]);
@@ -153,12 +152,13 @@ export function EditFilters({
                     operators={filterOperators}
                   />
                   <FilterValue
-                    filterValue={filter.value}
+                    filterValue={filter.value.astNode}
                     onSave={(astNode) =>
-                      onFilterChange(
-                        { value: adaptAstNodeViewModel({ ast: astNode }) },
-                        filterIndex,
-                      )
+                      onFilterChange({ value: { astNode } }, filterIndex)
+                    }
+                    astNodeErrors={filter.value.astNodeErrors}
+                    validationStatus={
+                      filter.errors.value.length > 0 ? 'error' : 'valid'
                     }
                   />
                 </div>
@@ -189,20 +189,22 @@ export function EditFilters({
 
 function FilterValue({
   filterValue,
+  astNodeErrors,
+  validationStatus,
   onSave,
 }: {
-  filterValue: AstNodeViewModel;
+  filterValue: AstNode;
+  astNodeErrors?: AstNodeErrors;
+  validationStatus: ValidationStatus;
   onSave: (astNode: AstNode) => void;
 }) {
-  const filterOptions = useOperandOptions(filterValue);
+  // TODO: try to get enum values from the left operand
+  const filterOptions = useOperandOptions([]);
   const coerceToConstant = useDefaultCoerceToConstant();
   const getAstNodeOption = useGetAstNodeOption();
 
   const operandProps = useMemo(() => {
-    return {
-      ...getAstNodeOption(filterValue),
-      validationStatus: getValidationStatus(filterValue),
-    };
+    return getAstNodeOption(filterValue);
   }, [filterValue, getAstNodeOption]);
 
   return (
@@ -211,6 +213,8 @@ function FilterValue({
       onSave={onSave}
       options={filterOptions}
       coerceToConstant={coerceToConstant}
+      astNodeErrors={astNodeErrors}
+      validationStatus={validationStatus}
     />
   );
 }

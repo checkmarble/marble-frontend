@@ -8,7 +8,10 @@ import {
   useGetAstNodeOption,
   useTimestampFieldOptions,
 } from '@app-builder/services/editor/options';
-import { type ValidationStatus } from '@app-builder/services/validation/ast-node-validation';
+import {
+  type AstNodeErrors,
+  type ValidationStatus,
+} from '@app-builder/services/validation/ast-node-validation';
 import * as React from 'react';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -18,10 +21,12 @@ import { Operand } from '../../../Operand';
 export function TimestampField({
   onChange,
   astNode,
+  astNodeErrors,
   validationStatus,
 }: {
   onChange: (value: TimestampFieldAstNode) => void;
   astNode: TimestampFieldAstNode;
+  astNodeErrors?: AstNodeErrors;
   validationStatus: ValidationStatus;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
@@ -62,6 +67,7 @@ export function TimestampField({
       options={options}
       coerceToConstant={coerceToConstant}
       validationStatus={validationStatus}
+      astNodeErrors={astNodeErrors}
       {...operandProps}
     />
   );

@@ -11,7 +11,6 @@ import {
   NewTimeNowAstNode,
   type PayloadAstNode,
 } from '@app-builder/models/ast-node';
-import { type AstNodeViewModel } from '@app-builder/models/ast-node-view-model';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type DataModel,
@@ -168,16 +167,19 @@ export function OptionsProvider({
   );
 }
 
-export function useEnumValuesFromNeighbour(astNodeVM: AstNodeViewModel) {
+export function useGetEnumValuesFromNeighbour() {
   const dataModel = useDataModel();
   const triggerObjectTable = useTriggerObjectTable();
 
-  return React.useMemo(() => {
-    return getEnumValuesFromNeighbour(astNodeVM, {
-      dataModel,
-      triggerObjectTable,
-    });
-  }, [astNodeVM, dataModel, triggerObjectTable]);
+  return React.useCallback(
+    (parentAstNode: AstNode, childIndex: number) => {
+      return getEnumValuesFromNeighbour(parentAstNode, childIndex, {
+        dataModel,
+        triggerObjectTable,
+      });
+    },
+    [dataModel, triggerObjectTable],
+  );
 }
 
 export function useGetAstNodeOption() {
@@ -220,11 +222,10 @@ export function useTimestampFieldOptions() {
   }, [databaseAccessors, payloadAccessors, getAstNodeOption]);
 }
 
-export function useOperandOptions(astNodeVM: AstNodeViewModel) {
+export function useOperandOptions(enumValues?: EnumValue[]) {
   const databaseAccessors = useDatabaseAccessors();
   const payloadAccessors = usePayloadAccessors();
   const customLists = useCustomLists();
-  const enumValues = useEnumValuesFromNeighbour(astNodeVM);
   const getAstNodeOption = useGetAstNodeOption();
 
   return React.useMemo(() => {
@@ -238,7 +239,7 @@ export function useOperandOptions(astNodeVM: AstNodeViewModel) {
       NewFuzzyMatchComparatorAstNode({ funcName: 'FuzzyMatch' }),
       NewTimeAddAstNode(),
       NewTimeNowAstNode(),
-      ...enumValues.map((enumValue) =>
+      ...(enumValues ?? []).map((enumValue) =>
         NewConstantAstNode({ constant: enumValue }),
       ),
     ].map((astNode) => getAstNodeOption(astNode, { enumValues }));

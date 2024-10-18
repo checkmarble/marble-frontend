@@ -5,7 +5,10 @@ import {
   type DataType,
 } from '@app-builder/models';
 import { type OperandType } from '@app-builder/models/operand-type';
-import { type ValidationStatus } from '@app-builder/services/validation/ast-node-validation';
+import {
+  type AstNodeErrors,
+  type ValidationStatus,
+} from '@app-builder/services/validation/ast-node-validation';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,6 +47,7 @@ export function OperandEditor({
   returnValue,
   onSave,
   validationStatus,
+  astNodeErrors,
   options,
   coerceToConstant,
 }: {
@@ -55,6 +59,7 @@ export function OperandEditor({
   returnValue?: string;
   onSave: (astNode: AstNode) => void;
   validationStatus: ValidationStatus;
+  astNodeErrors?: AstNodeErrors;
   options: {
     astNode: AstNode;
     dataType: DataType;
@@ -71,6 +76,7 @@ export function OperandEditor({
     <OperandEditorProvider onSave={onSave}>
       <OperandMenu
         astNode={astNode}
+        astNodeErrors={astNodeErrors}
         options={options}
         coerceToConstant={coerceToConstant}
       >
@@ -162,11 +168,13 @@ function BottomOptions({ options }: { options: BottomOptionProps[] }) {
 function OperandMenu({
   children,
   astNode,
+  astNodeErrors,
   options,
   coerceToConstant,
 }: {
   children: React.ReactNode;
   astNode: AstNode;
+  astNodeErrors?: AstNodeErrors;
   options: {
     astNode: AstNode;
     dataType: DataType;
@@ -183,7 +191,13 @@ function OperandMenu({
   const operandEditorOpen = useOperandEditorOpen();
   const { setOperandEditorOpen, onSearch } = useOperandEditorActions();
   const setOpen = useCallbackRef((open: boolean) => {
-    setOperandEditorOpen(open, astNode, options, coerceToConstant);
+    setOperandEditorOpen(
+      open,
+      astNode,
+      options,
+      coerceToConstant,
+      astNodeErrors,
+    );
   });
 
   return (

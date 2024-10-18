@@ -1,9 +1,7 @@
-import { type AstNode } from '@app-builder/models';
 import {
-  adaptAstNodeViewModel,
-  type AstNodeViewModel,
-  type FuzzyMatchComparatorAstNodeViewModel,
-} from '@app-builder/models/ast-node-view-model';
+  type AstNode,
+  type FuzzyMatchComparatorAstNode,
+} from '@app-builder/models';
 import {
   adaptFuzzyMatchComparatorLevel,
   adaptFuzzyMatchComparatorThreshold,
@@ -18,6 +16,7 @@ import {
   useDataModel,
   useTriggerObjectTable,
 } from '@app-builder/services/editor/options';
+import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import * as React from 'react';
 
 type EditFuzzyMatchComparatorState = {
@@ -34,8 +33,14 @@ type EditFuzzyMatchComparatorState = {
         level: FuzzyMatchComparatorLevel;
         errors: EvaluationError[];
       };
-  left: AstNodeViewModel;
-  right: AstNodeViewModel;
+  left: {
+    astNode: AstNode;
+    astNodeErrors?: AstNodeErrors;
+  };
+  right: {
+    astNode: AstNode;
+    astNodeErrors?: AstNodeErrors;
+  };
   errors: EvaluationError[];
   funcName: 'FuzzyMatch' | 'FuzzyMatchAnyOf';
 };
@@ -54,12 +59,12 @@ type EditFuzzyMatchComparatorAction =
     }
   | {
       type: 'setLeft';
-      payload: { left: AstNodeViewModel };
+      payload: { left: AstNode };
     }
   | {
       type: 'setRight';
       payload: {
-        right: AstNodeViewModel;
+        right: AstNode;
         funcName: 'FuzzyMatch' | 'FuzzyMatchAnyOf';
       };
     };
@@ -102,14 +107,14 @@ function editFuzzyMatchComparatorReducer(
     case 'setLeft': {
       return {
         ...prevState,
-        left: action.payload.left,
+        left: { astNode: action.payload.left },
         errors: prevState.errors.filter((error) => error.argumentIndex !== 0),
       };
     }
     case 'setRight': {
       return {
         ...prevState,
-        right: action.payload.right,
+        right: { astNode: action.payload.right },
         funcName: action.payload.funcName,
         errors: prevState.errors.filter((error) => error.argumentIndex !== 1),
       };
@@ -117,52 +122,65 @@ function editFuzzyMatchComparatorReducer(
   }
 }
 
-function adaptEditFuzzyMatchComparatorState(
-  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
-): EditFuzzyMatchComparatorState {
+function adaptEditFuzzyMatchComparatorState({
+  initialFuzzyMatchComparatorAstNode,
+  initialAstNodeErrors,
+}: {
+  initialFuzzyMatchComparatorAstNode: FuzzyMatchComparatorAstNode;
+  initialAstNodeErrors: AstNodeErrors;
+}): EditFuzzyMatchComparatorState {
   const algorithmNode =
-    initialFuzzyMatchComparatorAstNodeViewModel.children[0].namedChildren
-      .algorithm;
+    initialFuzzyMatchComparatorAstNode.children[0].namedChildren.algorithm;
+  const algorithmErrors =
+    initialAstNodeErrors.children[0]?.namedChildren['algorithm']?.errors ?? [];
 
-  const thresholdNode = initialFuzzyMatchComparatorAstNodeViewModel.children[1];
+  const thresholdNode = initialFuzzyMatchComparatorAstNode.children[1];
   const initialThreshold =
     thresholdNode.constant ?? defaultFuzzyMatchComparatorThreshold;
   const initialLevel = adaptFuzzyMatchComparatorLevel(initialThreshold);
+  const thresholdErrors = initialAstNodeErrors.children[1]?.errors ?? [];
 
-  const fuzzyMatchNode =
-    initialFuzzyMatchComparatorAstNodeViewModel.children[0];
+  const fuzzyMatchNode = initialFuzzyMatchComparatorAstNode.children[0];
+  const fuzzyMatchNodeErrors = initialAstNodeErrors.children[0];
 
   return {
     algorithm: {
       value: algorithmNode.constant ?? defaultEditableFuzzyMatchAlgorithm,
-      errors: algorithmNode.errors,
+      errors: algorithmErrors,
     },
     threshold:
       initialLevel === undefined
         ? {
             mode: 'threshold',
             value: initialThreshold,
-            errors: thresholdNode.errors,
+            errors: thresholdErrors,
           }
         : {
             mode: 'level',
             value: initialThreshold,
             level: initialLevel,
-            errors: thresholdNode.errors,
+            errors: thresholdErrors,
           },
-    left: fuzzyMatchNode.children[0],
-    right: fuzzyMatchNode.children[1],
-    errors: fuzzyMatchNode.errors,
+    left: {
+      astNode: fuzzyMatchNode.children[0],
+      astNodeErrors: fuzzyMatchNodeErrors?.children[0],
+    },
+    right: {
+      astNode: fuzzyMatchNode.children[1],
+      astNodeErrors: fuzzyMatchNodeErrors?.children[1],
+    },
+    errors: fuzzyMatchNodeErrors?.errors ?? [],
     funcName: fuzzyMatchNode.name,
   };
 }
 
 export function useFuzzyMatchComparatorEditState(
-  initialFuzzyMatchComparatorAstNodeViewModel: FuzzyMatchComparatorAstNodeViewModel,
+  initialFuzzyMatchComparatorAstNode: FuzzyMatchComparatorAstNode,
+  initialAstNodeErrors: AstNodeErrors,
 ) {
   const [state, dispatch] = React.useReducer(
     editFuzzyMatchComparatorReducer,
-    initialFuzzyMatchComparatorAstNodeViewModel,
+    { initialFuzzyMatchComparatorAstNode, initialAstNodeErrors },
     adaptEditFuzzyMatchComparatorState,
   );
   const dataModel = useDataModel();
@@ -181,21 +199,16 @@ export function useFuzzyMatchComparatorEditState(
       dispatch({ type: 'setLevel', payload: { level } });
     },
     left: state.left,
-    setLeft: (ast: AstNode) => {
+    setLeft: (left: AstNode) => {
       dispatch({
         type: 'setLeft',
         payload: {
-          left: adaptAstNodeViewModel({
-            ast,
-          }),
+          left,
         },
       });
     },
     right: state.right,
-    setRight: (ast: AstNode) => {
-      const right = adaptAstNodeViewModel({
-        ast,
-      });
+    setRight: (right: AstNode) => {
       dispatch({
         type: 'setRight',
         payload: {
@@ -211,6 +224,10 @@ export function useFuzzyMatchComparatorEditState(
       });
     },
     funcName: state.funcName,
-    errors: [...state.errors, ...state.left.errors, ...state.right.errors],
+    errors: [
+      ...state.errors,
+      ...(state.left.astNodeErrors?.errors ?? []),
+      ...(state.right.astNodeErrors?.errors ?? []),
+    ],
   };
 }

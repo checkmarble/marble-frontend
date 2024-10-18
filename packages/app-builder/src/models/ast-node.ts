@@ -2,7 +2,11 @@ import { hasExactlyTwoElements } from '@app-builder/utils/array';
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 
-import { undefinedAstNodeName } from './editable-operators';
+import {
+  isTwoLineOperandOperatorFunction,
+  type TwoLineOperandOperatorFunction,
+  undefinedAstNodeName,
+} from './editable-operators';
 import {
   defaultEditableFuzzyMatchAlgorithm,
   defaultFuzzyMatchComparatorThreshold,
@@ -481,4 +485,61 @@ export function isKnownOperandAstNode(
     isDataAccessorAstNode(node) ||
     isLeafOperandAstNode(node)
   );
+}
+
+export interface AndAstNode {
+  name: 'And';
+  constant: undefined;
+  children: AstNode[];
+  namedChildren: Record<string, never>;
+}
+
+export function isAndAstNode(astNode: AstNode): astNode is AndAstNode {
+  if (astNode.name !== 'And') {
+    return false;
+  }
+  if (Object.keys(astNode.namedChildren).length > 0) return false;
+  return true;
+}
+
+export interface OrWithAndAstNode {
+  name: 'Or';
+  constant: undefined;
+  children: AndAstNode[];
+  namedChildren: Record<string, never>;
+}
+
+export function isOrWithAndAstNode(
+  astNode: AstNode,
+): astNode is OrWithAndAstNode {
+  if (astNode.name !== 'Or') {
+    return false;
+  }
+  for (const child of astNode.children) {
+    if (child.name !== 'And') {
+      return false;
+    }
+  }
+  if (Object.keys(astNode.namedChildren).length > 0) return false;
+  return true;
+}
+
+export interface TwoLineOperandAstNode {
+  name: TwoLineOperandOperatorFunction;
+  constant: undefined;
+  children: [AstNode, AstNode];
+  namedChildren: Record<string, never>;
+}
+
+export function isTwoLineOperandAstNode(
+  astNode: AstNode,
+): astNode is TwoLineOperandAstNode {
+  if (isLeafOperandAstNode(astNode)) return false;
+
+  if (!hasExactlyTwoElements(astNode.children)) return false;
+  if (Object.keys(astNode.namedChildren).length > 0) return false;
+  if (astNode.name == null || !isTwoLineOperandOperatorFunction(astNode.name))
+    return false;
+
+  return true;
 }

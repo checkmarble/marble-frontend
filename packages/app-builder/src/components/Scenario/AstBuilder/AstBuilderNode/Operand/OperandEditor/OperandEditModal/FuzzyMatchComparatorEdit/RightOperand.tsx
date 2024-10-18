@@ -1,11 +1,13 @@
 import { type AstNode } from '@app-builder/models';
-import { type AstNodeViewModel } from '@app-builder/models/ast-node-view-model';
 import {
   useDefaultCoerceToConstant,
   useGetAstNodeOption,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
-import { type ValidationStatus } from '@app-builder/services/validation/ast-node-validation';
+import {
+  type AstNodeErrors,
+  type ValidationStatus,
+} from '@app-builder/services/validation/ast-node-validation';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,15 +15,17 @@ import { Operand } from '../../../Operand';
 
 export function RightOperand({
   onChange,
-  right,
+  astNode,
+  astNodeErrors,
   validationStatus,
 }: {
   onChange: (astNode: AstNode) => void;
-  right: AstNodeViewModel;
+  astNode: AstNode;
+  astNodeErrors?: AstNodeErrors;
   validationStatus: ValidationStatus;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
-  const options = useOperandOptions(right);
+  const options = useOperandOptions([]);
   const rightOptions = React.useMemo(
     () =>
       options.filter(
@@ -46,8 +50,8 @@ export function RightOperand({
   const getAstNodeOption = useGetAstNodeOption();
 
   const operandProps = React.useMemo(
-    () => getAstNodeOption(right),
-    [right, getAstNodeOption],
+    () => getAstNodeOption(astNode),
+    [astNode, getAstNodeOption],
   );
 
   return (
@@ -57,6 +61,7 @@ export function RightOperand({
       options={rightOptions}
       coerceToConstant={coerceToConstant}
       validationStatus={validationStatus}
+      astNodeErrors={astNodeErrors}
       {...operandProps}
     />
   );

@@ -6,7 +6,10 @@ import {
   isKnownOperandAstNode,
 } from '@app-builder/models';
 import { type OperandType } from '@app-builder/models/operand-type';
-import { type ValidationStatus } from '@app-builder/services/validation/ast-node-validation';
+import {
+  type AstNodeErrors,
+  type ValidationStatus,
+} from '@app-builder/services/validation/ast-node-validation';
 import { cva } from 'class-variance-authority';
 
 import { OperandEditor } from './OperandEditor';
@@ -22,6 +25,7 @@ export function Operand({
   onSave,
   viewOnly,
   validationStatus,
+  astNodeErrors,
   options,
   coerceToConstant,
 }: {
@@ -34,6 +38,7 @@ export function Operand({
   onSave?: (astNode: AstNode) => void;
   viewOnly?: boolean;
   validationStatus: ValidationStatus;
+  astNodeErrors?: AstNodeErrors;
   options: {
     astNode: AstNode;
     dataType: DataType;
@@ -78,6 +83,7 @@ export function Operand({
       displayName={displayName}
       returnValue={returnValue}
       validationStatus={validationStatus}
+      astNodeErrors={astNodeErrors}
       onSave={onSave}
       options={options}
       coerceToConstant={coerceToConstant}

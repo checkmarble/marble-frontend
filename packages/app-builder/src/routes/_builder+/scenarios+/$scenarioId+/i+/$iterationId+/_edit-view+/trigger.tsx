@@ -5,7 +5,6 @@ import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
 import { type AstNode, NewEmptyTriggerAstNode } from '@app-builder/models';
-import { adaptAstNodeFromViewModel } from '@app-builder/models/ast-node-view-model';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import {
@@ -13,7 +12,11 @@ import {
   executeAScenarioDocHref,
 } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor';
-import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
+import {
+  useAstNodeEditor,
+  useSaveAstNode,
+  useValidateAstNode,
+} from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -162,7 +165,7 @@ export default function Trigger() {
 
   const [schedule, setSchedule] = useState(scenarioIteration.schedule ?? '');
 
-  const { validate, validation: localValidation } = useTriggerValidationFetcher(
+  const { validate, validation } = useTriggerValidationFetcher(
     scenarioIteration.scenarioId,
     scenarioIteration.id,
   );
@@ -170,18 +173,18 @@ export default function Trigger() {
   const scenario = useCurrentScenario();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
-  const astEditor = useAstBuilder({
-    backendAst: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),
-    backendEvaluation: scenarioValidation.trigger.triggerEvaluation,
-    localEvaluation: localValidation,
-    onValidate: validate,
+  const astEditorStore = useAstNodeEditor({
+    initialAstNode: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),
+    initialEvaluation: scenarioValidation.trigger.triggerEvaluation,
   });
 
-  const handleSave = () => {
+  useValidateAstNode(astEditorStore, validate, validation);
+
+  const handleSave = useSaveAstNode(astEditorStore, (astNode) => {
     fetcher.submit(
       {
         action: 'save',
-        astNode: adaptAstNodeFromViewModel(astEditor.astNodeVM),
+        astNode,
         schedule,
       },
       {
@@ -189,7 +192,7 @@ export default function Trigger() {
         encType: 'application/json',
       },
     );
-  };
+  });
 
   const isLive = scenarioIteration.id == scenario.liveVersionId;
   const withManualTriggerButton =
@@ -311,12 +314,8 @@ export default function Trigger() {
                 customLists,
                 triggerObjectType: scenario.triggerObjectType,
               }}
-              setOperand={astEditor.setOperand}
-              setOperator={astEditor.setOperator}
-              appendChild={astEditor.appendChild}
-              remove={astEditor.remove}
-              astNodeVM={astEditor.astNodeVM}
               viewOnly={editorMode === 'view'}
+              astEditorStore={astEditorStore}
             />
 
             {editorMode === 'edit' ? (

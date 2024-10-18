@@ -1,9 +1,13 @@
-import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
-  type AstNodeViewModel,
-  isTwoLineOperandAstNodeViewModel,
-  type TwoLineOperandAstNodeViewModel,
-} from '@app-builder/models/ast-node-view-model';
+  type AstNode,
+  isTwoLineOperandAstNode,
+  NewUndefinedAstNode,
+  type TwoLineOperandAstNode,
+} from '@app-builder/models';
+import {
+  useAstNodeEditorActions,
+  useEvaluationErrors,
+} from '@app-builder/services/editor/ast-editor';
 import { useTwoLineOperandOperatorFunctions } from '@app-builder/services/editor/options';
 import { useTranslation } from 'react-i18next';
 import { Switch } from 'ui-design-system';
@@ -18,66 +22,66 @@ function NewNestedChild(node: AstNode) {
 }
 
 export function TwoOperandsLine({
-  setOperand,
-  setOperator,
-  twoOperandsViewModel,
+  path,
+  twoLineOperandAstNode,
   viewOnly,
   root,
 }: {
-  setOperand: (nodeId: string, operandAst: AstNode) => void;
-  setOperator: (nodeId: string, name: string) => void;
-  twoOperandsViewModel: TwoLineOperandAstNodeViewModel;
+  path: string;
+  twoLineOperandAstNode: TwoLineOperandAstNode;
   viewOnly?: boolean;
   root?: boolean;
 }) {
   const { t } = useTranslation(['scenarios']);
-  function addNestedChild(child: AstNodeViewModel) {
-    setOperand(child.nodeId, NewNestedChild(child));
+  const { setAstNodeAtPath, setOperatorAtPath } = useAstNodeEditorActions();
+
+  function addNestedChild(stringPath: string, child: AstNode) {
+    setAstNodeAtPath(stringPath, NewNestedChild(child));
   }
 
-  function removeNestedChild(child: AstNodeViewModel) {
+  function removeNestedChild(stringPath: string, child: AstNode) {
     const nestedChild = child.children[0];
     if (!nestedChild) return;
-    setOperand(child.nodeId, nestedChild);
+    setAstNodeAtPath(stringPath, nestedChild);
   }
 
   const operators = useTwoLineOperandOperatorFunctions();
 
-  const left = twoOperandsViewModel.children[0];
-  const right = twoOperandsViewModel.children[1];
+  const left = twoLineOperandAstNode.children[0];
+  const leftPath = `${path}.children.0`;
+  const right = twoLineOperandAstNode.children[1];
+  const rightPath = `${path}.children.1`;
 
-  const isNestedRight = isTwoLineOperandAstNodeViewModel(right);
+  const isNestedRight = isTwoLineOperandAstNode(right);
+
+  const evaluationErrors = useEvaluationErrors(path);
 
   return (
     <div className="flex justify-between gap-2">
       <div className="flex flex-row flex-wrap items-center gap-2">
         {!root ? <span className="text-grey-25">(</span> : null}
         <AstBuilderNode
-          setOperand={setOperand}
-          setOperator={setOperator}
-          astNodeVM={left}
+          path={leftPath}
+          astNode={left}
           onSave={(astNode) => {
-            setOperand(left.nodeId, astNode);
+            setAstNodeAtPath(leftPath, astNode);
           }}
           viewOnly={viewOnly}
         />
         <Operator
-          value={twoOperandsViewModel.name}
+          value={twoLineOperandAstNode.name}
           setValue={(operator: (typeof operators)[number]) => {
-            setOperator(twoOperandsViewModel.nodeId, operator);
+            setOperatorAtPath(path, operator);
           }}
-          validationStatus={
-            twoOperandsViewModel.errors?.length > 0 ? 'error' : 'valid'
-          }
+          validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}
           viewOnly={viewOnly}
           operators={operators}
         />
         <AstBuilderNode
-          setOperand={setOperand}
-          setOperator={setOperator}
-          astNodeVM={right}
+          path={rightPath}
+          astNode={right}
           onSave={(astNode) => {
-            setOperand(right.nodeId, astNode);
+            setAstNodeAtPath(rightPath, astNode);
           }}
           viewOnly={viewOnly}
         />
@@ -92,7 +96,9 @@ export function TwoOperandsLine({
             id="nest"
             checked={isNestedRight}
             onCheckedChange={(checked) =>
-              checked ? addNestedChild(right) : removeNestedChild(right)
+              checked
+                ? addNestedChild(rightPath, right)
+                : removeNestedChild(rightPath, right)
             }
           />
         </div>
