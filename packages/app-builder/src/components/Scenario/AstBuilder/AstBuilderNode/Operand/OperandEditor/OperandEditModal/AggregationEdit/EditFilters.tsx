@@ -1,29 +1,38 @@
 import { Callout } from '@app-builder/components';
 import { scenarioI18n } from '@app-builder/components/Scenario';
+import { RemoveButton } from '@app-builder/components/Scenario/AstBuilder/RemoveButton';
+import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import {
+  adaptAstNodeViewModel,
+  type AstNodeViewModel,
+} from '@app-builder/models/ast-node-view-model';
 import {
   filterOperators,
   isFilterOperator,
 } from '@app-builder/models/editable-operators';
-import { useOperandOptions } from '@app-builder/services/ast-node/options';
-import { adaptEditorNodeViewModel } from '@app-builder/services/editor/ast-editor';
+import {
+  useDefaultCoerceToConstant,
+  useGetAstNodeOption,
+  useOperandOptions,
+} from '@app-builder/services/editor/options';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
+import { getValidationStatus } from '@app-builder/services/validation/ast-node-validation';
 import clsx from 'clsx';
+import { useMemo } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { RemoveButton } from '../../RemoveButton';
-import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
-import { Operand, type OperandViewModel } from '../Operand';
-import { Operator } from '../Operator';
+import { Operator } from '../../../../Operator';
+import { Operand } from '../../../Operand';
+import { type FilterViewModel } from './AggregationEdit';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
-import { type FilterViewModel } from './Modal';
 
 const newFilterValidation = () => ({
   filter: [],
@@ -45,11 +54,15 @@ export function EditFilters({
 }) {
   const { t } = useTranslation(scenarioI18n);
 
-  const filteredDataModalFieldOptions = aggregatedField?.tableName
-    ? dataModelFieldOptions.filter(
-        ({ tableName }) => tableName == aggregatedField?.tableName,
-      )
-    : dataModelFieldOptions;
+  const filteredDataModalFieldOptions = useMemo(
+    () =>
+      aggregatedField?.tableName
+        ? dataModelFieldOptions.filter(
+            ({ tableName }) => tableName == aggregatedField?.tableName,
+          )
+        : dataModelFieldOptions,
+    [aggregatedField?.tableName, dataModelFieldOptions],
+  );
 
   const onFilterChange = (
     newFieldValue: Partial<FilterViewModel>,
@@ -74,7 +87,7 @@ export function EditFilters({
       {
         operator: null,
         filteredField: null,
-        value: adaptEditorNodeViewModel({ ast: NewUndefinedAstNode() }),
+        value: adaptAstNodeViewModel({ ast: NewUndefinedAstNode() }),
         errors: newFilterValidation(),
       },
     ]);
@@ -134,14 +147,16 @@ export function EditFilters({
                     setValue={(operator) =>
                       onFilterChange({ operator }, filterIndex)
                     }
-                    errors={filter.errors.operator}
+                    validationStatus={
+                      filter.errors.operator.length > 0 ? 'error' : 'valid'
+                    }
                     operators={filterOperators}
                   />
                   <FilterValue
                     filterValue={filter.value}
                     onSave={(astNode) =>
                       onFilterChange(
-                        { value: adaptEditorNodeViewModel({ ast: astNode }) },
+                        { value: adaptAstNodeViewModel({ ast: astNode }) },
                         filterIndex,
                       )
                     }
@@ -176,15 +191,26 @@ function FilterValue({
   filterValue,
   onSave,
 }: {
-  filterValue: OperandViewModel;
+  filterValue: AstNodeViewModel;
   onSave: (astNode: AstNode) => void;
 }) {
-  const filterOptions = useOperandOptions({ operandViewModel: filterValue });
+  const filterOptions = useOperandOptions(filterValue);
+  const coerceToConstant = useDefaultCoerceToConstant();
+  const getAstNodeOption = useGetAstNodeOption();
+
+  const operandProps = useMemo(() => {
+    return {
+      ...getAstNodeOption(filterValue),
+      validationStatus: getValidationStatus(filterValue),
+    };
+  }, [filterValue, getAstNodeOption]);
+
   return (
     <Operand
-      operandViewModel={filterValue}
+      {...operandProps}
       onSave={onSave}
       options={filterOptions}
+      coerceToConstant={coerceToConstant}
     />
   );
 }

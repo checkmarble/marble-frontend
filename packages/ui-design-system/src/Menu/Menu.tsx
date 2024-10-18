@@ -4,7 +4,6 @@ import * as React from 'react';
 
 const WithComboboxContext = React.createContext(false);
 const WithComboboxListContext = React.createContext(false);
-const ParentContext = React.createContext(false);
 const HideAllContext = React.createContext<(() => void) | null>(null);
 
 function HideAllContextProvider({ children }: { children: React.ReactNode }) {
@@ -16,10 +15,69 @@ function HideAllContextProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export interface MenuRootProps {
+interface MenuProviderProps {
   searchValue?: string;
   onSearch?: (value: string) => void;
   children: React.ReactNode;
+  isSubmenu: boolean;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
+}
+
+function MenuProvider({
+  children,
+  searchValue,
+  onSearch,
+  isSubmenu,
+  open,
+  setOpen,
+}: MenuProviderProps) {
+  const withCombobox = searchValue !== undefined || onSearch !== undefined;
+
+  const element = (
+    <Ariakit.MenuProvider
+      open={withCombobox ? undefined : open}
+      setOpen={withCombobox ? undefined : setOpen}
+      showTimeout={0}
+      placement={isSubmenu ? 'right-start' : 'bottom-start'}
+      /**
+       * Explicitly set the parent to null to prevent the menu from being nested (ex: a <Menu> inside a <Menu>)
+       * This is necessary to prevent hideAll from closing the parent menu
+       *
+       * Example:
+       * <MenuRoot>
+       *   <MenuItem>Item 1</MenuItem>
+       *   <Modal>
+       *     <MenuRoot> <!-- This menu should not be nested -->
+       *       <MenuItem>Item 2</MenuItem>
+       *     </MenuRoot>
+       *   </Modal>
+       * <MenuRoot>
+       */
+      parent={isSubmenu ? undefined : null}
+    >
+      <WithComboboxContext.Provider value={withCombobox}>
+        <HideAllContextProvider>{children}</HideAllContextProvider>
+      </WithComboboxContext.Provider>
+    </Ariakit.MenuProvider>
+  );
+
+  if (withCombobox) {
+    return (
+      <Ariakit.ComboboxProvider
+        open={open}
+        setOpen={setOpen}
+        resetValueOnHide
+        value={searchValue}
+        setValue={onSearch}
+        includesBaseElement={false}
+      >
+        {element}
+      </Ariakit.ComboboxProvider>
+    );
+  }
+
+  return element;
 }
 
 /**
@@ -40,48 +98,32 @@ export interface MenuRootProps {
  *          <MenuItem />
  *          <MenuItem />
  *        </MenuGroup>
+ *        <SubMenuRoot>
+ *          <MenuButton />
+ *          <MenuPopover>
+ *            <MenuItem />
+ *            <MenuItem />
+ *          </MenuPopover>
+ *        </SubMenuRoot>
  *      </MenuContent>
  *    </MenuPopover>
  *  </MenuRoot>
  */
-export function MenuRoot({ children, searchValue, onSearch }: MenuRootProps) {
-  const parent = React.useContext(ParentContext);
-  const withCombobox = searchValue !== undefined || onSearch !== undefined;
-
-  const element = (
-    <Ariakit.MenuProvider
-      showTimeout={0}
-      placement={parent ? 'right-start' : 'bottom-start'}
-    >
-      <WithComboboxContext.Provider value={withCombobox}>
-        <HideAllContextProvider>{children}</HideAllContextProvider>
-      </WithComboboxContext.Provider>
-    </Ariakit.MenuProvider>
-  );
-
-  if (withCombobox) {
-    return (
-      <Ariakit.ComboboxProvider
-        resetValueOnHide
-        value={searchValue}
-        setValue={onSearch}
-        includesBaseElement={false}
-      >
-        {element}
-      </Ariakit.ComboboxProvider>
-    );
-  }
-
-  return element;
+export function MenuRoot(props: Omit<MenuProviderProps, 'isSubmenu'>) {
+  return <MenuProvider {...props} isSubmenu={false} />;
 }
 
-export interface MenuButtonProps
-  extends Ariakit.MenuButtonProps<'div' | 'button'> {}
+export function SubMenuRoot(props: Omit<MenuProviderProps, 'isSubmenu'>) {
+  return <MenuProvider {...props} isSubmenu />;
+}
 
-export const MenuButton = React.forwardRef<HTMLDivElement, MenuButtonProps>(
-  function MenuButton({ render, ...props }, ref) {
-    const parent = React.useContext(ParentContext);
+export interface CoreMenuButtonProps
+  extends Ariakit.MenuButtonProps<'div' | 'button'> {
+  isSubmenu: boolean;
+}
 
+const CoreMenuButton = React.forwardRef<HTMLDivElement, CoreMenuButtonProps>(
+  function MenuButton({ render, isSubmenu, ...props }, ref) {
     return (
       <Ariakit.MenuButton
         ref={ref}
@@ -89,37 +131,52 @@ export const MenuButton = React.forwardRef<HTMLDivElement, MenuButtonProps>(
           e.stopPropagation();
         }}
         {...props}
-        render={parent ? <MenuItem render={render} /> : render}
+        render={isSubmenu ? <MenuItem render={render} /> : render}
       />
     );
   },
 );
+
+export type MenuButtonProps = Omit<CoreMenuButtonProps, 'isSubmenu'>;
+
+export const MenuButton = React.forwardRef<HTMLDivElement, MenuButtonProps>(
+  function MenuButton(props, ref) {
+    return <CoreMenuButton ref={ref} isSubmenu={false} {...props} />;
+  },
+);
+
+export type SubMenuButtonProps = Omit<CoreMenuButtonProps, 'isSubmenu'>;
+
+export const SubMenuButton = React.forwardRef<
+  HTMLDivElement,
+  SubMenuButtonProps
+>(function SubMenuButton(props, ref) {
+  return <CoreMenuButton ref={ref} isSubmenu {...props} />;
+});
 
 export interface MenuProps extends Ariakit.MenuProps<'div'> {}
 
 export const MenuPopover = React.forwardRef<HTMLDivElement, MenuProps>(
   function MenuPopover(props, ref) {
     return (
-      <ParentContext.Provider value={true}>
-        <Ariakit.Menu
-          ref={ref}
-          portal
-          overlap
-          unmountOnHide
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => e.stopPropagation()}
-          hideOnInteractOutside={(event) => {
-            event.stopPropagation();
-            return true;
-          }}
-          gutter={8}
-          {...props}
-          className={clsx(
-            'bg-grey-00 border-grey-10 flex max-h-[min(var(--popover-available-height),_400px)] -translate-y-1 overflow-hidden rounded border opacity-0 shadow-md outline-none transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
-            props.className,
-          )}
-        />
-      </ParentContext.Provider>
+      <Ariakit.Menu
+        ref={ref}
+        portal
+        overlap
+        unmountOnHide
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        hideOnInteractOutside={(event) => {
+          event.stopPropagation();
+          return true;
+        }}
+        gutter={8}
+        {...props}
+        className={clsx(
+          'bg-grey-00 border-grey-10 flex max-h-[min(var(--popover-available-height),_400px)] -translate-y-1 overflow-hidden rounded border opacity-0 shadow-md outline-none transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
+          props.className,
+        )}
+      />
     );
   },
 );

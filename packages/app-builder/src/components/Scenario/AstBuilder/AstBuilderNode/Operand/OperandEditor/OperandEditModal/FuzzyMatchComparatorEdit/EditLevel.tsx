@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Select } from 'ui-design-system';
 
-import { operatorContainerClassnames } from '../Operator';
+import { operatorContainerClassnames } from '../../../../Operator';
 
 interface EditLevelProps {
   level: FuzzyMatchComparatorLevel;

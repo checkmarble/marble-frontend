@@ -19,8 +19,7 @@ import { type ScenarioIterationRule } from '@app-builder/models/scenario-iterati
 import {
   DisplayReturnValuesProvider,
   useDisplayReturnValues,
-} from '@app-builder/services/ast-node/return-value';
-import { useAstBuilder } from '@app-builder/services/editor/ast-editor';
+} from '@app-builder/services/editor/return-value';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { Await } from '@remix-run/react';
 import { type TFunction } from 'i18next';
@@ -29,6 +28,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Accordion, Collapsible, Switch, Tag } from 'ui-design-system';
 
 import { AstBuilder } from '../Scenario/AstBuilder';
+import { useAstNodeEditor } from '@app-builder/services/editor/ast-editor copy';
 
 export function RulesDetail({
   ruleExecutions,
@@ -217,13 +217,10 @@ function RuleFormula({
   customLists: CustomList[];
   triggerObjectType: string;
 }) {
-  const astEditor = useAstBuilder({
-    backendAst: formula,
-    backendEvaluation: evaluation,
-    localEvaluation: null,
-    onValidate: () => {},
+  const astEditorStore = useAstNodeEditor({
+    initialAstNode: formula,
+    initialEvaluation: evaluation,
   });
-
   return (
     <Paper.Container scrollable={false} className="bg-grey-00">
       <AstBuilder
@@ -235,11 +232,7 @@ function RuleFormula({
           customLists,
           triggerObjectType,
         }}
-        setOperand={astEditor.setOperand}
-        setOperator={astEditor.setOperator}
-        appendChild={astEditor.appendChild}
-        remove={astEditor.remove}
-        editorNodeViewModel={astEditor.editorNodeViewModel}
+        astEditorStore={astEditorStore}
         viewOnly={true}
       />
     </Paper.Container>
