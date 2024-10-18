@@ -71,6 +71,12 @@ import {
   useCurrentScenarioIterationRule,
   useRuleGroups,
 } from './_layout';
+import {
+  AstEditorStore,
+  useAstNodeEditor,
+  useSaveAstNode,
+  useValidateAstNode,
+} from '@app-builder/services/editor/ast-editor copy';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -208,13 +214,12 @@ export default function RuleDetail() {
 
   const editorMode = useEditorMode();
 
-  const initialAst = rule.formula ?? NewEmptyRuleAstNode();
-  const astEditor = useAstBuilder({
-    backendAst: initialAst,
-    backendEvaluation: ruleValidation.ruleEvaluation,
-    localEvaluation: localValidation,
-    onValidate: validate,
+  const astEditorStore = useAstNodeEditor({
+    initialAstNode: rule.formula ?? NewEmptyRuleAstNode(),
+    initialEvaluation: ruleValidation.ruleEvaluation,
   });
+
+  useValidateAstNode(astEditorStore, validate, localValidation);
 
   const options = {
     databaseAccessors,
@@ -244,21 +249,13 @@ export default function RuleDetail() {
       {editorMode === 'view' ? (
         <RuleViewContent
           options={options}
-          setOperand={astEditor.setOperand}
-          setOperator={astEditor.setOperator}
-          appendChild={astEditor.appendChild}
-          remove={astEditor.remove}
-          astNodeVM={astEditor.astNodeVM}
+          astEditorStore={astEditorStore}
           rule={rule}
         />
       ) : (
         <RuleEditContent
           options={options}
-          setOperand={astEditor.setOperand}
-          setOperator={astEditor.setOperator}
-          appendChild={astEditor.appendChild}
-          remove={astEditor.remove}
-          astNodeVM={astEditor.astNodeVM}
+          astEditorStore={astEditorStore}
           rule={rule}
           scenarioId={scenarioId}
         />
@@ -269,11 +266,7 @@ export default function RuleDetail() {
 
 function RuleViewContent({
   options,
-  setOperand,
-  setOperator,
-  appendChild,
-  remove,
-  astNodeVM,
+  astEditorStore,
   rule,
 }: {
   options: {
@@ -284,11 +277,7 @@ function RuleViewContent({
     customLists: CustomList[];
     triggerObjectType: string;
   };
-  setOperand: (nodeId: string, operandAst: AstNode) => void;
-  setOperator: (nodeId: string, name: string) => void;
-  appendChild: (nodeId: string, childAst: AstNode) => void;
-  remove: (nodeId: string) => void;
-  astNodeVM: AstNodeViewModel;
+  astEditorStore: AstEditorStore;
   rule: ScenarioIterationRule;
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -319,11 +308,7 @@ function RuleViewContent({
         <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
           <AstBuilder
             options={options}
-            setOperand={setOperand}
-            setOperator={setOperator}
-            appendChild={appendChild}
-            remove={remove}
-            astNodeVM={astNodeVM}
+            astEditorStore={astEditorStore}
             viewOnly={true}
           />
         </Paper.Container>
@@ -334,11 +319,7 @@ function RuleViewContent({
 
 function RuleEditContent({
   options,
-  setOperand,
-  setOperator,
-  appendChild,
-  remove,
-  astNodeVM,
+  astEditorStore,
   rule,
   scenarioId,
 }: {
@@ -350,11 +331,7 @@ function RuleEditContent({
     customLists: CustomList[];
     triggerObjectType: string;
   };
-  setOperand: (nodeId: string, operandAst: AstNode) => void;
-  setOperator: (nodeId: string, name: string) => void;
-  appendChild: (nodeId: string, childAst: AstNode) => void;
-  remove: (nodeId: string) => void;
-  astNodeVM: AstNodeViewModel;
+  astEditorStore: AstEditorStore;
   rule: ScenarioIterationRule;
   scenarioId: string;
 }) {
@@ -391,11 +368,11 @@ function RuleEditContent({
     });
   }, [errors, setError]);
 
-  const handleSave = () => {
+  const handleSave = useSaveAstNode(astEditorStore, (astNode) => {
     const values = formMethods.getValues();
     fetcher.submit(
       {
-        astNode: adaptAstNodeFromViewModel(astNodeVM),
+        astNode,
         formValues: values,
       },
       {
@@ -403,7 +380,7 @@ function RuleEditContent({
         encType: 'application/json',
       },
     );
-  };
+  });
 
   return (
     <Page.Content>
@@ -483,14 +460,7 @@ function RuleEditContent({
         </Collapsible.Title>
         <Collapsible.Content>
           <div className="flex flex-col gap-4 lg:gap-6">
-            <AstBuilder
-              options={options}
-              setOperand={setOperand}
-              setOperator={setOperator}
-              appendChild={appendChild}
-              remove={remove}
-              astNodeVM={astNodeVM}
-            />
+            <AstBuilder options={options} astEditorStore={astEditorStore} />
 
             <EvaluationErrors
               errors={ruleValidation.errors

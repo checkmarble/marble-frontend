@@ -1,45 +1,41 @@
-import { type AstNode } from '@app-builder/models';
-import {
-  type AstNodeViewModel,
-  isTwoLineOperandAstNodeViewModel,
-} from '@app-builder/models/ast-node-view-model';
+import { isTwoLineOperandAstNode, type AstNode } from '@app-builder/models';
 import {
   useDefaultCoerceToConstant,
-  useEnumValuesFromNeighbour,
   useGetAstNodeOption,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
-import { getValidationStatus } from '@app-builder/services/validation/ast-node-validation';
 import * as React from 'react';
 
 import { Operand } from './Operand';
 import { TwoOperandsLine } from './TwoOperandsLine';
 import { useFormatReturnValue } from '@app-builder/services/editor/return-value';
+import {
+  useEnumValuesFromNeighbour,
+  useEvaluation,
+  useValidationStatus,
+} from '@app-builder/services/editor/ast-editor copy';
 
 interface AstBuilderNodeProps {
-  setOperand: (nodeId: string, operandAst: AstNode) => void;
-  setOperator: (nodeId: string, name: string) => void;
-  astNodeVM: AstNodeViewModel;
+  path: string;
+  astNode: AstNode;
   viewOnly?: boolean;
   onSave?: (astNode: AstNode) => void;
   root?: boolean;
 }
 
 export function AstBuilderNode({
-  astNodeVM,
-  setOperand,
-  setOperator,
+  path,
+  astNode,
   viewOnly,
   onSave,
   root = false,
 }: AstBuilderNodeProps) {
-  if (isTwoLineOperandAstNodeViewModel(astNodeVM)) {
+  if (isTwoLineOperandAstNode(astNode)) {
     return (
       <div className="flex w-full flex-col gap-2">
         <TwoOperandsLine
-          setOperand={setOperand}
-          setOperator={setOperator}
-          twoOperandsViewModel={astNodeVM}
+          path={path}
+          twoLineOperandAstNode={astNode}
           viewOnly={viewOnly}
           root={root}
         />
@@ -49,36 +45,41 @@ export function AstBuilderNode({
 
   return (
     <OperandBuilderNode
+      path={path}
+      astNode={astNode}
       viewOnly={viewOnly}
       onSave={onSave}
-      astNodeVM={astNodeVM}
     />
   );
 }
 
 export function OperandBuilderNode({
-  astNodeVM,
+  path,
+  astNode,
   viewOnly,
   onSave,
 }: {
-  astNodeVM: AstNodeViewModel;
+  path: string;
+  astNode: AstNode;
   viewOnly?: boolean;
   onSave?: (astNode: AstNode) => void;
 }) {
-  const enumValues = useEnumValuesFromNeighbour(astNodeVM);
+  const enumValues = useEnumValuesFromNeighbour(path);
   const getAstNodeOption = useGetAstNodeOption();
 
-  const options = useOperandOptions(astNodeVM);
+  const options = useOperandOptions(enumValues);
   const coerceToConstant = useDefaultCoerceToConstant();
+  const evaluation = useEvaluation(path);
   const formatReturnValue = useFormatReturnValue();
+
+  const validationStatus = useValidationStatus(path);
 
   const operandProps = React.useMemo(() => {
     return {
-      ...getAstNodeOption(astNodeVM, { enumValues }),
-      returnValue: formatReturnValue(astNodeVM.returnValue),
-      validationStatus: getValidationStatus(astNodeVM),
+      ...getAstNodeOption(astNode, { enumValues }),
+      returnValue: formatReturnValue(evaluation?.returnValue),
     };
-  }, [astNodeVM, enumValues, getAstNodeOption]);
+  }, [astNode, enumValues, getAstNodeOption]);
 
   return (
     <Operand
@@ -86,6 +87,8 @@ export function OperandBuilderNode({
       onSave={onSave}
       options={options}
       coerceToConstant={coerceToConstant}
+      validationStatus={validationStatus}
+      astNodeErrors={evaluation}
       {...operandProps}
     />
   );
