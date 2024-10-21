@@ -3,6 +3,8 @@ import { type Outcome as TOutcome } from '@app-builder/models/outcome';
 import clsx from 'clsx';
 import * as React from 'react';
 import * as R from 'remeda';
+import { Tooltip } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { OutcomeTag, useOutcomes } from './OutcomeTag';
 import { ReviewStatusTag, useReviewStatuses } from './ReviewStatusTag';
@@ -63,27 +65,23 @@ export function OutcomeAndReviewStatus({
   }
 
   return (
-    <div className={clsx('relative flex flex-col gap-2', className)}>
-      <OutcomeTag
-        className="opacity-20"
+    <div className={clsx('relative flex flex-row gap-2', className)}>
+      <Tooltip.Default
+        content={
+          <OutcomeTag border="square" size="big" outcome="block_and_review" />
+        }
+      >
+        <div className="bg-orange-10 flex size-8 shrink-0 items-center justify-center rounded">
+          <Icon icon="policy" className="size-6 text-orange-100" />
+        </div>
+      </Tooltip.Default>
+      <span className="text-s text-grey-25 self-center font-semibold">→</span>
+      <ReviewStatusTag
         border="square"
         size="big"
-        outcome={outcome}
+        reviewStatus={reviewStatus}
+        className="w-full"
       />
-      <svg
-        className="text-grey-25 absolute -left-4 h-full w-4"
-        viewBox="0 0 16 72"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M 16 18 h-2 q -6 0 -6 6 v 26 q0 6 6 6 h2 l-3 3 l3 -3 l-3 -3 l3 3"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-      <ReviewStatusTag border="square" size="big" reviewStatus={reviewStatus} />
     </div>
   );
 }
