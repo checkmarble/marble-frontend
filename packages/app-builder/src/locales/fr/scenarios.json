@@ -122,6 +122,7 @@
   "edit_date.now.description": "L'heure à laquelle le scénario est exécuté",
   "edit_date.select_a_field": "Sélectionnez un timestamp",
   "edit_date.title": "Créer une date",
+  "edit_date.field_is_not_supported": "Veuillez sélectionner un champ de type timestamp",
   "edit_fuzzy_match.algorithm.description.ratio": "Compare les textes qui devraient être presque identiques",
   "edit_fuzzy_match.algorithm.description.token_set_ratio": "Compare les textes qui devraient être presque identiques, mais avec des mots dans un ordre différent",
   "edit_fuzzy_match.algorithm.label": "Algorithme de similarité",
@@ -245,5 +246,6 @@
   "validation.evaluation_error.payload_field_not_found_other": "{{count}} champs de l'objet déclencheur introuvables",
   "validation.evaluation_error.undefined_function_one": "requis",
   "validation.evaluation_error.undefined_function_other": "{{count}} requis",
-  "validation.evaluation_error.wrong_number_of_arguments": "mauvais nombre d'arguments"
+  "validation.evaluation_error.wrong_number_of_arguments": "mauvais nombre d'arguments",
+  "custom_list.unknown": "Liste inconnue"
 }

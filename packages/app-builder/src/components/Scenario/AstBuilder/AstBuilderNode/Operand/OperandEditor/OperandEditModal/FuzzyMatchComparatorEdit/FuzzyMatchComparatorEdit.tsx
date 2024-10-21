@@ -3,6 +3,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
+  type FuzzyMatchComparatorAstNode,
   NewFuzzyMatchComparatorAstNode,
 } from '@app-builder/models';
 import {
@@ -10,95 +11,29 @@ import {
   isEditableFuzzyMatchAlgorithm,
 } from '@app-builder/models/fuzzy-match';
 import { fuzzyMatchingDocHref } from '@app-builder/services/documentation-href';
-import { adaptAstNodeFromEditorViewModel } from '@app-builder/services/editor/ast-editor';
-import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { createSimpleContext } from '@app-builder/utils/create-context';
+import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import { type ParseKeys } from 'i18next';
-import { useCallback, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
 
-import { Operand } from '../Operand';
 import { EditAlgorithm } from './EditAlgorithm';
 import { EditLevel } from './EditLevel';
 import { EditThreshold } from './EditThreshold';
-import {
-  useFuzzyMatchComparatorEditState,
-  useLeftOptions,
-  useRightOptions,
-} from './FuzzyMatchComparatorEdit.hook';
-import {
-  type FuzzyMatchComparatorEditorNodeViewModel,
-  type FuzzyMatchEditorNodeViewModel,
-} from './FuzzyMatchComparatorEdit.types';
+import { useFuzzyMatchComparatorEditState } from './FuzzyMatchComparatorEdit.hook';
+import { LeftOperand } from './LeftOperand';
+import { RightOperand } from './RightOperand';
 
-export interface FuzzyMatchComparatorEditModalProps {
-  initialValue: FuzzyMatchComparatorEditorNodeViewModel;
-  onSave: (astNode: AstNode) => void;
-}
-
-const FuzzyMatchComparatorEditModalContext = createSimpleContext<
-  (timeAddProps: FuzzyMatchComparatorEditModalProps) => void
->('FuzzyMatchComparatorEditModalContext');
-
-export const useFuzzyMatchComparatorEdit =
-  FuzzyMatchComparatorEditModalContext.useValue;
-
-export function FuzzyMatchComparatorEditModal({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [open, onOpenChange] = useState<boolean>(false);
-  const [
-    fuzzyMatchComparatorEditModalProps,
-    setFuzzyMatchComparatorEditModalProps,
-  ] = useState<FuzzyMatchComparatorEditModalProps>();
-
-  const fuzzyMatchComparatorEdit = useCallback(
-    (props: FuzzyMatchComparatorEditModalProps) => {
-      setFuzzyMatchComparatorEditModalProps(props);
-      onOpenChange(true);
-    },
-    [],
-  );
-
-  return (
-    <ModalV2.Root open={open} setOpen={onOpenChange}>
-      <FuzzyMatchComparatorEditModalContext.Provider
-        value={fuzzyMatchComparatorEdit}
-      >
-        {children}
-        <ModalV2.Content size="medium" unmountOnHide>
-          {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
-          <CopyPasteASTContextProvider>
-            {fuzzyMatchComparatorEditModalProps ? (
-              <FuzzyMatchComparatorEditModalContent
-                initialFuzzyMatchComparatorEditorNodeViewModel={
-                  fuzzyMatchComparatorEditModalProps.initialValue
-                }
-                onSave={(astNode: AstNode) => {
-                  fuzzyMatchComparatorEditModalProps.onSave(astNode);
-                  onOpenChange(false);
-                }}
-              />
-            ) : null}
-          </CopyPasteASTContextProvider>
-        </ModalV2.Content>
-      </FuzzyMatchComparatorEditModalContext.Provider>
-    </ModalV2.Root>
-  );
-}
-
-function FuzzyMatchComparatorEditModalContent({
-  initialFuzzyMatchComparatorEditorNodeViewModel,
+export function FuzzyMatchComparatorEdit({
+  initialFuzzyMatchComparatorAstNode,
+  initialAstNodeErrors,
   onSave,
 }: {
-  initialFuzzyMatchComparatorEditorNodeViewModel: FuzzyMatchComparatorEditorNodeViewModel;
+  initialFuzzyMatchComparatorAstNode: FuzzyMatchComparatorAstNode;
+  initialAstNodeErrors: AstNodeErrors;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
@@ -117,21 +52,15 @@ function FuzzyMatchComparatorEditModalContent({
     funcName,
     errors,
   } = useFuzzyMatchComparatorEditState(
-    initialFuzzyMatchComparatorEditorNodeViewModel,
-  );
-
-  const leftOptions = useLeftOptions(
-    initialFuzzyMatchComparatorEditorNodeViewModel,
-  );
-  const rightOptions = useRightOptions(
-    initialFuzzyMatchComparatorEditorNodeViewModel,
+    initialFuzzyMatchComparatorAstNode,
+    initialAstNodeErrors,
   );
 
   const handleSave = () => {
     const fuzzyMatchComparatorAstNode = NewFuzzyMatchComparatorAstNode({
       funcName,
-      left: adaptAstNodeFromEditorViewModel(left),
-      right: adaptAstNodeFromEditorViewModel(right),
+      left: left.astNode,
+      right: right.astNode,
       algorithm: algorithm.value,
       threshold: threshold.value,
     });
@@ -181,20 +110,30 @@ function FuzzyMatchComparatorEditModalContent({
             {t('scenarios:edit_fuzzy_match.operands.label')}
           </p>
           <div className="flex gap-2">
-            <Operand
-              operandViewModel={left}
-              onSave={setLeft}
-              options={leftOptions}
+            <LeftOperand
+              astNode={left.astNode}
+              astNodeErrors={left.astNodeErrors}
+              validationStatus={
+                (left.astNodeErrors?.errors ?? []).length > 0
+                  ? 'error'
+                  : 'valid'
+              }
+              onChange={setLeft}
             />
             <div className="border-grey-10 bg-grey-02 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
               <span className="text-s text-grey-100 font-medium">
                 {t(funcNameTKeys[funcName])}
               </span>
             </div>
-            <Operand
-              operandViewModel={right}
-              onSave={setRight}
-              options={rightOptions}
+            <RightOperand
+              astNode={right.astNode}
+              astNodeErrors={right.astNodeErrors}
+              validationStatus={
+                (right.astNodeErrors?.errors ?? []).length > 0
+                  ? 'error'
+                  : 'valid'
+              }
+              onChange={setRight}
             />
           </div>
           <EvaluationErrors
@@ -229,7 +168,7 @@ const funcNameTKeys = {
   FuzzyMatch: 'scenarios:edit_fuzzy_match.fuzzy_match',
   FuzzyMatchAnyOf: 'scenarios:edit_fuzzy_match.fuzzy_match_any_of',
 } satisfies Record<
-  FuzzyMatchEditorNodeViewModel['funcName'],
+  ReturnType<typeof useFuzzyMatchComparatorEditState>['funcName'],
   ParseKeys<['scenarios']>
 >;
 

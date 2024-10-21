@@ -1,60 +1,108 @@
-import { type AstNode } from '@app-builder/models';
-import { type EditableAstNode } from '@app-builder/models/editable-ast-node';
-import { useAdaptEditableAstNode } from '@app-builder/services/ast-node/options';
-import { useFormatReturnValue } from '@app-builder/services/ast-node/return-value';
 import {
-  type EditorNodeViewModel,
-  getValidationStatus,
-} from '@app-builder/services/editor/ast-editor';
+  type AstNode,
+  type ConstantAstNode,
+  type ConstantType,
+  type DataType,
+  isKnownOperandAstNode,
+} from '@app-builder/models';
+import { type OperandType } from '@app-builder/models/operand-type';
+import {
+  type AstNodeErrors,
+  type ValidationStatus,
+} from '@app-builder/services/validation/ast-node-validation';
+import { cva } from 'class-variance-authority';
 
-import { Default } from '../Default';
 import { OperandEditor } from './OperandEditor';
 import { OperandLabel } from './OperandLabel';
 
-export type OperandViewModel = EditorNodeViewModel;
-
 export function Operand({
-  operandViewModel,
+  astNode,
+  dataType,
+  operandType,
+  displayName,
+  placeholder,
+  returnValue,
   onSave,
   viewOnly,
+  validationStatus,
+  astNodeErrors,
   options,
+  coerceToConstant,
 }: {
-  operandViewModel: OperandViewModel;
+  astNode: AstNode;
+  dataType: DataType;
+  operandType: OperandType;
+  displayName: string;
+  placeholder?: string;
+  returnValue?: string;
   onSave?: (astNode: AstNode) => void;
   viewOnly?: boolean;
-  options: EditableAstNode[];
+  validationStatus: ValidationStatus;
+  astNodeErrors?: AstNodeErrors;
+  options: {
+    astNode: AstNode;
+    dataType: DataType;
+    operandType: OperandType;
+    displayName: string;
+  }[];
+  coerceToConstant?: (searchValue: string) => {
+    astNode: ConstantAstNode<ConstantType>;
+    displayName: string;
+    dataType: DataType;
+  }[];
 }) {
-  const adaptEditableAstNode = useAdaptEditableAstNode();
-  const editableAstNode = adaptEditableAstNode(operandViewModel);
-  const formatReturnValue = useFormatReturnValue();
-
-  if (!editableAstNode) {
+  if (!isKnownOperandAstNode(astNode)) {
     return (
-      <Default
-        editorNodeViewModel={operandViewModel}
-        type={viewOnly ? 'viewer' : 'editor'}
-        validationStatus={getValidationStatus(operandViewModel)}
-      />
+      <div className={defaultClassnames({ validationStatus })}>
+        {displayName}
+      </div>
     );
   }
 
   if (viewOnly || !onSave) {
     return (
       <OperandLabel
-        editableAstNode={editableAstNode}
-        validationStatus={getValidationStatus(operandViewModel)}
-        type="viewer"
-        returnValue={formatReturnValue(operandViewModel.returnValue)}
+        interactionMode="viewer"
+        astNode={astNode}
+        placeholder={placeholder}
+        dataType={dataType}
+        operandType={operandType}
+        displayName={displayName}
+        returnValue={returnValue}
+        validationStatus={validationStatus}
       />
     );
   }
 
   return (
     <OperandEditor
-      operandViewModel={operandViewModel}
-      editableAstNode={editableAstNode}
+      astNode={astNode}
+      placeholder={placeholder}
+      dataType={dataType}
+      operandType={operandType}
+      displayName={displayName}
+      returnValue={returnValue}
+      validationStatus={validationStatus}
+      astNodeErrors={astNodeErrors}
       onSave={onSave}
       options={options}
+      coerceToConstant={coerceToConstant}
     />
   );
 }
+
+const defaultClassnames = cva(
+  'bg-grey-02 flex size-fit min-h-[40px] min-w-[40px] items-center justify-between rounded px-2 outline-none',
+  {
+    variants: {
+      validationStatus: {
+        valid: 'border border-grey-02',
+        error: 'border border-red-100',
+        'light-error': 'border border-red-25',
+      },
+    },
+    defaultVariants: {
+      validationStatus: 'valid',
+    },
+  },
+);

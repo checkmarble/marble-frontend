@@ -36,20 +36,19 @@ describe('Menu', () => {
 
     await userEvent.click(screen.getByText('Open'));
 
-    const fruitMenuitems = screen.getAllByRole('menuitem');
-    fruitMenuitems.forEach((fruitMenuitem) =>
-      expect(fruitMenuitem).toBeInTheDocument(),
+    fruits.forEach((fruit) =>
+      expect(screen.getByRole('menuitem', { name: fruit })).toBeInTheDocument(),
     );
-    const firstItem = fruitMenuitems[0];
+    const firstItem = screen.getByRole('menuitem', { name: fruits[0] });
     expect(firstItem).toBeDefined();
     if (!firstItem) return;
 
     // Click on an option
     await userEvent.click(firstItem);
 
-    // Menu should be closed and the content should not be visible
-    fruitMenuitems.forEach((fruitMenuitem) =>
-      expect(fruitMenuitem).not.toBeInTheDocument(),
+    expect(screen.queryByRole('button', { name: 'Open' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
     );
   });
 });
@@ -88,20 +87,19 @@ describe('Menu with combobox', () => {
 
     await userEvent.click(screen.getByText('Open'));
 
-    const fruitOptions = screen.getAllByRole('option');
-    fruitOptions.forEach((fruitOption) =>
-      expect(fruitOption).toBeInTheDocument(),
+    fruits.forEach((fruit) =>
+      expect(screen.getByRole('option', { name: fruit })).toBeInTheDocument(),
     );
-    const firstItem = fruitOptions[0];
+    const firstItem = screen.getByRole('option', { name: fruits[0] });
     expect(firstItem).toBeDefined();
     if (!firstItem) return;
 
     // Click on an option
     await userEvent.click(firstItem);
 
-    // Menu should be closed and the content should not be visible
-    fruitOptions.forEach((fruitOption) =>
-      expect(fruitOption).not.toBeInTheDocument(),
+    expect(screen.queryByRole('button', { name: 'Open' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
     );
   });
 

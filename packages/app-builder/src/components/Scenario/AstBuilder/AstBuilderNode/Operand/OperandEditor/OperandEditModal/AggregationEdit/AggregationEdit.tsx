@@ -11,30 +11,24 @@ import {
   type AggregatorOperator,
   aggregatorOperators,
 } from '@app-builder/models/editable-operators';
-import {
-  computeValidationForNamedChildren,
-  type EvaluationError,
-} from '@app-builder/models/node-evaluation';
-import { useDataModel } from '@app-builder/services/ast-node/options';
+import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
-import {
-  adaptAstNodeFromEditorViewModel,
-  type ConstantEditorNodeViewModel,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
-import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
+import { useDataModel } from '@app-builder/services/editor/options';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { createSimpleContext } from '@app-builder/utils/create-context';
+import {
+  type AstNodeErrors,
+  computeValidationForNamedChildren,
+} from '@app-builder/services/validation/ast-node-validation';
 import { type Namespace } from 'i18next';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 import { Logo } from 'ui-icons';
 
-import { Operator } from '../Operator';
+import { Operator } from '../../../../Operator';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
 
@@ -43,7 +37,6 @@ export const handle = {
 };
 
 export interface AggregationViewModel {
-  nodeId: string;
   label: string;
   aggregator: AggregatorOperator;
   aggregatedField: DataModelField | null;
@@ -57,7 +50,7 @@ export interface AggregationViewModel {
 export interface FilterViewModel {
   operator: string | null;
   filteredField: DataModelField | null;
-  value: EditorNodeViewModel;
+  value: { astNode: AstNode; astNodeErrors?: AstNodeErrors };
   errors: {
     filter: EvaluationError[];
     operator: EvaluationError[];
@@ -66,117 +59,92 @@ export interface FilterViewModel {
   };
 }
 
-export interface AggregationEditorNodeViewModel {
-  nodeId: string;
-  funcName: typeof aggregationAstNodeName;
-  constant: undefined;
-  errors: EvaluationError[];
-  children: [];
-  namedChildren: {
-    aggregator: ConstantEditorNodeViewModel<
-      string,
-      AggregationEditorNodeViewModel
-    >;
-    tableName: ConstantEditorNodeViewModel<
-      string,
-      AggregationEditorNodeViewModel
-    >;
-    fieldName: ConstantEditorNodeViewModel<
-      string,
-      AggregationEditorNodeViewModel
-    >;
-    label: ConstantEditorNodeViewModel<string, AggregationEditorNodeViewModel>;
-    filters?: AggregationFiltersEditorNodeViewModel;
-  };
-  parent: EditorNodeViewModel;
-}
-
-interface AggregationFiltersEditorNodeViewModel {
-  nodeId: string;
-  funcName: 'List';
-  constant: undefined;
-  errors: EvaluationError[];
-  children: AggregationFilterEditorNodeViewModel[];
-  namedChildren: Record<string, never>;
-  parent: AggregationEditorNodeViewModel;
-}
-
-interface AggregationFilterEditorNodeViewModel {
-  nodeId: string;
-  funcName: 'Filter';
-  constant: undefined;
-  errors: EvaluationError[];
-  children: [];
-  namedChildren: {
-    tableName: ConstantEditorNodeViewModel<
-      string | null,
-      AggregationFilterEditorNodeViewModel
-    >;
-    fieldName: ConstantEditorNodeViewModel<
-      string | null,
-      AggregationFilterEditorNodeViewModel
-    >;
-    operator: ConstantEditorNodeViewModel<
-      string | null,
-      AggregationFilterEditorNodeViewModel
-    >;
-    value: EditorNodeViewModel;
-  };
-  parent: AggregationFiltersEditorNodeViewModel;
-}
-
-export const isAggregationEditorNodeViewModel = (
-  vm: EditorNodeViewModel,
-): vm is AggregationEditorNodeViewModel => {
-  return vm.funcName === aggregationAstNodeName;
-};
-
 export const adaptAggregationViewModel = (
-  vm: AggregationEditorNodeViewModel,
+  initialAggregationAstNode: AggregationAstNode,
+  initialAstNodeErrors: AstNodeErrors,
 ): AggregationViewModel => {
   const aggregatedField: DataModelField = {
-    tableName: vm.namedChildren.tableName.constant,
-    fieldName: vm.namedChildren.fieldName.constant,
+    tableName: initialAggregationAstNode.namedChildren.tableName.constant,
+    fieldName: initialAggregationAstNode.namedChildren.fieldName.constant,
   };
-  const filters =
-    vm.namedChildren.filters?.children.map(adaptFilterViewModel) ?? [];
+  const initialFiltersAstNodeErrors = initialAstNodeErrors.namedChildren[
+    'filters'
+  ] ?? {
+    errors: [],
+    children: [],
+    namedChildren: {},
+  };
+  const filters = initialAggregationAstNode.namedChildren.filters.children.map(
+    (filterAstNode, index) => {
+      const initialFilterAstNodeErrors = initialFiltersAstNodeErrors.children[
+        index
+      ] ?? {
+        errors: [],
+        children: [],
+        namedChildren: {},
+      };
+      return adaptFilterViewModel(filterAstNode, initialFilterAstNodeErrors);
+    },
+  );
 
   return {
-    nodeId: vm.nodeId,
-    label: vm.namedChildren.label.constant ?? '',
+    label: initialAggregationAstNode.namedChildren.label.constant ?? '',
     // No guard here: we prefer to display an unhandled operator to a default one
-    aggregator: vm.namedChildren.aggregator.constant as AggregatorOperator,
+    aggregator: initialAggregationAstNode.namedChildren.aggregator
+      .constant as AggregatorOperator,
     aggregatedField,
     filters,
     errors: {
-      label: computeValidationForNamedChildren(vm, 'label'),
-      aggregator: computeValidationForNamedChildren(vm, 'aggregator'),
-      aggregatedField: computeValidationForNamedChildren(vm, [
-        'tableName',
-        'fieldName',
-      ]),
+      label: computeValidationForNamedChildren(
+        initialAggregationAstNode,
+        initialAstNodeErrors,
+        'label',
+      ),
+      aggregator: computeValidationForNamedChildren(
+        initialAggregationAstNode,
+        initialAstNodeErrors,
+        'aggregator',
+      ),
+      aggregatedField: computeValidationForNamedChildren(
+        initialAggregationAstNode,
+        initialAstNodeErrors,
+        ['tableName', 'fieldName'],
+      ),
     },
   };
 };
 
 function adaptFilterViewModel(
-  filterVM: AggregationFilterEditorNodeViewModel,
+  filterAstNode: AggregationAstNode['namedChildren']['filters']['children'][number],
+  initialAstNodeErrors: AstNodeErrors,
 ): FilterViewModel {
   return {
-    operator: filterVM.namedChildren.operator.constant,
+    operator: filterAstNode.namedChildren.operator.constant,
     filteredField: {
-      tableName: filterVM.namedChildren.tableName?.constant,
-      fieldName: filterVM.namedChildren.fieldName?.constant,
+      tableName: filterAstNode.namedChildren.tableName?.constant,
+      fieldName: filterAstNode.namedChildren.fieldName?.constant,
     },
-    value: filterVM.namedChildren.value,
+    value: {
+      astNode: filterAstNode.namedChildren.value,
+      astNodeErrors: initialAstNodeErrors.namedChildren['value'],
+    },
     errors: {
-      filter: filterVM.errors,
-      operator: computeValidationForNamedChildren(filterVM, 'operator'),
-      filteredField: computeValidationForNamedChildren(filterVM, [
-        'tableName',
-        'fieldName',
-      ]),
-      value: computeValidationForNamedChildren(filterVM, 'value'),
+      filter: initialAstNodeErrors.errors,
+      operator: computeValidationForNamedChildren(
+        filterAstNode,
+        initialAstNodeErrors,
+        'operator',
+      ),
+      filteredField: computeValidationForNamedChildren(
+        filterAstNode,
+        initialAstNodeErrors,
+        ['tableName', 'fieldName'],
+      ),
+      value: computeValidationForNamedChildren(
+        filterAstNode,
+        initialAstNodeErrors,
+        'value',
+      ),
     },
   };
 }
@@ -199,7 +167,7 @@ export const adaptAggregationAstNode = (
         fieldName: NewConstantAstNode({
           constant: filter.filteredField?.fieldName ?? null,
         }),
-        value: adaptAstNodeFromEditorViewModel(filter.value),
+        value: filter.value.astNode,
       },
     }),
   );
@@ -230,69 +198,19 @@ export const adaptAggregationAstNode = (
   };
 };
 
-export interface AggregationEditModalProps {
-  initialAggregation: AggregationViewModel;
-  onSave: (astNode: AstNode) => void;
-}
-
-const AggregationEditModalContext = createSimpleContext<
-  (agregationProps: AggregationEditModalProps) => void
->('AggregationEditModal');
-
-export const useEditAggregation = AggregationEditModalContext.useValue;
-
-export function AggregationEditModal({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [open, onOpenChange] = useState<boolean>(false);
-  const [aggregation, setAggregation] = useState<AggregationViewModel>();
-  const onSaveRef = useRef<(astNode: AstNode) => void>();
-
-  const editAgregation = useCallback(
-    (aggregationProps: AggregationEditModalProps) => {
-      setAggregation(aggregationProps.initialAggregation);
-      onSaveRef.current = aggregationProps.onSave;
-      onOpenChange(true);
-    },
-    [],
-  );
-
-  return (
-    <ModalV2.Root open={open} setOpen={onOpenChange}>
-      <AggregationEditModalContext.Provider value={editAgregation}>
-        {children}
-        <ModalV2.Content size="large" unmountOnHide>
-          {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
-          <CopyPasteASTContextProvider>
-            {aggregation ? (
-              <AggregationEditModalContent
-                aggregation={aggregation}
-                setAggregation={setAggregation}
-                onSave={(astNode) => {
-                  onSaveRef.current?.(astNode);
-                  onOpenChange(false);
-                }}
-              />
-            ) : null}
-          </CopyPasteASTContextProvider>
-        </ModalV2.Content>
-      </AggregationEditModalContext.Provider>
-    </ModalV2.Root>
-  );
-}
-
-function AggregationEditModalContent({
-  aggregation,
-  setAggregation,
+export function AggregationEdit({
+  initialAggregationAstNode,
+  initialAstNodeErrors,
   onSave,
 }: {
-  aggregation: AggregationViewModel;
-  setAggregation: (aggregation: AggregationViewModel) => void;
+  initialAggregationAstNode: AggregationAstNode;
+  initialAstNodeErrors: AstNodeErrors;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(handle.i18n);
+  const [aggregation, setAggregation] = useState(() =>
+    adaptAggregationViewModel(initialAggregationAstNode, initialAstNodeErrors),
+  );
 
   const dataModel = useDataModel();
   const dataModelFieldOptions = useMemo(
@@ -325,7 +243,7 @@ function AggregationEditModalContent({
           </div>
         </div>
       </ModalV2.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex max-h-[70dvh] flex-col gap-6 overflow-auto p-6">
         <div className="flex flex-1 flex-col gap-4">
           <Callout variant="outlined">
             <ModalV2.Description className="whitespace-pre text-wrap">
@@ -383,7 +301,9 @@ function AggregationEditModalContent({
                       },
                     })
                   }
-                  errors={aggregation.errors.aggregator}
+                  validationStatus={
+                    aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'
+                  }
                   operators={aggregatorOperators}
                 />
                 <EvaluationErrors

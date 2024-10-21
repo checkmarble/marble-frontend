@@ -1,27 +1,21 @@
 import { scenarioI18n } from '@app-builder/components';
-import {
-  type ConstantEditableAstNode,
-  type EditableAstNode,
-} from '@app-builder/models/editable-ast-node';
 import { useTranslation } from 'react-i18next';
 import { MenuGroup, MenuGroupLabel } from 'ui-design-system';
 
+import {
+  useCoercedConstantOptions,
+  useMatchOptions,
+  useOperandEditorActions,
+  useSearchValue,
+} from './OperandEditorProvider';
 import { CoercedConstantOption, OperandOption } from './OperandMenuItem';
 
-interface OperandEditorSearchResultsProps {
-  constantOptions: ConstantEditableAstNode[];
-  matchOptions: EditableAstNode[];
-  searchValue: string;
-  onClick: (option: EditableAstNode) => void;
-}
-
-export function OperandEditorSearchResults({
-  constantOptions,
-  matchOptions,
-  searchValue,
-  onClick,
-}: OperandEditorSearchResultsProps) {
+export function OperandEditorSearchResults() {
   const { t } = useTranslation(scenarioI18n);
+  const searchValue = useSearchValue();
+  const constantOptions = useCoercedConstantOptions();
+  const matchOptions = useMatchOptions();
+  const { onOptionClick } = useOperandEditorActions();
 
   return (
     <>
@@ -31,8 +25,11 @@ export function OperandEditorSearchResults({
           {constantOptions.map((constant) => (
             <CoercedConstantOption
               key={constant.displayName}
-              constantEditableAstNode={constant}
-              onClick={onClick}
+              displayName={constant.displayName}
+              dataType={constant.dataType}
+              onClick={() => {
+                onOptionClick(constant.astNode);
+              }}
             />
           ))}
         </MenuGroup>
@@ -54,8 +51,13 @@ export function OperandEditorSearchResults({
           <OperandOption
             key={option.displayName}
             searchValue={searchValue}
-            editableAstNode={option}
-            onClick={onClick}
+            astNode={option.astNode}
+            dataType={option.dataType}
+            operandType={option.operandType}
+            displayName={option.displayName}
+            onClick={() => {
+              onOptionClick(option.astNode);
+            }}
           />
         ))}
       </MenuGroup>

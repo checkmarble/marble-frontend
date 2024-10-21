@@ -3,7 +3,6 @@ import {
   type OperatorFunction,
   undefinedAstNodeName,
 } from '@app-builder/models/editable-operators';
-import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { Trigger, Value } from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
@@ -49,6 +48,15 @@ const OperatorLabel = forwardRef<HTMLButtonElement, OperatorLabelProps>(
   },
 );
 
+interface OperatorProps<T extends OperatorFunction>
+  extends VariantProps<typeof operatorContainerClassnames> {
+  value?: T;
+  setValue: (operator: T) => void;
+  operators: readonly T[];
+  viewOnly?: boolean;
+  'aria-labelledby'?: string;
+}
+
 /**
  * TODO: refactor to separate component label and select so we can use the label in the OperandInfos component (better than a disabled select requiring operators to be passed in as a prop)
  *
@@ -58,17 +66,10 @@ export function Operator<T extends OperatorFunction>({
   value,
   setValue,
   operators,
-  errors,
+  validationStatus,
   viewOnly,
   ...rest
-}: {
-  value?: T;
-  setValue: (operator: T) => void;
-  operators: readonly T[];
-  errors?: EvaluationError[];
-  viewOnly?: boolean;
-  'aria-labelledby'?: string;
-}) {
+}: OperatorProps<T>) {
   const { t } = useTranslation(['common', 'scenarios']);
 
   // We treat undefinedAstNodeName as "no value"
@@ -81,9 +82,7 @@ export function Operator<T extends OperatorFunction>({
       disabled={viewOnly}
       {...rest}
     >
-      <OperatorLabel
-        validationStatus={errors && errors.length > 0 ? 'error' : 'valid'}
-      />
+      <OperatorLabel validationStatus={validationStatus} />
       <Select.Content className="max-h-60">
         <Select.Viewport>
           {operators.map((operator) => {

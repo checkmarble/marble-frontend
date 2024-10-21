@@ -2,7 +2,11 @@ import { hasExactlyTwoElements } from '@app-builder/utils/array';
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 
-import { undefinedAstNodeName } from './editable-operators';
+import {
+  isTwoLineOperandOperatorFunction,
+  type TwoLineOperandOperatorFunction,
+  undefinedAstNodeName,
+} from './editable-operators';
 import {
   defaultEditableFuzzyMatchAlgorithm,
   defaultFuzzyMatchComparatorThreshold,
@@ -219,10 +223,21 @@ export interface TimeAddAstNode {
   };
 }
 export type TimestampFieldAstNode =
-  | DatabaseAccessAstNode
-  | PayloadAstNode
+  | DataAccessorAstNode
   | TimeNowAstNode
+  | TimeAddAstNode
   | UndefinedAstNode;
+
+export function isTimestampFieldAstNode(
+  node: AstNode,
+): node is TimestampFieldAstNode {
+  return (
+    isDataAccessorAstNode(node) ||
+    isTimeNow(node) ||
+    isTimeAdd(node) ||
+    isUndefinedAstNode(node)
+  );
+}
 
 export function NewTimeAddAstNode(
   timestampFieldAstNode: TimestampFieldAstNode = NewUndefinedAstNode(),
@@ -245,7 +260,7 @@ export function NewTimeAddAstNode(
   };
 }
 
-const timeNowAstNodeName = 'TimeNow';
+export const timeNowAstNodeName = 'TimeNow';
 export interface TimeNowAstNode {
   name: typeof timeNowAstNodeName;
   constant?: undefined;
@@ -291,7 +306,7 @@ export function NewFuzzyMatchAstNode({
   };
 }
 
-const fuzzyMatchAnyOfAstNodeName = 'FuzzyMatchAnyOf';
+export const fuzzyMatchAnyOfAstNodeName = 'FuzzyMatchAnyOf';
 export interface FuzzyMatchAnyOfAstNode {
   name: typeof fuzzyMatchAnyOfAstNodeName;
   constant?: undefined;
@@ -413,36 +428,90 @@ export function isFuzzyMatchComparator(
   return isFuzzyMatch(firstChild) || isFuzzyMatchAnyOf(firstChild);
 }
 
-type FunctionAstNode =
+export type EditableAstNode =
   | AggregationAstNode
   | TimeAddAstNode
-  | TimeNowAstNode
   | FuzzyMatchComparatorAstNode;
 
-// TODO(EditableAstNode): heavy link to EditableAstNode operandType = 'Function'
-// Function is considered a special type of operand which require modal to edit
-export function isFunctionAstNode(node: AstNode): node is FunctionAstNode {
+/**
+ * Check if the node is editable in a dedicated modal
+ * @param node
+ * @returns
+ */
+export function isEditableAstNode(node: AstNode): node is EditableAstNode {
+  return isAggregation(node) || isTimeAdd(node) || isFuzzyMatchComparator(node);
+}
+
+type LeafOperandAstNode = EditableAstNode | TimeNowAstNode;
+
+/**
+ * Check if the node is considered as leaf operand
+ * @param node
+ * @returns
+ */
+export function isLeafOperandAstNode(
+  node: AstNode,
+): node is LeafOperandAstNode {
+  return isEditableAstNode(node) || isTimeNow(node);
+}
+
+export type DataAccessorAstNode = DatabaseAccessAstNode | PayloadAstNode;
+
+export function isDataAccessorAstNode(
+  node: AstNode,
+): node is DataAccessorAstNode {
+  return isDatabaseAccess(node) || isPayload(node);
+}
+
+export type KnownOperandAstNode =
+  | UndefinedAstNode
+  | ConstantAstNode
+  | CustomListAccessAstNode
+  | DatabaseAccessAstNode
+  | LeafOperandAstNode;
+
+/**
+ * Check if the node is handled in the Operand UI
+ * @param node
+ * @returns
+ */
+export function isKnownOperandAstNode(
+  node: AstNode,
+): node is KnownOperandAstNode {
   return (
-    isAggregation(node) ||
-    isTimeAdd(node) ||
-    isTimeNow(node) ||
-    isFuzzyMatchComparator(node)
+    isUndefinedAstNode(node) ||
+    isConstant(node) ||
+    isCustomListAccess(node) ||
+    isDataAccessorAstNode(node) ||
+    isLeafOperandAstNode(node)
   );
 }
 
-export interface OrAndGroupAstNode {
-  name: 'Or';
+export interface AndAstNode {
+  name: 'And';
   constant: undefined;
-  children: {
-    name: 'And';
-    constant: undefined;
-    children: AstNode[];
-    namedChildren: Record<string, never>;
-  }[];
+  children: AstNode[];
   namedChildren: Record<string, never>;
 }
 
-export function isOrAndGroup(astNode: AstNode): astNode is OrAndGroupAstNode {
+export function isAndAstNode(astNode: AstNode): astNode is AndAstNode {
+  if (astNode.name !== 'And') {
+    return false;
+  }
+  if (Object.keys(astNode.namedChildren).length > 0) return false;
+  return true;
+}
+
+export interface OrWithAndAstNode {
+  name: 'Or';
+  constant: undefined;
+  children: AndAstNode[];
+  namedChildren: Record<string, never>;
+}
+
+export function isOrWithAndAstNode(
+  astNode: AstNode,
+): astNode is OrWithAndAstNode {
   if (astNode.name !== 'Or') {
     return false;
   }
@@ -451,5 +520,26 @@ export function isOrAndGroup(astNode: AstNode): astNode is OrAndGroupAstNode {
       return false;
     }
   }
+  if (Object.keys(astNode.namedChildren).length > 0) return false;
+  return true;
+}
+
+export interface TwoLineOperandAstNode {
+  name: TwoLineOperandOperatorFunction;
+  constant: undefined;
+  children: [AstNode, AstNode];
+  namedChildren: Record<string, never>;
+}
+
+export function isTwoLineOperandAstNode(
+  astNode: AstNode,
+): astNode is TwoLineOperandAstNode {
+  if (isLeafOperandAstNode(astNode)) return false;
+
+  if (!hasExactlyTwoElements(astNode.children)) return false;
+  if (Object.keys(astNode.namedChildren).length > 0) return false;
+  if (astNode.name == null || !isTwoLineOperandOperatorFunction(astNode.name))
+    return false;
+
   return true;
 }

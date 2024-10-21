@@ -5,9 +5,7 @@ import {
   type AstNode,
   NewConstantAstNode,
   NewTimeAddAstNode,
-  NewUndefinedAstNode,
   type TimeAddAstNode,
-  timeAddAstNodeName,
   type TimestampFieldAstNode,
 } from '@app-builder/models';
 import {
@@ -15,34 +13,30 @@ import {
   type TimeAddOperator,
   timeAddOperators,
 } from '@app-builder/models/editable-operators';
-import {
-  computeValidationForNamedChildren,
-  type EvaluationError,
-} from '@app-builder/models/node-evaluation';
+import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { dateDocHref } from '@app-builder/services/documentation-href';
-import {
-  adaptAstNodeFromEditorViewModel,
-  type ConstantEditorNodeViewModel,
-  type EditorNodeViewModel,
-} from '@app-builder/services/editor/ast-editor';
-import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
 } from '@app-builder/services/validation';
-import { createSimpleContext } from '@app-builder/utils/create-context';
-import { useCallback, useState } from 'react';
+import {
+  type AstNodeErrors,
+  computeValidationForNamedChildren,
+} from '@app-builder/services/validation/ast-node-validation';
+import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 
-import { Operator } from '../Operator';
+import { Operator } from '../../../../Operator';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
 import { TimestampField } from './TimestampField';
 
 export interface TimeAddViewModal {
-  nodeId: string;
-  timestampField: EditorNodeViewModel | null;
+  timestampField: {
+    astNode: TimestampFieldAstNode;
+    astNodeErrors?: AstNodeErrors;
+  };
   sign: TimeAddOperator;
   duration: string;
   durationUnit: DurationUnit;
@@ -53,136 +47,86 @@ export interface TimeAddViewModal {
   };
 }
 
-export const isTimeAddEditorNodeViewModel = (
-  vm: EditorNodeViewModel,
-): vm is TimeAddEditorNodeViewModel => {
-  return vm.funcName === timeAddAstNodeName;
-};
-
-export interface TimeAddEditorNodeViewModel {
-  nodeId: string;
-  funcName: typeof timeAddAstNodeName;
-  constant: undefined;
-  errors: EvaluationError[];
-  children: [];
-  namedChildren: {
-    timestampField: EditorNodeViewModel;
-    sign: ConstantEditorNodeViewModel<string, TimeAddEditorNodeViewModel>;
-    duration: ConstantEditorNodeViewModel<string, TimeAddEditorNodeViewModel>;
-  };
-  parent: TimeAddEditorNodeViewModel;
-}
-
 export const defaultISO8601Duration = 'PT0S';
-export const adaptTimeAddViewModal = (
-  vm: TimeAddEditorNodeViewModel,
-): TimeAddViewModal => {
+export function adaptTimeAddViewModal(
+  timeAddAstNode: TimeAddAstNode,
+  astNodeErrors: AstNodeErrors,
+): TimeAddViewModal {
   const iso8601Duration =
-    vm.namedChildren.duration.constant !== ''
-      ? vm.namedChildren.duration.constant
+    timeAddAstNode.namedChildren.duration.constant !== ''
+      ? timeAddAstNode.namedChildren.duration.constant
       : defaultISO8601Duration;
   const temporalDuration =
     Temporal.Duration.from(iso8601Duration).round('seconds');
   const { duration, durationUnit } =
     adaptDurationAndUnitFromTemporalDuration(temporalDuration);
 
-  const sign = isTimeAddOperator(vm.namedChildren.sign.constant)
-    ? vm.namedChildren.sign.constant
+  const sign = isTimeAddOperator(timeAddAstNode.namedChildren.sign.constant)
+    ? timeAddAstNode.namedChildren.sign.constant
     : '+';
 
   return {
-    nodeId: vm.nodeId,
-    timestampField: vm.namedChildren.timestampField,
+    timestampField: {
+      astNode: timeAddAstNode.namedChildren.timestampField,
+      astNodeErrors: astNodeErrors.namedChildren['timestampField'],
+    },
     sign,
     duration: duration.toString(),
     durationUnit,
     errors: {
-      timestampField: computeValidationForNamedChildren(vm, 'timestampField'),
-      sign: computeValidationForNamedChildren(vm, 'sign'),
-      duration: computeValidationForNamedChildren(vm, 'duration'),
+      timestampField: computeValidationForNamedChildren(
+        timeAddAstNode,
+        astNodeErrors,
+        'timestampField',
+      ),
+      sign: computeValidationForNamedChildren(
+        timeAddAstNode,
+        astNodeErrors,
+        'sign',
+      ),
+      duration: computeValidationForNamedChildren(
+        timeAddAstNode,
+        astNodeErrors,
+        'duration',
+      ),
     },
   };
-};
+}
 
-const adaptTimeAddAstNode = (
+function adaptTimeAddAstNode(
   timeAddViewModel: TimeAddViewModal,
-): TimeAddAstNode => {
-  const timestampFieldAstNode = timeAddViewModel.timestampField
-    ? adaptAstNodeFromEditorViewModel(timeAddViewModel.timestampField)
-    : NewUndefinedAstNode();
+): TimeAddAstNode {
   const signAstNode = NewConstantAstNode({
     constant: timeAddViewModel.sign,
   });
-  const temporalDuration = adaptTemporalDurationFromDurationAndUnit({
-    duration: parseInt(timeAddViewModel.duration),
-    durationUnit: timeAddViewModel.durationUnit,
+  const temporalDuration = Temporal.Duration.from({
+    [timeAddViewModel.durationUnit]: parseInt(timeAddViewModel.duration),
   });
   const durationAstNode = NewConstantAstNode({
     constant: temporalDuration.toString(),
   });
 
   return NewTimeAddAstNode(
-    timestampFieldAstNode as TimestampFieldAstNode,
+    timeAddViewModel.timestampField.astNode,
     signAstNode,
     durationAstNode,
   );
-};
-
-export interface TimeAddEditModalProps {
-  initialValue: TimeAddViewModal;
-  onSave: (astNode: AstNode) => void;
 }
 
-const TimeAddEditModalContext =
-  createSimpleContext<(timeAddProps: TimeAddEditModalProps) => void>(
-    'TimeAddEditModal',
-  );
-
-export const useEditTimeAdd = TimeAddEditModalContext.useValue;
-
-export function TimeAddEditModal({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState<boolean>(false);
-  const [timeAddEditModalProps, setValueEditModalProps] =
-    useState<TimeAddEditModalProps>();
-
-  const editTimeAdd = useCallback((dateProps: TimeAddEditModalProps) => {
-    setValueEditModalProps(dateProps);
-    setOpen(true);
-  }, []);
-
-  return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <TimeAddEditModalContext.Provider value={editTimeAdd}>
-        {children}
-        <ModalV2.Content>
-          {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
-          <CopyPasteASTContextProvider>
-            {timeAddEditModalProps ? (
-              <TimeAddEditModalContent
-                initialValue={timeAddEditModalProps.initialValue}
-                onSave={(astNode: AstNode) => {
-                  timeAddEditModalProps.onSave(astNode);
-                  setOpen(false);
-                }}
-              />
-            ) : null}
-          </CopyPasteASTContextProvider>
-        </ModalV2.Content>
-      </TimeAddEditModalContext.Provider>
-    </ModalV2.Root>
-  );
-}
-
-function TimeAddEditModalContent({
-  initialValue,
+export function TimeAddEdit({
+  timeAddAstNode,
+  astNodeErrors,
   onSave,
 }: {
-  initialValue: TimeAddViewModal;
+  timeAddAstNode: TimeAddAstNode;
+  astNodeErrors: AstNodeErrors;
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
-  const [value, setValue] = useState<TimeAddViewModal>(() => initialValue);
+  const [value, setValue] = React.useState<TimeAddViewModal>(() =>
+    adaptTimeAddViewModal(timeAddAstNode, astNodeErrors),
+  );
 
   const handleSave = () => {
     onSave(adaptTimeAddAstNode(value));
@@ -192,33 +136,42 @@ function TimeAddEditModalContent({
     <>
       <ModalV2.Title>{t('scenarios:edit_date.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
-        <div className="flex flex-col gap-4">
-          <Callout variant="outlined">
-            <ModalV2.Description className="whitespace-pre text-wrap">
-              <Trans
-                t={t}
-                i18nKey="scenarios:edit_date.description"
-                components={{
-                  DocLink: <ExternalLink href={dateDocHref} />,
-                }}
-              />
-            </ModalV2.Description>
-          </Callout>
+        <Callout variant="outlined">
+          <ModalV2.Description className="whitespace-pre text-wrap">
+            <Trans
+              t={t}
+              i18nKey="scenarios:edit_date.description"
+              components={{
+                DocLink: <ExternalLink href={dateDocHref} />,
+              }}
+            />
+          </ModalV2.Description>
+        </Callout>
+        <div className="flex flex-col gap-2">
           <div className="flex gap-2">
             <TimestampField
-              value={value.timestampField}
+              astNode={value.timestampField.astNode}
+              astNodeErrors={value.timestampField.astNodeErrors}
               onChange={(timestampField) =>
                 setValue({
                   ...value,
-                  timestampField,
+                  timestampField: {
+                    astNode: timestampField,
+                    astNodeErrors: {
+                      errors: [],
+                      children: [],
+                      namedChildren: {},
+                    },
+                  },
                   errors: {
                     ...value.errors,
                     timestampField: [],
                   },
                 })
               }
-              errors={value.errors.timestampField}
-              className="grow"
+              validationStatus={
+                value.errors.timestampField.length > 0 ? 'error' : 'valid'
+              }
             />
             <Operator
               operators={timeAddOperators}
@@ -233,7 +186,9 @@ function TimeAddEditModalContent({
                   },
                 })
               }
-              errors={value.errors.sign}
+              validationStatus={
+                value.errors.sign.length > 0 ? 'error' : 'valid'
+              }
             />
             <Input
               value={value.duration ?? undefined}
@@ -313,14 +268,4 @@ const adaptDurationAndUnitFromTemporalDuration = (
     duration: temporalDuration.total('day'),
     durationUnit: 'days',
   };
-};
-
-const adaptTemporalDurationFromDurationAndUnit = ({
-  duration,
-  durationUnit,
-}: {
-  duration: number;
-  durationUnit: DurationUnit;
-}): Temporal.Duration => {
-  return Temporal.Duration.from({ [durationUnit]: duration });
 };

@@ -1,27 +1,22 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
+  type AndAstNode,
   type AstNode,
   NewAstNode,
   NewUndefinedAstNode,
+  type OrWithAndAstNode,
 } from '@app-builder/models';
 import {
-  type EvaluationError,
-  separateChildrenErrors,
-} from '@app-builder/models/node-evaluation';
+  useAstNodeEditorActions,
+  useEvaluation,
+  useRootOrAndChildValidation,
+  useRootOrAndValidation,
+} from '@app-builder/services/editor/ast-editor';
 import {
   adaptBooleanReturnValue,
   useDisplayReturnValues,
-} from '@app-builder/services/ast-node/return-value';
-import {
-  type EditorNodeViewModel,
-  findArgumentIndexErrorsFromParent,
-  hasArgumentIndexErrorsFromParent,
-} from '@app-builder/services/editor/ast-editor';
-import {
-  adaptEvaluationErrorViewModels,
-  useGetNodeEvaluationErrorMessage,
-  useGetOrAndNodeEvaluationErrorMessage,
-} from '@app-builder/services/validation';
+} from '@app-builder/services/editor/return-value';
+import { useChildrenArray } from '@app-builder/utils/tree';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,42 +24,8 @@ import { Tag } from 'ui-design-system';
 
 import { EvaluationErrors } from '../../ScenarioValidationError';
 import { AstBuilderNode } from '../AstBuilderNode/AstBuilderNode';
-import { computeLineErrors } from '../AstBuilderNode/TwoOperandsLine';
 import { RemoveButton } from '../RemoveButton';
 import { AddLogicalOperatorButton } from './AddLogicalOperatorButton';
-
-export interface RootOrWithAndViewModel {
-  orNodeId: string;
-  orErrors: EvaluationError[];
-  ands: {
-    nodeId: string;
-    errors: EvaluationError[];
-    children: EditorNodeViewModel[];
-  }[];
-}
-
-export function adaptRootOrWithAndViewModel(
-  viewModel: EditorNodeViewModel,
-): RootOrWithAndViewModel | null {
-  if (viewModel.funcName !== 'Or') {
-    return null;
-  }
-  for (const child of viewModel.children) {
-    if (child.funcName !== 'And') {
-      return null;
-    }
-  }
-
-  return {
-    orNodeId: viewModel.nodeId,
-    orErrors: viewModel.errors,
-    ands: viewModel.children.map((andNode) => ({
-      nodeId: andNode.nodeId,
-      errors: andNode.errors,
-      children: andNode.children,
-    })),
-  };
-}
 
 function NewAndChild() {
   return NewUndefinedAstNode({
@@ -80,61 +41,31 @@ function NewOrChild() {
 }
 
 export function RootOrWithAnd({
-  setOperand,
-  setOperator,
-  appendChild,
-  remove,
-  rootOrWithAndViewModel,
+  path,
+  astNode,
   viewOnly,
 }: {
-  setOperand: (nodeId: string, operandAst: AstNode) => void;
-  setOperator: (nodeId: string, name: string) => void;
-  appendChild: (nodeId: string, childAst: AstNode) => void;
-  remove: (nodeId: string) => void;
-  rootOrWithAndViewModel: RootOrWithAndViewModel;
+  path: string;
+  astNode: OrWithAndAstNode;
   viewOnly?: boolean;
 }) {
-  const { t } = useTranslation(['common']);
-  const getOrAndNodeEvaluationErrorMessage =
-    useGetOrAndNodeEvaluationErrorMessage();
-  const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
+  const { appendChild } = useAstNodeEditorActions();
 
   function appendOrChild() {
-    appendChild(rootOrWithAndViewModel.orNodeId, NewOrChild());
+    appendChild(path, NewOrChild());
   }
 
-  const { nodeErrors: orNodeErrors } = separateChildrenErrors(
-    rootOrWithAndViewModel.orErrors,
-  );
-  const orErrorMessages = adaptEvaluationErrorViewModels(orNodeErrors).map(
-    getOrAndNodeEvaluationErrorMessage,
-  );
+  const astNodeChildren = useChildrenArray(path, astNode);
 
-  const [displayReturnValues] = useDisplayReturnValues();
+  const { errorMessages } = useRootOrAndValidation(path);
 
   return (
     <div className="grid grid-cols-[40px_1fr_max-content] gap-2">
-      {rootOrWithAndViewModel.ands.map((andChild, childIndex) => {
+      {astNodeChildren.map(({ child, key, path }, childIndex) => {
         const isFirstChild = childIndex === 0;
-        const { nodeErrors: andNodeErrors } = separateChildrenErrors(
-          andChild.errors,
-        );
-
-        const andErrorMessages = adaptEvaluationErrorViewModels(
-          andNodeErrors,
-        ).map(getOrAndNodeEvaluationErrorMessage);
-
-        function appendAndChild() {
-          appendChild(andChild.nodeId, NewAndChild());
-        }
-
-        // if this is the last and child, remove the and from or operands
-        function removeAndChild(nodeId: string) {
-          remove(andChild.children.length > 1 ? nodeId : andChild.nodeId);
-        }
 
         return (
-          <Fragment key={andChild.nodeId}>
+          <Fragment key={key}>
             {/* OR separator row */}
             {!isFirstChild ? (
               <>
@@ -149,101 +80,148 @@ export function RootOrWithAnd({
               </>
             ) : null}
 
-            {andChild.children.map((child, childIndex) => {
-              const errorMessages = adaptEvaluationErrorViewModels([
-                ...computeLineErrors(child),
-                ...findArgumentIndexErrorsFromParent(child),
-              ]).map(getNodeEvaluationErrorMessage);
-
-              const childBooleanReturnValue = adaptBooleanReturnValue(
-                child.returnValue,
-              );
-
-              let rightComponent = null;
-              if (!viewOnly) {
-                rightComponent = (
-                  <div className="flex h-10 items-center justify-center">
-                    <RemoveButton
-                      onClick={() => {
-                        removeAndChild(child.nodeId);
-                      }}
-                    />
-                  </div>
-                );
-              } else if (displayReturnValues && childBooleanReturnValue) {
-                rightComponent = (
-                  <div className="flex h-10 items-center justify-center">
-                    <Tag
-                      border="square"
-                      className="w-full"
-                      color={childBooleanReturnValue.value ? 'green' : 'red'}
-                    >
-                      {t(`common:${childBooleanReturnValue.value}`)}
-                    </Tag>
-                  </div>
-                );
-              }
-
-              return (
-                // AND operand row
-                <Fragment key={child.nodeId}>
-                  <LogicalOperatorLabel
-                    operator={childIndex === 0 ? 'if' : 'and'}
-                    type="text"
-                    validationStatus={
-                      hasArgumentIndexErrorsFromParent(child)
-                        ? 'error'
-                        : 'valid'
-                    }
-                  />
-                  <div
-                    className={clsx(
-                      'flex flex-col gap-2',
-                      rightComponent === null && 'col-span-2',
-                    )}
-                  >
-                    <AstBuilderNode
-                      setOperand={setOperand}
-                      setOperator={setOperator}
-                      editorNodeViewModel={child}
-                      viewOnly={viewOnly}
-                      root
-                    />
-                    <EvaluationErrors errors={errorMessages} />
-                  </div>
-                  {rightComponent}
-                </Fragment>
-              );
-            })}
-
-            {/* [+ Condition] row */}
-            {viewOnly ? (
-              <EvaluationErrors
-                errors={andErrorMessages}
-                className="col-span-2 col-start-2"
-              />
-            ) : (
-              <div className="col-span-2 col-start-2 flex flex-row flex-wrap gap-2">
-                <AddLogicalOperatorButton
-                  onClick={appendAndChild}
-                  operator="and"
-                />
-                <EvaluationErrors errors={andErrorMessages} />
-              </div>
-            )}
+            <OrOperand path={path} andAstNode={child} viewOnly={viewOnly} />
           </Fragment>
         );
       })}
 
       {/* [+ Group] row */}
       {viewOnly ? (
-        <EvaluationErrors errors={orErrorMessages} className="col-span-3" />
+        <EvaluationErrors errors={errorMessages} className="col-span-3" />
       ) : (
         <div className="col-span-3 flex flex-row flex-wrap gap-2">
           <AddLogicalOperatorButton onClick={appendOrChild} operator="or" />
-          <EvaluationErrors errors={orErrorMessages} />
+          <EvaluationErrors errors={errorMessages} />
         </div>
       )}
     </div>
+  );
+}
+
+function OrOperand({
+  path,
+  andAstNode,
+  viewOnly,
+}: {
+  path: string;
+  andAstNode: AndAstNode;
+  viewOnly?: boolean;
+}) {
+  const { remove, appendChild } = useAstNodeEditorActions();
+
+  const { errorMessages } = useRootOrAndValidation(path);
+
+  function removeAndOperand(stringPath: string) {
+    // if this is the last and child, remove the and from or operands
+    remove(andAstNode.children.length > 1 ? stringPath : path);
+  }
+
+  function appendAndChild() {
+    appendChild(path, NewAndChild());
+  }
+
+  const andAstNodeChildren = useChildrenArray(path, andAstNode);
+
+  return (
+    <Fragment>
+      {andAstNodeChildren.map(({ child, key, path }, childIndex) => (
+        <AndOperand
+          key={key}
+          path={path}
+          operator={childIndex === 0 ? 'if' : 'and'}
+          astNode={child}
+          remove={removeAndOperand}
+          viewOnly={viewOnly}
+        />
+      ))}
+
+      {/* [+ Condition] row */}
+      {viewOnly ? (
+        <EvaluationErrors
+          errors={errorMessages}
+          className="col-span-2 col-start-2"
+        />
+      ) : (
+        <div className="col-span-2 col-start-2 flex flex-row flex-wrap gap-2">
+          <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
+          <EvaluationErrors errors={errorMessages} />
+        </div>
+      )}
+    </Fragment>
+  );
+}
+
+function AndOperand({
+  path,
+  operator,
+  astNode,
+  viewOnly,
+  remove,
+}: {
+  path: string;
+  operator: 'if' | 'and';
+  astNode: AstNode;
+  remove: (path: string) => void;
+  viewOnly?: boolean;
+}) {
+  const { t } = useTranslation(['common']);
+  const [displayReturnValues] = useDisplayReturnValues();
+  const evaluation = useEvaluation(path);
+
+  const { errorMessages, hasArgumentIndexErrorsFromParent } =
+    useRootOrAndChildValidation(path);
+
+  const childBooleanReturnValue = adaptBooleanReturnValue(
+    evaluation?.returnValue,
+  );
+
+  let rightComponent = null;
+  if (!viewOnly) {
+    rightComponent = (
+      <div className="flex h-10 items-center justify-center">
+        <RemoveButton
+          onClick={() => {
+            remove(path);
+          }}
+        />
+      </div>
+    );
+  } else if (displayReturnValues && childBooleanReturnValue) {
+    rightComponent = (
+      <div className="flex h-10 items-center justify-center">
+        <Tag
+          border="square"
+          className="w-full"
+          color={childBooleanReturnValue.value ? 'green' : 'red'}
+        >
+          {t(`common:${childBooleanReturnValue.value}`)}
+        </Tag>
+      </div>
+    );
+  }
+
+  return (
+    <Fragment>
+      <LogicalOperatorLabel
+        operator={operator}
+        type="text"
+        validationStatus={hasArgumentIndexErrorsFromParent ? 'error' : 'valid'}
+      />
+      <div
+        className={clsx(
+          'flex flex-col gap-2',
+          rightComponent === null && 'col-span-2',
+        )}
+      >
+        <AstBuilderNode
+          path={path}
+          astNode={astNode}
+          viewOnly={viewOnly}
+          root
+        />
+        <EvaluationErrors errors={errorMessages} />
+      </div>
+      {rightComponent}
+    </Fragment>
   );
 }

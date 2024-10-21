@@ -1,56 +1,11 @@
-import { type ConstantType } from '@app-builder/models';
-import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import { type ReturnValue } from '@app-builder/models/node-evaluation';
+import { useFormatLanguage } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import { createContext, useCallback, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
 import { noop } from 'typescript-utils';
 
-export type ReturnValue =
-  | {
-      value: ConstantType;
-      isOmitted: false;
-    }
-  | {
-      isOmitted: true;
-    };
-
-// This method is close to ConstantEditableAstNode.getConstantDisplayName
-// We may need to refactor this method in the future
-function formatConstantType(
-  constant: ConstantType,
-  config: {
-    t: TFunction<['common', 'scenarios'], undefined>;
-    language: string;
-  },
-): string {
-  if (R.isNullish(constant)) return 'NULL';
-
-  if (R.isArray(constant)) {
-    return `[${constant.map((c) => formatConstantType(c, config)).join(', ')}]`;
-  }
-
-  if (R.isString(constant)) {
-    //TODO(combobox): handle Timestamp here, if we do manipulate them as ISOstring
-    return `"${constant.toString()}"`;
-  }
-
-  if (R.isBoolean(constant)) {
-    return config.t(`common:${constant}`);
-  }
-
-  if (R.isNumber(constant)) {
-    return formatNumber(constant, {
-      language: config.language,
-      maximumFractionDigits: 2,
-    });
-  }
-
-  // Handle other cases when needed
-  return JSON.stringify(
-    R.mapValues(constant, (c) => formatConstantType(c, config)),
-  );
-}
+import { formatConstant } from '../ast-node/formatConstant';
 
 export function formatReturnValue(
   returnValue: ReturnValue | undefined,
@@ -60,7 +15,7 @@ export function formatReturnValue(
   },
 ) {
   if (returnValue?.isOmitted === false) {
-    return formatConstantType(returnValue.value, config);
+    return formatConstant(returnValue.value, config);
   }
   return undefined;
 }
