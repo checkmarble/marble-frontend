@@ -128,7 +128,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
                   />
                   <Icon
                     icon="edit"
-                    className="text-grey-00 group-hover:text-grey-100 relative size-6 bg-transparent transition-colors ease-in-out"
+                    className="group-hover:text-grey-100 relative size-6 text-transparent transition-colors ease-in-out"
                   />
                 </div>
               </EditTable>
@@ -281,7 +281,7 @@ function TableDetailFields({
                   field={cell.row.original}
                   linksToThisTable={linksToThisTable}
                 >
-                  <div className="text-grey-00 group-hover:text-grey-100 group-hover:bg-grey-02 group-hover:border-grey-50 group-hover:hover:bg-grey-05 group-hover:active:bg-grey-10 relative cursor-pointer rounded border bg-transparent p-2 transition-colors ease-in-out">
+                  <div className="group-hover:text-grey-100 group-hover:bg-grey-02 group-hover:border-grey-50 group-hover:hover:bg-grey-05 group-hover:active:bg-grey-10 relative cursor-pointer rounded border p-2 text-transparent transition-colors ease-in-out">
                     <Icon icon="edit" className="size-6" />
                   </div>
                 </EditField>

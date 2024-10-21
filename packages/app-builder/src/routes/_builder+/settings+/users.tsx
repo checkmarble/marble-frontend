@@ -113,7 +113,7 @@ export default function Users() {
               size: 50,
               cell: ({ cell }) => {
                 return (
-                  <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
+                  <div className="group-hover:text-grey-100 flex gap-2 text-transparent">
                     {isEditUserAvailable ? (
                       <UpdateUser
                         user={cell.row.original}

@@ -93,7 +93,7 @@ export default function ApiKeys() {
               size: 100,
               cell: ({ cell }) => {
                 return (
-                  <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
+                  <div className="group-hover:text-grey-100 flex gap-2 text-transparent">
                     <DeleteApiKey apiKey={cell.row.original} />
                   </div>
                 );

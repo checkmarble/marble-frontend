@@ -82,7 +82,7 @@ export default function Lists() {
                   value={value}
                 >
                   <button
-                    className="text-grey-00 group-hover:text-grey-100 transition-colors duration-200 ease-in-out"
+                    className="group-hover:text-grey-100 text-transparent transition-colors duration-200 ease-in-out"
                     name="delete"
                     tabIndex={-1}
                   >
