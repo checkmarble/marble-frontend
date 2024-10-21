@@ -265,7 +265,7 @@ export function useBottomOptions() {
       const { ast } = copyPasteAST;
       if (ast) {
         bottomOptions.push({
-          icon: 'clipboard-document',
+          icon: 'paste',
           label: t('common:paste'),
           onSelect: () => {
             onSave(ast);

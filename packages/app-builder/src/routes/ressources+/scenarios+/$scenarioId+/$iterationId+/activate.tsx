@@ -270,7 +270,7 @@ function ActivateScenarioVersionContent({
               </Button>
             </Modal.Close>
             <Button className="flex-1" variant="primary" type="submit">
-              <Icon icon="play" className="size-6" />
+              <Icon icon="pushtolive" className="size-6" />
               {t('scenarios:deployment_modal.activate.button')}
             </Button>
           </div>

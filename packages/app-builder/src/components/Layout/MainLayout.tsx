@@ -1,5 +1,4 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import clsx from 'clsx';
 import * as React from 'react';
 import { Icon } from 'ui-icons';
 
@@ -32,14 +31,10 @@ export function ToggleHeader() {
   return (
     <SidebarButton
       onClick={toggleExpanded}
-      labelTKey={expanded ? 'navigation:collapsed' : 'navigation:expanded'}
-      Icon={({ className, ...props }) => (
+      labelTKey={expanded ? 'navigation:collapse' : 'navigation:expand'}
+      Icon={(props) => (
         <Icon
-          icon="arrow-right"
-          className={clsx(
-            'transition-transform group-aria-expanded/nav:rotate-180',
-            className,
-          )}
+          icon={expanded ? 'left-panel-close' : 'left-panel-open'}
           {...props}
         />
       )}

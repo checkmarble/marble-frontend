@@ -7,7 +7,7 @@ export function CopyPivotValue({ children }: { children: React.ReactNode }) {
         {children}
       </span>
       <Icon
-        icon="duplicate"
+        icon="copy"
         className="group-hover:text-grey-100 size-4 shrink-0 text-transparent transition-colors"
       />
     </div>
