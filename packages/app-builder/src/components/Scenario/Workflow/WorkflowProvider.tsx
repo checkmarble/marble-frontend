@@ -298,8 +298,10 @@ export function useNodes() {
 }
 
 export function useNodeData(nodeId: string) {
-  return useWorkflowStore(
-    (state) => state.nodes.find((node) => node.id === nodeId)?.data,
+  const nodes = useNodes();
+  return React.useMemo(
+    () => nodes.find((node) => node.id === nodeId)?.data,
+    [nodes, nodeId],
   );
 }
 
@@ -312,13 +314,15 @@ const nonConnectableNodeDataTypes: NodeData['type'][] = [
   'create-case',
 ];
 export function useIsSourceConnectable({ nodeId }: { nodeId: string }) {
-  return useWorkflowStore((state) => {
-    const nodeType = state.nodes.find((node) => node.id === nodeId)?.data.type;
+  const nodeData = useNodeData(nodeId);
+  const nodeType = nodeData?.type;
+  const edges = useEdges();
+  return React.useMemo(() => {
     if (nodeType && nonConnectableNodeDataTypes.includes(nodeType)) {
       return false;
     }
-    return !state.edges.some((edge) => edge.source === nodeId);
-  });
+    return !edges.some((edge) => edge.source === nodeId);
+  }, [nodeType, edges, nodeId]);
 }
 
 export function useSelectedNodes() {
@@ -349,7 +353,7 @@ export function useWorkflowActions() {
 }
 
 export function useValidationPayload() {
-  return useWorkflowStore((state) =>
-    validateWorkflow(state.nodes, state.edges),
-  );
+  const nodes = useNodes();
+  const edges = useEdges();
+  return React.useMemo(() => validateWorkflow(nodes, edges), [edges, nodes]);
 }
