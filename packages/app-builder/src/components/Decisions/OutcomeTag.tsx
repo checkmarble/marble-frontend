@@ -54,7 +54,7 @@ export function OutcomeTag({
   );
 }
 
-export const OutcomePanel = ({ outcome }: { outcome: Outcome }) => {
+export function OutcomePanel({ outcome }: { outcome: Outcome }) {
   const { t } = useTranslation(decisionsI18n);
   const { color, tKey } = outcomeMapping[outcome] ?? outcomeMapping.unknown;
 
@@ -95,4 +95,4 @@ export const OutcomePanel = ({ outcome }: { outcome: Outcome }) => {
       </div>
     </div>
   );
-};
+}

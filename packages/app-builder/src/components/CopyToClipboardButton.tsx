@@ -17,7 +17,7 @@ export const CopyToClipboardButton = forwardRef<
       {...props}
     >
       {children}
-      <Icon icon="duplicate" className="size-4 shrink-0" />
+      <Icon icon="copy" className="size-4 shrink-0" />
     </div>
   );
 });
