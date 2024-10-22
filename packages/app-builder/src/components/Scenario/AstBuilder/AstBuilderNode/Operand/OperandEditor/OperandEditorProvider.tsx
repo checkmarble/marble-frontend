@@ -101,7 +101,7 @@ export function OperandEditorProvider({
           });
         },
         onEditSave(astNode) {
-          onSave(astNode);
+          onSaveCallbackRef(astNode);
           set({
             editModalOpen: false,
           });
