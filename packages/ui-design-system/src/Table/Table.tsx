@@ -82,7 +82,7 @@ function Header<TData extends RowData>({
                 <th
                   colSpan={header.colSpan}
                   key={header.id}
-                  className="bg-grey-02 border-grey-10 w-0 border-b"
+                  className="bg-grey-00 border-grey-10 w-0 border-b"
                 ></th>
               );
             }
