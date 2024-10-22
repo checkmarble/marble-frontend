@@ -217,7 +217,7 @@ export default function WorkflowsPage() {
                         <Table.Row
                           key={row.id}
                           tabIndex={0}
-                          className="hover:bg-grey-02 relative cursor-pointer"
+                          className="hover:bg-purple-05 cursor-pointer"
                           row={row}
                         />
                       );

@@ -189,7 +189,9 @@ export default function Inbox() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx('hover:bg-grey-02 cursor-pointer')}
+                      className={clsx(
+                        'hover:bg-purple-05 group cursor-pointer',
+                      )}
                       row={row}
                     />
                   );

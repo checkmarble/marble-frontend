@@ -308,7 +308,11 @@ function TableDetailFields({
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => (
-          <Table.Row key={row.id} className="mb-4 break-words" row={row} />
+          <Table.Row
+            key={row.id}
+            className="group mb-4 break-words"
+            row={row}
+          />
         ))}
       </Table.Body>
     </Table.Container>

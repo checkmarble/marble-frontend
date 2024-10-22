@@ -96,7 +96,7 @@ export function CasesList({
           return (
             <Table.Row
               key={row.id}
-              className={clsx('hover:bg-grey-02 cursor-pointer')}
+              className={clsx('hover:bg-purple-05 cursor-pointer')}
               row={row}
               onClick={() => {
                 navigate(

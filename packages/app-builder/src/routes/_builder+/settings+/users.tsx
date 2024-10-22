@@ -169,7 +169,7 @@ export default function Users() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx('hover:bg-grey-02')}
+                      className={clsx('hover:bg-purple-05 group')}
                       row={row}
                     />
                   );
