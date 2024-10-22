@@ -100,7 +100,7 @@ export default function ListsPage() {
                 {rows.map((row) => (
                   <Table.Row
                     key={row.id}
-                    className="hover:bg-grey-02 cursor-pointer"
+                    className="hover:bg-purple-05 cursor-pointer"
                     row={row}
                     onClick={() => {
                       navigate(

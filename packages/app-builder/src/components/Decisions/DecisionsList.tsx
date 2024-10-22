@@ -299,7 +299,7 @@ export function DecisionsList({
             <Table.Row
               key={row.id}
               tabIndex={0}
-              className={clsx('hover:bg-grey-02 relative cursor-pointer')}
+              className={clsx('hover:bg-purple-05 relative cursor-pointer')}
               row={row}
             />
           );

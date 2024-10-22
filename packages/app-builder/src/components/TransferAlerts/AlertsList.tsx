@@ -213,7 +213,7 @@ function AlertsListTable({
               key={row.id}
               tabIndex={0}
               className={clsx(
-                'hover:bg-grey-02 relative cursor-pointer',
+                'hover:bg-purple-05 relative cursor-pointer',
                 bgClassName,
               )}
               row={row}

@@ -50,7 +50,7 @@ function TableTH<TData extends RowData, TValue>({
       colSpan={header.colSpan}
       style={{ width: header.getSize() }}
       className={clsx(
-        'bg-grey-02 border-grey-10 relative h-12 w-full border-b border-r px-4 last:border-r-0',
+        'border-grey-10 bg-grey-00 relative h-12 w-full border-b border-r px-4 last:border-r-0',
         {
           'cursor-pointer select-none': header.column.getCanSort(),
         },
@@ -258,24 +258,21 @@ function Row<TData extends RowData>({
 }: Omit<React.ComponentProps<'tr'>, 'children'> & { row: Row<TData> }) {
   return (
     // Scale-100 is a hack to bypass relative bug on <tr /> for Safari https://bugs.webkit.org/show_bug.cgi?id=240961
-    <tr className={clsx('group relative h-16 scale-100', className)} {...props}>
+    <tr
+      className={clsx('even:bg-grey-02 relative h-12 scale-100', className)}
+      {...props}
+    >
       {row.getVisibleCells().map((cell) => {
         const context = cell.getContext();
         if (context.column.id === internalRowLink) {
           return (
-            <td
-              key={cell.id}
-              className="border-grey-10 border-b group-last:border-b-0"
-            >
+            <td key={cell.id}>
               {flexRender(cell.column.columnDef.cell, context)}
             </td>
           );
         }
         return (
-          <td
-            key={cell.id}
-            className="border-grey-10 text-s w-full border-b px-4 font-normal group-last:border-b-0"
-          >
+          <td key={cell.id} className="text-s w-full px-4 font-normal">
             {flexRender(cell.column.columnDef.cell, context)}
           </td>
         );

@@ -100,7 +100,7 @@ export default function Inbox() {
               size: 100,
               cell: ({ cell }) => {
                 return (
-                  <div className="text-grey-00 group-hover:text-grey-100 flex gap-2">
+                  <div className="group-hover:text-grey-100 flex gap-2 text-transparent">
                     {isEditInboxUserAvailable ? (
                       <UpdateInboxUser
                         inboxUser={cell.row.original}
@@ -189,7 +189,9 @@ export default function Inbox() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx('hover:bg-grey-02 cursor-pointer')}
+                      className={clsx(
+                        'hover:bg-purple-05 group cursor-pointer',
+                      )}
                       row={row}
                     />
                   );
