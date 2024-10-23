@@ -27,6 +27,7 @@ jobs:
       actions: read
     environment: ${{ inputs.environment }}
     env:
+      VERSION: ${{ inputs.version }}
       IMAGE: europe-west1-docker.pkg.dev/marble-infra/marble/marble-frontend:${{ inputs.version }}
       SERVICE_ACCOUNT: marble-frontend-cloud-run@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
     steps:
@@ -68,6 +69,7 @@ jobs:
             "SENTRY_ORG=${{ env.SENTRY_ORG }}"
             "SENTRY_PROJECT=${{ env.SENTRY_PROJECT }}"
             "SENTRY_RELEASE=${{ env.SENTRY_RELEASE }}"
+            "VERSION"=${{ env.VERSION }}
           secrets: |
             "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
 

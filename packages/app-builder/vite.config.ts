@@ -43,10 +43,25 @@ if (!isVitest) {
   );
 }
 if (isSentryConfigured) {
+  const version = process.env['VERSION'];
+  const name =
+    version && /v\d+\.\d+\.\d+/.test(version)
+      ? version
+      : process.env['COMMIT_SHA'];
+
   plugins.push(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     sentryVitePlugin({
       telemetry: false,
+      release: {
+        name,
+        setCommits: {
+          auto: true,
+        },
+      },
+      sourcemaps: {
+        filesToDeleteAfterUpload: ['./build/**/*.map'],
+      },
     }),
   );
 }
