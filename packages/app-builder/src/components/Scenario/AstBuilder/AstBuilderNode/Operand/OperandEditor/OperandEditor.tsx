@@ -32,6 +32,7 @@ import { OperandEditorDiscoveryResults } from './OperandEditorDiscoveryResults';
 import {
   OperandEditorProvider,
   useBottomOptions,
+  useDiscoveryResults,
   useOperandEditorActions,
   useOperandEditorOpen,
   useSearchValue,
@@ -103,6 +104,7 @@ function OperandEditorContent() {
 
   const bottomOptions = useBottomOptions();
   const searchValue = useSearchValue();
+  const discoveryResults = useDiscoveryResults();
 
   return (
     <>
@@ -119,7 +121,9 @@ function OperandEditorContent() {
       <MenuContent>
         <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pr-[calc(0.5rem-var(--scrollbar-width))]">
           {searchValue === '' ? (
-            <OperandEditorDiscoveryResults />
+            <OperandEditorDiscoveryResults
+              discoveryResults={discoveryResults}
+            />
           ) : (
             <OperandEditorSearchResults />
           )}

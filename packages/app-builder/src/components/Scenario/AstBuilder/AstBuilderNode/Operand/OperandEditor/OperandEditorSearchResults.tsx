@@ -1,11 +1,13 @@
 import { scenarioI18n } from '@app-builder/components';
+import { matchSorter } from 'match-sorter';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MenuGroup, MenuGroupLabel } from 'ui-design-system';
 
 import {
-  useCoercedConstantOptions,
-  useMatchOptions,
+  useCoerceToConstant,
   useOperandEditorActions,
+  useOptions,
   useSearchValue,
 } from './OperandEditorProvider';
 import { CoercedConstantOption, OperandOption } from './OperandMenuItem';
@@ -13,9 +15,34 @@ import { CoercedConstantOption, OperandOption } from './OperandMenuItem';
 export function OperandEditorSearchResults() {
   const { t } = useTranslation(scenarioI18n);
   const searchValue = useSearchValue();
-  const constantOptions = useCoercedConstantOptions();
-  const matchOptions = useMatchOptions();
   const { onOptionClick } = useOperandEditorActions();
+
+  const coerceToConstant = useCoerceToConstant();
+  const constantOptions = React.useMemo(() => {
+    return (
+      coerceToConstant?.(searchValue).map((option) => ({
+        key: `${option.displayName}-${option.dataType}`,
+        ...option,
+        onClick: () => {
+          onOptionClick(option.astNode);
+        },
+      })) ?? []
+    );
+  }, [coerceToConstant, onOptionClick, searchValue]);
+
+  const options = useOptions();
+  const matchOptions = React.useMemo(() => {
+    return matchSorter(options, searchValue, {
+      keys: ['displayName'],
+    }).map((option) => ({
+      key: `${option.displayName}-${option.dataType}-${option.operandType}`,
+      ...option,
+      searchValue,
+      onClick: () => {
+        onOptionClick(option.astNode);
+      },
+    }));
+  }, [onOptionClick, options, searchValue]);
 
   return (
     <>
@@ -23,14 +50,7 @@ export function OperandEditorSearchResults() {
         <MenuGroup className="flex w-full flex-col gap-1">
           <MenuGroupLabel className="sr-only">Constants</MenuGroupLabel>
           {constantOptions.map((constant) => (
-            <CoercedConstantOption
-              key={constant.displayName}
-              displayName={constant.displayName}
-              dataType={constant.dataType}
-              onClick={() => {
-                onOptionClick(constant.astNode);
-              }}
-            />
+            <CoercedConstantOption {...constant} key={constant.key} />
           ))}
         </MenuGroup>
       ) : null}
@@ -48,17 +68,7 @@ export function OperandEditorSearchResults() {
           </span>
         </div>
         {matchOptions.map((option) => (
-          <OperandOption
-            key={option.displayName}
-            searchValue={searchValue}
-            astNode={option.astNode}
-            dataType={option.dataType}
-            operandType={option.operandType}
-            displayName={option.displayName}
-            onClick={() => {
-              onOptionClick(option.astNode);
-            }}
-          />
+          <OperandOption {...option} key={option.key} />
         ))}
       </MenuGroup>
     </>
