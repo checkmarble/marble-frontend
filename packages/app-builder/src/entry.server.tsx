@@ -144,13 +144,47 @@ Sentry.init({
   dsn: getServerEnv('SENTRY_DSN'),
   environment: getServerEnv('SENTRY_ENVIRONMENT'),
   integrations: [Sentry.httpIntegration(), Sentry.requestDataIntegration()],
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 0.5,
+  denyUrls: [
+    /\/healthcheck/,
+    /\/build\//,
+    /\/favicons\//,
+    /\/images\//,
+    /\/fonts\//,
+    /\/apple-touch-.*/,
+    /\/robots.txt/,
+    /\/favicon.ico/,
+    /\/site\.webmanifest/,
+  ],
+  // This function is called for every transaction.
+  // It should return a number between 0.0 and 1.0 to determine the sample rate.
+  // The `samplingContext` contains information about the transaction.
+  // For example, you could use the transaction name to decide the sample rate.
+  tracesSampler(samplingContext) {
+    if (samplingContext.request?.url?.includes('healthcheck')) {
+      return 0;
+    }
+    if (
+      [
+        'routes/ressources+/auth+/refresh',
+        'routes/ressources+/auth+/logout',
+        'routes/_auth+/sign-in',
+        'routes/ressources+/locales',
+        'routes/app-router',
+      ].includes(samplingContext.name)
+    ) {
+      return 0.01;
+    }
+
+    return 0.2;
+  },
 });
 
 export const handleError: HandleErrorFunction = (error, { request }) => {
+  // Skip capturing if the request is aborted as Remix docs suggest
+  // Ref: https://remix.run/docs/en/main/file-conventions/entry.server#handleerror
+  if (request.signal.aborted) {
+    return;
+  }
   if (error instanceof Error) {
     void Sentry.captureRemixServerException(error, 'remix.server', request);
   } else {

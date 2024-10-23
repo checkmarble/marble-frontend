@@ -25,13 +25,20 @@ Sentry.init({
       console.error(hint.originalException || hint.syntheticException);
       return null; // this drops the event and nothing will be sent to sentry
     }
+    if (isBrowserExtensionError(hint.originalException)) {
+      return null;
+    }
     return event;
   },
+  ignoreErrors: [
+    // Add any other errors you want to ignore
+    "NotSupportedError: Failed to execute 'define' on 'CustomElementRegistry': the name \"chatlio-widget\" has already been used with this registry",
+  ],
 
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.
   // We recommend adjusting this value in production
-  tracesSampleRate: 0.5,
+  tracesSampleRate: 0.2,
 
   // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
   tracePropagationTargets: [
@@ -44,6 +51,16 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
 });
+
+function isBrowserExtensionError(exception: unknown): boolean {
+  if (exception instanceof Error && exception.stack) {
+    const extensionPattern =
+      /chrome-extension:|moz-extension:|extensions|anonymous scripts/;
+    return extensionPattern.test(exception.stack);
+  }
+
+  return false;
+}
 
 async function hydrate() {
   const { i18nextClientService } = clientServices;
