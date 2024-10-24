@@ -59,7 +59,7 @@ export function CaseStatus({
       <div
         className={cx(
           caseStatusVariants({ color, variant: 'contained' }),
-          'text-s flex size-6 shrink-0 items-center justify-center rounded font-semibold capitalize',
+          'text-s flex shrink-0 items-center justify-center rounded font-semibold capitalize',
           className,
         )}
       >

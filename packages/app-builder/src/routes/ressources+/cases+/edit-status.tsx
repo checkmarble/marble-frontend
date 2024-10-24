@@ -132,7 +132,7 @@ export function EditCaseStatus({
                     event.preventDefault();
                   }}
                 >
-                  <CaseStatus status={nextStatus.value} />
+                  <CaseStatus className="size-6" status={nextStatus.value} />
                   <span className="text-s text-grey-100 first-letter:capitalize">
                     {nextStatus.label}
                   </span>

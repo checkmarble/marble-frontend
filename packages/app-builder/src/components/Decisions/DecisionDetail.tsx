@@ -52,7 +52,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
           <DetailLabel>{t('decisions:case')}</DetailLabel>
           {caseDetail ? (
             <div className="flex w-fit flex-row items-center justify-center gap-1 align-baseline">
-              <CaseStatus status={caseDetail.status} />
+              <CaseStatus className="size-6" status={caseDetail.status} />
               <Link
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUID(caseDetail.id),

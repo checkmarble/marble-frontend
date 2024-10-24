@@ -82,7 +82,7 @@ function Header<TData extends RowData>({
                 <th
                   colSpan={header.colSpan}
                   key={header.id}
-                  className="bg-grey-02 border-grey-10 w-0 border-b"
+                  className="bg-grey-00 border-grey-10 w-0 border-b"
                 ></th>
               );
             }
@@ -97,22 +97,24 @@ function Header<TData extends RowData>({
                       asc: <Icon icon="arrow-2-up" className="size-6" />,
                       desc: <Icon icon="arrow-2-down" className="size-6" />,
                     }[header.column.getIsSorted() as string] ?? null}
-                    <div
-                      className={clsx(
-                        'hover:bg-grey-10 active:bg-grey-50 absolute right-0 h-full w-1 cursor-col-resize touch-none select-none',
-                        // Hack to take scroll bar into account
-                        index === headerGroup.headers.length - 1 && 'right-2',
-                      )}
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                      }}
-                      onDoubleClick={() => {
-                        header.column.resetSize();
-                      }}
-                      aria-hidden="true"
-                    />
+                    {header.column.getCanResize() ? (
+                      <div
+                        className={clsx(
+                          'hover:bg-grey-10 active:bg-grey-50 absolute right-0 h-full w-1 cursor-col-resize touch-none select-none',
+                          // Hack to take scroll bar into account
+                          index === headerGroup.headers.length - 1 && 'right-2',
+                        )}
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                        }}
+                        onDoubleClick={() => {
+                          header.column.resetSize();
+                        }}
+                        aria-hidden="true"
+                      />
+                    ) : null}
                   </div>
                 )}
               </Table.TH>
