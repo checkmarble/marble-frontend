@@ -4,18 +4,21 @@ import {
   type ConstantType,
   type DataType,
   type EditableAstNode,
+  isDatabaseAccess,
   isEditableAstNode,
+  isPayload,
   isUndefinedAstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
 import { type OperandType } from '@app-builder/models/operand-type';
 import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
+import { useTriggerObjectTable } from '@app-builder/services/editor/options';
 import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { type IconName } from 'ui-icons';
 import { createStore, type StoreApi, useStore } from 'zustand';
 
@@ -217,6 +220,10 @@ export function useOptions() {
   return useOperandEditorStore((state) => state.options);
 }
 
+export function useCoerceToConstant() {
+  return useOperandEditorStore((state) => state.coerceToConstant);
+}
+
 export function useBottomOptions() {
   const { t } = useTranslation(['common', 'scenarios']);
   // Local copy of the astNode to avoid the content to flicker during closing animation
@@ -278,20 +285,39 @@ export function useBottomOptions() {
   }, [copyPasteAST, initialAstNode, onEdit, onSave, t]);
 }
 
-export function useMatchOptions() {
-  const searchValue = useSearchValue();
-  const options = useOperandEditorStore((state) => state.options);
+export function useDiscoveryResults() {
+  const options = useOptions();
+  const triggerObjectTable = useTriggerObjectTable();
   return React.useMemo(() => {
-    return matchSorter(options, searchValue, {
-      keys: ['displayName'],
-    });
-  }, [searchValue, options]);
-}
+    return R.pipe(
+      options,
+      R.groupBy((option) => option.operandType),
+      ({ Enum, CustomList, Function, Field }) => {
+        const fieldOptions = Field
+          ? R.pipe(
+              Field,
+              R.groupBy((option) => {
+                if (isDatabaseAccess(option.astNode)) {
+                  const { path, tableName } = option.astNode.namedChildren;
+                  return [tableName.constant, ...path.constant].join('.');
+                }
+                if (isPayload(option.astNode)) {
+                  return triggerObjectTable.name;
+                }
+              }),
+              R.mapValues((value) => R.sortBy(value, R.prop('displayName'))),
+              R.entries(),
+              R.sortBy(([path]) => path),
+            )
+          : [];
 
-export function useCoercedConstantOptions() {
-  const searchValue = useSearchValue();
-  const coerceToConstant = useOperandEditorStore(
-    (state) => state.coerceToConstant,
-  );
-  return coerceToConstant?.(searchValue) ?? [];
+        return {
+          enumOptions: Enum ?? [],
+          fieldOptions,
+          customListOptions: CustomList ?? [],
+          functionOptions: Function ?? [],
+        };
+      },
+    );
+  }, [options, triggerObjectTable.name]);
 }

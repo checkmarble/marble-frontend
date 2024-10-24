@@ -1,20 +1,12 @@
-import {
-  type AstNode,
-  type DataType,
-  isDatabaseAccess,
-  isPayload,
-} from '@app-builder/models';
+import { type AstNode, type DataType } from '@app-builder/models';
 import {
   getOperandTypeIcon,
   getOperandTypeTKey,
   type OperandType,
 } from '@app-builder/models/operand-type';
-import { useTriggerObjectTable } from '@app-builder/services/editor/options';
 import * as Ariakit from '@ariakit/react';
 import clsx from 'clsx';
-import { type FunctionComponent, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import * as R from 'remeda';
 import {
   MenuContent,
   MenuGroup,
@@ -25,58 +17,99 @@ import {
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { useOperandEditorActions, useOptions } from './OperandEditorProvider';
+import { useOperandEditorActions } from './OperandEditorProvider';
 import { OperandOption } from './OperandMenuItem';
 
-type GroupGetter = FunctionComponent<{
-  operandType: OperandType;
-  options: {
-    astNode: AstNode;
-    displayName: string;
-    dataType: DataType;
-    operandType: OperandType;
-  }[];
-  onClick: (option: AstNode) => void;
-}>;
-
-/**
- * Organize the options into groups and subgroups
- * - Key order is used to determine the order of the groups in the UI
- * - GroupGetter is used to display the options in each group
- */
-type OperandEditorDiscoveryResultsConfig = Partial<
-  Record<OperandType, GroupGetter>
->;
-
 interface OperandEditorDiscoveryResultsProps {
-  discoveryResultsConfig?: OperandEditorDiscoveryResultsConfig;
+  discoveryResults: {
+    enumOptions: {
+      astNode: AstNode;
+      displayName: string;
+      dataType: DataType;
+      operandType: OperandType;
+    }[];
+    fieldOptions: [
+      string,
+      {
+        astNode: AstNode;
+        displayName: string;
+        dataType: DataType;
+        operandType: OperandType;
+      }[],
+    ][];
+    customListOptions: {
+      astNode: AstNode;
+      displayName: string;
+      dataType: DataType;
+      operandType: OperandType;
+    }[];
+    functionOptions: {
+      astNode: AstNode;
+      displayName: string;
+      dataType: DataType;
+      operandType: OperandType;
+    }[];
+  };
 }
 
 export function OperandEditorDiscoveryResults({
-  discoveryResultsConfig = defaultDiscoveryResultsConfig,
+  discoveryResults: {
+    enumOptions,
+    fieldOptions,
+    customListOptions,
+    functionOptions,
+  },
 }: OperandEditorDiscoveryResultsProps) {
-  const options = useOptions();
   const { onOptionClick } = useOperandEditorActions();
-  const optionsGroups = useMemo(() => {
-    return R.pipe(
-      options,
-      R.groupBy((option) => option.operandType),
-    );
-  }, [options]);
 
-  return R.pipe(
-    discoveryResultsConfig,
-    R.entries(),
-    R.map(([operandType, Getter]) => {
-      return (
-        <Getter
-          key={operandType}
-          operandType={operandType}
-          options={optionsGroups[operandType] ?? []}
-          onClick={onOptionClick}
-        />
-      );
-    }),
+  return (
+    <>
+      {enumOptions.length > 0 ? (
+        <Submenu options={enumOptions} onClick={onOptionClick}>
+          <OperandDiscoveryTitle
+            operandType="Enum"
+            count={enumOptions.length}
+          />
+        </Submenu>
+      ) : null}
+
+      {fieldOptions.length > 0 ? (
+        <MenuGroup className="flex w-full flex-col">
+          <OperandDiscoveryTitle
+            operandType="Field"
+            count={fieldOptions.reduce(
+              (acc, [_, subOptions]) => acc + subOptions.length,
+              0,
+            )}
+            className="min-h-10 p-2"
+            renderLabel={<MenuGroupLabel render={<span />} />}
+          />
+          {fieldOptions.map(([path, subOptions]) => (
+            <Submenu key={path} options={subOptions} onClick={onOptionClick}>
+              <FieldByPathLabel path={path} count={subOptions.length} />
+            </Submenu>
+          ))}
+        </MenuGroup>
+      ) : null}
+
+      {customListOptions.length > 0 ? (
+        <Submenu options={customListOptions} onClick={onOptionClick}>
+          <OperandDiscoveryTitle
+            operandType="CustomList"
+            count={customListOptions.length}
+          />
+        </Submenu>
+      ) : null}
+
+      {functionOptions.length > 0 ? (
+        <Submenu options={functionOptions} onClick={onOptionClick}>
+          <OperandDiscoveryTitle
+            operandType="Function"
+            count={functionOptions.length}
+          />
+        </Submenu>
+      ) : null}
+    </>
   );
 }
 
@@ -123,57 +156,6 @@ function Submenu({
     </SubMenuRoot>
   );
 }
-
-const FlatGroupGetter: GroupGetter = ({ operandType, options, onClick }) => {
-  const count = options.length;
-
-  if (count === 0) return null;
-
-  return (
-    <Submenu options={options} onClick={onClick}>
-      <OperandDiscoveryTitle operandType={operandType} count={count} />
-    </Submenu>
-  );
-};
-
-const FieldGroupGetter: GroupGetter = ({ operandType, options, onClick }) => {
-  const triggerObjectTable = useTriggerObjectTable();
-  const fieldByPathOptions = useMemo(() => {
-    return R.pipe(
-      options,
-      R.groupBy((option) => {
-        if (isDatabaseAccess(option.astNode)) {
-          const { path, tableName } = option.astNode.namedChildren;
-          return [tableName.constant, ...path.constant].join('.');
-        }
-        if (isPayload(option.astNode)) {
-          return triggerObjectTable.name;
-        }
-      }),
-      R.mapValues((value) => R.sortBy(value, (o) => o.displayName)),
-      R.entries(),
-    );
-  }, [options, triggerObjectTable.name]);
-
-  const count = options.length;
-  if (count === 0) return null;
-
-  return (
-    <MenuGroup className="flex w-full flex-col">
-      <OperandDiscoveryTitle
-        operandType={operandType}
-        count={count}
-        className="min-h-10 p-2"
-        renderLabel={<MenuGroupLabel render={<span />} />}
-      />
-      {fieldByPathOptions.map(([path, subOptions]) => (
-        <Submenu key={path} options={subOptions} onClick={onClick}>
-          <FieldByPathLabel path={path} count={subOptions.length} />
-        </Submenu>
-      ))}
-    </MenuGroup>
-  );
-};
 
 function OperandDiscoveryTitle({
   operandType,
@@ -237,10 +219,3 @@ function FieldByPathLabel({ path, count }: { path: string; count: number }) {
     </span>
   );
 }
-
-const defaultDiscoveryResultsConfig: OperandEditorDiscoveryResultsConfig = {
-  Enum: FlatGroupGetter,
-  Field: FieldGroupGetter,
-  CustomList: FlatGroupGetter,
-  Function: FlatGroupGetter,
-};
