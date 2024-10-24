@@ -11,7 +11,6 @@
     "type-check": "pnpm exec tsc --noEmit",
     "dev": "remix vite:dev",
     "build": "remix vite:build",
-    "build-with-sourcemaps": "remix vite:build --sourcemap && sentry-upload-sourcemaps --org checkmarble --project marble-frontend",
     "start": "remix-serve ./build/server/index.js",
     "generate-routes": "source scripts/generateRoutes.sh && tsx scripts/generateRoutes.ts"
   },
