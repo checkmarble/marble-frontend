@@ -57,7 +57,7 @@ jobs:
           build-args: |
             SENTRY_ORG=checkmarble
             SENTRY_PROJECT=marble-frontend
-            VERSION=${{ env.VERSION }}
+            SENTRY_RELEASE=${{ env.GITHUB_SHA }}
           secrets: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 
