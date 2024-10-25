@@ -1,6 +1,6 @@
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import { useMemo } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
@@ -16,7 +16,7 @@ export const TriggerObjectDetail = ({
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
 
-  const parsedTriggerObject = useMemo(
+  const parsedTriggerObject = React.useMemo(
     () => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.entries()),
     [triggerObject],
   );
@@ -27,13 +27,12 @@ export const TriggerObjectDetail = ({
         {t('decisions:trigger_object.type')}
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-[max-content_1fr] gap-2 break-all">
           {parsedTriggerObject.map(([property, data]) => (
-            <div key={property}>
-              <span className="font-semibold capitalize">{property}:</span>
-              &nbsp;
+            <React.Fragment key={property}>
+              <span className="font-semibold capitalize">{property}</span>
               <FormatData data={data} language={language} />
-            </div>
+            </React.Fragment>
           ))}
         </div>
       </Collapsible.Content>
