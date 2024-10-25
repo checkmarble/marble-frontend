@@ -1,6 +1,6 @@
 node_modules
 
-**/.git
+**/.github
 **/.gitignore
 **/.vscode
 **/coverage
@@ -8,6 +8,8 @@ node_modules
 **/.aws
 **/.ssh
 Dockerfile
+Dockerfile_local
+.dockerignore
 README.md
 docker-compose.yml
 **/.DS_Store

@@ -7,16 +7,15 @@ ARG SENTRY_ORG
 ENV SENTRY_ORG=$SENTRY_ORG
 ARG SENTRY_PROJECT
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
-ARG SENTRY_RELEASE
-ENV SENTRY_RELEASE=$SENTRY_RELEASE
+ARG VERSION
+ENV VERSION=$VERSION
 RUN apt-get update
 RUN apt-get -y install ca-certificates
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 RUN pnpm install --frozen-lockfile
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
-      SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) && \
-      export SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN && \
+      export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) && \
       pnpm --filter=app-builder run build
 ENV NODE_ENV=production
 RUN pnpm --filter=app-builder --prod deploy /prod/app-builder
