@@ -14,7 +14,7 @@ import { Temporal } from 'temporal-polyfill';
  * This is a workaround for the fact we do not allow the user to change the data format.
  * Since we do not store the user's language preferences, we use the browser's language.
  *
- * Note: Prefered translation language and data format language are not mandatory the same.
+ * Note: Prefered translation language and data format language are not necessarily the same.
  * You can have a user with a prefered language in 'en-US' but the data format in 'fr-FR' (for DateTime, Number, etc).
  *
  * This introduce hydration issues for non 'fr-FR' browsers, as the language is not available on the server.
