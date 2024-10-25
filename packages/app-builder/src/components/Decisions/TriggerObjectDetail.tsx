@@ -30,7 +30,7 @@ export const TriggerObjectDetail = ({
         <div className="grid grid-cols-[max-content_1fr] gap-2 break-all">
           {parsedTriggerObject.map(([property, data]) => (
             <React.Fragment key={property}>
-              <span className="font-semibold capitalize">{property}</span>
+              <span className="font-semibold">{property}</span>
               <FormatData data={data} language={language} />
             </React.Fragment>
           ))}

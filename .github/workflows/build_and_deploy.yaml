@@ -55,11 +55,11 @@ jobs:
           tags: ${{ env.IMAGE }}
           file: ./Dockerfile
           build-args: |
-            SENTRY_ORG='checkmarble'
-            SENTRY_PROJECT='marble-frontend'
+            SENTRY_ORG=checkmarble
+            SENTRY_PROJECT=marble-frontend
             VERSION=${{ env.VERSION }}
           secrets: |
-            "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Auth
         uses: 'google-github-actions/auth@v2'
