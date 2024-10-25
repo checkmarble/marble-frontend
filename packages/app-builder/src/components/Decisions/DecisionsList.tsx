@@ -153,32 +153,25 @@ export function DecisionsList({
         header: t('decisions:scenario.name'),
         size: 200,
         cell: ({ getValue, row }) => (
-          <Link
-            to={getRoute('/scenarios/:scenarioId', {
-              scenarioId: fromUUID(row.original.scenario.id),
-            })}
-            onClick={(e) => e.stopPropagation()}
-            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
-          >
-            {getValue()}
-          </Link>
-        ),
-      }),
-      columnHelper.accessor((row) => row.scenario.version, {
-        id: 'scenario_version',
-        header: 'Vi',
-        size: 40,
-        cell: ({ getValue, row }) => (
-          <Link
-            to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
-              scenarioId: fromUUID(row.original.scenario.id),
-              iterationId: fromUUID(row.original.scenario.scenarioIterationId),
-            })}
-            onClick={(e) => e.stopPropagation()}
-            className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
-          >
-            {`V${getValue()}`}
-          </Link>
+          <div className="flex flex-row items-center gap-2">
+            <Tooltip.Default content={getValue()}>
+              <Link
+                to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
+                  scenarioId: fromUUID(row.original.scenario.id),
+                  iterationId: fromUUID(
+                    row.original.scenario.scenarioIterationId,
+                  ),
+                })}
+                onClick={(e) => e.stopPropagation()}
+                className="hover:text-purple-120 focus:text-purple-120 relative line-clamp-2 font-semibold text-purple-100 hover:underline focus:underline"
+              >
+                {getValue()}
+              </Link>
+            </Tooltip.Default>
+            <div className="border-grey-10 text-grey-100 rounded-full border px-3 py-1 font-semibold">
+              {`V${row.original.scenario.version}`}
+            </div>
+          </div>
         ),
       }),
       columnHelper.accessor((row) => row.triggerObjectType, {
@@ -192,20 +185,22 @@ export function DecisionsList({
         size: 150,
         cell: ({ getValue, row }) =>
           row.original.case ? (
-            <div className="flex w-fit flex-row items-center justify-center gap-1 align-baseline">
+            <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
               <CaseStatus
-                className="isolate"
+                className="isolate size-8"
                 status={row.original.case.status}
               />
-              <Link
-                to={getRoute('/cases/:caseId', {
-                  caseId: fromUUID(row.original.case.id),
-                })}
-                onClick={(e) => e.stopPropagation()}
-                className="hover:text-purple-120 focus:text-purple-120 relative font-semibold text-purple-100 hover:underline focus:underline"
-              >
-                {getValue()}
-              </Link>
+              <Tooltip.Default content={getValue()}>
+                <Link
+                  to={getRoute('/cases/:caseId', {
+                    caseId: fromUUID(row.original.case.id),
+                  })}
+                  onClick={(e) => e.stopPropagation()}
+                  className="hover:text-purple-120 focus:text-purple-120 relative line-clamp-2 font-semibold text-purple-100 hover:underline focus:underline"
+                >
+                  {getValue()}
+                </Link>
+              </Tooltip.Default>
             </div>
           ) : (
             <span className="bg-grey-02 text-grey-100 text-s flex h-8 w-fit items-center justify-center rounded px-2 font-normal">

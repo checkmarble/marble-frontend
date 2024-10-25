@@ -11,16 +11,22 @@ import { Temporal } from 'temporal-polyfill';
 /**
  * Get the language of the user's browser.
  *
- * This is a workaround for the fact that we only support en, and we want to format dates in the user's language.
+ * This is a workaround for the fact we do not allow the user to change the data format.
  * Since we do not store the user's language preferences, we use the browser's language.
  *
+ * Note: Prefered translation language and data format language are not necessarily the same.
+ * You can have a user with a prefered language in 'en-US' but the data format in 'fr-FR' (for DateTime, Number, etc).
+ *
  * This introduce hydration issues for non 'fr-FR' browsers, as the language is not available on the server.
- * We use a hook to ease the migration to a better solution.
+ * We use a hook to ease the migration to a better solution (like storing the user's data format language preferences).
+ *
+ * A frontend only solution could be to store the user's language preferences in the already existing language session cookie.
+ * We just need to add an interface to allow the user to change it.
  */
 export function useFormatLanguage() {
   return useMemo(
     () =>
-      typeof navigator === 'undefined'
+      typeof window === 'undefined'
         ? 'fr-FR'
         : (navigator?.languages[0] ?? 'fr-FR'),
     [],

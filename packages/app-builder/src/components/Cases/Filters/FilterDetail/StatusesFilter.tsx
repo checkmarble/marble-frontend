@@ -33,7 +33,7 @@ export function StatusesFilter() {
                 value={status.value}
                 className="align-baseline"
               >
-                <CaseStatus status={status.value} />
+                <CaseStatus className="size-6" status={status.value} />
                 <span className="text-grey-100 text-s font-normal first-letter:capitalize">
                   {status.label}
                 </span>
