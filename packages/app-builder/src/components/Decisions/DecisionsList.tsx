@@ -16,7 +16,7 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, Table, Tag, Tooltip, useTable } from 'ui-design-system';
+import { Checkbox, Table, Tooltip, useTable } from 'ui-design-system';
 
 import { OutcomeAndReviewStatus } from './OutcomeAndReviewStatus';
 import { Score } from './Score';
