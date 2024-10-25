@@ -55,19 +55,19 @@ jobs:
           tags: ${{ env.IMAGE }}
           file: ./Dockerfile
           build-args: |
-            "SENTRY_ORG=${{ env.SENTRY_ORG }}"
-            "SENTRY_PROJECT=${{ env.SENTRY_PROJECT }}"
-            "VERSION"=${{ env.VERSION }}
+            SENTRY_ORG='checkmarble'
+            SENTRY_PROJECT='marble-frontend'
+            VERSION=${{ env.VERSION }}
           secrets: |
             "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
 
       - name: Auth
-        uses: 'google-github-actions/auth@v1'
+        uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
       - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
+        uses: 'google-github-actions/setup-gcloud@v2'
         with:
           install_components: beta
 
