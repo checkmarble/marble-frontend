@@ -11,6 +11,10 @@ on:
         type: string
         description: 'version to deploy'
         required: true
+      SENTRY_RELEASE:
+        type: string
+        required: true
+        description: 'Sentry release name'
     secrets:
       GCP_SA_KEY:
         required: true
@@ -57,7 +61,7 @@ jobs:
           build-args: |
             SENTRY_ORG=checkmarble
             SENTRY_PROJECT=marble-frontend
-            SENTRY_RELEASE=${{ env.GITHUB_SHA }}
+            SENTRY_RELEASE=${{ inputs.SENTRY_RELEASE }}
           secrets: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 
