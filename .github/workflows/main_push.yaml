@@ -6,7 +6,7 @@ on:
       - main
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -25,6 +25,7 @@ jobs:
     with:
       environment: 'staging'
       version: latest
+      SENTRY_RELEASE: ${{ github.sha }}
     secrets:
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_STAGING }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
