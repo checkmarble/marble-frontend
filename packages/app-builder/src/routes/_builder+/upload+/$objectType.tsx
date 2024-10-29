@@ -1,4 +1,4 @@
-import { Callout, Page, Paper } from '@app-builder/components';
+import { Page, Paper } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
@@ -387,50 +387,54 @@ export default function Upload() {
   const { objectType, table, uploadLogs } = useLoaderData<typeof loader>();
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header>
         <Icon icon="upload" className="mr-2 size-6" />
         {t('upload:upload_cta', { replace: { objectType } })}
       </Page.Header>
-      <Page.Content>
-        <Callout className="whitespace-normal" variant="outlined">
-          <div className="leading-8">
-            <p className="whitespace-pre text-wrap">
-              <Trans
-                t={t}
-                i18nKey="upload:upload_callout_1"
-                components={{
-                  DocLink: <ExternalLink href={ingestingDataByCsvDocHref} />,
-                }}
-                values={{ objectType }}
-              />
-            </p>
-            <p>{t('upload:upload_callout_2')}</p>
+      <Page.Container>
+        <Page.Description>
+          <p className="whitespace-pre text-wrap">
+            <Trans
+              t={t}
+              i18nKey="upload:upload_callout_1"
+              components={{
+                DocLink: <ExternalLink href={ingestingDataByCsvDocHref} />,
+              }}
+              values={{ objectType }}
+            />
+            <br />
+            {t('upload:upload_callout_2')}
+          </p>
+        </Page.Description>
+
+        <Page.Content>
+          <div className="flex">
+            <ClientOnly fallback={<LoadingButton />}>
+              {() => (
+                <a
+                  href={generateCsvTemplateLink(table)}
+                  download={`${objectType}_template.csv`}
+                  className={clsx(
+                    'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
+                    'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100',
+                  )}
+                >
+                  <Icon icon="download" className="mr-2 size-6" />
+                  {t('upload:download_template_cta')}
+                </a>
+              )}
+            </ClientOnly>
           </div>
-        </Callout>
-        <div className="flex">
-          <ClientOnly fallback={<LoadingButton />}>
-            {() => (
-              <a
-                href={generateCsvTemplateLink(table)}
-                download={`${objectType}_template.csv`}
-                className={clsx(
-                  'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
-                  'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100',
-                )}
-              >
-                <Icon icon="download" className="mr-2 size-6" />
-                {t('upload:download_template_cta')}
-              </a>
-            )}
+          <ClientOnly fallback={<Loading />}>
+            {() => <UploadForm objectType={objectType} />}
           </ClientOnly>
-        </div>
-        <ClientOnly fallback={<Loading />}>
-          {() => <UploadForm objectType={objectType} />}
-        </ClientOnly>
-        {uploadLogs.length > 0 ? <PastUploads uploadLogs={uploadLogs} /> : null}
-      </Page.Content>
-    </Page.Container>
+          {uploadLogs.length > 0 ? (
+            <PastUploads uploadLogs={uploadLogs} />
+          ) : null}
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
 

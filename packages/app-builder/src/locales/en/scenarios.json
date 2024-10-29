@@ -92,6 +92,7 @@
   "deployment_modal.deactivate.helper": "You can roll back to a previous version directly from the version page",
   "deployment_modal_success.deactivate.title": "Version deactivated",
   "deployment_modal_success.deactivate.description": "The live version has been successfully deactivated, the scenario has ceased to operate",
+  "scenarios.description": "A scenario is used to detect a certain type of risk, following specific business rules, for a specific triggering event.",
   "create_scenario.title": "New Scenario",
   "create_scenario.callout": "A scenario identifies a certain risk type, triggered by a specific event (<DocLink>learn more</DocLink>)",
   "create_scenario.name": "Name",

@@ -80,53 +80,55 @@ export default function Settings() {
   const { sections } = useLoaderData<typeof loader>();
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header>
         <Icon icon="settings" className="mr-2 size-6" />
         {t('navigation:settings')}
       </Page.Header>
       <div className="flex size-full flex-row overflow-hidden">
-        <div className="border-r-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] flex-col border-r p-4">
-          {sections.map(([section, settings]) => {
-            if (settings.length === 0) return null;
+        <div className="border-r-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-r p-4">
+          <div className="flex flex-col">
+            {sections.map(([section, settings]) => {
+              if (settings.length === 0) return null;
 
-            const icon =
-              section === 'users'
-                ? 'users'
-                : section === 'case_manager'
-                  ? 'case-manager'
-                  : 'world';
+              const icon =
+                section === 'users'
+                  ? 'users'
+                  : section === 'case_manager'
+                    ? 'case-manager'
+                    : 'world';
 
-            return (
-              <nav key={section} className="flex flex-col gap-4">
-                <div className="flex flex-row items-center gap-2">
-                  <Icon icon={icon} className="size-5" />
-                  <p className="font-bold">{t(`settings:${section}`)}</p>
-                </div>
-                <ul className="flex flex-col gap-1 pb-6">
-                  {settings.map((setting) => (
-                    <NavLink
-                      key={setting.title}
-                      className={({ isActive }) =>
-                        clsx(
-                          'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
-                          isActive
-                            ? 'bg-purple-10 text-purple-100'
-                            : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
-                        )
-                      }
-                      to={setting.to}
-                    >
-                      {t(`settings:${setting.title}`)}
-                    </NavLink>
-                  ))}
-                </ul>
-              </nav>
-            );
-          })}
+              return (
+                <nav key={section} className="flex flex-col gap-4">
+                  <div className="flex flex-row items-center gap-2">
+                    <Icon icon={icon} className="size-5" />
+                    <p className="font-bold">{t(`settings:${section}`)}</p>
+                  </div>
+                  <ul className="flex flex-col gap-1 pb-6">
+                    {settings.map((setting) => (
+                      <NavLink
+                        key={setting.title}
+                        className={({ isActive }) =>
+                          clsx(
+                            'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
+                            isActive
+                              ? 'bg-purple-10 text-purple-100'
+                              : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                          )
+                        }
+                        to={setting.to}
+                      >
+                        {t(`settings:${setting.title}`)}
+                      </NavLink>
+                    ))}
+                  </ul>
+                </nav>
+              );
+            })}
+          </div>
         </div>
         <Outlet />
       </div>
-    </Page.Container>
+    </Page.Main>
   );
 }

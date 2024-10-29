@@ -226,7 +226,7 @@ export default function RuleDetail() {
   };
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
@@ -240,22 +240,23 @@ export default function RuleDetail() {
           ) : null}
         </div>
       </Page.Header>
-
-      {editorMode === 'view' ? (
-        <RuleViewContent
-          options={options}
-          astEditorStore={astEditorStore}
-          rule={rule}
-        />
-      ) : (
-        <RuleEditContent
-          options={options}
-          astEditorStore={astEditorStore}
-          rule={rule}
-          scenarioId={scenarioId}
-        />
-      )}
-    </Page.Container>
+      <Page.Container>
+        {editorMode === 'view' ? (
+          <RuleViewContent
+            options={options}
+            astEditorStore={astEditorStore}
+            rule={rule}
+          />
+        ) : (
+          <RuleEditContent
+            options={options}
+            astEditorStore={astEditorStore}
+            rule={rule}
+            scenarioId={scenarioId}
+          />
+        )}
+      </Page.Container>
+    </Page.Main>
   );
 }
 

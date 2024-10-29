@@ -124,7 +124,7 @@ export default function DecisionPage() {
 
   return (
     <DecisionRightPanel.Root>
-      <Page.Container>
+      <Page.Main>
         <Page.Header className="justify-between gap-8">
           <div className="flex flex-row items-center gap-4">
             <Page.BackButton />
@@ -139,30 +139,32 @@ export default function DecisionPage() {
           </div>
           {!decision.case ? <AddToCase decisionIds={[decision.id]} /> : null}
         </Page.Header>
-        <Page.Content>
-          <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-6">
-            <div className="flex flex-col gap-4 lg:gap-6">
-              <DecisionDetail decision={decision} />
-              <PivotDetail
-                pivotValues={pivotValues}
-                existingPivotDefinition={existingPivotDefinition}
-              />
-              <RulesDetail
-                ruleExecutions={decision.rules}
-                triggerObjectType={decision.triggerObjectType}
-                astRuleData={astRuleData}
-              />
-            </div>
-            <div className="flex flex-col gap-4 lg:gap-6">
-              <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
-                <ScorePanel score={decision.score} />
-                <OutcomePanel outcome={decision.outcome} />
+        <Page.Container>
+          <Page.Content>
+            <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-6">
+              <div className="flex flex-col gap-4 lg:gap-6">
+                <DecisionDetail decision={decision} />
+                <PivotDetail
+                  pivotValues={pivotValues}
+                  existingPivotDefinition={existingPivotDefinition}
+                />
+                <RulesDetail
+                  ruleExecutions={decision.rules}
+                  triggerObjectType={decision.triggerObjectType}
+                  astRuleData={astRuleData}
+                />
               </div>
-              <TriggerObjectDetail triggerObject={decision.triggerObject} />
+              <div className="flex flex-col gap-4 lg:gap-6">
+                <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
+                  <ScorePanel score={decision.score} />
+                  <OutcomePanel outcome={decision.outcome} />
+                </div>
+                <TriggerObjectDetail triggerObject={decision.triggerObject} />
+              </div>
             </div>
-          </div>
-        </Page.Content>
-      </Page.Container>
+          </Page.Content>
+        </Page.Container>
+      </Page.Main>
     </DecisionRightPanel.Root>
   );
 }

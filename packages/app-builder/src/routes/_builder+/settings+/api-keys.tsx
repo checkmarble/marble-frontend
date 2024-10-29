@@ -13,7 +13,6 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
@@ -113,7 +112,7 @@ export default function ApiKeys() {
 
   return (
     <Page.Container>
-      <Page.Content>
+      <Page.Content className="max-w-screen-xl">
         {createdApiKey ? <CreatedAPIKey createdApiKey={createdApiKey} /> : null}
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
@@ -129,7 +128,7 @@ export default function ApiKeys() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx('hover:bg-purple-05 group')}
+                      className="hover:bg-purple-05 group"
                       row={row}
                     />
                   );

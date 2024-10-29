@@ -101,7 +101,7 @@ export default function ScenarioEditLayout() {
     isCreateDraftAvailable && currentIteration.type !== 'draft';
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
           <Page.BackLink to={getRoute('/scenarios/')} />
@@ -159,56 +159,58 @@ export default function ScenarioEditLayout() {
           ) : null}
         </div>
       </Page.Header>
-      <Page.Content>
-        <nav>
-          <ul className="flex flex-row gap-2">
-            <li>
-              <TabLink
-                aria-invalid={hasTriggerErrors(scenarioValidation)}
-                labelTKey="navigation:scenario.trigger"
-                to="./trigger"
-                Icon={(props) => (
-                  <ScenariosLinkIcon
-                    {...props}
-                    icon="trigger"
-                    withPing={hasTriggerErrors(scenarioValidation)}
-                  />
-                )}
-              />
-            </li>
-            <li>
-              <TabLink
-                aria-invalid={hasRulesErrors(scenarioValidation)}
-                labelTKey="navigation:scenario.rules"
-                to="./rules"
-                Icon={(props) => (
-                  <ScenariosLinkIcon
-                    {...props}
-                    icon="rules"
-                    withPing={hasRulesErrors(scenarioValidation)}
-                  />
-                )}
-              />
-            </li>
-            <li>
-              <TabLink
-                aria-invalid={hasDecisionErrors(scenarioValidation)}
-                labelTKey="navigation:scenario.decision"
-                to="./decision"
-                Icon={(props) => (
-                  <ScenariosLinkIcon
-                    {...props}
-                    icon="decision"
-                    withPing={hasDecisionErrors(scenarioValidation)}
-                  />
-                )}
-              />
-            </li>
-          </ul>
-        </nav>
-        <Outlet />
-      </Page.Content>
-    </Page.Container>
+      <Page.Container>
+        <Page.Content>
+          <nav>
+            <ul className="flex flex-row gap-2">
+              <li>
+                <TabLink
+                  aria-invalid={hasTriggerErrors(scenarioValidation)}
+                  labelTKey="navigation:scenario.trigger"
+                  to="./trigger"
+                  Icon={(props) => (
+                    <ScenariosLinkIcon
+                      {...props}
+                      icon="trigger"
+                      withPing={hasTriggerErrors(scenarioValidation)}
+                    />
+                  )}
+                />
+              </li>
+              <li>
+                <TabLink
+                  aria-invalid={hasRulesErrors(scenarioValidation)}
+                  labelTKey="navigation:scenario.rules"
+                  to="./rules"
+                  Icon={(props) => (
+                    <ScenariosLinkIcon
+                      {...props}
+                      icon="rules"
+                      withPing={hasRulesErrors(scenarioValidation)}
+                    />
+                  )}
+                />
+              </li>
+              <li>
+                <TabLink
+                  aria-invalid={hasDecisionErrors(scenarioValidation)}
+                  labelTKey="navigation:scenario.decision"
+                  to="./decision"
+                  Icon={(props) => (
+                    <ScenariosLinkIcon
+                      {...props}
+                      icon="decision"
+                      withPing={hasDecisionErrors(scenarioValidation)}
+                    />
+                  )}
+                />
+              </li>
+            </ul>
+          </nav>
+          <Outlet />
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
 

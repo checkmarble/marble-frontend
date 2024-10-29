@@ -62,34 +62,35 @@ export default function TransfersPage() {
   const [query, setQuery] = React.useState(transferId || '');
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header>
         <Icon icon="arrows-right-left" className="mr-2 size-6" />
         {t('navigation:transfercheck.transfers')}
       </Page.Header>
-
-      <Page.Content className="max-w-3xl">
-        <Form
-          id="search-form"
-          onChange={(event) => submit(event.currentTarget, { replace: true })}
-          role="search"
-        >
-          <div className="flex flex-row items-center gap-2">
-            <Input
-              className="w-full max-w-lg"
-              type="search"
-              aria-label={t('transfercheck:transfer.search.placeholder')}
-              placeholder={t('transfercheck:transfer.search.placeholder')}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              startAdornment="search"
-              name="transferId"
-            />
-            <Spinner className={clsx('size-6', !isLoading && 'hidden')} />
-          </div>
-        </Form>
-        <TransfersList transfers={transfers} />
-      </Page.Content>
-    </Page.Container>
+      <Page.Container>
+        <Page.Content className="max-w-3xl">
+          <Form
+            id="search-form"
+            onChange={(event) => submit(event.currentTarget, { replace: true })}
+            role="search"
+          >
+            <div className="flex flex-row items-center gap-2">
+              <Input
+                className="w-full max-w-lg"
+                type="search"
+                aria-label={t('transfercheck:transfer.search.placeholder')}
+                placeholder={t('transfercheck:transfer.search.placeholder')}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                startAdornment="search"
+                name="transferId"
+              />
+              <Spinner className={clsx('size-6', !isLoading && 'hidden')} />
+            </div>
+          </Form>
+          <TransfersList transfers={transfers} />
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }

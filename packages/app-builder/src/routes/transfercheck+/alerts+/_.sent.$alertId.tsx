@@ -69,7 +69,7 @@ export default function SentAlertDetailPage() {
   const { color, tKey } = alertStatusMapping[alert.status];
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
@@ -89,8 +89,8 @@ export default function SentAlertDetailPage() {
         </div>
       </Page.Header>
 
-      <Page.Content>
-        <div className="flex max-w-3xl flex-col gap-4 lg:gap-6">
+      <Page.Container>
+        <Page.Content className="max-w-3xl">
           <Collapsible.Container className="bg-grey-00 w-full">
             <Collapsible.Title>
               {t('transfercheck:alert_detail.alert_data.title')}
@@ -117,9 +117,9 @@ export default function SentAlertDetailPage() {
               </div>
             </Collapsible.Content>
           </Collapsible.Container>
-        </div>
-      </Page.Content>
-    </Page.Container>
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
 

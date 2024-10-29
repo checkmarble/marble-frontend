@@ -12,6 +12,9 @@ export const transferAlerStatuses = [
   'acknowledged',
   'archived',
 ] as const;
+export const transferAlerStatusesWithoutArchived = transferAlerStatuses.filter(
+  (status) => status !== 'archived',
+);
 export type TransferAlertStatus = (typeof transferAlerStatuses)[number];
 
 export interface TransferAlertSender {

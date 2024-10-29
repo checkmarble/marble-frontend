@@ -16,7 +16,6 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
@@ -139,7 +138,7 @@ export default function Inbox() {
 
   return (
     <Page.Container>
-      <Page.Content>
+      <Page.Content className="max-w-screen-xl">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">
@@ -189,9 +188,7 @@ export default function Inbox() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx(
-                        'hover:bg-purple-05 group cursor-pointer',
-                      )}
+                      className="hover:bg-purple-05 group cursor-pointer"
                       row={row}
                     />
                   );

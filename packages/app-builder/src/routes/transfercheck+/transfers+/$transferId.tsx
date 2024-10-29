@@ -125,7 +125,7 @@ export default function TransferDetailPage() {
   });
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
@@ -139,9 +139,8 @@ export default function TransferDetailPage() {
           </CopyToClipboardButton>
         </div>
       </Page.Header>
-
-      <Page.Content>
-        <div className="flex max-w-3xl flex-col gap-4 lg:gap-6">
+      <Page.Container>
+        <Page.Content className="max-w-3xl">
           <Collapsible.Container className="bg-grey-00 w-full">
             <Collapsible.Title>
               {t('transfercheck:transfer_detail.transfer_status.title')}
@@ -185,9 +184,9 @@ export default function TransferDetailPage() {
               <TransferData {...transfer.data} />
             </Collapsible.Content>
           </Collapsible.Container>
-        </div>
-      </Page.Content>
-    </Page.Container>
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
 

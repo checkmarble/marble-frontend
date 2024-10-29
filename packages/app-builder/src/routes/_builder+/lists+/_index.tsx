@@ -74,49 +74,51 @@ export default function ListsPage() {
     });
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header>
         <Icon icon="lists" className="mr-2 size-6" />
         {t('navigation:lists')}
       </Page.Header>
-      <Page.Content>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-row justify-end">
-            {isCreateListAvailable ? <CreateList /> : null}
-          </div>
-          {isEmpty ? (
-            <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-              <p className="text-s font-medium">
-                {t('lists:empty_custom_lists_list')}
-              </p>
+      <Page.Container>
+        <Page.Content className="max-w-screen-xl">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row justify-end">
+              {isCreateListAvailable ? <CreateList /> : null}
             </div>
-          ) : (
-            <Table.Container
-              {...getContainerProps()}
-              className="bg-grey-00 max-h-[70dvh]"
-            >
-              <Table.Header headerGroups={table.getHeaderGroups()} />
-              <Table.Body {...getBodyProps()}>
-                {rows.map((row) => (
-                  <Table.Row
-                    key={row.id}
-                    className="hover:bg-purple-05 cursor-pointer"
-                    row={row}
-                    onClick={() => {
-                      navigate(
-                        getRoute('/lists/:listId', {
-                          listId: fromUUID(row.original.id),
-                        }),
-                      );
-                    }}
-                  />
-                ))}
-              </Table.Body>
-            </Table.Container>
-          )}
-        </div>
-      </Page.Content>
-    </Page.Container>
+            {isEmpty ? (
+              <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+                <p className="text-s font-medium">
+                  {t('lists:empty_custom_lists_list')}
+                </p>
+              </div>
+            ) : (
+              <Table.Container
+                {...getContainerProps()}
+                className="bg-grey-00 max-h-[70dvh]"
+              >
+                <Table.Header headerGroups={table.getHeaderGroups()} />
+                <Table.Body {...getBodyProps()}>
+                  {rows.map((row) => (
+                    <Table.Row
+                      key={row.id}
+                      className="hover:bg-purple-05 cursor-pointer"
+                      row={row}
+                      onClick={() => {
+                        navigate(
+                          getRoute('/lists/:listId', {
+                            listId: fromUUID(row.original.id),
+                          }),
+                        );
+                      }}
+                    />
+                  ))}
+                </Table.Body>
+              </Table.Container>
+            )}
+          </div>
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
 export function ErrorBoundary() {

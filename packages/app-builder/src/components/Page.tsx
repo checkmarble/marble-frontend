@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-function PageContainer({ className, ...props }: React.ComponentProps<'div'>) {
+function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <main
       className={clsx(
@@ -44,24 +44,47 @@ function PageHeader({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
+function PageContainer({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     // eslint-disable-next-line tailwindcss/no-custom-classname
-    <div className="scrollbar-gutter-stable size-full overflow-y-scroll">
-      <div
-        className={clsx(
-          'flex flex-1 flex-col',
-          'gap-4 p-4 pr-[calc(1rem-var(--scrollbar-width))] lg:gap-6 lg:p-6 lg:pr-[calc(1.5rem-var(--scrollbar-width))]',
-          className,
-        )}
-        {...props}
-      />
-    </div>
+    <div
+      className="scrollbar-gutter-stable size-full overflow-y-scroll"
+      {...props}
+    />
   );
 }
 
-const style =
-  'border-grey-10 hover:bg-grey-02 flex items-center justify-center rounded-md border p-2';
+function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <aside
+      className={clsx(
+        'bg-purple-05 text-s flex flex-row gap-2 p-4 font-normal text-purple-100 lg:px-6 lg:py-4',
+        className,
+      )}
+      {...props}
+    >
+      <Icon icon="tip" className="size-5 shrink-0" />
+      {props.children}
+    </aside>
+  );
+}
+
+function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      className={clsx(
+        'flex flex-1 flex-col',
+        'gap-4 p-4 pr-[calc(1rem-var(--scrollbar-width))] lg:gap-6 lg:p-6 lg:pr-[calc(1.5rem-var(--scrollbar-width))]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+const pageBack = cva(
+  'border-grey-10 hover:bg-grey-02 flex items-center justify-center rounded-md border p-2',
+);
 
 function PageBackButton({
   className,
@@ -72,7 +95,7 @@ function PageBackButton({
   return (
     <Tooltip.Default content={t('common:go_back')}>
       <button
-        className={clsx(style, className)}
+        className={pageBack({ className })}
         onClick={() => navigate(-1)}
         {...props}
       >
@@ -88,16 +111,35 @@ function PageBackLink({
   ...props
 }: React.ComponentProps<typeof Link>) {
   return (
-    <Link className={clsx(style, className)} {...props}>
+    <Link className={pageBack({ className })} {...props}>
       <Icon icon="arrow-left" className="size-5" aria-hidden />
     </Link>
   );
 }
 
+/**
+ * Example:
+ * ```tsx
+ * <Page.Main>
+ *     <Page.Header> // Fixed header
+ *       ...
+ *     </Page.Header>
+ *     <Page.Container> // Scrollable container
+ *         <Page.Description> // Optional
+ *           ...
+ *         </Page.Description>
+ *         <Page.Content> // Main content of the page
+ *           ...
+ *         </Page.Content>
+ *     </Page.Container>
+ * </Page.Main>
+ */
 export const Page = {
-  Container: PageContainer,
+  Main: PageMain,
   Header: PageHeader,
   BackButton: PageBackButton,
   BackLink: PageBackLink,
+  Container: PageContainer,
   Content: PageContent,
+  Description: PageDescription,
 };

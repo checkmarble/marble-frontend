@@ -47,7 +47,7 @@ export default function Data() {
   const { dataModel, dataModelFeatureAccess } = useLoaderData<typeof loader>();
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center">
           <Icon icon="harddrive" className="mr-2 size-6" />
@@ -60,6 +60,6 @@ export default function Data() {
       >
         <Outlet />
       </DataModelContextProvider>
-    </Page.Container>
+    </Page.Main>
   );
 }

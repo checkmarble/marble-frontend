@@ -35,16 +35,18 @@ export default function ScheduledExecutions() {
   const { scheduledExecutions } = useLoaderData<typeof loader>();
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header>
         <Icon icon="scheduled-execution" className="mr-2 size-6" />
         {t('navigation:scheduledExecutions')}
       </Page.Header>
 
-      <Page.Content>
-        <ScheduledExecutionsList scheduledExecutions={scheduledExecutions} />
-      </Page.Content>
-    </Page.Container>
+      <Page.Container>
+        <Page.Content>
+          <ScheduledExecutionsList scheduledExecutions={scheduledExecutions} />
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
 
