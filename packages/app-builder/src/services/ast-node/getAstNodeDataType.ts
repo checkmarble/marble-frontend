@@ -9,6 +9,7 @@ import {
   isTimeNow,
   type TableModel,
 } from '@app-builder/models';
+import { dateTimeDataTypeSchema } from '@app-builder/utils/schema/dataTypeSchema';
 import * as R from 'remeda';
 
 import { getDataAccessorAstNodeField } from './getDataAccessorAstNodeField';
@@ -23,7 +24,10 @@ export function getAstNodeDataType(
   if (isConstant(astNode)) {
     const { constant } = astNode;
     if (R.isString(constant)) {
-      //TODO(combobox): handle Timestamp here, if we do manipulate them as ISOstring
+      const parsedConstant = dateTimeDataTypeSchema.safeParse(constant);
+      if (parsedConstant.success) {
+        return 'Timestamp';
+      }
       return 'String';
     }
 
