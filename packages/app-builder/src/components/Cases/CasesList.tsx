@@ -7,7 +7,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, useVirtualTable } from 'ui-design-system';
+import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
 import { CaseContributors } from './CaseContributors';
 import { casesI18n } from './cases-i18n';
@@ -41,11 +41,23 @@ export function CasesList({
         id: 'name',
         header: t('cases:case.name'),
         size: 200,
+        minSize: 120,
+        cell: ({ getValue }) => {
+          const caseName = getValue();
+          return (
+            <Tooltip.Default content={caseName}>
+              <span className="text-grey-100 text-s isolate line-clamp-2 font-normal">
+                {caseName}
+              </span>
+            </Tooltip.Default>
+          );
+        },
       }),
       columnHelper.accessor(({ createdAt }) => createdAt, {
         id: 'created_at',
         header: t('cases:case.date'),
-        size: 100,
+        size: 70,
+        minSize: 70,
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return (
@@ -58,7 +70,8 @@ export function CasesList({
       columnHelper.accessor(({ decisionsCount }) => decisionsCount, {
         id: 'decisions',
         header: t('cases:case.decisions'),
-        size: 100,
+        size: 60,
+        minSize: 60,
       }),
       columnHelper.accessor(({ tags }) => tags, {
         id: 'tags',
@@ -73,7 +86,8 @@ export function CasesList({
       columnHelper.accessor(({ contributors }) => contributors, {
         id: 'contributors',
         header: t('cases:case.contributors'),
-        size: 100,
+        size: 80,
+        minSize: 80,
         cell: ({ getValue }) => <CaseContributors contributors={getValue()} />,
       }),
     ],
