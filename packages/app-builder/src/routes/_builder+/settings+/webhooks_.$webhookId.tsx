@@ -14,7 +14,6 @@ import {
   getCoreRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -62,7 +61,7 @@ export default function WebhookDetail() {
 
   return (
     <Page.Container>
-      <Page.Content>
+      <Page.Content className="max-w-screen-xl">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:webhook_details')}</span>
@@ -221,7 +220,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
             <Table.Row
               key={row.id}
               tabIndex={0}
-              className={clsx('relative')}
+              className="relative"
               row={row}
             />
           );

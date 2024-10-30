@@ -9,7 +9,6 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -152,7 +151,7 @@ export default function Users() {
 
   return (
     <Page.Container>
-      <Page.Content>
+      <Page.Content className="max-w-screen-xl">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:users')}</span>
@@ -169,7 +168,7 @@ export default function Users() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx('hover:bg-purple-05 group')}
+                      className="hover:bg-purple-05 group"
                       row={row}
                     />
                   );

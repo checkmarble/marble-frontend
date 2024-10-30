@@ -247,5 +247,6 @@
   "validation.evaluation_error.undefined_function_one": "requis",
   "validation.evaluation_error.undefined_function_other": "{{count}} requis",
   "validation.evaluation_error.wrong_number_of_arguments": "mauvais nombre d'arguments",
-  "custom_list.unknown": "Liste inconnue"
+  "custom_list.unknown": "Liste inconnue",
+  "scenarios.description": "Un scénario permet de détecter un certain type de risque, selon des règles métier spécifiques, pour un événement déclencheur spécifique."
 }

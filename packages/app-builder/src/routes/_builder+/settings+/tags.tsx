@@ -7,7 +7,6 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type Tag } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -99,7 +98,7 @@ export default function Tags() {
 
   return (
     <Page.Container>
-      <Page.Content>
+      <Page.Content className="max-w-screen-xl">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:tags')}</span>
@@ -114,7 +113,7 @@ export default function Tags() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx('hover:bg-purple-05 group')}
+                      className="hover:bg-purple-05 group"
                       row={row}
                     />
                   );

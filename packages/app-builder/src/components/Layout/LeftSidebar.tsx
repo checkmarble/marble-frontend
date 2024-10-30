@@ -4,29 +4,29 @@ import { Icon } from 'ui-icons';
 
 import { SidebarButton } from '../Navigation';
 
-const ToggleHeaderContext = createSimpleContext<[boolean, () => void]>(
-  'ToggleHeaderContext',
+const ToggleSidebarContext = createSimpleContext<[boolean, () => void]>(
+  'ToggleSidebarContext',
 );
 
-export function Header({ children }: { children: React.ReactNode }) {
+export function LeftSidebar({ children }: { children: React.ReactNode }) {
   const [expanded, setExpanded] = React.useState(true);
 
   const toggleExpanded = () => setExpanded((prev) => !prev);
 
   return (
-    <header
+    <div
       aria-expanded={expanded}
       className="bg-grey-00 border-r-grey-10 group/nav flex max-h-screen w-14 shrink-0 flex-col border-r transition-all aria-expanded:w-[235px]"
     >
-      <ToggleHeaderContext.Provider value={[expanded, toggleExpanded]}>
+      <ToggleSidebarContext.Provider value={[expanded, toggleExpanded]}>
         {children}
-      </ToggleHeaderContext.Provider>
-    </header>
+      </ToggleSidebarContext.Provider>
+    </div>
   );
 }
 
-export function ToggleHeader() {
-  const [expanded, toggleExpanded] = ToggleHeaderContext.useValue();
+export function ToggleSidebar() {
+  const [expanded, toggleExpanded] = ToggleSidebarContext.useValue();
 
   return (
     <SidebarButton

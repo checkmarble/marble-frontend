@@ -45,7 +45,7 @@ export default function Analytics() {
   const { globalDashbord } = useLoaderData<typeof loader>();
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center">
           <Icon icon="analytics" className="mr-2 size-6" />
@@ -59,7 +59,7 @@ export default function Analytics() {
         title={globalDashbord.title}
         className="size-full"
       ></iframe>
-    </Page.Container>
+    </Page.Main>
   );
 }
 

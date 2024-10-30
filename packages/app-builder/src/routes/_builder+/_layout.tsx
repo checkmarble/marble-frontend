@@ -9,9 +9,9 @@ import {
   useMarbleCoreResources,
 } from '@app-builder/components/HelpCenter';
 import {
-  Header,
-  ToggleHeader,
-} from '@app-builder/components/Layout/MainLayout';
+  LeftSidebar,
+  ToggleSidebar,
+} from '@app-builder/components/Layout/LeftSidebar';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleAdmin, isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
@@ -124,7 +124,7 @@ export default function Builder() {
     <OrganizationUsersContextProvider orgUsers={orgUsers}>
       <OrganizationTagsContextProvider orgTags={orgTags}>
         <div className="flex h-full flex-1 flex-row overflow-hidden">
-          <Header>
+          <LeftSidebar>
             <div className="h-24 px-2 pt-3">
               <UserInfo
                 email={user.actorIdentity.email}
@@ -265,11 +265,11 @@ export default function Builder() {
                   </ChatlioProvider>
                 </li>
                 <li>
-                  <ToggleHeader />
+                  <ToggleSidebar />
                 </li>
               </ul>
             </nav>
-          </Header>
+          </LeftSidebar>
 
           <Outlet />
         </div>

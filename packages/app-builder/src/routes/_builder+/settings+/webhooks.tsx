@@ -9,7 +9,6 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -101,7 +100,7 @@ export default function Webhooks() {
 
   return (
     <Page.Container>
-      <Page.Content>
+      <Page.Content className="max-w-screen-xl">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:webhooks')}</span>
@@ -139,7 +138,7 @@ export default function Webhooks() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx('hover:bg-purple-05 cursor-pointer')}
+                      className="hover:bg-purple-05 cursor-pointer"
                       row={row}
                     />
                   );

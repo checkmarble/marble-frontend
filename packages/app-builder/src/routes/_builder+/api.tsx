@@ -43,40 +43,42 @@ export default function Api() {
   const { openapi } = useLoaderData<typeof loader>();
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center">
           <Icon icon="world" className="mr-2 size-6" />
           <span className="line-clamp-1 text-left">{t('navigation:api')}</span>
         </div>
       </Page.Header>
-      <Page.Content>
-        <div className="flex">
-          <Button
-            variant="secondary"
-            onClick={() => {
-              const blob = new Blob([JSON.stringify(openapi)], {
-                type: 'application/json;charset=utf-8,',
-              });
-              void downloadBlob(blob, 'openapi.json');
-            }}
-          >
-            <Icon icon="download" className="mr-2 size-6" />
-            {t('api:download_openapi_spec')}
-          </Button>
-        </div>
-        <div className="-mx-5">
-          <React.Suspense fallback={t('common:loading')}>
-            {/* Issue with UNSAFE_componentWillReceiveProps: https://github.com/swagger-api/swagger-ui/issues/5729 */}
-            <SwaggerUI
-              spec={openapi}
-              supportedSubmitMethods={[]}
-              defaultModelExpandDepth={5}
-              defaultModelsExpandDepth={4}
-            />
-          </React.Suspense>
-        </div>
-      </Page.Content>
-    </Page.Container>
+      <Page.Container>
+        <Page.Content>
+          <div className="flex">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                const blob = new Blob([JSON.stringify(openapi)], {
+                  type: 'application/json;charset=utf-8,',
+                });
+                void downloadBlob(blob, 'openapi.json');
+              }}
+            >
+              <Icon icon="download" className="mr-2 size-6" />
+              {t('api:download_openapi_spec')}
+            </Button>
+          </div>
+          <div className="-mx-5">
+            <React.Suspense fallback={t('common:loading')}>
+              {/* Issue with UNSAFE_componentWillReceiveProps: https://github.com/swagger-api/swagger-ui/issues/5729 */}
+              <SwaggerUI
+                spec={openapi}
+                supportedSubmitMethods={[]}
+                defaultModelExpandDepth={5}
+                defaultModelsExpandDepth={4}
+              />
+            </React.Suspense>
+          </div>
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }

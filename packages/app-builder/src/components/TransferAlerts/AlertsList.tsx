@@ -1,5 +1,8 @@
 import { Highlight } from '@app-builder/components/Highlight';
-import { type TransferAlertStatus } from '@app-builder/models/transfer-alert';
+import {
+  transferAlerStatusesWithoutArchived,
+  type TransferAlertStatus,
+} from '@app-builder/models/transfer-alert';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import {
@@ -44,7 +47,10 @@ type TransferAlertColumnFiltersState = (
 
 export function AlertsList({ alerts, className, rowLink }: AlertsListProps) {
   const [columnFilters, setColumnFilters] =
-    React.useState<TransferAlertColumnFiltersState>([]);
+    React.useState<TransferAlertColumnFiltersState>([
+      // archived status is not included in the default filter
+      { id: 'status', value: transferAlerStatusesWithoutArchived },
+    ]);
 
   const filterValues: AlertsFilters = columnFilters.reduce<AlertsFilters>(
     (acc, filter) => {
@@ -202,20 +208,18 @@ function AlertsListTable({
   }
 
   return (
-    <Table.Container {...getContainerProps()} className={className}>
+    <Table.Container
+      {...getContainerProps()}
+      className={clsx('bg-grey-00', className)}
+    >
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
-          const bgClassName =
-            row.original.status === 'archived' ? 'transparent' : 'bg-grey-00';
           return (
             <Table.Row
               key={row.id}
               tabIndex={0}
-              className={clsx(
-                'hover:bg-purple-05 relative cursor-pointer',
-                bgClassName,
-              )}
+              className="hover:bg-purple-05 relative cursor-pointer"
               row={row}
             />
           );

@@ -31,58 +31,63 @@ export default function ScenariosPage() {
   const { scenarios } = useLoaderData<typeof loader>();
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header>
         <Icon icon="scenarios" className="mr-2 size-6" />
         {t('navigation:scenarios')}
       </Page.Header>
-      <Page.Content>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-row justify-end">
-            <CreateScenario>
-              <Button>
-                <Icon icon="plus" className="size-6" aria-hidden />
-                {t('scenarios:create_scenario.title')}
-              </Button>
-            </CreateScenario>
-          </div>
-          <div className="flex max-w-3xl flex-col gap-2 lg:gap-4">
-            {scenarios.length ? (
-              scenarios.map((scenario) => {
-                return (
-                  <Link
-                    key={scenario.id}
-                    to={getRoute('/scenarios/:scenarioId', {
-                      scenarioId: fromUUID(scenario.id),
-                    })}
-                  >
-                    <div className="bg-grey-00 border-grey-10 flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
-                      <div className="text-m flex flex-row gap-2 font-bold">
-                        {scenario.name}
-                        {scenario.liveVersionId ? (
-                          <Tag color="purple" className="capitalize">
-                            {t('scenarios:live')}
-                          </Tag>
-                        ) : null}
+      <Page.Container>
+        <Page.Description>
+          {t('scenarios:scenarios.description')}
+        </Page.Description>
+        <Page.Content className="max-w-3xl">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row justify-end">
+              <CreateScenario>
+                <Button>
+                  <Icon icon="plus" className="size-6" aria-hidden />
+                  {t('scenarios:create_scenario.title')}
+                </Button>
+              </CreateScenario>
+            </div>
+            <div className="flex flex-col gap-2 lg:gap-4">
+              {scenarios.length ? (
+                scenarios.map((scenario) => {
+                  return (
+                    <Link
+                      key={scenario.id}
+                      to={getRoute('/scenarios/:scenarioId', {
+                        scenarioId: fromUUID(scenario.id),
+                      })}
+                    >
+                      <div className="bg-grey-00 border-grey-10 flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
+                        <div className="text-m flex flex-row gap-2 font-bold">
+                          {scenario.name}
+                          {scenario.liveVersionId ? (
+                            <Tag color="purple" className="capitalize">
+                              {t('scenarios:live')}
+                            </Tag>
+                          ) : null}
+                        </div>
+                        <p className="text-s line-clamp-2 font-medium">
+                          {scenario.description}
+                        </p>
                       </div>
-                      <p className="text-s line-clamp-2 font-medium">
-                        {scenario.description}
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })
-            ) : (
-              <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-                <p className="text-s font-medium">
-                  {t('scenarios:empty_scenario_list')}
-                </p>
-              </div>
-            )}
+                    </Link>
+                  );
+                })
+              ) : (
+                <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+                  <p className="text-s font-medium">
+                    {t('scenarios:empty_scenario_list')}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </Page.Content>
-    </Page.Container>
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
 

@@ -1,6 +1,5 @@
 import {
   adaptOffsetPaginationButtonsProps,
-  Callout,
   ErrorComponent,
   OffsetPaginationButtons,
   Page,
@@ -162,13 +161,13 @@ export default function WorkflowsPage() {
   });
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header>
         <Icon icon="rule-settings" className="mr-2 size-6" />
         {t('navigation:workflows')}
       </Page.Header>
-      <Page.Content className="max-w-screen-lg">
-        <Callout className="w-full" variant="outlined">
+      <Page.Container>
+        <Page.Description>
           <p className="whitespace-pre text-wrap">
             <Trans
               t={t}
@@ -178,61 +177,63 @@ export default function WorkflowsPage() {
               }}
             />
           </p>
-        </Callout>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2 lg:gap-4">
-            <div className="flex flex-row gap-2 lg:gap-4">
-              <form className="flex grow items-center">
-                <Input
-                  className="w-full max-w-md"
-                  disabled={scenarios.length === 0}
-                  type="search"
-                  aria-label={t('common:search')}
-                  placeholder={t('common:search')}
-                  startAdornment="search"
-                  onChange={(event) => {
-                    table.setGlobalFilter(event.target.value);
-                  }}
-                />
-              </form>
-            </div>
-            {rows.length === 0 ? (
-              <div className="bg-grey-00 border-grey-10 flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
-                <p className="text-s font-medium">
-                  {scenarios.length === 0
-                    ? t('workflows:no_scenarios')
-                    : t('workflows:no_matching_scenarios')}
-                </p>
+        </Page.Description>
+        <Page.Content className="max-w-screen-xl">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2 lg:gap-4">
+              <div className="flex flex-row gap-2 lg:gap-4">
+                <form className="flex grow items-center">
+                  <Input
+                    className="w-full max-w-md"
+                    disabled={scenarios.length === 0}
+                    type="search"
+                    aria-label={t('common:search')}
+                    placeholder={t('common:search')}
+                    startAdornment="search"
+                    onChange={(event) => {
+                      table.setGlobalFilter(event.target.value);
+                    }}
+                  />
+                </form>
               </div>
-            ) : (
-              <>
-                <Table.Container
-                  {...getContainerProps()}
-                  className="bg-grey-00"
-                >
-                  <Table.Header headerGroups={table.getHeaderGroups()} />
-                  <Table.Body {...getBodyProps()}>
-                    {rows.map((row) => {
-                      return (
-                        <Table.Row
-                          key={row.id}
-                          tabIndex={0}
-                          className="hover:bg-purple-05 cursor-pointer"
-                          row={row}
-                        />
-                      );
-                    })}
-                  </Table.Body>
-                </Table.Container>
-                <OffsetPaginationButtons
-                  {...adaptOffsetPaginationButtonsProps(table)}
-                />
-              </>
-            )}
+              {rows.length === 0 ? (
+                <div className="bg-grey-00 border-grey-10 flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
+                  <p className="text-s font-medium">
+                    {scenarios.length === 0
+                      ? t('workflows:no_scenarios')
+                      : t('workflows:no_matching_scenarios')}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <Table.Container
+                    {...getContainerProps()}
+                    className="bg-grey-00"
+                  >
+                    <Table.Header headerGroups={table.getHeaderGroups()} />
+                    <Table.Body {...getBodyProps()}>
+                      {rows.map((row) => {
+                        return (
+                          <Table.Row
+                            key={row.id}
+                            tabIndex={0}
+                            className="hover:bg-purple-05 cursor-pointer"
+                            row={row}
+                          />
+                        );
+                      })}
+                    </Table.Body>
+                  </Table.Container>
+                  <OffsetPaginationButtons
+                    {...adaptOffsetPaginationButtonsProps(table)}
+                  />
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      </Page.Content>
-    </Page.Container>
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
 

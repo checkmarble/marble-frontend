@@ -143,54 +143,56 @@ export default function Decisions() {
 
   return (
     <DecisionRightPanel.Root>
-      <Page.Container>
+      <Page.Main>
         <Page.Header>
           <Icon icon="decision" className="mr-2 size-6" />
           {t('navigation:decisions')}
         </Page.Header>
 
-        <Page.Content>
-          <div className="flex flex-col gap-4">
-            <DecisionFiltersProvider
-              scenarios={scenarios}
-              submitDecisionFilters={navigateDecisionList}
-              filterValues={filters}
-              hasPivots={hasPivots}
-              inboxes={inboxes}
-            >
-              <div className="flex justify-between gap-4">
-                <SearchById />
-                <div className="flex gap-4">
-                  <DecisionFiltersMenu filterNames={decisionFilterNames}>
-                    <FiltersButton />
-                  </DecisionFiltersMenu>
-                  <AddToCase
-                    hasSelection={hasSelection}
-                    getSelectedDecisions={getSelectedDecisions}
-                  />
+        <Page.Container>
+          <Page.Content>
+            <div className="flex flex-col gap-4">
+              <DecisionFiltersProvider
+                scenarios={scenarios}
+                submitDecisionFilters={navigateDecisionList}
+                filterValues={filters}
+                hasPivots={hasPivots}
+                inboxes={inboxes}
+              >
+                <div className="flex justify-between gap-4">
+                  <SearchById />
+                  <div className="flex gap-4">
+                    <DecisionFiltersMenu filterNames={decisionFilterNames}>
+                      <FiltersButton />
+                    </DecisionFiltersMenu>
+                    <AddToCase
+                      hasSelection={hasSelection}
+                      getSelectedDecisions={getSelectedDecisions}
+                    />
+                  </div>
                 </div>
-              </div>
-              <DecisionFiltersBar />
-              <DecisionsList
-                className="max-h-[60dvh]"
-                decisions={decisions}
-                selectable
-                selectionProps={selectionProps}
-                columnVisibility={{
-                  pivot_value: false,
-                }}
-              />
-              <CursorPaginationButtons
-                items={decisions}
-                onPaginationChange={(paginationParams: PaginationParams) =>
-                  navigateDecisionList(filters, paginationParams)
-                }
-                {...pagination}
-              />
-            </DecisionFiltersProvider>
-          </div>
-        </Page.Content>
-      </Page.Container>
+                <DecisionFiltersBar />
+                <DecisionsList
+                  className="max-h-[60dvh]"
+                  decisions={decisions}
+                  selectable
+                  selectionProps={selectionProps}
+                  columnVisibility={{
+                    pivot_value: false,
+                  }}
+                />
+                <CursorPaginationButtons
+                  items={decisions}
+                  onPaginationChange={(paginationParams: PaginationParams) =>
+                    navigateDecisionList(filters, paginationParams)
+                  }
+                  {...pagination}
+                />
+              </DecisionFiltersProvider>
+            </div>
+          </Page.Content>
+        </Page.Container>
+      </Page.Main>
     </DecisionRightPanel.Root>
   );
 }

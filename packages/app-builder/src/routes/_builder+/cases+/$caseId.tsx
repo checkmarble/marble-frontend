@@ -133,7 +133,7 @@ export default function CasePage() {
   const language = useFormatLanguage();
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between gap-8">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
@@ -148,129 +148,133 @@ export default function CasePage() {
       </Page.Header>
       <div className="flex size-full flex-row overflow-hidden">
         <div className="relative flex size-full flex-col overflow-hidden">
-          <Page.Content>
-            <div>
-              <CollapsibleV2.Provider
-                defaultOpen={caseDetail.decisions.length > 0}
-              >
-                <div className="group flex flex-1 items-center gap-2">
-                  <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
-                    <Icon
-                      icon="arrow-2-up"
-                      aria-hidden
-                      className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
-                    />
-                    <span className="text-m mx-2 font-bold first-letter:capitalize">
-                      {t('cases:case.decisions')}
-                    </span>
-                  </CollapsibleV2.Title>
-                  <span className="text-grey-25 text-xs font-normal capitalize">
-                    {t('cases:case_detail.decisions_count', {
-                      count: caseDetail.decisions.length,
-                    })}
-                  </span>
-                </div>
-                <CollapsibleV2.Content>
-                  {caseDetail.decisions.length > 0 ? (
-                    <div className="mt-4">
-                      <CaseDecisions
-                        decisions={caseDetail.decisions}
-                        caseDecisionsPromise={caseDecisionsPromise}
+          <Page.Container>
+            <Page.Content>
+              <div>
+                <CollapsibleV2.Provider
+                  defaultOpen={caseDetail.decisions.length > 0}
+                >
+                  <div className="group flex flex-1 items-center gap-2">
+                    <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
+                      <Icon
+                        icon="arrow-2-up"
+                        aria-hidden
+                        className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
                       />
-                    </div>
-                  ) : (
-                    <div className="px-2 pt-2">
-                      <span className="text-grey-50 text-s whitespace-pre">
-                        <Trans
-                          t={t}
-                          i18nKey="cases:case_detail.no_decisions"
-                          components={{
-                            Link: (
-                              <Link
-                                className="text-purple-50 hover:text-purple-100 hover:underline"
-                                to={getRoute('/decisions/')}
-                              />
-                            ),
-                          }}
-                        />
+                      <span className="text-m mx-2 font-bold first-letter:capitalize">
+                        {t('cases:case.decisions')}
                       </span>
-                    </div>
-                  )}
-                </CollapsibleV2.Content>
-              </CollapsibleV2.Provider>
-            </div>
-            <div>
-              <CollapsibleV2.Provider defaultOpen={caseDetail.files.length > 0}>
-                <div className="group flex flex-1 items-center gap-2">
-                  <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
-                    <Icon
-                      icon="arrow-2-up"
-                      aria-hidden
-                      className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
-                    />
-                    <span className="text-m mx-2 font-bold capitalize">
-                      {t('cases:case.files')}
+                    </CollapsibleV2.Title>
+                    <span className="text-grey-25 text-xs font-normal capitalize">
+                      {t('cases:case_detail.decisions_count', {
+                        count: caseDetail.decisions.length,
+                      })}
                     </span>
-                  </CollapsibleV2.Title>
-                  <span className="text-grey-25 text-xs font-normal capitalize">
-                    {t('cases:case_detail.files_count', {
-                      count: caseDetail.files.length,
-                    })}
-                  </span>
-                </div>
-
-                <CollapsibleV2.Content>
-                  {caseDetail.files.length > 0 ? (
-                    <div className="mt-4">
-                      <FilesList files={caseDetail.files} />
-                    </div>
-                  ) : (
-                    <div className="px-2 pt-2">
-                      <span className="text-grey-50 text-s whitespace-pre">
-                        <Trans
-                          t={t}
-                          i18nKey="cases:case_detail.no_files"
-                          components={{
-                            Button: (
-                              <AddYourFirstFile caseDetail={caseDetail} />
-                            ),
-                          }}
-                        />
-                      </span>
-                    </div>
-                  )}
-                </CollapsibleV2.Content>
-              </CollapsibleV2.Provider>
-            </div>
-            <div>
-              <CollapsibleV2.Provider
-                defaultOpen={caseDetail.events.length > 0}
-              >
-                <div className="group flex flex-1 items-center gap-2">
-                  <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
-                    <Icon
-                      icon="arrow-2-up"
-                      aria-hidden
-                      className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180"
-                    />
-                    <span className="text-m mx-2 font-bold capitalize">
-                      {t('cases:case_detail.history')}
-                    </span>
-                  </CollapsibleV2.Title>
-                  <span className="text-grey-25 text-xs font-normal capitalize">
-                    {t('cases:case_detail.events_count', {
-                      count: caseDetail.events.length,
-                    })}
-                  </span>
-                </div>
-                <CollapsibleV2.Content>
-                  <div className="border-grey-10 bg-grey-00 mt-4 max-h-96 overflow-y-scroll rounded-lg border p-4">
-                    <CaseEvents events={caseDetail.events} />
                   </div>
-                </CollapsibleV2.Content>
-              </CollapsibleV2.Provider>
-            </div>
-          </Page.Content>
+                  <CollapsibleV2.Content>
+                    {caseDetail.decisions.length > 0 ? (
+                      <div className="mt-4">
+                        <CaseDecisions
+                          decisions={caseDetail.decisions}
+                          caseDecisionsPromise={caseDecisionsPromise}
+                        />
+                      </div>
+                    ) : (
+                      <div className="px-2 pt-2">
+                        <span className="text-grey-50 text-s whitespace-pre">
+                          <Trans
+                            t={t}
+                            i18nKey="cases:case_detail.no_decisions"
+                            components={{
+                              Link: (
+                                <Link
+                                  className="text-purple-50 hover:text-purple-100 hover:underline"
+                                  to={getRoute('/decisions/')}
+                                />
+                              ),
+                            }}
+                          />
+                        </span>
+                      </div>
+                    )}
+                  </CollapsibleV2.Content>
+                </CollapsibleV2.Provider>
+              </div>
+              <div>
+                <CollapsibleV2.Provider
+                  defaultOpen={caseDetail.files.length > 0}
+                >
+                  <div className="group flex flex-1 items-center gap-2">
+                    <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
+                      <Icon
+                        icon="arrow-2-up"
+                        aria-hidden
+                        className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
+                      />
+                      <span className="text-m mx-2 font-bold capitalize">
+                        {t('cases:case.files')}
+                      </span>
+                    </CollapsibleV2.Title>
+                    <span className="text-grey-25 text-xs font-normal capitalize">
+                      {t('cases:case_detail.files_count', {
+                        count: caseDetail.files.length,
+                      })}
+                    </span>
+                  </div>
+
+                  <CollapsibleV2.Content>
+                    {caseDetail.files.length > 0 ? (
+                      <div className="mt-4">
+                        <FilesList files={caseDetail.files} />
+                      </div>
+                    ) : (
+                      <div className="px-2 pt-2">
+                        <span className="text-grey-50 text-s whitespace-pre">
+                          <Trans
+                            t={t}
+                            i18nKey="cases:case_detail.no_files"
+                            components={{
+                              Button: (
+                                <AddYourFirstFile caseDetail={caseDetail} />
+                              ),
+                            }}
+                          />
+                        </span>
+                      </div>
+                    )}
+                  </CollapsibleV2.Content>
+                </CollapsibleV2.Provider>
+              </div>
+              <div>
+                <CollapsibleV2.Provider
+                  defaultOpen={caseDetail.events.length > 0}
+                >
+                  <div className="group flex flex-1 items-center gap-2">
+                    <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
+                      <Icon
+                        icon="arrow-2-up"
+                        aria-hidden
+                        className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180"
+                      />
+                      <span className="text-m mx-2 font-bold capitalize">
+                        {t('cases:case_detail.history')}
+                      </span>
+                    </CollapsibleV2.Title>
+                    <span className="text-grey-25 text-xs font-normal capitalize">
+                      {t('cases:case_detail.events_count', {
+                        count: caseDetail.events.length,
+                      })}
+                    </span>
+                  </div>
+                  <CollapsibleV2.Content>
+                    <div className="border-grey-10 bg-grey-00 mt-4 max-h-96 overflow-y-scroll rounded-lg border p-4">
+                      <CaseEvents events={caseDetail.events} />
+                    </div>
+                  </CollapsibleV2.Content>
+                </CollapsibleV2.Provider>
+              </div>
+            </Page.Content>
+          </Page.Container>
           <div className="bg-grey-00 border-t-grey-10 flex shrink-0 flex-row items-center gap-4 border-t p-4">
             <AddComment caseId={caseDetail.id} />
             <UploadFile caseDetail={caseDetail}>
@@ -311,7 +315,7 @@ export default function CasePage() {
           </div>
         </div>
       </div>
-    </Page.Container>
+    </Page.Main>
   );
 }
 

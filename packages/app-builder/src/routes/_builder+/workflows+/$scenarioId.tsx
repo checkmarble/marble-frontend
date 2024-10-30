@@ -137,7 +137,7 @@ export default function Workflow() {
   };
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
@@ -159,7 +159,7 @@ export default function Workflow() {
           <DetailPanel onDelete={deleteWorkflow} onSave={saveWorkflow} />
         </div>
       </WorkflowProvider>
-    </Page.Container>
+    </Page.Main>
   );
 }
 

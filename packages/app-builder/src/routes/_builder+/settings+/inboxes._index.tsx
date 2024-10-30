@@ -10,7 +10,6 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -85,7 +84,7 @@ export default function Inboxes() {
 
   return (
     <Page.Container>
-      <Page.Content>
+      <Page.Content className="max-w-screen-xl">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:inboxes')}</span>
@@ -102,7 +101,7 @@ export default function Inboxes() {
                     <Table.Row
                       key={row.id}
                       tabIndex={0}
-                      className={clsx('hover:bg-purple-05 cursor-pointer')}
+                      className="hover:bg-purple-05 cursor-pointer"
                       row={row}
                       onClick={() => {
                         navigate(

@@ -117,7 +117,7 @@ export default function Cases() {
 
   return (
     <CaseRightPanel.Root>
-      <div className="flex h-full flex-row">
+      <Page.Container>
         <Page.Content>
           <div className="flex flex-col gap-4">
             <CasesFiltersProvider
@@ -147,7 +147,7 @@ export default function Cases() {
             </CasesFiltersProvider>
           </div>
         </Page.Content>
-      </div>
+      </Page.Container>
     </CaseRightPanel.Root>
   );
 }

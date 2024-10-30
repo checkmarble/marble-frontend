@@ -1,4 +1,4 @@
-import { Callout, ErrorComponent, Page } from '@app-builder/components';
+import { ErrorComponent, Page } from '@app-builder/components';
 import { DeleteList } from '@app-builder/routes/ressources+/lists+/delete';
 import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
 import { NewListValue } from '@app-builder/routes/ressources+/lists+/value_create';
@@ -113,13 +113,11 @@ export default function Lists() {
     getSortedRowModel: getSortedRowModel(),
   });
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header className="justify-between">
-        <div className="flex w-full flex-row items-center justify-between gap-4">
-          <div className="flex flex-row items-center gap-4">
-            <Page.BackButton />
-            <span className="line-clamp-2 text-left">{customList.name}</span>
-          </div>
+        <div className="flex w-full flex-row items-center gap-4">
+          <Page.BackButton />
+          <span className="line-clamp-2 text-left">{customList.name}</span>
           {listFeatureAccess.isEditListAvailable ? (
             <EditList
               listId={customList.id}
@@ -129,47 +127,47 @@ export default function Lists() {
           ) : null}
         </div>
       </Page.Header>
-      <Page.Content className="max-w-3xl">
-        <Callout className="w-full" variant="outlined">
-          {customList.description}
-        </Callout>
-        {/* <ScenariosList scenarios={scenarios} /> */}
-        <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
-          <div className="flex flex-row gap-2 lg:gap-4">
-            <form className="flex grow items-center">
-              <Input
-                className="w-full"
-                disabled={listValues.length === 0}
-                type="search"
-                aria-label={t('common:search')}
-                placeholder={t('common:search')}
-                startAdornment="search"
-                onChange={(event) => {
-                  virtualTable.table.setGlobalFilter(event.target.value);
-                }}
-              />
-            </form>
-            {listFeatureAccess.isCreateListValueAvailable ? (
-              <NewListValue listId={customList.id} />
-            ) : null}
-          </div>
-          {virtualTable.isEmpty ? (
-            <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-              <p className="text-s font-medium">
-                {listValues.length > 0
-                  ? t('lists:empty_custom_list_matches')
-                  : t('lists:empty_custom_list_values_list')}
-              </p>
+      <Page.Container>
+        <Page.Description>{customList.description}</Page.Description>
+        <Page.Content className="max-w-screen-xl">
+          {/* <ScenariosList scenarios={scenarios} /> */}
+          <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
+            <div className="flex flex-row gap-2 lg:gap-4">
+              <form className="flex grow items-center">
+                <Input
+                  className="w-full"
+                  disabled={listValues.length === 0}
+                  type="search"
+                  aria-label={t('common:search')}
+                  placeholder={t('common:search')}
+                  startAdornment="search"
+                  onChange={(event) => {
+                    virtualTable.table.setGlobalFilter(event.target.value);
+                  }}
+                />
+              </form>
+              {listFeatureAccess.isCreateListValueAvailable ? (
+                <NewListValue listId={customList.id} />
+              ) : null}
             </div>
-          ) : (
-            <Table.Default {...virtualTable}></Table.Default>
-          )}
-        </div>
-        {listFeatureAccess.isDeleteListAvailable ? (
-          <DeleteList listId={customList.id} />
-        ) : null}
-      </Page.Content>
-    </Page.Container>
+            {virtualTable.isEmpty ? (
+              <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+                <p className="text-s font-medium">
+                  {listValues.length > 0
+                    ? t('lists:empty_custom_list_matches')
+                    : t('lists:empty_custom_list_values_list')}
+                </p>
+              </div>
+            ) : (
+              <Table.Default {...virtualTable}></Table.Default>
+            )}
+          </div>
+          {listFeatureAccess.isDeleteListAvailable ? (
+            <DeleteList listId={customList.id} />
+          ) : null}
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
 export function ErrorBoundary() {

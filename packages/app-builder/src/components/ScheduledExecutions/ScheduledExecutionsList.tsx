@@ -7,7 +7,6 @@ import {
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import qs from 'qs';
 import { useMemo } from 'react';
@@ -142,7 +141,7 @@ export function ScheduledExecutionsList({
           return (
             <Table.Row
               key={row.id}
-              className={clsx('hover:bg-purple-05 cursor-pointer')}
+              className="hover:bg-purple-05 cursor-pointer"
               row={row}
             />
           );

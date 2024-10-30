@@ -33,21 +33,23 @@ export default function Cases() {
   const { isCreateInboxAvailable } = useLoaderData<typeof loader>();
 
   return (
-    <Page.Container>
+    <Page.Main>
       <Page.Header>
         <Icon icon="case-manager" className="mr-2 size-6" />
         {t('navigation:caseManager')}
       </Page.Header>
-      <Page.Content>
-        {isCreateInboxAvailable ? (
-          <div className="flex max-w-xl flex-col gap-4">
-            <p>{t('cases:inbox.need_first_inbox')}</p>
-            <CreateInbox redirectRoutePath="/cases/inboxes/:inboxId" />
-          </div>
-        ) : (
-          <p>{t('cases:inbox.need_inbox_contact_admin')}</p>
-        )}
-      </Page.Content>
-    </Page.Container>
+      <Page.Container>
+        <Page.Content>
+          {isCreateInboxAvailable ? (
+            <div className="flex max-w-xl flex-col gap-4">
+              <p>{t('cases:inbox.need_first_inbox')}</p>
+              <CreateInbox redirectRoutePath="/cases/inboxes/:inboxId" />
+            </div>
+          ) : (
+            <p>{t('cases:inbox.need_inbox_contact_admin')}</p>
+          )}
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
