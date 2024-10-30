@@ -139,7 +139,7 @@ export default function CasePage() {
           <Page.BackButton />
           <span className="line-clamp-2 text-left">{caseDetail.name}</span>
           <CopyToClipboardButton toCopy={caseDetail.id}>
-            <span className="text-s line-clamp-1 font-normal">
+            <span className="text-s line-clamp-1 max-w-40 font-normal">
               <span className="font-medium">ID</span> {caseDetail.id}
             </span>
           </CopyToClipboardButton>
