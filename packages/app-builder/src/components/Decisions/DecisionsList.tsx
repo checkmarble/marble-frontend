@@ -129,7 +129,7 @@ export function DecisionsList({
                   }}
                 />
               ),
-              size: 58,
+              size: 40,
               enableResizing: false,
             }),
           ]
@@ -138,7 +138,8 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.createdAt, {
         id: 'created_at',
         header: t('decisions:created_at'),
-        size: 100,
+        size: 80,
+        minSize: 80,
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return (
@@ -152,23 +153,15 @@ export function DecisionsList({
         id: 'scenario_name',
         header: t('decisions:scenario.name'),
         size: 200,
+        minSize: 120,
         cell: ({ getValue, row }) => (
           <div className="flex flex-row items-center gap-2">
             <Tooltip.Default content={getValue()}>
-              <Link
-                to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
-                  scenarioId: fromUUID(row.original.scenario.id),
-                  iterationId: fromUUID(
-                    row.original.scenario.scenarioIterationId,
-                  ),
-                })}
-                onClick={(e) => e.stopPropagation()}
-                className="hover:text-purple-120 focus:text-purple-120 relative line-clamp-2 font-semibold text-purple-100 hover:underline focus:underline"
-              >
+              <span className="text-grey-100 text-s isolate line-clamp-2 font-normal">
                 {getValue()}
-              </Link>
+              </span>
             </Tooltip.Default>
-            <div className="border-grey-10 text-grey-100 rounded-full border px-3 py-1 font-semibold">
+            <div className="border-grey-10 text-grey-100 rounded-full border px-3 py-1 font-normal">
               {`V${row.original.scenario.version}`}
             </div>
           </div>
@@ -177,12 +170,14 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.triggerObjectType, {
         id: 'trigger_object_type',
         header: t('decisions:trigger_object.type'),
-        size: 150,
+        size: 100,
+        minSize: 100,
       }),
       columnHelper.accessor((row) => row.case?.name ?? '-', {
         id: 'case',
         header: t('decisions:case'),
-        size: 150,
+        size: 200,
+        minSize: 150,
         cell: ({ getValue, row }) =>
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
@@ -191,19 +186,15 @@ export function DecisionsList({
                 status={row.original.case.status}
               />
               <Tooltip.Default content={getValue()}>
-                <Link
-                  to={getRoute('/cases/:caseId', {
-                    caseId: fromUUID(row.original.case.id),
-                  })}
-                  onClick={(e) => e.stopPropagation()}
-                  className="hover:text-purple-120 focus:text-purple-120 relative line-clamp-2 font-semibold text-purple-100 hover:underline focus:underline"
-                >
-                  {getValue()}
-                </Link>
+                <div className="bg-grey-02 isolate flex h-8 items-center justify-center rounded px-2">
+                  <span className="text-grey-100 text-s line-clamp-1 font-normal">
+                    {getValue()}
+                  </span>
+                </div>
               </Tooltip.Default>
             </div>
           ) : (
-            <span className="bg-grey-02 text-grey-100 text-s flex h-8 w-fit items-center justify-center rounded px-2 font-normal">
+            <span className="bg-grey-02 text-grey-100 text-s flex size-8 items-center justify-center rounded font-normal">
               {getValue()}
             </span>
           ),
@@ -231,7 +222,8 @@ export function DecisionsList({
       columnHelper.accessor((row) => row.score, {
         id: 'score',
         header: t('decisions:score'),
-        size: 80,
+        size: 50,
+        minSize: 80,
         cell: ({ getValue }) => <Score score={getValue()} />,
       }),
       columnHelper.accessor(
