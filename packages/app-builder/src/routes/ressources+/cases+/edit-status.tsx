@@ -90,9 +90,9 @@ export function EditCaseStatus({
           ref={dropdownTriggerRef}
           className={caseStatusVariants({
             color: caseStatusMapping[status].color,
-            variant: 'contained',
-            className:
-              'group flex h-10 flex-row items-center gap-1 rounded px-2',
+            type: 'full',
+            size: 'big',
+            className: 'group',
           })}
         >
           <span className="text-s ml-2 font-semibold capitalize">
@@ -132,10 +132,11 @@ export function EditCaseStatus({
                     event.preventDefault();
                   }}
                 >
-                  <CaseStatus className="size-6" status={nextStatus.value} />
-                  <span className="text-s text-grey-100 first-letter:capitalize">
-                    {nextStatus.label}
-                  </span>
+                  <CaseStatus
+                    type="full"
+                    size="big"
+                    status={nextStatus.value}
+                  />
                 </DropdownMenu.Item>
               </Modal.Trigger>
               <Modal.Content>
@@ -208,18 +209,7 @@ function ModalContent({
               t={t}
               i18nKey="cases:change_status_modal.description.from"
               components={{
-                Status: (
-                  <span
-                    className={caseStatusVariants({
-                      color: caseStatusMapping[status].color,
-                      variant: 'contained',
-                      className: 'flex h-10 w-fit items-center rounded px-2',
-                    })}
-                  />
-                ),
-              }}
-              values={{
-                status: t(caseStatusMapping[status].tKey),
+                Status: <CaseStatus type="full" size="big" status={status} />,
               }}
             />
           </div>
@@ -229,17 +219,8 @@ function ModalContent({
               i18nKey="cases:change_status_modal.description.to"
               components={{
                 Status: (
-                  <span
-                    className={caseStatusVariants({
-                      color: caseStatusMapping[status].color,
-                      variant: 'contained',
-                      className: 'flex h-10 w-fit items-center rounded px-2',
-                    })}
-                  />
+                  <CaseStatus type="full" size="big" status={nextStatus} />
                 ),
-              }}
-              values={{
-                status: t(caseStatusMapping[nextStatus].tKey),
               }}
             />
           </div>

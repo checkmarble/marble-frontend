@@ -7,7 +7,7 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const avatar = cva(
-  'inline-flex select-none items-center justify-center overflow-hidden rounded-full bg-purple-25',
+  'inline-flex select-none items-center justify-center overflow-hidden rounded-full bg-purple-25 shrink-0',
   {
     variants: {
       size: {

@@ -182,7 +182,8 @@ export function DecisionsList({
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
               <CaseStatus
-                className="isolate size-8"
+                size="big"
+                type="first-letter"
                 status={row.original.case.status}
               />
               <Tooltip.Default content={getValue()}>

@@ -109,7 +109,7 @@ export default function SentAlertDetailPage() {
                     }}
                   >
                     <Button>
-                      <Icon icon="edit" className="size-5" />
+                      <Icon icon="edit-square" className="size-5" />
                       {t('transfercheck:alert.update.title')}
                     </Button>
                   </UpdateAlert>

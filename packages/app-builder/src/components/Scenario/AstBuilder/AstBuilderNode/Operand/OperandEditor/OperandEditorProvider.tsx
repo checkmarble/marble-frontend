@@ -250,7 +250,7 @@ export function useBottomOptions() {
 
     if (isEditableAstNode(initialAstNode)) {
       bottomOptions.push({
-        icon: 'edit',
+        icon: 'edit-square',
         label: t('common:edit'),
         onSelect: () => {
           onEdit(initialAstNode);

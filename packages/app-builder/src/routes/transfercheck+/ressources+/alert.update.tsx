@@ -210,7 +210,7 @@ function UpdateAlertContent({
               {t('common:cancel')}
             </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">
-              <Icon icon="edit" className="size-5" />
+              <Icon icon="edit-square" className="size-5" />
               {t('transfercheck:alert.update.submit')}
             </Button>
           </div>

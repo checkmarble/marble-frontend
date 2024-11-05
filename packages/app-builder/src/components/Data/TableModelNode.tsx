@@ -292,7 +292,7 @@ function EditDataModelField({
         disabled={displayPivot}
         className="group-hover:text-grey-100 focus:text-grey-100 block overflow-hidden text-transparent after:absolute after:inset-0 after:content-['']"
       >
-        <Icon icon="edit" className="size-5" />
+        <Icon icon="edit-square" className="size-5" />
       </button>
     </EditField>
   );
@@ -330,7 +330,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
     menuItems.push(
       <EditTable key="edit-description" table={data.original}>
         <SchemaMenuMenuItem>
-          <Icon icon="edit" className="size-6" />
+          <Icon icon="edit-square" className="size-6" />
           {t('data:edit_table.title')}
         </SchemaMenuMenuItem>
       </EditTable>,

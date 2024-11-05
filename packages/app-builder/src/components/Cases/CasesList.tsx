@@ -34,7 +34,7 @@ export function CasesList({
         header: t('cases:case.status'),
         size: 50,
         cell: ({ getValue }) => (
-          <CaseStatus className="size-8" status={getValue()} />
+          <CaseStatus size="big" type="first-letter" status={getValue()} />
         ),
       }),
       columnHelper.accessor(({ name }) => name, {
