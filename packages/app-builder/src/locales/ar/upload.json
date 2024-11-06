@@ -16,5 +16,8 @@
   "started_at": "بدأت في",
   "finished_at": "اكتملت في",
   "status_success": "اكتمل",
-  "status_pending": "جارٍ المعالجة"
+  "status_pending": "جارٍ المعالجة",
+  "num_rows_ingested": "عدد السجلات التي تم استيعابها",
+  "status_failure": "فشل",
+  "status_processing": "يعالج"
 }

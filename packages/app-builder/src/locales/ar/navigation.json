@@ -22,5 +22,10 @@
   "settings.case_manager": "مدير الحالة",
   "settings.inboxes": "الصناديق الواردة",
   "settings.tags": "الإشارات",
-  "transfercheck.transfers": "الحوالات"
+  "transfercheck.transfers": "الحوالات",
+  "collapse": "ينهار",
+  "expand": "يوسع",
+  "transfercheck.alerts": "التنبيهات",
+  "transfercheck.alerts.received": "التنبيهات المستلمة",
+  "transfercheck.alerts.sent": "التنبيهات المرسلة"
 }

@@ -45,5 +45,15 @@
   "rules.status.no_hit": "لا توجد نتائج",
   "rules.description": "الوصف",
   "rules.error.not_found": "تعذر العثور على معلومات القاعدة المرتبطة. يرجى المحاولة مرة أخرى أو الاتصال بالمسؤول الخاص بك.",
-  "rules.show_contextual_values": "عرض القيم السياقية"
+  "rules.show_contextual_values": "عرض القيم السياقية",
+  "filters.inbox": "البريد الوارد",
+  "filters.scheduled_execution": "التنفيذ المقرر",
+  "filters.scheduled_execution.no_results": "لا توجد عمليات تنفيذ مجدولة ناجحة تطابق بحثك",
+  "filters.scheduled_execution.no_schedule": "لا توجد عمليات إعدام مجدولة ناجحة",
+  "filters.scheduled_execution.placeholder": "عمليات الإعدام المجدولة الناجحة",
+  "outcome.block_and_review": "حظر ومراجعة",
+  "review_status.approve": "يعتمد",
+  "review_status.decline": "انخفاض",
+  "review_status.pending": "قيد الانتظار",
+  "rules.status.snoozed": "مؤجلة"
 }

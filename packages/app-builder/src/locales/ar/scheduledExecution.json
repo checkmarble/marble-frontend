@@ -8,5 +8,9 @@
   "finished_at": "انتهت في",
   "status_pending": "قيد الانتظار",
   "status_success": "نجاح",
-  "status_failure": "فشل"
+  "status_failure": "فشل",
+  "number_of_evaluated_decisions": "القرارات التي تم تقييمها",
+  "number_of_planned_decisions": "قرارات للقيام بها",
+  "status_partial_failure": "فشل",
+  "status_processing": "يعالج"
 }
