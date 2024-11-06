@@ -25,7 +25,6 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
-  ScrollAreaV2,
   Tag,
 } from 'ui-design-system';
 
@@ -52,11 +51,16 @@ export function HelpCenter({
   ChatWithUsButton,
   MenuButton: renderMenuButton,
 }: HelpCenterProps) {
+  const { i18n } = useTranslation();
   const [searchValue, setSearchValue] = React.useState('');
   const deferredSearchValue = React.useDeferredValue(searchValue);
 
   return (
-    <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
+    <MenuRoot
+      searchValue={searchValue}
+      onSearch={setSearchValue}
+      rtl={i18n.dir() === 'rtl'}
+    >
       <MenuButton render={renderMenuButton} />
       <MenuPopover
         className="flex h-[600px] max-h-[var(--popover-available-height)] w-[400px] max-w-[var(--popover-available-width)] flex-col"
@@ -86,7 +90,7 @@ function HelpCenterContent({
   ChatWithUsButton,
   searchValue,
 }: HelpCenterContentProps) {
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common']);
   const language = useFormatLanguage();
   const categories = React.useMemo(() => R.keys(resources), [resources]);
 
@@ -130,29 +134,28 @@ function HelpCenterContent({
         if (!id) return;
         setTabId(id);
       }}
+      rtl={i18n.dir() === 'rtl'}
     >
       <MenuCombobox render={<Input className="mx-2 mt-2 shrink-0" />} />
 
       <Ariakit.TabList
         aria-label="Categories"
-        className="shrink-0 overflow-hidden"
+        className="shrink-0 overflow-x-auto"
       >
-        <ScrollAreaV2 orientation="horizontal">
-          <div className="flex w-fit flex-row gap-2 p-2">
-            {categories.map((category) => {
-              const resourcesLength = matches[category]?.length ?? 0;
-              return (
-                <CategoryTab
-                  key={category}
-                  id={category}
-                  disabled={resourcesLength === 0}
-                >
-                  {category} {formatNumber(resourcesLength, { language })}
-                </CategoryTab>
-              );
-            })}
-          </div>
-        </ScrollAreaV2>
+        <div className="flex w-fit flex-row gap-2 p-2">
+          {categories.map((category) => {
+            const resourcesLength = matches[category]?.length ?? 0;
+            return (
+              <CategoryTab
+                key={category}
+                id={category}
+                disabled={resourcesLength === 0}
+              >
+                {category} {formatNumber(resourcesLength, { language })}
+              </CategoryTab>
+            );
+          })}
+        </div>
       </Ariakit.TabList>
       <div className="border-grey-10 bg-grey-02 flex h-full flex-col overflow-hidden border-y">
         <Ariakit.TabPanel
@@ -160,40 +163,34 @@ function HelpCenterContent({
           className="flex flex-col overflow-hidden"
         >
           <MenuContent>
-            <ScrollAreaV2 type="auto">
-              <div className="flex flex-col gap-2 p-2">
-                {!currentResources.length ? (
-                  <div className="text-grey-25 w-full text-center">
-                    {t('common:help_center.no_results')}
-                  </div>
-                ) : null}
-                {currentResources.map((resource) => (
-                  <MenuItem
-                    key={`${resource.category}-${resource.label}`}
-                    className="border-grey-05 bg-grey-00 data-[active-item]:bg-purple-05 flex scroll-my-2 flex-col gap-2 rounded border p-2 outline-none data-[active-item]:border-purple-100"
-                    render={
-                      // eslint-disable-next-line jsx-a11y/anchor-has-content
-                      <a
-                        href={resource.href}
-                        target="_blank"
-                        rel="noreferrer"
-                      />
-                    }
-                  >
-                    {resource.label}
-                    {resource.tags ? (
-                      <div className="flex flex-wrap gap-1">
-                        {resource.tags.map((tag) => (
-                          <Tag color="grey" key={tag}>
-                            {tag}
-                          </Tag>
-                        ))}
-                      </div>
-                    ) : null}
-                  </MenuItem>
-                ))}
-              </div>
-            </ScrollAreaV2>
+            <div className="flex flex-col gap-2 overflow-y-auto p-2">
+              {!currentResources.length ? (
+                <div className="text-grey-25 w-full text-center">
+                  {t('common:help_center.no_results')}
+                </div>
+              ) : null}
+              {currentResources.map((resource) => (
+                <MenuItem
+                  key={`${resource.category}-${resource.label}`}
+                  className="border-grey-05 bg-grey-00 data-[active-item]:bg-purple-05 flex scroll-my-2 flex-col gap-2 rounded border p-2 outline-none data-[active-item]:border-purple-100"
+                  render={
+                    // eslint-disable-next-line jsx-a11y/anchor-has-content
+                    <a href={resource.href} target="_blank" rel="noreferrer" />
+                  }
+                >
+                  {resource.label}
+                  {resource.tags ? (
+                    <div className="flex flex-wrap gap-1">
+                      {resource.tags.map((tag) => (
+                        <Tag color="grey" key={tag}>
+                          {tag}
+                        </Tag>
+                      ))}
+                    </div>
+                  ) : null}
+                </MenuItem>
+              ))}
+            </div>
           </MenuContent>
         </Ariakit.TabPanel>
       </div>

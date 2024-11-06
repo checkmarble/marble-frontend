@@ -22,6 +22,7 @@ interface MenuProviderProps {
   isSubmenu: boolean;
   open?: boolean;
   setOpen?: (open: boolean) => void;
+  rtl?: boolean;
 }
 
 function MenuProvider({
@@ -31,6 +32,7 @@ function MenuProvider({
   isSubmenu,
   open,
   setOpen,
+  rtl,
 }: MenuProviderProps) {
   const withCombobox = searchValue !== undefined || onSearch !== undefined;
 
@@ -39,7 +41,9 @@ function MenuProvider({
       open={withCombobox ? undefined : open}
       setOpen={withCombobox ? undefined : setOpen}
       showTimeout={0}
-      placement={isSubmenu ? 'right-start' : 'bottom-start'}
+      placement={
+        isSubmenu ? (rtl ? 'left-start' : 'right-start') : 'bottom-start'
+      }
       /**
        * Explicitly set the parent to null to prevent the menu from being nested (ex: a <Menu> inside a <Menu>)
        * This is necessary to prevent hideAll from closing the parent menu
@@ -55,6 +59,7 @@ function MenuProvider({
        * <MenuRoot>
        */
       parent={isSubmenu ? undefined : null}
+      rtl={rtl}
     >
       <WithComboboxContext.Provider value={withCombobox}>
         <HideAllContextProvider>{children}</HideAllContextProvider>
@@ -71,6 +76,7 @@ function MenuProvider({
         value={searchValue}
         setValue={onSearch}
         includesBaseElement={false}
+        rtl={rtl}
       >
         {element}
       </Ariakit.ComboboxProvider>

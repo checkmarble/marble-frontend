@@ -2,9 +2,9 @@ import 'cronstrue/locales/en.js';
 import 'cronstrue/locales/fr.js';
 
 import { type Locale } from 'date-fns/locale';
+import { ar } from 'date-fns/locale/ar';
 import { enGB } from 'date-fns/locale/en-GB';
 import { fr } from 'date-fns/locale/fr';
-import { ar } from 'date-fns/locale/ar';
 import { type InitOptions } from 'i18next';
 
 export const defaultNS = 'common';

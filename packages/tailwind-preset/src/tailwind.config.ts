@@ -147,6 +147,26 @@ export default {
             opacity: '1',
           },
         },
+        slideLeftAndFadeIn: {
+          from: {
+            opacity: '0',
+            transform: 'translate(-100%, 0)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translate(0, 0)',
+          },
+        },
+        slideLeftAndFadeOut: {
+          from: {
+            opacity: '1',
+            transform: 'translate(0, 0)',
+          },
+          to: {
+            opacity: '0',
+            transform: 'translate(-100%, 0)',
+          },
+        },
         slideRightAndFadeIn: {
           from: {
             opacity: '0',
@@ -195,6 +215,10 @@ export default {
         secondLineAnimation: 'secondLineAnimation 300ms ease-out forwards',
         checkmarkAnimation: 'checkmarkAnimation  300ms ease-out forwards',
         overlayShow: 'overlayShow 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+        slideLeftAndFadeIn:
+          'slideLeftAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+        slideLeftAndFadeOut:
+          'slideLeftAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1)',
         slideRightAndFadeIn:
           'slideRightAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1)',
         slideRightAndFadeOut:

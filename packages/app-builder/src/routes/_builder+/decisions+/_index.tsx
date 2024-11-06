@@ -5,7 +5,7 @@ import {
   DecisionFiltersMenu,
   DecisionFiltersProvider,
   decisionFiltersSchema,
-  DecisionRightPanel,
+  DecisionRightPannel,
   decisionsI18n,
   DecisionsList,
   ErrorComponent,
@@ -142,7 +142,7 @@ export default function Decisions() {
     useSelectedDecisionIds();
 
   return (
-    <DecisionRightPanel.Root>
+    <DecisionRightPannel.Root>
       <Page.Main>
         <Page.Header>
           <Icon icon="decision" className="mr-2 size-6" />
@@ -193,7 +193,7 @@ export default function Decisions() {
           </Page.Content>
         </Page.Container>
       </Page.Main>
-    </DecisionRightPanel.Root>
+    </DecisionRightPannel.Root>
   );
 }
 
@@ -215,12 +215,12 @@ function AddToCase({
     }
   };
   return (
-    <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
+    <DecisionRightPannel.Trigger asChild onClick={getDecisionIds}>
       <Button disabled={!hasSelection}>
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
-    </DecisionRightPanel.Trigger>
+    </DecisionRightPannel.Trigger>
   );
 }
 

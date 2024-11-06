@@ -73,8 +73,7 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={clsx(
-        'flex flex-1 flex-col',
-        'gap-4 p-4 pr-[calc(1rem-var(--scrollbar-width))] lg:gap-6 lg:p-6 lg:pr-[calc(1.5rem-var(--scrollbar-width))]',
+        'flex flex-1 flex-col gap-4 p-4 pe-[calc(1rem-var(--scrollbar-width))] lg:gap-6 lg:p-6 lg:pe-[calc(1.5rem-var(--scrollbar-width))]',
         className,
       )}
       {...props}
@@ -99,7 +98,7 @@ function PageBackButton({
         onClick={() => navigate(-1)}
         {...props}
       >
-        <Icon icon="arrow-left" className="size-5" aria-hidden />
+        <Icon icon="arrow-left" className="size-5 rtl:rotate-180" aria-hidden />
         <span className="sr-only">{t('common:go_back')}</span>
       </button>
     </Tooltip.Default>
@@ -110,9 +109,14 @@ function PageBackLink({
   className,
   ...props
 }: React.ComponentProps<typeof Link>) {
+  const { i18n } = useTranslation();
   return (
     <Link className={pageBack({ className })} {...props}>
-      <Icon icon="arrow-left" className="size-5" aria-hidden />
+      <Icon
+        icon={i18n.dir() === 'ltr' ? 'arrow-left' : 'arrow-right'}
+        className="size-5"
+        aria-hidden
+      />
     </Link>
   );
 }

@@ -34,7 +34,7 @@ import {
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button, ScrollArea } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -85,33 +85,24 @@ export default function Builder() {
             orgOrPartnerName={partner.name}
           />
         </div>
-        <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
-          <ScrollArea.Viewport>
-            <nav className="p-2">
-              <ul className="flex flex-col gap-2">
-                <li>
-                  <SidebarLink
-                    labelTKey="navigation:transfercheck.transfers"
-                    to={getRoute('/transfercheck/transfers/')}
-                    Icon={(props) => (
-                      <Icon icon="arrows-right-left" {...props} />
-                    )}
-                  />
-                </li>
-                <li>
-                  <SidebarLink
-                    labelTKey="navigation:transfercheck.alerts"
-                    to={getRoute('/transfercheck/alerts')}
-                    Icon={(props) => <Icon icon="notifications" {...props} />}
-                  />
-                </li>
-              </ul>
-            </nav>
-          </ScrollArea.Viewport>
-          <ScrollArea.Scrollbar>
-            <ScrollArea.Thumb />
-          </ScrollArea.Scrollbar>
-        </ScrollArea.Root>
+        <nav className="flex flex-1 flex-col overflow-y-auto p-2">
+          <ul className="flex flex-col gap-2">
+            <li>
+              <SidebarLink
+                labelTKey="navigation:transfercheck.transfers"
+                to={getRoute('/transfercheck/transfers/')}
+                Icon={(props) => <Icon icon="arrows-right-left" {...props} />}
+              />
+            </li>
+            <li>
+              <SidebarLink
+                labelTKey="navigation:transfercheck.alerts"
+                to={getRoute('/transfercheck/alerts')}
+                Icon={(props) => <Icon icon="notifications" {...props} />}
+              />
+            </li>
+          </ul>
+        </nav>
         <nav className="p-2 pb-4">
           <ul className="flex flex-col gap-2">
             <li>

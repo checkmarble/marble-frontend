@@ -22,7 +22,6 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
-  ScrollAreaV2,
 } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
@@ -119,7 +118,7 @@ function OperandEditorContent() {
         }
       />
       <MenuContent>
-        <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pr-[calc(0.5rem-var(--scrollbar-width))]">
+        <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pe-[calc(0.5rem-var(--scrollbar-width))]">
           {searchValue === '' ? (
             <OperandEditorDiscoveryResults
               discoveryResults={discoveryResults}
@@ -144,28 +143,23 @@ interface BottomOptionProps {
 
 function BottomOptions({ options }: { options: BottomOptionProps[] }) {
   return (
-    <ScrollAreaV2
-      orientation="horizontal"
-      className="border-t-grey-10 sticky bottom-0 shrink-0 border-t"
-    >
-      <div className="flex w-fit shrink-0 flex-row gap-2 p-2">
-        {options.map(({ icon, label, onSelect }) => (
-          <MenuItem
-            key={label}
-            render={
-              <Button
-                variant="secondary"
-                className="data-[active-item]:bg-purple-05 scroll-mx-2 data-[active-item]:border-purple-100"
-                onClick={onSelect}
-              >
-                <Icon icon={icon} className="size-4" />
-                <span className="line-clamp-1">{label}</span>
-              </Button>
-            }
-          />
-        ))}
-      </div>
-    </ScrollAreaV2>
+    <div className="border-t-grey-10 sticky bottom-0 flex shrink-0 flex-row gap-2 overflow-x-auto border-t p-2">
+      {options.map(({ icon, label, onSelect }) => (
+        <MenuItem
+          key={label}
+          render={
+            <Button
+              variant="secondary"
+              className="data-[active-item]:bg-purple-05 scroll-mx-2 data-[active-item]:border-purple-100"
+              onClick={onSelect}
+            >
+              <Icon icon={icon} className="size-4" />
+              <span className="line-clamp-1">{label}</span>
+            </Button>
+          }
+        />
+      ))}
+    </div>
   );
 }
 
@@ -191,6 +185,7 @@ function OperandMenu({
     dataType: DataType;
   }[];
 }) {
+  const { i18n } = useTranslation();
   const searchValue = useSearchValue();
   const operandEditorOpen = useOperandEditorOpen();
   const { setOperandEditorOpen, onSearch } = useOperandEditorActions();
@@ -210,6 +205,7 @@ function OperandMenu({
       searchValue={searchValue}
       onSearch={onSearch}
       setOpen={setOpen}
+      rtl={i18n.dir() === 'rtl'}
     >
       {children}
     </MenuRoot>

@@ -16,7 +16,7 @@ export function LeftSidebar({ children }: { children: React.ReactNode }) {
   return (
     <div
       aria-expanded={expanded}
-      className="bg-grey-00 border-r-grey-10 group/nav flex max-h-screen w-14 shrink-0 flex-col border-r transition-all aria-expanded:w-[235px]"
+      className="bg-grey-00 group/nav border-e-grey-10 flex max-h-screen w-14 shrink-0 flex-col border-e transition-all aria-expanded:w-[235px]"
     >
       <ToggleSidebarContext.Provider value={[expanded, toggleExpanded]}>
         {children}

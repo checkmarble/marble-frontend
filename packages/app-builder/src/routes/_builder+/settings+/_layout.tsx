@@ -86,7 +86,7 @@ export default function Settings() {
         {t('navigation:settings')}
       </Page.Header>
       <div className="flex size-full flex-row overflow-hidden">
-        <div className="border-r-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-r p-4">
+        <div className="border-e-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-e p-4">
           <div className="flex flex-col">
             {sections.map(([section, settings]) => {
               if (settings.length === 0) return null;

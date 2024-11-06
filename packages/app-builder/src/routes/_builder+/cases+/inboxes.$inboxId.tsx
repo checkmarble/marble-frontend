@@ -4,7 +4,7 @@ import {
   paginationSchema,
 } from '@app-builder/components';
 import { casesI18n, CasesList } from '@app-builder/components/Cases';
-import { CaseRightPanel } from '@app-builder/components/Cases/CaseRightPanel';
+import { CaseRightPanel } from '@app-builder/components/Cases/CaseEndPanel';
 import {
   type CasesFilters,
   CasesFiltersBar,

@@ -127,19 +127,20 @@ function Submenu({
   }[];
   onClick: (option: AstNode) => void;
 }) {
+  const { i18n } = useTranslation();
   return (
-    <SubMenuRoot>
+    <SubMenuRoot rtl={i18n.dir() === 'rtl'}>
       <SubMenuButton className="data-[active-item]:bg-purple-05 flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2 outline-none">
         {children}
         <Icon
           aria-hidden="true"
           icon="arrow-right"
-          className="size-5 shrink-0"
+          className="size-5 shrink-0 rtl:rotate-180"
         />
       </SubMenuButton>
       <MenuPopover className="max-h-64 w-96 flex-col" gutter={16}>
         <MenuContent>
-          <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pr-[calc(0.5rem-var(--scrollbar-width))]">
+          <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pe-[calc(0.5rem-var(--scrollbar-width))]">
             {options.map((option) => (
               <OperandOption
                 key={option.displayName}
@@ -187,13 +188,13 @@ function OperandDiscoveryTitle({
         />
       ) : null}
       {tKey ? (
-        <span className="text-grey-100 text-m flex-1 items-baseline break-all">
+        <span className="text-grey-100 text-m flex flex-1 flex-row items-baseline gap-1 break-all">
           <Ariakit.Role.span className="font-semibold" render={renderLabel}>
             {t(tKey, {
               count: count,
             })}
           </Ariakit.Role.span>
-          <span className="text-grey-25 text-xs font-medium">{` ${count}`}</span>
+          <span className="text-grey-25 text-xs font-medium">{count}</span>
         </span>
       ) : null}
     </div>
@@ -204,7 +205,7 @@ function FieldByPathLabel({ path, count }: { path: string; count: number }) {
   const { t } = useTranslation('scenarios');
 
   return (
-    <span className="text-grey-100 text-s select-none items-baseline break-all pl-9">
+    <span className="text-grey-100 text-s flex select-none flex-row items-baseline gap-1 break-all pl-9">
       <Trans
         t={t}
         i18nKey="edit_operand.operator_discovery.from"
@@ -215,7 +216,7 @@ function FieldByPathLabel({ path, count }: { path: string; count: number }) {
           path,
         }}
       />
-      <span className="text-grey-25 text-xs font-medium">{` ${count}`}</span>
+      <span className="text-grey-25 text-xs font-medium">{count}</span>
     </span>
   );
 }

@@ -61,7 +61,6 @@ import {
   ComboboxPopover,
   ComboboxRoot,
   Input,
-  ScrollAreaV2,
   Tag,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -301,7 +300,7 @@ function RuleViewContent({
             }}
           />
         </div>
-        <Paper.Container scrollable={false} className="bg-grey-00 max-w-3xl">
+        <Paper.Container className="bg-grey-00 max-w-3xl">
           <AstBuilder
             options={options}
             astEditorStore={astEditorStore}
@@ -538,25 +537,23 @@ function RuleGroup({
         </FormControl>
         <FormError />
         <ComboboxPopover
-          className="flex flex-col gap-2 p-2"
+          className="flex flex-col gap-2 overflow-y-auto p-2"
           fitViewport
           portal
           sameWidth
         >
-          <ScrollAreaV2>
-            {matches.map((item) => {
-              return (
-                <ComboboxItem key={item} value={item}>
-                  <Highlight text={item} query={searchValue} />
-                </ComboboxItem>
-              );
-            })}
-            {matches.length === 0 ? (
-              <p className="text-grey-50 text-xs">
-                {t('scenarios:edit_rule.rule_group.empty_matches')}
-              </p>
-            ) : null}
-          </ScrollAreaV2>
+          {matches.map((item) => {
+            return (
+              <ComboboxItem key={item} value={item}>
+                <Highlight text={item} query={searchValue} />
+              </ComboboxItem>
+            );
+          })}
+          {matches.length === 0 ? (
+            <p className="text-grey-50 text-xs">
+              {t('scenarios:edit_rule.rule_group.empty_matches')}
+            </p>
+          ) : null}
         </ComboboxPopover>
       </FormItem>
     </ComboboxRoot>

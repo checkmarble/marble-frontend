@@ -43,8 +43,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         ref={ref}
         className={clsx(
           input({ borderColor }),
-          startAdornment && 'pl-10',
-          endAdornment && 'pr-10',
+          startAdornment && 'ps-10',
+          endAdornment && 'pe-10',
         )}
         {...props}
       />
@@ -54,7 +54,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           className={clsx(
             'pointer-events-none absolute flex items-center',
             'text-grey-50 peer-focus:text-grey-100',
-            'inset-y-0 left-0 pl-2',
+            'inset-y-0 start-0 ps-2',
           )}
         >
           <Icon icon={startAdornment} className="size-6" />
@@ -65,7 +65,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           className={clsx(
             'pointer-events-none absolute flex items-center',
             'text-grey-50 peer-focus:text-grey-100',
-            'inset-y-0 right-0 pr-2',
+            'inset-y-0 end-0 pe-2',
           )}
         >
           <Icon icon={endAdornment} className="size-6" />

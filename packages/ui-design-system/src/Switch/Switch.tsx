@@ -17,7 +17,13 @@ export const Switch = forwardRef<
       )}
       {...props}
     >
-      <Thumb className="bg-grey-00 radix-state-checked:translate-x-5 block size-4 translate-x-1 rounded-full transition-transform" />
+      <Thumb
+        className={clsx(
+          'bg-grey-00 block size-4 rounded-full transition-transform',
+          'rtl:radix-state-checked:-translate-x-5 rtl:-translate-x-1',
+          'ltr:radix-state-checked:translate-x-5 ltr:translate-x-1',
+        )}
+      />
     </Root>
   );
 });

@@ -36,7 +36,7 @@ import {
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button, ScrollArea } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { getSettings } from './settings+/_layout';
@@ -123,76 +123,65 @@ export default function Builder() {
                 orgOrPartnerName={organization.name}
               />
             </div>
-            <ScrollArea.Root className="flex flex-1 flex-col" type="auto">
-              <ScrollArea.Viewport>
-                <nav className="p-2">
-                  <ul className="flex flex-col gap-2">
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:scenarios"
-                        to={getRoute('/scenarios/')}
-                        Icon={(props) => <Icon icon="scenarios" {...props} />}
-                      />
-                    </li>
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:lists"
-                        to={getRoute('/lists/')}
-                        Icon={(props) => <Icon icon="lists" {...props} />}
-                      />
-                    </li>
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:decisions"
-                        to={getRoute('/decisions/')}
-                        Icon={(props) => <Icon icon="decision" {...props} />}
-                      />
-                    </li>
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:scheduledExecutions"
-                        to={getRoute('/scheduled-executions')}
-                        Icon={(props) => (
-                          <Icon icon="scheduled-execution" {...props} />
-                        )}
-                      />
-                    </li>
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:caseManager"
-                        to={getRoute('/cases/')}
-                        Icon={(props) => (
-                          <Icon icon="case-manager" {...props} />
-                        )}
-                      />
-                    </li>
-                    {featuresAccess.isWorkflowsAvailable ? (
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:workflows"
-                          to={getRoute('/workflows')}
-                          Icon={(props) => (
-                            <Icon icon="rule-settings" {...props} />
-                          )}
-                        />
-                      </li>
-                    ) : null}
-                    {featuresAccess.isAnalyticsAvailable ? (
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:analytics"
-                          to={getRoute('/analytics')}
-                          Icon={(props) => <Icon icon="analytics" {...props} />}
-                        />
-                      </li>
-                    ) : null}
-                  </ul>
-                </nav>
-              </ScrollArea.Viewport>
-              <ScrollArea.Scrollbar>
-                <ScrollArea.Thumb />
-              </ScrollArea.Scrollbar>
-            </ScrollArea.Root>
+            <nav className="flex flex-1 flex-col overflow-y-auto p-2">
+              <ul className="flex flex-col gap-2">
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:scenarios"
+                    to={getRoute('/scenarios/')}
+                    Icon={(props) => <Icon icon="scenarios" {...props} />}
+                  />
+                </li>
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:lists"
+                    to={getRoute('/lists/')}
+                    Icon={(props) => <Icon icon="lists" {...props} />}
+                  />
+                </li>
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:decisions"
+                    to={getRoute('/decisions/')}
+                    Icon={(props) => <Icon icon="decision" {...props} />}
+                  />
+                </li>
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:scheduledExecutions"
+                    to={getRoute('/scheduled-executions')}
+                    Icon={(props) => (
+                      <Icon icon="scheduled-execution" {...props} />
+                    )}
+                  />
+                </li>
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:caseManager"
+                    to={getRoute('/cases/')}
+                    Icon={(props) => <Icon icon="case-manager" {...props} />}
+                  />
+                </li>
+                {featuresAccess.isWorkflowsAvailable ? (
+                  <li>
+                    <SidebarLink
+                      labelTKey="navigation:workflows"
+                      to={getRoute('/workflows')}
+                      Icon={(props) => <Icon icon="rule-settings" {...props} />}
+                    />
+                  </li>
+                ) : null}
+                {featuresAccess.isAnalyticsAvailable ? (
+                  <li>
+                    <SidebarLink
+                      labelTKey="navigation:analytics"
+                      to={getRoute('/analytics')}
+                      Icon={(props) => <Icon icon="analytics" {...props} />}
+                    />
+                  </li>
+                ) : null}
+              </ul>
+            </nav>
             <nav className="p-2 pb-4">
               <ul className="flex flex-col gap-2">
                 <li>
