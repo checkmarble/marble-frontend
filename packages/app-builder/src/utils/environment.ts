@@ -37,8 +37,6 @@ const PublicEnvVarsSchema = z.object({
   SENTRY_ENVIRONMENT: z.string().optional(),
 
   SEGMENT_WRITE_KEY: z.string().optional(),
-
-  CHATLIO_WIDGET_ID: z.string().optional(),
 });
 type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
@@ -90,7 +88,6 @@ interface ServerEnvVars {
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
   SEGMENT_WRITE_KEY?: string;
-  CHATLIO_WIDGET_ID?: string;
   SESSION_SECRET: string;
   LICENSE_KEY: string;
 }
@@ -120,7 +117,6 @@ interface ClientEnvVars {
   MARBLE_APP_DOMAIN: string;
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
-  CHATLIO_WIDGET_ID?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -130,7 +126,6 @@ export function getClientEnvVars(): ClientEnvVars {
     MARBLE_APP_DOMAIN: getServerEnv('MARBLE_APP_DOMAIN'),
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
-    CHATLIO_WIDGET_ID: getServerEnv('CHATLIO_WIDGET_ID'),
   };
 }
 
