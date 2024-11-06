@@ -15,18 +15,11 @@ import {
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleAdmin, isTransferCheckUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import {
-  ChatlioButton,
-  ChatlioProvider,
-} from '@app-builder/services/chatlio/ChatlioWidget';
-import { chatlioScript } from '@app-builder/services/chatlio/script';
 import { serverServices } from '@app-builder/services/init.server';
 import {
   segment,
   useSegmentIdentification,
 } from '@app-builder/services/segment';
-import { getFullName } from '@app-builder/services/user';
-import { getClientEnv } from '@app-builder/utils/environment';
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
@@ -68,9 +61,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export const handle = {
   i18n: ['common', 'transfercheck', ...navigationI18n] satisfies Namespace,
-  scripts: () => [
-    ...(getClientEnv('CHATLIO_WIDGET_ID') ? [chatlioScript] : []),
-  ],
 };
 
 export default function Builder() {
@@ -81,7 +71,6 @@ export default function Builder() {
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
   useRefreshToken();
 
-  const chatlioWidgetId = getClientEnv('CHATLIO_WIDGET_ID');
   const transfercheckResources = useTransfercheckResources();
 
   return (
@@ -126,36 +115,16 @@ export default function Builder() {
         <nav className="p-2 pb-4">
           <ul className="flex flex-col gap-2">
             <li>
-              <ChatlioProvider
-                chatlio={
-                  chatlioWidgetId
-                    ? {
-                        user: {
-                          id: user.actorIdentity.userId,
-                          email: user.actorIdentity.email,
-                          name: getFullName(user.actorIdentity),
-                        },
-                        partner: {
-                          id: user.partnerId,
-                        },
-                        widgetid: chatlioWidgetId,
-                        marbleProduct: 'transfercheck',
-                      }
-                    : undefined
+              <HelpCenter
+                defaultTab={transfercheckResources.defaultTab}
+                resources={transfercheckResources.resources}
+                MenuButton={
+                  <SidebarButton
+                    labelTKey="navigation:helpCenter"
+                    Icon={(props) => <Icon icon="helpcenter" {...props} />}
+                  />
                 }
-              >
-                <HelpCenter
-                  defaultTab={transfercheckResources.defaultTab}
-                  resources={transfercheckResources.resources}
-                  MenuButton={
-                    <SidebarButton
-                      labelTKey="navigation:helpCenter"
-                      Icon={(props) => <Icon icon="helpcenter" {...props} />}
-                    />
-                  }
-                  ChatWithUsButton={<ChatlioButton />}
-                />
-              </ChatlioProvider>
+              />
             </li>
             <li>
               <ToggleSidebar />

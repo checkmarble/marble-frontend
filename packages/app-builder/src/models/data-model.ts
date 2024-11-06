@@ -324,6 +324,8 @@ export function getConstantDataTypeTKey(
   switch (dataType) {
     case 'String':
       return 'edit_operand.constant.use_data_type.string';
+    case 'Timestamp':
+      return 'edit_operand.constant.use_data_type.timestamp';
     case 'Int':
     case 'Float':
       return 'edit_operand.constant.use_data_type.number';
@@ -331,6 +333,8 @@ export function getConstantDataTypeTKey(
       return 'edit_operand.constant.use_data_type.boolean';
     case 'String[]':
       return 'edit_operand.constant.use_data_type.string[]';
+    case 'Timestamp[]':
+      return 'edit_operand.constant.use_data_type.timestamp[]';
     case 'Int[]':
     case 'Float[]':
       return 'edit_operand.constant.use_data_type.number[]';

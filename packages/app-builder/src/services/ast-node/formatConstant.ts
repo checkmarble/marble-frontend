@@ -1,5 +1,6 @@
 import { type ConstantType } from '@app-builder/models';
-import { formatNumber } from '@app-builder/utils/format';
+import { formatDateTime, formatNumber } from '@app-builder/utils/format';
+import { dateTimeDataTypeSchema } from '@app-builder/utils/schema/dataTypeSchema';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 
@@ -17,7 +18,13 @@ export function formatConstant(
   }
 
   if (R.isString(constant)) {
-    //TODO(combobox): handle Timestamp here, if we do manipulate them as ISOstring
+    const parsedConstant = dateTimeDataTypeSchema.safeParse(constant);
+    if (parsedConstant.success) {
+      return formatDateTime(parsedConstant.data, {
+        language: context.language,
+      });
+    }
+
     return `"${constant.toString()}"`;
   }
 
