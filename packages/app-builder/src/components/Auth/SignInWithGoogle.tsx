@@ -1,5 +1,6 @@
 import {
   AccountExistsWithDifferentCredential,
+  InvalidLoginCredentials,
   NetworkRequestFailed,
   PopupBlockedByClient,
   useGoogleSignIn,
@@ -72,6 +73,8 @@ function ClientSignInWithGoogle({
         toast.error(<PopupBlockedError />);
       } else if (error instanceof NetworkRequestFailed) {
         toast.error(t('common:errors.firebase_network_error'));
+      } else if (error instanceof InvalidLoginCredentials) {
+        toast.error(t('auth:sign_in.errors.invalid_login_credentials'));
       } else {
         Sentry.captureException(error);
         toast.error(t('common:errors.unknown'));

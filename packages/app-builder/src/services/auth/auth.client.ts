@@ -43,6 +43,8 @@ export function useGoogleSignIn({
             throw new AccountExistsWithDifferentCredential();
           case AuthErrorCodes.POPUP_BLOCKED:
             throw new PopupBlockedByClient();
+          case AuthErrorCodes.INVALID_IDP_RESPONSE:
+            throw new InvalidLoginCredentials();
           case AuthErrorCodes.NETWORK_REQUEST_FAILED:
             throw new NetworkRequestFailed();
         }
@@ -77,6 +79,8 @@ export function useMicrosoftSignIn({
             throw new AccountExistsWithDifferentCredential();
           case AuthErrorCodes.POPUP_BLOCKED:
             throw new PopupBlockedByClient();
+          case AuthErrorCodes.INVALID_IDP_RESPONSE:
+            throw new InvalidLoginCredentials();
           case AuthErrorCodes.NETWORK_REQUEST_FAILED:
             throw new NetworkRequestFailed();
         }
