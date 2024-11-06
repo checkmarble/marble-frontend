@@ -32,7 +32,6 @@ Sentry.init({
   },
   ignoreErrors: [
     // Add any other errors you want to ignore
-    "NotSupportedError: Failed to execute 'define' on 'CustomElementRegistry': the name \"chatlio-widget\" has already been used with this registry",
   ],
 
   // Set tracesSampleRate to 1.0 to capture 100%
