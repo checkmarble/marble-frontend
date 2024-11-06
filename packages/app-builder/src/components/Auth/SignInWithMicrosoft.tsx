@@ -54,7 +54,7 @@ function ClientSignInWithMicrosoft({
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
 }) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'auth']);
   const microsoftSignIn = useMicrosoftSignIn(
     clientServices.authenticationClientService,
   );

@@ -17,7 +17,6 @@ import { getRoute } from '@app-builder/utils/routes';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import * as Sentry from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm, useWatch } from 'react-hook-form';

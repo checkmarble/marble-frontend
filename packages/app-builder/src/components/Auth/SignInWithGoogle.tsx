@@ -52,7 +52,7 @@ function ClientSignInWithGoogle({
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
 }) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'auth']);
   const googleSignIn = useGoogleSignIn(
     clientServices.authenticationClientService,
   );
