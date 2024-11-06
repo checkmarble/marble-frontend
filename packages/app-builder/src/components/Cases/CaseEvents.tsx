@@ -27,7 +27,7 @@ import { Icon, type IconName } from 'ui-icons';
 import { ReviewStatusTag } from '../Decisions/ReviewStatusTag';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
-import { caseStatusMapping, caseStatusVariants } from './CaseStatus';
+import { CaseStatus } from './CaseStatus';
 import { CaseTags } from './CaseTags';
 import { CopyPivotValue } from './PivotValue';
 
@@ -125,13 +125,7 @@ export function getEventIcon(event: CaseEvent) {
       );
     case 'status_updated': {
       return (
-        <EventIcon
-          className={caseStatusVariants({
-            color: caseStatusMapping[event.newStatus].color,
-            variant: 'contained',
-          })}
-          icon="manage-search"
-        />
+        <EventIcon className="bg-blue-10 text-blue-100" icon="manage-search" />
       );
     }
     case 'file_added':
@@ -251,17 +245,8 @@ export function getEventTitle(
             i18nKey="cases:case_detail.history.event_title.status_updated"
             components={{
               Status: (
-                <span
-                  className={caseStatusVariants({
-                    color: caseStatusMapping[event.newStatus].color,
-                    variant: 'text',
-                    className: 'capitalize',
-                  })}
-                />
+                <CaseStatus status={event.newStatus} size="small" type="full" />
               ),
-            }}
-            values={{
-              status: t(caseStatusMapping[event.newStatus].tKey),
             }}
           />
         </span>

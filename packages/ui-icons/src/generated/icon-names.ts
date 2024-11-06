@@ -23,6 +23,7 @@ export const iconNames = [
   'delete',
   'download',
   'draft',
+  'edit-square',
   'edit',
   'enum',
   'field',

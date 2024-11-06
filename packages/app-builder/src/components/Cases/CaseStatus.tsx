@@ -1,5 +1,5 @@
 import { type CaseStatus } from '@app-builder/models/cases';
-import { cva, cx, type VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { type ParseKeys } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,63 +7,85 @@ import { Tooltip } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
 
-export const caseStatusVariants = cva(undefined, {
-  variants: {
-    color: {
-      red: 'text-red-100',
-      blue: 'text-blue-100',
-      grey: 'text-grey-50',
-      green: 'text-green-100',
+export const caseStatusVariants = cva(
+  'inline-flex items-center justify-center rounded shrink-0',
+  {
+    variants: {
+      color: {
+        red: 'text-red-100 bg-red-10',
+        blue: 'text-blue-100 bg-blue-10',
+        grey: 'text-grey-50 bg-grey-10',
+        green: 'text-green-100 bg-green-10',
+      },
+      size: {
+        small: undefined,
+        big: undefined,
+      },
+      type: {
+        'first-letter': 'isolate capitalize text-s font-medium',
+        full: 'px-2 w-fit capitalize text-s font-semibold',
+      },
     },
-    variant: {
-      text: undefined,
-      contained: undefined,
-    },
+    compoundVariants: [
+      {
+        size: 'small',
+        type: 'full',
+        className: 'h-6',
+      },
+      {
+        size: 'big',
+        type: 'full',
+        className: 'h-10',
+      },
+      {
+        size: 'small',
+        type: 'first-letter',
+        className: 'size-6',
+      },
+      {
+        size: 'big',
+        type: 'first-letter',
+        className: 'size-8',
+      },
+    ],
   },
-  compoundVariants: [
-    {
-      variant: 'contained',
-      color: 'red',
-      className: 'bg-red-10',
-    },
-    {
-      variant: 'contained',
-      color: 'blue',
-      className: 'bg-blue-10',
-    },
-    {
-      variant: 'contained',
-      color: 'grey',
-      className: 'bg-grey-10',
-    },
-    {
-      variant: 'contained',
-      color: 'green',
-      className: 'bg-green-10',
-    },
-  ],
-});
+);
 
 export function CaseStatus({
   status,
-  className,
+  size,
+  type,
 }: {
   status: CaseStatus;
-  className?: string;
+  size?: VariantProps<typeof caseStatusVariants>['size'];
+  type?: VariantProps<typeof caseStatusVariants>['type'];
 }) {
   const { t } = useTranslation(casesI18n);
   const { color, tKey } = caseStatusMapping[status];
+  const caseStatusLetter = t(tKey);
+
+  if (type === 'full') {
+    return (
+      <div className={caseStatusVariants({ color, size, type: 'full' })}>
+        {caseStatusLetter}
+      </div>
+    );
+  }
 
   return (
-    <Tooltip.Default content={t(tKey)}>
+    <Tooltip.Default
+      content={
+        <div
+          className={caseStatusVariants({ color, size: 'big', type: 'full' })}
+        >
+          {caseStatusLetter}
+        </div>
+      }
+    >
       <div
-        className={cx(
-          caseStatusVariants({ color, variant: 'contained' }),
-          'text-s flex shrink-0 items-center justify-center rounded font-semibold capitalize',
-          className,
-        )}
+        className={caseStatusVariants({ color, size, type: 'first-letter' })}
       >
-        {t(tKey)[0]}
+        {caseStatusLetter[0]}
       </div>
     </Tooltip.Default>
   );

@@ -180,7 +180,7 @@ function UpdateWebhookContent({
               name="update"
             >
               <LoadingIcon
-                icon="edit"
+                icon="edit-square"
                 className="size-5"
                 loading={fetcher.state === 'submitting'}
               />

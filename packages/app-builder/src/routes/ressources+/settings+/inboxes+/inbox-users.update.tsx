@@ -107,7 +107,7 @@ export function UpdateInboxUser({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
         <Icon
-          icon="edit"
+          icon="edit-square"
           className="size-6 shrink-0"
           aria-label={t('settings:tags.update_tag')}
         />

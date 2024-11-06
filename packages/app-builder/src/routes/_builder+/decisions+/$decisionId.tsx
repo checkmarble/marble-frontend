@@ -132,7 +132,7 @@ export default function DecisionPage() {
               {t('decisions:decision')}
             </span>
             <CopyToClipboardButton toCopy={decision.id}>
-              <span className="text-s line-clamp-1 font-normal">
+              <span className="text-s line-clamp-1 max-w-40 font-normal">
                 <span className="font-medium">ID</span> {decision.id}
               </span>
             </CopyToClipboardButton>
