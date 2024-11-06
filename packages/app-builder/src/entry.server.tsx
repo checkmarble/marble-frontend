@@ -11,6 +11,7 @@ import { I18nextProvider } from 'react-i18next';
 import { PassThrough } from 'stream';
 
 import { serverServices } from './services/init.server';
+import { captureUnexpectedRemixError } from './services/monitoring';
 import { getServerEnv } from './utils/environment';
 
 const ABORT_DELAY = 5000;
@@ -185,10 +186,5 @@ export const handleError: HandleErrorFunction = (error, { request }) => {
   if (request.signal.aborted) {
     return;
   }
-  if (error instanceof Error) {
-    void Sentry.captureRemixServerException(error, 'remix.server', request);
-  } else {
-    // Optionally capture non-Error objects
-    Sentry.captureException(error);
-  }
+  captureUnexpectedRemixError(error, 'remix.server', request);
 };

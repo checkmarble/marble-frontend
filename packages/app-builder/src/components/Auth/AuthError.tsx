@@ -7,6 +7,7 @@ import { authI18n } from './auth-i18n';
 
 const errorLabels: Record<AuthErrors, ParseKeys<typeof authI18n>> = {
   NoAccount: 'auth:errors.no_account',
+  CSRFError: 'auth:errors.csrf_error',
   Unknown: 'common:errors.unknown',
 };
 

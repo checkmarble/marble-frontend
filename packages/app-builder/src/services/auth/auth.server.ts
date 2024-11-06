@@ -32,12 +32,12 @@ import { type WebhookRepository } from '@app-builder/repositories/WebhookReposit
 import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { json, redirect } from '@remix-run/node';
-import * as Sentry from '@sentry/remix';
 import { marblecoreApi } from 'marble-api';
-import { type CSRF } from 'remix-utils/csrf/server';
+import { type CSRF, CSRFError } from 'remix-utils/csrf/server';
 import * as z from 'zod';
 
 import { getRoute } from '../../utils/routes';
+import { captureUnexpectedRemixError } from '../monitoring';
 import { type SessionService } from './session.server';
 
 interface AuthenticatedInfo {
@@ -156,6 +156,10 @@ interface MakeAuthenticationServerServiceArgs {
   csrfService: CSRF;
 }
 
+function expectedErrors(error: unknown) {
+  return error instanceof CSRFError || error instanceof z.ZodError;
+}
+
 export function makeAuthenticationServerService({
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
@@ -221,10 +225,12 @@ export function makeAuthenticationServerService({
       authSession.set('user', user);
       redirectUrl = options.successRedirect;
     } catch (error) {
-      Sentry.captureException(error);
       authSession.flash('authError', { message: adaptAuthErrors(error) });
-
       redirectUrl = options.failureRedirect;
+
+      if (!expectedErrors(error)) {
+        captureUnexpectedRemixError(error, 'auth.server@authenticate', request);
+      }
     }
 
     throw redirect(redirectUrl, {
@@ -284,7 +290,9 @@ export function makeAuthenticationServerService({
         },
       );
     } catch (error) {
-      Sentry.captureException(error);
+      if (!expectedErrors(error)) {
+        captureUnexpectedRemixError(error, 'auth.server@refresh', request);
+      }
       throw redirect(options.failureRedirect);
     }
   }
