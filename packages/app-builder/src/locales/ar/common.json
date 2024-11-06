@@ -23,7 +23,6 @@
   "errors.firebase_auth_error": "حدث خطأ في المصادقة. يرجى محاولة تسجيل الدخول مرة أخرى.",
   "errors.firebase_network_error": "حدث خطأ في الشبكة. يرجى محاولة تسجيل الدخول مرة أخرى.",
   "cancel": "الغاء",
-  "display": "عرض",
   "save": "حفظ",
   "delete": "حذف",
   "close": "إغلاق",

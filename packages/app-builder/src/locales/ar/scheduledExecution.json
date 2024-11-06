@@ -6,10 +6,6 @@
   "created_at": "أنشئ في",
   "started_at": "بدأت في",
   "finished_at": "انتهت في",
-  "download_decisions": "تحميل القرارات",
-  "downloading_decisions": "جاري تحميل القرارات...",
-  "errors.downloading_decisions_link.auth_error": "حدث خطأ في المصادقة أثناء إنشاء رابط التحميل. قد تحتاج إلى تسجيل الدخول مرة أخرى.",
-  "errors.downloading_decisions_link.unknown": "حدث خطأ غير معروف أثناء إنشاء رابط التحميل. يرجى المحاولة مرة أخرى لاحقًا.",
   "status_pending": "قيد الانتظار",
   "status_success": "نجاح",
   "status_failure": "فشل"

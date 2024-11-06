@@ -12,8 +12,6 @@
   "data": "البيانات",
   "data.list": "قائمة نموذج البيانات",
   "data.schema": "مخطط نموذج البيانات",
-  "expanded": "موسع",
-  "collapsed": "مختصر",
   "api": "API \"Marble\" ",
   "scheduledExecutions": "المهام المجدولة",
   "caseManager": "مدير الحالة",

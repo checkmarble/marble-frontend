@@ -1,5 +1,5 @@
 {
-  "scenario.name": "سيناريو", 
+  "scenario.name": "سيناريو",
   "scenario.version": "الإصدار",
   "search.placeholder": "البحث بواسطة المعرف",
   "detail.scenario_name_runs_on": "<ScenarioName>{{scenarioName}}</ScenarioName> (runs on <TriggerObjectType>{{triggerObjectType}}</TriggerObjectType>)",
@@ -15,7 +15,6 @@
   "outcome.approve": "الموافقة",
   "outcome.review": "تدقيق",
   "outcome.decline": "رفض",
-  "outcome.null": "لا توجد قيمة",
   "outcome.unknown": "غير معرف",
   "live_update": "تحديث مباشر",
   "decision": "قرار",
