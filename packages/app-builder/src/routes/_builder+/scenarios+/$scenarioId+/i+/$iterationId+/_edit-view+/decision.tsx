@@ -39,6 +39,8 @@ export const handle = {
   i18n: [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace,
 };
 
+const MAX_THRESHOLD = 10000;
+
 /**
  * This is a list of validation errors comming from the backend that are handled by the form schema.
  * The form schema is responsible for displaying the error message.
@@ -54,16 +56,22 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
         .number({
           message: t('scenarios:validation.decision.score_threshold_missing'),
         })
+        .max(MAX_THRESHOLD)
+        .min(-MAX_THRESHOLD)
         .int(),
       scoreBlockAndReviewThreshold: z.coerce
         .number({
           message: t('scenarios:validation.decision.score_threshold_missing'),
         })
+        .max(MAX_THRESHOLD)
+        .min(-MAX_THRESHOLD)
         .int(),
       scoreDeclineThreshold: z.coerce
         .number({
           message: t('scenarios:validation.decision.score_threshold_missing'),
         })
+        .max(MAX_THRESHOLD)
+        .min(-MAX_THRESHOLD)
         .int(),
     })
     .superRefine(
