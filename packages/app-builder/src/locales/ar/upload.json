@@ -1,0 +1,23 @@
+{
+  "upload_cta": "رفع {{objectType}}",
+  "upload_callout_1": "يمكنك إضافة {{objectType}} يدويًا إلى نسخة \"Marble\" الخاصة بك من هذه الصفحة عن طريق رفع ملف . (<DocLink>لمعرفة المزيد</DocLink>)",
+  "upload_callout_2": "يجب أن يتبع ملف .csv نفس المخطط كما هو محدد في نموذج بياناتك. لقد قمنا بإنشاء قالب يمكنك استخدامه للبدء بسرعة.",
+  "download_template_cta": "تحميل قالب .csv",
+  "drop_file_cta": "أدرج ملف .csv الخاص بك هنا.",
+  "pick_file_cta": "اختر ملفًا",
+  "success_message": "{{linesProcessed}} {{objectType}} سيتم إضافته إلى بياناتك.",
+  "failure_message": "حدث خطأ:",
+  "failure_additional_message": "لم تتم إضافة أي {{objectType}} إلى بياناتك.",
+  "errors.request_timeout": "انتهت مهلة الطلب. يرجى المحاولة مرة أخرى، أو حاول تقسيم الملف إلى أجزاء أصغر.",
+  "results": "النتائج",
+  "past_uploads": "عمليات الرفع السابقة",
+  "upload_status": "الحالة",
+  "lines_processed": "السجلات التي تمت معالجتها",
+  "started_at": "بدأت في",
+  "finished_at": "اكتملت في",
+  "status_success": "اكتمل",
+  "status_pending": "جارٍ المعالجة",
+  "num_rows_ingested": "عدد السجلات التي تم استيعابها",
+  "status_failure": "فشل",
+  "status_processing": "يعالج"
+}

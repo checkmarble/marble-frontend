@@ -218,7 +218,7 @@ function OutcomeAndReviewStatusWithModal({ decision }: { decision: Decision }) {
 }
 
 function DecisionActions({ decision }: { decision: Decision }) {
-  const { t } = useTranslation(casesI18n);
+  const { t, i18n } = useTranslation(casesI18n);
 
   const reviewDecisionModalStore = Ariakit.useDialogStore();
 
@@ -226,7 +226,7 @@ function DecisionActions({ decision }: { decision: Decision }) {
 
   return (
     <>
-      <MenuRoot>
+      <MenuRoot rtl={i18n.dir() === 'rtl'}>
         <MenuButton
           render={
             <button className="hover:bg-purple-05 active:bg-purple-10 rounded">

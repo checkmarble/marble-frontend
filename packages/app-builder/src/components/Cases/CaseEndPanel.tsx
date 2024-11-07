@@ -7,7 +7,6 @@ import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type DialogTriggerProps } from '@radix-ui/react-dialog';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollArea } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
 
@@ -88,21 +87,14 @@ function CaseRightPanelRoot({
 const CaseRightPanelContent = () => {
   const { t } = useTranslation(casesI18n);
   return (
-    <RightPanel.Content className="max-w-md">
-      <ScrollArea.Root className="flex size-full flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-        <RightPanel.Title>
-          <span className="w-full first-letter:capitalize">
-            {t('cases:case.new_case')}
-          </span>
-          <RightPanel.Close />
-        </RightPanel.Title>
-        <ScrollArea.Viewport className="h-full">
-          <CreateCase />
-        </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar orientation="vertical">
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
+    <RightPanel.Content className="flex max-w-md flex-col gap-4">
+      <RightPanel.Title>
+        <span className="w-full first-letter:capitalize">
+          {t('cases:case.new_case')}
+        </span>
+        <RightPanel.Close />
+      </RightPanel.Title>
+      <CreateCase />
     </RightPanel.Content>
   );
 };

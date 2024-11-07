@@ -5,8 +5,6 @@ import {
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import clsx from 'clsx';
 
-import { ScrollArea } from '../ScrollArea/ScrollArea';
-
 interface DefaultTooltipProps
   extends Pick<TooltipProps, 'open' | 'defaultOpen' | 'onOpenChange'>,
     Omit<TooltipContentProps, 'content'> {
@@ -37,14 +35,14 @@ export function DefaultTooltip({
           className="drop-shadow"
           {...props}
         >
-          <ScrollArea.Root className={clsx('bg-grey-00 rounded', className)}>
-            <ScrollArea.Viewport className="max-h-40 p-2">
-              {content}
-            </ScrollArea.Viewport>
-            <ScrollArea.Scrollbar orientation="vertical">
-              <ScrollArea.Thumb />
-            </ScrollArea.Scrollbar>
-          </ScrollArea.Root>
+          <div
+            className={clsx(
+              'bg-grey-00 max-h-40 overflow-y-auto rounded p-2',
+              className,
+            )}
+          >
+            {content}
+          </div>
           <TooltipPrimitive.Arrow
             width={11}
             height={5}

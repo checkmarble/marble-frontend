@@ -109,7 +109,7 @@ export function EditFilters({
               {/* Row 1 */}
               <div
                 className={clsx(
-                  'border-grey-10 col-span-5 w-2 border-r',
+                  'border-grey-10 col-span-5 w-2 border-e',
                   isFirstCondition ? 'h-4' : 'h-2',
                 )}
               />
@@ -117,7 +117,7 @@ export function EditFilters({
               {/* Row 2 */}
               <div
                 className={clsx(
-                  'border-grey-10 col-start-1 border-r',
+                  'border-grey-10 col-start-1 border-e',
                   isLastCondition && 'h-5',
                 )}
               />

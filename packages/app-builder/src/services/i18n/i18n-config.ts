@@ -2,6 +2,7 @@ import 'cronstrue/locales/en.js';
 import 'cronstrue/locales/fr.js';
 
 import { type Locale } from 'date-fns/locale';
+import { ar } from 'date-fns/locale/ar';
 import { enGB } from 'date-fns/locale/en-GB';
 import { fr } from 'date-fns/locale/fr';
 import { type InitOptions } from 'i18next';
@@ -9,7 +10,7 @@ import { type InitOptions } from 'i18next';
 export const defaultNS = 'common';
 
 // When adding a new supported lng, add corresponding cronstrue locale above too
-export const supportedLngs = ['en', 'fr'] as const;
+export const supportedLngs = ['en', 'fr', 'ar'] as const;
 const fallbackLng = 'en';
 
 export const i18nConfig = {
@@ -29,6 +30,7 @@ export const i18nConfig = {
 const dateFnsLocales = {
   en: enGB,
   fr: fr,
+  ar: ar,
 } satisfies Record<(typeof supportedLngs)[number], Locale>;
 
 export function getDateFnsLocale(locale: string): Locale {

@@ -1,13 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
 import { useTranslation } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
-import {
-  Button,
-  ModalV2,
-  ScrollAreaV2,
-  Separator,
-  Tag,
-} from 'ui-design-system';
+import { Button, ModalV2, Separator, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import {
@@ -49,11 +43,9 @@ export function DetailPanel({ onSave, onDelete }: DetailPanelProps) {
   return (
     // eslint-disable-next-line tailwindcss/no-custom-classname -- nokey class ensures that ReactFlow onKeyDown event is not triggered (ex: delete node)
     <div className="border-grey-10 bg-grey-00 nokey flex h-full flex-col overflow-hidden border-l">
-      <ScrollAreaV2 type="auto" className="flex-1">
-        <div className="flex h-full flex-col gap-4 p-6">
-          <DetailPanelContent />
-        </div>
-      </ScrollAreaV2>
+      <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
+        <DetailPanelContent />
+      </div>
       <Separator className="bg-grey-10" />
       <div className="flex items-center justify-center gap-4 p-4">
         <ModalV2.Root>

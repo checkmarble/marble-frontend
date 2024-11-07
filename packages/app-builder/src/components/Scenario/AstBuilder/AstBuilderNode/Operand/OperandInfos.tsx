@@ -68,7 +68,7 @@ export function OperandInfos({
         portal
         className="bg-grey-00 border-grey-10 flex max-h-[min(var(--popover-available-height),_400px)] max-w-[var(--popover-available-width)] rounded border shadow-md"
       >
-        <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-auto p-4 pr-[calc(1rem-var(--scrollbar-width))]">
+        <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-auto p-4 pe-[calc(1rem-var(--scrollbar-width))]">
           <div className="flex flex-col gap-1">
             <TypeInfos operandType={operandType} dataType={dataType} />
             <p className="text-grey-100 text-s text-ellipsis hyphens-auto font-normal">

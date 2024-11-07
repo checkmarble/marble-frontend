@@ -9,6 +9,7 @@ import {
   useEvaluationErrors,
 } from '@app-builder/services/editor/ast-editor';
 import { useTwoLineOperandOperatorFunctions } from '@app-builder/services/editor/options';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch } from 'ui-design-system';
 
@@ -32,7 +33,6 @@ export function TwoOperandsLine({
   viewOnly?: boolean;
   root?: boolean;
 }) {
-  const { t } = useTranslation(['scenarios']);
   const { setAstNodeAtPath, setOperatorAtPath } = useAstNodeEditorActions();
 
   function addNestedChild(stringPath: string, child: AstNode) {
@@ -88,21 +88,33 @@ export function TwoOperandsLine({
         {!root ? <span className="text-grey-25">)</span> : null}
       </div>
       {root && !viewOnly ? (
-        <div className="flex h-10 items-center gap-2">
-          <label className="text-s" htmlFor="nest">
-            {t('scenarios:nest')}
-          </label>
-          <Switch
-            id="nest"
-            checked={isNestedRight}
-            onCheckedChange={(checked) =>
-              checked
-                ? addNestedChild(rightPath, right)
-                : removeNestedChild(rightPath, right)
-            }
-          />
-        </div>
+        <NestSwitch
+          checked={isNestedRight}
+          onCheckedChange={(checked) => {
+            if (checked) addNestedChild(rightPath, right);
+            else removeNestedChild(rightPath, right);
+          }}
+        />
       ) : null}
+    </div>
+  );
+}
+
+function NestSwitch({
+  checked,
+  onCheckedChange,
+}: {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  const { t } = useTranslation(['scenarios']);
+  const id = React.useId();
+  return (
+    <div className="flex h-10 items-center gap-2">
+      <label className="text-s" htmlFor={id}>
+        {t('scenarios:nest')}
+      </label>
+      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
     </div>
   );
 }

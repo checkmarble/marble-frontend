@@ -1,31 +1,15 @@
 import clsx from 'clsx';
 import { forwardRef } from 'react';
-import { Collapsible, ScrollArea } from 'ui-design-system';
+import { Collapsible } from 'ui-design-system';
 
 function PaperContainer({
   children,
   className,
-  scrollable = true,
 }: {
   children: React.ReactNode;
   className?: string;
-  scrollable?: boolean;
 }) {
-  return scrollable ? (
-    <ScrollArea.Root
-      className={clsx('border-grey-10 w-full rounded-lg border', className)}
-      type="auto"
-    >
-      <ScrollArea.Viewport>
-        <div className="flex flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          {children}
-        </div>
-      </ScrollArea.Viewport>
-      <ScrollArea.Scrollbar orientation="horizontal">
-        <ScrollArea.Thumb />
-      </ScrollArea.Scrollbar>
-    </ScrollArea.Root>
-  ) : (
+  return (
     <div
       className={clsx(
         'border-grey-10 w-full rounded-lg border',

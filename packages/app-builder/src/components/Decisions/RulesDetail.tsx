@@ -24,7 +24,7 @@ import {
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { Await } from '@remix-run/react';
 import { type TFunction } from 'i18next';
-import { Suspense, useMemo } from 'react';
+import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Accordion, Collapsible, Switch, Tag } from 'ui-design-system';
 
@@ -91,7 +91,7 @@ export function RulesDetail({
                       </Callout>
                     ) : null}
 
-                    <Suspense fallback={t('common:loading')}>
+                    <React.Suspense fallback={t('common:loading')}>
                       <Await resolve={astRuleData}>
                         {(astRuleData) => (
                           <RuleExecutionDetail
@@ -101,7 +101,7 @@ export function RulesDetail({
                           />
                         )}
                       </Await>
-                    </Suspense>
+                    </React.Suspense>
                   </div>
                 </Accordion.Content>
               </Accordion.Item>
@@ -131,7 +131,7 @@ export function RuleExecutionDetail({
 }) {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
-  const currentRule = useMemo(
+  const currentRule = React.useMemo(
     () => astRuleData.rules.find((rule) => rule.id === ruleExecution.ruleId),
     [astRuleData.rules, ruleExecution.ruleId],
   );
@@ -184,13 +184,15 @@ function DisplayReturnValuesSwitch() {
   const [displayReturnValues, setDisplayReturnValues] =
     useDisplayReturnValues();
 
+  const id = React.useId();
+
   return (
     <div className="flex flex-row justify-between gap-2">
-      <label htmlFor="displayReturnValues" className="select-none">
+      <label htmlFor={id} className="select-none">
         {t('decisions:rules.show_contextual_values')}
       </label>
       <Switch
-        id="displayReturnValues"
+        id={id}
         checked={displayReturnValues}
         onCheckedChange={setDisplayReturnValues}
       />
@@ -222,7 +224,7 @@ function RuleFormula({
     initialEvaluation: evaluation,
   });
   return (
-    <Paper.Container scrollable={false} className="bg-grey-00">
+    <Paper.Container className="bg-grey-00">
       <AstBuilder
         options={{
           databaseAccessors,
