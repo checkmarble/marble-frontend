@@ -1,7 +1,7 @@
 import {
   CopyToClipboardButton,
   DecisionDetail,
-  DecisionRightPannel,
+  DecisionRightPanel,
   decisionsI18n,
   ErrorComponent,
   OutcomePanel,
@@ -123,7 +123,7 @@ export default function DecisionPage() {
   );
 
   return (
-    <DecisionRightPannel.Root>
+    <DecisionRightPanel.Root>
       <Page.Main>
         <Page.Header className="justify-between gap-8">
           <div className="flex flex-row items-center gap-4">
@@ -165,7 +165,7 @@ export default function DecisionPage() {
           </Page.Content>
         </Page.Container>
       </Page.Main>
-    </DecisionRightPannel.Root>
+    </DecisionRightPanel.Root>
   );
 }
 
@@ -173,7 +173,7 @@ function AddToCase({ decisionIds }: { decisionIds: string[] }) {
   const { t } = useTranslation(decisionsI18n);
   const { onTriggerClick } = useDecisionRightPanelContext();
   return (
-    <DecisionRightPannel.Trigger
+    <DecisionRightPanel.Trigger
       asChild
       onClick={() => {
         onTriggerClick({ decisionIds });
@@ -183,7 +183,7 @@ function AddToCase({ decisionIds }: { decisionIds: string[] }) {
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
-    </DecisionRightPannel.Trigger>
+    </DecisionRightPanel.Trigger>
   );
 }
 

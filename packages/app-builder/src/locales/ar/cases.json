@@ -89,7 +89,7 @@
   "case_detail.history.event_detail.rule_snooze_created.pivot_value": "القيمة المحورية",
   "case_detail.history.event_detail.rule_snooze_created.rule_detail": "تفاصيل القاعدة",
   "case_detail.history.event_detail.rule_snooze_created.valid_from": "صالحة من",
-  "case_detail.history.event_title.decision_reviewed": "تمت مراجعة القرار",
+  "case_detail.history.event_title.decision_reviewed": "تمت مراجعة القرار: <ReviewStatus/>",
   "case_detail.history.event_title.rule_snooze_created": "تم إنشاء قاعدة التأجيل",
   "case_detail.no_decisions": "إضافة قرار من <Link>قائمة القرارات</Link> لبدء التحقيق",
   "case_detail.no_files": "<Button>أضف ملفك الأول</Button> إلى الحالة لتتبع تحقيقاتك",
@@ -101,5 +101,18 @@
   "case_detail.review_decision.review_status.label": "حالة المراجعة",
   "case_detail.review_decision.review_status.placeholder": "حدد حالة المراجعة",
   "case_detail.review_decision.title": "مراجعة القرار",
-  "case_detail.rules_execution": "تنفيذ القواعد"
+  "case_detail.rules_execution": "تنفيذ القواعد",
+  "case_detail.history.event_detail.rule_snooze_created.load_details": "تفاصيل التحميل",
+  "case_detail.history.event_type.case_created": "تم إنشاء الحالة",
+  "case_detail.history.event_type.comment_added": "ملحوظة",
+  "case_detail.history.event_type.decision_added": "تمت إضافة القرار",
+  "case_detail.history.event_type.decision_reviewed": "تمت مراجعة القرار",
+  "case_detail.history.event_type.file_added": "تمت إضافة الملف",
+  "case_detail.history.event_type.inbox_changed": "تم تغيير البريد الوارد",
+  "case_detail.history.event_type.name_updated": "تم تحديث الاسم",
+  "case_detail.history.event_type.rule_snooze_created": "تم إنشاء قاعدة التأجيل",
+  "case_detail.history.event_type.status_updated": "تم تحديث الحالة",
+  "case_detail.history.event_type.tags_updated": "تم تحديث العلامات",
+  "case_detail.history.filter.date": "تاريخ",
+  "case_detail.history.filter.event_type": "نوع الحدث"
 }

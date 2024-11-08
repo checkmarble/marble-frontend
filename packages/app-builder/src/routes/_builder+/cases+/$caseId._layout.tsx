@@ -3,12 +3,13 @@ import {
   ErrorComponent,
   Page,
 } from '@app-builder/components';
-import { CaseEvents, casesI18n } from '@app-builder/components/Cases';
+import { casesI18n } from '@app-builder/components/Cases';
 import { CaseContributors } from '@app-builder/components/Cases/CaseContributors';
 import { CaseDecisions } from '@app-builder/components/Cases/CaseDecisions';
 import { FilesList } from '@app-builder/components/Cases/CaseFiles';
+import { CaseHistory } from '@app-builder/components/Cases/CaseHistory/CaseHistory';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { type CaseDetail } from '@app-builder/models/cases';
+import { CaseDetail } from '@app-builder/models/cases';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
 import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
@@ -146,10 +147,66 @@ export default function CasePage() {
         </div>
         <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
       </Page.Header>
-      <div className="flex size-full flex-row overflow-hidden">
-        <div className="relative flex size-full flex-col overflow-hidden">
+      <div className="flex size-full flex-col overflow-hidden">
+        <div className="flex flex-1 flex-row overflow-hidden">
           <Page.Container>
             <Page.Content>
+              <div>
+                <CollapsibleV2.Provider
+                  defaultOpen={caseDetail.events.length > 0}
+                >
+                  <div className="group flex flex-1 items-center gap-2">
+                    <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
+                      <Icon
+                        icon="arrow-2-up"
+                        aria-hidden
+                        className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180"
+                      />
+                      <span className="text-m mx-2 font-bold capitalize">
+                        {t('cases:case_detail.informations')}
+                      </span>
+                    </CollapsibleV2.Title>
+                  </div>
+                  <CollapsibleV2.Content>
+                    <div className="border-grey-10 bg-grey-00 mt-4 max-h-96 overflow-y-scroll rounded-lg border p-4">
+                      <EditCaseName
+                        caseId={caseDetail.id}
+                        name={caseDetail.name}
+                      />
+                      <div className="flex flex-col gap-2">
+                        <div className="text-s text-grey-25 first-letter:capitalize">
+                          {t('cases:case.date')}
+                        </div>
+                        <time dateTime={caseDetail.createdAt}>
+                          {formatDateTime(caseDetail.createdAt, {
+                            language,
+                            timeStyle: undefined,
+                          })}
+                        </time>
+                      </div>
+                      <EditCaseInbox
+                        defaultInbox={inbox}
+                        caseId={caseDetail.id}
+                      />
+                      <EditCaseTags
+                        defaultCaseTagIds={caseDetail.tags.map(
+                          ({ tagId }) => tagId,
+                        )}
+                        caseId={caseDetail.id}
+                        user={user}
+                      />
+                      <div className="flex flex-col gap-2">
+                        <div className="text-s text-grey-25 first-letter:capitalize">
+                          {t('cases:case.contributors')}
+                        </div>
+                        <CaseContributors
+                          contributors={caseDetail.contributors}
+                        />
+                      </div>
+                    </div>
+                  </CollapsibleV2.Content>
+                </CollapsibleV2.Provider>
+              </div>
               <div>
                 <CollapsibleV2.Provider
                   defaultOpen={caseDetail.decisions.length > 0}
@@ -245,74 +302,25 @@ export default function CasePage() {
                   </CollapsibleV2.Content>
                 </CollapsibleV2.Provider>
               </div>
-              <div>
-                <CollapsibleV2.Provider
-                  defaultOpen={caseDetail.events.length > 0}
-                >
-                  <div className="group flex flex-1 items-center gap-2">
-                    <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
-                      <Icon
-                        icon="arrow-2-up"
-                        aria-hidden
-                        className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180"
-                      />
-                      <span className="text-m mx-2 font-bold capitalize">
-                        {t('cases:case_detail.history')}
-                      </span>
-                    </CollapsibleV2.Title>
-                    <span className="text-grey-25 text-xs font-normal capitalize">
-                      {t('cases:case_detail.events_count', {
-                        count: caseDetail.events.length,
-                      })}
-                    </span>
-                  </div>
-                  <CollapsibleV2.Content>
-                    <div className="border-grey-10 bg-grey-00 mt-4 max-h-96 overflow-y-scroll rounded-lg border p-4">
-                      <CaseEvents events={caseDetail.events} />
-                    </div>
-                  </CollapsibleV2.Content>
-                </CollapsibleV2.Provider>
-              </div>
             </Page.Content>
           </Page.Container>
-          <div className="bg-grey-00 border-t-grey-10 flex shrink-0 flex-row items-center gap-4 border-t p-4">
-            <AddComment caseId={caseDetail.id} />
-            <UploadFile caseDetail={caseDetail}>
-              <Button
-                className="h-14 w-fit whitespace-nowrap"
-                variant="secondary"
-              >
-                <Icon icon="attachment" className="size-5" />
-                {t('cases:add_file')}
-              </Button>
-            </UploadFile>
-          </div>
-        </div>
-        <div className="bg-grey-00 border-l-grey-10 flex h-full min-w-52 max-w-64 flex-col gap-4 border-l p-4">
-          <EditCaseName caseId={caseDetail.id} name={caseDetail.name} />
-          <div className="flex flex-col gap-2">
-            <div className="text-s text-grey-25 first-letter:capitalize">
-              {t('cases:case.date')}
-            </div>
-            <time dateTime={caseDetail.createdAt}>
-              {formatDateTime(caseDetail.createdAt, {
-                language,
-                timeStyle: undefined,
-              })}
-            </time>
-          </div>
-          <EditCaseInbox defaultInbox={inbox} caseId={caseDetail.id} />
-          <EditCaseTags
-            defaultCaseTagIds={caseDetail.tags.map(({ tagId }) => tagId)}
-            caseId={caseDetail.id}
-            user={user}
+
+          <CaseHistory
+            className="bg-grey-00 border-l-grey-10 flex w-[470px] shrink-0 flex-col border-l p-6"
+            events={caseDetail.events}
           />
-          <div className="flex flex-col gap-2">
-            <div className="text-s text-grey-25 first-letter:capitalize">
-              {t('cases:case.contributors')}
-            </div>
-            <CaseContributors contributors={caseDetail.contributors} />
-          </div>
+        </div>
+        <div className="bg-grey-00 border-t-grey-10 flex shrink-0 flex-row items-center gap-4 border-t p-4">
+          <AddComment caseId={caseDetail.id} />
+          <UploadFile caseDetail={caseDetail}>
+            <Button
+              className="h-14 w-fit whitespace-nowrap"
+              variant="secondary"
+            >
+              <Icon icon="attachment" className="size-5" />
+              {t('cases:add_file')}
+            </Button>
+          </UploadFile>
         </div>
       </div>
     </Page.Main>
