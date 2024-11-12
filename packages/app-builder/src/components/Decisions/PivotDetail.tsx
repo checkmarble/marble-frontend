@@ -13,7 +13,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Collapsible, Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
-import { PivotType } from '../Data/SelectedPivot';
+import { PivotType } from '../Data/PivotDetails';
 import { ExternalLink, linkClasses } from '../ExternalLink';
 
 interface PivotDetailProps {

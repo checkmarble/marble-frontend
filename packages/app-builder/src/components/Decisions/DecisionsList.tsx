@@ -161,7 +161,7 @@ export function DecisionsList({
                 {getValue()}
               </span>
             </Tooltip.Default>
-            <div className="border-grey-10 text-grey-100 rounded-full border px-3 py-1 font-normal">
+            <div className="border-grey-10 text-grey-100 rounded-full border px-3 py-1 font-semibold">
               {`V${row.original.scenario.version}`}
             </div>
           </div>

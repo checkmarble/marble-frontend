@@ -2,36 +2,34 @@ import {
   CopyToClipboardButton,
   ErrorComponent,
   Page,
+  TabLink,
 } from '@app-builder/components';
 import { casesI18n } from '@app-builder/components/Cases';
-import { CaseContributors } from '@app-builder/components/Cases/CaseContributors';
-import { CaseDecisions } from '@app-builder/components/Cases/CaseDecisions';
-import { FilesList } from '@app-builder/components/Cases/CaseFiles';
 import { CaseHistory } from '@app-builder/components/Cases/CaseHistory/CaseHistory';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { CaseDetail } from '@app-builder/models/cases';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
-import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
-import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
 import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-status';
-import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
 import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
 import { serverServices } from '@app-builder/services/init.server';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
+import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { defer, type LoaderFunctionArgs } from '@remix-run/node';
+import {
+  defer,
+  type LoaderFunctionArgs,
+  type SerializeFrom,
+} from '@remix-run/node';
 import {
   isRouteErrorResponse,
-  Link,
+  Outlet,
   useLoaderData,
   useNavigate,
   useRouteError,
+  useRouteLoaderData,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { Trans, useTranslation } from 'react-i18next';
-import { Button, CollapsibleV2 } from 'ui-design-system';
+import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -127,11 +125,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
+export function useCurrentCase() {
+  return useRouteLoaderData(
+    'routes/_builder+/cases+/$caseId._layout' satisfies RouteID,
+  ) as SerializeFrom<typeof loader>;
+}
+
 export default function CasePage() {
   const { t } = useTranslation(handle.i18n);
-  const { caseDetail, inbox, user, caseDecisionsPromise } =
-    useLoaderData<typeof loader>();
-  const language = useFormatLanguage();
+  const { caseDetail } = useLoaderData<typeof loader>();
 
   return (
     <Page.Main>
@@ -151,157 +153,32 @@ export default function CasePage() {
         <div className="flex flex-1 flex-row overflow-hidden">
           <Page.Container>
             <Page.Content>
-              <div>
-                <CollapsibleV2.Provider
-                  defaultOpen={caseDetail.events.length > 0}
-                >
-                  <div className="group flex flex-1 items-center gap-2">
-                    <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
-                      <Icon
-                        icon="arrow-2-up"
-                        aria-hidden
-                        className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180"
-                      />
-                      <span className="text-m mx-2 font-bold capitalize">
-                        {t('cases:case_detail.informations')}
-                      </span>
-                    </CollapsibleV2.Title>
-                  </div>
-                  <CollapsibleV2.Content>
-                    <div className="border-grey-10 bg-grey-00 mt-4 max-h-96 overflow-y-scroll rounded-lg border p-4">
-                      <EditCaseName
-                        caseId={caseDetail.id}
-                        name={caseDetail.name}
-                      />
-                      <div className="flex flex-col gap-2">
-                        <div className="text-s text-grey-25 first-letter:capitalize">
-                          {t('cases:case.date')}
-                        </div>
-                        <time dateTime={caseDetail.createdAt}>
-                          {formatDateTime(caseDetail.createdAt, {
-                            language,
-                            timeStyle: undefined,
-                          })}
-                        </time>
-                      </div>
-                      <EditCaseInbox
-                        defaultInbox={inbox}
-                        caseId={caseDetail.id}
-                      />
-                      <EditCaseTags
-                        defaultCaseTagIds={caseDetail.tags.map(
-                          ({ tagId }) => tagId,
-                        )}
-                        caseId={caseDetail.id}
-                        user={user}
-                      />
-                      <div className="flex flex-col gap-2">
-                        <div className="text-s text-grey-25 first-letter:capitalize">
-                          {t('cases:case.contributors')}
-                        </div>
-                        <CaseContributors
-                          contributors={caseDetail.contributors}
-                        />
-                      </div>
-                    </div>
-                  </CollapsibleV2.Content>
-                </CollapsibleV2.Provider>
-              </div>
-              <div>
-                <CollapsibleV2.Provider
-                  defaultOpen={caseDetail.decisions.length > 0}
-                >
-                  <div className="group flex flex-1 items-center gap-2">
-                    <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
-                      <Icon
-                        icon="arrow-2-up"
-                        aria-hidden
-                        className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
-                      />
-                      <span className="text-m mx-2 font-bold first-letter:capitalize">
-                        {t('cases:case.decisions')}
-                      </span>
-                    </CollapsibleV2.Title>
-                    <span className="text-grey-25 text-xs font-normal capitalize">
-                      {t('cases:case_detail.decisions_count', {
-                        count: caseDetail.decisions.length,
-                      })}
-                    </span>
-                  </div>
-                  <CollapsibleV2.Content>
-                    {caseDetail.decisions.length > 0 ? (
-                      <div className="mt-4">
-                        <CaseDecisions
-                          decisions={caseDetail.decisions}
-                          caseDecisionsPromise={caseDecisionsPromise}
-                        />
-                      </div>
-                    ) : (
-                      <div className="px-2 pt-2">
-                        <span className="text-grey-50 text-s whitespace-pre">
-                          <Trans
-                            t={t}
-                            i18nKey="cases:case_detail.no_decisions"
-                            components={{
-                              Link: (
-                                <Link
-                                  className="text-purple-50 hover:text-purple-100 hover:underline"
-                                  to={getRoute('/decisions/')}
-                                />
-                              ),
-                            }}
-                          />
-                        </span>
-                      </div>
-                    )}
-                  </CollapsibleV2.Content>
-                </CollapsibleV2.Provider>
-              </div>
-              <div>
-                <CollapsibleV2.Provider
-                  defaultOpen={caseDetail.files.length > 0}
-                >
-                  <div className="group flex flex-1 items-center gap-2">
-                    <CollapsibleV2.Title className="hover:bg-purple-05 text-grey-100 group flex items-center rounded border border-transparent outline-none transition-colors focus-visible:border-purple-100">
-                      <Icon
-                        icon="arrow-2-up"
-                        aria-hidden
-                        className="size-6 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
-                      />
-                      <span className="text-m mx-2 font-bold capitalize">
-                        {t('cases:case.files')}
-                      </span>
-                    </CollapsibleV2.Title>
-                    <span className="text-grey-25 text-xs font-normal capitalize">
-                      {t('cases:case_detail.files_count', {
-                        count: caseDetail.files.length,
-                      })}
-                    </span>
-                  </div>
-
-                  <CollapsibleV2.Content>
-                    {caseDetail.files.length > 0 ? (
-                      <div className="mt-4">
-                        <FilesList files={caseDetail.files} />
-                      </div>
-                    ) : (
-                      <div className="px-2 pt-2">
-                        <span className="text-grey-50 text-s whitespace-pre">
-                          <Trans
-                            t={t}
-                            i18nKey="cases:case_detail.no_files"
-                            components={{
-                              Button: (
-                                <AddYourFirstFile caseDetail={caseDetail} />
-                              ),
-                            }}
-                          />
-                        </span>
-                      </div>
-                    )}
-                  </CollapsibleV2.Content>
-                </CollapsibleV2.Provider>
-              </div>
+              <nav>
+                <ul className="flex flex-row gap-2">
+                  <li>
+                    <TabLink
+                      labelTKey="navigation:caseManager.information"
+                      to="./information"
+                      Icon={(props) => <Icon {...props} icon="tip" />}
+                    />
+                  </li>
+                  <li>
+                    <TabLink
+                      labelTKey="navigation:caseManager.decisions"
+                      to="./decisions"
+                      Icon={(props) => <Icon {...props} icon="decision" />}
+                    />
+                  </li>
+                  <li>
+                    <TabLink
+                      labelTKey="navigation:caseManager.files"
+                      to="./files"
+                      Icon={(props) => <Icon {...props} icon="attachment" />}
+                    />
+                  </li>
+                </ul>
+              </nav>
+              <Outlet />
             </Page.Content>
           </Page.Container>
 
@@ -324,22 +201,6 @@ export default function CasePage() {
         </div>
       </div>
     </Page.Main>
-  );
-}
-
-function AddYourFirstFile({
-  children,
-  caseDetail,
-}: {
-  children?: React.ReactNode;
-  caseDetail: CaseDetail;
-}) {
-  return (
-    <UploadFile caseDetail={caseDetail}>
-      <button className="text-purple-50 hover:text-purple-100 hover:underline">
-        {children}
-      </button>
-    </UploadFile>
   );
 }
 

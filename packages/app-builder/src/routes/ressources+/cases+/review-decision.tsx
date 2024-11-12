@@ -197,7 +197,7 @@ function ReviewDecisionContent({
             </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">
               <LoadingIcon
-                icon="send"
+                icon="case-manager"
                 className="size-5"
                 loading={fetcher.state === 'submitting'}
               />

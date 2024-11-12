@@ -1,8 +1,9 @@
+import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { ReviewStatusTag } from '@app-builder/components/Decisions/ReviewStatusTag';
 import { Spinner } from '@app-builder/components/Spinner';
 import {
-  CaseEventType,
   type CaseEvent,
+  type CaseEventType,
   type CaseTagsUpdatedEvent,
   type CommentAddedEvent,
   type DecisionReviewedEvent,
@@ -31,7 +32,6 @@ import { Icon, type IconName } from 'ui-icons';
 import { casesI18n } from '../cases-i18n';
 import { CaseStatus } from '../CaseStatus';
 import { CaseTags } from '../CaseTags';
-import { CopyPivotValue } from '../PivotValue';
 
 export function CaseEvents({ events }: { events: CaseEvent[] }) {
   const { t } = useTranslation(casesI18n);
@@ -39,7 +39,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
 
   return (
     <div className="relative z-0 flex flex-col gap-4 lg:gap-6">
-      <div className="border-r-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-r border-dashed" />
+      <div className="border-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-dashed ltr:border-r rtl:right-0 rtl:border-l" />
       {events.map((event) => {
         const EventIcon = getEventIcon(event.eventType);
         const Title = getEventTitle(event, t);
@@ -457,7 +457,7 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
   }
 
   return (
-    <div className="grid w-full grid-cols-[max-content_1fr] gap-2">
+    <div className="grid w-full auto-rows-max grid-cols-[max-content_1fr] items-baseline gap-2">
       <span className="text-grey-100 text-s font-medium first-letter:capitalize">
         {t(
           'cases:case_detail.history.event_detail.rule_snooze_created.pivot_value',
@@ -472,7 +472,11 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
         {isLoading ? (
           <Spinner className="size-4" />
         ) : (
-          <CopyPivotValue>{data.ruleSnoozeDetail.pivotValue}</CopyPivotValue>
+          <CopyToClipboardButton toCopy={data.ruleSnoozeDetail.pivotValue}>
+            <span className="line-clamp-1 max-w-40 text-xs font-normal">
+              {data.ruleSnoozeDetail.pivotValue}
+            </span>
+          </CopyToClipboardButton>
         )}
       </span>
       <span className="text-grey-100 text-s font-medium first-letter:capitalize">
@@ -531,23 +535,18 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
       </span>
       <span className="text-grey-100 text-s font-medium first-letter:capitalize">
         {t(
-          'cases:case_detail.history.event_detail.rule_snooze_created.valid_from',
+          'cases:case_detail.history.event_detail.rule_snooze_created.validity',
         )}
       </span>
       <span className="text-grey-100 text-s">
-        <div className="grid w-fit grid-cols-[1fr_max-content_1fr] gap-1">
-          <span className="text-right">
-            {isLoading
-              ? '--/--/----'
-              : formatDateTime(data.ruleSnoozeDetail.startsAt, { language })}
-          </span>
-          <span className="self-center">→</span>
-          <span>
-            {isLoading
-              ? '--/--/----'
-              : formatDateTime(data.ruleSnoozeDetail.endsAt, { language })}
-          </span>
-        </div>
+        {t('cases:case_detail.pivot_values.snooze_from_to', {
+          from: isLoading
+            ? '--/--/----'
+            : formatDateTime(data.ruleSnoozeDetail.startsAt, { language }),
+          to: isLoading
+            ? '--/--/----'
+            : formatDateTime(data.ruleSnoozeDetail.endsAt, { language }),
+        })}
       </span>
     </div>
   );

@@ -92,7 +92,7 @@ export function EditCaseInbox({
       <fetcher.Form
         ref={formRef}
         method="post"
-        className="w-full"
+        className="col-span-2 grid grid-cols-subgrid"
         action={getRoute('/ressources/cases/edit-inbox')}
         {...getFormProps(form)}
       >
@@ -100,8 +100,11 @@ export function EditCaseInbox({
           {...getInputProps(fields.caseId, { type: 'hidden' })}
           key={fields.caseId.key}
         />
-        <FormField name={fields.inboxId.name} className="flex flex-col gap-2">
-          <FormLabel className="text-grey-25 text-s first-letter:capitalize">
+        <FormField
+          name={fields.inboxId.name}
+          className="col-span-2 grid grid-cols-subgrid items-center"
+        >
+          <FormLabel className="text-s font-semibold first-letter:capitalize">
             {t('cases:case.inbox')}
           </FormLabel>
           <FormSelect.Default

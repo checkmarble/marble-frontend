@@ -90,7 +90,7 @@ export function getPageViewNameAndProps(
     case 'routes/_builder+/cases+/_index': {
       return { name: 'Cases', properties: undefined };
     }
-    case 'routes/_builder+/cases+/$caseId': {
+    case 'routes/_builder+/cases+/$caseId.information': {
       const safeParseProperties = z
         .object({
           caseId: shortUUIDSchema,
@@ -99,7 +99,37 @@ export function getPageViewNameAndProps(
       if (!safeParseProperties.success) return;
 
       return {
-        name: 'Case',
+        name: 'Case information',
+        properties: {
+          case_id: safeParseProperties.data.caseId,
+        },
+      };
+    }
+    case 'routes/_builder+/cases+/$caseId.decisions': {
+      const safeParseProperties = z
+        .object({
+          caseId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
+      return {
+        name: 'Case decisions',
+        properties: {
+          case_id: safeParseProperties.data.caseId,
+        },
+      };
+    }
+    case 'routes/_builder+/cases+/$caseId.files': {
+      const safeParseProperties = z
+        .object({
+          caseId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
+      return {
+        name: 'Case files',
         properties: {
           case_id: safeParseProperties.data.caseId,
         },

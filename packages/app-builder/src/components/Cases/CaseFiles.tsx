@@ -26,7 +26,7 @@ export function FilesList({ files }: { files: CaseFile[] }) {
       columnHelper.accessor((row) => row.fileName, {
         id: 'file_name',
         header: t('cases:case.file.name'),
-        size: 120,
+        size: 100,
       }),
       columnHelper.accessor((row) => row.fileName, {
         id: 'extension',

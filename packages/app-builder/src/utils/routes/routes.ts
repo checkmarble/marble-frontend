@@ -50,9 +50,31 @@ export const routes = [
             "file": "routes/_builder+/api.tsx"
           },
           {
-            "id": "routes/_builder+/cases+/$caseId",
+            "id": "routes/_builder+/cases+/$caseId._layout",
             "path": "cases/:caseId",
-            "file": "routes/_builder+/cases+/$caseId.tsx"
+            "file": "routes/_builder+/cases+/$caseId._layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/cases+/$caseId._index",
+                "index": true,
+                "file": "routes/_builder+/cases+/$caseId._index.tsx"
+              },
+              {
+                "id": "routes/_builder+/cases+/$caseId.decisions",
+                "path": "decisions",
+                "file": "routes/_builder+/cases+/$caseId.decisions.tsx"
+              },
+              {
+                "id": "routes/_builder+/cases+/$caseId.files",
+                "path": "files",
+                "file": "routes/_builder+/cases+/$caseId.files.tsx"
+              },
+              {
+                "id": "routes/_builder+/cases+/$caseId.information",
+                "path": "information",
+                "file": "routes/_builder+/cases+/$caseId.information.tsx"
+              }
+            ]
           },
           {
             "id": "routes/_builder+/cases+/_index",
@@ -383,6 +405,11 @@ export const routes = [
         "id": "routes/ressources+/lists+/value_delete",
         "path": "ressources/lists/value_delete",
         "file": "routes/ressources+/lists+/value_delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/locales",
+        "path": "ressources/locales",
+        "file": "routes/ressources+/locales.ts"
       },
       {
         "id": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId",

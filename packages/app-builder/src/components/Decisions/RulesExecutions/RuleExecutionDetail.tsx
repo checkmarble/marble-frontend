@@ -1,4 +1,5 @@
 import { decisionsI18n, Paper } from '@app-builder/components';
+import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder/AstBuilder';
 import {
   type AstNode,
   type DatabaseAccessAstNode,
@@ -16,72 +17,9 @@ import {
   useDisplayReturnValues,
 } from '@app-builder/services/editor/return-value';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
-import { Await } from '@remix-run/react';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Collapsible, Switch } from 'ui-design-system';
-
-import { AstBuilder } from '../Scenario/AstBuilder/AstBuilder';
-import {
-  RuleExecutionCollapsible,
-  RuleExecutionContent,
-  RuleExecutionDescription,
-  RuleExecutionTitle,
-  RulesExecutionsContainer,
-} from './RulesExecutions/RulesExecutions';
-
-export function RulesDetail({
-  ruleExecutions,
-  triggerObjectType,
-  astRuleData,
-}: {
-  ruleExecutions: RuleExecution[];
-  triggerObjectType: string;
-  astRuleData: Promise<{
-    rules: ScenarioIterationRule[];
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
-    dataModel: DataModel;
-    customLists: CustomList[];
-  }>;
-}) {
-  const { t } = useTranslation(decisionsI18n);
-
-  return (
-    <Collapsible.Container className="bg-grey-00">
-      <Collapsible.Title>{t('decisions:rules.title')}</Collapsible.Title>
-      <Collapsible.Content>
-        <RulesExecutionsContainer>
-          {ruleExecutions.map((ruleExecution) => {
-            return (
-              <RuleExecutionCollapsible key={ruleExecution.ruleId}>
-                <RuleExecutionTitle ruleExecution={ruleExecution} />
-                <RuleExecutionContent>
-                  <RuleExecutionDescription
-                    description={ruleExecution.description}
-                  />
-
-                  <React.Suspense fallback={t('common:loading')}>
-                    <Await resolve={astRuleData}>
-                      {(astRuleData) => (
-                        <RuleExecutionDetail
-                          ruleExecution={ruleExecution}
-                          triggerObjectType={triggerObjectType}
-                          astRuleData={astRuleData}
-                        />
-                      )}
-                    </Await>
-                  </React.Suspense>
-                </RuleExecutionContent>
-              </RuleExecutionCollapsible>
-            );
-          })}
-        </RulesExecutionsContainer>
-      </Collapsible.Content>
-    </Collapsible.Container>
-  );
-}
+import { Switch } from 'ui-design-system';
 
 export function RuleExecutionDetail({
   ruleExecution,

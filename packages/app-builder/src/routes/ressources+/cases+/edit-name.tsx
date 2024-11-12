@@ -61,6 +61,7 @@ export function EditCaseName(defaultValue: z.infer<typeof schema>) {
     <FormProvider context={form.context}>
       <fetcher.Form
         method="post"
+        className="col-span-2 grid grid-cols-subgrid"
         action={getRoute('/ressources/cases/edit-name')}
         {...getFormProps(form)}
       >
@@ -68,8 +69,11 @@ export function EditCaseName(defaultValue: z.infer<typeof schema>) {
           {...getInputProps(fields.caseId, { type: 'hidden' })}
           key={fields.caseId.key}
         />
-        <FormField name={fields.name.name} className="flex flex-col gap-2">
-          <FormLabel className="text-grey-25 text-s first-letter:capitalize">
+        <FormField
+          name={fields.name.name}
+          className="col-span-2 grid grid-cols-subgrid items-center"
+        >
+          <FormLabel className="text-s font-semibold first-letter:capitalize">
             {t('cases:case.name')}
           </FormLabel>
           <FormInput type="text" autoComplete="off" onBlur={submitOnBlur} />

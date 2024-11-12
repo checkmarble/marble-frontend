@@ -1,5 +1,5 @@
 import { Callout } from '@app-builder/components';
-import { PivotType } from '@app-builder/components/Data/SelectedPivot';
+import { PivotType } from '@app-builder/components/Data/PivotDetails';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import {
   FormControl,

@@ -275,11 +275,11 @@ function AddRuleSnoozeContent({
               name="update"
             >
               <LoadingIcon
-                icon="plus"
+                icon="snooze"
                 className="size-5"
                 loading={fetcher.state === 'submitting'}
               />
-              {t('cases:case_detail.add_rule_snooze')}
+              {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
             </Button>
           </div>
         </div>

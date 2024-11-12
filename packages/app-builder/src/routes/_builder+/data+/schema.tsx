@@ -42,7 +42,7 @@ export default function Data() {
   const { pivots } = useLoaderData<typeof loader>();
 
   return (
-    <div className="size-full">
+    <div className="flex size-full flex-col">
       <Page.Description>{t('data:your_data_callout')}</Page.Description>
       <DataModelFlow dataModel={dataModel} pivots={pivots}>
         <Panel position="top-left">
