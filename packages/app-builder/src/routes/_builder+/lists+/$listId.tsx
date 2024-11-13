@@ -117,7 +117,7 @@ export default function Lists() {
       <Page.Header className="justify-between">
         <div className="flex w-full flex-row items-center gap-4">
           <Page.BackButton />
-          <span className="line-clamp-2 text-left">{customList.name}</span>
+          <span className="line-clamp-2 text-start">{customList.name}</span>
           {listFeatureAccess.isEditListAvailable ? (
             <EditList
               listId={customList.id}

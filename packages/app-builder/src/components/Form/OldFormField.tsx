@@ -176,7 +176,7 @@ const FormError = React.forwardRef<
       ref={ref}
       id={formMessageId}
       className={clsx(
-        'text-s text-left font-medium text-red-100 transition-opacity duration-200 ease-in-out',
+        'text-s text-start font-medium text-red-100 transition-opacity duration-200 ease-in-out',
         className,
       )}
       {...props}

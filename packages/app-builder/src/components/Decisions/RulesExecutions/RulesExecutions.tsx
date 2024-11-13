@@ -50,7 +50,7 @@ export function RuleExecutionTitle({
         aria-hidden
         className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180 rtl:-rotate-90 rtl:group-aria-expanded:-rotate-180 rtl:group-data-[initial]:-rotate-180"
       />
-      <span className="text-s line-clamp-1 text-left font-semibold">
+      <span className="text-s line-clamp-1 text-start font-semibold">
         {ruleExecution.name}
       </span>
       <RuleExecutionStatus ruleExecution={ruleExecution} />

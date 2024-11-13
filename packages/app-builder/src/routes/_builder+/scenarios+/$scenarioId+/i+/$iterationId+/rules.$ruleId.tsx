@@ -229,7 +229,7 @@ export default function RuleDetail() {
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
-          <span className="line-clamp-2 text-left">
+          <span className="line-clamp-2 text-start">
             {rule.name ?? fromUUID(ruleId)}
           </span>
           {editorMode === 'edit' ? (
@@ -466,7 +466,7 @@ function RuleEditContent({
         </Collapsible.Content>
       </Collapsible.Container>
 
-      <div className="sticky bottom-4 left-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6 lg:left-6">
+      <div className="sticky bottom-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6">
         <div className="bg-grey-00 border-grey-10 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
           <DeleteRule
             ruleId={rule.id}

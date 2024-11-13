@@ -140,7 +140,7 @@ export default function CasePage() {
       <Page.Header className="justify-between gap-8">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
-          <span className="line-clamp-2 text-left">{caseDetail.name}</span>
+          <span className="line-clamp-2 text-start">{caseDetail.name}</span>
           <CopyToClipboardButton toCopy={caseDetail.id}>
             <span className="text-s line-clamp-1 max-w-40 font-normal">
               <span className="font-medium">ID</span> {caseDetail.id}
@@ -183,7 +183,7 @@ export default function CasePage() {
           </Page.Container>
 
           <CaseHistory
-            className="bg-grey-00 border-l-grey-10 flex w-[470px] shrink-0 flex-col border-l p-6"
+            className="bg-grey-00 border-s-grey-10 flex w-[470px] shrink-0 flex-col border-s p-6"
             events={caseDetail.events}
           />
         </div>

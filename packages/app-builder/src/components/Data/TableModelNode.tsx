@@ -118,7 +118,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         id: 'name',
         header: () => (
           <div className="flex justify-between gap-2 p-4">
-            <div className="flex flex-col gap-2 text-left">
+            <div className="flex flex-col gap-2 text-start">
               <span className="text-grey-100 text-[30px]">{data.name}</span>
               <FormatDescription description={data.description || ''} />
             </div>
@@ -131,7 +131,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           columnHelper.accessor((row) => row.name, {
             id: 'name',
             header: () => (
-              <span className="text-grey-100 flex p-2 text-left font-medium">
+              <span className="text-grey-100 flex p-2 text-start font-medium">
                 {t('data:field_name')}
               </span>
             ),
@@ -146,7 +146,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           columnHelper.accessor((row) => row.displayType, {
             id: 'displayType',
             header: () => (
-              <span className="text-grey-100 flex p-2 text-left font-medium">
+              <span className="text-grey-100 flex p-2 text-start font-medium">
                 {t('data:field_type')}
               </span>
             ),
@@ -154,7 +154,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           columnHelper.accessor((row) => row.description, {
             id: 'description',
             header: () => (
-              <span className="text-grey-100 flex p-2 text-left font-medium">
+              <span className="text-grey-100 flex p-2 text-start font-medium">
                 {t('data:description')}
               </span>
             ),

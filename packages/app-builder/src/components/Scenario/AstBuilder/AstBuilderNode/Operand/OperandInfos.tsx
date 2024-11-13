@@ -52,11 +52,12 @@ export function OperandInfos({
   operandType,
   displayName,
 }: OperandInfosProps) {
+  const { i18n } = useTranslation();
   return (
     <Ariakit.HovercardProvider
       showTimeout={0}
       hideTimeout={0}
-      placement="right-start"
+      placement={i18n.dir() === 'ltr' ? 'right-start' : 'left-start'}
     >
       <Ariakit.HovercardAnchor tabIndex={-1}>
         <Icon icon="tip" className={className} />
@@ -233,7 +234,7 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
               - a field name (string) = fieldName?.constant
               - a table name (string) = tableName?.constant
               */}
-              <p className="bg-grey-02 whitespace-nowrap p-2 text-right">
+              <p className="bg-grey-02 whitespace-nowrap p-2 text-end">
                 {fieldName?.constant ?? '...'}
               </p>
               <Operator

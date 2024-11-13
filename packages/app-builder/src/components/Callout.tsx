@@ -16,8 +16,8 @@ const callout = cva(
         soft: 'bg-grey-02',
       },
       color: {
-        purple: 'border-l-2 border-l-purple-100',
-        red: 'border-l-2 border-l-red-100',
+        purple: 'border-s-2 border-s-purple-100',
+        red: 'border-s-2 border-s-red-100',
       },
     },
   },

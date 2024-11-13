@@ -42,7 +42,7 @@ export function DetailPanel({ onSave, onDelete }: DetailPanelProps) {
 
   return (
     // eslint-disable-next-line tailwindcss/no-custom-classname -- nokey class ensures that ReactFlow onKeyDown event is not triggered (ex: delete node)
-    <div className="border-grey-10 bg-grey-00 nokey flex h-full flex-col overflow-hidden border-l">
+    <div className="border-grey-10 bg-grey-00 nokey flex h-full flex-col overflow-hidden border-s">
       <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
         <DetailPanelContent />
       </div>

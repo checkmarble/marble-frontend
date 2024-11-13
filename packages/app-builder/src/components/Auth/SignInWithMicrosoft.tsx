@@ -40,7 +40,7 @@ function SignInWithMicrosoftButton({
       <span className="text-s w-full whitespace-nowrap text-center align-middle font-semibold text-[#5E5E5E]">
         {t('auth:sign_in.microsoft')}
       </span>
-      <span className="absolute right-0 mx-2 size-4">
+      <span className="absolute end-0 mx-2 size-4">
         {loading ? <Spinner className="size-4" /> : null}
       </span>
     </button>

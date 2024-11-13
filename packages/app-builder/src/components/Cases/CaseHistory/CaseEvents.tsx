@@ -39,7 +39,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
 
   return (
     <div className="relative z-0 flex flex-col gap-4 lg:gap-6">
-      <div className="border-grey-10 absolute inset-y-0 left-0 -z-10 w-3 border-dashed ltr:border-r rtl:right-0 rtl:border-l" />
+      <div className="border-e-grey-10 absolute inset-y-0 start-0 -z-10 w-3 border-e border-dashed" />
       {events.map((event) => {
         const EventIcon = getEventIcon(event.eventType);
         const Title = getEventTitle(event, t);

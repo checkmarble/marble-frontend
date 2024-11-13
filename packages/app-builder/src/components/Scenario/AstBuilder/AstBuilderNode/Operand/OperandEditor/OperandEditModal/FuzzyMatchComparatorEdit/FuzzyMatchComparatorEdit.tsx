@@ -189,13 +189,13 @@ function Examples({
       </caption>
       <thead>
         <tr>
-          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-left text-xs font-normal capitalize">
+          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-start text-xs font-normal capitalize">
             {t('scenarios:edit_fuzzy_match.examples.left')}
           </th>
-          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-left text-xs font-normal capitalize">
+          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-start text-xs font-normal capitalize">
             {t('scenarios:edit_fuzzy_match.examples.right')}
           </th>
-          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-left text-xs font-normal capitalize">
+          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-start text-xs font-normal capitalize">
             {t('scenarios:edit_fuzzy_match.examples.result')}
           </th>
         </tr>

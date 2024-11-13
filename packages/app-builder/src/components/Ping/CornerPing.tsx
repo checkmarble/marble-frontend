@@ -8,10 +8,10 @@ const corner_ping = cva(
   {
     variants: {
       position: {
-        'top-right': 'top-0 right-0',
-        'top-left': 'top-0 left-0',
-        'bottom-right': 'bottom-0 right-0',
-        'bottom-left': 'bottom-0 left-0',
+        'top-right': 'top-0 end-0',
+        'top-left': 'top-0 start-0',
+        'bottom-right': 'bottom-0 end-0',
+        'bottom-left': 'bottom-0 start-0',
       },
     },
   },

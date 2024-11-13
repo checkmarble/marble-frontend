@@ -36,7 +36,7 @@ export function SidebarLink({ Icon, labelTKey, to }: SidebarLinkProps) {
   return (
     <NavLink className={({ isActive }) => sidebarLink({ isActive })} to={to}>
       <Icon className="size-6 shrink-0" />
-      <span className="line-clamp-1 text-left opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
         {t(labelTKey)}
       </span>
     </NavLink>
@@ -58,7 +58,7 @@ export const SidebarButton = React.forwardRef<
   return (
     <button ref={ref} className={sidebarLink({ className })} {...props}>
       <Icon className="size-6 shrink-0" />
-      <span className="line-clamp-1 text-left opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
         {t(labelTKey)}
       </span>
     </button>
