@@ -207,6 +207,7 @@
   "validation.decision.formula_must_return_boolean": "La formule doit renvoyer un booléen",
   "validation.decision.rule_formula_required": "Au moins une condition est requise",
   "validation.decision.score_threshold_min": "Devrait être ≥ {{min}}",
+  "validation.decision.score_threshold_max": "Devrait être ≤ {{max}}",
   "validation.decision.score_threshold_missing": "Un seuil est manquant",
   "validation.decision.score_thresholds_mismatch": "Les seuils doivent être dans l'ordre croissant",
   "validation.decision.trigger_condition_required": "Au moins une condition est requise",

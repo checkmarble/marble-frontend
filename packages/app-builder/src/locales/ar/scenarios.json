@@ -249,6 +249,7 @@
   "trigger.run_scenario.description.batch_execution": "<strong>التنفيذ المجمع</strong>: يتم التشغيل تلقائيًا أو يدويًا على البيانات التي يتم استيعابها.",
   "validation.decision.formula_must_return_boolean": "يجب أن ترجع الصيغة قيمة منطقية",
   "validation.decision.score_threshold_min": "يجب أن تكون ≥ {{min}}",
+  "validation.decision.score_threshold_max": "يجب أن تكون ≤ {{max}}",
   "validation.decision.score_threshold_missing": "العتبة مفقودة",
   "validation.decision.score_thresholds_mismatch": "يجب أن تكون العتبات بترتيب تصاعدي"
 }

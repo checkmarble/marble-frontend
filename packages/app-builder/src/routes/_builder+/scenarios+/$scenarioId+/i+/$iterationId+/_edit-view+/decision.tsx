@@ -56,22 +56,46 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
         .number({
           message: t('scenarios:validation.decision.score_threshold_missing'),
         })
-        .max(MAX_THRESHOLD)
-        .min(-MAX_THRESHOLD)
+        .max(MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_max', {
+            replace: { max: MAX_THRESHOLD },
+          }),
+        })
+        .min(-MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_min', {
+            replace: { min: -MAX_THRESHOLD },
+          }),
+        })
         .int(),
       scoreBlockAndReviewThreshold: z.coerce
         .number({
           message: t('scenarios:validation.decision.score_threshold_missing'),
         })
-        .max(MAX_THRESHOLD)
-        .min(-MAX_THRESHOLD)
+        .max(MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_max', {
+            replace: { max: MAX_THRESHOLD },
+          }),
+        })
+        .min(-MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_min', {
+            replace: { min: -MAX_THRESHOLD },
+          }),
+        })
         .int(),
       scoreDeclineThreshold: z.coerce
         .number({
           message: t('scenarios:validation.decision.score_threshold_missing'),
         })
-        .max(MAX_THRESHOLD)
-        .min(-MAX_THRESHOLD)
+        .max(MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_max', {
+            replace: { max: MAX_THRESHOLD },
+          }),
+        })
+        .min(-MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_min', {
+            replace: { min: -MAX_THRESHOLD },
+          }),
+        })
         .int(),
     })
     .superRefine(
