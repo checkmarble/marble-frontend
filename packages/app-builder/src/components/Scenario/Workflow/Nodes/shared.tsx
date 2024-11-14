@@ -97,7 +97,7 @@ export function TriggerNodeContainer({
       </p>
       <div
         className={clsx(
-          'border-grey-10 bg-grey-00 flex flex-col gap-4 rounded-r-md rounded-bl-md border p-4',
+          'border-grey-10 bg-grey-00 flex flex-col gap-4 rounded-e-md rounded-bl-md border p-4',
           selected ? 'border-purple-100' : 'border-grey-10',
         )}
       >

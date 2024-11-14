@@ -73,7 +73,7 @@ export default function SentAlertDetailPage() {
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center gap-4">
           <Page.BackButton />
-          <span className="line-clamp-1 text-left">
+          <span className="line-clamp-1 text-start">
             {t('transfercheck:alert_detail.sent.title')}
           </span>
           <div

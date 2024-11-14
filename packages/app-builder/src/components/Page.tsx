@@ -109,14 +109,9 @@ function PageBackLink({
   className,
   ...props
 }: React.ComponentProps<typeof Link>) {
-  const { i18n } = useTranslation();
   return (
     <Link className={pageBack({ className })} {...props}>
-      <Icon
-        icon={i18n.dir() === 'ltr' ? 'arrow-left' : 'arrow-right'}
-        className="size-5"
-        aria-hidden
-      />
+      <Icon icon="arrow-left" className="size-5 rtl:rotate-180" aria-hidden />
     </Link>
   );
 }

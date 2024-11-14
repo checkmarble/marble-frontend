@@ -113,7 +113,7 @@ export default function ScenarioEditLayout() {
             }}
           >
             <button className="outline-none hover:text-purple-100 hover:underline focus:text-purple-100 focus:underline">
-              <span className="line-clamp-2 text-left">
+              <span className="line-clamp-2 text-start">
                 {currentScenario.name}
               </span>
             </button>

@@ -128,7 +128,7 @@ export default function DecisionPage() {
         <Page.Header className="justify-between gap-8">
           <div className="flex flex-row items-center gap-4">
             <Page.BackButton />
-            <span className="line-clamp-1 text-left">
+            <span className="line-clamp-1 text-start">
               {t('decisions:decision')}
             </span>
             <CopyToClipboardButton toCopy={decision.id}>

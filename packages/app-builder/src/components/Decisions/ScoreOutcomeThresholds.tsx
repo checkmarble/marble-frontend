@@ -19,7 +19,7 @@ export function ScoreOutcomeThresholds({
 
   return (
     <div className="relative flex h-[70px] w-full flex-row">
-      <div className="bg-green-10 isolate flex h-10 flex-1 items-center justify-center rounded-l-md border-b-4 border-b-green-100">
+      <div className="bg-green-10 isolate flex h-10 flex-1 items-center justify-center rounded-s-md border-b-4 border-b-green-100">
         <span className="text-s font-semibold text-green-100">
           {t('decisions:outcome.approve')}
         </span>
@@ -63,7 +63,7 @@ export function ScoreOutcomeThresholds({
         </span>
       </div>
 
-      <div className="bg-red-10 flex h-10 flex-1 items-center justify-center rounded-r-md border-b-4 border-b-red-100">
+      <div className="bg-red-10 flex h-10 flex-1 items-center justify-center rounded-e-md border-b-4 border-b-red-100">
         <span className="text-s font-semibold text-red-100">
           {t('decisions:outcome.decline')}
         </span>

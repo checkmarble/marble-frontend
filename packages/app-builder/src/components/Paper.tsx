@@ -63,7 +63,7 @@ const CollapsiblePaperTitle = forwardRef<
     <Collapsible.Title ref={ref} className="bg-grey-02" {...props}>
       <div
         className={clsx(
-          'flex flex-1 flex-row items-center gap-2 text-left font-bold',
+          'flex flex-1 flex-row items-center gap-2 text-start font-bold',
           className,
         )}
       >

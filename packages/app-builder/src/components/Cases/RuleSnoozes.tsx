@@ -29,7 +29,7 @@ export function RuleSnoozes({
   decisionId: string;
   ruleId: string;
 }) {
-  const { t } = useTranslation(casesI18n);
+  const { t, i18n } = useTranslation(casesI18n);
   const language = useFormatLanguage();
 
   return (
@@ -54,7 +54,7 @@ export function RuleSnoozes({
                 <Ariakit.HovercardProvider
                   showTimeout={0}
                   hideTimeout={0}
-                  placement="right"
+                  placement={i18n.dir() === 'ltr' ? 'right' : 'left'}
                 >
                   <Ariakit.HovercardAnchor
                     tabIndex={-1}
@@ -93,7 +93,7 @@ export function RuleSnoozes({
                   <Ariakit.HovercardProvider
                     showTimeout={0}
                     hideTimeout={0}
-                    placement="right"
+                    placement={i18n.dir() === 'ltr' ? 'right' : 'left'}
                   >
                     <Ariakit.HovercardAnchor
                       tabIndex={-1}

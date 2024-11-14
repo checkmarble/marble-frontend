@@ -37,7 +37,7 @@ export default function SignUp() {
 
   return (
     <div className="flex w-full flex-col items-center">
-      <Callout variant="soft" className="mb-6 text-left">
+      <Callout variant="soft" className="mb-6 text-start">
         {t('auth:sign_up.description')}
       </Callout>
       <SignUpWithEmailAndPassword signUp={signUp} />
