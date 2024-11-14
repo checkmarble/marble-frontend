@@ -1,4 +1,3 @@
-export * from './Accordion/Accordion';
 export * from './Avatar/Avatar';
 export * from './Button/Button';
 export * from './Calendar/Calendar';

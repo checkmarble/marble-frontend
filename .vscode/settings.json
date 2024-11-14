@@ -1,8 +1,9 @@
 {
-  "i18n-ally.localesPaths": ["packages/app-builder/public/locales","packages/app-builder/src/locales"],
+  "i18n-ally.localesPaths": ["packages/app-builder/src/locales"],
   "i18n-ally.keystyle": "flat",
   "i18n-ally.enabledFrameworks": ["react", "i18next", "react-i18next"],
   "i18n-ally.namespace": true,
+  "i18n-ally.pathMatcher": "{locale}/{namespaces}.json",
 
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit"

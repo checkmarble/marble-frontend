@@ -1,6 +1,6 @@
 import { type Row, type RowData } from '@tanstack/react-table';
-import { Temporal } from 'temporal-polyfill';
 
+import { getDateRangeFilter } from './datetime';
 import { type DateRangeFilter } from './schema/filterSchema';
 
 export function dateRangeFilterFn<TData extends RowData>(
@@ -9,22 +9,9 @@ export function dateRangeFilterFn<TData extends RowData>(
   filterValue?: DateRangeFilter,
 ) {
   if (!filterValue) return true;
+  const dateRangeFilter = getDateRangeFilter(filterValue);
   const date = row.getValue<string>(columnId);
-  if (filterValue.type === 'static') {
-    if (filterValue.startDate && filterValue.startDate > date) return false;
-    if (filterValue.endDate && filterValue.endDate < date) return false;
-    return true;
-  }
-  if (filterValue.type === 'dynamic') {
-    const dateInstant = Temporal.Instant.from(date);
-    const now = Temporal.Now.instant();
-    const durationFromNow = Temporal.Duration.from(filterValue.fromNow);
-
-    return (
-      Temporal.Duration.compare(now.until(dateInstant), durationFromNow) >= 0
-    );
-  }
-  return false;
+  return dateRangeFilter(date);
 }
 
 export function arrIncludesExactSome<TData extends RowData>(

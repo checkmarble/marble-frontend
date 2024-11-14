@@ -81,40 +81,45 @@ export function EditCaseTags({
   const notTags = orgTags.length === 0;
   if (notTags) {
     return (
-      <div className="flex flex-row gap-2">
-        <p className="bg-grey-00 text-s text-grey-25">
-          {t('cases:case_detail.empty_tag_list')}
-        </p>
+      <>
+        <div className="text-s font-semibold first-letter:capitalize">
+          {t('cases:case.tags')}
+        </div>
+        <div className="flex flex-row gap-2">
+          <p className="bg-grey-00 text-s text-grey-25">
+            {t('cases:case_detail.empty_tag_list')}
+          </p>
 
-        <Tooltip.Root delayDuration={0}>
-          <Tooltip.Trigger tabIndex={-1}>
-            <Icon
-              icon="tip"
-              className="text-grey-10 size-5 shrink-0 outline-none transition-colors hover:text-purple-100"
-            />
-          </Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Content
-              side="right"
-              sideOffset={4}
-              className="bg-grey-00 border-grey-10 flex max-h-[400px] max-w-[300px] overflow-y-auto overflow-x-hidden rounded border p-2 shadow-md"
-            >
-              {isAdmin(user) ? (
-                <Link
-                  to={getRoute('/settings/tags')}
-                  className="text-purple-100 underline"
-                >
-                  {t('cases:case_detail.empty_tag_list.create_tag')}
-                </Link>
-              ) : (
-                <p className="bg-grey-00 text-s text-grey-50">
-                  {t('cases:case_detail.empty_tag_list.info')}
-                </p>
-              )}
-            </Tooltip.Content>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-      </div>
+          <Tooltip.Root delayDuration={0}>
+            <Tooltip.Trigger tabIndex={-1}>
+              <Icon
+                icon="tip"
+                className="text-grey-10 size-5 shrink-0 outline-none transition-colors hover:text-purple-100"
+              />
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content
+                side="right"
+                sideOffset={4}
+                className="bg-grey-00 border-grey-10 flex max-h-[400px] max-w-[300px] overflow-y-auto overflow-x-hidden rounded border p-2 shadow-md"
+              >
+                {isAdmin(user) ? (
+                  <Link
+                    to={getRoute('/settings/tags')}
+                    className="text-purple-100 underline"
+                  >
+                    {t('cases:case_detail.empty_tag_list.create_tag')}
+                  </Link>
+                ) : (
+                  <p className="bg-grey-00 text-s text-grey-50">
+                    {t('cases:case_detail.empty_tag_list.info')}
+                  </p>
+                )}
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </div>
+      </>
     );
   }
 
@@ -123,7 +128,7 @@ export function EditCaseTags({
       <fetcher.Form
         ref={formRef}
         method="post"
-        className="w-full"
+        className="col-span-2 grid grid-cols-subgrid"
         action={getRoute('/ressources/cases/edit-tags')}
         {...getFormProps(form)}
       >
@@ -133,9 +138,9 @@ export function EditCaseTags({
         />
         <FormField
           name={fields.caseTagIds.name}
-          className="flex flex-col gap-2"
+          className="col-span-2 grid grid-cols-subgrid items-center"
         >
-          <FormLabel className="text-grey-25 text-s first-letter:capitalize">
+          <FormLabel className="text-s font-semibold first-letter:capitalize">
             {t('cases:case.tags')}
           </FormLabel>
           <FormSelectWithCombobox.Control

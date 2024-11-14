@@ -1,4 +1,5 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
+import clsx from 'clsx';
 import * as React from 'react';
 import { Icon } from 'ui-icons';
 
@@ -32,8 +33,9 @@ export function ToggleSidebar() {
     <SidebarButton
       onClick={toggleExpanded}
       labelTKey={expanded ? 'navigation:collapse' : 'navigation:expand'}
-      Icon={(props) => (
+      Icon={({ className, ...props }) => (
         <Icon
+          className={clsx('rtl:rotate-180', className)}
           icon={expanded ? 'left-panel-close' : 'left-panel-open'}
           {...props}
         />

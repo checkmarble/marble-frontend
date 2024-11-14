@@ -79,58 +79,66 @@ export function adaptCase(dto: CaseDto): Case {
   };
 }
 
-interface CaseEventBase {
+export const caseEventTypes = [
+  'case_created',
+  'status_updated',
+  'decision_added',
+  'comment_added',
+  'name_updated',
+  'tags_updated',
+  'file_added',
+  'inbox_changed',
+  'rule_snooze_created',
+  'decision_reviewed',
+] as const;
+export type CaseEventType = (typeof caseEventTypes)[number];
+
+interface CaseEventBase<T extends CaseEventType> {
   id: string;
   caseId: string;
   createdAt: string;
+  eventType: T;
 }
 
-export interface CaseCreatedEvent extends CaseEventBase {
-  eventType: 'case_created';
+export interface CaseCreatedEvent extends CaseEventBase<'case_created'> {
   userId?: string;
 }
-export interface CaseStatusUpdatedEvent extends CaseEventBase {
-  eventType: 'status_updated';
+export interface CaseStatusUpdatedEvent
+  extends CaseEventBase<'status_updated'> {
   userId: string;
   newStatus: CaseStatus;
 }
-export interface DecisionAddedEvent extends CaseEventBase {
-  eventType: 'decision_added';
+export interface DecisionAddedEvent extends CaseEventBase<'decision_added'> {
   userId?: string;
 }
-export interface CommentAddedEvent extends CaseEventBase {
-  eventType: 'comment_added';
+export interface CommentAddedEvent extends CaseEventBase<'comment_added'> {
   comment: string;
   userId: string;
 }
-export interface NameUpdatedEvent extends CaseEventBase {
-  eventType: 'name_updated';
+export interface NameUpdatedEvent extends CaseEventBase<'name_updated'> {
   newName: string;
   userId: string;
 }
-export interface CaseTagsUpdatedEvent extends CaseEventBase {
-  eventType: 'tags_updated';
+export interface CaseTagsUpdatedEvent extends CaseEventBase<'tags_updated'> {
   tagIds: string[];
   userId: string;
 }
-export interface FileAddedEvent extends CaseEventBase {
-  eventType: 'file_added';
+export interface FileAddedEvent extends CaseEventBase<'file_added'> {
   fileName: string;
   userId: string;
 }
-export interface InboxChangedEvent extends CaseEventBase {
-  eventType: 'inbox_changed';
+export interface InboxChangedEvent extends CaseEventBase<'inbox_changed'> {
   newInboxId: string;
   userId: string;
 }
-export interface RuleSnoozeCreatedEvent extends CaseEventBase {
-  eventType: 'rule_snooze_created';
+export interface RuleSnoozeCreatedEvent
+  extends CaseEventBase<'rule_snooze_created'> {
   ruleSnoozeId: string;
   userId: string;
   comment: string;
 }
-export interface DecisionReviewedEvent extends CaseEventBase {
-  eventType: 'decision_reviewed';
+export interface DecisionReviewedEvent
+  extends CaseEventBase<'decision_reviewed'> {
   userId: string;
   reviewComment: string;
   finalStatus: 'approve' | 'decline';

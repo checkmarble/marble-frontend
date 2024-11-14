@@ -106,7 +106,7 @@ function DecisionRightPanelContent() {
   );
 }
 
-export const DecisionRightPannel = {
+export const DecisionRightPanel = {
   Root: DecisionRightPanelRoot,
   Trigger: RightPanel.Trigger,
 };
