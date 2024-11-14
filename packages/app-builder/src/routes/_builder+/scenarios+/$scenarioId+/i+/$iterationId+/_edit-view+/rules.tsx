@@ -105,7 +105,11 @@ export default function Rules() {
                   <Ping className="relative box-content size-[6px] border border-transparent text-red-100" />
                 ) : null}
               </span>
-              <Highlight text={getValue()} query={query} />
+              <Highlight
+                text={getValue()}
+                query={query}
+                className="hyphens-auto"
+              />
             </span>
           );
         },
