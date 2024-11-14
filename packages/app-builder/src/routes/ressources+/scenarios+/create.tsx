@@ -9,6 +9,7 @@ import { scenarioObjectDocHref } from '@app-builder/services/documentation-href'
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
+import * as Ariakit from '@ariakit/react';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import {
@@ -23,6 +24,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, ModalV2 } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -91,7 +93,7 @@ export function CreateScenario({ children }: { children: React.ReactElement }) {
 }
 
 function CreateScenarioContent() {
-  const { t } = useTranslation(handle.i18n);
+  const { t, i18n } = useTranslation(handle.i18n);
   const dataModelFetcher = useFetcher<typeof loader>();
 
   const { load: loadDataModel } = dataModelFetcher;
@@ -168,8 +170,27 @@ function CreateScenarioContent() {
               name={fields.triggerObjectType.name}
               className="group flex w-full flex-col gap-2"
             >
-              <FormLabel>
+              <FormLabel className="flex flex-row items-center gap-1">
                 {t('scenarios:create_scenario.trigger_object_title')}
+                <Ariakit.HovercardProvider
+                  showTimeout={0}
+                  hideTimeout={0}
+                  placement={i18n.dir() === 'ltr' ? 'right' : 'left'}
+                >
+                  <Ariakit.HovercardAnchor
+                    tabIndex={-1}
+                    className="text-grey-25 hover:text-grey-50 cursor-pointer transition-colors"
+                  >
+                    <Icon icon="tip" className="size-5" />
+                  </Ariakit.HovercardAnchor>
+                  <Ariakit.Hovercard
+                    portal
+                    gutter={4}
+                    className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
+                  >
+                    {t('scenarios:trigger_object.description')}
+                  </Ariakit.Hovercard>
+                </Ariakit.HovercardProvider>
               </FormLabel>
               <FormSelect.Default
                 placeholder={t(
