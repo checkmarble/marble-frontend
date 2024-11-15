@@ -199,6 +199,7 @@ function DataAccessorDescription({
   );
 }
 
+// Look at this for value display
 function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
   const getAstNodeOption = useGetAstNodeOption();
   const { aggregator, tableName, fieldName, filters } = astNode.namedChildren;
@@ -226,7 +227,7 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
               type="text"
             />
             <div className="flex items-center gap-1">
-              {/* TODO: replace with OperandLable for consistency, 
+              {/* TODO: replace with OperandLabel for consistency, 
               we may need to change the AggregatorEditableAstNode to register a valid Payload node (instead of the shorthand Constant) 
               but it can be cumbersome for api compatibility (notably when getting the astNode from the server)
               

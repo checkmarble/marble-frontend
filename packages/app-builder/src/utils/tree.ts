@@ -193,13 +193,13 @@ export function removeAtPath<T>(
 export function useChildrenArray<C, T extends { children: C[] }>(
   stringPath: string,
   tree: T,
-): { child: T['children'][number]; key: string; path: string }[] {
+): { child: T['children'][number]; key: string; treePath: string }[] {
   return React.useMemo(
     () =>
       tree.children.map((child, index) => ({
         key: nanoid(),
         child,
-        path: `${stringPath}.children.${index}`,
+        treePath: `${stringPath}.children.${index}`,
       })),
     [stringPath, tree.children],
   );

@@ -16,7 +16,7 @@ import { Operand } from './Operand';
 import { TwoOperandsLine } from './TwoOperandsLine';
 
 interface AstBuilderNodeProps {
-  path: string;
+  treePath: string;
   astNode: AstNode;
   viewOnly?: boolean;
   onSave?: (astNode: AstNode) => void;
@@ -24,7 +24,7 @@ interface AstBuilderNodeProps {
 }
 
 export function AstBuilderNode({
-  path,
+  treePath,
   astNode,
   viewOnly,
   onSave,
@@ -34,7 +34,7 @@ export function AstBuilderNode({
     return (
       <div className="flex w-full flex-col gap-2">
         <TwoOperandsLine
-          path={path}
+          treePath={treePath}
           twoLineOperandAstNode={astNode}
           viewOnly={viewOnly}
           root={root}
@@ -45,7 +45,7 @@ export function AstBuilderNode({
 
   return (
     <OperandBuilderNode
-      path={path}
+      treePath={treePath}
       astNode={astNode}
       viewOnly={viewOnly}
       onSave={onSave}
@@ -54,33 +54,32 @@ export function AstBuilderNode({
 }
 
 export function OperandBuilderNode({
-  path,
+  treePath,
   astNode,
   viewOnly,
   onSave,
 }: {
-  path: string;
+  treePath: string;
   astNode: AstNode;
   viewOnly?: boolean;
   onSave?: (astNode: AstNode) => void;
 }) {
-  const enumValues = useEnumValuesFromNeighbour(path);
+  const enumValues = useEnumValuesFromNeighbour(treePath);
   const getAstNodeOption = useGetAstNodeOption();
 
   const options = useOperandOptions(enumValues);
   const coerceToConstant = useDefaultCoerceToConstant();
 
-  const validationStatus = useValidationStatus(path);
-
   const operandProps = React.useMemo(() => {
     return getAstNodeOption(astNode, { enumValues });
   }, [astNode, enumValues, getAstNodeOption]);
 
-  const evaluation = useEvaluation(path);
+  const evaluation = useEvaluation(treePath);
   const formatReturnValue = useFormatReturnValue();
   const returnValue = React.useMemo(() => {
     return formatReturnValue(evaluation?.returnValue);
   }, [evaluation?.returnValue, formatReturnValue]);
+  const validationStatus = useValidationStatus(treePath);
 
   return (
     <Operand
