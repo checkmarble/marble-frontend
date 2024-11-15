@@ -199,7 +199,6 @@ function DataAccessorDescription({
   );
 }
 
-// Look at this for value display
 function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
   const getAstNodeOption = useGetAstNodeOption();
   const { aggregator, tableName, fieldName, filters } = astNode.namedChildren;

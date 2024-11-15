@@ -196,6 +196,7 @@ function AndOperand({
         <Tag
           border="square"
           className="w-full"
+          // TODO Pascal: this is where it happens
           color={childBooleanReturnValue.value ? 'green' : 'red'}
         >
           {t(`common:${childBooleanReturnValue.value}`)}

@@ -146,11 +146,19 @@ export function findArgumentErrorsFromParent(
   }
 }
 
-export function getValidationStatus(
-  evaluationErrors: EvaluationError[],
-  parentEvaluationErrors?: EvaluationError[],
-  pathSegment?: PathSegment,
-): ValidationStatus {
+export function getValidationStatus({
+  evaluationErrors,
+  valueIsNull,
+  isDivByZeroField,
+  parentEvaluationErrors,
+  pathSegment,
+}: {
+  evaluationErrors: EvaluationError[];
+  valueIsNull: boolean;
+  isDivByZeroField: boolean;
+  parentEvaluationErrors?: EvaluationError[];
+  pathSegment?: PathSegment;
+}): ValidationStatus {
   if (evaluationErrors.length > 0) return 'error';
 
   if (pathSegment && parentEvaluationErrors) {
@@ -160,6 +168,8 @@ export function getValidationStatus(
     );
     if (argumentErrors.length > 0) return 'light-error';
   }
+  if (isDivByZeroField) return 'light-error';
+  if (valueIsNull) return 'light-error';
 
   return 'valid';
 }

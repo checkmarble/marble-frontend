@@ -39,6 +39,7 @@ const operandContainerClassnames = cva(
       },
     },
     compoundVariants: [
+      // editor cases
       {
         interactionMode: 'editor',
         validationStatus: 'valid',
@@ -57,6 +58,7 @@ const operandContainerClassnames = cva(
         className:
           'border enabled:aria-[expanded=false]:border-red-25 enabled:aria-[expanded=false]:focus:border-purple-100',
       },
+      // viewer cases
       {
         interactionMode: 'viewer',
         validationStatus: 'valid',

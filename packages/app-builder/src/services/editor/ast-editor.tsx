@@ -2,6 +2,7 @@ import { type AstNode } from '@app-builder/models';
 import {
   NewNodeEvaluation,
   type NodeEvaluation,
+  type ReturnValue,
 } from '@app-builder/models/node-evaluation';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
@@ -13,6 +14,7 @@ import {
   type Path,
   removeAtPath,
   setAtPath,
+  type Tree,
 } from '@app-builder/utils/tree';
 import * as React from 'react';
 import { createStore, type StoreApi, useStore } from 'zustand';
@@ -315,16 +317,56 @@ export function useRootOrAndChildValidation(stringPath: string) {
   ]);
 }
 
-export function useValidationStatus(stringPath: string) {
+export function useValidationStatus(
+  stringPath: string,
+  returnValue?: ReturnValue,
+) {
   const path = usePath(stringPath);
   const evaluationErrors = useEvaluationErrors(stringPath);
   const parentPath = useParentPath(path);
+  const parentNode = useParentAstNode(parentPath);
+  const isDivByZeroField =
+    isDivisionDenominator(parentNode, path) &&
+    !returnValue?.isOmitted &&
+    returnValue?.value === 0;
+
   const parentEvaluationErrors = useParentEvaluationErrors(parentPath);
+  const valueIsNull = !returnValue?.isOmitted && returnValue?.value === null;
   return React.useMemo(() => {
-    return getValidationStatus(
+    return getValidationStatus({
       evaluationErrors,
+      valueIsNull,
+      isDivByZeroField,
       parentEvaluationErrors,
-      parentPath?.childPathSegment,
-    );
-  }, [evaluationErrors, parentEvaluationErrors, parentPath]);
+      pathSegment: parentPath?.childPathSegment,
+    });
+  }, [
+    evaluationErrors,
+    isDivByZeroField,
+    parentEvaluationErrors,
+    parentPath?.childPathSegment,
+    valueIsNull,
+  ]);
+}
+
+function isDivisionDenominator(
+  parentNode: Tree<AstNode> | undefined,
+  path: Path,
+) {
+  if (path.length === 0) {
+    return false;
+  }
+  const pathLastPart = path[path.length - 1];
+  if (!pathLastPart) {
+    return false;
+  }
+  if (pathLastPart.type !== 'children') {
+    return false;
+  }
+
+  return (
+    parentNode?.name === '/' &&
+    pathLastPart.type === 'children' &&
+    pathLastPart.index === 1
+  );
 }

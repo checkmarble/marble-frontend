@@ -3798,6 +3798,7 @@ components:
       properties:
         code:
           type: integer
+          enum: [100, 200]
         message:
           type: string
     OutcomeDto:
