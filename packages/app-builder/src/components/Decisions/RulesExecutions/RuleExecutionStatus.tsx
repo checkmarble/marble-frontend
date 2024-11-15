@@ -3,6 +3,8 @@ import {
   isRuleExecutionHit,
   isRuleExecutionSnoozed,
   type RuleExecution,
+  type RuleExecutionError,
+  RuleExecutionErrorCode,
 } from '@app-builder/models/decision';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
@@ -69,10 +71,24 @@ function getRuleExecutionStatusLabel(
     return t('decisions:rules.status.hit');
   }
   if (isRuleExecutionError(ruleExecution)) {
-    return t('decisions:rules.status.error');
+    return getRuleExecutionErrorLabel(t, ruleExecution);
   }
   if (isRuleExecutionSnoozed(ruleExecution)) {
     return t('decisions:rules.status.snoozed');
   }
   return t('decisions:rules.status.no_hit');
+}
+
+function getRuleExecutionErrorLabel(
+  t: TFunction<typeof decisionsI18n>,
+  ruleExecution: RuleExecutionError,
+) {
+  switch (ruleExecution.errorCode) {
+    case RuleExecutionErrorCode.DivisionByZero:
+      return t('decisions:rules.error.division_by_zero');
+    case RuleExecutionErrorCode.NullValueFound:
+      return t('decisions:rules.error.null_value');
+    default:
+      return t('decisions:rules.status.error');
+  }
 }

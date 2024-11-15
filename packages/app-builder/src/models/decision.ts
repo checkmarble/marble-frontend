@@ -103,9 +103,15 @@ export function isRuleExecutionHit(
   return ruleExecution.outcome === 'hit';
 }
 
+export enum RuleExecutionErrorCode {
+  DivisionByZero = 100,
+  NullValueFound = 200,
+}
+
 export interface RuleExecutionError extends RuleExecutionCore {
   outcome: 'error';
   error: Error;
+  errorCode: RuleExecutionErrorCode;
 }
 
 export function isRuleExecutionError(
@@ -120,7 +126,7 @@ export interface RuleExecutionSnoozed extends RuleExecutionCore {
 
 export function isRuleExecutionSnoozed(
   ruleExecution: RuleExecution,
-): ruleExecution is RuleExecutionError {
+): ruleExecution is RuleExecutionSnoozed {
   return ruleExecution.outcome === 'snoozed';
 }
 
@@ -185,6 +191,7 @@ function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
         ...ruleExecution,
         outcome: 'error',
         error: dto.error,
+        errorCode: dto.error.code,
       };
     }
     case 'snoozed': {

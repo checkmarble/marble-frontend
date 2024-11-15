@@ -79,7 +79,10 @@ export function OperandBuilderNode({
   const returnValue = React.useMemo(() => {
     return formatReturnValue(evaluation?.returnValue);
   }, [evaluation?.returnValue, formatReturnValue]);
-  const validationStatus = useValidationStatus(treePath);
+  const validationStatus = useValidationStatus(
+    treePath,
+    evaluation?.returnValue,
+  );
 
   return (
     <Operand
