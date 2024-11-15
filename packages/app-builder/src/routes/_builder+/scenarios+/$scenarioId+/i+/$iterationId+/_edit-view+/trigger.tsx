@@ -27,12 +27,11 @@ import {
   json,
   type LoaderFunctionArgs,
 } from '@remix-run/node';
-import { Link, useFetcher, useLoaderData } from '@remix-run/react';
-import clsx from 'clsx';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Collapsible, Tooltip } from 'ui-design-system';
+import { Button, Collapsible } from 'ui-design-system';
 
 import {
   useCurrentScenarioIteration,
@@ -44,45 +43,31 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const {
-    user,
-    apiClient,
-    customListsRepository,
-    editor,
-    dataModelRepository,
-  } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { authService } = serverServices;
+  const { customListsRepository, editor, dataModelRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const [operators, accessors, dataModel, customLists, scheduledExecutions] =
-    await Promise.all([
-      editor.listOperators({
-        scenarioId,
-      }),
-      editor.listAccessors({
-        scenarioId,
-      }),
-      dataModelRepository.getDataModel(),
-      customListsRepository.listCustomLists(),
-      apiClient.listScheduledExecutions({
-        scenarioId,
-      }),
-    ]);
+  const [operators, accessors, dataModel, customLists] = await Promise.all([
+    editor.listOperators({
+      scenarioId,
+    }),
+    editor.listAccessors({
+      scenarioId,
+    }),
+    dataModelRepository.getDataModel(),
+    customListsRepository.listCustomLists(),
+  ]);
 
   return json({
-    featureAccess: {
-      isManualTriggerScenarioAvailable:
-        featureAccessService.isManualTriggerScenarioAvailable(user),
-    },
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
     operators,
     dataModel,
     customLists,
-    scheduledExecutions: scheduledExecutions.scheduled_executions,
   });
 }
 
@@ -92,7 +77,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
   const session = await getSession(request);
-  const { apiClient, scenario } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -100,11 +85,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const iterationId = fromParams(params, 'iterationId');
 
     const { action, ...payload } = (await request.json()) as { action: string };
-
-    if (action === 'trigger') {
-      await apiClient.scheduleScenarioExecution(iterationId);
-      return json({ success: true, error: null });
-    }
 
     if (action === 'save') {
       const { astNode: triggerConditionAstExpression, schedule } = payload as {
@@ -151,13 +131,11 @@ export default function Trigger() {
   const scenarioValidation = useCurrentScenarioValidation();
 
   const {
-    featureAccess,
     databaseAccessors,
     payloadAccessors,
     operators,
     dataModel,
     customLists,
-    scheduledExecutions,
   } = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
@@ -193,20 +171,6 @@ export default function Trigger() {
       },
     );
   });
-
-  const isLive = scenarioIteration.id == scenario.liveVersionId;
-  const withManualTriggerButton =
-    isLive && featureAccess.isManualTriggerScenarioAvailable;
-  const pendingExecutions = scheduledExecutions.filter((execution) =>
-    ['pending', 'processing'].includes(execution.status),
-  );
-  const triggerFetcher = useFetcher<typeof action>();
-  const handleTriggerExecution = () => {
-    triggerFetcher.submit(
-      { action: 'trigger' },
-      { method: 'POST', encType: 'application/json' },
-    );
-  };
 
   const getCopyToClipboardProps = useGetCopyToClipboard();
   return (
@@ -272,14 +236,6 @@ export default function Trigger() {
                         viewOnly={editorMode === 'view'}
                       />
                     </li>
-                    {withManualTriggerButton ? (
-                      <li>
-                        <ManualTriggerButton
-                          handleTriggerExecution={handleTriggerExecution}
-                          hasPendingExecution={pendingExecutions.length > 0}
-                        />
-                      </li>
-                    ) : null}
                   </ul>
                 </li>
               </ol>
@@ -340,52 +296,5 @@ export default function Trigger() {
         </Collapsible.Content>
       </Collapsible.Container>
     </>
-  );
-}
-
-function ManualTriggerButton({
-  hasPendingExecution,
-  handleTriggerExecution,
-}: {
-  hasPendingExecution: boolean;
-  handleTriggerExecution: () => void;
-}) {
-  const { t } = useTranslation(handle.i18n);
-
-  const ManualButton = (
-    <Button
-      type="submit"
-      disabled={hasPendingExecution}
-      onClick={handleTriggerExecution}
-      className={clsx({ 'cursor-not-allowed': hasPendingExecution })}
-    >
-      {t('scenarios:trigger.trigger_manual_execution.button')}
-    </Button>
-  );
-
-  if (!hasPendingExecution) return ManualButton;
-
-  return (
-    <Tooltip.Default
-      content={
-        <p className="my-2 text-xs">
-          <Trans
-            t={t}
-            i18nKey="scenarios:trigger.trigger_manual_execution.warning"
-            components={{
-              Link: (
-                // eslint-disable-next-line jsx-a11y/anchor-has-content
-                <Link
-                  to={getRoute('/scheduled-executions')}
-                  className="text-purple-100"
-                />
-              ),
-            }}
-          />
-        </p>
-      }
-    >
-      {ManualButton}
-    </Tooltip.Default>
   );
 }

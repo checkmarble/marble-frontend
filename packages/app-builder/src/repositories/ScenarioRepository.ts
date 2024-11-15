@@ -81,6 +81,7 @@ export interface ScenarioRepository {
   getScenarioIterationActiveSnoozes(
     scenarioIterationId: string,
   ): Promise<SnoozesOfIteration>;
+  scheduleScenarioExecution(args: { iterationId: string }): Promise<void>;
 }
 
 export function makeGetScenarioRepository() {
@@ -219,6 +220,9 @@ export function makeGetScenarioRepository() {
           scenarioIterationId,
         );
       return adaptSnoozesOfIteration(snoozes);
+    },
+    scheduleScenarioExecution: async ({ iterationId }) => {
+      await marbleCoreApiClient.scheduleScenarioExecution(iterationId);
     },
   });
 }

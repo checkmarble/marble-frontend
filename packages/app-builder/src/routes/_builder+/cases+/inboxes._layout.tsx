@@ -37,7 +37,7 @@ export default function Cases() {
     <Page.Main>
       <Page.Header>
         <Icon icon="case-manager" className="mr-2 size-6" />
-        {t('navigation:caseManager')}
+        {t('navigation:case_manager')}
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
         <div className="border-e-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">

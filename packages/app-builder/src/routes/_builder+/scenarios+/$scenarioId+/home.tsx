@@ -1,27 +1,45 @@
+import { CalloutV2 } from '@app-builder/components/Callout';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Page } from '@app-builder/components/Page';
 import {
   getFormattedLive,
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
+import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
+import { Spinner } from '@app-builder/components/Spinner';
+import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { serverServices } from '@app-builder/services/init.server';
 import {
   formatDateRelative,
+  formatSchedule,
   useFormatLanguage,
 } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
-import * as Ariakit from '@ariakit/react';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import {
+  FormProvider,
+  getFormProps,
+  getInputProps,
+  useForm,
+} from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import {
+  type ActionFunctionArgs,
+  json,
+  type LoaderFunctionArgs,
+} from '@remix-run/node';
+import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button, MenuButton } from 'ui-design-system';
+import { Button, CtaClassName, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { z } from 'zod';
 
 import { useCurrentScenario, useScenarioIterations } from './_layout';
 
@@ -29,27 +47,81 @@ export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { user } = await authService.isAuthenticated(request, {
+  const { user, decision } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
+  });
+
+  const scenarioId = fromParams(params, 'scenarioId');
+
+  const scheduledExecutions = await decision.listScheduledExecutions({
+    scenarioId,
   });
 
   return json({
     featureAccess: {
       isEditScenarioAvailable:
         featureAccessService.isEditScenarioAvailable(user),
+      isManualTriggerScenarioAvailable:
+        featureAccessService.isManualTriggerScenarioAvailable(user),
     },
+    scheduledExecutions,
   });
+}
+
+const schema = z.object({
+  iterationId: z.string(),
+});
+
+export async function action({ request }: ActionFunctionArgs) {
+  const {
+    authService,
+    toastSessionService: { getSession, commitSession },
+  } = serverServices;
+  const session = await getSession(request);
+
+  const { scenario } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
+
+  const formData = await request.formData();
+  const submission = parseWithZod(formData, { schema });
+
+  if (submission.status !== 'success') {
+    return json(submission.reply());
+  }
+
+  try {
+    await scenario.scheduleScenarioExecution({
+      iterationId: submission.value.iterationId,
+    });
+
+    return json(submission.reply({ resetForm: true }));
+  } catch (error) {
+    setToastMessage(session, {
+      type: 'error',
+      messageKey: 'common:errors.unknown',
+    });
+
+    return json(submission, {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    });
+  }
 }
 
 export default function ScenarioHome() {
   const { t } = useTranslation(handle.i18n);
   const hydrated = useHydrated();
-  const { featureAccess } = useLoaderData<typeof loader>();
+  const { featureAccess, scheduledExecutions } = useLoaderData<typeof loader>();
 
   const currentScenario = useCurrentScenario();
   const scenarioIterations = useScenarioIterations();
+
+  const liveScenarioIteration = React.useMemo(
+    () => scenarioIterations.find(({ type }) => type === 'live version'),
+    [scenarioIterations],
+  );
 
   return (
     <Page.Main>
@@ -58,29 +130,9 @@ export default function ScenarioHome() {
           <div className="flex flex-row items-center gap-4">
             <Page.BackLink to={getRoute('/scenarios/')} />
             <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-            <div className="text-s bg-purple-05 flex h-10 items-center gap-2 rounded p-2 font-normal text-purple-100">
+            <TriggerObjectTag>
               {currentScenario.triggerObjectType}
-
-              <Ariakit.HovercardProvider
-                showTimeout={0}
-                hideTimeout={0}
-                placement="bottom"
-              >
-                <Ariakit.HovercardAnchor
-                  tabIndex={-1}
-                  className="cursor-pointer text-purple-50 transition-colors hover:text-purple-100"
-                >
-                  <Icon icon="tip" className="size-5" />
-                </Ariakit.HovercardAnchor>
-                <Ariakit.Hovercard
-                  portal
-                  gutter={16}
-                  className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
-                >
-                  {t('scenarios:trigger_object.description')}
-                </Ariakit.Hovercard>
-              </Ariakit.HovercardProvider>
-            </div>
+            </TriggerObjectTag>
             {featureAccess.isEditScenarioAvailable ? (
               <UpdateScenario
                 defaultValue={{
@@ -108,6 +160,14 @@ export default function ScenarioHome() {
         ) : null}
         <Page.Content>
           <VersionSection scenarioIterations={scenarioIterations} />
+          <ExecutionSection
+            scenarioId={currentScenario.id}
+            isManualTriggerScenarioAvailable={
+              featureAccess.isManualTriggerScenarioAvailable
+            }
+            scheduledExecutions={scheduledExecutions}
+            liveScenarioIteration={liveScenarioIteration}
+          />
         </Page.Content>
       </Page.Container>
     </Page.Main>
@@ -124,9 +184,9 @@ function VersionSection({
 
   const { quickDraft, quickVersion, otherVersions } = React.useMemo(() => {
     let quickVersion: ScenarioIterationWithType | undefined;
-    const liveVersion = scenarioIterations.filter(
+    const liveVersion = scenarioIterations.find(
       (si) => si.type === 'live version',
-    )[0];
+    );
     if (liveVersion) {
       quickVersion = liveVersion;
     } else {
@@ -226,5 +286,150 @@ function QuickVersionAccess({
         </span>
       ) : null}
     </Link>
+  );
+}
+
+function ExecutionSection({
+  scenarioId,
+  isManualTriggerScenarioAvailable,
+  scheduledExecutions,
+  liveScenarioIteration,
+}: {
+  scenarioId: string;
+  isManualTriggerScenarioAvailable: boolean;
+  scheduledExecutions: ScheduledExecution[];
+  liveScenarioIteration?: ScenarioIterationWithType;
+}) {
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(['scenarios']);
+
+  const isLive = liveScenarioIteration !== undefined;
+  const schedule = liveScenarioIteration?.schedule;
+
+  const formattedSchedule = React.useMemo(() => {
+    try {
+      if (!schedule) return undefined;
+      return formatSchedule(schedule, {
+        language,
+        throwExceptionOnParseError: true,
+      });
+    } catch (e) {
+      return undefined;
+    }
+  }, [language, schedule]);
+
+  const isExecutionOngoing = scheduledExecutions.some((execution) =>
+    ['pending', 'processing'].includes(execution.status),
+  );
+
+  return (
+    <section className="flex flex-col gap-4">
+      <h2 className="text-grey-100 text-m font-semibold">
+        {t('scenarios:home.execution')}
+      </h2>
+      <div className="flex max-w-5xl flex-row gap-4">
+        <div className="bg-grey-00 border-grey-10 flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8">
+          <h3 className="text-grey-100 text-l font-bold">
+            {t('scenarios:home.execution.real_time')}
+          </h3>
+          <CalloutV2>
+            {t('scenarios:home.execution.real_time.callout')}
+          </CalloutV2>
+        </div>
+        <div
+          className={clsx(
+            'bg-grey-00 border-grey-10 relative flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8',
+            isExecutionOngoing && 'border-purple-100',
+          )}
+        >
+          {isExecutionOngoing ? (
+            <div className="text-grey-00 text-s absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t bg-purple-100 px-2 font-semibold">
+              <Spinner className="size-3" />
+              {t('scenarios:home.execution.batch.ongoing')}
+            </div>
+          ) : null}
+          <h3 className="text-grey-100 text-l font-bold">
+            {t('scenarios:home.execution.batch')}
+          </h3>
+          <CalloutV2>
+            <div className="flex flex-col gap-4">
+              <span>{t('scenarios:home.execution.batch.callout')}</span>
+              {formattedSchedule ? (
+                <span className="text-grey-100 text-s text-balance font-semibold">
+                  <Trans
+                    t={t}
+                    i18nKey="scenarios:scheduled"
+                    components={{
+                      ScheduleLocale: <span className="text-purple-100" />,
+                    }}
+                    values={{
+                      schedule: formattedSchedule,
+                    }}
+                  />
+                </span>
+              ) : null}
+            </div>
+          </CalloutV2>
+
+          <div className="flex flex-row gap-4">
+            {isManualTriggerScenarioAvailable && isLive ? (
+              <ManualTriggerScenarioExecutionForm
+                iterationId={liveScenarioIteration.id}
+                disabled={isExecutionOngoing}
+              />
+            ) : null}
+            <Link
+              className={CtaClassName({ variant: 'secondary', color: 'grey' })}
+              to={getRoute('/scenarios/:scenarioId/scheduled-executions', {
+                scenarioId: fromUUID(scenarioId),
+              })}
+            >
+              {t('scenarios:home.execution.batch.scheduled_execution', {
+                count: scheduledExecutions.length,
+              })}
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ManualTriggerScenarioExecutionForm({
+  iterationId,
+  disabled,
+}: {
+  iterationId: string;
+  disabled: boolean;
+}) {
+  const { t } = useTranslation(['scenarios']);
+  const lastResult = useActionData<typeof action>();
+
+  const [form, fields] = useForm({
+    defaultValue: { iterationId },
+    lastResult,
+    constraint: getZodConstraint(schema),
+    onValidate({ formData }) {
+      return parseWithZod(formData, {
+        schema,
+      });
+    },
+  });
+
+  return (
+    <FormProvider context={form.context}>
+      <Form method="post" {...getFormProps(form)}>
+        <input
+          {...getInputProps(fields.iterationId, { type: 'hidden' })}
+          key={fields.iterationId.key}
+        />
+        <Button type="submit" disabled={disabled}>
+          <Icon icon="play" className="size-6 shrink-0" aria-hidden />
+          {t('scenarios:home.execution.batch.trigger_manual_execution')}
+        </Button>
+      </Form>
+    </FormProvider>
   );
 }
