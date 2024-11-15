@@ -58,7 +58,7 @@ function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <aside
       className={clsx(
-        'bg-purple-05 text-s flex flex-row gap-2 p-4 font-normal text-purple-100 lg:px-6 lg:py-4',
+        'bg-purple-05 text-s flex flex-row gap-2 p-4 font-normal text-purple-100 lg:px-8 lg:py-4',
         className,
       )}
       {...props}
@@ -73,7 +73,7 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={clsx(
-        'flex flex-1 flex-col gap-4 p-4 pe-[calc(1rem-var(--scrollbar-width))] lg:gap-6 lg:p-6 lg:pe-[calc(1.5rem-var(--scrollbar-width))]',
+        'flex flex-1 flex-col gap-4 p-4 pe-[calc(1rem-var(--scrollbar-width))] lg:gap-8 lg:p-8 lg:pe-[calc(2rem-var(--scrollbar-width))]',
         className,
       )}
       {...props}

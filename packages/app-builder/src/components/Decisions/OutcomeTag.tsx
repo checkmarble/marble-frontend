@@ -61,7 +61,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
   return (
     <div
       className={clsx(
-        'flex flex-1 flex-col items-center justify-center gap-2 rounded p-2',
+        'flex flex-1 flex-col items-center justify-center gap-2 rounded-lg p-2',
         {
           'bg-green-10': color === 'green',
           'bg-yellow-10': color === 'yellow',
