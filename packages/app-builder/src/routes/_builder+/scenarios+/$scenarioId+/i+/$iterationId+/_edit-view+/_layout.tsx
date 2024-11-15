@@ -5,6 +5,7 @@ import {
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import {
   useCurrentScenario,
   useScenarioIterations,
@@ -105,7 +106,11 @@ export default function ScenarioEditLayout() {
     <Page.Main>
       <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
-          <Page.BackLink to={getRoute('/scenarios/')} />
+          <Page.BackLink
+            to={getRoute('/scenarios/:scenarioId/home', {
+              scenarioId: fromUUID(currentScenario.id),
+            })}
+          />
           <p className="line-clamp-2 text-start">{currentScenario.name}</p>
           <VersionSelect
             currentIteration={currentIteration}
@@ -207,8 +212,8 @@ function VersionSelect({
   currentIteration,
   scenarioIterations,
 }: {
-  currentIteration: ReturnType<typeof useScenarioIterations>[number];
-  scenarioIterations: ReturnType<typeof useScenarioIterations>;
+  currentIteration: ScenarioIterationWithType;
+  scenarioIterations: ScenarioIterationWithType[];
 }) {
   const { t } = useTranslation(['scenarios']);
   const location = useLocation();
