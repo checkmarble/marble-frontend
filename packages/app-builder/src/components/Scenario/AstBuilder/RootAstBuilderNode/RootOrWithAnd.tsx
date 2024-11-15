@@ -13,7 +13,7 @@ import {
   useRootOrAndValidation,
 } from '@app-builder/services/editor/ast-editor';
 import {
-  adaptBooleanReturnValue,
+  adaptBooleanOrNullReturnValue,
   useDisplayReturnValues,
 } from '@app-builder/services/editor/return-value';
 import { useChildrenArray } from '@app-builder/utils/tree';
@@ -175,7 +175,7 @@ function AndOperand({
   const { errorMessages, hasArgumentIndexErrorsFromParent } =
     useRootOrAndChildValidation(treePath);
 
-  const childBooleanReturnValue = adaptBooleanReturnValue(
+  const childBooleanReturnValue = adaptBooleanOrNullReturnValue(
     evaluation?.returnValue,
   );
 
@@ -190,16 +190,20 @@ function AndOperand({
         />
       </div>
     );
-  } else if (displayReturnValues && childBooleanReturnValue) {
+  } else if (
+    displayReturnValues &&
+    childBooleanReturnValue &&
+    !errorMessages.length
+  ) {
+    const { value } = childBooleanReturnValue;
     rightComponent = (
       <div className="flex h-10 items-center justify-center">
         <Tag
           border="square"
           className="w-full"
-          // TODO Pascal: this is where it happens
-          color={childBooleanReturnValue.value ? 'green' : 'red'}
+          color={value === null ? 'orange' : value ? 'green' : 'red'}
         >
-          {t(`common:${childBooleanReturnValue.value}`)}
+          {t(`common:${value === null ? 'null' : value}`)}
         </Tag>
       </div>
     );

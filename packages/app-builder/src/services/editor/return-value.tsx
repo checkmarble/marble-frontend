@@ -56,11 +56,11 @@ export function useDisplayReturnValues() {
   return useContext(DisplayReturnValues);
 }
 
-export function adaptBooleanReturnValue(returnValue?: ReturnValue) {
+export function adaptBooleanOrNullReturnValue(returnValue?: ReturnValue) {
   if (
     returnValue !== undefined &&
     returnValue.isOmitted === false &&
-    typeof returnValue.value === 'boolean'
+    (typeof returnValue.value === 'boolean' || returnValue.value === null)
   ) {
     return { value: returnValue.value };
   }
