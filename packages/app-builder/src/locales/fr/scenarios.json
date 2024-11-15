@@ -253,5 +253,12 @@
   "custom_list.unknown": "Liste inconnue",
   "scenarios.description": "Un scénario permet de détecter un certain type de risque, selon des règles métier spécifiques, pour un événement déclencheur spécifique.",
   "trigger_object.description": "L'objet central qui initie le processus de prise de décision. Il est accessible lors de l'exécution du scénario.",
-  "current_version": "Version actuelle"
+  "current_version": "Version actuelle",
+  "home.execution": "Exécution",
+  "home.other_versions_one": "{{count}} autre",
+  "home.other_versions_other": "{{count}} autres",
+  "home.resources": "Ressources",
+  "home.testrun": "Testrun",
+  "home.versions": "Versions ({{count}})",
+  "home.workflow": "Automatisation"
 }
