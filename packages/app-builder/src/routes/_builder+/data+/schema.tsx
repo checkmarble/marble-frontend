@@ -1,4 +1,4 @@
-import { Page, TabLink } from '@app-builder/components';
+import { TabLink } from '@app-builder/components';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import {
   DataModelFlow,
@@ -14,8 +14,6 @@ import {
 } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { useTranslation } from 'react-i18next';
-import { Panel } from 'reactflow';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -38,15 +36,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Data() {
   const dataModel = useDataModel();
-  const { t } = useTranslation(handle.i18n);
   const { pivots } = useLoaderData<typeof loader>();
 
   return (
     <div className="flex size-full flex-col">
-      <Page.Description>{t('data:your_data_callout')}</Page.Description>
       <DataModelFlow dataModel={dataModel} pivots={pivots}>
-        <Panel position="top-left">
-          <nav className="bg-grey-00 border-grey-10 w-fit rounded border p-px drop-shadow-md lg:p-[9px]">
+        <div className="absolute left-2 top-2 z-10 lg:left-6 lg:top-6">
+          <nav className="bg-grey-00 border-grey-10 w-fit rounded border p-2 drop-shadow-md">
             <ul className="flex flex-row gap-2">
               <li>
                 <TabLink
@@ -64,7 +60,7 @@ export default function Data() {
               </li>
             </ul>
           </nav>
-        </Panel>
+        </div>
       </DataModelFlow>
     </div>
   );

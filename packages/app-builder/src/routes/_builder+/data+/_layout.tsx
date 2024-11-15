@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 export const handle = {
-  i18n: ['navigation'] satisfies Namespace,
+  i18n: ['navigation', 'data'] satisfies Namespace,
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -58,6 +58,7 @@ export default function Data() {
         dataModel={dataModel}
         dataModelFeatureAccess={dataModelFeatureAccess}
       >
+        <Page.Description>{t('data:your_data_callout')}</Page.Description>
         <Outlet />
       </DataModelContextProvider>
     </Page.Main>

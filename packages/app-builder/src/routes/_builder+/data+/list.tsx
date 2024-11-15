@@ -23,7 +23,6 @@ export default function Data() {
 
   return (
     <Page.Container>
-      <Page.Description>{t('data:your_data_callout')}</Page.Description>
       <Page.Content>
         <nav className="border border-transparent">
           <ul className="flex flex-row gap-2">

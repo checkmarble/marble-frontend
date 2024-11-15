@@ -141,8 +141,8 @@ export default function DecisionPage() {
         </Page.Header>
         <Page.Container>
           <Page.Content>
-            <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-6">
-              <div className="flex flex-col gap-4 lg:gap-6">
+            <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
+              <div className="flex flex-col gap-4 lg:gap-8">
                 <DecisionDetail decision={decision} />
                 <PivotDetail
                   pivotValues={pivotValues}
@@ -154,8 +154,8 @@ export default function DecisionPage() {
                   astRuleData={astRuleData}
                 />
               </div>
-              <div className="flex flex-col gap-4 lg:gap-6">
-                <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
+              <div className="flex flex-col gap-4 lg:gap-8">
+                <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
                   <ScorePanel score={decision.score} />
                   <OutcomePanel outcome={decision.outcome} />
                 </div>
