@@ -1,14 +1,19 @@
 import { navigationI18n, Page, TabLink } from '@app-builder/components';
 import { CornerPing } from '@app-builder/components/Ping';
-import { VersionSelect } from '@app-builder/components/Scenario/Iteration/VersionSelect';
-import { sortScenarioIterations } from '@app-builder/models/scenario-iteration';
-import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import {
+  getFormattedLive,
+  getFormattedVersion,
+  ScenarioIterationMenu,
+} from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
+import {
+  useCurrentScenario,
+  useScenarioIterations,
+} from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { ActivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate';
 import { CommitScenarioDraft } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/commit';
 import { CreateDraftIteration } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft';
 import { DeactivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate';
 import { PrepareScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/prepare';
-import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -16,14 +21,19 @@ import {
   hasRulesErrors,
   hasTriggerErrors,
 } from '@app-builder/services/validation';
+import {
+  formatDateRelative,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, useParam } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { Outlet, useLoaderData, useLocation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
-import { Tag } from 'ui-design-system';
+import { MenuButton, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { useCurrentScenarioValidation } from '../_layout';
@@ -38,7 +48,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
   const isDeploymentActionsAvailable =
@@ -49,25 +58,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return json({
       isDeploymentActionsAvailable: false as const,
       isCreateDraftAvailable,
-      scenarioIterations: await scenario.listScenarioIterations({
-        scenarioId,
-      }),
     });
   }
 
-  const [scenarioIterations, publicationPreparationStatus] = await Promise.all([
-    scenario.listScenarioIterations({
-      scenarioId,
-    }),
-    scenario.getPublicationPreparationStatus({
+  const publicationPreparationStatus =
+    await scenario.getPublicationPreparationStatus({
       iterationId,
-    }),
-  ]);
+    });
 
   return json({
     isDeploymentActionsAvailable: true as const,
     isCreateDraftAvailable,
-    scenarioIterations,
     publicationPreparationStatus,
   });
 }
@@ -76,23 +77,23 @@ export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
   const scenarioValidation = useCurrentScenarioValidation();
-  const { scenarioIterations, isCreateDraftAvailable, ...loaderData } =
+  const { isCreateDraftAvailable, ...loaderData } =
     useLoaderData<typeof loader>();
 
-  const sortedScenarioIterations = sortScenarioIterations(
-    scenarioIterations,
-    currentScenario.liveVersionId,
-  );
+  const scenarioIterations = useScenarioIterations();
 
   const iterationId = useParam('iterationId');
 
-  const currentIteration = sortedScenarioIterations.find(
-    ({ id }) => id === iterationId,
-  );
-  const draftIteration = sortedScenarioIterations.find(
-    ({ version }) => version === null,
-  );
-  invariant(currentIteration, 'currentIteration is required');
+  const { currentIteration, draftIteration } = React.useMemo(() => {
+    const currentIteration = scenarioIterations.find(
+      ({ id }) => id === iterationId,
+    );
+    const draftIteration = scenarioIterations.find(
+      ({ version }) => version === null,
+    );
+    invariant(currentIteration, 'currentIteration is required');
+    return { currentIteration, draftIteration };
+  }, [iterationId, scenarioIterations]);
 
   const editorMode = useEditorMode();
 
@@ -105,22 +106,10 @@ export default function ScenarioEditLayout() {
       <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
           <Page.BackLink to={getRoute('/scenarios/')} />
-          <UpdateScenario
-            defaultValue={{
-              name: currentScenario.name,
-              scenarioId: currentScenario.id,
-              description: currentScenario.description,
-            }}
-          >
-            <button className="outline-none hover:text-purple-100 hover:underline focus:text-purple-100 focus:underline">
-              <span className="line-clamp-2 text-start">
-                {currentScenario.name}
-              </span>
-            </button>
-          </UpdateScenario>
+          <p className="line-clamp-2 text-start">{currentScenario.name}</p>
           <VersionSelect
-            scenarioIterations={sortedScenarioIterations}
             currentIteration={currentIteration}
+            scenarioIterations={scenarioIterations}
           />
           {withEditTag ? (
             <Tag size="big" border="square">
@@ -211,6 +200,65 @@ export default function ScenarioEditLayout() {
         </Page.Content>
       </Page.Container>
     </Page.Main>
+  );
+}
+
+function VersionSelect({
+  currentIteration,
+  scenarioIterations,
+}: {
+  currentIteration: ReturnType<typeof useScenarioIterations>[number];
+  scenarioIterations: ReturnType<typeof useScenarioIterations>;
+}) {
+  const { t } = useTranslation(['scenarios']);
+  const location = useLocation();
+  const language = useFormatLanguage();
+
+  const labelledScenarioIteration = React.useMemo(
+    () =>
+      scenarioIterations.map((si) => ({
+        id: si.id,
+        type: si.type,
+        version: si.version,
+        updatedAt: si.updatedAt,
+        linkTo: location.pathname.replace(
+          fromUUID(currentIteration.id),
+          fromUUID(si.id),
+        ),
+        formattedVersion: getFormattedVersion(si, t),
+        formattedLive: getFormattedLive(si, t),
+        formattedUpdatedAt: formatDateRelative(si.updatedAt, {
+          language,
+        }),
+      })),
+    [currentIteration.id, language, location.pathname, scenarioIterations, t],
+  );
+
+  const currentFormattedVersion = getFormattedVersion(currentIteration, t);
+  const currentFormattedLive = getFormattedLive(currentIteration, t);
+
+  return (
+    <ScenarioIterationMenu
+      labelledScenarioIteration={labelledScenarioIteration}
+    >
+      <MenuButton className="text-s text-grey-100 border-grey-10 flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-none focus:border-purple-100">
+        <p className="text-s ml-2 flex flex-row gap-1 font-semibold">
+          <span className="text-grey-100 capitalize">
+            {currentFormattedVersion}
+          </span>
+          {currentFormattedLive ? (
+            <span className="capitalize text-purple-100">
+              {currentFormattedLive}
+            </span>
+          ) : null}
+        </p>
+        <Icon
+          aria-hidden
+          icon="arrow-2-down"
+          className="text-grey-100 size-6 shrink-0"
+        />
+      </MenuButton>
+    </ScenarioIterationMenu>
   );
 }
 

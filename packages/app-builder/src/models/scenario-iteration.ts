@@ -3,7 +3,6 @@ import {
   type ScenarioIterationWithBodyDto,
   type UpdateScenarioIterationBody as UpdateScenarioIterationBodyDto,
 } from 'marble-api';
-import * as R from 'remeda';
 
 import { adaptAstNode, adaptNodeDto, type AstNode } from './ast-node';
 import {
@@ -91,40 +90,3 @@ export function adaptScenarioIterationSummary(
     updatedAt: dto.updated_at,
   };
 }
-
-//TODO(merge view/edit): create an adapter + extract the sort logic. Move to a repository/service
-export function sortScenarioIterations<T extends ScenarioIterationSummary>(
-  scenarioIterations: T[],
-  liveVersionId?: string,
-) {
-  return R.pipe(
-    scenarioIterations,
-    R.partition(({ version }) => R.isNonNullish(version)),
-    ([versions, drafts]) => {
-      const sortedDrafts = R.pipe(
-        drafts,
-        R.map((draft) => ({ ...draft, type: 'draft' as const })),
-        R.sortBy([({ createdAt }) => createdAt, 'desc']),
-      );
-
-      const sortedVersions = R.pipe(
-        versions,
-        R.map((version) => ({
-          ...version,
-          type:
-            version.id === liveVersionId
-              ? ('live version' as const)
-              : ('version' as const),
-        })),
-        R.sortBy([({ createdAt }) => createdAt, 'desc']),
-      );
-
-      return [...sortedDrafts, ...sortedVersions];
-    },
-  );
-}
-
-export type SortedScenarioIteration =
-  ReturnType<typeof sortScenarioIterations> extends Array<infer ItemT>
-    ? ItemT
-    : unknown;

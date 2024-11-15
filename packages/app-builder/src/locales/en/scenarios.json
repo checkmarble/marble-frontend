@@ -1,6 +1,7 @@
 {
   "no_scheduled": "This scenario is not scheduled.",
   "scheduled": "This scenario is scheduled and will run <ScheduleLocale>{{schedule}}</ScheduleLocale>.",
+  "current_version": "Current version",
   "live": "live",
   "draft": "draft",
   "empty_scenario_list": "You don’t have any scenario. Click on new scenario to make a new one",

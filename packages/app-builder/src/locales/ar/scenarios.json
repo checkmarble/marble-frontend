@@ -252,5 +252,6 @@
   "validation.decision.score_threshold_max": "يجب أن تكون ≤ {{max}}",
   "validation.decision.score_threshold_missing": "العتبة مفقودة",
   "validation.decision.score_thresholds_mismatch": "يجب أن تكون العتبات بترتيب تصاعدي",
-  "trigger_object.description": "الكائن المركزي الذي يبدأ عملية اتخاذ القرار. \nيتم توفيرها كحمولة عند طلب القرار."
+  "trigger_object.description": "الكائن المركزي الذي يبدأ عملية اتخاذ القرار. \nيتم توفيرها كحمولة عند طلب القرار.",
+  "current_version": "الإصدار الحالي"
 }

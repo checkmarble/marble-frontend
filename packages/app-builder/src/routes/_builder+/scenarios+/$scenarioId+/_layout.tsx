@@ -23,17 +23,43 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const currentScenario = await scenario.getScenario({ scenarioId });
+  const [currentScenario, scenarioIterations] = await Promise.all([
+    scenario.getScenario({ scenarioId }),
+    scenario.listScenarioIterations({
+      scenarioId,
+    }),
+  ]);
 
-  return json(currentScenario);
+  return json({
+    currentScenario,
+    scenarioIterations: scenarioIterations.map((si) => ({
+      ...si,
+      type: si.version
+        ? si.id === currentScenario.liveVersionId
+          ? ('live version' as const)
+          : ('version' as const)
+        : ('draft' as const),
+    })),
+  });
 }
 
-export const useCurrentScenario = () =>
-  useRouteLoaderData(
+export function useScenarioIterations() {
+  const { scenarioIterations } = useRouteLoaderData(
     'routes/_builder+/scenarios+/$scenarioId+/_layout' satisfies RouteID,
   ) as SerializeFrom<typeof loader>;
+  return scenarioIterations;
+}
 
-export default function CurrentScenarioProvider() {
+export type SortedScenarioIteration = ReturnType<typeof useScenarioIterations>;
+
+export function useCurrentScenario() {
+  const { currentScenario } = useRouteLoaderData(
+    'routes/_builder+/scenarios+/$scenarioId+/_layout' satisfies RouteID,
+  ) as SerializeFrom<typeof loader>;
+  return currentScenario;
+}
+
+export default function CurrentScenarioLayout() {
   return <Outlet />;
 }
 export function ErrorBoundary() {
