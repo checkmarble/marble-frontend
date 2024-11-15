@@ -32,7 +32,7 @@ import { Operator } from '../../../../Operator';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
 import { TimestampField } from './TimestampField';
 
-export interface TimeAddViewModal {
+export interface TimeAddViewModel {
   timestampField: {
     astNode: TimestampFieldAstNode;
     astNodeErrors?: AstNodeErrors;
@@ -51,7 +51,7 @@ export const defaultISO8601Duration = 'PT0S';
 export function adaptTimeAddViewModal(
   timeAddAstNode: TimeAddAstNode,
   astNodeErrors: AstNodeErrors,
-): TimeAddViewModal {
+): TimeAddViewModel {
   const iso8601Duration =
     timeAddAstNode.namedChildren.duration.constant !== ''
       ? timeAddAstNode.namedChildren.duration.constant
@@ -94,7 +94,7 @@ export function adaptTimeAddViewModal(
 }
 
 function adaptTimeAddAstNode(
-  timeAddViewModel: TimeAddViewModal,
+  timeAddViewModel: TimeAddViewModel,
 ): TimeAddAstNode {
   const signAstNode = NewConstantAstNode({
     constant: timeAddViewModel.sign,
@@ -124,7 +124,7 @@ export function TimeAddEdit({
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
-  const [value, setValue] = React.useState<TimeAddViewModal>(() =>
+  const [value, setValue] = React.useState<TimeAddViewModel>(() =>
     adaptTimeAddViewModal(timeAddAstNode, astNodeErrors),
   );
 

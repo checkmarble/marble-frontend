@@ -61,7 +61,7 @@ export function RootOrWithAnd({
 
   return (
     <div className="grid grid-cols-[40px_1fr_max-content] gap-2">
-      {astNodeChildren.map(({ child, key, path }, childIndex) => {
+      {astNodeChildren.map(({ child, key, treePath }, childIndex) => {
         const isFirstChild = childIndex === 0;
 
         return (
@@ -80,7 +80,11 @@ export function RootOrWithAnd({
               </>
             ) : null}
 
-            <OrOperand path={path} andAstNode={child} viewOnly={viewOnly} />
+            <OrOperand
+              treePath={treePath}
+              andAstNode={child}
+              viewOnly={viewOnly}
+            />
           </Fragment>
         );
       })}
@@ -99,35 +103,35 @@ export function RootOrWithAnd({
 }
 
 function OrOperand({
-  path,
+  treePath,
   andAstNode,
   viewOnly,
 }: {
-  path: string;
+  treePath: string;
   andAstNode: AndAstNode;
   viewOnly?: boolean;
 }) {
   const { remove, appendChild } = useAstNodeEditorActions();
 
-  const { errorMessages } = useRootOrAndValidation(path);
+  const { errorMessages } = useRootOrAndValidation(treePath);
 
   function removeAndOperand(stringPath: string) {
     // if this is the last and child, remove the and from or operands
-    remove(andAstNode.children.length > 1 ? stringPath : path);
+    remove(andAstNode.children.length > 1 ? stringPath : treePath);
   }
 
   function appendAndChild() {
-    appendChild(path, NewAndChild());
+    appendChild(treePath, NewAndChild());
   }
 
-  const andAstNodeChildren = useChildrenArray(path, andAstNode);
+  const andAstNodeChildren = useChildrenArray(treePath, andAstNode);
 
   return (
     <Fragment>
-      {andAstNodeChildren.map(({ child, key, path }, childIndex) => (
+      {andAstNodeChildren.map(({ child, key, treePath }, childIndex) => (
         <AndOperand
           key={key}
-          path={path}
+          treePath={treePath}
           operator={childIndex === 0 ? 'if' : 'and'}
           astNode={child}
           remove={removeAndOperand}
@@ -152,24 +156,24 @@ function OrOperand({
 }
 
 function AndOperand({
-  path,
+  treePath,
   operator,
   astNode,
   viewOnly,
   remove,
 }: {
-  path: string;
+  treePath: string;
   operator: 'if' | 'and';
   astNode: AstNode;
-  remove: (path: string) => void;
+  remove: (treePath: string) => void;
   viewOnly?: boolean;
 }) {
   const { t } = useTranslation(['common']);
   const [displayReturnValues] = useDisplayReturnValues();
-  const evaluation = useEvaluation(path);
+  const evaluation = useEvaluation(treePath);
 
   const { errorMessages, hasArgumentIndexErrorsFromParent } =
-    useRootOrAndChildValidation(path);
+    useRootOrAndChildValidation(treePath);
 
   const childBooleanReturnValue = adaptBooleanReturnValue(
     evaluation?.returnValue,
@@ -181,7 +185,7 @@ function AndOperand({
       <div className="flex h-10 items-center justify-center">
         <RemoveButton
           onClick={() => {
-            remove(path);
+            remove(treePath);
           }}
         />
       </div>
@@ -214,7 +218,7 @@ function AndOperand({
         )}
       >
         <AstBuilderNode
-          path={path}
+          treePath={treePath}
           astNode={astNode}
           viewOnly={viewOnly}
           root

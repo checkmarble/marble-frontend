@@ -26,6 +26,11 @@ export function RootAstBuilderNode({ viewOnly }: RootAstBuilderNodeProps) {
 
   // Fallback to the generic AstBuilderNode
   return (
-    <AstBuilderNode path="root" astNode={astNode} viewOnly={viewOnly} root />
+    <AstBuilderNode
+      treePath="root"
+      astNode={astNode}
+      viewOnly={viewOnly}
+      root
+    />
   );
 }

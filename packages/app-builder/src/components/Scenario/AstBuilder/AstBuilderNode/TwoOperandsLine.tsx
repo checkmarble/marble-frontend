@@ -23,12 +23,12 @@ function NewNestedChild(node: AstNode) {
 }
 
 export function TwoOperandsLine({
-  path,
+  treePath,
   twoLineOperandAstNode,
   viewOnly,
   root,
 }: {
-  path: string;
+  treePath: string;
   twoLineOperandAstNode: TwoLineOperandAstNode;
   viewOnly?: boolean;
   root?: boolean;
@@ -48,20 +48,20 @@ export function TwoOperandsLine({
   const operators = useTwoLineOperandOperatorFunctions();
 
   const left = twoLineOperandAstNode.children[0];
-  const leftPath = `${path}.children.0`;
+  const leftPath = `${treePath}.children.0`;
   const right = twoLineOperandAstNode.children[1];
-  const rightPath = `${path}.children.1`;
+  const rightPath = `${treePath}.children.1`;
 
   const isNestedRight = isTwoLineOperandAstNode(right);
 
-  const evaluationErrors = useEvaluationErrors(path);
+  const evaluationErrors = useEvaluationErrors(treePath);
 
   return (
     <div className="flex justify-between gap-2">
       <div className="flex flex-row flex-wrap items-center gap-2">
         {!root ? <span className="text-grey-25">(</span> : null}
         <AstBuilderNode
-          path={leftPath}
+          treePath={leftPath}
           astNode={left}
           onSave={(astNode) => {
             setAstNodeAtPath(leftPath, astNode);
@@ -71,14 +71,14 @@ export function TwoOperandsLine({
         <Operator
           value={twoLineOperandAstNode.name}
           setValue={(operator: (typeof operators)[number]) => {
-            setOperatorAtPath(path, operator);
+            setOperatorAtPath(treePath, operator);
           }}
           validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}
           viewOnly={viewOnly}
           operators={operators}
         />
         <AstBuilderNode
-          path={rightPath}
+          treePath={rightPath}
           astNode={right}
           onSave={(astNode) => {
             setAstNodeAtPath(rightPath, astNode);

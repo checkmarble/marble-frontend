@@ -69,7 +69,7 @@ export function RootAnd({
         <div className="text-s bg-grey-02 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
           {triggerObjectTable.name}
         </div>
-        {andAstNodeChildren.map(({ child, key, path }, childIndex) => {
+        {andAstNodeChildren.map(({ child, key, treePath }, childIndex) => {
           const isFirstCondition = childIndex === 0;
           const isLastCondition = childIndex === andAstNodeChildren.length - 1;
 
@@ -78,7 +78,7 @@ export function RootAnd({
               key={key}
               isFirstCondition={isFirstCondition}
               isLastCondition={isLastCondition}
-              path={path}
+              treePath={treePath}
               astNode={child}
               viewOnly={viewOnly}
             />
@@ -101,20 +101,20 @@ export function RootAnd({
 function AndOperand({
   isFirstCondition,
   isLastCondition,
-  path,
+  treePath,
   astNode,
   viewOnly,
 }: {
   isFirstCondition: boolean;
   isLastCondition: boolean;
-  path: string;
+  treePath: string;
   astNode: AstNode;
   viewOnly?: boolean;
 }) {
   const { remove } = useAstNodeEditorActions();
 
   const { errorMessages, hasArgumentIndexErrorsFromParent } =
-    useRootOrAndChildValidation(path);
+    useRootOrAndChildValidation(treePath);
 
   return (
     <Fragment>
@@ -148,7 +148,7 @@ function AndOperand({
         )}
       >
         <AstBuilderNode
-          path={path}
+          treePath={treePath}
           astNode={astNode}
           viewOnly={viewOnly}
           root
@@ -159,7 +159,7 @@ function AndOperand({
         <div className="col-start-5 flex h-10 flex-col items-center justify-center">
           <RemoveButton
             onClick={() => {
-              remove(path);
+              remove(treePath);
             }}
           />
         </div>
