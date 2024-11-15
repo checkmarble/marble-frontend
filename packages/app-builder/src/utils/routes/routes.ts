@@ -149,6 +149,11 @@ export const routes = [
                 "file": "routes/_builder+/scenarios+/$scenarioId+/_index.tsx"
               },
               {
+                "id": "routes/_builder+/scenarios+/$scenarioId+/home",
+                "path": "home",
+                "file": "routes/_builder+/scenarios+/$scenarioId+/home.tsx"
+              },
+              {
                 "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout",
                 "path": "i/:iterationId",
                 "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout.tsx",

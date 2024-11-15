@@ -32,6 +32,25 @@ export interface ScenarioIteration {
   trigger: AstNode | null;
 }
 
+export interface ScenarioIterationWithType extends ScenarioIteration {
+  type: 'draft' | 'version' | 'live version';
+}
+
+export function adaptScenarioIterationWithType(
+  scenarioIteration: ScenarioIteration,
+  liveVersionId?: string,
+): ScenarioIterationWithType {
+  return {
+    ...scenarioIteration,
+    type:
+      scenarioIteration.id === liveVersionId
+        ? 'live version'
+        : scenarioIteration.version
+          ? 'version'
+          : 'draft',
+  };
+}
+
 export interface UpdateScenarioIterationBody {
   triggerConditionAstExpression?: AstNode | null;
   scoreReviewThreshold?: number;
