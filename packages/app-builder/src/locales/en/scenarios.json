@@ -18,6 +18,8 @@
   "home.testrun": "Testrun",
   "home.workflow": "Workflow",
   "home.resources": "Resources",
+  "home.resources.api": "API",
+  "home.resources.scenario_guide": "Scenario guide",
   "empty_scenario_list": "You don’t have any scenario. Click on new scenario to make a new one",
   "trigger.run_scenario.title": "How to run this scenario ?",
   "trigger.run_scenario.description": "There are two ways to execute a scenario (<DocLink>learn more</DocLink>)",
