@@ -280,5 +280,12 @@
   "home.execution.real_time": "Temps réel",
   "home.execution.real_time.callout": "Demandez une décision grâce à notre API et obtenez des réponses synchrones en temps réel",
   "home.resources.api": "API",
-  "home.resources.scenario_guide": "Guide de scénario"
+  "home.resources.scenario_guide": "Guide de scénario",
+  "home.workflow.create": "Créer une automatisation",
+  "home.workflow.edit": "Éditer l'automatisation",
+  "home.workflow_description": "Les automatisations sont une série d'actions exécutées automatiquement en fonction d'un déclencheur. \nIls vous aident à automatiser votre travail et à gagner du temps.",
+  "home.workflow_type.add_to_case_if_possible": "ajouter à l'investigation",
+  "home.workflow_type.add_to_case_if_possible.tooltip": "Ajouter la décision correspondant aux critères à une investigation existante ou créer une nouvelle investigation",
+  "home.workflow_type.create_case": "nouvelle investigation",
+  "home.workflow_type.create_case.tooltip": "Ajouter la décision correspondant aux critères à une nouvelle investigation"
 }

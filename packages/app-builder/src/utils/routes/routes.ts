@@ -195,6 +195,11 @@ export const routes = [
                 "id": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions",
                 "path": "scheduled-executions",
                 "file": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions.tsx"
+              },
+              {
+                "id": "routes/_builder+/scenarios+/$scenarioId+/workflow",
+                "path": "workflow",
+                "file": "routes/_builder+/scenarios+/$scenarioId+/workflow.tsx"
               }
             ]
           },
@@ -256,23 +261,6 @@ export const routes = [
             "id": "routes/_builder+/upload+/$objectType",
             "path": "upload/:objectType",
             "file": "routes/_builder+/upload+/$objectType.tsx"
-          },
-          {
-            "id": "routes/_builder+/workflows+/_layout",
-            "path": "workflows",
-            "file": "routes/_builder+/workflows+/_layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/workflows+/$scenarioId",
-                "path": ":scenarioId",
-                "file": "routes/_builder+/workflows+/$scenarioId.tsx"
-              },
-              {
-                "id": "routes/_builder+/workflows+/_index",
-                "index": true,
-                "file": "routes/_builder+/workflows+/_index.tsx"
-              }
-            ]
           }
         ]
       },

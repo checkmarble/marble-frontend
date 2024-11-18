@@ -61,14 +61,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     orgTags,
     settings,
     isAnalyticsAvailable,
-    isWorkflowsAvailable,
   ] = await Promise.all([
     organization.getCurrentOrganization(),
     organization.listUsers(),
     organization.listTags(),
     getSettings(user, featureAccessService),
     featureAccessService.isAnalyticsAvailable(user),
-    featureAccessService.isWorkflowsAvailable(),
   ]);
 
   const firstSettings = settings[0];
@@ -80,7 +78,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     orgTags,
     featuresAccess: {
       isAnalyticsAvailable,
-      isWorkflowsAvailable,
       settings:
         firstSettings !== undefined
           ? {
@@ -153,15 +150,6 @@ export default function Builder() {
                     Icon={(props) => <Icon icon="case-manager" {...props} />}
                   />
                 </li>
-                {featuresAccess.isWorkflowsAvailable ? (
-                  <li>
-                    <SidebarLink
-                      labelTKey="navigation:workflows"
-                      to={getRoute('/workflows')}
-                      Icon={(props) => <Icon icon="rule-settings" {...props} />}
-                    />
-                  </li>
-                ) : null}
                 {featuresAccess.isAnalyticsAvailable ? (
                   <li>
                     <SidebarLink
