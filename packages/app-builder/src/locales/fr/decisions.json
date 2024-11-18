@@ -49,6 +49,8 @@
   "review_status.pending": "en attente",
   "rules.description": "Description",
   "rules.error.not_found": "Les informations sur la règle associée sont introuvables. \nVeuillez réessayer ou contacter votre administrateur.",
+  "rules.error.null_value": "Valeur nulle trouvée",
+  "rules.error.division_by_zero": "Division par zéro",
   "rules.show_contextual_values": "Afficher les valeurs contextuelles",
   "rules.status.error": "erreur",
   "rules.status.hit": "déclenchée",
