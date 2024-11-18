@@ -45,6 +45,8 @@
   "rules.status.no_hit": "لا توجد نتائج",
   "rules.description": "الوصف",
   "rules.error.not_found": "تعذر العثور على معلومات القاعدة المرتبطة. يرجى المحاولة مرة أخرى أو الاتصال بالمسؤول الخاص بك.",
+  "rules.error.null_value": "تم العثور على قيمة فارغة",
+  "rules.error.division_by_zero": "القسمة على الصفر",
   "rules.show_contextual_values": "عرض القيم السياقية",
   "filters.inbox": "البريد الوارد",
   "filters.scheduled_execution": "التنفيذ المقرر",
