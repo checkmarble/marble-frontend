@@ -45,6 +45,7 @@ export const iconNames = [
   'notifications',
   'number',
   'paste',
+  'play',
   'plus',
   'policy',
   'pushtolive',

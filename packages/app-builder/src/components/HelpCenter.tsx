@@ -264,7 +264,7 @@ export function useMarbleCoreResources() {
     if (location.pathname.startsWith(getRoute('/settings')))
       return t('navigation:settings');
     if (location.pathname.startsWith(getRoute('/cases/')))
-      return t('navigation:caseManager');
+      return t('navigation:case_manager');
 
     return t('navigation:scenarios');
   }, [location.pathname, t]);
@@ -405,7 +405,7 @@ export function useMarbleCoreResources() {
           href: webhooksEventsDocHref,
         },
       ],
-      [t('navigation:caseManager')]: [
+      [t('navigation:case_manager')]: [
         {
           label: 'Rule snoozes',
           href: ruleSnoozesDocHref,

@@ -15,6 +15,21 @@ export function getPageViewNameAndProps(
     case 'routes/_builder+/scenarios+/_index': {
       return { name: 'Scenarios', properties: undefined };
     }
+    case 'routes/_builder+/scenarios+/$scenarioId+/scheduled-executions': {
+      const safeParseProperties = z
+        .object({
+          scenarioId: shortUUIDSchema,
+        })
+        .safeParse(thisPage.params);
+      if (!safeParseProperties.success) return;
+
+      return {
+        name: 'Scheduled executions',
+        properties: {
+          scenario_id: safeParseProperties.data.scenarioId,
+        },
+      };
+    }
     case 'routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/trigger': {
       const safeParseProperties = z
         .object({
@@ -83,9 +98,6 @@ export function getPageViewNameAndProps(
           decision_id: safeParseProperties.data.decisionId,
         },
       };
-    }
-    case 'routes/_builder+/scheduled-executions': {
-      return { name: 'Scheduled executions', properties: undefined };
     }
     case 'routes/_builder+/cases+/_index': {
       return { name: 'Cases', properties: undefined };

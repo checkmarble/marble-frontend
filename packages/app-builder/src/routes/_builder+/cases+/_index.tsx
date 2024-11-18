@@ -36,7 +36,7 @@ export default function Cases() {
     <Page.Main>
       <Page.Header>
         <Icon icon="case-manager" className="mr-2 size-6" />
-        {t('navigation:caseManager')}
+        {t('navigation:case_manager')}
       </Page.Header>
       <Page.Container>
         <Page.Content>

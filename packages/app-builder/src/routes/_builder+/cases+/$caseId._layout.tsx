@@ -157,21 +157,21 @@ export default function CasePage() {
                 <ul className="flex flex-row gap-2">
                   <li>
                     <TabLink
-                      labelTKey="navigation:caseManager.information"
+                      labelTKey="navigation:case_manager.information"
                       to="./information"
                       Icon={(props) => <Icon {...props} icon="tip" />}
                     />
                   </li>
                   <li>
                     <TabLink
-                      labelTKey="navigation:caseManager.decisions"
+                      labelTKey="navigation:case_manager.decisions"
                       to="./decisions"
                       Icon={(props) => <Icon {...props} icon="decision" />}
                     />
                   </li>
                   <li>
                     <TabLink
-                      labelTKey="navigation:caseManager.files"
+                      labelTKey="navigation:case_manager.files"
                       to="./files"
                       Icon={(props) => <Icon {...props} icon="attachment" />}
                     />

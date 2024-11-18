@@ -1,4 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
+import clsx from 'clsx';
 import { Icon } from 'ui-icons';
 
 export const variants = ['info', 'error'] as const;
@@ -41,5 +42,26 @@ export function Callout({
       <Icon icon="lightbulb" className="size-6 shrink-0" />
       {children}
     </div>
+  );
+}
+
+export function CalloutV2({
+  children,
+  className,
+  ...otherProps
+}: React.ComponentPropsWithoutRef<'aside'>) {
+  if (!children) return null;
+
+  return (
+    <aside
+      className={clsx(
+        'bg-purple-05 text-s flex flex-row gap-2 rounded-lg p-4 font-normal text-purple-100',
+        className,
+      )}
+      {...otherProps}
+    >
+      <Icon icon="tip" className="size-5 shrink-0" />
+      {children}
+    </aside>
   );
 }

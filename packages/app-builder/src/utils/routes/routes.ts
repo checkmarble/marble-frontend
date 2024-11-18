@@ -190,6 +190,11 @@ export const routes = [
                     "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId.tsx"
                   }
                 ]
+              },
+              {
+                "id": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions",
+                "path": "scheduled-executions",
+                "file": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions.tsx"
               }
             ]
           },
@@ -198,11 +203,6 @@ export const routes = [
             "index": true,
             "path": "scenarios/",
             "file": "routes/_builder+/scenarios+/_index.tsx"
-          },
-          {
-            "id": "routes/_builder+/scheduled-executions",
-            "path": "scheduled-executions",
-            "file": "routes/_builder+/scheduled-executions.tsx"
           },
           {
             "id": "routes/_builder+/settings+/_layout",
