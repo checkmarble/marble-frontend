@@ -278,5 +278,7 @@
   "home.execution.batch.scheduled_execution": "جدولة عمليات التنفيذ ({{count}})",
   "home.execution.batch.trigger_manual_execution": "إطلاق الآن",
   "home.execution.real_time": "في الوقت الحالى",
-  "home.execution.real_time.callout": "اطلب قرارًا باستخدام واجهة برمجة التطبيقات (API) الخاصة بنا واحصل على إجابات متزامنة في الوقت الفعلي"
+  "home.execution.real_time.callout": "اطلب قرارًا باستخدام واجهة برمجة التطبيقات (API) الخاصة بنا واحصل على إجابات متزامنة في الوقت الفعلي",
+  "home.resources.api": "واجهة برمجة التطبيقات",
+  "home.resources.scenario_guide": "دليل السيناريو"
 }
