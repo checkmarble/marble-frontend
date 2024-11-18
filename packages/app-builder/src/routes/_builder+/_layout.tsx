@@ -148,16 +148,7 @@ export default function Builder() {
                 </li>
                 <li>
                   <SidebarLink
-                    labelTKey="navigation:scheduledExecutions"
-                    to={getRoute('/scheduled-executions')}
-                    Icon={(props) => (
-                      <Icon icon="scheduled-execution" {...props} />
-                    )}
-                  />
-                </li>
-                <li>
-                  <SidebarLink
-                    labelTKey="navigation:caseManager"
+                    labelTKey="navigation:case_manager"
                     to={getRoute('/cases/')}
                     Icon={(props) => <Icon icon="case-manager" {...props} />}
                   />

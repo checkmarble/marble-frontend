@@ -8,7 +8,6 @@ import filters from '@app-builder/locales/en/filters.json';
 import lists from '@app-builder/locales/en/lists.json';
 import navigation from '@app-builder/locales/en/navigation.json';
 import scenarios from '@app-builder/locales/en/scenarios.json';
-import scheduledExecution from '@app-builder/locales/en/scheduledExecution.json';
 import settings from '@app-builder/locales/en/settings.json';
 import transfercheck from '@app-builder/locales/en/transfercheck.json';
 import upload from '@app-builder/locales/en/upload.json';
@@ -25,7 +24,6 @@ export const en = {
   lists,
   auth,
   scenarios,
-  scheduledExecution,
   settings,
   transfercheck,
   upload,
