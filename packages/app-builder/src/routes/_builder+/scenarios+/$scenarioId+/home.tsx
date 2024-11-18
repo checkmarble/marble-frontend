@@ -33,7 +33,7 @@ import {
 } from '@remix-run/node';
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
+import { ParseKeys, type Namespace } from 'i18next';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
@@ -42,6 +42,7 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 import { useCurrentScenario, useScenarioIterations } from './_layout';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,
@@ -168,6 +169,7 @@ export default function ScenarioHome() {
             scheduledExecutions={scheduledExecutions}
             liveScenarioIteration={liveScenarioIteration}
           />
+          <Resources />
         </Page.Content>
       </Page.Container>
     </Page.Main>
@@ -431,5 +433,61 @@ function ManualTriggerScenarioExecutionForm({
         </Button>
       </Form>
     </FormProvider>
+  );
+}
+
+const resources = [
+  {
+    tKey: 'scenarios:home.resources.scenario_guide',
+    href: 'https://docs.checkmarble.com/docs/executing-a-scenario',
+    src: '/img/home/scenario-guide.png',
+  },
+  {
+    tKey: 'scenarios:home.resources.api',
+    href: 'https://docs.checkmarble.com/reference/intro-getting-started',
+    src: '/img/home/api.png',
+  },
+  // TODO: Uncomment when the page is ready
+  // {
+  //   tKey: 'scenarios:home.testrun',
+  //   href: 'crocuspage.html',
+  //   src: '/img/home/testrun.png',
+  // },
+  {
+    tKey: 'scenarios:home.workflow',
+    href: 'https://docs.checkmarble.com/docs/introduction-5',
+    src: '/img/home/workflow.png',
+  },
+] satisfies Array<{
+  tKey: ParseKeys<['scenarios']>;
+  href: string;
+  src: string;
+}>;
+
+function Resources() {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <section className="flex flex-col gap-4">
+      <h2 className="text-grey-100 text-m font-semibold">
+        {t('scenarios:home.resources')}
+      </h2>
+      <div className="flex flex-row gap-4">
+        {resources.map(({ tKey, href, src }) => (
+          <a
+            key={tKey}
+            href={href}
+            className="border-grey-10 group flex flex-col overflow-hidden rounded border outline-none transition-colors hover:border-purple-100 focus:border-purple-100"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={src} alt="" />
+            <span className="border-grey-10 bg-grey-00 text-s flex flex-row items-center justify-between border-t p-4 font-semibold transition-colors group-hover:border-purple-100 group-focus:border-purple-100">
+              {t(tKey)}
+              <Icon aria-hidden icon="arrow-right" className="size-6" />
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
   );
 }
