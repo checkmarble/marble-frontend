@@ -248,8 +248,20 @@ function useParentEvaluation(parentPath: ParentPath) {
 }
 
 export function useEvaluationErrors(stringPath: string) {
+  // const path = usePath(stringPath);
   const astNode = useAstNode(stringPath);
   const evaluation = useEvaluation(stringPath);
+  // const parentPath = useParentPath(path);
+  // const parentNode = useParentAstNode(parentPath);
+
+  // const returnValue = evaluation
+  //   ? evaluation.returnValue
+  //   : { isOmitted: true, value: undefined };
+  // const isDivByZeroField =
+  //   isDivisionDenominator(parentNode, path) &&
+  //   !returnValue?.isOmitted &&
+  //   returnValue?.value === 0;
+
   return React.useMemo(() => {
     if (!astNode || !evaluation) return [];
     return getAstNodeEvaluationErrors(astNode, evaluation);
@@ -353,10 +365,7 @@ function isDivisionDenominator(
   parentNode: Tree<AstNode> | undefined,
   path: Path,
 ) {
-  if (path.length === 0) {
-    return false;
-  }
-  const pathLastPart = path[path.length - 1];
+  const pathLastPart = path.at(-1);
   if (!pathLastPart) {
     return false;
   }

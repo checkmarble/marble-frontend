@@ -103,15 +103,27 @@ export function isRuleExecutionHit(
   return ruleExecution.outcome === 'hit';
 }
 
-export enum RuleExecutionErrorCode {
-  DivisionByZero = 100,
-  NullValueFound = 200,
+export type ExecutionError = {
+  code: 'division_by_zero' | 'null_value_found' | 'undefined_error';
+  message: string;
+};
+
+const errorCodeMappings: Record<number, ExecutionError['code']> = {
+  100: 'division_by_zero',
+  200: 'null_value_found',
+};
+
+function adaptExecutionError(dto: Error): ExecutionError {
+  const code = errorCodeMappings[dto.code] ?? 'undefined_error';
+  return {
+    code,
+    message: dto.message,
+  };
 }
 
 export interface RuleExecutionError extends RuleExecutionCore {
   outcome: 'error';
-  error: Error;
-  errorCode: RuleExecutionErrorCode;
+  error: ExecutionError;
 }
 
 export function isRuleExecutionError(
@@ -190,8 +202,7 @@ function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
       return {
         ...ruleExecution,
         outcome: 'error',
-        error: dto.error,
-        errorCode: dto.error.code,
+        error: adaptExecutionError(dto.error),
       };
     }
     case 'snoozed': {

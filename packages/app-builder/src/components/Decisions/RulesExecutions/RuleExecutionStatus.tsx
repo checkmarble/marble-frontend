@@ -4,7 +4,6 @@ import {
   isRuleExecutionSnoozed,
   type RuleExecution,
   type RuleExecutionError,
-  RuleExecutionErrorCode,
 } from '@app-builder/models/decision';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
@@ -83,10 +82,10 @@ function getRuleExecutionErrorLabel(
   t: TFunction<typeof decisionsI18n>,
   ruleExecution: RuleExecutionError,
 ) {
-  switch (ruleExecution.errorCode) {
-    case RuleExecutionErrorCode.DivisionByZero:
+  switch (ruleExecution.error.code) {
+    case 'division_by_zero':
       return t('decisions:rules.error.division_by_zero');
-    case RuleExecutionErrorCode.NullValueFound:
+    case 'null_value_found':
       return t('decisions:rules.error.null_value');
     default:
       return t('decisions:rules.status.error');

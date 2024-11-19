@@ -175,10 +175,6 @@ function AndOperand({
   const { errorMessages, hasArgumentIndexErrorsFromParent } =
     useRootOrAndChildValidation(treePath);
 
-  const childBooleanReturnValue = adaptBooleanOrNullReturnValue(
-    evaluation?.returnValue,
-  );
-
   let rightComponent = null;
   if (!viewOnly) {
     rightComponent = (
@@ -192,21 +188,24 @@ function AndOperand({
     );
   } else if (
     displayReturnValues &&
-    childBooleanReturnValue &&
-    !errorMessages.length
+    !errorMessages.length &&
+    evaluation?.returnValue?.isOmitted === false
   ) {
-    const { value } = childBooleanReturnValue;
-    rightComponent = (
-      <div className="flex h-10 items-center justify-center">
-        <Tag
-          border="square"
-          className="w-full"
-          color={value === null ? 'orange' : value ? 'green' : 'red'}
-        >
-          {t(`common:${value === null ? 'null' : value}`)}
-        </Tag>
-      </div>
-    );
+    const adaptedValue = adaptBooleanOrNullReturnValue(evaluation.returnValue);
+    if (adaptedValue.isBooleanOrNull) {
+      const { value } = adaptedValue;
+      rightComponent = (
+        <div className="flex h-10 items-center justify-center">
+          <Tag
+            border="square"
+            className="w-full"
+            color={value === null ? 'orange' : value ? 'green' : 'red'}
+          >
+            {t(`common:${value === null ? 'null' : value}`)}
+          </Tag>
+        </div>
+      );
+    }
   }
 
   return (

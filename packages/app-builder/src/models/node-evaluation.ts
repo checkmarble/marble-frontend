@@ -16,6 +16,14 @@ export type ReturnValue =
       isOmitted: true;
     };
 
+export type NonOmittedReturnValue = { value: ConstantType; isOmitted: false };
+
+export function hasReturnValue(
+  returnValue: ReturnValue,
+): returnValue is NonOmittedReturnValue {
+  return !returnValue.isOmitted;
+}
+
 export type EvaluationErrorCode = EvaluationErrorCodeDto | 'FUNCTION_ERROR';
 
 export interface EvaluationError {

@@ -69,7 +69,7 @@ export type CaseDto = {
     tags: CaseTagDto[];
 };
 export type Error = {
-    code: 100 | 200;
+    code: number;
     message: string;
 };
 export type PivotValueDto = {
