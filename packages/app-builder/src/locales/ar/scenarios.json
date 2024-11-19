@@ -280,5 +280,12 @@
   "home.execution.real_time": "في الوقت الحالى",
   "home.execution.real_time.callout": "اطلب قرارًا باستخدام واجهة برمجة التطبيقات (API) الخاصة بنا واحصل على إجابات متزامنة في الوقت الفعلي",
   "home.resources.api": "واجهة برمجة التطبيقات",
-  "home.resources.scenario_guide": "دليل السيناريو"
+  "home.resources.scenario_guide": "دليل السيناريو",
+  "home.workflow.create": "سير العمل الجديد",
+  "home.workflow.edit": "تحرير سير العمل",
+  "home.workflow_description": "سير العمل عبارة عن سلسلة من الإجراءات التي يتم تنفيذها تلقائيًا بناءً على المشغل. \nأنها تساعدك على أتمتة عملك وتوفير الوقت.",
+  "home.workflow_type.add_to_case_if_possible": "أضف إلى الحالة",
+  "home.workflow_type.add_to_case_if_possible.tooltip": "أضف القرار المطابق مع المعايير إلى الحلة موجود أو أنشئ ملفًا جديدًا",
+  "home.workflow_type.create_case": "ملف جديد",
+  "home.workflow_type.create_case.tooltip": "أضف القرار المناسب للمعايير إلى الحالة جديد."
 }

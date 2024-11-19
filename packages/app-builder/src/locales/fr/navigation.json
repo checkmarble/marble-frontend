@@ -28,6 +28,5 @@
   "transfercheck.alerts": "Alertes",
   "transfercheck.alerts.received": "Alertes reçues",
   "transfercheck.alerts.sent": "Alertes envoyées",
-  "transfercheck.transfers": "Transferts",
-  "workflows": "Automatisations"
+  "transfercheck.transfers": "Transferts"
 }

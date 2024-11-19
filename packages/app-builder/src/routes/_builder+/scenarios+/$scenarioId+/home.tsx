@@ -9,6 +9,7 @@ import {
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type ScheduledExecution } from '@app-builder/models/decision';
+import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { serverServices } from '@app-builder/services/init.server';
@@ -19,6 +20,7 @@ import {
 } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import * as Ariakit from '@ariakit/react';
 import {
   FormProvider,
   getFormProps,
@@ -33,7 +35,7 @@ import {
 } from '@remix-run/node';
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
-import { ParseKeys, type Namespace } from 'i18next';
+import { type Namespace, type ParseKeys } from 'i18next';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
@@ -42,7 +44,6 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 import { useCurrentScenario, useScenarioIterations } from './_layout';
-import { ExternalLink } from '@app-builder/components/ExternalLink';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,
@@ -66,6 +67,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         featureAccessService.isEditScenarioAvailable(user),
       isManualTriggerScenarioAvailable:
         featureAccessService.isManualTriggerScenarioAvailable(user),
+      isWorkflowsAvailable: await featureAccessService.isWorkflowsAvailable(),
     },
     scheduledExecutions,
   });
@@ -169,7 +171,10 @@ export default function ScenarioHome() {
             scheduledExecutions={scheduledExecutions}
             liveScenarioIteration={liveScenarioIteration}
           />
-          <Resources />
+          {featureAccess.isWorkflowsAvailable ? (
+            <WorkflowSection scenario={currentScenario} />
+          ) : null}
+          <ResourcesSection />
         </Page.Content>
       </Page.Container>
     </Page.Main>
@@ -436,6 +441,98 @@ function ManualTriggerScenarioExecutionForm({
   );
 }
 
+function WorkflowSection({ scenario }: { scenario: Scenario }) {
+  const { t } = useTranslation(handle.i18n);
+
+  const isEdit = scenario.decisionToCaseWorkflowType !== 'DISABLED';
+
+  let tag: string | undefined;
+  let tooltip: string | undefined;
+  if (scenario.decisionToCaseWorkflowType === 'CREATE_CASE') {
+    tag = t('scenarios:home.workflow_type.create_case');
+    tooltip = t('scenarios:home.workflow_type.create_case.tooltip');
+  } else if (
+    scenario.decisionToCaseWorkflowType === 'ADD_TO_CASE_IF_POSSIBLE'
+  ) {
+    tag = t('scenarios:home.workflow_type.add_to_case_if_possible');
+    tooltip = t('scenarios:home.workflow_type.add_to_case_if_possible.tooltip');
+  }
+
+  return (
+    <section className="flex flex-col gap-4">
+      <h2 className="text-grey-100 text-m flex flex-row items-center gap-2 font-semibold">
+        {t('scenarios:home.workflow')}
+
+        <Ariakit.HovercardProvider
+          showTimeout={0}
+          hideTimeout={0}
+          placement="right"
+        >
+          <Ariakit.HovercardAnchor
+            tabIndex={-1}
+            className="cursor-pointer text-purple-50 transition-colors hover:text-purple-100"
+          >
+            <Icon icon="tip" className="size-5" />
+          </Ariakit.HovercardAnchor>
+          <Ariakit.Hovercard
+            portal
+            gutter={8}
+            className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
+          >
+            {t('scenarios:home.workflow_description')}
+          </Ariakit.Hovercard>
+        </Ariakit.HovercardProvider>
+      </h2>
+      <div className="flex flex-row gap-3">
+        {tag ? (
+          <div className="bg-purple-05 text-s flex h-10 flex-row items-center gap-2 rounded px-2 uppercase text-purple-100">
+            {tag}
+            {tooltip ? (
+              <Ariakit.HovercardProvider
+                showTimeout={0}
+                hideTimeout={0}
+                placement="right"
+              >
+                <Ariakit.HovercardAnchor
+                  tabIndex={-1}
+                  className="cursor-pointer text-purple-50 transition-colors hover:text-purple-100"
+                >
+                  <Icon icon="tip" className="size-5" />
+                </Ariakit.HovercardAnchor>
+                <Ariakit.Hovercard
+                  portal
+                  gutter={8}
+                  className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
+                >
+                  {tooltip}
+                </Ariakit.Hovercard>
+              </Ariakit.HovercardProvider>
+            ) : null}
+          </div>
+        ) : null}
+        <Link
+          className={CtaClassName({
+            variant: isEdit ? 'secondary' : 'primary',
+            color: isEdit ? 'grey' : 'purple',
+          })}
+          to={getRoute('/scenarios/:scenarioId/workflow', {
+            scenarioId: fromUUID(scenario.id),
+          })}
+        >
+          <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-6" />
+          <p>
+            {t(
+              isEdit
+                ? 'scenarios:home.workflow.edit'
+                : 'scenarios:home.workflow.create',
+            )}
+          </p>
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 const resources = [
   {
     tKey: 'scenarios:home.resources.scenario_guide',
@@ -464,7 +561,7 @@ const resources = [
   src: string;
 }>;
 
-function Resources() {
+function ResourcesSection() {
   const { t } = useTranslation(handle.i18n);
   return (
     <section className="flex flex-col gap-4">
