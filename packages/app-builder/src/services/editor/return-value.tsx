@@ -1,4 +1,7 @@
-import { type ReturnValue } from '@app-builder/models/node-evaluation';
+import {
+  type NonOmittedReturnValue,
+  type ReturnValue,
+} from '@app-builder/models/node-evaluation';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import { createContext, useCallback, useContext, useState } from 'react';
@@ -56,13 +59,11 @@ export function useDisplayReturnValues() {
   return useContext(DisplayReturnValues);
 }
 
-export function adaptBooleanOrNullReturnValue(returnValue?: ReturnValue) {
-  if (
-    returnValue !== undefined &&
-    returnValue.isOmitted === false &&
-    (typeof returnValue.value === 'boolean' || returnValue.value === null)
-  ) {
-    return { value: returnValue.value };
+export function adaptBooleanOrNullReturnValue(
+  returnValue: NonOmittedReturnValue,
+) {
+  if (typeof returnValue.value === 'boolean' || returnValue.value === null) {
+    return { value: returnValue.value, isBooleanOrNull: true as const };
   }
-  return undefined;
+  return { isBooleanOrNull: false as const };
 }
