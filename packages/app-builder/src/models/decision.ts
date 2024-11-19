@@ -104,7 +104,7 @@ export function isRuleExecutionHit(
 }
 
 export type ExecutionError = {
-  code: 'division_by_zero' | 'null_value_found' | 'undefined_error';
+  code: 'division_by_zero' | 'null_value_found' | 'unknown_error';
   message: string;
 };
 
@@ -114,7 +114,7 @@ const errorCodeMappings: Record<number, ExecutionError['code']> = {
 };
 
 function adaptExecutionError(dto: Error): ExecutionError {
-  const code = errorCodeMappings[dto.code] ?? 'undefined_error';
+  const code = errorCodeMappings[dto.code] ?? 'unknown_error';
   return {
     code,
     message: dto.message,
