@@ -28,6 +28,7 @@ import {
   computeLineErrors,
   findArgumentErrorsFromParent,
   getAstNodeEvaluationErrors,
+  getIndirectEvaluationErrors,
   getValidationStatus,
   separateChildrenErrors,
 } from '../validation/ast-node-validation';
@@ -248,19 +249,8 @@ function useParentEvaluation(parentPath: ParentPath) {
 }
 
 export function useEvaluationErrors(stringPath: string) {
-  // const path = usePath(stringPath);
   const astNode = useAstNode(stringPath);
   const evaluation = useEvaluation(stringPath);
-  // const parentPath = useParentPath(path);
-  // const parentNode = useParentAstNode(parentPath);
-
-  // const returnValue = evaluation
-  //   ? evaluation.returnValue
-  //   : { isOmitted: true, value: undefined };
-  // const isDivByZeroField =
-  //   isDivisionDenominator(parentNode, path) &&
-  //   !returnValue?.isOmitted &&
-  //   returnValue?.value === 0;
 
   return React.useMemo(() => {
     if (!astNode || !evaluation) return [];
@@ -341,24 +331,22 @@ export function useValidationStatus(
     isDivisionDenominator(parentNode, path) &&
     !returnValue?.isOmitted &&
     returnValue?.value === 0;
-
-  const parentEvaluationErrors = useParentEvaluationErrors(parentPath);
   const valueIsNull = !returnValue?.isOmitted && returnValue?.value === null;
+  const parentEvaluationErrors = useParentEvaluationErrors(parentPath);
+
+  const indirectEvaluationErrors = getIndirectEvaluationErrors({
+    parentEvaluationErrors,
+    pathSegment: parentPath?.childPathSegment,
+    isDivByZeroField,
+    valueIsNull,
+  });
+
   return React.useMemo(() => {
     return getValidationStatus({
       evaluationErrors,
-      valueIsNull,
-      isDivByZeroField,
-      parentEvaluationErrors,
-      pathSegment: parentPath?.childPathSegment,
+      indirectEvaluationErrors,
     });
-  }, [
-    evaluationErrors,
-    isDivByZeroField,
-    parentEvaluationErrors,
-    parentPath?.childPathSegment,
-    valueIsNull,
-  ]);
+  }, [evaluationErrors, indirectEvaluationErrors]);
 }
 
 function isDivisionDenominator(

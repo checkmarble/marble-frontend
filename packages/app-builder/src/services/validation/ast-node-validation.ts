@@ -146,30 +146,44 @@ export function findArgumentErrorsFromParent(
   }
 }
 
-export function getValidationStatus({
-  evaluationErrors,
-  valueIsNull,
-  isDivByZeroField,
+export function getIndirectEvaluationErrors({
   parentEvaluationErrors,
   pathSegment,
+  isDivByZeroField,
+  valueIsNull,
 }: {
-  evaluationErrors: EvaluationError[];
-  valueIsNull: boolean;
-  isDivByZeroField: boolean;
   parentEvaluationErrors?: EvaluationError[];
   pathSegment?: PathSegment;
+  isDivByZeroField: boolean;
+  valueIsNull: boolean;
+}): EvaluationError[] {
+  const out = [] as EvaluationError[];
+  if (pathSegment && parentEvaluationErrors) {
+    out.push(
+      ...findArgumentErrorsFromParent(pathSegment, parentEvaluationErrors),
+    );
+  }
+  if (isDivByZeroField) {
+    out.push({
+      error: 'DIVISION_BY_ZERO',
+      message: 'Division by zero error',
+    });
+  }
+  if (valueIsNull) {
+    out.push({ error: 'NULL_FIELD_READ', message: 'Null value read' });
+  }
+  return out;
+}
+
+export function getValidationStatus({
+  evaluationErrors,
+  indirectEvaluationErrors,
+}: {
+  evaluationErrors: EvaluationError[];
+  indirectEvaluationErrors: EvaluationError[];
 }): ValidationStatus {
   if (evaluationErrors.length > 0) return 'error';
-
-  if (pathSegment && parentEvaluationErrors) {
-    const argumentErrors = findArgumentErrorsFromParent(
-      pathSegment,
-      parentEvaluationErrors,
-    );
-    if (argumentErrors.length > 0) return 'light-error';
-  }
-  if (isDivByZeroField) return 'light-error';
-  if (valueIsNull) return 'light-error';
+  if (indirectEvaluationErrors.length > 0) return 'light-error';
 
   return 'valid';
 }
