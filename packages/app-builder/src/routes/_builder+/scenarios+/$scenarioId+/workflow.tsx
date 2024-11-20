@@ -1,5 +1,6 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { DetailPanel } from '@app-builder/components/Scenario/Workflow/DetailPanel/DetailPanel';
 import {
   adaptScenarioUpdateWorkflowInput,
@@ -18,7 +19,7 @@ import {
 } from '@app-builder/models/scenario';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import {
   json,
   type LinksFunction,
@@ -28,6 +29,8 @@ import {
 import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
+
+import { useCurrentScenario } from './_layout';
 
 export const handle = {
   i18n: workflowI18n satisfies Namespace,
@@ -39,12 +42,21 @@ export const links: LinksFunction = () => [
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
+
+  const scenarioId = fromParams(params, 'scenarioId');
+
+  if (!(await featureAccessService.isWorkflowsAvailable())) {
+    return redirect(
+      getRoute('/scenarios/:scenarioId/home', {
+        scenarioId: fromUUID(scenarioId),
+      }),
+    );
+  }
+
   const { user, scenario, inbox, dataModelRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
-
-  const scenarioId = fromParams(params, 'scenarioId');
 
   const [scenarios, inboxes, pivotValues] = await Promise.all([
     scenario.listScenarios(),
@@ -53,18 +65,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   const currentScenario = scenarios.find((s) => s.id === scenarioId);
-  const initialWorkflow = currentScenario
-    ? adaptValidWorkflow(currentScenario)
-    : undefined;
 
   const hasPivotValue = pivotValues.some(
     (pivot) => pivot.baseTable === currentScenario?.triggerObjectType,
   );
 
   return json({
-    nonEditableData: { scenarioId },
-    scenarioName: currentScenario?.name,
-    initialWorkflow,
     scenarios,
     inboxes,
     hasPivotValue,
@@ -77,14 +83,24 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export async function action({ request, params }: LoaderFunctionArgs) {
   const {
     authService,
+    featureAccessService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
+
+  const scenarioId = fromParams(params, 'scenarioId');
+
+  if (!(await featureAccessService.isWorkflowsAvailable())) {
+    return redirect(
+      getRoute('/scenarios/:scenarioId/home', {
+        scenarioId: fromUUID(scenarioId),
+      }),
+    );
+  }
+
   const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-
-  const scenarioId = fromParams(params, 'scenarioId');
 
   const input = scenarioUpdateWorkflowInputSchema.parse(await request.json());
 
@@ -100,21 +116,22 @@ export async function action({ request, params }: LoaderFunctionArgs) {
         : t('workflows:toast.success.create_workflow'),
   });
 
-  return redirect(getRoute('/workflows'), {
-    headers: { 'Set-Cookie': await commitSession(session) },
-  });
+  return redirect(
+    getRoute('/scenarios/:scenarioId/home', {
+      scenarioId: fromUUID(scenarioId),
+    }),
+    {
+      headers: { 'Set-Cookie': await commitSession(session) },
+    },
+  );
 }
 
 export default function Workflow() {
-  const {
-    nonEditableData,
-    scenarioName,
-    initialWorkflow,
-    scenarios,
-    inboxes,
-    hasPivotValue,
-    workflowDataFeatureAccess,
-  } = useLoaderData<typeof loader>();
+  const { scenarios, inboxes, hasPivotValue, workflowDataFeatureAccess } =
+    useLoaderData<typeof loader>();
+
+  const currentScenario = useCurrentScenario();
+  const initialWorkflow = adaptValidWorkflow(currentScenario);
 
   const fetcher = useFetcher();
 
@@ -138,17 +155,21 @@ export default function Workflow() {
 
   return (
     <Page.Main>
-      <Page.Header className="justify-between">
-        <div className="flex flex-row items-center gap-4">
-          <Page.BackButton />
-          <span className="line-clamp-2 text-start">{scenarioName}</span>
-        </div>
+      <Page.Header className="gap-4">
+        <Page.BackLink
+          to={getRoute('/scenarios/:scenarioId/home', {
+            scenarioId: fromUUID(currentScenario.id),
+          })}
+        />
+        <p className="line-clamp-2 text-start">{currentScenario.name}</p>
+
+        <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
       </Page.Header>
       <WorkflowProvider
         data={{
           scenarios,
           inboxes,
-          nonEditableData,
+          nonEditableData: { scenarioId: currentScenario.id },
           hasPivotValue,
         }}
         workflowDataFeatureAccess={workflowDataFeatureAccess}

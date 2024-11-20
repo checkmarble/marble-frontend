@@ -149,6 +149,11 @@ export const routes = [
                 "file": "routes/_builder+/scenarios+/$scenarioId+/_index.tsx"
               },
               {
+                "id": "routes/_builder+/scenarios+/$scenarioId+/home",
+                "path": "home",
+                "file": "routes/_builder+/scenarios+/$scenarioId+/home.tsx"
+              },
+              {
                 "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout",
                 "path": "i/:iterationId",
                 "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout.tsx",
@@ -185,6 +190,16 @@ export const routes = [
                     "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId.tsx"
                   }
                 ]
+              },
+              {
+                "id": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions",
+                "path": "scheduled-executions",
+                "file": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions.tsx"
+              },
+              {
+                "id": "routes/_builder+/scenarios+/$scenarioId+/workflow",
+                "path": "workflow",
+                "file": "routes/_builder+/scenarios+/$scenarioId+/workflow.tsx"
               }
             ]
           },
@@ -193,11 +208,6 @@ export const routes = [
             "index": true,
             "path": "scenarios/",
             "file": "routes/_builder+/scenarios+/_index.tsx"
-          },
-          {
-            "id": "routes/_builder+/scheduled-executions",
-            "path": "scheduled-executions",
-            "file": "routes/_builder+/scheduled-executions.tsx"
           },
           {
             "id": "routes/_builder+/settings+/_layout",
@@ -251,23 +261,6 @@ export const routes = [
             "id": "routes/_builder+/upload+/$objectType",
             "path": "upload/:objectType",
             "file": "routes/_builder+/upload+/$objectType.tsx"
-          },
-          {
-            "id": "routes/_builder+/workflows+/_layout",
-            "path": "workflows",
-            "file": "routes/_builder+/workflows+/_layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/workflows+/$scenarioId",
-                "path": ":scenarioId",
-                "file": "routes/_builder+/workflows+/$scenarioId.tsx"
-              },
-              {
-                "id": "routes/_builder+/workflows+/_index",
-                "index": true,
-                "file": "routes/_builder+/workflows+/_index.tsx"
-              }
-            ]
           }
         ]
       },

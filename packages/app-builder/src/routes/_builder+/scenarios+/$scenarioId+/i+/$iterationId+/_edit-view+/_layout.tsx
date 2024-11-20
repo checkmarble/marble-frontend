@@ -5,6 +5,8 @@ import {
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
+import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import {
   useCurrentScenario,
   useScenarioIterations,
@@ -105,8 +107,15 @@ export default function ScenarioEditLayout() {
     <Page.Main>
       <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
-          <Page.BackLink to={getRoute('/scenarios/')} />
+          <Page.BackLink
+            to={getRoute('/scenarios/:scenarioId/home', {
+              scenarioId: fromUUID(currentScenario.id),
+            })}
+          />
           <p className="line-clamp-2 text-start">{currentScenario.name}</p>
+          <TriggerObjectTag>
+            {currentScenario.triggerObjectType}
+          </TriggerObjectTag>
           <VersionSelect
             currentIteration={currentIteration}
             scenarioIterations={scenarioIterations}
@@ -149,6 +158,9 @@ export default function ScenarioEditLayout() {
         </div>
       </Page.Header>
       <Page.Container>
+        {currentScenario.description ? (
+          <Page.Description>{currentScenario.description}</Page.Description>
+        ) : null}
         <Page.Content>
           <nav>
             <ul className="flex flex-row gap-2">
@@ -207,8 +219,8 @@ function VersionSelect({
   currentIteration,
   scenarioIterations,
 }: {
-  currentIteration: ReturnType<typeof useScenarioIterations>[number];
-  scenarioIterations: ReturnType<typeof useScenarioIterations>;
+  currentIteration: ScenarioIterationWithType;
+  scenarioIterations: ScenarioIterationWithType[];
 }) {
   const { t } = useTranslation(['scenarios']);
   const location = useLocation();

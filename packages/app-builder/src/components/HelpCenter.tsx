@@ -257,14 +257,13 @@ export function useMarbleCoreResources() {
       return t('navigation:scenarios');
     if (location.pathname.startsWith(getRoute('/lists/')))
       return t('navigation:lists');
-    if (location.pathname.startsWith(getRoute('/workflows')))
-      return t('navigation:workflows');
+    if (location.pathname.includes('/workflow')) return 'Workflows';
     if (location.pathname.startsWith(getRoute('/data')))
       return t('navigation:data');
     if (location.pathname.startsWith(getRoute('/settings')))
       return t('navigation:settings');
     if (location.pathname.startsWith(getRoute('/cases/')))
-      return t('navigation:caseManager');
+      return t('navigation:case_manager');
 
     return t('navigation:scenarios');
   }, [location.pathname, t]);
@@ -350,7 +349,7 @@ export function useMarbleCoreResources() {
           href: 'https://docs.checkmarble.com/docs/list-operators',
         },
       ],
-      [t('navigation:workflows')]: [
+      Workflows: [
         {
           label: 'Manage Workflows',
           tags: ['Create', 'Update', 'Delete'],
@@ -405,7 +404,7 @@ export function useMarbleCoreResources() {
           href: webhooksEventsDocHref,
         },
       ],
-      [t('navigation:caseManager')]: [
+      [t('navigation:case_manager')]: [
         {
           label: 'Rule snoozes',
           href: ruleSnoozesDocHref,

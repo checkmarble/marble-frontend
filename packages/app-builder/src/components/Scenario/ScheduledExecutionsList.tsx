@@ -15,7 +15,7 @@ import { Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { type DecisionFilters } from '../Decisions';
-import { scheduledExecutionI18n } from './scheduledExecution-i18n';
+import { scenarioI18n } from './scenario-i18n';
 
 const columnHelper = createColumnHelper<ScheduledExecution>();
 
@@ -24,21 +24,11 @@ export function ScheduledExecutionsList({
 }: {
   scheduledExecutions: ScheduledExecution[];
 }) {
-  const { t } = useTranslation(scheduledExecutionI18n);
+  const { t } = useTranslation(scenarioI18n);
   const language = useFormatLanguage();
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor((s) => s.scenarioName, {
-        id: 'scenario-name',
-        header: t('scheduledExecution:scenario_name'),
-        size: 200,
-      }),
-      columnHelper.accessor((s) => s.scenarioTriggerObjectType, {
-        id: 'scenario-trigger_object_type',
-        header: t('scheduledExecution:scenario_trigger_object_type'),
-        size: 200,
-      }),
       columnHelper.accessor((s) => s.numberOfCreatedDecisions, {
         id: 'number-of-created-decisions',
         cell: ({ row, getValue }) => {
@@ -60,7 +50,7 @@ export function ScheduledExecutionsList({
           }
           return <span>{formattedNumber}</span>;
         },
-        header: t('scheduledExecution:number_of_created_decisions'),
+        header: t('scenarios:scheduled_execution.number_of_created_decisions'),
         size: 100,
       }),
       columnHelper.accessor((s) => s.numberOfEvaluatedDecisions, {
@@ -75,7 +65,9 @@ export function ScheduledExecutionsList({
             </span>
           );
         },
-        header: t('scheduledExecution:number_of_evaluated_decisions'),
+        header: t(
+          'scenarios:scheduled_execution.number_of_evaluated_decisions',
+        ),
         size: 100,
       }),
       columnHelper.accessor((s) => s.numberOfPlannedDecisions, {
@@ -94,7 +86,7 @@ export function ScheduledExecutionsList({
             </span>
           );
         },
-        header: t('scheduledExecution:number_of_planned_decisions'),
+        header: t('scenarios:scheduled_execution.number_of_planned_decisions'),
         size: 100,
       }),
       columnHelper.accessor((s) => s.status, {
@@ -106,12 +98,12 @@ export function ScheduledExecutionsList({
             <p className="capitalize">{t(getStatusTKey(getValue()))}</p>
           </div>
         ),
-        header: t('scheduledExecution:status'),
+        header: t('scenarios:scheduled_execution.status'),
         size: 100,
       }),
       columnHelper.accessor((s) => formatDateTime(s.startedAt, { language }), {
         id: 'created_at',
-        header: t('scheduledExecution:created_at'),
+        header: t('scenarios:scheduled_execution.created_at'),
         size: 100,
         cell: ({ getValue, cell }) => {
           return (
@@ -138,13 +130,7 @@ export function ScheduledExecutionsList({
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
-          return (
-            <Table.Row
-              key={row.id}
-              className="hover:bg-purple-05 cursor-pointer"
-              row={row}
-            />
-          );
+          return <Table.Row key={row.id} row={row} />;
         })}
       </Table.Body>
     </Table.Container>
@@ -161,20 +147,20 @@ const getStatusIcon = (status: string) => {
   return <Icon icon="restart-alt" className="text-grey-50 size-6 shrink-0" />;
 };
 
-const getStatusTKey = (status: string): ParseKeys<['scheduledExecution']> => {
+const getStatusTKey = (status: string): ParseKeys<['scenarios']> => {
   if (status === 'success') {
-    return 'scheduledExecution:status_success';
+    return 'scenarios:scheduled_execution.status_success';
   }
   if (status === 'failure') {
-    return 'scheduledExecution:status_failure';
+    return 'scenarios:scheduled_execution.status_failure';
   }
   if (status === 'partial_failure') {
-    return 'scheduledExecution:status_partial_failure';
+    return 'scenarios:scheduled_execution.status_partial_failure';
   }
   if (status === 'processing') {
-    return 'scheduledExecution:status_processing';
+    return 'scenarios:scheduled_execution.status_processing';
   }
-  return 'scheduledExecution:status_pending';
+  return 'scenarios:scheduled_execution.status_pending';
 };
 
 function getDecisionRoute(

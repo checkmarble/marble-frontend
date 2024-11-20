@@ -8,7 +8,6 @@ import filters from '@app-builder/locales/ar/filters.json';
 import lists from '@app-builder/locales/ar/lists.json';
 import navigation from '@app-builder/locales/ar/navigation.json';
 import scenarios from '@app-builder/locales/ar/scenarios.json';
-import scheduledExecution from '@app-builder/locales/ar/scheduledExecution.json';
 import settings from '@app-builder/locales/ar/settings.json';
 import transfercheck from '@app-builder/locales/ar/transfercheck.json';
 import upload from '@app-builder/locales/ar/upload.json';
@@ -25,7 +24,6 @@ export const ar = {
   lists,
   auth,
   scenarios,
-  scheduledExecution,
   settings,
   transfercheck,
   upload,

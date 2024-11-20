@@ -1,4 +1,5 @@
 import { ErrorComponent } from '@app-builder/components';
+import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -32,14 +33,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({
     currentScenario,
-    scenarioIterations: scenarioIterations.map((si) => ({
-      ...si,
-      type: si.version
-        ? si.id === currentScenario.liveVersionId
-          ? ('live version' as const)
-          : ('version' as const)
-        : ('draft' as const),
-    })),
+    scenarioIterations: scenarioIterations.map((dto) =>
+      adaptScenarioIterationWithType(dto, currentScenario.liveVersionId),
+    ),
   });
 }
 
@@ -49,8 +45,6 @@ export function useScenarioIterations() {
   ) as SerializeFrom<typeof loader>;
   return scenarioIterations;
 }
-
-export type SortedScenarioIteration = ReturnType<typeof useScenarioIterations>;
 
 export function useCurrentScenario() {
   const { currentScenario } = useRouteLoaderData(
