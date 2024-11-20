@@ -620,7 +620,6 @@ export type UpdateOrganizationBodyDto = {
 };
 export type FuncAttributes = {
     name: string;
-    number_of_arguments: number;
     named_arguments?: string[];
 };
 export type InboxUserDto = {

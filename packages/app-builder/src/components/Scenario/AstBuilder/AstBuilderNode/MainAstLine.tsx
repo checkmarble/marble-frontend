@@ -1,6 +1,7 @@
 import {
   type AstNode,
-  isMainAstNode,
+  isMainAstBinaryNode,
+  isMainAstUnaryNode,
   type MainAstBinaryNode,
   type MainAstUnaryNode,
   NewUndefinedAstNode,
@@ -26,8 +27,6 @@ function NewNestedChild(node: AstNode) {
     children: [node, NewUndefinedAstNode()],
   });
 }
-
-// add a similar component for unary operator below
 
 export function MainAstBinaryOperatorLine({
   treePath,
@@ -60,7 +59,7 @@ export function MainAstBinaryOperatorLine({
   const right = mainAstNode.children[1];
   const rightPath = `${treePath}.children.1`;
 
-  const isNestedRight = isMainAstNode(right); // and operator is not unary
+  const isNestedRight = isMainAstUnaryNode(right) || isMainAstBinaryNode(right);
 
   const evaluationErrors = useEvaluationErrors(treePath);
 
@@ -80,9 +79,8 @@ export function MainAstBinaryOperatorLine({
           value={mainAstNode.name}
           setValue={(operator: (typeof operators)[number]) => {
             setOperatorAtPath(treePath, operator);
-            // here, set right operator to undefined if operator changes to a unary operator, or vice versa
             if (isUnaryMainAstOperatorFunction(operator)) {
-              remove(`${treePath}.children.1`);
+              remove(rightPath);
             }
           }}
           validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}
@@ -99,7 +97,7 @@ export function MainAstBinaryOperatorLine({
         />
         {!root ? <span className="text-grey-25">)</span> : null}
       </div>
-      {root && !viewOnly ? ( // also, only display the option if the operator is not a unary operator
+      {root && !viewOnly ? (
         <NestSwitch
           checked={isNestedRight}
           onCheckedChange={(checked) => {
@@ -149,9 +147,8 @@ export function MainAstUnaryOperatorLine({
           value={mainAstNode.name}
           setValue={(operator: (typeof operators)[number]) => {
             setOperatorAtPath(treePath, operator);
-            // here, set right operator to undefined if operator changes to a unary operator, or vice versa
             if (isBinaryMainAstOperatorFunction(operator)) {
-              appendChild(`${treePath}`, NewUndefinedAstNode());
+              appendChild(treePath, NewUndefinedAstNode());
             }
           }}
           validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}

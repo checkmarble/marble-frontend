@@ -41,6 +41,8 @@
   "operator.does_not_contain": "لا يحتوي على",
   "operator.contains_any_of": "يحتوي على أي من",
   "operator.contains_none_of": "لا يحتوي على أي من",
+  "operator.is_empty": "فارغ",
+  "operator.is_not_empty": "غير فارغ",
   "rules.function.title": "دالة",
   "deployment_modal.commit.button": "حفظ",
   "deployment_modal.commit.title": "حفظ الإصدار",
