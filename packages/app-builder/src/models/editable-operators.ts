@@ -4,7 +4,44 @@ import { assertNever } from 'typescript-utils';
 export const undefinedAstNodeName = 'Undefined';
 
 // order is important for sorting
-const twoLineOperandOperatorFunctions = [
+const mainAstOperatorFunctions = [
+  '=',
+  '≠',
+  '<',
+  '<=',
+  '>',
+  '>=',
+  '+',
+  '-',
+  '*',
+  '/',
+  'IsInList',
+  'IsNotInList',
+  'StringContains',
+  'StringNotContain',
+  'ContainsAnyOf',
+  'ContainsNoneOf',
+  'IsEmpty',
+  'IsNotEmpty',
+  undefinedAstNodeName,
+] as const;
+export type MainAstOperatorFunction = (typeof mainAstOperatorFunctions)[number];
+
+// define a subset of MainAstOperatorFunction with only unary operators
+const unaryMainAstOperatorFunctions = ['IsEmpty', 'IsNotEmpty'] as const;
+export type UnaryMainAstOperatorFunction =
+  (typeof unaryMainAstOperatorFunctions)[number];
+
+export function isUnaryMainAstOperatorFunction(
+  value: string,
+): value is UnaryMainAstOperatorFunction {
+  return (unaryMainAstOperatorFunctions as ReadonlyArray<string>).includes(
+    value,
+  );
+}
+
+// define a subset of MainAstOperatorFunction with only binary operators
+const binaryMainAstOperatorFunctions = [
   '=',
   '≠',
   '<',
@@ -23,23 +60,29 @@ const twoLineOperandOperatorFunctions = [
   'ContainsNoneOf',
   undefinedAstNodeName,
 ] as const;
-export type TwoLineOperandOperatorFunction =
-  (typeof twoLineOperandOperatorFunctions)[number];
+export type BinaryMainAstOperatorFunction =
+  (typeof binaryMainAstOperatorFunctions)[number];
 
-export function isTwoLineOperandOperatorFunction(
+export function isBinaryMainAstOperatorFunction(
   value: string,
-): value is TwoLineOperandOperatorFunction {
-  return (twoLineOperandOperatorFunctions as ReadonlyArray<string>).includes(
+): value is BinaryMainAstOperatorFunction {
+  return (binaryMainAstOperatorFunctions as ReadonlyArray<string>).includes(
     value,
   );
 }
 
-export function sortTwoLineOperandOperatorFunctions(
-  lhs: TwoLineOperandOperatorFunction,
-  rhs: TwoLineOperandOperatorFunction,
+export function isMainAstOperatorFunction(
+  value: string,
+): value is MainAstOperatorFunction {
+  return (mainAstOperatorFunctions as ReadonlyArray<string>).includes(value);
+}
+
+export function sortMainAstOperatorFunctions(
+  lhs: MainAstOperatorFunction,
+  rhs: MainAstOperatorFunction,
 ) {
-  const lhsIndex = twoLineOperandOperatorFunctions.indexOf(lhs);
-  const rhsIndex = twoLineOperandOperatorFunctions.indexOf(rhs);
+  const lhsIndex = mainAstOperatorFunctions.indexOf(lhs);
+  const rhsIndex = mainAstOperatorFunctions.indexOf(rhs);
   return lhsIndex - rhsIndex;
 }
 
@@ -83,13 +126,13 @@ export function isAggregatorOperator(
 }
 
 export type OperatorFunction =
-  | TwoLineOperandOperatorFunction
+  | MainAstOperatorFunction
   | FilterOperator
   | TimeAddOperator
   | AggregatorOperator;
 export function isOperatorFunction(value: string): value is OperatorFunction {
   return (
-    isTwoLineOperandOperatorFunction(value) ||
+    isMainAstOperatorFunction(value) ||
     isFilterOperator(value) ||
     isTimeAddOperator(value) ||
     isAggregatorOperator(value)
@@ -125,6 +168,10 @@ export function getOperatorName(
         return '÷';
       case 'IsInList':
         return t('scenarios:operator.is_in');
+      case 'IsEmpty':
+        return 'IsEmpty'; // TODO add trad
+      case 'IsNotEmpty':
+        return 'IsNotEmpty'; // TODO add trad
       case 'IsNotInList':
         return t('scenarios:operator.is_not_in');
       case 'StringContains':

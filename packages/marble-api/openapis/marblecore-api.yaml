@@ -5012,12 +5012,9 @@ components:
       type: object
       required:
         - name
-        - number_of_arguments
       properties:
         name:
           type: string
-        number_of_arguments:
-          type: number
         named_arguments:
           type: array
           items:
