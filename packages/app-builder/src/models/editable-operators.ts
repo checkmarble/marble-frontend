@@ -4,7 +4,7 @@ import { assertNever } from 'typescript-utils';
 export const undefinedAstNodeName = 'Undefined';
 
 // order is important for sorting
-const mainAstOperatorFunctions = [
+const orderedMainAstOperatorFunctions = [
   '=',
   '≠',
   '<',
@@ -25,7 +25,6 @@ const mainAstOperatorFunctions = [
   'IsNotEmpty',
   undefinedAstNodeName,
 ] as const;
-export type MainAstOperatorFunction = (typeof mainAstOperatorFunctions)[number];
 
 // define a subset of MainAstOperatorFunction with only unary operators
 const unaryMainAstOperatorFunctions = ['IsEmpty', 'IsNotEmpty'] as const;
@@ -74,15 +73,21 @@ export function isBinaryMainAstOperatorFunction(
 export function isMainAstOperatorFunction(
   value: string,
 ): value is MainAstOperatorFunction {
-  return (mainAstOperatorFunctions as ReadonlyArray<string>).includes(value);
+  return (
+    isBinaryMainAstOperatorFunction(value) ||
+    isUnaryMainAstOperatorFunction(value)
+  );
 }
+export type MainAstOperatorFunction =
+  | BinaryMainAstOperatorFunction
+  | UnaryMainAstOperatorFunction;
 
 export function sortMainAstOperatorFunctions(
   lhs: MainAstOperatorFunction,
   rhs: MainAstOperatorFunction,
 ) {
-  const lhsIndex = mainAstOperatorFunctions.indexOf(lhs);
-  const rhsIndex = mainAstOperatorFunctions.indexOf(rhs);
+  const lhsIndex = orderedMainAstOperatorFunctions.indexOf(lhs);
+  const rhsIndex = orderedMainAstOperatorFunctions.indexOf(rhs);
   return lhsIndex - rhsIndex;
 }
 
@@ -169,9 +174,9 @@ export function getOperatorName(
       case 'IsInList':
         return t('scenarios:operator.is_in');
       case 'IsEmpty':
-        return 'IsEmpty'; // TODO add trad
+        return t('scenarios:operator.is_empty');
       case 'IsNotEmpty':
-        return 'IsNotEmpty'; // TODO add trad
+        return t('scenarios:operator.is_not_empty');
       case 'IsNotInList':
         return t('scenarios:operator.is_not_in');
       case 'StringContains':

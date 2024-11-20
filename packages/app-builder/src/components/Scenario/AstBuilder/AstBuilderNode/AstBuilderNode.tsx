@@ -37,7 +37,6 @@ export function AstBuilderNode({
   onSave,
   root = false,
 }: AstBuilderNodeProps) {
-  console.log(astNode);
   if (isMainAstBinaryNode(astNode)) {
     return (
       <div className="flex w-full flex-col gap-2">

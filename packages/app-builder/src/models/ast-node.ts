@@ -3,7 +3,9 @@ import * as R from 'remeda';
 
 import {
   type BinaryMainAstOperatorFunction,
+  isBinaryMainAstOperatorFunction,
   isMainAstOperatorFunction,
+  isUnaryMainAstOperatorFunction,
   type MainAstOperatorFunction,
   type UnaryMainAstOperatorFunction,
   undefinedAstNodeName,
@@ -550,11 +552,16 @@ export interface MainAstUnaryNode {
 }
 
 export function isMainAstNode(astNode: AstNode): astNode is MainAstNode {
-  if (isLeafOperandAstNode(astNode)) return false;
-
-  if (Object.keys(astNode.namedChildren).length > 0) return false;
-  if (astNode.name == null || !isMainAstOperatorFunction(astNode.name))
+  if (isLeafOperandAstNode(astNode)) {
     return false;
+  }
+
+  if (Object.keys(astNode.namedChildren).length > 0) {
+    return false;
+  }
+  if (astNode.name == null || !isMainAstOperatorFunction(astNode.name)) {
+    return false;
+  }
 
   return true;
 }
@@ -564,7 +571,10 @@ export function isMainAstUnaryNode(
 ): astNode is MainAstUnaryNode {
   if (!isMainAstNode(astNode)) return false;
 
-  return astNode.children.length === 1;
+  return (
+    astNode.children.length === 1 &&
+    isUnaryMainAstOperatorFunction(astNode.name)
+  );
 }
 
 export function isMainAstBinaryNode(
@@ -572,5 +582,8 @@ export function isMainAstBinaryNode(
 ): astNode is MainAstBinaryNode {
   if (!isMainAstNode(astNode)) return false;
 
-  return astNode.children.length === 2;
+  return (
+    astNode.children.length === 2 &&
+    isBinaryMainAstOperatorFunction(astNode.name)
+  );
 }
