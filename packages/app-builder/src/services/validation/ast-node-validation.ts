@@ -91,7 +91,7 @@ function hasNestedErrors(astNodeErrors: AstNodeErrors, root = true): boolean {
   return false;
 }
 
-// TODO: should be removed. Depending on the use case, we should use computeLineErrors or alike function (ex: when we have a "TwoLineOperandAstNode" like comp in a modal)
+// TODO: should be removed. Depending on the use case, we should use computeLineErrors or alike function (ex: when we have a "MainAstNode" like comp in a modal)
 // Ex: if you nest variables, this function is "wrong" because it doesn't separate children errors like computeLineErrors
 export function computeValidationForNamedChildren(
   astNode: AstNode,

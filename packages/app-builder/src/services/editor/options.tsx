@@ -22,9 +22,9 @@ import {
 } from '@app-builder/models/data-model';
 import {
   aggregatorOperators,
-  isTwoLineOperandOperatorFunction,
+  isMainAstOperatorFunction,
   type OperatorFunction,
-  sortTwoLineOperandOperatorFunctions,
+  sortMainAstOperatorFunctions,
 } from '@app-builder/models/editable-operators';
 import { type OperandType } from '@app-builder/models/operand-type';
 import { createSimpleContext } from '@app-builder/utils/create-context';
@@ -252,13 +252,13 @@ export function useOperandOptions(enumValues?: EnumValue[]) {
   ]);
 }
 
-export function useTwoLineOperandOperatorFunctions() {
+export function useMainAstOperatorFunctions() {
   const operators = useOperatorFunctions();
   return React.useMemo(
     () =>
       operators
-        .filter(isTwoLineOperandOperatorFunction)
-        .sort(sortTwoLineOperandOperatorFunctions),
+        .filter(isMainAstOperatorFunction)
+        .sort(sortMainAstOperatorFunctions),
     [operators],
   );
 }

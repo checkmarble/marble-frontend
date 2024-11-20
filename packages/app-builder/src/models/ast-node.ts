@@ -1,10 +1,11 @@
-import { hasExactlyTwoElements } from '@app-builder/utils/array';
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 
 import {
-  isTwoLineOperandOperatorFunction,
-  type TwoLineOperandOperatorFunction,
+  type BinaryMainAstOperatorFunction,
+  isMainAstOperatorFunction,
+  type MainAstOperatorFunction,
+  type UnaryMainAstOperatorFunction,
   undefinedAstNodeName,
 } from './editable-operators';
 import {
@@ -421,10 +422,13 @@ export function isFuzzyMatchComparator(
   if (node.name !== '>') {
     return false;
   }
-  if (!hasExactlyTwoElements(node.children)) {
+  if (node.children.length !== 2) {
     return false;
   }
   const firstChild = node.children[0];
+  if (firstChild === undefined) {
+    return false;
+  }
   return isFuzzyMatch(firstChild) || isFuzzyMatchAnyOf(firstChild);
 }
 
@@ -524,22 +528,49 @@ export function isOrWithAndAstNode(
   return true;
 }
 
-export interface TwoLineOperandAstNode {
-  name: TwoLineOperandOperatorFunction;
+export interface MainAstNode {
+  name: MainAstOperatorFunction;
+  constant: undefined;
+  children: AstNode[];
+  namedChildren: Record<string, never>;
+}
+
+export interface MainAstBinaryNode {
+  name: BinaryMainAstOperatorFunction;
   constant: undefined;
   children: [AstNode, AstNode];
   namedChildren: Record<string, never>;
 }
 
-export function isTwoLineOperandAstNode(
-  astNode: AstNode,
-): astNode is TwoLineOperandAstNode {
+export interface MainAstUnaryNode {
+  name: UnaryMainAstOperatorFunction;
+  constant: undefined;
+  children: [AstNode];
+  namedChildren: Record<string, never>;
+}
+
+export function isMainAstNode(astNode: AstNode): astNode is MainAstNode {
   if (isLeafOperandAstNode(astNode)) return false;
 
-  if (!hasExactlyTwoElements(astNode.children)) return false;
   if (Object.keys(astNode.namedChildren).length > 0) return false;
-  if (astNode.name == null || !isTwoLineOperandOperatorFunction(astNode.name))
+  if (astNode.name == null || !isMainAstOperatorFunction(astNode.name))
     return false;
 
   return true;
+}
+
+export function isMainAstUnaryNode(
+  astNode: AstNode,
+): astNode is MainAstUnaryNode {
+  if (!isMainAstNode(astNode)) return false;
+
+  return astNode.children.length === 1;
+}
+
+export function isMainAstBinaryNode(
+  astNode: AstNode,
+): astNode is MainAstBinaryNode {
+  if (!isMainAstNode(astNode)) return false;
+
+  return astNode.children.length === 2;
 }

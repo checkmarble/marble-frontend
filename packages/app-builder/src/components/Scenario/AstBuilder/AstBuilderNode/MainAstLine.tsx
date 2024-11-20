@@ -1,14 +1,19 @@
 import {
   type AstNode,
-  isTwoLineOperandAstNode,
+  isMainAstNode,
+  type MainAstBinaryNode,
+  type MainAstUnaryNode,
   NewUndefinedAstNode,
-  type TwoLineOperandAstNode,
 } from '@app-builder/models';
+import {
+  isBinaryMainAstOperatorFunction,
+  isUnaryMainAstOperatorFunction,
+} from '@app-builder/models/editable-operators';
 import {
   useAstNodeEditorActions,
   useEvaluationErrors,
 } from '@app-builder/services/editor/ast-editor';
-import { useTwoLineOperandOperatorFunctions } from '@app-builder/services/editor/options';
+import { useMainAstOperatorFunctions } from '@app-builder/services/editor/options';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch } from 'ui-design-system';
@@ -22,18 +27,21 @@ function NewNestedChild(node: AstNode) {
   });
 }
 
-export function TwoOperandsLine({
+// add a similar component for unary operator below
+
+export function MainAstBinaryOperatorLine({
   treePath,
-  twoLineOperandAstNode,
+  mainAstNode,
   viewOnly,
   root,
 }: {
   treePath: string;
-  twoLineOperandAstNode: TwoLineOperandAstNode;
+  mainAstNode: MainAstBinaryNode;
   viewOnly?: boolean;
   root?: boolean;
 }) {
-  const { setAstNodeAtPath, setOperatorAtPath } = useAstNodeEditorActions();
+  const { setAstNodeAtPath, setOperatorAtPath, remove } =
+    useAstNodeEditorActions();
 
   function addNestedChild(stringPath: string, child: AstNode) {
     setAstNodeAtPath(stringPath, NewNestedChild(child));
@@ -45,14 +53,14 @@ export function TwoOperandsLine({
     setAstNodeAtPath(stringPath, nestedChild);
   }
 
-  const operators = useTwoLineOperandOperatorFunctions();
+  const operators = useMainAstOperatorFunctions();
 
-  const left = twoLineOperandAstNode.children[0];
+  const left = mainAstNode.children[0];
   const leftPath = `${treePath}.children.0`;
-  const right = twoLineOperandAstNode.children[1];
+  const right = mainAstNode.children[1];
   const rightPath = `${treePath}.children.1`;
 
-  const isNestedRight = isTwoLineOperandAstNode(right);
+  const isNestedRight = isMainAstNode(right); // and operator is not unary
 
   const evaluationErrors = useEvaluationErrors(treePath);
 
@@ -69,9 +77,13 @@ export function TwoOperandsLine({
           viewOnly={viewOnly}
         />
         <Operator
-          value={twoLineOperandAstNode.name}
+          value={mainAstNode.name}
           setValue={(operator: (typeof operators)[number]) => {
             setOperatorAtPath(treePath, operator);
+            // here, set right operator to undefined if operator changes to a unary operator, or vice versa
+            if (isUnaryMainAstOperatorFunction(operator)) {
+              remove(`${treePath}.children.1`);
+            }
           }}
           validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}
           viewOnly={viewOnly}
@@ -87,7 +99,7 @@ export function TwoOperandsLine({
         />
         {!root ? <span className="text-grey-25">)</span> : null}
       </div>
-      {root && !viewOnly ? (
+      {root && !viewOnly ? ( // also, only display the option if the operator is not a unary operator
         <NestSwitch
           checked={isNestedRight}
           onCheckedChange={(checked) => {
@@ -96,6 +108,58 @@ export function TwoOperandsLine({
           }}
         />
       ) : null}
+    </div>
+  );
+}
+
+export function MainAstUnaryOperatorLine({
+  treePath,
+  mainAstNode,
+  viewOnly,
+  root,
+}: {
+  treePath: string;
+  mainAstNode: MainAstUnaryNode;
+  viewOnly?: boolean;
+  root?: boolean;
+}) {
+  const { setAstNodeAtPath, setOperatorAtPath, appendChild } =
+    useAstNodeEditorActions();
+
+  const operators = useMainAstOperatorFunctions();
+
+  const left = mainAstNode.children[0];
+  const leftPath = `${treePath}.children.0`;
+
+  const evaluationErrors = useEvaluationErrors(treePath);
+
+  return (
+    <div className="flex justify-between gap-2">
+      <div className="flex flex-row flex-wrap items-center gap-2">
+        {!root ? <span className="text-grey-25">(</span> : null}
+        <AstBuilderNode
+          treePath={leftPath}
+          astNode={left}
+          onSave={(astNode) => {
+            setAstNodeAtPath(leftPath, astNode);
+          }}
+          viewOnly={viewOnly}
+        />
+        <Operator
+          value={mainAstNode.name}
+          setValue={(operator: (typeof operators)[number]) => {
+            setOperatorAtPath(treePath, operator);
+            // here, set right operator to undefined if operator changes to a unary operator, or vice versa
+            if (isBinaryMainAstOperatorFunction(operator)) {
+              appendChild(`${treePath}`, NewUndefinedAstNode());
+            }
+          }}
+          validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}
+          viewOnly={viewOnly}
+          operators={operators}
+        />
+        {!root ? <span className="text-grey-25">)</span> : null}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,8 @@
-import { type AstNode, isTwoLineOperandAstNode } from '@app-builder/models';
+import {
+  type AstNode,
+  isMainAstBinaryNode,
+  isMainAstUnaryNode,
+} from '@app-builder/models';
 import {
   useEnumValuesFromNeighbour,
   useEvaluation,
@@ -12,8 +16,11 @@ import {
 import { useFormatReturnValue } from '@app-builder/services/editor/return-value';
 import * as React from 'react';
 
+import {
+  MainAstBinaryOperatorLine,
+  MainAstUnaryOperatorLine,
+} from './MainAstLine';
 import { Operand } from './Operand';
-import { TwoOperandsLine } from './TwoOperandsLine';
 
 interface AstBuilderNodeProps {
   treePath: string;
@@ -30,12 +37,26 @@ export function AstBuilderNode({
   onSave,
   root = false,
 }: AstBuilderNodeProps) {
-  if (isTwoLineOperandAstNode(astNode)) {
+  console.log(astNode);
+  if (isMainAstBinaryNode(astNode)) {
     return (
       <div className="flex w-full flex-col gap-2">
-        <TwoOperandsLine
+        <MainAstBinaryOperatorLine
           treePath={treePath}
-          twoLineOperandAstNode={astNode}
+          mainAstNode={astNode}
+          viewOnly={viewOnly}
+          root={root}
+        />
+      </div>
+    );
+  }
+
+  if (isMainAstUnaryNode(astNode)) {
+    return (
+      <div className="flex w-full flex-col gap-2">
+        <MainAstUnaryOperatorLine
+          treePath={treePath}
+          mainAstNode={astNode}
           viewOnly={viewOnly}
           root={root}
         />
