@@ -12,7 +12,7 @@ import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-stat
 import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import {
   defer,
   type LoaderFunctionArgs,
@@ -139,7 +139,11 @@ export default function CasePage() {
     <Page.Main>
       <Page.Header className="justify-between gap-8">
         <div className="flex flex-row items-center gap-4">
-          <Page.BackButton />
+          <Page.BackLink
+            to={getRoute('/cases/inboxes/:inboxId', {
+              inboxId: fromUUID(caseDetail.inboxId),
+            })}
+          />
           <span className="line-clamp-2 text-start">{caseDetail.name}</span>
           <CopyToClipboardButton toCopy={caseDetail.id}>
             <span className="text-s line-clamp-1 max-w-40 font-normal">
