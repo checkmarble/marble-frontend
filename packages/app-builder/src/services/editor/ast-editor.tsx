@@ -1,4 +1,8 @@
-import { type AstNode } from '@app-builder/models';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import {
+  isBinaryMainAstOperatorFunction,
+  isUnaryMainAstOperatorFunction,
+} from '@app-builder/models/editable-operators';
 import {
   NewNodeEvaluation,
   type NodeEvaluation,
@@ -82,11 +86,18 @@ export function useAstNodeEditor({
             // No node at this path
             return;
           }
+          const newNode = {
+            ...currentNode,
+            name,
+          };
+          if (isUnaryMainAstOperatorFunction(name)) {
+            const children = newNode.children.slice(0, 1);
+            newNode.children = children;
+          } else if (isBinaryMainAstOperatorFunction(name)) {
+            newNode.children.push(NewUndefinedAstNode());
+          }
           set({
-            rootAstNode: setAtPath(rootAstNode, path, {
-              ...currentNode,
-              name,
-            }),
+            rootAstNode: setAtPath(rootAstNode, path, newNode),
           });
         },
         appendChild: (stringPath, childAst) => {
