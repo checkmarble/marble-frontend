@@ -7,10 +7,6 @@ import {
   NewUndefinedAstNode,
 } from '@app-builder/models';
 import {
-  isBinaryMainAstOperatorFunction,
-  isUnaryMainAstOperatorFunction,
-} from '@app-builder/models/editable-operators';
-import {
   useAstNodeEditorActions,
   useEvaluationErrors,
 } from '@app-builder/services/editor/ast-editor';
@@ -39,8 +35,7 @@ export function MainAstBinaryOperatorLine({
   viewOnly?: boolean;
   root?: boolean;
 }) {
-  const { setAstNodeAtPath, setOperatorAtPath, remove } =
-    useAstNodeEditorActions();
+  const { setAstNodeAtPath, setOperatorAtPath } = useAstNodeEditorActions();
 
   function addNestedChild(stringPath: string, child: AstNode) {
     setAstNodeAtPath(stringPath, NewNestedChild(child));
@@ -79,9 +74,6 @@ export function MainAstBinaryOperatorLine({
           value={mainAstNode.name}
           setValue={(operator: (typeof operators)[number]) => {
             setOperatorAtPath(treePath, operator);
-            if (isUnaryMainAstOperatorFunction(operator)) {
-              remove(rightPath);
-            }
           }}
           validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}
           viewOnly={viewOnly}
@@ -121,8 +113,7 @@ export function MainAstUnaryOperatorLine({
   viewOnly?: boolean;
   root?: boolean;
 }) {
-  const { setAstNodeAtPath, setOperatorAtPath, appendChild } =
-    useAstNodeEditorActions();
+  const { setAstNodeAtPath, setOperatorAtPath } = useAstNodeEditorActions();
 
   const operators = useMainAstOperatorFunctions();
 
@@ -147,9 +138,6 @@ export function MainAstUnaryOperatorLine({
           value={mainAstNode.name}
           setValue={(operator: (typeof operators)[number]) => {
             setOperatorAtPath(treePath, operator);
-            if (isBinaryMainAstOperatorFunction(operator)) {
-              appendChild(treePath, NewUndefinedAstNode());
-            }
           }}
           validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}
           viewOnly={viewOnly}
