@@ -91,10 +91,9 @@ export function useAstNodeEditor({
             name,
           };
           if (isUnaryMainAstOperatorFunction(name)) {
-            const children = newNode.children.slice(0, 1);
-            newNode.children = children;
+            newNode.children = newNChildren(1, newNode.children);
           } else if (isBinaryMainAstOperatorFunction(name)) {
-            newNode.children.push(NewUndefinedAstNode());
+            newNode.children = newNChildren(2, newNode.children);
           }
           set({
             rootAstNode: setAtPath(rootAstNode, path, newNode),
@@ -132,6 +131,13 @@ export function useAstNodeEditor({
   );
 
   return store;
+}
+
+function newNChildren(n: number, currentChildren: AstNode[]) {
+  return Array.from(
+    { length: n },
+    (_, i) => currentChildren[i] ?? NewUndefinedAstNode(),
+  );
 }
 
 export function AstNodeEditorProvider({
