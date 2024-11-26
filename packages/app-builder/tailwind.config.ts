@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       gridTemplateColumns: {
-        'test-run': '2.5fr 3fr 1fr 1fr 2fr',
+        'test-run': '28.38% 28.97% 11.59% 8.83% auto',
       },
     },
   },

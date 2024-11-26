@@ -6,6 +6,7 @@ import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { type Dispatch, type SetStateAction, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -93,6 +94,85 @@ const Filters = () => {
   );
 };
 
+const TestRunPreview = ({
+  status,
+  selected,
+}: {
+  status: 'ongoing' | 'archived';
+  selected: boolean;
+}) => {
+  return (
+    <div
+      className={clsx(
+        'grid-cols-test-run bg-grey-00 border-grey-10 grid items-center rounded-lg border py-4',
+        {
+          'bg-purple-05': selected,
+          'border-purple-100': selected,
+        },
+      )}
+    >
+      <div className="px-4">
+        <div className="flex flex-row items-center gap-1">
+          <Tag
+            size="big"
+            color="grey-light"
+            className="border-grey-10 gap-1 border px-4 py-2"
+          >
+            <span className="text-grey-100 font-semibold">V3</span>
+            <span className="font-semibold text-purple-100">Live</span>
+          </Tag>
+          <Icon icon="arrow-range" className="text-grey-100 size-5" />
+          <Tag
+            size="big"
+            color="grey-light"
+            className="border-grey-10 border px-4 py-2"
+          >
+            V4
+          </Tag>
+        </div>
+      </div>
+      <div className="px-4">
+        <span className="text-s inline-flex flex-row items-center gap-1">
+          From
+          <span className="font-semibold">04.10.24</span>
+          To
+          <span className="font-semibold">04.11.24</span>
+        </span>
+      </div>
+      <div className="flex flex-row items-center justify-center">
+        <Avatar firstName="Jean" lastName="Christophe" />
+      </div>
+      <div className="flex flex-row items-center justify-center">
+        <Button variant="secondary" className="size-8 px-0">
+          <Icon icon="news" className="text-grey-100 size-5" />
+        </Button>
+      </div>
+      <div className="px-4">
+        {status === 'ongoing' ? (
+          <Tag
+            border="square"
+            size="big"
+            className="inline-flex flex-row items-center gap-1 bg-purple-100"
+          >
+            <Spinner className="size-3" />
+            <span className="text-grey-00 text-s font-semibold">Ongoing</span>
+          </Tag>
+        ) : (
+          <Tag
+            border="square"
+            size="big"
+            color="grey"
+            className="inline-flex flex-row items-center gap-1"
+            aria-disabled
+          >
+            <span className="text-grey-50 text-s font-semibold">Archived</span>
+          </Tag>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function TestRun() {
   const { t } = useTranslation(handle.i18n);
   const _data = useLoaderData<typeof loader>();
@@ -130,65 +210,14 @@ export default function TestRun() {
               <div className="grid-cols-test-run text-s grid font-semibold">
                 <span className="px-4">Version</span>
                 <span className="px-4">Period</span>
-                <span className="px-4">Creator</span>
-                <span className="px-4">Log</span>
+                <span className="text-center">Creator</span>
+                <span className="text-center">Log</span>
                 <span className="px-4">Status</span>
               </div>
-              <div className="grid-cols-test-run bg-grey-00 border-grey-10 grid items-center rounded-lg border p-4">
-                <div>
-                  <div className="flex flex-row items-center gap-1">
-                    <Tag
-                      size="big"
-                      color="grey-light"
-                      className="border-grey-10 gap-1 border px-4 py-2"
-                    >
-                      <span className="text-grey-100 font-semibold">V3</span>
-                      <span className="font-semibold text-purple-100">
-                        Live
-                      </span>
-                    </Tag>
-                    <Icon
-                      icon="arrows-right-left"
-                      className="text-grey-100 size-5"
-                    />
-                    <Tag
-                      size="big"
-                      color="grey-light"
-                      className="border-grey-10 border px-4 py-2"
-                    >
-                      V4
-                    </Tag>
-                  </div>
-                </div>
-                <div className="px-2">
-                  <span className="text-s inline-flex flex-row items-center gap-1">
-                    From
-                    <span className="font-semibold">04.10.24</span>
-                    To
-                    <span className="font-semibold">04.11.24</span>
-                  </span>
-                </div>
-                <div className="px-3">
-                  <Avatar firstName="Jean" lastName="Christophe" />
-                </div>
-                <div className="px-4">
-                  <Button variant="secondary" className="px-1.5 py-2">
-                    <Icon icon="decision" className="size-5" />
-                  </Button>
-                </div>
-                <div className="px-4">
-                  <Tag
-                    border="square"
-                    size="big"
-                    className="inline-flex flex-row items-center gap-2 bg-purple-100"
-                  >
-                    <Spinner className="size-3" />
-                    <span className="text-grey-00 text-s font-semibold">
-                      Ongoing
-                    </span>
-                  </Tag>
-                </div>
-              </div>
+              <TestRunPreview selected={true} status="ongoing" />
+              <TestRunPreview selected={false} status="archived" />
+              <TestRunPreview selected={false} status="archived" />
+              <TestRunPreview selected={false} status="archived" />
             </div>
           </div>
         </Page.Content>
