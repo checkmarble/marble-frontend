@@ -123,6 +123,10 @@ export default function ScenarioHome() {
 
   const currentScenario = useCurrentScenario();
   const scenarioIterations = useScenarioIterations();
+  const shouldHaveAccessToTestRun = React.useMemo(
+    () => scenarioIterations.length > 1,
+    [scenarioIterations],
+  );
 
   const liveScenarioIteration = React.useMemo(
     () => scenarioIterations.find(({ type }) => type === 'live version'),
@@ -140,22 +144,41 @@ export default function ScenarioHome() {
               {currentScenario.triggerObjectType}
             </TriggerObjectTag>
             {featureAccess.isEditScenarioAvailable ? (
-              <UpdateScenario
-                defaultValue={{
-                  name: currentScenario.name,
-                  scenarioId: currentScenario.id,
-                  description: currentScenario.description,
-                }}
-              >
-                <Button
-                  variant="secondary"
-                  className="isolate h-10 w-fit"
-                  disabled={!hydrated}
+              <div className="flex flex-row gap-4">
+                <UpdateScenario
+                  defaultValue={{
+                    name: currentScenario.name,
+                    scenarioId: currentScenario.id,
+                    description: currentScenario.description,
+                  }}
                 >
-                  <Icon icon="edit-square" className="size-6" />
-                  <p>{t('scenarios:update_scenario.title')}</p>
-                </Button>
-              </UpdateScenario>
+                  <Button
+                    variant="secondary"
+                    className="isolate h-10 w-fit"
+                    disabled={!hydrated}
+                  >
+                    <Icon icon="edit-square" className="size-6" />
+                    <p>{t('scenarios:update_scenario.title')}</p>
+                  </Button>
+                </UpdateScenario>
+                <Link
+                  aria-disabled={!hydrated || !shouldHaveAccessToTestRun}
+                  className={clsx(
+                    CtaClassName({ variant: 'primary', color: 'purple' }),
+                    'isolate h-10 w-fit',
+                    {
+                      'pointer-events-none cursor-default':
+                        !hydrated || !shouldHaveAccessToTestRun,
+                    },
+                  )}
+                  to={getRoute('/scenarios/:scenarioId/test-run', {
+                    scenarioId: fromUUID(currentScenario.id),
+                  })}
+                >
+                  <Icon icon="backtest" className="size-6" />
+                  <p>{t('scenarios:home.testrun')}</p>
+                </Link>
+              </div>
             ) : null}
           </div>
         </div>

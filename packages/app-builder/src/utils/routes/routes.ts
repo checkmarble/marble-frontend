@@ -197,6 +197,11 @@ export const routes = [
                 "file": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions.tsx"
               },
               {
+                "id": "routes/_builder+/scenarios+/$scenarioId+/test-run",
+                "path": "test-run",
+                "file": "routes/_builder+/scenarios+/$scenarioId+/test-run.tsx"
+              },
+              {
                 "id": "routes/_builder+/scenarios+/$scenarioId+/workflow",
                 "path": "workflow",
                 "file": "routes/_builder+/scenarios+/$scenarioId+/workflow.tsx"
