@@ -14,6 +14,8 @@ You can start editing / add components in isolation
 
 ### Add a new component
 
+> Try to use Ariakit in favour of Radix to create new components
+
 1. Create a folder following the convention (look at existing components)
 
 2. Create a story and visualize it in Storybook
