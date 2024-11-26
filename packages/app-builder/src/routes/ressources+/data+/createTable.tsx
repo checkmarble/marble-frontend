@@ -27,8 +27,10 @@ export const handle = {
 const createTableFormSchema = z.object({
   name: z
     .string()
-    .nonempty()
-    .regex(/^[a-zA-Z0-9_]+$/, { message: 'Only alphanumeric and _' }),
+    .min(1)
+    .regex(/^[a-z]+[a-z0-9_]+$/, {
+      message: 'Only lower case alphanumeric and _, must start with a letter',
+    }),
   description: z.string(),
 });
 
