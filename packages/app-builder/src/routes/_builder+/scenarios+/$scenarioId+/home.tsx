@@ -1,4 +1,6 @@
+import { CopyToClipboardButton } from '@app-builder/components';
 import { CalloutV2 } from '@app-builder/components/Callout';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Page } from '@app-builder/components/Page';
 import {
@@ -12,6 +14,7 @@ import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
+import { createDecisionDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import {
   formatDateRelative,
@@ -342,7 +345,36 @@ function ExecutionSection({
             {t('scenarios:home.execution.real_time')}
           </h3>
           <CalloutV2>
-            {t('scenarios:home.execution.real_time.callout')}
+            <div className="flex flex-col gap-4">
+              <span>
+                <Trans
+                  t={t}
+                  i18nKey="scenarios:home.execution.real_time.callout"
+                  components={{
+                    DocLink: <ExternalLink href={createDecisionDocHref} />,
+                  }}
+                />
+              </span>
+              <span className="text-grey-100 text-s inline-flex items-center whitespace-pre font-semibold">
+                {isLive ? (
+                  <Trans
+                    t={t}
+                    i18nKey="scenarios:home.execution.real_time.callout.scenario_id"
+                    components={{
+                      CopyScenarioId: (
+                        <CopyToClipboardButton toCopy={scenarioId}>
+                          <code>scenario_id</code>
+                        </CopyToClipboardButton>
+                      ),
+                    }}
+                  />
+                ) : (
+                  t(
+                    'scenarios:home.execution.real_time.callout.no_live_version',
+                  )
+                )}
+              </span>
+            </div>
           </CalloutV2>
         </div>
         <div

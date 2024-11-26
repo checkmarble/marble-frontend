@@ -19,7 +19,6 @@ import {
 } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import * as Ariakit from '@ariakit/react';
 import { Link } from '@remix-run/react';
 import { cx } from 'class-variance-authority';
@@ -444,7 +443,6 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
     ruleSnoozeId,
   });
   const { t } = useTranslation(casesI18n);
-  const getCopyToClipboardProps = useGetCopyToClipboard();
   const language = useFormatLanguage();
 
   const isError = data?.success === false;
@@ -463,12 +461,7 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
           'cases:case_detail.history.event_detail.rule_snooze_created.pivot_value',
         )}
       </span>
-      <span
-        className="text-grey-100 text-s"
-        {...(isLoading
-          ? {}
-          : getCopyToClipboardProps(data.ruleSnoozeDetail.pivotValue))}
-      >
+      <span className="text-grey-100 text-s">
         {isLoading ? (
           <Spinner className="size-4" />
         ) : (

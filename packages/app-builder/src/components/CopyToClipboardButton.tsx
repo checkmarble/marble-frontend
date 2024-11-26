@@ -4,8 +4,8 @@ import { type ComponentPropsWithoutRef, forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
 export const CopyToClipboardButton = forwardRef<
-  HTMLDivElement,
-  ComponentPropsWithoutRef<'div'> & {
+  HTMLButtonElement,
+  ComponentPropsWithoutRef<'button'> & {
     toCopy: string;
   }
 >(function CopyToClipboardButton(
@@ -14,7 +14,7 @@ export const CopyToClipboardButton = forwardRef<
 ) {
   const getCopyToClipboardProps = useGetCopyToClipboard();
   return (
-    <div
+    <button
       ref={ref}
       className={clsx(
         'border-grey-10 text-grey-100 hover:bg-grey-05 active:bg-grey-10 flex min-h-8 w-fit shrink-0 cursor-pointer select-none items-center gap-3 break-all rounded border px-2 font-normal transition-colors',
@@ -25,6 +25,6 @@ export const CopyToClipboardButton = forwardRef<
     >
       {children}
       <Icon icon="copy" className="size-4 shrink-0" />
-    </div>
+    </button>
   );
 });

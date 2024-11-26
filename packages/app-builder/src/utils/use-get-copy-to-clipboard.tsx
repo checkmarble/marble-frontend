@@ -4,7 +4,6 @@ import { Trans, useTranslation } from 'react-i18next';
 export function useGetCopyToClipboard() {
   const { t } = useTranslation('common');
   return (value: string) => ({
-    type: 'button',
     'aria-label': t('clipboard.aria-label', {
       replace: {
         value,
