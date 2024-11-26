@@ -39,7 +39,9 @@ const createFieldFormSchema = z.object({
   name: z
     .string()
     .min(1)
-    .regex(/^[a-zA-Z0-9_]+$/, { message: 'Only alphanumeric and _' })
+    .regex(/^[a-z]+[a-z0-9_]+$/, {
+      message: 'Only lower case alphanumeric and _, must start with a letter',
+    })
     .refine((value) => value !== 'id', {
       message: 'The name "id" is reserved',
     }),

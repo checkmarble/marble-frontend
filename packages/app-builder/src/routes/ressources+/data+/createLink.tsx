@@ -28,14 +28,14 @@ export const handle = {
 const createLinkFormSchema = z.object({
   name: z
     .string()
-    .nonempty()
-    .regex(/^[a-zA-Z0-9_]+$/, {
-      message: 'Only alphanumeric and _',
+    .min(1)
+    .regex(/^[a-z]+[a-z0-9_]+$/, {
+      message: 'Only lower case alphanumeric and _, must start with a letter',
     }),
-  parentTableId: z.string().nonempty().uuid(),
-  parentFieldId: z.string().nonempty().uuid(),
-  childTableId: z.string().nonempty().uuid(),
-  childFieldId: z.string().nonempty().uuid(),
+  parentTableId: z.string().min(1).uuid(),
+  parentFieldId: z.string().min(1).uuid(),
+  childTableId: z.string().min(1).uuid(),
+  childFieldId: z.string().min(1).uuid(),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
