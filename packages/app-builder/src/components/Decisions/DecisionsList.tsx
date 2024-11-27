@@ -172,6 +172,11 @@ export function DecisionsList({
         header: t('decisions:trigger_object.type'),
         size: 100,
         minSize: 100,
+        cell: ({ getValue }) => (
+          <span className="text-grey-100 text-s line-clamp-2 break-words font-normal">
+            {getValue()}
+          </span>
+        ),
       }),
       columnHelper.accessor((row) => row.case?.name ?? '-', {
         id: 'case',
