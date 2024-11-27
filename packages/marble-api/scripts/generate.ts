@@ -8,7 +8,6 @@ import {
   licenseApiConfig,
   marbleCoreApiConfig,
   transfercheckApiConfig,
-  testrunApiConfig,
 } from './config';
 
 async function openapiGenerator({
@@ -20,7 +19,7 @@ async function openapiGenerator({
   const spinner = ora(`Start to generate ${apiName} client...`).start();
   try {
     const code = await Oazapfts.generateSource(apiSpec, apiOptions);
-    
+
     await writeFile(generatedApi, code);
 
     spinner.succeed(`Succesfully generated ${apiName} client`);
@@ -38,7 +37,6 @@ async function main() {
     await openapiGenerator(marbleCoreApiConfig);
     await openapiGenerator(licenseApiConfig);
     await openapiGenerator(transfercheckApiConfig);
-    await openapiGenerator(testrunApiConfig);
   } catch (error) {
     console.error('\n', error);
     process.exit(1);

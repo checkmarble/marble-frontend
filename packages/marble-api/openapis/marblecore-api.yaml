@@ -42,6 +42,8 @@ tags:
     description: Operations about webhooks.
   - name: RuleSnoozes
     description: Operations about rule snoozes.
+  - name: TestRun
+    description: Operations about testrun.
 servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
@@ -3269,6 +3271,126 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /scenario-testrun:
+    get:
+      tags:
+        - TestRun
+      summary: List all test runs for a scenario
+      operationId: listTestRuns
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioId
+          description: ID of the scenario that need to be fetched
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of corresponding test runs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TestRunDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      tags:
+        - TestRun
+      summary: Create a test run
+      operationId: createTestRun
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Test run object that needs to be added to the database'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestRunCreateInputDto'
+        required: true
+      responses:
+        '200':
+          description: Created test run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestRunDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '422':
+          $ref: '#/components/responses/422'
+  /scenario-testruns/{testRunId}:
+    get:
+      tags:
+        - TestRun
+      summary: Get a test run by id
+      operationId: getTestRun
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: testRunId
+          description: ID of the test run that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The test run corresponding to the provided `testRunId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestRunDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    patch:
+      tags:
+        - TestRun
+      summary: Update a test run
+      operationId: updateTestRun
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: testRunId
+          description: ID of the test run that need to be updated
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Updated test run object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestRunUpdateInputDto'
+        required: true
+      responses:
+        '200':
+          description: The updated test run corresponding to the provided `testRunId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestRunDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
 components:
   parameters:
     start_date:
@@ -5214,6 +5336,75 @@ components:
           type: integer
         rate_limit_duration:
           type: integer
+    TestRunStatusDto:
+      type: string
+      enum: ['pending', 'up', 'down', 'unknown']
+    TestRunDto:
+      type: object
+      required:
+        - id
+        - scenario_id
+        - ref_iteration_id
+        - phantom_iteration_id
+        - start_date
+        - end_date
+        - creator_id
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        scenario_id:
+          type: string
+          format: uuid
+        ref_iteration_id:
+          type: string
+          format: uuid
+        phantom_iteration_id:
+          type: string
+          format: uuid
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        creator_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/TestRunStatusDto'
+    TestRunCreateInputDto:
+      type: object
+      required:
+        - scenario_id
+        - ref_iteration_id
+        - phantom_iteration_id
+        - start_date
+        - end_date
+      properties:
+        scenario_id:
+          type: string
+          format: uuid
+        ref_iteration_id:
+          type: string
+          format: uuid
+        phantom_iteration_id:
+          type: string
+          format: uuid
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+    TestRunUpdateInputDto:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/TestRunStatusDto'
   securitySchemes:
     bearerAuth:
       type: http

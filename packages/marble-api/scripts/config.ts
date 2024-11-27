@@ -45,4 +45,3 @@ export const transfercheckApiConfig: Config = {
     mergeReadWriteOnly: true,
   },
 };
-
