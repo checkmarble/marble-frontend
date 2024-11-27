@@ -15,7 +15,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
-    successRedirect: getRoute('/cases/:caseId/information', {
+    successRedirect: getRoute('/cases/:caseId/decisions', {
       caseId: fromUUID(caseId),
     }),
   });
