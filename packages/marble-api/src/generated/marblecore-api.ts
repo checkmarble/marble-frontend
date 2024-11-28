@@ -682,7 +682,7 @@ export type TestRunDto = {
     id: string;
     scenario_id: string;
     ref_iteration_id: string;
-    phantom_iteration_id: string;
+    test_iteration_id: string;
     start_date: string;
     end_date: string;
     creator_id: string;
@@ -690,13 +690,8 @@ export type TestRunDto = {
 };
 export type TestRunCreateInputDto = {
     scenario_id: string;
-    ref_iteration_id: string;
-    phantom_iteration_id: string;
-    start_date: string;
+    test_iteration_id: string;
     end_date: string;
-};
-export type TestRunUpdateInputDto = {
-    status: TestRunStatusDto;
 };
 /**
  * Get an access token
@@ -2845,7 +2840,7 @@ export function listTestRuns(scenarioId: string, opts?: Oazapfts.RequestOpts) {
         status: 403;
         data: string;
     }>(`/scenario-testrun${QS.query(QS.explode({
-        scenarioId
+        scenario_id: scenarioId
     }))}`, {
         ...opts
     }));
@@ -2891,26 +2886,4 @@ export function getTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
     }>(`/scenario-testruns/${encodeURIComponent(testRunId)}`, {
         ...opts
     }));
-}
-/**
- * Update a test run
- */
-export function updateTestRun(testRunId: string, testRunUpdateInputDto: TestRunUpdateInputDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: TestRunDto;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}`, oazapfts.json({
-        ...opts,
-        method: "PATCH",
-        body: testRunUpdateInputDto
-    })));
 }
