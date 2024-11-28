@@ -1,19 +1,39 @@
-import { ErrorComponent, Page, scenarioI18n } from '@app-builder/components';
-import { Spinner } from '@app-builder/components/Spinner';
+import {
+  CursorPaginationButtons,
+  ErrorComponent,
+  Page,
+  paginationSchema,
+  scenarioI18n,
+} from '@app-builder/components';
+import { type TestRun } from '@app-builder/models/testrun';
+import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useRouteError } from '@remix-run/react';
+import { json, redirect, type LoaderFunctionArgs } from '@remix-run/node';
+import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { type Dispatch, type SetStateAction, useState } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, Separator, Tag } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { useCurrentScenario } from './_layout';
+import { parseQuerySafe } from '@app-builder/utils/input-validation';
+import { TestRunPreview } from '@app-builder/components/Scenario/TestRun/TestRunPreview';
+import { PaginationParams } from '@app-builder/models/pagination';
+import qs from 'qs';
+import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
+import {
+  TestRunsFilters,
+  TestRunsFiltersBar,
+  TestRunsFiltersMenu,
+  TestRunsFiltersProvider,
+  testRunsFiltersSchema,
+} from '@app-builder/components/Scenario/TestRun/Filters';
+import { testRunsFilterNames } from '@app-builder/components/Scenario/TestRun/Filters/filters';
+import { FiltersButton } from '@app-builder/components/Filters';
 
 export const handle = {
   i18n: [...scenarioI18n] satisfies Namespace,
@@ -22,164 +42,84 @@ export const handle = {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const scenarioId = fromParams(params, 'scenarioId');
-  const { decision } = await authService.isAuthenticated(request, {
+  const { testRunRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const scheduledExecutions = await decision.listScheduledExecutions({
-    scenarioId,
-  });
+  const parsedQuery = await parseQuerySafe(request, testRunsFiltersSchema);
+  const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
+  if (!parsedQuery.success || !parsedPaginationQuery.success) {
+    return redirect(
+      getRoute('/scenarios/:scenarioId/test-run', { scenarioId }),
+    );
+  }
 
-  return json({
-    scheduledExecutions,
-  });
+  const filters = parsedQuery.data;
+  const filtersForBackend: TestRunsFilters = {
+    ...parsedQuery.data,
+    ...parsedPaginationQuery.data,
+  };
+  try {
+    return json({
+      testRuns: await testRunRepository.listTestRuns(filtersForBackend),
+      filters,
+    });
+  } catch (error) {
+    // if scenario is deleted or user no longer have access, the user is redirected
+    if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
+      return redirect(getRoute('/scenarios/'));
+    } else {
+      throw error;
+    }
+  }
 }
-
-const Header = ({
-  showFilters,
-}: {
-  showFilters: Dispatch<SetStateAction<boolean>>;
-}) => {
-  return (
-    <div className="flex flex-row items-center justify-between">
-      <span className="text-m font-semibold">History</span>
-      <div className="flex flex-row gap-4">
-        <Button
-          variant="outline"
-          onPointerDown={() => showFilters((prev) => !prev)}
-        >
-          <Icon icon="filters" className="size-6" />
-          <span>Filters</span>
-        </Button>
-        <Button variant="primary">
-          <Icon icon="plus" className="size-6" />
-          <span>Nouveau testrun</span>
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-const Filter = () => {
-  return (
-    <div className="bg-purple-05 flex flex-row items-center gap-2 rounded-[4px] p-2 text-purple-100">
-      <div className="flex flex-row items-center gap-1">
-        <Icon icon="calendar-month" className="size-5" />
-        <span className="text-s font-semibold">Date:</span>
-        <span className="text-s">07.11.24</span>
-      </div>
-      <Icon
-        icon="cross"
-        className="hover:text-purple-120 size-6 cursor-pointer font-semibold"
-      />
-    </div>
-  );
-};
-
-const Filters = () => {
-  return (
-    <div className="flex flex-row items-center justify-between">
-      <div className="flex flex-row items-center gap-2">
-        <Filter />
-        <Button variant="tertiary">
-          <Icon icon="plus" className="size-6" />
-          <span>New Filter</span>
-        </Button>
-      </div>
-      <Button variant="tertiary">
-        <Icon icon="cross" className="size-6" />
-        <span>Clear filters</span>
-      </Button>
-    </div>
-  );
-};
-
-const TestRunPreview = ({
-  status,
-  selected,
-}: {
-  status: 'ongoing' | 'archived';
-  selected: boolean;
-}) => {
-  return (
-    <div
-      className={clsx(
-        'grid-cols-test-run bg-grey-00 border-grey-10 grid items-center rounded-lg border py-4',
-        {
-          'bg-purple-05': selected,
-          'border-purple-100': selected,
-        },
-      )}
-    >
-      <div className="px-4">
-        <div className="flex flex-row items-center gap-1">
-          <Tag
-            size="big"
-            color="grey-light"
-            className="border-grey-10 gap-1 border px-4 py-2"
-          >
-            <span className="text-grey-100 font-semibold">V3</span>
-            <span className="font-semibold text-purple-100">Live</span>
-          </Tag>
-          <Icon icon="arrow-range" className="text-grey-100 size-5" />
-          <Tag
-            size="big"
-            color="grey-light"
-            className="border-grey-10 border px-4 py-2"
-          >
-            V4
-          </Tag>
-        </div>
-      </div>
-      <div className="px-4">
-        <span className="text-s inline-flex flex-row items-center gap-1">
-          From
-          <span className="font-semibold">04.10.24</span>
-          To
-          <span className="font-semibold">04.11.24</span>
-        </span>
-      </div>
-      <div className="flex flex-row items-center justify-center">
-        <Avatar firstName="Jean" lastName="Christophe" />
-      </div>
-      <div className="flex flex-row items-center justify-center">
-        <Button variant="secondary" className="size-8 px-0">
-          <Icon icon="news" className="text-grey-100 size-5" />
-        </Button>
-      </div>
-      <div className="px-4">
-        {status === 'ongoing' ? (
-          <Tag
-            border="square"
-            size="big"
-            className="inline-flex flex-row items-center gap-1 bg-purple-100"
-          >
-            <Spinner className="size-3" />
-            <span className="text-grey-00 text-s font-semibold">Ongoing</span>
-          </Tag>
-        ) : (
-          <Tag
-            border="square"
-            size="big"
-            color="grey"
-            className="inline-flex flex-row items-center gap-1"
-            aria-disabled
-          >
-            <span className="text-grey-50 text-s font-semibold">Archived</span>
-          </Tag>
-        )}
-      </div>
-    </div>
-  );
-};
 
 export default function TestRun() {
   const { t } = useTranslation(handle.i18n);
-  const _data = useLoaderData<typeof loader>();
-
+  const {
+    testRuns: { items: runs, ...pagination },
+    filters,
+  } = useLoaderData<typeof loader>();
   const currentScenario = useCurrentScenario();
 
-  const [isFiltersShowned, showFilters] = useState(true);
+  const navigate = useNavigate();
+  const navigateTestRunsList = useCallback(
+    (testRunsFilters: TestRunsFilters, pagination?: PaginationParams) => {
+      navigate(
+        {
+          pathname: getRoute('/scenarios/:scenarioId/test-run', {
+            scenarioId: fromUUID(currentScenario.id),
+          }),
+          search: qs.stringify(
+            {
+              statuses: testRunsFilters.statuses ?? [],
+              dateRange: testRunsFilters.dateRange
+                ? testRunsFilters.dateRange.type === 'static'
+                  ? {
+                      type: 'static',
+                      endDate: testRunsFilters.dateRange.endDate || null,
+                      startDate: testRunsFilters.dateRange.startDate || null,
+                    }
+                  : {
+                      type: 'dynamic',
+                      fromNow: testRunsFilters.dateRange.fromNow,
+                    }
+                : {},
+              offsetId: pagination?.offsetId || null,
+              next: pagination?.next || null,
+              previous: pagination?.previous || null,
+            },
+            {
+              addQueryPrefix: true,
+              skipNulls: true,
+            },
+          ),
+        },
+        { replace: true },
+      );
+    },
+    [navigate, currentScenario.id],
+  );
 
   return (
     <Page.Main>
@@ -200,25 +140,50 @@ export default function TestRun() {
           {t('scenarios:testrun.description')}
         </Page.Description>
         <Page.Content className="max-w-screen-lg">
-          <div className="flex max-w-[725px] flex-col gap-[14px]">
-            <div className="flex flex-col gap-4">
-              <Header showFilters={showFilters} />
-              <Separator className="bg-grey-10" />
-              {isFiltersShowned ? <Filters /> : null}
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="grid-cols-test-run text-s grid font-semibold">
-                <span className="px-4">Version</span>
-                <span className="px-4">Period</span>
-                <span className="text-center">Creator</span>
-                <span className="text-center">Log</span>
-                <span className="px-4">Status</span>
+          <div className="flex flex-col gap-4">
+            <TestRunsFiltersProvider
+              submitTestRunsFilters={navigateTestRunsList}
+              filterValues={filters}
+            >
+              <div className="flex justify-end gap-4">
+                <TestRunsFiltersMenu filterNames={testRunsFilterNames}>
+                  <FiltersButton />
+                </TestRunsFiltersMenu>
+                <CreateTestRun>
+                  <Button variant="primary" className="isolate h-10 w-fit">
+                    <Icon icon="plus" className="size-6" aria-hidden />
+                    {t('scenarios:create_testrun.title')}
+                  </Button>
+                </CreateTestRun>
               </div>
-              <TestRunPreview selected={true} status="ongoing" />
-              <TestRunPreview selected={false} status="archived" />
-              <TestRunPreview selected={false} status="archived" />
-              <TestRunPreview selected={false} status="archived" />
-            </div>
+              <TestRunsFiltersBar />
+              <div className="flex flex-col gap-2">
+                <div className="grid-cols-test-run text-s grid font-semibold">
+                  <span className="px-4">
+                    {t('scenarios:testrun.filters.version')}
+                  </span>
+                  <span className="px-4">
+                    {t('scenarios:testrun.filters.period')}
+                  </span>
+                  <span className="text-center">
+                    {t('scenarios:testrun.filters.creator')}
+                  </span>
+                  <span className="px-4">
+                    {t('scenarios:testrun.filters.status')}
+                  </span>
+                </div>
+                {runs.map((run) => (
+                  <TestRunPreview {...run} key={run.id} />
+                ))}
+              </div>
+              <CursorPaginationButtons
+                items={runs}
+                onPaginationChange={(paginationParams: PaginationParams) =>
+                  navigateTestRunsList(filters, paginationParams)
+                }
+                {...pagination}
+              />
+            </TestRunsFiltersProvider>
           </div>
         </Page.Content>
       </Page.Container>

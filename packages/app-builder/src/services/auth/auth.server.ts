@@ -25,6 +25,7 @@ import { type PartnerRepository } from '@app-builder/repositories/PartnerReposit
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
+import { type TestRunRepository } from '@app-builder/repositories/TestRunRepository';
 import { type TransferAlertRepository } from '@app-builder/repositories/TransferAlertRepository';
 import { type TransferRepository } from '@app-builder/repositories/TransferRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
@@ -55,6 +56,7 @@ interface AuthenticatedInfo {
   transferRepository: TransferRepository;
   partnerRepository: PartnerRepository;
   transferAlertRepository: TransferAlertRepository;
+  testRunRepository: TestRunRepository;
   webhookRepository: WebhookRepository;
   ruleSnoozeRepository: RuleSnoozeRepository;
   organization: OrganizationRepository;
@@ -139,6 +141,7 @@ interface MakeAuthenticationServerServiceArgs {
   getTransferRepository: (
     transfercheckApi: TransfercheckApi,
   ) => TransferRepository;
+  getTestRunRepository: () => TestRunRepository;
   getPartnerRepository: (
     transfercheckApi: TransfercheckApi,
   ) => PartnerRepository;
@@ -176,6 +179,7 @@ export function makeAuthenticationServerService({
   getApiKeyRepository,
   getAnalyticsRepository,
   getTransferRepository,
+  getTestRunRepository,
   getPartnerRepository,
   getTransferAlertRepository,
   getWebhookRepository,
@@ -358,6 +362,7 @@ export function makeAuthenticationServerService({
       apiKey: getApiKeyRepository(marbleCoreApiClient),
       analytics: getAnalyticsRepository(marbleCoreApiClient),
       transferRepository: getTransferRepository(transfercheckAPIClient),
+      testRunRepository: getTestRunRepository(),
       partnerRepository: getPartnerRepository(transfercheckAPIClient),
       transferAlertRepository: getTransferAlertRepository(
         transfercheckAPIClient,
