@@ -460,6 +460,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/testrun+/create",
+        "path": "ressources/scenarios/:scenarioId/testrun/create",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/testrun+/create.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources+/scenarios+/create.tsx"

@@ -161,25 +161,25 @@ export default function ScenarioHome() {
                     <p>{t('scenarios:update_scenario.title')}</p>
                   </Button>
                 </UpdateScenario>
-                <Link
-                  aria-disabled={!hydrated || !shouldHaveAccessToTestRun}
-                  className={clsx(
-                    CtaClassName({ variant: 'primary', color: 'purple' }),
-                    'isolate h-10 w-fit',
-                    {
-                      'pointer-events-none cursor-default':
-                        !hydrated || !shouldHaveAccessToTestRun,
-                    },
-                  )}
-                  to={getRoute('/scenarios/:scenarioId/test-run', {
-                    scenarioId: fromUUID(currentScenario.id),
-                  })}
-                >
-                  <Icon icon="backtest" className="size-6" />
-                  <p>{t('scenarios:home.testrun')}</p>
-                </Link>
               </div>
             ) : null}
+            <Link
+              aria-disabled={!hydrated || !shouldHaveAccessToTestRun}
+              className={clsx(
+                CtaClassName({ variant: 'primary', color: 'purple' }),
+                'isolate h-10 w-fit',
+                {
+                  'pointer-events-none cursor-default':
+                    !hydrated || !shouldHaveAccessToTestRun,
+                },
+              )}
+              to={getRoute('/scenarios/:scenarioId/test-run', {
+                scenarioId: fromUUID(currentScenario.id),
+              })}
+            >
+              <Icon icon="backtest" className="size-6" />
+              <p>{t('scenarios:home.testrun')}</p>
+            </Link>
           </div>
         </div>
       </Page.Header>
