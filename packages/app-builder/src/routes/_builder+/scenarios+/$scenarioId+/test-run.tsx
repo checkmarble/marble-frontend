@@ -5,7 +5,6 @@ import {
   paginationSchema,
   scenarioI18n,
 } from '@app-builder/components';
-import { type TestRun } from '@app-builder/models/testrun';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -74,7 +73,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
-export default function TestRun() {
+export default function TestRuns() {
   const { t } = useTranslation(handle.i18n);
   const {
     testRuns: { items: runs, ...pagination },
@@ -145,16 +144,21 @@ export default function TestRun() {
               submitTestRunsFilters={navigateTestRunsList}
               filterValues={filters}
             >
-              <div className="flex justify-end gap-4">
-                <TestRunsFiltersMenu filterNames={testRunsFilterNames}>
-                  <FiltersButton />
-                </TestRunsFiltersMenu>
-                <CreateTestRun>
-                  <Button variant="primary" className="isolate h-10 w-fit">
-                    <Icon icon="plus" className="size-6" aria-hidden />
-                    {t('scenarios:create_testrun.title')}
-                  </Button>
-                </CreateTestRun>
+              <div className="flex flex-row items-center justify-between">
+                <span className="text-grey-100 font-semibold">
+                  {t('scenarios:testrun.history')}
+                </span>
+                <div className="flex flex-row gap-4">
+                  <TestRunsFiltersMenu filterNames={testRunsFilterNames}>
+                    <FiltersButton />
+                  </TestRunsFiltersMenu>
+                  <CreateTestRun>
+                    <Button variant="primary" className="isolate h-10 w-fit">
+                      <Icon icon="plus" className="size-6" aria-hidden />
+                      {t('scenarios:create_testrun.title')}
+                    </Button>
+                  </CreateTestRun>
+                </div>
               </div>
               <TestRunsFiltersBar />
               <div className="flex flex-col gap-2">

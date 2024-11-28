@@ -1,16 +1,39 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import { TestRun } from '@app-builder/models/testrun';
+import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUID } from '@app-builder/utils/short-uuid';
+import { useNavigate } from '@remix-run/react';
 import clsx from 'clsx';
 import { Tag, Avatar } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export const TestRunPreview = ({ status }: TestRun) => {
+export const TestRunPreview = ({
+  id,
+  status,
+  refIterationId,
+  testIterationId: phantomIterationId,
+  creatorId,
+  startDate,
+  endDate,
+}: TestRun) => {
+  const navigate = useNavigate();
+  const currentScenario = useCurrentScenario();
+
   return (
     <div
+      onClick={() => {
+        navigate(
+          getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
+            scenarioId: fromUUID(currentScenario.id),
+            testRunId: id,
+          }),
+        );
+      }}
       className={clsx(
-        'grid-cols-test-run bg-grey-00 border-grey-10 grid items-center rounded-lg border py-4',
+        'grid-cols-test-run bg-grey-00 hover:bg-grey-05 border-grey-10 grid cursor-pointer items-center rounded-lg border py-4 transition-colors',
         {
-          'bg-purple-05': status !== 'up',
+          'bg-purple-05 hover:bg-purple-10': status !== 'up',
           'border-purple-100': status === 'up',
         },
       )}
