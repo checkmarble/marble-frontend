@@ -3280,7 +3280,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: scenarioId
+        - name: scenario_id
           description: ID of the scenario that need to be fetched
           in: query
           required: true
@@ -3327,7 +3327,7 @@ paths:
           $ref: '#/components/responses/403'
         '422':
           $ref: '#/components/responses/422'
-  /scenario-testruns/{testRunId}:
+  /scenario-testruns/{test_run_id}:
     get:
       tags:
         - TestRun
@@ -3336,7 +3336,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: testRunId
+        - name: test_run_id
           description: ID of the test run that need to be fetched
           in: path
           required: true
@@ -3345,42 +3345,7 @@ paths:
             format: uuid
       responses:
         '200':
-          description: The test run corresponding to the provided `testRunId`
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TestRunDto'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-    patch:
-      tags:
-        - TestRun
-      summary: Update a test run
-      operationId: updateTestRun
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: testRunId
-          description: ID of the test run that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        description: 'Updated test run object'
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TestRunUpdateInputDto'
-        required: true
-      responses:
-        '200':
-          description: The updated test run corresponding to the provided `testRunId`
+          description: The test run corresponding to the provided `test_run_id`
           content:
             application/json:
               schema:
@@ -5345,7 +5310,7 @@ components:
         - id
         - scenario_id
         - ref_iteration_id
-        - phantom_iteration_id
+        - test_iteration_id
         - start_date
         - end_date
         - creator_id
@@ -5360,7 +5325,7 @@ components:
         ref_iteration_id:
           type: string
           format: uuid
-        phantom_iteration_id:
+        test_iteration_id:
           type: string
           format: uuid
         start_date:
@@ -5378,33 +5343,18 @@ components:
       type: object
       required:
         - scenario_id
-        - ref_iteration_id
-        - phantom_iteration_id
-        - start_date
+        - test_iteration_id
         - end_date
       properties:
         scenario_id:
           type: string
           format: uuid
-        ref_iteration_id:
+        test_iteration_id:
           type: string
           format: uuid
-        phantom_iteration_id:
-          type: string
-          format: uuid
-        start_date:
-          type: string
-          format: date-time
         end_date:
           type: string
           format: date-time
-    TestRunUpdateInputDto:
-      type: object
-      required:
-        - status
-      properties:
-        status:
-          $ref: '#/components/schemas/TestRunStatusDto'
   securitySchemes:
     bearerAuth:
       type: http
