@@ -16,9 +16,10 @@ import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
+import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, ModalV2 } from 'ui-design-system';
@@ -30,7 +31,7 @@ export const handle = {
 
 const createTestRunFormSchema = z.object({
   refIterationId: z.string(),
-  phantomIterationId: z.string(),
+  testIterationId: z.string(),
   endDate: z.string(),
 });
 
@@ -56,8 +57,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
       scenarioId: fromUUID(scenarioId),
     });
     return redirect(
-      getRoute('/scenarios/:scenarioId/test-run', {
-        scenarioId: fromUUID(createdTestRun.id),
+      getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
+        scenarioId: fromUUID(createdTestRun.scenarioId),
+        testRunId: fromUUID(createdTestRun.id),
       }),
     );
   } catch (error) {
@@ -66,9 +68,18 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export function CreateTestRun({ children }: { children: React.ReactElement }) {
+  const [open, setOpen] = useState(false);
   const hydrated = useHydrated();
+  const navigation = useNavigation();
+
+  React.useEffect(() => {
+    if (navigation.state === 'loading') {
+      setOpen(false);
+    }
+  }, [navigation.state]);
+
   return (
-    <ModalV2.Root>
+    <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} disabled={!hydrated} />
       <ModalV2.Content className="overflow-visible">
         <CreateTestRunToContent />
@@ -168,7 +179,7 @@ function CreateTestRunToContent() {
                 <FormErrorOrDescription />
               </FormField>
               <FormField
-                name={fields.phantomIterationId.name}
+                name={fields.testIterationId.name}
                 className="group flex w-full flex-col gap-2"
               >
                 <FormLabel>{t('scenarios:create_testrun.phantom')}</FormLabel>
@@ -211,13 +222,9 @@ function CreateTestRunToContent() {
             >
               {t('common:cancel')}
             </ModalV2.Close>
-            <ModalV2.Close
-              render={
-                <Button className="flex-1" variant="primary" type="submit" />
-              }
-            >
+            <Button className="flex-1" variant="primary" type="submit">
               {t('common:save')}
-            </ModalV2.Close>
+            </Button>
           </div>
         </div>
       </createTestRunFetcher.Form>

@@ -5,7 +5,7 @@ import {
 } from '@app-builder/models/pagination';
 import {
   type TestRun,
-  type TestRunCreateBody,
+  type TestRunCreateInput,
 } from '@app-builder/models/testrun';
 import { nanoid } from 'nanoid';
 
@@ -13,7 +13,7 @@ export type TestRunFiltersWithPagination =
   FiltersWithPagination<TestRunsFilters>;
 
 export interface TestRunRepository {
-  launchTestRun(args: TestRunCreateBody): Promise<TestRun>;
+  launchTestRun(args: TestRunCreateInput): Promise<TestRun>;
   listTestRuns(
     args: TestRunFiltersWithPagination,
   ): Promise<PaginatedResponse<TestRun>>;
@@ -33,12 +33,12 @@ export function makeGetTestRunRepository(runs: TestRun[]) {
         startIndex: 0,
         endIndex: testruns.length - 1,
       }),
-    launchTestRun: (args: TestRunCreateBody) => {
+    launchTestRun: (args: TestRunCreateInput) => {
       const testRun: TestRun = {
         id: nanoid(),
         scenarioId: args.scenarioId,
         refIterationId: args.refIterationId,
-        phantomIterationId: args.phantomIterationId,
+        testIterationId: args.testIterationId,
         startDate: String(new Date().getTime()),
         endDate: args.endDate,
         creatorId: '1',

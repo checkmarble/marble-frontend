@@ -49,6 +49,7 @@
   "trigger.trigger_object.callout": "Determines whether the scenario is relevant for each trigger object (<DocLink>learn more</DocLink>)",
   "trigger.trigger_manual_execution.button": "Launch now",
   "testrun.description": "Ask for a decision using our API and get synchronous answers in real time",
+  "testrun.history": "History",
   "testrun.filters.version": "Version",
   "testrun.filters.period": "Period",
   "testrun.filters.creator": "Creator",
