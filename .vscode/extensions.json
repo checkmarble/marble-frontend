@@ -3,6 +3,8 @@
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "bradlc.vscode-tailwindcss",
-    "lokalise.i18n-ally"
+    "lokalise.i18n-ally",
+    "developer2006.svg-gallery",
+    "42crunch.vscode-openapi",
   ]
 }
