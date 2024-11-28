@@ -29,7 +29,7 @@ const OperandEditModalContent = React.forwardRef<
       ref={ref}
       hideOnInteractOutside={(event) => {
         event.stopPropagation();
-        // Prevent people from loosing their work by clicking accidentally outside the modal
+        // Prevent people from losing their work by clicking accidentally outside the modal
         return false;
       }}
       open={editModalOpen}

@@ -5015,10 +5015,6 @@ components:
       properties:
         name:
           type: string
-        named_arguments:
-          type: array
-          items:
-            type: string
     UploadLog:
       type: object
       required:
