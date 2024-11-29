@@ -10,8 +10,10 @@ import {
   isPayload,
   isTimeAdd,
   isTimeNow,
+  isTimestampExtract,
   isUndefinedAstNode,
   type TimeAddAstNode,
+  type TimestampExtractAstNode,
 } from '@app-builder/models';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
@@ -65,6 +67,10 @@ export function getAstNodeDisplayName(
 
   if (isTimeNow(astNode)) {
     return context.t('scenarios:edit_date.now');
+  }
+
+  if (isTimestampExtract(astNode)) {
+    return getTimestampExtractDisplayName(astNode, context);
   }
 
   if (isFuzzyMatchComparator(astNode)) {
@@ -197,4 +203,20 @@ function getFuzzyMatchComparatorDisplayName(
   const formatLeft = getAstNodeDisplayName(left, context) || '?';
   const formatRight = getAstNodeDisplayName(right, context) || '?';
   return `${formatLeft} ≈ ${formatRight}`;
+}
+
+function getTimestampExtractDisplayName(
+  astNode: TimestampExtractAstNode,
+  context: AstNodeStringifierContext,
+) {
+  const part = astNode.namedChildren['part']?.constant ?? '';
+  const timestamp = astNode.namedChildren['timestamp'];
+
+  const timestampStr = getAstNodeDisplayName(timestamp, context);
+
+  if (timestampStr === '') {
+    return context.t('scenarios:edit_timestamp_extract.title');
+  }
+
+  return `[${getOperatorName(context.t, part)}] ${context.t('scenarios:edit_timestamp_extract.from')} ${timestampStr}`;
 }

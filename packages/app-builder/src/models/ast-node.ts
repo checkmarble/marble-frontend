@@ -214,17 +214,6 @@ export function NewCustomListAstNode(
   };
 }
 
-export const timeAddAstNodeName = 'TimeAdd';
-export interface TimeAddAstNode {
-  name: typeof timeAddAstNodeName;
-  constant?: undefined;
-  children: [];
-  namedChildren: {
-    timestampField: TimestampFieldAstNode;
-    sign: ConstantAstNode<string>;
-    duration: ConstantAstNode<string>;
-  };
-}
 export type TimestampFieldAstNode =
   | DataAccessorAstNode
   | TimeNowAstNode
@@ -240,6 +229,55 @@ export function isTimestampFieldAstNode(
     isTimeAdd(node) ||
     isUndefinedAstNode(node)
   );
+}
+
+export const timestampExtractAstNodeName = 'TimestampExtract';
+export const validTimestampExtractParts = [
+  'year',
+  'month',
+  'day_of_month',
+  'day_of_week',
+  'hour',
+] as const;
+export type ValidTimestampExtractParts =
+  (typeof validTimestampExtractParts)[number];
+
+export interface TimestampExtractAstNode {
+  name: typeof timestampExtractAstNodeName;
+  constant?: undefined;
+  children: [];
+  namedChildren: {
+    timestamp: TimestampFieldAstNode;
+    part: ConstantAstNode<ValidTimestampExtractParts>;
+  };
+}
+export function NewTimestampExtractAstNode(
+  timestampFieldAstNode: TimestampFieldAstNode = NewUndefinedAstNode(),
+  part: ConstantAstNode<ValidTimestampExtractParts> = NewConstantAstNode({
+    constant: 'hour',
+  }),
+): TimestampExtractAstNode {
+  return {
+    name: timestampExtractAstNodeName,
+    constant: undefined,
+    children: [],
+    namedChildren: {
+      timestamp: timestampFieldAstNode,
+      part,
+    },
+  };
+}
+
+export const timeAddAstNodeName = 'TimeAdd';
+export interface TimeAddAstNode {
+  name: typeof timeAddAstNodeName;
+  constant?: undefined;
+  children: [];
+  namedChildren: {
+    timestampField: TimestampFieldAstNode;
+    sign: ConstantAstNode<string>;
+    duration: ConstantAstNode<string>;
+  };
 }
 
 export function NewTimeAddAstNode(
@@ -404,6 +442,12 @@ export function isTimeAdd(node: AstNode): node is TimeAddAstNode {
   return node.name === timeAddAstNodeName;
 }
 
+export function isTimestampExtract(
+  node: AstNode,
+): node is TimestampExtractAstNode {
+  return node.name === timestampExtractAstNodeName;
+}
+
 export function isTimeNow(node: AstNode): node is TimeNowAstNode {
   return node.name === timeNowAstNodeName;
 }
@@ -445,7 +489,12 @@ export type EditableAstNode =
  * @returns
  */
 export function isEditableAstNode(node: AstNode): node is EditableAstNode {
-  return isAggregation(node) || isTimeAdd(node) || isFuzzyMatchComparator(node);
+  return (
+    isAggregation(node) ||
+    isTimeAdd(node) ||
+    isFuzzyMatchComparator(node) ||
+    isTimestampExtract(node)
+  );
 }
 
 type LeafOperandAstNode = EditableAstNode | TimeNowAstNode;
