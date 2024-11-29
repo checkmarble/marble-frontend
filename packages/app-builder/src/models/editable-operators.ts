@@ -158,7 +158,7 @@ function isTimestampPart(value: string): value is ValidTimestampExtractParts {
 }
 
 export function getOperatorName(
-  t: TFunction<['common', 'scenarios'], undefined>,
+  t: TFunction<['scenarios'], undefined>,
   operatorName: string,
 ) {
   if (isOperatorFunction(operatorName)) {

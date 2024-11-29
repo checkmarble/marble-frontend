@@ -27,10 +27,12 @@ import { Temporal } from 'temporal-polyfill';
 import { formatConstant } from './formatConstant';
 import { getCustomListAccessCustomList } from './getCustomListAccessCustomList';
 
-type TFunctionDisplayName = TFunction<['common', 'scenarios'], undefined>;
+type TFunctionDisplayNameCommon = TFunction<['common'], undefined>;
+type TFunctionDisplayNameScenarios = TFunction<['scenarios'], undefined>;
 
 interface AstNodeStringifierContext {
-  t: TFunctionDisplayName;
+  tCommon: TFunctionDisplayNameCommon;
+  tScenarios: TFunctionDisplayNameScenarios;
   language: string;
   customLists: CustomList[];
 }
@@ -45,7 +47,9 @@ export function getAstNodeDisplayName(
 
   if (isCustomListAccess(astNode)) {
     const customList = getCustomListAccessCustomList(astNode, context);
-    return customList?.name ?? context.t('scenarios:custom_list.unknown');
+    return (
+      customList?.name ?? context.tScenarios('scenarios:custom_list.unknown')
+    );
   }
 
   if (isDatabaseAccess(astNode)) {
@@ -66,7 +70,7 @@ export function getAstNodeDisplayName(
   }
 
   if (isTimeNow(astNode)) {
-    return context.t('scenarios:edit_date.now');
+    return context.tScenarios('scenarios:edit_date.now');
   }
 
   if (isTimestampExtract(astNode)) {
@@ -119,7 +123,7 @@ function getTimeAddDisplayName(
   const timestamp = getAstNodeDisplayName(timestampField, context);
 
   if (sign === '' || isoDuration === '' || timestamp === '') {
-    return context.t('scenarios:edit_date.date');
+    return context.tScenarios('scenarios:edit_date.date');
   }
 
   const temporalDuration = Temporal.Duration.from(isoDuration);
@@ -172,7 +176,10 @@ const pluralizeTemporalDurationUnit = (unit: number, type: string): string => {
 
 function getAggregatorDisplayName(
   astNode: AggregationAstNode,
-  context: { t: TFunctionDisplayName },
+  context: {
+    tCommon: TFunctionDisplayNameCommon;
+    tScenarios: TFunctionDisplayNameScenarios;
+  },
 ) {
   const { aggregator, label } = astNode.namedChildren;
   if (label?.constant !== undefined && label?.constant !== '') {
@@ -180,7 +187,7 @@ function getAggregatorDisplayName(
   }
   const aggregatorName = aggregator.constant;
   if (isAggregatorOperator(aggregatorName)) {
-    return getOperatorName(context.t, aggregatorName);
+    return getOperatorName(context.tScenarios, aggregatorName);
   }
   // eslint-disable-next-line no-restricted-properties
   if (process.env.NODE_ENV === 'development') {
@@ -197,7 +204,7 @@ function getFuzzyMatchComparatorDisplayName(
   const left = fuzzyMatch.children[0];
   const right = fuzzyMatch.children[1];
   if (isUndefinedAstNode(left) && isUndefinedAstNode(right)) {
-    return context.t('scenarios:edit_fuzzy_match.string_similarity');
+    return context.tScenarios('scenarios:edit_fuzzy_match.string_similarity');
   }
   // '?' is used as a fallback when the node is undefined
   const formatLeft = getAstNodeDisplayName(left, context) || '?';
@@ -215,8 +222,8 @@ function getTimestampExtractDisplayName(
   const timestampStr = getAstNodeDisplayName(timestamp, context);
 
   if (timestampStr === '') {
-    return context.t('scenarios:edit_timestamp_extract.title');
+    return context.tScenarios('scenarios:edit_timestamp_extract.title');
   }
 
-  return `${getOperatorName(context.t, part)} ${context.t('scenarios:edit_timestamp_extract.from')} ${timestampStr}`;
+  return `[${getOperatorName(context.tScenarios, part)}] ${context.tScenarios('scenarios:edit_timestamp_extract.from')} ${timestampStr}`;
 }
