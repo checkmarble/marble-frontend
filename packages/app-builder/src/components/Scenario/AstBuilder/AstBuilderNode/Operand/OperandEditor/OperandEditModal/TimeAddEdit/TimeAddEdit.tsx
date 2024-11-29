@@ -48,7 +48,7 @@ export interface TimeAddViewModel {
 }
 
 export const defaultISO8601Duration = 'PT0S';
-export function adaptTimeAddViewModal(
+export function adaptTimeAddViewModel(
   timeAddAstNode: TimeAddAstNode,
   astNodeErrors: AstNodeErrors,
 ): TimeAddViewModel {
@@ -125,7 +125,7 @@ export function TimeAddEdit({
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   const [value, setValue] = React.useState<TimeAddViewModel>(() =>
-    adaptTimeAddViewModal(timeAddAstNode, astNodeErrors),
+    adaptTimeAddViewModel(timeAddAstNode, astNodeErrors),
   );
 
   const handleSave = () => {

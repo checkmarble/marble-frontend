@@ -9,6 +9,7 @@ import {
   NewFuzzyMatchComparatorAstNode,
   NewTimeAddAstNode,
   NewTimeNowAstNode,
+  NewTimestampExtractAstNode,
   type PayloadAstNode,
 } from '@app-builder/models/ast-node';
 import { type CustomList } from '@app-builder/models/custom-list';
@@ -238,6 +239,7 @@ export function useOperandOptions(enumValues?: EnumValue[]) {
       ),
       NewFuzzyMatchComparatorAstNode({ funcName: 'FuzzyMatch' }),
       NewTimeAddAstNode(),
+      NewTimestampExtractAstNode(),
       NewTimeNowAstNode(),
       ...(enumValues ?? []).map((enumValue) =>
         NewConstantAstNode({ constant: enumValue }),
