@@ -1,10 +1,10 @@
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { getInputProps, useField, useInputControl } from '@conform-to/react';
-import { format } from 'date-fns';
 import { Popover, PopoverDisclosure, PopoverProvider } from '@ariakit/react';
-import { Calendar, CtaClassName, type Input } from 'ui-design-system';
+import { getInputProps, useField, useInputControl } from '@conform-to/react';
+import clsx from 'clsx';
+import { type ElementRef, forwardRef, useState } from 'react';
+import { Button, Calendar, type Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { forwardRef, useState, type ElementRef } from 'react';
 
 interface FormDateSelectorProps
   extends React.ComponentPropsWithoutRef<typeof Input> {
@@ -25,7 +25,7 @@ export const FormDateSelector = forwardRef<
   const handleSelect = (date?: Date) => {
     if (date) {
       selectDate(date);
-      input.change(format(date, 'yyyy-MM-dd'));
+      input.change(String(date.getTime()));
       setOpen(false);
     }
   };
@@ -35,14 +35,25 @@ export const FormDateSelector = forwardRef<
       <input
         {...getInputProps(field, { type: 'hidden' })}
         ref={ref}
-        value={selectedDate ? format(selectedDate, 'PP') : ''}
+        value={selectedDate?.getTime()}
         readOnly
         {...props}
       />
       <PopoverProvider open={open} setOpen={setOpen}>
-        <PopoverDisclosure className={CtaClassName({ variant: 'secondary' })}>
-          <Icon icon="calendar-month" className="size-6" />
-          <span>
+        <PopoverDisclosure render={<Button variant="secondary" />}>
+          <Icon
+            icon="calendar-month"
+            className={clsx('size-6', {
+              'text-grey-100': selectedDate,
+              'text-grey-50': !selectedDate,
+            })}
+          />
+          <span
+            className={clsx('font-normal', {
+              'text-grey-100': selectedDate,
+              'text-grey-50': !selectedDate,
+            })}
+          >
             {selectedDate
               ? formatDateTime(selectedDate, {
                   language,

@@ -5,34 +5,40 @@ import {
   paginationSchema,
   scenarioI18n,
 } from '@app-builder/components';
-import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
-import { serverServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { json, redirect, type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
-import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
-import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-
-import { useCurrentScenario } from './_layout';
-import { parseQuerySafe } from '@app-builder/utils/input-validation';
-import { TestRunPreview } from '@app-builder/components/Scenario/TestRun/TestRunPreview';
-import { PaginationParams } from '@app-builder/models/pagination';
-import qs from 'qs';
-import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
+import { FiltersButton } from '@app-builder/components/Filters';
 import {
-  TestRunsFilters,
+  type TestRunsFilters,
   TestRunsFiltersBar,
   TestRunsFiltersMenu,
   TestRunsFiltersProvider,
   testRunsFiltersSchema,
 } from '@app-builder/components/Scenario/TestRun/Filters';
 import { testRunsFilterNames } from '@app-builder/components/Scenario/TestRun/Filters/filters';
-import { FiltersButton } from '@app-builder/components/Filters';
+import { TestRunPreview } from '@app-builder/components/Scenario/TestRun/TestRunPreview';
+import {
+  isForbiddenHttpError,
+  isNotFoundHttpError,
+  type User,
+} from '@app-builder/models';
+import { type PaginationParams } from '@app-builder/models/pagination';
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
+import { serverServices } from '@app-builder/services/init.server';
+import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
+import { parseQuerySafe } from '@app-builder/utils/input-validation';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
+import { captureRemixErrorBoundaryError } from '@sentry/remix';
+import { type Namespace } from 'i18next';
+import qs from 'qs';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+
+import { useCurrentScenario, useScenarioIterations } from './_layout';
 
 export const handle = {
   i18n: [...scenarioI18n] satisfies Namespace,
@@ -80,6 +86,43 @@ export default function TestRuns() {
     filters,
   } = useLoaderData<typeof loader>();
   const currentScenario = useCurrentScenario();
+  const { orgUsers } = useOrganizationUsers();
+  const scenarioIterations = useScenarioIterations();
+
+  const users = useMemo(
+    () =>
+      orgUsers.reduce(
+        (acc, curr) => {
+          acc[curr.userId] = {
+            firstName: curr.firstName,
+            lastName: curr.lastName,
+          };
+
+          return acc;
+        },
+        {} as Record<string, Pick<User, 'firstName' | 'lastName'>>,
+      ),
+    [orgUsers],
+  );
+
+  const iterations = useMemo(
+    () =>
+      scenarioIterations.reduce(
+        (acc, curr) => {
+          acc[curr.id] = {
+            version: curr.version,
+            type: curr.type,
+          };
+
+          return acc;
+        },
+        {} as Record<
+          string,
+          Pick<ScenarioIterationWithType, 'version' | 'type'>
+        >,
+      ),
+    [scenarioIterations],
+  );
 
   const navigate = useNavigate();
   const navigateTestRunsList = useCallback(
@@ -177,7 +220,12 @@ export default function TestRuns() {
                   </span>
                 </div>
                 {runs.map((run) => (
-                  <TestRunPreview {...run} key={run.id} />
+                  <TestRunPreview
+                    {...run}
+                    key={run.id}
+                    users={users}
+                    iterations={iterations}
+                  />
                 ))}
               </div>
               <CursorPaginationButtons
