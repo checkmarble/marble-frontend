@@ -152,7 +152,7 @@ export type RouteID =
   | 'routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId'
   | 'routes/_builder+/scenarios+/$scenarioId+/scheduled-executions'
   | 'routes/_builder+/scenarios+/$scenarioId+/test-run'
-  | 'routes/_builder+/scenarios+/$scenarioId+/test-run.$testRunId'
+  | 'routes/_builder+/scenarios+/$scenarioId+/test-run_.$testRunId'
   | 'routes/_builder+/scenarios+/$scenarioId+/workflow'
   | 'routes/_builder+/scenarios+/_index'
   | 'routes/_builder+/settings+/_layout'

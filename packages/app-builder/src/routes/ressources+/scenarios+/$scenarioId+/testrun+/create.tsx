@@ -59,7 +59,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return redirect(
       getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
         scenarioId: fromUUID(createdTestRun.scenarioId),
-        testRunId: fromUUID(createdTestRun.id),
+        //testRunId: fromUUID(createdTestRun.id), Waiting for the api
+        testRunId: createdTestRun.id,
       }),
     );
   } catch (error) {
@@ -98,6 +99,7 @@ function CreateTestRunToContent() {
     () => scenarioIterations.filter(({ type }) => type === 'live version'),
     [scenarioIterations],
   );
+
   const phantomIterations = React.useMemo(
     () =>
       scenarioIterations.filter(

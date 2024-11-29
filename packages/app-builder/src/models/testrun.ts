@@ -1,6 +1,6 @@
 import {
-  type TestRunDto,
   type TestRunCreateInputDto,
+  type TestRunDto,
 } from 'marble-api/generated/marblecore-api';
 
 export const testRunStatuses = ['up', 'down', 'pending', 'unknown'] as const;
