@@ -99,5 +99,9 @@
   "webhooks.secret.expires_at": "Expires at",
   "webhooks.secret.value": "Value",
   "webhooks.setup_documentation": "For more information on webhooks, please refer to <DocLink>the documentation</DocLink>.",
-  "webhooks.events_documentation": "For more information on events, please refer to <DocLink>the documentation</DocLink>."
+  "webhooks.events_documentation": "For more information on events, please refer to <DocLink>the documentation</DocLink>.",
+  "scenarios": "Scenarios",
+  "scenenario_execution": "Scenario execution settings",
+  "scenario_default_timezone.label": "Default timezone for timestamp interpretation",
+  "scenario_default_timezone.change_warning": "Changing this value will immediately impact all live scenario versions."
 }

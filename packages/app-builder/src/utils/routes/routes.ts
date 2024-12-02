@@ -236,6 +236,11 @@ export const routes = [
                 "file": "routes/_builder+/settings+/inboxes._index.tsx"
               },
               {
+                "id": "routes/_builder+/settings+/scenarios",
+                "path": "scenarios",
+                "file": "routes/_builder+/settings+/scenarios.tsx"
+              },
+              {
                 "id": "routes/_builder+/settings+/tags",
                 "path": "tags",
                 "file": "routes/_builder+/settings+/tags.tsx"
@@ -473,6 +478,11 @@ export const routes = [
         "id": "routes/ressources+/settings+/api-keys+/delete",
         "path": "ressources/settings/api-keys/delete",
         "file": "routes/ressources+/settings+/api-keys+/delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/edit-org-default-timezone",
+        "path": "ressources/settings/edit-org-default-timezone",
+        "file": "routes/ressources+/settings+/edit-org-default-timezone.tsx"
       },
       {
         "id": "routes/ressources+/settings+/inboxes+/create",
