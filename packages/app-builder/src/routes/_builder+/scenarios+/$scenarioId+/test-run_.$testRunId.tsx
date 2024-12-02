@@ -5,7 +5,7 @@ import { type ScenarioIterationWithType } from '@app-builder/models/scenario-ite
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';

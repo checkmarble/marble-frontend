@@ -66,7 +66,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
   try {
     return json({
-      testRuns: await testRunRepository.listTestRuns(filtersForBackend),
+      testRuns: await testRunRepository.listTestRuns({
+        ...filtersForBackend,
+        scenarioId,
+      }),
       filters,
     });
   } catch (error) {
