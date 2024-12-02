@@ -4,10 +4,6 @@ import {
 } from '@app-builder/models/testrun';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import {
-  type DateRangeFilterForm,
-  dateRangeSchema,
-} from '@app-builder/utils/schema/filterSchema';
 import { useCallback, useMemo } from 'react';
 import {
   FormProvider,
@@ -22,7 +18,10 @@ import { type TestRunFilterName, testRunsFilterNames } from './filters';
 
 export const testRunsFiltersSchema = z.object({
   statuses: z.array(z.enum(testRunStatuses)).optional(),
-  dateRange: dateRangeSchema.optional(),
+  startedAfter: z.date().optional(),
+  creator: z.string().optional(),
+  ref_version: z.string().optional(),
+  test_version: z.string().optional(),
 });
 
 export type TestRunsFilters = z.infer<typeof testRunsFiltersSchema>;
@@ -39,35 +38,23 @@ const TestRunsFiltersContext = createSimpleContext<TestRunsFiltersContextValue>(
 
 export type TestRunsFiltersForm = {
   statuses: TestRunStatus[];
-  dateRange: DateRangeFilterForm;
+  startedAfter?: Date;
+  creator?: string;
+  ref_version?: string;
+  test_version?: string;
 };
-const emptyTestRunsFilters: TestRunsFiltersForm = {
+
+export const emptyTestRunsFilters: TestRunsFiltersForm = {
   statuses: [],
-  dateRange: null,
 };
 
 function adaptFilterValues({
-  dateRange,
   ...otherFilters
 }: TestRunsFilters): TestRunsFiltersForm {
-  const adaptedFilterValues: TestRunsFiltersForm = {
+  return {
     ...emptyTestRunsFilters,
     ...otherFilters,
   };
-  if (dateRange?.type === 'static') {
-    adaptedFilterValues.dateRange = {
-      type: 'static',
-      startDate: dateRange.startDate ?? '',
-      endDate: dateRange.endDate ?? '',
-    };
-  }
-  if (dateRange?.type === 'dynamic' && dateRange.fromNow) {
-    adaptedFilterValues.dateRange = {
-      type: 'dynamic',
-      fromNow: dateRange.fromNow,
-    };
-  }
-  return adaptedFilterValues;
 }
 
 export function TestRunsFiltersProvider({
@@ -83,14 +70,13 @@ export function TestRunsFiltersProvider({
     defaultValues: emptyTestRunsFilters,
     values: adaptFilterValues(filterValues),
   });
+
   const { isDirty } = formMethods.formState;
+
   const submitTestRunsFilters = useCallbackRef(() => {
-    const formValues = formMethods.getValues();
-    _submitTestRunsFilters({
-      ...formValues,
-      dateRange: formValues.dateRange ?? undefined,
-    });
+    _submitTestRunsFilters(formMethods.getValues());
   });
+
   const onTestRunsFilterClose = useCallbackRef(() => {
     if (isDirty) {
       submitTestRunsFilters();
@@ -105,6 +91,7 @@ export function TestRunsFiltersProvider({
     }),
     [filterValues, onTestRunsFilterClose, submitTestRunsFilters],
   );
+
   return (
     <FormProvider {...formMethods}>
       <TestRunsFiltersContext.Provider value={value}>
@@ -125,14 +112,41 @@ export function useStatusesFilter() {
   return { selectedStatuses, setSelectedStatuses };
 }
 
-export function useDateRangeFilter() {
-  const { field } = useController<TestRunsFiltersForm, 'dateRange'>({
-    name: 'dateRange',
+export function useStartedAfterFilter() {
+  const { field } = useController<TestRunsFiltersForm, 'startedAfter'>({
+    name: 'startedAfter',
   });
-  const dateRange = field.value;
-  const setDateRange = field.onChange;
-  return { dateRange, setDateRange };
+  const startedAfter = field.value;
+  const setStartedAfter = field.onChange;
+  return { startedAfter, setStartedAfter };
 }
+
+export const useCreatorFilter = () => {
+  const { field } = useController<TestRunsFiltersForm, 'creator'>({
+    name: 'creator',
+  });
+  const creator = field.value;
+  const setCreator = field.onChange;
+  return { creator, setCreator };
+};
+
+export const useRefVersionFilter = () => {
+  const { field } = useController<TestRunsFiltersForm, 'ref_version'>({
+    name: 'ref_version',
+  });
+  const refVersion = field.value;
+  const setRefVersion = field.onChange;
+  return { refVersion, setRefVersion };
+};
+
+export const useTestVersionFilter = () => {
+  const { field } = useController<TestRunsFiltersForm, 'test_version'>({
+    name: 'test_version',
+  });
+  const testVersion = field.value;
+  const setTestVersion = field.onChange;
+  return { testVersion, setTestVersion };
+};
 
 /**
  * Split testRuns filters in two partitions:
@@ -169,3 +183,12 @@ export function useClearFilter() {
     [setValue, submitTestRunsFilters],
   );
 }
+
+export const useClearAllFilters = () => {
+  const { submitTestRunsFilters } = useTestRunsFiltersContext();
+  const { reset } = useFormContext<TestRunsFiltersForm>();
+  return useCallback(() => {
+    reset(emptyTestRunsFilters);
+    submitTestRunsFilters();
+  }, [reset, submitTestRunsFilters]);
+};

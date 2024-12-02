@@ -1,10 +1,9 @@
 import {
   AddNewFilterButton,
-  ClearAllFiltersLink,
+  ClearAllFiltersButton,
   FilterItem,
   FilterPopover,
 } from '@app-builder/components/Filters';
-import { getRoute } from '@app-builder/utils/routes';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
@@ -14,17 +13,18 @@ import {
   useTestRunsFiltersContext,
   useTestRunsFiltersPartition,
   useClearFilter,
+  TestRunsFiltersForm,
+  useClearAllFilters,
 } from './TestRunsFiltersContext';
 import { TestRunsFiltersMenu } from './TestRunsFiltersMenu';
 import { FilterDetail } from './FilterDetail';
 import { getFilterIcon, getFilterTKey } from './filters';
-import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { useFormContext } from 'react-hook-form';
 
 export function TestRunsFiltersBar() {
   const { t } = useTranslation(['scenarios', 'common']);
   const { onTestRunsFilterClose } = useTestRunsFiltersContext();
-  const currentScenario = useCurrentScenario();
+  const { reset } = useFormContext<TestRunsFiltersForm>();
 
   const onOpenChange = useCallback(
     (open: boolean) => {
@@ -37,7 +37,9 @@ export function TestRunsFiltersBar() {
 
   const { undefinedTestRunsFilterNames, definedTestRunsFilterNames } =
     useTestRunsFiltersPartition();
+
   const clearFilter = useClearFilter();
+  const clearAllFilters = useClearAllFilters();
 
   if (definedTestRunsFilterNames.length === 0) {
     return null;
@@ -79,12 +81,7 @@ export function TestRunsFiltersBar() {
             </TestRunsFiltersMenu>
           ) : null}
         </div>
-        <ClearAllFiltersLink
-          to={getRoute('/scenarios/:scenarioId/test-run', {
-            scenarioId: fromUUID(currentScenario.id),
-          })}
-          replace
-        />
+        <ClearAllFiltersButton onPointerDown={clearAllFilters} />
       </div>
     </>
   );

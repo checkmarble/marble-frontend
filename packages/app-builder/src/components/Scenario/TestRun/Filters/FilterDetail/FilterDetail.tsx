@@ -1,20 +1,20 @@
-import { assertNever } from 'typescript-utils';
-
 import { type TestRunFilterName } from '../filters';
-import { TestRunsDateRangeFilter } from './TestRunsDateRangeFilter';
+import { StartedAfterFilter } from './StartedAfterFilter';
 import { StatusesFilter } from './StatusesFilter';
+import { match } from 'ts-pattern';
+import { CreatorFilter } from './CreatorFilter';
+import { VersionFilter } from './VersionFilter';
 
 export function FilterDetail({
   filterName,
 }: {
   filterName: TestRunFilterName;
 }) {
-  switch (filterName) {
-    case 'dateRange':
-      return <TestRunsDateRangeFilter />;
-    case 'statuses':
-      return <StatusesFilter />;
-    default:
-      assertNever('[CasesFilter] unknown filter:', filterName);
-  }
+  return match(filterName)
+    .with('startedAfter', () => <StartedAfterFilter />)
+    .with('statuses', () => <StatusesFilter />)
+    .with('creator', () => <CreatorFilter />)
+    .with('ref_version', () => <VersionFilter type="ref" />)
+    .with('test_version', () => <VersionFilter type="test" />)
+    .exhaustive();
 }

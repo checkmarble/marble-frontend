@@ -2830,6 +2830,10 @@ export function getRuleSnooze(ruleSnoozeId: string, opts?: Oazapfts.RequestOpts)
  * List all test runs for a scenario
  */
 export function listTestRuns(scenarioId: string, opts?: Oazapfts.RequestOpts) {
+    console.log("URL", `/scenario-testrun${QS.query(QS.explode({
+        scenario_id: scenarioId
+    }))}`)
+
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: TestRunDto[];

@@ -7,6 +7,7 @@ import {
 } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters';
 import {
+  emptyTestRunsFilters,
   type TestRunsFilters,
   TestRunsFiltersBar,
   TestRunsFiltersMenu,
@@ -29,11 +30,10 @@ import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
+import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import qs from 'qs';
-import { useCallback, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -51,26 +51,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const parsedQuery = await parseQuerySafe(request, testRunsFiltersSchema);
-  const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
-  if (!parsedQuery.success || !parsedPaginationQuery.success) {
-    return redirect(
-      getRoute('/scenarios/:scenarioId/test-run', { scenarioId }),
-    );
-  }
-
-  const filters = parsedQuery.data;
-  const filtersForBackend: TestRunsFilters = {
-    ...parsedQuery.data,
-    ...parsedPaginationQuery.data,
-  };
   try {
     return json({
       testRuns: await testRunRepository.listTestRuns({
-        ...filtersForBackend,
-        scenarioId,
+        scenarioId: fromUUID(scenarioId),
       }),
-      filters,
     });
   } catch (error) {
     // if scenario is deleted or user no longer have access, the user is redirected
@@ -84,13 +69,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function TestRuns() {
   const { t } = useTranslation(handle.i18n);
-  const {
-    testRuns: { items: runs, ...pagination },
-    filters,
-  } = useLoaderData<typeof loader>();
+  const { testRuns: runs } = useLoaderData<typeof loader>();
   const currentScenario = useCurrentScenario();
   const { orgUsers } = useOrganizationUsers();
   const scenarioIterations = useScenarioIterations();
+  const [filters, setFilters] = useState<TestRunsFilters>({});
+
+  const filteredRuns = useMemo(() => {
+    return runs;
+  }, [runs, filters]);
 
   const users = useMemo(
     () =>
@@ -127,45 +114,6 @@ export default function TestRuns() {
     [scenarioIterations],
   );
 
-  const navigate = useNavigate();
-  const navigateTestRunsList = useCallback(
-    (testRunsFilters: TestRunsFilters, pagination?: PaginationParams) => {
-      navigate(
-        {
-          pathname: getRoute('/scenarios/:scenarioId/test-run', {
-            scenarioId: fromUUID(currentScenario.id),
-          }),
-          search: qs.stringify(
-            {
-              statuses: testRunsFilters.statuses ?? [],
-              dateRange: testRunsFilters.dateRange
-                ? testRunsFilters.dateRange.type === 'static'
-                  ? {
-                      type: 'static',
-                      endDate: testRunsFilters.dateRange.endDate || null,
-                      startDate: testRunsFilters.dateRange.startDate || null,
-                    }
-                  : {
-                      type: 'dynamic',
-                      fromNow: testRunsFilters.dateRange.fromNow,
-                    }
-                : {},
-              offsetId: pagination?.offsetId || null,
-              next: pagination?.next || null,
-              previous: pagination?.previous || null,
-            },
-            {
-              addQueryPrefix: true,
-              skipNulls: true,
-            },
-          ),
-        },
-        { replace: true },
-      );
-    },
-    [navigate, currentScenario.id],
-  );
-
   return (
     <Page.Main>
       <Page.Header className="gap-4">
@@ -187,7 +135,7 @@ export default function TestRuns() {
         <Page.Content className="max-w-screen-lg">
           <div className="flex flex-col gap-4">
             <TestRunsFiltersProvider
-              submitTestRunsFilters={navigateTestRunsList}
+              submitTestRunsFilters={setFilters}
               filterValues={filters}
             >
               <div className="flex flex-row items-center justify-between">
@@ -213,7 +161,7 @@ export default function TestRuns() {
                     {t('scenarios:testrun.filters.version')}
                   </span>
                   <span className="px-4">
-                    {t('scenarios:testrun.filters.period')}
+                    {t('scenarios:testrun.filters.started_after')}
                   </span>
                   <span className="text-center">
                     {t('scenarios:testrun.filters.creator')}
@@ -222,7 +170,7 @@ export default function TestRuns() {
                     {t('scenarios:testrun.filters.status')}
                   </span>
                 </div>
-                {runs.map((run) => (
+                {filteredRuns.map((run) => (
                   <TestRunPreview
                     {...run}
                     key={run.id}
@@ -231,13 +179,6 @@ export default function TestRuns() {
                   />
                 ))}
               </div>
-              <CursorPaginationButtons
-                items={runs}
-                onPaginationChange={(paginationParams: PaginationParams) =>
-                  navigateTestRunsList(filters, paginationParams)
-                }
-                {...pagination}
-              />
             </TestRunsFiltersProvider>
           </div>
         </Page.Content>
