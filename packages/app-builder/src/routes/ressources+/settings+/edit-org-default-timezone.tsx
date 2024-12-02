@@ -3,6 +3,7 @@ import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
+import { validTimezones } from '@app-builder/utils/validTimezones';
 import {
   FormProvider,
   getFormProps,
@@ -42,14 +43,6 @@ export async function action({ request }: ActionFunctionArgs) {
   return json(submission.reply());
 }
 
-const timezoneOptions = [
-  'CET',
-  'EST',
-  'UTC',
-  'Europe/Paris',
-  'America/New_York',
-];
-
 export function EditOrgDefaultTimezone({
   organizationId,
   currentTimezone,
@@ -64,7 +57,7 @@ export function EditOrgDefaultTimezone({
   const [form, fields] = useForm({
     defaultValue: {
       organizationId,
-      timezone: currentTimezone || timezoneOptions[0],
+      timezone: currentTimezone || validTimezones[0],
     },
     lastResult: fetcher.data,
     onValidate({ formData }) {
@@ -106,9 +99,9 @@ export function EditOrgDefaultTimezone({
             onValueChange={() => {
               formRef.current?.requestSubmit();
             }}
-            options={timezoneOptions}
+            options={validTimezones}
           >
-            {timezoneOptions.map((tz) => (
+            {validTimezones.map((tz) => (
               <FormSelect.DefaultItem key={tz} value={tz}>
                 {tz}
               </FormSelect.DefaultItem>
