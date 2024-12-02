@@ -610,13 +610,16 @@ export type UpdateUser = {
 };
 export type OrganizationDto = {
     id: string;
+    /** (Immutable) name of the organization */
     name: string;
+    /** Timezone (IANA format) used by default for scenarios of this organization, when interpreting timestamps as datetimes. */
+    default_scenario_timezone?: string;
 };
 export type CreateOrganizationBodyDto = {
     name: string;
 };
 export type UpdateOrganizationBodyDto = {
-    name?: string;
+    default_scenario_timezone?: string;
 };
 export type FuncAttributes = {
     name: string;

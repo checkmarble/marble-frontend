@@ -27,6 +27,11 @@ export async function getSettings(
       to: getRoute('/settings/users'),
     });
   }
+  settings.push({
+    section: 'scenarios' as const,
+    title: 'scenarios' as const,
+    to: getRoute('/settings/scenarios'),
+  });
   if (featureAccessService.isReadAllInboxesAvailable(user)) {
     settings.push({
       section: 'case_manager' as const,
