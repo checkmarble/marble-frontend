@@ -19,8 +19,10 @@ import {
   type AstNodeErrors,
   computeValidationForNamedChildren,
 } from '@app-builder/services/validation/ast-node-validation';
+import { type TFunction } from 'i18next';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { assertNever } from 'typescript-utils';
 import { Button, ModalV2 } from 'ui-design-system';
 
 import { Operator } from '../../../../Operator';
@@ -81,12 +83,13 @@ export function TimestampExtractEdit({
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
-  const [value, setValue] = React.useState<TimestampExtractViewModel>(() =>
-    adaptTimestampExtractViewModel(timestampExtractAstNode, astNodeErrors),
+  const [viewModel, setViewModel] = React.useState<TimestampExtractViewModel>(
+    () =>
+      adaptTimestampExtractViewModel(timestampExtractAstNode, astNodeErrors),
   );
 
   const handleSave = () => {
-    onSave(adaptTimestampExtractAstNode(value));
+    onSave(adaptTimestampExtractAstNode(viewModel));
   };
 
   return (
@@ -108,24 +111,26 @@ export function TimestampExtractEdit({
         </Callout>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <span>{t('scenarios:edit_timestamp_extract.extract_the')}</span>
+            <span className="first-letter:uppercase">
+              {t('scenarios:edit_timestamp_extract.extract_the')}
+            </span>
             <Operator
               operators={validTimestampExtractParts}
-              value={value.part}
+              value={viewModel.part}
               setValue={(part) =>
-                setValue({
-                  ...value,
+                setViewModel({
+                  ...viewModel,
                   part,
                 })
               }
             />
             <span>{t('scenarios:edit_timestamp_extract.from')}</span>
             <TimestampField
-              astNode={value.timestampField.astNode}
-              astNodeErrors={value.timestampField.astNodeErrors}
+              astNode={viewModel.timestampField.astNode}
+              astNodeErrors={viewModel.timestampField.astNodeErrors}
               onChange={(timestampField) =>
-                setValue({
-                  ...value,
+                setViewModel({
+                  ...viewModel,
                   timestampField: {
                     astNode: timestampField,
                     astNodeErrors: {
@@ -135,22 +140,23 @@ export function TimestampExtractEdit({
                     },
                   },
                   errors: {
-                    ...value.errors,
+                    ...viewModel.errors,
                     timestamp: [],
                   },
                 })
               }
               validationStatus={
-                value.errors.timestamp.length > 0 ? 'error' : 'valid'
+                viewModel.errors.timestamp.length > 0 ? 'error' : 'valid'
               }
             />
           </div>
           <EvaluationErrors
             errors={adaptEvaluationErrorViewModels([
-              ...value.errors.timestamp,
+              ...viewModel.errors.timestamp,
             ]).map(getNodeEvaluationErrorMessage)}
           />
         </div>
+        <p>{returnTimestampExtractInformation(t, viewModel.part)}</p>
         <div className="flex flex-1 flex-row gap-2">
           <ModalV2.Close
             render={
@@ -171,4 +177,24 @@ export function TimestampExtractEdit({
       </div>
     </>
   );
+}
+
+function returnTimestampExtractInformation(
+  t: TFunction<['scenarios'], undefined>,
+  part: ValidTimestampExtractParts,
+): string {
+  switch (part) {
+    case 'year':
+      return t(`scenarios:edit_timestamp_extract.explanation.year`);
+    case 'month':
+      return t(`scenarios:edit_timestamp_extract.explanation.month`);
+    case 'day_of_month':
+      return t(`scenarios:edit_timestamp_extract.explanation.day_of_month`);
+    case 'day_of_week':
+      return t(`scenarios:edit_timestamp_extract.explanation.day_of_week`);
+    case 'hour':
+      return t(`scenarios:edit_timestamp_extract.explanation.hour`);
+    default:
+      assertNever('Untranslated operator', part);
+  }
 }
