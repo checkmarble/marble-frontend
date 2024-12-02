@@ -218,5 +218,5 @@ function getTimestampExtractDisplayName(
     return context.t('scenarios:edit_timestamp_extract.title');
   }
 
-  return `[${getOperatorName(context.t, part)}] ${context.t('scenarios:edit_timestamp_extract.from')} ${timestampStr}`;
+  return `${getOperatorName(context.t, part)} ${context.t('scenarios:edit_timestamp_extract.from')} ${timestampStr}`;
 }
