@@ -43,12 +43,7 @@ export function CaseHistory({
       filterValues={filterValues}
       submitCasesFilters={setFilterValues}
     >
-      <div
-        className={clsx(
-          'scrollbar-gutter-stable relative flex flex-col gap-4 overflow-y-scroll p-4 pr-[calc(1rem-var(--scrollbar-width))] lg:gap-6 lg:p-6 lg:pr-[calc(1.5rem-var(--scrollbar-width))]',
-          className,
-        )}
-      >
+      <div className={clsx('relative flex flex-col gap-4 lg:gap-6', className)}>
         <div className="flex flex-row items-center justify-between gap-4">
           <span className="text-m text-grey-100 ml-2 font-bold">
             {t('cases:case_detail.history')}
