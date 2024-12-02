@@ -46,7 +46,12 @@ import { Button, CtaClassName, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
-import { useCurrentScenario, useScenarioIterations } from './_layout';
+import {
+  useCurrentScenario,
+  useScenarioIterations,
+  useScenarioTestRuns,
+} from './_layout';
+import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,
@@ -71,6 +76,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       isManualTriggerScenarioAvailable:
         featureAccessService.isManualTriggerScenarioAvailable(user),
       isWorkflowsAvailable: await featureAccessService.isWorkflowsAvailable(),
+      //isTestRunAvailable: await featureAccessService.isTestRunAvailable(),
+      isTestRunAvailable: true,
     },
     scheduledExecutions,
   });
@@ -163,23 +170,6 @@ export default function ScenarioHome() {
                 </UpdateScenario>
               </div>
             ) : null}
-            <Link
-              aria-disabled={!hydrated || !shouldHaveAccessToTestRun}
-              className={clsx(
-                CtaClassName({ variant: 'primary', color: 'purple' }),
-                'isolate h-10 w-fit',
-                {
-                  'pointer-events-none cursor-default':
-                    !hydrated || !shouldHaveAccessToTestRun,
-                },
-              )}
-              to={getRoute('/scenarios/:scenarioId/test-run', {
-                scenarioId: fromUUID(currentScenario.id),
-              })}
-            >
-              <Icon icon="backtest" className="size-6" />
-              <p>{t('scenarios:home.testrun')}</p>
-            </Link>
           </div>
         </div>
       </Page.Header>
@@ -197,6 +187,9 @@ export default function ScenarioHome() {
             scheduledExecutions={scheduledExecutions}
             liveScenarioIteration={liveScenarioIteration}
           />
+          {featureAccess.isTestRunAvailable ? (
+            <TestRunSection scenarioId={currentScenario.id} />
+          ) : null}
           {featureAccess.isWorkflowsAvailable ? (
             <WorkflowSection scenario={currentScenario} />
           ) : null}
@@ -319,6 +312,87 @@ function QuickVersionAccess({
         </span>
       ) : null}
     </Link>
+  );
+}
+
+function TestRunSection({ scenarioId }: { scenarioId: string }) {
+  const { t } = useTranslation();
+  const { items: runs } = useScenarioTestRuns();
+
+  const currentTestRun = React.useMemo(
+    () => runs.filter((r) => r.status === 'up'),
+    [runs],
+  );
+
+  const isExecutionOngoing = React.useMemo(
+    () => currentTestRun.length > 0,
+    [currentTestRun],
+  );
+
+  return (
+    <section className="flex flex-col gap-8">
+      <h2 className="text-grey-100 text-m font-semibold">
+        {t('scenarios:home.testrun')}
+      </h2>
+      <div className="flex max-w-[500px] flex-row gap-4">
+        <div
+          className={clsx(
+            'bg-grey-00 border-grey-10 relative flex h-fit flex-col gap-4 rounded-lg border p-8',
+            isExecutionOngoing && 'border-purple-100',
+          )}
+        >
+          {isExecutionOngoing ? (
+            <div className="text-grey-00 text-s absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t bg-purple-100 px-2 font-semibold">
+              <Spinner className="size-3" />
+              {t('scenarios:home.execution.batch.ongoing')}
+            </div>
+          ) : null}
+          <CalloutV2>
+            <div className="flex flex-col gap-4">
+              <span>{t('scenarios:testrun.description')}</span>
+            </div>
+          </CalloutV2>
+
+          <div className="flex flex-row gap-4">
+            <CreateTestRun>
+              <Button variant="primary" className="isolate h-10 w-fit">
+                <Icon icon="plus" className="size-6" aria-hidden />
+                {t('scenarios:create_testrun.title')}
+              </Button>
+            </CreateTestRun>
+            {currentTestRun.length > 0 ? (
+              <Link
+                className={CtaClassName({
+                  variant: 'secondary',
+                  color: 'grey',
+                })}
+                to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
+                  scenarioId: fromUUID(scenarioId),
+                  testRunId: currentTestRun[0]?.id ?? '1',
+                })}
+              >
+                {t('scenarios:testrun.current_run')}
+              </Link>
+            ) : null}
+            {runs.length > 1 ? (
+              <Link
+                className={CtaClassName({
+                  variant: 'secondary',
+                  color: 'grey',
+                })}
+                to={getRoute('/scenarios/:scenarioId/test-run', {
+                  scenarioId: fromUUID(scenarioId),
+                })}
+              >
+                {t('scenarios:home.other_versions_other', {
+                  count: runs.length - 1,
+                })}
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

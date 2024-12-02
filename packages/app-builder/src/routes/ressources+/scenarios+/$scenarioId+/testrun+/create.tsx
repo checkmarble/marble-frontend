@@ -57,10 +57,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
       scenarioId: fromUUID(scenarioId),
     });
     return redirect(
-      getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
+      getRoute('/scenarios/:scenarioId/test-run', {
         scenarioId: fromUUID(createdTestRun.scenarioId),
         //testRunId: fromUUID(createdTestRun.id), Waiting for the api
-        testRunId: createdTestRun.id,
       }),
     );
   } catch (error) {

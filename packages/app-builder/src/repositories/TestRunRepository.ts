@@ -12,7 +12,7 @@ import {
 import { randomInteger } from 'remeda';
 
 export type TestRunFiltersWithPagination =
-  FiltersWithPagination<TestRunsFilters>;
+  FiltersWithPagination<TestRunsFilters> & { scenarioId: string };
 
 export interface TestRunRepository {
   getTestRun(args: { testRunId: string }): Promise<TestRun>;
