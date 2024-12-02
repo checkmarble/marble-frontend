@@ -73,7 +73,7 @@ export function makeServerRepositories({
     getTransferAlertRepository: makeGetTransferAlertRepository(),
     getWebhookRepository: makeGetWebhookRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
-    getTestRunRepository: makeGetTestRunRepository([]),
+    getTestRunRepository: makeGetTestRunRepository(),
     licenseRepository: getLicenseRepository(licenseAPIClient, devEnvironment),
   };
 }
