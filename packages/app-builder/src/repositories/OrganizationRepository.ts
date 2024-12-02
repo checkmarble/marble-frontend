@@ -10,6 +10,10 @@ export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
   listUsers(): Promise<User[]>;
   listTags(args?: { withCaseCount: boolean }): Promise<Tag[]>;
+  updateOrganization(args: {
+    organizationId: string;
+    defaultScenarioTimezone: string;
+  }): Promise<Organization>;
 }
 
 export function makeGetOrganizationRepository() {
@@ -32,6 +36,13 @@ export function makeGetOrganizationRepository() {
       const withCaseCount = args?.withCaseCount ?? false;
       const { tags } = await marbleCoreApiClient.listTags({ withCaseCount });
       return tags;
+    },
+    updateOrganization: async (args) => {
+      const { organization: updatedOrganization } =
+        await marbleCoreApiClient.updateOrganization(organizationId, {
+          default_scenario_timezone: args.defaultScenarioTimezone,
+        });
+      return updatedOrganization;
     },
   });
 }
