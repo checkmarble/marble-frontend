@@ -46,10 +46,10 @@ export const TestRunPreview = ({
         );
       }}
       className={clsx(
-        'grid-cols-test-run bg-grey-00 hover:bg-grey-05 border-grey-10 grid cursor-pointer items-center rounded-lg border py-4 transition-colors',
+        'grid-cols-test-run grid cursor-pointer items-center rounded-lg border py-4 transition-colors',
         {
-          'bg-purple-05 hover:bg-purple-10': status !== 'up',
-          'border-purple-100': status === 'up',
+          'bg-grey-00 hover:bg-grey-05 border-grey-10': status !== 'up',
+          'bg-purple-05 hover:bg-purple-10 border-purple-100': status === 'up',
         },
         className,
       )}

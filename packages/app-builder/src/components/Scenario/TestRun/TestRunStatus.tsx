@@ -95,11 +95,11 @@ export function TestRunStatus({
 
 export const testRunStatusMapping = {
   up: {
-    color: 'red',
+    color: 'blue',
     tKey: 'scenarios:testrun.status.up',
   },
   down: {
-    color: 'blue',
+    color: 'red',
     tKey: 'scenarios:testrun.status.down',
   },
   unknown: {

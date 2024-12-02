@@ -18,29 +18,21 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { scenario, testRunRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { scenario } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const [currentScenario, scenarioIterations, scenarioTestRuns] =
-    await Promise.all([
-      scenario.getScenario({ scenarioId }),
-      scenario.listScenarioIterations({
-        scenarioId,
-      }),
-      testRunRepository.listTestRuns({
-        scenarioId,
-      }),
-    ]);
+  const [currentScenario, scenarioIterations] = await Promise.all([
+    scenario.getScenario({ scenarioId }),
+    scenario.listScenarioIterations({
+      scenarioId,
+    }),
+  ]);
 
   return json({
     currentScenario,
-    scenarioTestRuns,
     scenarioIterations: scenarioIterations.map((dto) =>
       adaptScenarioIterationWithType(dto, currentScenario.liveVersionId),
     ),
@@ -52,13 +44,6 @@ export function useScenarioIterations() {
     'routes/_builder+/scenarios+/$scenarioId+/_layout' satisfies RouteID,
   ) as SerializeFrom<typeof loader>;
   return scenarioIterations;
-}
-
-export function useScenarioTestRuns() {
-  const { scenarioTestRuns } = useRouteLoaderData(
-    'routes/_builder+/scenarios+/$scenarioId+/_layout' satisfies RouteID,
-  ) as SerializeFrom<typeof loader>;
-  return scenarioTestRuns;
 }
 
 export function useCurrentScenario() {

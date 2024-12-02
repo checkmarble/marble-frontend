@@ -46,11 +46,7 @@ import { Button, CtaClassName, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
-import {
-  useCurrentScenario,
-  useScenarioIterations,
-  useScenarioTestRuns,
-} from './_layout';
+import { useCurrentScenario, useScenarioIterations } from './_layout';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 
 export const handle = {
@@ -59,13 +55,18 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { user, decision } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { user, decision, testRunRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
   const scheduledExecutions = await decision.listScheduledExecutions({
+    scenarioId,
+  });
+
+  const runs = await testRunRepository.listTestRuns({
     scenarioId,
   });
 
@@ -80,6 +81,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       isTestRunAvailable: true,
     },
     scheduledExecutions,
+    testRuns: runs,
   });
 }
 
@@ -130,10 +132,6 @@ export default function ScenarioHome() {
 
   const currentScenario = useCurrentScenario();
   const scenarioIterations = useScenarioIterations();
-  const shouldHaveAccessToTestRun = React.useMemo(
-    () => scenarioIterations.length > 1,
-    [scenarioIterations],
-  );
 
   const liveScenarioIteration = React.useMemo(
     () => scenarioIterations.find(({ type }) => type === 'live version'),
@@ -317,11 +315,11 @@ function QuickVersionAccess({
 
 function TestRunSection({ scenarioId }: { scenarioId: string }) {
   const { t } = useTranslation();
-  const { items: runs } = useScenarioTestRuns();
+  const { testRuns } = useLoaderData<typeof loader>();
 
   const currentTestRun = React.useMemo(
-    () => runs.filter((r) => r.status === 'up'),
-    [runs],
+    () => testRuns.filter((r) => r.status === 'up'),
+    [testRuns],
   );
 
   const isExecutionOngoing = React.useMemo(
@@ -374,7 +372,7 @@ function TestRunSection({ scenarioId }: { scenarioId: string }) {
                 {t('scenarios:testrun.current_run')}
               </Link>
             ) : null}
-            {runs.length > 1 ? (
+            {testRuns.length > 1 ? (
               <Link
                 className={CtaClassName({
                   variant: 'secondary',
@@ -385,7 +383,7 @@ function TestRunSection({ scenarioId }: { scenarioId: string }) {
                 })}
               >
                 {t('scenarios:home.other_versions_other', {
-                  count: runs.length - 1,
+                  count: testRuns.length - 1,
                 })}
               </Link>
             ) : null}
