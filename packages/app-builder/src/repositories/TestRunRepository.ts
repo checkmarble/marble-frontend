@@ -5,7 +5,9 @@ import {
   type TestRun,
   type TestRunCreateInput,
 } from '@app-builder/models/testrun';
+import { toUUID } from '@app-builder/utils/short-uuid';
 import { randomInteger } from 'remeda';
+import short from 'short-uuid';
 
 export interface TestRunRepository {
   getTestRun(args: { testRunId: string }): Promise<TestRun>;
@@ -23,23 +25,22 @@ export const makeGetTestRunRepository = () => {
         ? Promise.resolve(run)
         : Promise.reject(new Error('Test run not found'));
     },
-    listTestRuns: () => {
-      return Promise.resolve(testruns);
-    },
+    listTestRuns: () => Promise.resolve(testruns),
     launchTestRun: (args: TestRunCreateInput) => {
-      const lastRun = testruns[testruns.length - 1];
-
       const testRun: TestRun = {
-        id: lastRun ? String(+lastRun.id + 1) : '1',
+        id: toUUID(short.generate()),
         refIterationId: '6f6fe0d8-9a1a-4d5a-bdd7-fa7fcda1b4e3',
         scenarioId: args.scenarioId,
         testIterationId: args.testIterationId,
         startDate: String(new Date().getTime()),
         endDate: args.endDate,
-        creatorId: '1',
-        status: testRunStatuses[
-          randomInteger(0, testRunStatuses.length - 1)
-        ] as TestRunStatus,
+        creatorId: '96762987-8895-4af2-9c0a-2dffde09985c',
+        status:
+          testruns.length === 0
+            ? testRunStatuses[0]
+            : (testRunStatuses[
+                randomInteger(1, testRunStatuses.length - 1)
+              ] as TestRunStatus),
       };
 
       testruns.push(testRun);

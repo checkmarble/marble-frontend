@@ -55,6 +55,7 @@
   "testrun.filters.ref_version": "Ref. version",
   "testrun.filters.test_version": "Test version",
   "testrun.filters.started_after": "Started after",
+  "testrun.filters.period": "Period",
   "testrun.filters.creator": "Creator",
   "testrun.filters.status": "Status",
   "testrun.status.up": "Ongoing",

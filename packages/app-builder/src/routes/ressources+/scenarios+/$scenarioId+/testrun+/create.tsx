@@ -38,7 +38,7 @@ const createTestRunFormSchema = z.object({
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService } = serverServices;
   const scenarioId = fromParams(params, 'scenarioId');
-  const { testRunRepository } = await authService.isAuthenticated(request, {
+  const { testRun } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -52,14 +52,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   try {
-    const createdTestRun = await testRunRepository.launchTestRun({
-      ...submission.value,
-      scenarioId: fromUUID(scenarioId),
-    });
+    await testRun.launchTestRun({ ...submission.value, scenarioId });
     return redirect(
       getRoute('/scenarios/:scenarioId/test-run', {
-        scenarioId: fromUUID(createdTestRun.scenarioId),
-        //testRunId: fromUUID(createdTestRun.id), Waiting for the api
+        scenarioId: fromUUID(scenarioId),
       }),
     );
   } catch (error) {
@@ -99,7 +95,7 @@ function CreateTestRunToContent() {
     [scenarioIterations],
   );
 
-  const phantomIterations = React.useMemo(
+  const testIterations = React.useMemo(
     () =>
       scenarioIterations.filter(
         ({ type }) => type !== 'live version' && type !== 'draft',
@@ -112,9 +108,9 @@ function CreateTestRunToContent() {
     [refIterations],
   );
 
-  const phantomIterationsOptions = React.useMemo(
-    () => phantomIterations.map(({ id }) => id),
-    [phantomIterations],
+  const testIterationsOptions = React.useMemo(
+    () => testIterations.map(({ id }) => id),
+    [testIterations],
   );
 
   const [form, fields] = useForm({
@@ -124,12 +120,10 @@ function CreateTestRunToContent() {
     defaultValue: {
       refIterationId: refIterationsOptions[0],
     },
-    onValidate({ formData }) {
-      console.log('Form data', formData);
-      return parseWithZod(formData, {
+    onValidate: ({ formData }) =>
+      parseWithZod(formData, {
         schema: createTestRunFormSchema,
-      });
-    },
+      }),
   });
 
   return (
@@ -188,12 +182,12 @@ function CreateTestRunToContent() {
                   placeholder={t(
                     'scenarios:create_testrun.phantom_placeholder',
                   )}
-                  options={phantomIterationsOptions}
+                  options={testIterationsOptions}
                 >
-                  {phantomIterations.map(({ id }) => (
+                  {testIterations.map(({ id }) => (
                     <FormSelect.DefaultItem key={id} value={id}>
                       {`V${
-                        phantomIterations.find(
+                        testIterations.find(
                           ({ id: iterationId }) => iterationId === id,
                         )?.version
                       }`}

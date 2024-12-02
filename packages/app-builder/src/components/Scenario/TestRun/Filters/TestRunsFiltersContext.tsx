@@ -19,9 +19,9 @@ import { type TestRunFilterName, testRunsFilterNames } from './filters';
 export const testRunsFiltersSchema = z.object({
   statuses: z.array(z.enum(testRunStatuses)).optional(),
   startedAfter: z.date().optional(),
-  creator: z.string().optional(),
-  ref_version: z.string().optional(),
-  test_version: z.string().optional(),
+  creators: z.array(z.string()).optional(),
+  ref_versions: z.array(z.string()).optional(),
+  test_versions: z.array(z.string()).optional(),
 });
 
 export type TestRunsFilters = z.infer<typeof testRunsFiltersSchema>;
@@ -36,16 +36,13 @@ const TestRunsFiltersContext = createSimpleContext<TestRunsFiltersContextValue>(
   'TestRunsFiltersContext',
 );
 
-export type TestRunsFiltersForm = {
-  statuses: TestRunStatus[];
-  startedAfter?: Date;
-  creator?: string;
-  ref_version?: string;
-  test_version?: string;
-};
+export type TestRunsFiltersForm = TestRunsFilters;
 
 export const emptyTestRunsFilters: TestRunsFiltersForm = {
   statuses: [],
+  creators: [],
+  ref_versions: [],
+  test_versions: [],
 };
 
 function adaptFilterValues({
@@ -122,8 +119,8 @@ export function useStartedAfterFilter() {
 }
 
 export const useCreatorFilter = () => {
-  const { field } = useController<TestRunsFiltersForm, 'creator'>({
-    name: 'creator',
+  const { field } = useController<TestRunsFiltersForm, 'creators'>({
+    name: 'creators',
   });
   const creator = field.value;
   const setCreator = field.onChange;
@@ -131,8 +128,8 @@ export const useCreatorFilter = () => {
 };
 
 export const useRefVersionFilter = () => {
-  const { field } = useController<TestRunsFiltersForm, 'ref_version'>({
-    name: 'ref_version',
+  const { field } = useController<TestRunsFiltersForm, 'ref_versions'>({
+    name: 'ref_versions',
   });
   const refVersion = field.value;
   const setRefVersion = field.onChange;
@@ -140,8 +137,8 @@ export const useRefVersionFilter = () => {
 };
 
 export const useTestVersionFilter = () => {
-  const { field } = useController<TestRunsFiltersForm, 'test_version'>({
-    name: 'test_version',
+  const { field } = useController<TestRunsFiltersForm, 'test_versions'>({
+    name: 'test_versions',
   });
   const testVersion = field.value;
   const setTestVersion = field.onChange;

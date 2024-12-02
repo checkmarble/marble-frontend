@@ -1,32 +1,25 @@
-import {
-  CursorPaginationButtons,
-  ErrorComponent,
-  Page,
-  paginationSchema,
-  scenarioI18n,
-} from '@app-builder/components';
+import { ErrorComponent, Page, scenarioI18n } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters';
 import {
-  emptyTestRunsFilters,
   type TestRunsFilters,
   TestRunsFiltersBar,
   TestRunsFiltersMenu,
   TestRunsFiltersProvider,
-  testRunsFiltersSchema,
 } from '@app-builder/components/Scenario/TestRun/Filters';
 import { testRunsFilterNames } from '@app-builder/components/Scenario/TestRun/Filters/filters';
-import { TestRunPreview } from '@app-builder/components/Scenario/TestRun/TestRunPreview';
+import { TestRunSelector } from '@app-builder/components/Scenario/TestRun/TestRunSelector';
 import {
   isForbiddenHttpError,
   isNotFoundHttpError,
   type User,
 } from '@app-builder/models';
-import { type PaginationParams } from '@app-builder/models/pagination';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import {
+  adaptScenarioIterationWithType,
+  type ScenarioIterationWithType,
+} from '@app-builder/models/scenario-iteration';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -38,7 +31,9 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { useCurrentScenario, useScenarioIterations } from './_layout';
+import { useCurrentScenario } from './_layout';
+import { allPass, filter, pick, mapToObj } from 'remeda';
+import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 
 export const handle = {
   i18n: [...scenarioI18n] satisfies Namespace,
@@ -47,15 +42,26 @@ export const handle = {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const scenarioId = fromParams(params, 'scenarioId');
-  const { testRunRepository } = await authService.isAuthenticated(request, {
+  const { testRun, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
+  const [runs, scenarioIterations, currScenario] = await Promise.all([
+    testRun.listTestRuns({ scenarioId }),
+    scenario.listScenarioIterations({ scenarioId }),
+    scenario.getScenario({ scenarioId }),
+  ]);
+
   try {
     return json({
-      testRuns: await testRunRepository.listTestRuns({
-        scenarioId: fromUUID(scenarioId),
-      }),
+      runs,
+      iterations: mapToObj(scenarioIterations, (i) => [
+        i.id,
+        pick(adaptScenarioIterationWithType(i, currScenario.liveVersionId), [
+          'version',
+          'type',
+        ]),
+      ]),
     });
   } catch (error) {
     // if scenario is deleted or user no longer have access, the user is redirected
@@ -69,14 +75,30 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function TestRuns() {
   const { t } = useTranslation(handle.i18n);
-  const { testRuns: runs } = useLoaderData<typeof loader>();
+  const { runs, iterations } = useLoaderData<typeof loader>();
   const currentScenario = useCurrentScenario();
   const { orgUsers } = useOrganizationUsers();
-  const scenarioIterations = useScenarioIterations();
   const [filters, setFilters] = useState<TestRunsFilters>({});
 
   const filteredRuns = useMemo(() => {
-    return runs;
+    const { statuses, startedAfter, creators, ref_versions, test_versions } =
+      filters;
+
+    return filter(runs, (r) =>
+      allPass(r, [
+        (r) => !statuses || !statuses.length || statuses.includes(r.status),
+        (r) => !startedAfter || +r.startDate > startedAfter.getTime(),
+        (r) => !creators || !creators.length || creators.includes(r.creatorId),
+        (r) =>
+          !ref_versions ||
+          !ref_versions.length ||
+          ref_versions.includes(r.refIterationId),
+        (r) =>
+          !test_versions ||
+          !test_versions.length ||
+          test_versions.includes(r.testIterationId),
+      ]),
+    );
   }, [runs, filters]);
 
   const users = useMemo(
@@ -95,25 +117,6 @@ export default function TestRuns() {
     [orgUsers],
   );
 
-  const iterations = useMemo(
-    () =>
-      scenarioIterations.reduce(
-        (acc, curr) => {
-          acc[curr.id] = {
-            version: curr.version,
-            type: curr.type,
-          };
-
-          return acc;
-        },
-        {} as Record<
-          string,
-          Pick<ScenarioIterationWithType, 'version' | 'type'>
-        >,
-      ),
-    [scenarioIterations],
-  );
-
   return (
     <Page.Main>
       <Page.Header className="gap-4">
@@ -123,9 +126,7 @@ export default function TestRuns() {
           })}
         />
         <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-        <p className="text-grey-50 line-clamp-2">
-          {t('scenarios:home.testrun')}
-        </p>
+        <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
       </Page.Header>
 
       <Page.Container>
@@ -139,8 +140,8 @@ export default function TestRuns() {
               filterValues={filters}
             >
               <div className="flex flex-row items-center justify-between">
-                <span className="text-grey-100 font-semibold">
-                  {t('scenarios:testrun.history')}
+                <span className="text-grey-100 text-l font-semibold">
+                  {t('scenarios:home.testrun')}
                 </span>
                 <div className="flex flex-row gap-4">
                   <TestRunsFiltersMenu filterNames={testRunsFilterNames}>
@@ -171,7 +172,7 @@ export default function TestRuns() {
                   </span>
                 </div>
                 {filteredRuns.map((run) => (
-                  <TestRunPreview
+                  <TestRunSelector
                     {...run}
                     key={run.id}
                     users={users}

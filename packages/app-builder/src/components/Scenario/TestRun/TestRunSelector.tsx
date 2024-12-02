@@ -12,7 +12,7 @@ import { match } from 'ts-pattern';
 import { Avatar, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export const TestRunPreview = ({
+export const TestRunSelector = ({
   id,
   status,
   refIterationId,
@@ -22,14 +22,12 @@ export const TestRunPreview = ({
   endDate,
   users,
   iterations,
-  className,
 }: TestRun & {
   users: Record<string, Pick<User, 'firstName' | 'lastName'>>;
   iterations: Record<
     string,
     Pick<ScenarioIterationWithType, 'version' | 'type'>
   >;
-  className?: string;
 }) => {
   const navigate = useNavigate();
   const currentScenario = useCurrentScenario();
@@ -41,7 +39,7 @@ export const TestRunPreview = ({
         navigate(
           getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
             scenarioId: fromUUID(currentScenario.id),
-            testRunId: id,
+            testRunId: fromUUID(id),
           }),
         );
       }}
@@ -51,7 +49,6 @@ export const TestRunPreview = ({
           'bg-grey-00 hover:bg-grey-05 border-grey-10': status !== 'up',
           'bg-purple-05 hover:bg-purple-10 border-purple-100': status === 'up',
         },
-        className,
       )}
     >
       <div className="px-4">

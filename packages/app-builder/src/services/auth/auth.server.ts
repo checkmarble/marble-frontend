@@ -56,7 +56,7 @@ interface AuthenticatedInfo {
   transferRepository: TransferRepository;
   partnerRepository: PartnerRepository;
   transferAlertRepository: TransferAlertRepository;
-  testRunRepository: TestRunRepository;
+  testRun: TestRunRepository;
   webhookRepository: WebhookRepository;
   ruleSnoozeRepository: RuleSnoozeRepository;
   organization: OrganizationRepository;
@@ -364,7 +364,7 @@ export function makeAuthenticationServerService({
       apiKey: getApiKeyRepository(marbleCoreApiClient),
       analytics: getAnalyticsRepository(marbleCoreApiClient),
       transferRepository: getTransferRepository(transfercheckAPIClient),
-      testRunRepository: getTestRunRepository(marbleCoreApiClient),
+      testRun: getTestRunRepository(marbleCoreApiClient),
       partnerRepository: getPartnerRepository(transfercheckAPIClient),
       transferAlertRepository: getTransferAlertRepository(
         transfercheckAPIClient,
