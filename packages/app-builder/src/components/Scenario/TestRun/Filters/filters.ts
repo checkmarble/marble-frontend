@@ -4,9 +4,9 @@ import { match } from 'ts-pattern';
 export const testRunsFilterNames = [
   'startedAfter',
   'statuses',
-  'creator',
-  'ref_version',
-  'test_version',
+  'creators',
+  'ref_versions',
+  'test_versions',
 ] as const;
 
 export type TestRunFilterName = (typeof testRunsFilterNames)[number];
@@ -15,9 +15,9 @@ export const getFilterIcon = (filterName: TestRunFilterName): IconName =>
   match<TestRunFilterName, IconName>(filterName)
     .with('startedAfter', () => 'calendar-month')
     .with('statuses', () => 'category')
-    .with('creator', () => 'person')
-    .with('ref_version', () => 'version')
-    .with('test_version', () => 'version')
+    .with('creators', () => 'person')
+    .with('ref_versions', () => 'version')
+    .with('test_versions', () => 'version')
     .exhaustive();
 
 export const getFilterTKey = (filterName: TestRunFilterName) =>
@@ -27,10 +27,13 @@ export const getFilterTKey = (filterName: TestRunFilterName) =>
       () => 'scenarios:testrun.filters.started_after' as const,
     )
     .with('statuses', () => 'scenarios:testrun.filters.status' as const)
-    .with('creator', () => 'scenarios:testrun.filters.creator' as const)
-    .with('ref_version', () => 'scenarios:testrun.filters.ref_version' as const)
+    .with('creators', () => 'scenarios:testrun.filters.creator' as const)
     .with(
-      'test_version',
+      'ref_versions',
+      () => 'scenarios:testrun.filters.ref_version' as const,
+    )
+    .with(
+      'test_versions',
       () => 'scenarios:testrun.filters.test_version' as const,
     )
     .exhaustive();

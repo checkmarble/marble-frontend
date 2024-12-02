@@ -7,7 +7,7 @@ import {
 } from '../TestRunsFiltersContext';
 import { useScenarioIterations } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 
-export function VersionFilter({ type }: { type: 'ref' | 'test' }) {
+export function VersionsFilter({ type }: { type: 'ref' | 'test' }) {
   const [value, setSearchValue] = useState('');
   const { refVersion, setRefVersion } = useRefVersionFilter();
   const { testVersion, setTestVersion } = useTestVersionFilter();

@@ -13,18 +13,15 @@ import {
   useTestRunsFiltersContext,
   useTestRunsFiltersPartition,
   useClearFilter,
-  TestRunsFiltersForm,
   useClearAllFilters,
 } from './TestRunsFiltersContext';
 import { TestRunsFiltersMenu } from './TestRunsFiltersMenu';
 import { FilterDetail } from './FilterDetail';
 import { getFilterIcon, getFilterTKey } from './filters';
-import { useFormContext } from 'react-hook-form';
 
 export function TestRunsFiltersBar() {
   const { t } = useTranslation(['scenarios', 'common']);
   const { onTestRunsFilterClose } = useTestRunsFiltersContext();
-  const { reset } = useFormContext<TestRunsFiltersForm>();
 
   const onOpenChange = useCallback(
     (open: boolean) => {
@@ -60,7 +57,7 @@ export function TestRunsFiltersBar() {
                   <FilterItem.Trigger>
                     <Icon icon={icon} className="size-5" />
                     <span className="text-s font-semibold first-letter:capitalize">
-                      {t(tKey)}
+                      <span>{t(tKey)}</span>
                     </span>
                   </FilterItem.Trigger>
                   <FilterItem.Clear

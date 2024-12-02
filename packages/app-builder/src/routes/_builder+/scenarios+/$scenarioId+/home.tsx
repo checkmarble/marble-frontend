@@ -55,20 +55,22 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { user, decision, testRunRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const {
+    user,
+    decision,
+    testRun: testRunRepository,
+  } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const scheduledExecutions = await decision.listScheduledExecutions({
-    scenarioId,
-  });
-
-  const runs = await testRunRepository.listTestRuns({
-    scenarioId,
-  });
+  const [scheduledExecutions, testRuns] = await Promise.all([
+    decision.listScheduledExecutions({ scenarioId }),
+    testRunRepository.listTestRuns({
+      scenarioId,
+    }),
+  ]);
 
   return json({
     featureAccess: {
@@ -81,7 +83,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       isTestRunAvailable: true,
     },
     scheduledExecutions,
-    testRuns: runs,
+    testRuns,
   });
 }
 
@@ -366,7 +368,7 @@ function TestRunSection({ scenarioId }: { scenarioId: string }) {
                 })}
                 to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
                   scenarioId: fromUUID(scenarioId),
-                  testRunId: currentTestRun[0]?.id ?? '1',
+                  testRunId: fromUUID(currentTestRun[0]!.id),
                 })}
               >
                 {t('scenarios:testrun.current_run')}
