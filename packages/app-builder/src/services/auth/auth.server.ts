@@ -141,7 +141,9 @@ interface MakeAuthenticationServerServiceArgs {
   getTransferRepository: (
     transfercheckApi: TransfercheckApi,
   ) => TransferRepository;
-  getTestRunRepository: () => TestRunRepository;
+  getTestRunRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => TestRunRepository;
   getPartnerRepository: (
     transfercheckApi: TransfercheckApi,
   ) => PartnerRepository;
@@ -362,7 +364,7 @@ export function makeAuthenticationServerService({
       apiKey: getApiKeyRepository(marbleCoreApiClient),
       analytics: getAnalyticsRepository(marbleCoreApiClient),
       transferRepository: getTransferRepository(transfercheckAPIClient),
-      testRunRepository: getTestRunRepository(),
+      testRunRepository: getTestRunRepository(marbleCoreApiClient),
       partnerRepository: getPartnerRepository(transfercheckAPIClient),
       transferAlertRepository: getTransferAlertRepository(
         transfercheckAPIClient,
