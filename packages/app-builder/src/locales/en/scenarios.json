@@ -265,6 +265,7 @@
   "edit_timestamp_extract.description": "Extract a year, month, day or hour from a timestamp, returning an integer number.",
   "edit_timestamp_extract.extract_the": "extract the",
   "edit_timestamp_extract.from": "from",
+  "edit_timestamp_extract.display_name": "{{operator}} from {{timestamp}}",
   "edit_timestamp_extract.explanation.year": "Day in the year, between 1 and 366.",
   "edit_timestamp_extract.explanation.month": "Month number, between 1 and 12.",
   "edit_timestamp_extract.explanation.day_of_month": "Day number in the month, between 1 and 31.",

@@ -101,8 +101,7 @@ export function OptionsProvider({
   customLists: CustomList[];
   triggerObjectType: string;
 }) {
-  const { t: tCommon } = useTranslation('common');
-  const { t: tScenarios } = useTranslation('scenarios');
+  const { t } = useTranslation(['common', 'scenarios']);
   const language = useFormatLanguage();
   const triggerObjectTable = React.useMemo(
     () =>
@@ -136,13 +135,8 @@ export function OptionsProvider({
 
   const getAstNodeDisplayNameValue = React.useCallback(
     (astNode: AstNode) =>
-      getAstNodeDisplayName(astNode, {
-        tCommon,
-        tScenarios,
-        language,
-        customLists,
-      }),
-    [tCommon, tScenarios, language, customLists],
+      getAstNodeDisplayName(astNode, { t, language, customLists }),
+    [t, language, customLists],
   );
 
   return (

@@ -7,7 +7,7 @@ import * as R from 'remeda';
 export function formatConstant(
   constant: ConstantType,
   context: {
-    tCommon: TFunction<'common', undefined>;
+    t: TFunction<['common', 'scenarios'], undefined>;
     language: string;
   },
 ): string {
