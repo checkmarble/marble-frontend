@@ -144,16 +144,14 @@ export function EditCaseTags({
             {t('cases:case.tags')}
           </FormLabel>
           <FormSelectWithCombobox.Control
+            multiple
             options={orgTagIds}
-            render={({ selectedValues }) => (
+            render={({ selectedValue }) => (
               <FormSelectCaseTags
                 orgTags={orgTags}
-                selectedTagIds={selectedValues}
+                selectedTagIds={selectedValue}
                 onOpenChange={(open) => {
-                  if (
-                    !open &&
-                    !R.isDeepEqual(defaultCaseTagIds, selectedValues)
-                  )
+                  if (!open && !R.isDeepEqual(defaultCaseTagIds, selectedValue))
                     formRef.current?.requestSubmit();
                 }}
               />
