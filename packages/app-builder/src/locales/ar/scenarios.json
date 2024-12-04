@@ -300,5 +300,11 @@
   "home.workflow_type.add_to_case_if_possible": "أضف إلى الحالة",
   "home.workflow_type.add_to_case_if_possible.tooltip": "أضف القرار المطابق مع المعايير إلى الحلة موجود أو أنشئ ملفًا جديدًا",
   "home.workflow_type.create_case": "ملف جديد",
-  "home.workflow_type.create_case.tooltip": "أضف القرار المناسب للمعايير إلى الحالة جديد."
+  "home.workflow_type.create_case.tooltip": "أضف القرار المناسب للمعايير إلى الحالة جديد.",
+  "edit_timestamp_extract.explanation.day_of_month": "رقم اليوم في الشهر بين 1 و 31.",
+  "edit_timestamp_extract.explanation.day_of_week": "رقم اليوم في الأسبوع، بين 1 و7، حيث يكون يوم الاثنين هو 1.",
+  "edit_timestamp_extract.explanation.hour": "الساعة في اليوم بين 0 و 23.",
+  "edit_timestamp_extract.explanation.month": "رقم الشهر بين 1 و 12",
+  "edit_timestamp_extract.explanation.year": "يوم في السنة من 1 إلى 366.",
+  "edit_timestamp_extract.display_name": "{{operator}} من {{timestamp}}"
 }
