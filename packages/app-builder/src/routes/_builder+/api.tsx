@@ -46,7 +46,7 @@ export default function Api() {
     <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center">
-          <Icon icon="world" className="mr-2 size-6" />
+          <Icon icon="world" className="me-2 size-6" />
           <span className="line-clamp-1 text-start">{t('navigation:api')}</span>
         </div>
       </Page.Header>
@@ -62,7 +62,7 @@ export default function Api() {
                 void downloadBlob(blob, 'openapi.json');
               }}
             >
-              <Icon icon="download" className="mr-2 size-6" />
+              <Icon icon="download" className="me-2 size-6" />
               {t('api:download_openapi_spec')}
             </Button>
           </div>

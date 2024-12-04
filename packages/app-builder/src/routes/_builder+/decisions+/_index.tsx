@@ -145,7 +145,7 @@ export default function Decisions() {
     <DecisionRightPanel.Root>
       <Page.Main>
         <Page.Header>
-          <Icon icon="decision" className="mr-2 size-6" />
+          <Icon icon="decision" className="me-2 size-6" />
           {t('navigation:decisions')}
         </Page.Header>
 

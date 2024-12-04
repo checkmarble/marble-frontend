@@ -16,7 +16,7 @@ export default function AlertsPage() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="notifications" className="mr-2 size-6" />
+        <Icon icon="notifications" className="me-2 size-6" />
         {t('navigation:transfercheck.alerts')}
       </Page.Header>
 
