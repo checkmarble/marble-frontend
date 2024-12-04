@@ -5416,11 +5416,7 @@ components:
       required:
         - version
         - outcome
-        - phantom_outcome
-        - score
-        - phantom_score
         - total
-        - phantom_total
       properties:
         version:
           type: string
