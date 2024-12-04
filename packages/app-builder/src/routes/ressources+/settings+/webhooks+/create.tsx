@@ -140,10 +140,11 @@ function CreateWebhookContent() {
           >
             <FormLabel>{t('settings:webhooks.event_types')}</FormLabel>
             <FormSelectWithCombobox.Control
+              multiple
               options={eventTypes}
-              render={({ selectedValues }) => (
+              render={({ selectedValue }) => (
                 <FormSelectEvents
-                  selectedEventTypes={selectedValues}
+                  selectedEventTypes={selectedValue}
                   className="w-full"
                 />
               )}
