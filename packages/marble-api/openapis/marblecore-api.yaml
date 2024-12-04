@@ -3359,7 +3359,7 @@ paths:
   /scenario-testruns/{test_run_id}/decisiondatabyscore:
     get:
       tags:
-       - TestRun
+        - TestRun
       summary: Get decisions by score and outcome
       operationId: getDecisionData
       security:
