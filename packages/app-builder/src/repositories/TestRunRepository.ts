@@ -47,12 +47,11 @@ export const makeGetTestRunRepository = () => {
         startDate: String(new Date().getTime()),
         endDate: args.endDate,
         creatorId: '96762987-8895-4af2-9c0a-2dffde09985c',
-        status:
-          testruns.length === 0
-            ? testRunStatuses[0]
-            : (testRunStatuses[
-                randomInteger(1, testRunStatuses.length - 1)
-              ] as TestRunStatus),
+        status: (testruns.length === 0
+          ? testRunStatuses[0]
+          : testRunStatuses[
+              randomInteger(1, testRunStatuses.length - 1)
+            ]) as TestRunStatus,
       };
 
       testruns.push(testRun);
@@ -62,7 +61,7 @@ export const makeGetTestRunRepository = () => {
   });
 };
 
-// export const makeGetTestRunRepository = () => {
+// export const makeGetTestRunRepository2 = () => {
 //   return (marbleCoreApiClient: MarbleCoreApi): TestRunRepository => ({
 //     getTestRun: async ({ testRunId }) => {
 //       const result = await marbleCoreApiClient.getTestRun(testRunId);

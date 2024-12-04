@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
 
 export const CtaClassName = cva(
-  'text-s flex flex-row items-center justify-center gap-1 rounded px-4 py-2 font-semibold outline-none border border-solid transition-colors',
+  'text-s flex flex-row items-center justify-center gap-1 rounded font-semibold outline-none border border-solid transition-colors',
   {
     variants: {
       variant: {
@@ -21,6 +21,13 @@ export const CtaClassName = cva(
         red: 'hover:bg-red-110 active:bg-red-120 border-red-100 bg-red-100 disabled:bg-red-50 aria-disabled:bg-red-50',
         grey: 'hover:bg-grey-05 active:bg-grey-10 focus:border-purple-100',
       },
+      size: {
+        default: 'px-4 py-2',
+        icon: 'size-6',
+      },
+    },
+    defaultVariants: {
+      size: 'default',
     },
   },
 );

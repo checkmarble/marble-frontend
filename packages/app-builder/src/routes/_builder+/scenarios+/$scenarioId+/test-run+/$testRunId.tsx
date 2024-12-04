@@ -12,6 +12,7 @@ import { useOrganizationUsers } from '@app-builder/services/organization/organiz
 import { useMemo } from 'react';
 import { mapToObj, pick } from 'remeda';
 import { SanKeyChart } from '@app-builder/components/Scenario/TestRun/Graphs/SanKeyChart';
+import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
 
 export const handle = {
   i18n: ['scenarios', 'navigation', 'common'] satisfies Namespace,
@@ -80,6 +81,7 @@ export default function TestRun() {
               { version: 'v1', outcome: 'block_and_review', count: 20 },
             ]}
           />
+          <FilterTransactionByDecision />
         </Page.Content>
       </Page.Container>
     </Page.Main>

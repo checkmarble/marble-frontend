@@ -1,4 +1,3 @@
-import { knownOutcomes } from '@app-builder/models/outcome';
 import { useMemo, useState } from 'react';
 import { toggle } from 'radash';
 import {
@@ -11,15 +10,11 @@ import clsx from 'clsx';
 import { entries, unique, groupBy, keys, mapValues, omit, sumBy } from 'remeda';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
+import { TestRunDecision } from '@app-builder/models/testrun';
+import { Outcome } from '@app-builder/models/outcome';
 
 type Type = 'absolute' | 'percentage';
-type Outcome = (typeof knownOutcomes)[number];
 type Summary = { total: number } & Partial<{ [outcome in Outcome]: number }>;
-type Decisions = {
-  version: string;
-  outcome: Outcome;
-  count: number;
-}[];
 
 const SanKey = ({
   version,
@@ -49,6 +44,7 @@ const SanKey = ({
         ) : (
           pairs.map(([outcome, count]) => (
             <div
+              key={outcome}
               style={{
                 flexBasis: `${Math.round((count * 100) / summary.total)}%`,
               }}
@@ -75,7 +71,11 @@ const SanKey = ({
   );
 };
 
-export const SanKeyChart = ({ decisions }: { decisions: Decisions }) => {
+export const SanKeyChart = ({
+  decisions,
+}: {
+  decisions: TestRunDecision[];
+}) => {
   const { t } = useTranslation(['scenarios', 'decisions']);
 
   const outcomes = useMemo(
@@ -110,19 +110,17 @@ export const SanKeyChart = ({ decisions }: { decisions: Decisions }) => {
       </Collapsible.Title>
       <Collapsible.Content>
         <div className="flex flex-col gap-8">
-          <div className="flex flex-row items-center">
-            <RadioGroup
-              onValueChange={(type) => setTytpe(type as Type)}
-              value={type}
-            >
-              <RadioGroupItem value="absolute">
-                {t('scenarios:testrun.distribution.absolute')}
-              </RadioGroupItem>
-              <RadioGroupItem value="percentage">
-                {t('scenarios:testrun.distribution.percentage')}
-              </RadioGroupItem>
-            </RadioGroup>
-          </div>
+          <RadioGroup
+            onValueChange={(type) => setTytpe(type as Type)}
+            value={type}
+          >
+            <RadioGroupItem value="absolute">
+              {t('scenarios:testrun.distribution.absolute')}
+            </RadioGroupItem>
+            <RadioGroupItem value="percentage">
+              {t('scenarios:testrun.distribution.percentage')}
+            </RadioGroupItem>
+          </RadioGroup>
           <div className="flex h-60 w-full flex-row items-center justify-center gap-4 px-8">
             <SanKey
               type={type}
@@ -142,6 +140,7 @@ export const SanKeyChart = ({ decisions }: { decisions: Decisions }) => {
             {outcomes.map((outcome) => (
               <Button
                 variant="tertiary"
+                key={outcome}
                 className="text-grey-100 gap-3"
                 onClick={() => updateLegend((prev) => toggle(prev, outcome))}
               >

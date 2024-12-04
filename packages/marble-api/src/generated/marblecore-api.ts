@@ -693,6 +693,22 @@ export type TestRunCreateInputDto = {
     test_iteration_id: string;
     end_date: string;
 };
+export type TestRunDecisionDataDto = {
+    version: string;
+    outcome: OutcomeDto;
+    phantom_outcome: OutcomeDto;
+    score: number;
+    phantom_score: number;
+    total: number;
+    phantom_total: number;
+};
+export type TestRunRuleExecutionDataDto = {
+    version: string;
+    name: string;
+    status: "hit" | "no_hit" | "error" | "snoozed";
+    total: number;
+    stable_rule_id: string;
+};
 /**
  * Get an access token
  */
@@ -2830,10 +2846,6 @@ export function getRuleSnooze(ruleSnoozeId: string, opts?: Oazapfts.RequestOpts)
  * List all test runs for a scenario
  */
 export function listTestRuns(scenarioId: string, opts?: Oazapfts.RequestOpts) {
-    console.log("URL", `/scenario-testrun${QS.query(QS.explode({
-        scenario_id: scenarioId
-    }))}`)
-
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: TestRunDto[];
@@ -2888,6 +2900,50 @@ export function getTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
         status: 404;
         data: string;
     }>(`/scenario-testruns/${encodeURIComponent(testRunId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Get decisions by score and outcome
+ */
+export function getDecisionData(testRunId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            decisions: TestRunDecisionDataDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/decisiondatabyscore`, {
+        ...opts
+    }));
+}
+/**
+ * Get rules execution distribution by status (hit, no hit, etxc)
+ */
+export function getRuleData(testRunId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            rules: TestRunRuleExecutionDataDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/databyruleexecution`, {
         ...opts
     }));
 }

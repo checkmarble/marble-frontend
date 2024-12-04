@@ -8,6 +8,7 @@ export default {
     extend: {
       gridTemplateColumns: {
         'test-run': '30% 30% 8% auto',
+        'ts-by-ds': '9% 40% 25% auto',
       },
     },
   },
