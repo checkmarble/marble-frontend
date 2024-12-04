@@ -74,7 +74,7 @@ export function FormSelectCaseTags({
 
   return (
     <FormSelectWithCombobox.Root
-      selectedValues={selectedTagIds}
+      selectedValue={selectedTagIds}
       searchValue={searchValue}
       onSearchValueChange={setSearchValue}
       onOpenChange={onOpenChange}

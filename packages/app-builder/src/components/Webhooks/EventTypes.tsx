@@ -27,7 +27,7 @@ export function FormSelectEvents({
 
   return (
     <FormSelectWithCombobox.Root
-      selectedValues={selectedEventTypes}
+      selectedValue={selectedEventTypes}
       searchValue={value}
       onSearchValueChange={setSearchValue}
     >

@@ -16,10 +16,11 @@ import {
 
 import { useFieldName } from './FormField';
 
-interface FormSelectWithComboboxContextValue {
+type Value = string | string[];
+interface FormSelectWithComboboxContextValue<T extends Value = Value> {
   selectRef: React.RefObject<HTMLButtonElement>;
   control: {
-    change: (value: string[]) => void;
+    change: (value: T) => void;
     blur: () => void;
   };
 }
@@ -30,24 +31,44 @@ const FormSelectWithComboboxContext =
 export const useFormSelectWithComboboxContext =
   FormSelectWithComboboxContext.useValue;
 
-interface FormSelectWithComboboxControlProps {
+interface FormSelectWithComboboxControlProps<Multiple extends boolean> {
+  /**
+   * Whether the select allows multiple values. This is redundant with the field schema, but to ensure static typing, it is required to specify it here.
+   */
+  multiple: Multiple;
   options: readonly string[];
-  render: (props: { selectedValues: string[] }) => React.ReactNode;
+  render: (props: {
+    selectedValue: Multiple extends true ? string[] : string | undefined;
+  }) => React.ReactNode;
 }
 
-function FormSelectWithComboboxControl({
+function FormSelectWithComboboxControl<Multiple extends boolean>({
+  multiple,
   options,
   render,
-}: FormSelectWithComboboxControlProps) {
+}: FormSelectWithComboboxControlProps<Multiple>) {
   const selectRef = React.useRef<HTMLButtonElement>(null);
   const { name, description } = useFieldName();
   const [meta] = useField<string[]>(name);
 
+  if (import.meta.env.DEV) {
+    // Ensure the field schema and the component configuration are compatible. This is a runtime check, only included in development.
+    if (multiple !== meta.multiple) {
+      throw new Error(
+        meta.multiple
+          ? 'The field schema seems to allow multiple values, but the `FormSelectWithComboboxControl` component is not configured to handle multiple values.'
+          : 'The field schema does not allow multiple values, but the `FormSelectWithComboboxControl` component is configured to handle multiple values.',
+      );
+    }
+  }
+
   const control = unstable_useControl(meta);
 
-  const selectedValues = React.useMemo(
-    () => adaptToStringArray(control.value),
-    [control.value],
+  const selectedValue = React.useMemo(
+    (): Multiple extends true ? string[] : string | undefined =>
+      // @ts-expect-error should be resolved in 5.8 https://github.com/microsoft/TypeScript/pull/56941
+      multiple ? adaptToStringArray(control.value) : control.value,
+    [control.value, multiple],
   );
 
   const { change, blur } = control;
@@ -81,37 +102,31 @@ function FormSelectWithComboboxControl({
           <option key={option} value={option} />
         ))}
       </select>
-      {render({ selectedValues })}
+      {render({ selectedValue })}
     </FormSelectWithComboboxContext.Provider>
   );
 }
 
-interface FormSelectWithComboboxRootProps
-  extends Omit<
-    SelectWithComboboxProviderProps<string[]>,
-    'onSelectedValuesChange' | 'selectedValues'
-  > {
-  selectedValues: string[];
-  onSelectedValuesChange?: (values: string[]) => void;
-}
+interface FormSelectWithComboboxRootProps<T extends Value = Value>
+  extends SelectWithComboboxProviderProps<T> {}
 
-function FormSelectWithComboboxRoot({
+function FormSelectWithComboboxRoot<T extends Value = Value>({
   children,
-  onSelectedValuesChange,
+  onSelectedValueChange,
   onOpenChange,
-  selectedValues,
+  selectedValue,
   ...rest
-}: FormSelectWithComboboxRootProps) {
+}: FormSelectWithComboboxRootProps<T>) {
   const { control } = useFormSelectWithComboboxContext();
 
   const { change, blur } = control;
 
   const _onSelectedValueChange = React.useCallback(
-    (value: string[]) => {
+    (value: T) => {
       change(value);
-      onSelectedValuesChange?.(value);
+      onSelectedValueChange?.(value);
     },
-    [change, onSelectedValuesChange],
+    [change, onSelectedValueChange],
   );
 
   const _onOpenChange = useCallbackRef((open: boolean) => {
@@ -124,7 +139,7 @@ function FormSelectWithComboboxRoot({
   return (
     <SelectWithCombobox.Root
       {...rest}
-      selectedValue={selectedValues}
+      selectedValue={selectedValue}
       onSelectedValueChange={_onSelectedValueChange}
       onOpenChange={_onOpenChange}
     >
