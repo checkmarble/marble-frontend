@@ -99,5 +99,9 @@
   "webhooks.secret.value": "قيمة",
   "webhooks.setup_documentation": "لمزيد من المعلومات حول خطافات الويب، يرجى الرجوع إلى <DocLink>الوثائق</DocLink>.",
   "webhooks.update_webhook": "تحديث خطاف الويب",
-  "webhooks.url": "عنوان URL"
+  "webhooks.url": "عنوان URL",
+  "scenario_default_timezone.change_warning": "سيؤثر تغيير هذه القيمة على الفور على جميع إصدارات السيناريو المباشر.",
+  "scenario_default_timezone.label": "المنطقة الزمنية الافتراضية لتفسير الطابع الزمني",
+  "scenarios": "السيناريوهات",
+  "scenenario_execution": "إعدادات تنفيذ السيناريو"
 }
