@@ -3378,7 +3378,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TestRunDecisionData'
+                type: object
+                required:
+                  - decisions
+                properties:
+                  decisions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TestRunDecisionDataDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -3407,7 +3414,14 @@ paths:
           content:
             application/json:
               schema:
-              $ref: '#/components/schemas/TestRunRuleExecutionData'
+                type: object
+                required:
+                  - rules
+                properties:
+                  rules:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TestRunRuleExecutionDataDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -5397,7 +5411,7 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/TestRunStatusDto'
-    TestRunDecisionData:
+    TestRunDecisionDataDto:
       type: object
       required:
         - version
@@ -5422,15 +5436,18 @@ components:
           type: integer
         phantom_total:
           type: integer
-    TestRunRuleExecutionData:
+    TestRunRuleExecutionDataDto:
       type: object
       required:
         - version
+        - name
         - status
         - total
         - stable_rule_id
       properties:
         version:
+          type: string
+        name:
           type: string
         status:
           type: string
