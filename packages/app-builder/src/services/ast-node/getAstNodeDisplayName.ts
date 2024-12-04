@@ -172,7 +172,9 @@ const pluralizeTemporalDurationUnit = (unit: number, type: string): string => {
 
 function getAggregatorDisplayName(
   astNode: AggregationAstNode,
-  context: { t: TFunctionDisplayName },
+  context: {
+    t: TFunctionDisplayName;
+  },
 ) {
   const { aggregator, label } = astNode.namedChildren;
   if (label?.constant !== undefined && label?.constant !== '') {
@@ -218,5 +220,10 @@ function getTimestampExtractDisplayName(
     return context.t('scenarios:edit_timestamp_extract.title');
   }
 
-  return `${getOperatorName(context.t, part)} ${context.t('scenarios:edit_timestamp_extract.from')} ${timestampStr}`;
+  return context.t('scenarios:edit_timestamp_extract.display_name', {
+    replace: {
+      operator: getOperatorName(context.t, part),
+      timestamp: timestampStr,
+    },
+  });
 }
