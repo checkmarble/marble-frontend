@@ -100,8 +100,11 @@
   "webhooks.setup_documentation": "Pour plus d'informations sur les webhooks, veuillez vous référer à <DocLink>la documentation</DocLink>.",
   "webhooks.update_webhook": "Mettre à jour le webhook",
   "webhooks.url": "URL",
-  "scenario_default_timezone.change_warning": "La modification de cette valeur aura un impact immédiat sur toutes les versions de scénarios en direct.",
+  "scenario_default_timezone.change_warning": "La modification de cette valeur aura un impact immédiat sur toutes les versions live de scénarios.",
   "scenario_default_timezone.label": "Fuseau horaire par défaut pour l'interprétation de l'horodatage",
+  "scenario_default_timezone.no_match": "Aucun fuseau horaire ne correspond à votre recherche",
   "scenarios": "Scénarios",
-  "scenenario_execution": "Paramètres d'exécution du scénario"
+  "scenenario_execution": "Paramètres d'exécution du scénario",
+  "scenario_default_timezone.more_results_one": "{{count}} fuseau horaire supplémentaire.\n\nAffinez votre recherche pour les voir.",
+  "scenario_default_timezone.more_results_other": "{{count}} fuseaux horaires supplémentaires.\n\nAffinez votre recherche pour les voir."
 }
