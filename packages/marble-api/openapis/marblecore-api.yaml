@@ -3358,62 +3358,62 @@ paths:
           $ref: '#/components/responses/404'
   /scenario-testruns/{test_run_id}/decisiondatabyscore:
     get:
-    tags:
-      - TestRun
-    summary: Get decisions by score and outcome
-    operationId: getDecisionData
-    security:
-      - bearerAuth: []
-    parameters:
-      - name: test_run_id
-        description: ID of the test run that need to be fetched
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    responses:
-      '200':
-        description: The list of decisions produced for the provided `test_run_id`
-        content:
-          application/json:
-            schema:
-            $ref: '#/components/schemas/TestRunDecisionData'
-      '401':
-        $ref: '#/components/responses/401'
-      '403':
-        $ref: '#/components/responses/403'
-      '404':
-        $ref: '#/components/responses/404'
+      tags:
+       - TestRun
+      summary: Get decisions by score and outcome
+      operationId: getDecisionData
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: test_run_id
+          description: ID of the test run that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The list of decisions produced for the provided `test_run_id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestRunDecisionData'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scenario-testruns/{test_run_id}/databyruleexecution:
     get:
-    tags:
-      - TestRun
-    summary: Get rules execution distribution by status (hit, no hit, etxc)
-    operationId: getRuleData
-    security:
-      - bearerAuth: []
-    parameters:
-      - name: test_run_id
-        description: ID of the test run that need to be fetched
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    responses:
-      '200':
-        description: The list of decision rules produced for the provided `test_run_id`
-        content:
-          application/json:
-            schema:
-            $ref: '#/components/schemas/TestRunRuleExecutionData'
-      '401':
-        $ref: '#/components/responses/401'
-      '403':
-        $ref: '#/components/responses/403'
-      '404':
-        $ref: '#/components/responses/404'
+      tags:
+        - TestRun
+      summary: Get rules execution distribution by status (hit, no hit, etxc)
+      operationId: getRuleData
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: test_run_id
+          description: ID of the test run that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The list of decision rules produced for the provided `test_run_id`
+          content:
+            application/json:
+              schema:
+              $ref: '#/components/schemas/TestRunRuleExecutionData'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
 components:
   parameters:
     start_date:
@@ -5411,9 +5411,9 @@ components:
         version:
           type: string
         outcome:
-          type: string
+          $ref: '#/components/schemas/OutcomeDto'
         phantom_outcome:
-          type: string
+          $ref: '#/components/schemas/OutcomeDto'
         score:
           type: integer
         phantom_score:
@@ -5434,6 +5434,7 @@ components:
           type: string
         status:
           type: string
+          enum: ['hit', 'no hit', 'error', 'unknown']
         total:
           type: integer
         stable_rule_id:
