@@ -5434,7 +5434,7 @@ components:
           type: string
         status:
           type: string
-          enum: ['hit', 'no hit', 'error', 'unknown']
+          enum: ['hit', 'no_hit', 'error', 'snoozed']
         total:
           type: integer
         stable_rule_id:
