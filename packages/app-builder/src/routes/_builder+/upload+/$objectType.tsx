@@ -389,7 +389,7 @@ export default function Upload() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="upload" className="mr-2 size-6" />
+        <Icon icon="upload" className="me-2 size-6" />
         {t('upload:upload_cta', { replace: { objectType } })}
       </Page.Header>
       <Page.Container>
@@ -420,7 +420,7 @@ export default function Upload() {
                     'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100',
                   )}
                 >
-                  <Icon icon="download" className="mr-2 size-6" />
+                  <Icon icon="download" className="me-2 size-6" />
                   {t('upload:download_template_cta')}
                 </a>
               )}
@@ -456,7 +456,7 @@ const LoadingButton = () => {
   const { t } = useTranslation(handle.i18n);
   return (
     <Button variant="secondary" className="cursor-wait">
-      <Icon icon="helpcenter" className="mr-2 size-6" />
+      <Icon icon="helpcenter" className="me-2 size-6" />
       {t('upload:download_template_cta')}
     </Button>
   );

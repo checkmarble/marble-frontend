@@ -149,7 +149,10 @@ function FormSelectTimezone({
         {selectedTimezone}
         <FormSelectWithCombobox.Arrow />
       </FormSelectWithCombobox.Select>
-      <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+      <FormSelectWithCombobox.Popover
+        className="z-50 flex flex-col gap-2 p-2"
+        unmountOnHide
+      >
         <FormSelectWithCombobox.Combobox
           render={<Input className="shrink-0" />}
           autoSelect
