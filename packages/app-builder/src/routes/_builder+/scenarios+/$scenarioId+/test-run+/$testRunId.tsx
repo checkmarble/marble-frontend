@@ -25,18 +25,18 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const [run, iterations, currScenario] = await Promise.all([
+  const [run, iterations, currentScenario] = await Promise.all([
     testRun.getTestRun({ testRunId }),
     scenario.listScenarioIterations({ scenarioId }),
     scenario.getScenario({ scenarioId }),
   ]);
 
   return json({
-    currentScenario: currScenario,
     run,
+    currentScenario,
     iterations: mapToObj(iterations, (i) => [
       i.id,
-      pick(adaptScenarioIterationWithType(i, currScenario.liveVersionId), [
+      pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), [
         'version',
         'type',
       ]),

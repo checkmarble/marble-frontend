@@ -6,17 +6,11 @@ import {
   Collapsible,
   RadioGroup,
   RadioGroupItem,
-  Switch,
 } from 'ui-design-system';
 import clsx from 'clsx';
 import { entries, unique, groupBy, keys, mapValues, omit, sumBy } from 'remeda';
-import { Icon } from 'ui-icons';
 import { useTranslation } from 'react-i18next';
-import { Namespace } from 'i18next';
-
-export const handle = {
-  i18n: ['scenarios', 'decisions'] satisfies Namespace,
-};
+import { Icon } from 'ui-icons';
 
 type Type = 'absolute' | 'percentage';
 type Outcome = (typeof knownOutcomes)[number];
@@ -31,44 +25,58 @@ const SanKey = ({
   version,
   summary,
   type,
+  legend,
 }: {
   version: string;
   type: Type;
   summary: Summary;
+  legend: Outcome[];
 }) => {
+  const pairs = useMemo(
+    () =>
+      entries(omit(summary, ['total'])).filter(([outcome]) =>
+        legend.includes(outcome),
+      ),
+    [summary, legend],
+  );
+
   return (
     <div className="flex size-full flex-col items-center gap-4">
       <span className="text-xs font-medium uppercase">{version}</span>
       <div className="flex size-full flex-col gap-1">
-        {entries(omit(summary, ['total'])).map(([outcome, count]) => (
-          <div
-            style={{
-              flexBasis: `${Math.round((count * 100) / summary.total)}%`,
-            }}
-            className={clsx(
-              'flex min-h-[24px] w-full shrink flex-row items-center justify-center rounded-[4px]',
-              {
-                'bg-green-100': outcome === 'approve',
-                'bg-yellow-100': outcome === 'review',
-                'bg-orange-100': outcome === 'block_and_review',
-                'bg-red-100': outcome === 'decline',
-              },
-            )}
-          >
-            <span className="text-s text-grey-00 font-medium">
-              {type === 'percentage'
-                ? `${Math.round((count * 100) / summary.total)}%`
-                : count}
-            </span>
-          </div>
-        ))}
+        {pairs.length === 0 ? (
+          <div className="border-grey-10 size-full rounded-lg border-2" />
+        ) : (
+          pairs.map(([outcome, count]) => (
+            <div
+              style={{
+                flexBasis: `${Math.round((count * 100) / summary.total)}%`,
+              }}
+              className={clsx(
+                'flex min-h-[24px] w-full shrink grow flex-row items-center justify-center rounded-[4px]',
+                {
+                  'bg-green-100': outcome === 'approve',
+                  'bg-yellow-100': outcome === 'review',
+                  'bg-orange-100': outcome === 'block_and_review',
+                  'bg-red-100': outcome === 'decline',
+                },
+              )}
+            >
+              <span className="text-s text-grey-00 font-medium">
+                {type === 'percentage'
+                  ? `${Math.round((count * 100) / summary.total)}%`
+                  : count}
+              </span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
 };
 
-export const SanKeyChart = ({ decisions = [] }: { decisions: Decisions }) => {
-  const { t } = useTranslation(handle.i18n);
+export const SanKeyChart = ({ decisions }: { decisions: Decisions }) => {
+  const { t } = useTranslation(['scenarios', 'decisions']);
 
   const outcomes = useMemo(
     () => unique(decisions.map((d) => d.outcome)),
@@ -76,7 +84,6 @@ export const SanKeyChart = ({ decisions = [] }: { decisions: Decisions }) => {
   );
 
   const [type, setTytpe] = useState<Type>('percentage');
-  const [showDistribution, setShowDistribution] = useState(false);
   const [legend, updateLegend] = useState<Outcome[]>(outcomes);
 
   const summaryByVersions = useMemo(
@@ -103,7 +110,7 @@ export const SanKeyChart = ({ decisions = [] }: { decisions: Decisions }) => {
       </Collapsible.Title>
       <Collapsible.Content>
         <div className="flex flex-col gap-8">
-          <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-row items-center">
             <RadioGroup
               onValueChange={(type) => setTytpe(type as Type)}
               value={type}
@@ -115,26 +122,18 @@ export const SanKeyChart = ({ decisions = [] }: { decisions: Decisions }) => {
                 {t('scenarios:testrun.distribution.percentage')}
               </RadioGroupItem>
             </RadioGroup>
-            <div className="flex flex-row items-center gap-2">
-              <span className="text-s text-grey-25 font-medium">
-                {t('scenarios:testrun.distribution.show')}
-              </span>
-              <Switch
-                disabled
-                checked={showDistribution}
-                onCheckedChange={setShowDistribution}
-              />
-            </div>
           </div>
           <div className="flex h-60 w-full flex-row items-center justify-center gap-4 px-8">
             <SanKey
               type={type}
+              legend={legend}
               version={refVersion as string}
               summary={summaryByVersions[refVersion as string] as Summary}
             />
-            <Icon icon="arrow-forward" className="h-4 text-gray-100" />
+            <Icon icon="arrow-forward" className="text-grey-100 h-4" />
             <SanKey
               type={type}
+              legend={legend}
               version={testVersion as string}
               summary={summaryByVersions[testVersion as string] as Summary}
             />

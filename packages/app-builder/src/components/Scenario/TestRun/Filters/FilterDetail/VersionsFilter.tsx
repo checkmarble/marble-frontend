@@ -1,6 +1,6 @@
 import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
-import { Avatar, Input, SelectWithCombobox } from 'ui-design-system';
+import { Input, SelectWithCombobox } from 'ui-design-system';
 import {
   useRefVersionFilter,
   useTestVersionFilter,

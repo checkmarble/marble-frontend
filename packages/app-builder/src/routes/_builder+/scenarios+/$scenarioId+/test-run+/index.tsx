@@ -1,4 +1,4 @@
-import { ErrorComponent, Page, scenarioI18n } from '@app-builder/components';
+import { ErrorComponent, Page } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters';
 import {
   type TestRunsFilters,
@@ -22,19 +22,12 @@ import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-import { useCurrentScenario } from '../_layout';
 import { allPass, filter, pick, mapToObj } from 'remeda';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
-
-export const handle = {
-  i18n: [...scenarioI18n] satisfies Namespace,
-};
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
@@ -43,7 +36,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const [runs, scenarioIterations, currScenario] = await Promise.all([
+  const [runs, scenarioIterations, currentScenario] = await Promise.all([
     testRun.listTestRuns({ scenarioId }),
     scenario.listScenarioIterations({ scenarioId }),
     scenario.getScenario({ scenarioId }),
@@ -51,11 +44,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   try {
     return json({
-      currentScenario: currScenario,
       runs,
+      currentScenario,
       iterations: mapToObj(scenarioIterations, (i) => [
         i.id,
-        pick(adaptScenarioIterationWithType(i, currScenario.liveVersionId), [
+        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), [
           'version',
           'type',
         ]),
@@ -72,7 +65,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function TestRuns() {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['scenarios']);
   const { runs, iterations, currentScenario } = useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
   const [filters, setFilters] = useState<TestRunsFilters>({});
