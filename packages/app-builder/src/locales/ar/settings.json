@@ -103,5 +103,8 @@
   "scenario_default_timezone.change_warning": "سيؤثر تغيير هذه القيمة على الفور على جميع إصدارات السيناريو المباشر.",
   "scenario_default_timezone.label": "المنطقة الزمنية الافتراضية لتفسير الطابع الزمني",
   "scenarios": "السيناريوهات",
-  "scenenario_execution": "إعدادات تنفيذ السيناريو"
+  "scenenario_execution": "إعدادات تنفيذ السيناريو",
+  "scenario_default_timezone.more_results_one": "{{count}} منطقة زمنية إضافية.\nقم بتحسين البحث لرؤيتهم.",
+  "scenario_default_timezone.more_results_other": "{{count}} مناطق زمنية إضافية.\nقم بتحسين البحث لرؤيتهم.",
+  "scenario_default_timezone.no_match": "لا توجد منطقة زمنية تطابق بحثك"
 }

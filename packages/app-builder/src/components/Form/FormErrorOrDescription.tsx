@@ -1,5 +1,4 @@
 import { useField } from '@conform-to/react';
-import clsx from 'clsx';
 import * as React from 'react';
 
 import { useFieldName } from './FormField';
@@ -32,10 +31,10 @@ export const FormErrorOrDescription = React.forwardRef<
       <p
         ref={ref}
         id={errorId}
-        className={clsx(
-          'text-s font-medium text-red-100 transition-opacity duration-200 ease-in-out',
-          errorClassName,
-        )}
+        className={
+          errorClassName ??
+          'text-s font-medium text-red-100 transition-opacity duration-200 ease-in-out'
+        }
         {...props}
       >
         {error}
@@ -48,10 +47,10 @@ export const FormErrorOrDescription = React.forwardRef<
       <p
         ref={ref}
         id={descriptionId}
-        className={clsx(
-          'text-s text-grey-25 font-medium transition-opacity duration-200 ease-in-out',
-          descriptionClassName,
-        )}
+        className={
+          descriptionClassName ??
+          'text-s text-grey-25 font-medium transition-opacity duration-200 ease-in-out'
+        }
         {...props}
       >
         {description}
