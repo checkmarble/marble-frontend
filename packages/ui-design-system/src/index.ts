@@ -18,3 +18,5 @@ export * from './Table/Table';
 export * from './Tag/Tag';
 export * from './TextArea/TextArea';
 export * from './Tooltip/Tooltip';
+export * from './RadioGroup/RadioGroup';
+export * from './utils';

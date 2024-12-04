@@ -13,10 +13,7 @@ import {
   isNotFoundHttpError,
   type User,
 } from '@app-builder/models';
-import {
-  adaptScenarioIterationWithType,
-  type ScenarioIterationWithType,
-} from '@app-builder/models/scenario-iteration';
+import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -31,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { useCurrentScenario } from './_layout';
+import { useCurrentScenario } from '../_layout';
 import { allPass, filter, pick, mapToObj } from 'remeda';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 
@@ -54,6 +51,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   try {
     return json({
+      currentScenario: currScenario,
       runs,
       iterations: mapToObj(scenarioIterations, (i) => [
         i.id,
@@ -75,8 +73,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function TestRuns() {
   const { t } = useTranslation(handle.i18n);
-  const { runs, iterations } = useLoaderData<typeof loader>();
-  const currentScenario = useCurrentScenario();
+  const { runs, iterations, currentScenario } = useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
   const [filters, setFilters] = useState<TestRunsFilters>({});
 

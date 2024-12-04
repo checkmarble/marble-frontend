@@ -6,6 +6,7 @@ import {
   type TestRunCreateInput,
 } from '@app-builder/models/testrun';
 import { toUUID } from '@app-builder/utils/short-uuid';
+import { addDays } from 'date-fns';
 import { randomInteger } from 'remeda';
 import short from 'short-uuid';
 
@@ -15,7 +16,18 @@ export interface TestRunRepository {
   listTestRuns(args: { scenarioId: string }): Promise<TestRun[]>;
 }
 
-const testruns: TestRun[] = [];
+const testruns: TestRun[] = [
+  {
+    id: '989ed5e4-c7ca-4685-9535-a3e1ab9dfc75',
+    refIterationId: '6f6fe0d8-9a1a-4d5a-bdd7-fa7fcda1b4e3',
+    scenarioId: '6f6fe0d8-0804-4500-ae68-f4e56ea780d7',
+    testIterationId: '6f6fe0d8-bbc8-4df3-a913-c0064ed99e4e',
+    startDate: String(new Date().getTime()),
+    endDate: String(addDays(new Date(), 1).getTime()),
+    creatorId: '96762987-8895-4af2-9c0a-2dffde09985c',
+    status: 'up',
+  },
+];
 
 export const makeGetTestRunRepository = () => {
   return (_: MarbleCoreApi): TestRunRepository => ({
@@ -63,21 +75,8 @@ export const makeGetTestRunRepository = () => {
 //       return adaptTestRun(result);
 //     },
 //     listTestRuns: async ({ scenarioId }) => {
-//       console.log('ScenarioId', scenarioId);
-
 //       const runs = await marbleCoreApiClient.listTestRuns(scenarioId);
-
-//       //TODO: Implement pagination & sorting
-
-//       return {
-//         items: runs.map(adaptTestRun),
-//         totalCount: {
-//           value: runs.length,
-//           isMaxCount: false,
-//         },
-//         startIndex: 0,
-//         endIndex: runs.length - 1,
-//       };
+//       return runs.map(adaptTestRun);
 //     },
 //   });
 // };

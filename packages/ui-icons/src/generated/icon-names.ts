@@ -4,6 +4,7 @@ export const iconNames = [
   'analytics',
   'arrow-2-down',
   'arrow-2-up',
+  'arrow-forward',
   'arrow-left',
   'arrow-range',
   'arrow-right',

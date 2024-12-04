@@ -5,14 +5,13 @@ import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-
-import { useCurrentScenario } from './_layout';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { useMemo } from 'react';
 import { mapToObj, pick } from 'remeda';
+import { SanKeyChart } from '@app-builder/components/Scenario/TestRun/Graphs/SanKeyChart';
 
 export const handle = {
   i18n: ['scenarios', 'navigation', 'common'] satisfies Namespace,
@@ -33,6 +32,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   return json({
+    currentScenario: currScenario,
     run,
     iterations: mapToObj(iterations, (i) => [
       i.id,
@@ -45,8 +45,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function TestRun() {
-  const currentScenario = useCurrentScenario();
-  const { run, iterations } = useLoaderData<typeof loader>();
+  const { run, iterations, currentScenario } = useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
 
   const creator = useMemo(
@@ -67,8 +66,20 @@ export default function TestRun() {
       </Page.Header>
 
       <Page.Container>
-        <Page.Content className="max-w-screen-lg">
+        <Page.Content className="flex max-w-screen-lg flex-col gap-8">
           <TestRunDetails {...run} iterations={iterations} creator={creator} />
+          <SanKeyChart
+            decisions={[
+              { version: 'v1', outcome: 'approve', count: 10 },
+              { version: 'v2', outcome: 'approve', count: 20 },
+              { version: 'v1', outcome: 'decline', count: 5 },
+              { version: 'v1', outcome: 'approve', count: 30 },
+              { version: 'v2', outcome: 'decline', count: 15 },
+              { version: 'v1', outcome: 'review', count: 9 },
+              { version: 'v2', outcome: 'review', count: 22 },
+              { version: 'v1', outcome: 'block_and_review', count: 20 },
+            ]}
+          />
         </Page.Content>
       </Page.Container>
     </Page.Main>
