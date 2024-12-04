@@ -64,7 +64,7 @@ export default function TransfersPage() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="arrows-right-left" className="mr-2 size-6" />
+        <Icon icon="arrows-right-left" className="me-2 size-6" />
         {t('navigation:transfercheck.transfers')}
       </Page.Header>
       <Page.Container>
