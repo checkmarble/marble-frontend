@@ -1,6 +1,8 @@
+import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
-import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
+import { Highlight } from '@app-builder/components/Highlight';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { validTimezones } from '@app-builder/utils/validTimezones';
@@ -10,11 +12,13 @@ import {
   getInputProps,
   useForm,
 } from '@conform-to/react';
-import { parseWithZod } from '@conform-to/zod';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Input } from 'ui-design-system';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -60,6 +64,7 @@ export function EditOrgDefaultTimezone({
       timezone: currentTimezone || validTimezones[0],
     },
     lastResult: fetcher.data,
+    constraint: getZodConstraint(schema),
     onValidate({ formData }) {
       return parseWithZod(formData, {
         schema,
@@ -83,32 +88,93 @@ export function EditOrgDefaultTimezone({
           key={fields.organizationId.key}
         />
         <FormField
-          name={'timezone'}
+          name={fields.timezone.name}
           className="flex flex-row items-center justify-between"
+          description={t('settings:scenario_default_timezone.change_warning')}
         >
           <div>
             <FormLabel className="font-semibold first-letter:capitalize">
               {t('settings:scenario_default_timezone.label')}
             </FormLabel>
-            <p className="text-s text-red-100">
-              {t('settings:scenario_default_timezone.change_warning')}
-            </p>
+            <FormErrorOrDescription descriptionClassName="text-s text-red-100" />
           </div>
-          <FormSelect.Default
-            className="w-fit"
-            onValueChange={() => {
-              formRef.current?.requestSubmit();
-            }}
+          <FormSelectWithCombobox.Control
+            multiple={false}
             options={validTimezones}
-          >
-            {validTimezones.map((tz) => (
-              <FormSelect.DefaultItem key={tz} value={tz}>
-                {tz}
-              </FormSelect.DefaultItem>
-            ))}
-          </FormSelect.Default>
+            render={({ selectedValue }) => (
+              <FormSelectTimezone
+                selectedTimezone={selectedValue}
+                validTimezones={validTimezones}
+                onSelectedValueChange={(timezone) => {
+                  if (currentTimezone !== timezone)
+                    formRef.current?.requestSubmit();
+                }}
+              />
+            )}
+          />
         </FormField>
       </fetcher.Form>
     </FormProvider>
+  );
+}
+
+const MAX_TIMEZONE_MATCHES = 50;
+
+function FormSelectTimezone({
+  selectedTimezone,
+  validTimezones,
+  onSelectedValueChange,
+}: {
+  selectedTimezone?: string;
+  validTimezones: string[];
+  onSelectedValueChange?: (selectedTimezone: string) => void;
+}) {
+  const { t } = useTranslation(['settings']);
+  const [value, setSearchValue] = React.useState('');
+  const searchValue = React.useDeferredValue(value);
+
+  const matches = React.useMemo(
+    () => matchSorter(validTimezones, searchValue),
+    [validTimezones, searchValue],
+  );
+
+  return (
+    <FormSelectWithCombobox.Root
+      selectedValue={selectedTimezone}
+      searchValue={searchValue}
+      onSearchValueChange={setSearchValue}
+      onSelectedValueChange={onSelectedValueChange}
+    >
+      <FormSelectWithCombobox.Select className="w-fit">
+        {selectedTimezone}
+        <FormSelectWithCombobox.Arrow />
+      </FormSelectWithCombobox.Select>
+      <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+        <FormSelectWithCombobox.Combobox
+          render={<Input className="shrink-0" />}
+          autoSelect
+          autoFocus
+        />
+        <FormSelectWithCombobox.ComboboxList>
+          {matches.slice(0, MAX_TIMEZONE_MATCHES).map((tz) => (
+            <FormSelectWithCombobox.ComboboxItem key={tz} value={tz}>
+              <Highlight text={tz} query={searchValue} />
+            </FormSelectWithCombobox.ComboboxItem>
+          ))}
+          {matches.length === 0 ? (
+            <p className="text-s text-grey-50 flex items-center justify-center p-2">
+              {t('settings:scenario_default_timezone.no_match')}
+            </p>
+          ) : null}
+          {matches.length > MAX_TIMEZONE_MATCHES ? (
+            <p className="text-s text-grey-50 flex items-center justify-center whitespace-pre-wrap text-balance p-2 text-center">
+              {t('settings:scenario_default_timezone.more_results', {
+                count: matches.length - MAX_TIMEZONE_MATCHES,
+              })}
+            </p>
+          ) : null}
+        </FormSelectWithCombobox.ComboboxList>
+      </FormSelectWithCombobox.Popover>
+    </FormSelectWithCombobox.Root>
   );
 }

@@ -53,7 +53,8 @@ function FormSelectWithComboboxControl<Multiple extends boolean>({
 
   if (import.meta.env.DEV) {
     // Ensure the field schema and the component configuration are compatible. This is a runtime check, only included in development.
-    if (multiple !== meta.multiple) {
+    // Caveat: This check assumes the `constraint: getZodConstraint(schema)` is used in the `useForm` call.
+    if (multiple !== Boolean(meta.multiple)) {
       throw new Error(
         meta.multiple
           ? 'The field schema seems to allow multiple values, but the `FormSelectWithComboboxControl` component is not configured to handle multiple values.'
