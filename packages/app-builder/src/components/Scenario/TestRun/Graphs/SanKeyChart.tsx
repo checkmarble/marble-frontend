@@ -7,11 +7,12 @@ import {
   RadioGroupItem,
 } from 'ui-design-system';
 import clsx from 'clsx';
-import { entries, unique, groupBy, keys, mapValues, omit, sumBy } from 'remeda';
+import { entries, unique, groupBy, mapValues, omit, sumBy } from 'remeda';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 import { TestRunDecision } from '@app-builder/models/testrun';
 import { Outcome } from '@app-builder/models/outcome';
+import { VersionSummary } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/test-run+/$testRunId';
 
 type Type = 'absolute' | 'percentage';
 type Summary = { total: number } & Partial<{ [outcome in Outcome]: number }>;
@@ -73,8 +74,10 @@ const SanKey = ({
 
 export const SanKeyChart = ({
   decisions,
+  versionSummary,
 }: {
   decisions: TestRunDecision[];
+  versionSummary: VersionSummary;
 }) => {
   const { t } = useTranslation(['scenarios', 'decisions']);
 
@@ -101,10 +104,8 @@ export const SanKeyChart = ({
     [decisions],
   );
 
-  const [refVersion, testVersion] = keys(summaryByVersions);
-
   return (
-    <Collapsible.Container className="bg-grey-00">
+    <Collapsible.Container className="bg-grey-00" defaultOpen={false}>
       <Collapsible.Title>
         {t('scenarios:testrun.distribution')}
       </Collapsible.Title>
@@ -125,15 +126,17 @@ export const SanKeyChart = ({
             <SanKey
               type={type}
               legend={legend}
-              version={refVersion as string}
-              summary={summaryByVersions[refVersion as string] as Summary}
+              version={versionSummary.ref.version}
+              summary={summaryByVersions[versionSummary.ref.version] as Summary}
             />
             <Icon icon="arrow-forward" className="text-grey-100 h-4" />
             <SanKey
               type={type}
               legend={legend}
-              version={testVersion as string}
-              summary={summaryByVersions[testVersion as string] as Summary}
+              version={versionSummary.test.version}
+              summary={
+                summaryByVersions[versionSummary.test.version] as Summary
+              }
             />
           </div>
           <div className="flex flex-row justify-center gap-2 px-24">

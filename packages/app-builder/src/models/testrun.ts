@@ -6,6 +6,7 @@ import {
   type TestRunRuleExecutionDataDto,
 } from 'marble-api/generated/marblecore-api';
 import { knownOutcomes } from './outcome';
+import { toUpperCase } from 'remeda';
 
 type Outcome = (typeof knownOutcomes)[number];
 
@@ -55,7 +56,7 @@ export function adaptTestRunDecision(
   dto: TestRunDecisionDataDto,
 ): TestRunDecision {
   return {
-    version: dto.version,
+    version: toUpperCase(dto.version),
     outcome: dto.outcome as Outcome,
     count: dto.total,
   };
