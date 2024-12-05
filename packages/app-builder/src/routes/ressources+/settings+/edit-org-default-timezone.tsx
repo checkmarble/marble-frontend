@@ -130,12 +130,12 @@ function FormSelectTimezone({
   onSelectedValueChange?: (selectedTimezone: string) => void;
 }) {
   const { t } = useTranslation(['settings']);
-  const [value, setSearchValue] = React.useState('');
-  const searchValue = React.useDeferredValue(value);
+  const [searchValue, setSearchValue] = React.useState('');
+  const deferredSearchValue = React.useDeferredValue(searchValue);
 
   const matches = React.useMemo(
-    () => matchSorter(validTimezones, searchValue),
-    [validTimezones, searchValue],
+    () => matchSorter(validTimezones, deferredSearchValue),
+    [validTimezones, deferredSearchValue],
   );
 
   return (
@@ -161,7 +161,7 @@ function FormSelectTimezone({
         <FormSelectWithCombobox.ComboboxList>
           {matches.slice(0, MAX_TIMEZONE_MATCHES).map((tz) => (
             <FormSelectWithCombobox.ComboboxItem key={tz} value={tz}>
-              <Highlight text={tz} query={searchValue} />
+              <Highlight text={tz} query={deferredSearchValue} />
             </FormSelectWithCombobox.ComboboxItem>
           ))}
           {matches.length === 0 ? (
