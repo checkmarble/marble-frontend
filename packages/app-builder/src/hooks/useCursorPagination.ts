@@ -35,14 +35,13 @@ export const useCursorPagination = () => {
     setState((currentState) => ({
       ...currentState,
       cursor: currentState.previousCursors.pop() ?? null,
-      previousCursors: currentState.previousCursors,
+      previousCursors: [...currentState.previousCursors],
       lastAction: 'previous',
       isPristine: false,
     }));
   }, []);
 
   const reset = useCallback(() => {
-    console.log('reset');
     setState(INITIAL_STATE);
   }, []);
 
