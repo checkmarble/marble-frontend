@@ -1,7 +1,12 @@
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 
-export const variants = ['primary', 'secondary', 'tertiary'] as const;
+export const variants = [
+  'primary',
+  'secondary',
+  'tertiary',
+  'outline',
+] as const;
 export type Variant = (typeof variants)[number];
 
 export const variantColors = {
@@ -13,6 +18,7 @@ export const variantColors = {
 export type PrimaryColor = (typeof variantColors)['primary'][number];
 export type SecondaryColor = (typeof variantColors)['secondary'][number];
 export type TertiaryColor = (typeof variantColors)['tertiary'][number];
+export type OutlineColor = (typeof variantColors)['primary'][number];
 
 export type ButtonProps = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -31,6 +37,10 @@ export type ButtonProps = React.DetailedHTMLProps<
         variant: 'tertiary';
         color?: TertiaryColor;
       }
+    | {
+        variant: 'outline';
+        color?: PrimaryColor;
+      }
   );
 
 export function CtaClassName({
@@ -40,20 +50,23 @@ export function CtaClassName({
   return clsx(
     'text-s flex flex-row items-center justify-center gap-1 rounded px-4 py-2 font-semibold outline-none border border-solid transition-colors',
     {
-      'hover:bg-green-110 active:bg-green-120  text-grey-00 border-bg-green-100 focus:border-grey-100 bg-green-100 disabled:bg-green-50':
+      'hover:bg-green-110 active:bg-green-120  text-grey-00 border-bg-green-100 focus:border-grey-100 bg-green-100 disabled:bg-green-50 aria-disabled:bg-green-50':
         variant === 'primary' && color === 'green',
 
-      'hover:bg-purple-110 active:bg-purple-120  text-grey-00 border-bg-purple-100 focus:border-grey-100   bg-purple-100 disabled:bg-purple-50':
+      'hover:bg-purple-110 active:bg-purple-120  text-grey-00 border-bg-purple-100 focus:border-grey-100 bg-purple-100 disabled:bg-purple-50 aria-disabled:bg-purple-50':
         variant === 'primary' && color === 'purple',
 
-      'hover:bg-red-110 active:bg-red-120  text-grey-00 border-bg-red-100 focus:border-grey-100 bg-red-100 disabled:bg-red-50':
+      'hover:bg-red-110 active:bg-red-120  text-grey-00 border-bg-red-100 focus:border-grey-100 bg-red-100 disabled:bg-red-50 aria-disabled:bg-red-50':
         variant === 'primary' && color === 'red',
 
-      'hover:bg-grey-05 active:bg-grey-10  bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100':
+      'hover:bg-grey-05 active:bg-grey-10  bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 aria-disabled:text-gray-50 disabled:border-grey-05 aria-disabled:border-grey-05 disabled:bg-grey-05 aria-disabled:bg-grey-05 focus:border-purple-100':
         variant === 'secondary' && color === 'grey',
 
       'hover:bg-grey-05 active:bg-grey-10 text-grey-25 border-transparent focus:border-purple-100':
         variant === 'tertiary' && color === 'grey',
+
+      'hover:bg-purple-25 active:bg-purple-10 bg-purple-05 border-purple-100 text-purple-100 disabled:text-grey-50 aria-disabled:text-gray-50 disabled:border-grey-05 aria-disabled:border-grey-05 disabled:bg-grey-05 aria-disabled:bg-grey-05 focus:border-purple-110':
+        variant === 'outline',
     },
   );
 }
