@@ -166,12 +166,15 @@ function CreatePivotContent({
     }
   }, [closeModal, fetcher.data?.success, fetcher.state]);
 
-  const [value, setSearchValue] = React.useState('');
-  const searchValue = React.useDeferredValue(value);
+  const [searchValue, setSearchValue] = React.useState('');
+  const deferredSearchValue = React.useDeferredValue(searchValue);
 
   const matches = React.useMemo(
-    () => matchSorter(pivotOptions, searchValue, { keys: ['displayValue'] }),
-    [pivotOptions, searchValue],
+    () =>
+      matchSorter(pivotOptions, deferredSearchValue, {
+        keys: ['displayValue'],
+      }),
+    [pivotOptions, deferredSearchValue],
   );
 
   return (
@@ -240,7 +243,7 @@ function CreatePivotContent({
                           >
                             <Highlight
                               text={pivot.displayValue}
-                              query={searchValue}
+                              query={deferredSearchValue}
                             />
                             <PivotType type={pivot.type} />
                           </SelectWithCombobox.ComboboxItem>

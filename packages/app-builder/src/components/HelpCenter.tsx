@@ -97,8 +97,6 @@ function HelpCenterContent({
   const [tabId, setTabId] = React.useState(defaultTab);
   const deferredTabId = React.useDeferredValue(tabId);
 
-  const deferredSearchValue = React.useDeferredValue(searchValue);
-
   const flatResources: FlatResource[] = React.useMemo(
     () =>
       R.pipe(
@@ -115,7 +113,7 @@ function HelpCenterContent({
   );
 
   const matches = React.useMemo(() => {
-    const allMatches = matchSorter(flatResources, deferredSearchValue, {
+    const allMatches = matchSorter(flatResources, searchValue, {
       keys: ['label', 'tags'],
     });
     const groups: Record<string, FlatResource[]> = R.groupBy(
@@ -123,7 +121,7 @@ function HelpCenterContent({
       R.prop('category'),
     );
     return groups;
-  }, [flatResources, deferredSearchValue]);
+  }, [flatResources, searchValue]);
 
   const currentResources = matches[deferredTabId] || [];
 
