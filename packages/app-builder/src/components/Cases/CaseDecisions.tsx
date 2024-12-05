@@ -28,6 +28,7 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
+  Switch,
   Tooltip,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -42,6 +43,7 @@ import {
   RulesExecutionsContainer,
 } from '../Decisions/RulesExecutions/RulesExecutions';
 import { Score } from '../Decisions/Score';
+import { CaseDetailTriggerObject } from '../Decisions/TriggerObjectDetail';
 import { casesI18n } from './cases-i18n';
 import { RuleSnoozes } from './RuleSnoozes';
 
@@ -80,7 +82,7 @@ export function CaseDecisions({
   const language = useFormatLanguage();
 
   return (
-    <div className="grid grid-cols-[repeat(2,_max-content)_1fr_repeat(4,_max-content)] gap-x-6 gap-y-2">
+    <div className="grid grid-cols-[repeat(2,_max-content)_2fr_1fr_repeat(3,_max-content)] gap-x-6 gap-y-2">
       <div className="col-span-full grid grid-cols-subgrid px-4">
         <div className="text-grey-100 text-s col-start-2 font-semibold">
           {t('decisions:created_at')}
@@ -131,7 +133,13 @@ export function CaseDecisions({
                     {`V${row.scenario.version}`}
                   </div>
                 </div>
-                <div>{row.triggerObjectType}</div>
+                <div>
+                  <Tooltip.Default content={row.triggerObjectType}>
+                    <span className="text-grey-100 text-s line-clamp-2 w-fit break-all font-normal">
+                      {row.triggerObjectType}
+                    </span>
+                  </Tooltip.Default>
+                </div>
                 <Score score={row.score} />
                 <OutcomeAndReviewStatusWithModal decision={row} />
                 <DecisionActions decision={row} />
@@ -277,33 +285,58 @@ function DecisionDetail({
     () => decisionsDetail.find((detail) => decision.id === detail.decisionId),
     [decision.id, decisionsDetail],
   );
+
+  const pivotValues = React.useMemo(() => {
+    return R.pipe(
+      decision.pivotValues,
+      R.map(({ id, value }) => {
+        if (!id || !value) return null;
+        const pivot = decisionDetail?.pivots.find((p) => p.id === id);
+        if (!pivot) return null;
+        return {
+          pivot,
+          value,
+        };
+      }),
+      R.filter(R.isNonNullish),
+    );
+  }, [decision.pivotValues, decisionDetail?.pivots]);
+
+  const [showHitOnly, setShowHitOnly] = React.useState(true);
+  const filteredRuleExecutions = React.useMemo(() => {
+    if (!decisionDetail?.ruleExecutions) return [];
+    if (showHitOnly) {
+      return decisionDetail.ruleExecutions.filter(
+        (ruleExecution) => ruleExecution.outcome === 'hit',
+      );
+    }
+    return decisionDetail.ruleExecutions;
+  }, [decisionDetail?.ruleExecutions, showHitOnly]);
+
   if (!decisionDetail) {
     return null;
   }
 
-  const pivotValues = R.pipe(
-    decision.pivotValues,
-    R.map(({ id, value }) => {
-      if (!id || !value) return null;
-      const pivot = decisionDetail.pivots.find((p) => p.id === id);
-      if (!pivot) return null;
-      return {
-        pivot,
-        value,
-      };
-    }),
-    R.filter(R.isNonNullish),
-  );
-
   return (
-    <div className="flex flex-col gap-2 p-4">
-      <div className="text-grey-100 text-xs font-medium first-letter:capitalize">
-        {t('cases:case_detail.rules_execution', {
-          count: decisionDetail.ruleExecutions.length,
-        })}
+    <div className="grid grid-cols-[2fr,_1fr] gap-x-4 gap-y-2 p-4">
+      <div className="flex flex-row items-center justify-between gap-2">
+        <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
+          {t('cases:case_detail.rules_execution', {
+            count: decisionDetail.ruleExecutions.length,
+          })}
+        </span>
+        <ShowHitOnlySwitch
+          checked={showHitOnly}
+          onCheckedChange={setShowHitOnly}
+        />
       </div>
-      <RulesExecutionsContainer>
-        {decisionDetail.ruleExecutions.map((ruleExecution) => {
+      <div className="flex flex-row items-center justify-between gap-2">
+        <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
+          {t('cases:case_detail.trigger_object')}
+        </span>
+      </div>
+      <RulesExecutionsContainer className="h-fit">
+        {filteredRuleExecutions.map((ruleExecution) => {
           const ruleSnoozes = decisionDetail.ruleSnoozes.filter(
             (snooze) => snooze.ruleId === ruleExecution.ruleId,
           );
@@ -348,6 +381,33 @@ function DecisionDetail({
           );
         })}
       </RulesExecutionsContainer>
+      <CaseDetailTriggerObject
+        className="sticky top-0 h-fit max-h-[50dvh] overflow-auto"
+        triggerObject={decision.triggerObject}
+      />
+    </div>
+  );
+}
+
+function ShowHitOnlySwitch({
+  checked,
+  onCheckedChange,
+}: {
+  checked: boolean;
+  onCheckedChange: (value: boolean) => void;
+}) {
+  const { t } = useTranslation(casesI18n);
+  const id = React.useId();
+
+  return (
+    <div className="flex flex-row items-center gap-2">
+      <label
+        htmlFor={id}
+        className="text-grey-100 cursor-pointer select-none text-xs"
+      >
+        {t('cases:case_detail.rules_execution.show_hit_only')}
+      </label>
+      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
     </div>
   );
 }

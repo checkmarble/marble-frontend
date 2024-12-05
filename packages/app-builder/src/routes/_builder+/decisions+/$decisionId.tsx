@@ -11,7 +11,7 @@ import {
 } from '@app-builder/components';
 import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
-import { TriggerObjectDetail } from '@app-builder/components/Decisions/TriggerObjectDetail';
+import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
@@ -159,7 +159,9 @@ export default function DecisionPage() {
                   <ScorePanel score={decision.score} />
                   <OutcomePanel outcome={decision.outcome} />
                 </div>
-                <TriggerObjectDetail triggerObject={decision.triggerObject} />
+                <DecisionDetailTriggerObject
+                  triggerObject={decision.triggerObject}
+                />
               </div>
             </div>
           </Page.Content>
