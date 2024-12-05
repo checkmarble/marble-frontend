@@ -16,6 +16,7 @@ import {
 } from '@app-builder/components';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { useCursorPagination } from '@app-builder/hooks/useCursorPagination';
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
@@ -24,6 +25,7 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import {
   Form,
+  useFetcher,
   useLoaderData,
   useNavigate,
   useRouteError,
@@ -31,7 +33,7 @@ import {
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
@@ -87,55 +89,135 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Decisions() {
   const { t } = useTranslation(handle.i18n);
   const {
-    decisionsData: { items: decisions, ...pagination },
-    filters,
+    decisionsData: initialDecisionsData,
+    filters: initialFilters,
     scenarios,
     hasPivots,
     inboxes,
   } = useLoaderData<typeof loader>();
 
+  const [decisionsData, setDecisionsData] = useState(initialDecisionsData);
+  const { items: decisions, ...pagination } = decisionsData;
+
+  const [filters, setFilters] = useState(initialFilters);
+  if (initialFilters !== filters) {
+    setFilters(initialFilters);
+    setDecisionsData(initialDecisionsData);
+  }
+
+  const {
+    state: paginationState,
+    next,
+    previous,
+    reset,
+  } = useCursorPagination();
+
+  const fetcher = useFetcher<typeof loader>();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (paginationState.isPristine) {
+      return;
+    }
+
+    fetcher.submit(
+      qs.stringify(
+        {
+          outcomeAndReviewStatus: filters.outcomeAndReviewStatus ?? [],
+          triggerObject: filters.triggerObject ?? [],
+          dateRange: filters.dateRange
+            ? filters.dateRange.type === 'static'
+              ? {
+                  type: 'static',
+                  endDate: filters.dateRange.endDate || null,
+                  startDate: filters.dateRange.startDate || null,
+                }
+              : {
+                  type: 'dynamic',
+                  fromNow: filters.dateRange.fromNow,
+                }
+            : {},
+          pivotValue: filters.pivotValue || null,
+          scenarioId: filters.scenarioId ?? [],
+          scheduledExecutionId: filters.scheduledExecutionId ?? [],
+          caseInboxId: filters.caseInboxId ?? [],
+          hasCase: filters?.hasCase ?? null,
+          ...(paginationState.cursor
+            ? {
+                offsetId: paginationState.cursor,
+                next: true,
+              }
+            : {}),
+        },
+        { skipNulls: true },
+      ),
+      {
+        method: 'GET',
+      },
+    );
+  }, [paginationState, filters]);
+
+  useEffect(() => {
+    if (fetcher.data) {
+      if (fetcher.data.decisionsData.items.length === 0) {
+        // TODO: Manage no result
+      } else {
+        const { decisionsData: fetchedDecisionsData } = fetcher.data;
+        setDecisionsData(fetchedDecisionsData);
+      }
+    }
+  }, [fetcher.data, fetcher.state]);
+
   const navigateDecisionList = useCallback(
     (decisionFilters: DecisionFilters, pagination?: PaginationParams) => {
-      navigate(
-        {
-          pathname: getRoute('/decisions/'),
-          search: qs.stringify(
-            {
-              outcomeAndReviewStatus:
-                decisionFilters.outcomeAndReviewStatus ?? [],
-              triggerObject: decisionFilters.triggerObject ?? [],
-              dateRange: decisionFilters.dateRange
-                ? decisionFilters.dateRange.type === 'static'
-                  ? {
-                      type: 'static',
-                      endDate: decisionFilters.dateRange.endDate || null,
-                      startDate: decisionFilters.dateRange.startDate || null,
-                    }
-                  : {
-                      type: 'dynamic',
-                      fromNow: decisionFilters.dateRange.fromNow,
-                    }
-                : {},
-              pivotValue: decisionFilters.pivotValue || null,
-              scenarioId: decisionFilters.scenarioId ?? [],
-              scheduledExecutionId: decisionFilters.scheduledExecutionId ?? [],
-              caseInboxId: decisionFilters.caseInboxId ?? [],
-              hasCase: decisionFilters?.hasCase ?? null,
-              offsetId: pagination?.offsetId || null,
-              next: pagination?.next || null,
-              previous: pagination?.previous || null,
-            },
-            {
-              addQueryPrefix: true,
-              skipNulls: true,
-            },
-          ),
-        },
-        { replace: true },
-      );
+      if (!pagination) {
+        reset();
+        navigate(
+          {
+            pathname: getRoute('/decisions/'),
+            search: qs.stringify(
+              {
+                outcomeAndReviewStatus:
+                  decisionFilters.outcomeAndReviewStatus ?? [],
+                triggerObject: decisionFilters.triggerObject ?? [],
+                dateRange: decisionFilters.dateRange
+                  ? decisionFilters.dateRange.type === 'static'
+                    ? {
+                        type: 'static',
+                        endDate: decisionFilters.dateRange.endDate || null,
+                        startDate: decisionFilters.dateRange.startDate || null,
+                      }
+                    : {
+                        type: 'dynamic',
+                        fromNow: decisionFilters.dateRange.fromNow,
+                      }
+                  : {},
+                pivotValue: decisionFilters.pivotValue || null,
+                scenarioId: decisionFilters.scenarioId ?? [],
+                scheduledExecutionId:
+                  decisionFilters.scheduledExecutionId ?? [],
+                caseInboxId: decisionFilters.caseInboxId ?? [],
+                hasCase: decisionFilters?.hasCase ?? null,
+              },
+              {
+                addQueryPrefix: true,
+                skipNulls: true,
+              },
+            ),
+          },
+          { replace: true },
+        );
+        return;
+      }
+
+      if (pagination.next && pagination.offsetId) {
+        next(pagination.offsetId);
+      }
+      if (pagination.previous) {
+        previous();
+      }
     },
-    [navigate],
+    [navigate, next, previous, reset],
   );
 
   const { hasSelection, getSelectedDecisions, selectionProps } =

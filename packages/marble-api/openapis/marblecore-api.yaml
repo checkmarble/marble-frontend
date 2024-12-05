@@ -5203,26 +5203,16 @@ components:
     Pagination:
       type: object
       required:
+        - has_next_page
         - start_index
         - end_index
-        - total_count
       properties:
+        has_next_page:
+          type: boolean
         start_index:
           type: integer
         end_index:
           type: integer
-        total_count:
-          $ref: '#/components/schemas/PaginationCount'
-    PaginationCount:
-      type: object
-      required:
-        - value
-        - is_max_count
-      properties:
-        value:
-          type: integer
-        is_max_count:
-          type: boolean
     InboxDto:
       type: object
       required:

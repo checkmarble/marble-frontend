@@ -44,6 +44,7 @@
   "help_center.to_navigate": "naviguer",
   "help_center.to_switch_tabs": "pour changer d'onglet",
   "hide": "Cacher",
+  "items_displayed": "<StartToEnd>{{start}} à {{end}}</StartToEnd>",
   "items_displayed_out_of_total": "<StartToEnd>{{start}} à {{end}}</StartToEnd> sur {{total}}",
   "items_displayed_out_of_total_over_max": "<StartToEnd>{{start}} à {{end}}</StartToEnd> sur plus de {{total}} !!",
   "loading": "Chargement...",
