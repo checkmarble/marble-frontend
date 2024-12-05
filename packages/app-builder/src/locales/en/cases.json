@@ -29,6 +29,8 @@
   "case_detail.pivot_values": "Pivot values",
   "case_detail.pivot_values.snooze_from_to": "From {{from}} -> To {{to}}",
   "case_detail.rules_execution": "Rules execution ({{count}})",
+  "case_detail.rules_execution.show_hit_only": "Show hit only",
+  "case_detail.trigger_object": "Trigger object",
   "case_detail.no_files": "<Button>Add your first file</Button> to the case to keep track of your investigation",
   "case_detail.events_count_one": "{{count}} event",
   "case_detail.events_count_other": "{{count}} events",
