@@ -106,5 +106,6 @@
   "scenario_default_timezone.change_warning": "Changing this value will immediately impact all live scenario versions.",
   "scenario_default_timezone.no_match": "No timezone matches your search",
   "scenario_default_timezone.more_results_one": "{{count}} more timezone.\nRefine your search to see them.",
-  "scenario_default_timezone.more_results_other": "{{count}} more timezones.\nRefine your search to see them."
+  "scenario_default_timezone.more_results_other": "{{count}} more timezones.\nRefine your search to see them.",
+  "scenario_default_timezone.not_set": "Not set"
 }

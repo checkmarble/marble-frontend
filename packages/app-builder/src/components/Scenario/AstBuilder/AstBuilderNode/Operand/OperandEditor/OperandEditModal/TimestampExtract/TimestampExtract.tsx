@@ -3,6 +3,8 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import {
   type AstNode,
+  type CurrentUser,
+  isAdmin,
   NewConstantAstNode,
   type TimestampExtractAstNode,
   type TimestampFieldAstNode,
@@ -11,6 +13,7 @@ import {
 } from '@app-builder/models';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { dateDocHref } from '@app-builder/services/documentation-href';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import {
   adaptEvaluationErrorViewModels,
   useGetNodeEvaluationErrorMessage,
@@ -19,6 +22,8 @@ import {
   type AstNodeErrors,
   computeValidationForNamedChildren,
 } from '@app-builder/services/validation/ast-node-validation';
+import { getRoute } from '@app-builder/utils/routes';
+import { Link } from '@remix-run/react';
 import { type TFunction } from 'i18next';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -82,6 +87,7 @@ export function TimestampExtractEdit({
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(['scenarios', 'common']);
+  const { org, currentUser } = useOrganizationDetails();
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
   const [viewModel, setViewModel] = React.useState<TimestampExtractViewModel>(
     () =>
@@ -157,6 +163,14 @@ export function TimestampExtractEdit({
           />
         </div>
         <p>{returnTimestampExtractInformation(t, viewModel.part)}</p>
+        <p>
+          {org.defaultScenarioTimezone
+            ? t('scenarios:edit_timestamp_extract.interpreted_in_timezone', {
+                replace: { timezone: org.defaultScenarioTimezone },
+              })
+            : getNoTimezoneSetupWarning(currentUser, t)}
+        </p>
+
         <div className="flex flex-1 flex-row gap-2">
           <ModalV2.Close
             render={
@@ -176,6 +190,32 @@ export function TimestampExtractEdit({
         </div>
       </div>
     </>
+  );
+}
+
+function getNoTimezoneSetupWarning(
+  currentUser: CurrentUser,
+  t: TFunction<['scenarios']>,
+): React.ReactNode {
+  return isAdmin(currentUser) ? (
+    <span className="text-red-100">
+      <Trans
+        t={t}
+        i18nKey="scenarios:edit_timestamp_extract.missing_default_timezone_admin"
+        components={{
+          DocLink: (
+            <Link
+              className="text-m hover:text-purple-120 focus:text-purple-120 relative font-normal text-purple-100 hover:underline focus:underline"
+              to={getRoute('/settings/scenarios')}
+            />
+          ),
+        }}
+      />
+    </span>
+  ) : (
+    <span className="text-red-100">
+      {t('scenarios:edit_timestamp_extract.missing_default_timezone_non_admin')}
+    </span>
   );
 }
 

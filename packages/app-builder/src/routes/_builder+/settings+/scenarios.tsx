@@ -48,7 +48,13 @@ export default function Users() {
                 <p className="font-semibold first-letter:capitalize">
                   {t('settings:scenario_default_timezone.label')}
                 </p>
-                <p>{organization.defaultScenarioTimezone}</p>
+                {organization.defaultScenarioTimezone ? (
+                  <span>{organization.defaultScenarioTimezone}</span>
+                ) : (
+                  <span className="text-red-100">
+                    {t('settings:scenario_default_timezone.not_set')}
+                  </span>
+                )}
               </div>
             )}
           </CollapsiblePaper.Content>
