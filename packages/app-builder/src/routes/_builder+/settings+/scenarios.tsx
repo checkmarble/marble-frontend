@@ -1,4 +1,5 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
+import { isAdmin } from '@app-builder/models';
 import { EditOrgDefaultTimezone } from '@app-builder/routes/ressources+/settings+/edit-org-default-timezone';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -12,16 +13,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const org = await organization.getCurrentOrganization();
+  const [org, { user }] = await Promise.all([
+    organization.getCurrentOrganization(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
   return json({
     organization: org,
+    user,
   });
 }
 
 export default function Users() {
   const { t } = useTranslation(['settings']);
-  const { organization } = useLoaderData<typeof loader>();
+  const { organization, user } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -31,10 +38,19 @@ export default function Users() {
             <span className="flex-1">{t('settings:scenenario_execution')}</span>
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
-            <EditOrgDefaultTimezone
-              organizationId={organization.id}
-              currentTimezone={organization.defaultScenarioTimezone}
-            />
+            {isAdmin(user) ? (
+              <EditOrgDefaultTimezone
+                organizationId={organization.id}
+                currentTimezone={organization.defaultScenarioTimezone}
+              />
+            ) : (
+              <div className="flex flex-row items-center justify-between">
+                <p className="font-semibold first-letter:capitalize">
+                  {t('settings:scenario_default_timezone.label')}
+                </p>
+                <p>{organization.defaultScenarioTimezone}</p>
+              </div>
+            )}
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
       </Page.Content>
