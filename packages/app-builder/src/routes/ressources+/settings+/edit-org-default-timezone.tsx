@@ -5,7 +5,7 @@ import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectW
 import { Highlight } from '@app-builder/components/Highlight';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { validTimezones } from '@app-builder/utils/validTimezones';
+import { UTC, validTimezones } from '@app-builder/utils/validTimezones';
 import {
   FormProvider,
   getFormProps,
@@ -52,7 +52,7 @@ export function EditOrgDefaultTimezone({
   currentTimezone,
 }: {
   organizationId: string;
-  currentTimezone: string | undefined;
+  currentTimezone: string | null;
 }) {
   const { t } = useTranslation(['settings']);
 
@@ -61,7 +61,7 @@ export function EditOrgDefaultTimezone({
   const [form, fields] = useForm({
     defaultValue: {
       organizationId,
-      timezone: currentTimezone || validTimezones[0],
+      timezone: currentTimezone || UTC,
     },
     lastResult: fetcher.data,
     constraint: getZodConstraint(schema),

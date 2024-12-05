@@ -1,7 +1,9 @@
 // List of valid timezones, sorted to put the "shortened" ones first, all compatible with go's time.LoadLocation function.
 // taken from https://github.com/bproctor/timezones/blob/master/timezones.csv, with some cleanup done.
 
+export const UTC = 'UTC';
 export const validTimezones = [
+  'UTC',
   'Africa/Abidjan',
   'Africa/Accra',
   'Africa/Addis_Ababa',
@@ -529,7 +531,6 @@ export const validTimezones = [
   'US/Samoa',
 
   // Usage discouraged because they are ambiguous and typically don't handle daylight saving time
-  'UTC',
   'WET', // Western European Time
   'MET', // Middle European Time
   'MST', // Middle Standard Time
