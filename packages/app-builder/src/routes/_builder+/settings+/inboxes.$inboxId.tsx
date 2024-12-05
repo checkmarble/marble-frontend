@@ -28,24 +28,27 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { user, apiClient, cases } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const {
+    user,
+    apiClient,
+    inbox: inboxApi,
+  } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const inboxId = fromParams(params, 'inboxId');
 
-  const [{ inbox }, caseList, inboxUserRoles] = await Promise.all([
+  const [{ inbox }, inboxesList, inboxUserRoles] = await Promise.all([
     apiClient.getInbox(inboxId),
-    cases.listCases({ inboxIds: [inboxId] }),
+    inboxApi.listInboxesWithCaseCount(),
     featureAccessService.getInboxUserRoles(),
   ]);
 
+  const inboxWithCaseCount = inboxesList.find((inbox) => inbox.id === inboxId);
+
   return json({
     inbox,
-    caseList,
+    caseCount: inboxWithCaseCount?.casesCount ?? 0,
     inboxUserRoles,
     isEditInboxAvailable: featureAccessService.isEditInboxAvailable(user),
     isDeleteInboxAvailable: featureAccessService.isDeleteInboxAvailable(user),
@@ -62,7 +65,7 @@ const columnHelper = createColumnHelper<InboxUserDto>();
 
 export default function Inbox() {
   const {
-    caseList,
+    caseCount,
     inbox,
     inboxUserRoles,
     isEditInboxAvailable,
@@ -155,13 +158,10 @@ export default function Inbox() {
             <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-4">
               <span className="font-bold">{t('settings:inboxes.name')}</span>
               {inbox.name}
-
               <span className="font-bold">
                 {t('settings:inboxes.inbox_details.case_count')}
               </span>
-              {caseList.totalCount.isMaxCount
-                ? caseList.totalCount.value + '+'
-                : caseList.totalCount.value}
+              {caseCount}
             </div>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
@@ -199,7 +199,7 @@ export default function Inbox() {
         </CollapsiblePaper.Container>
 
         {isDeleteInboxAvailable ? (
-          caseList.totalCount.value === 0 ? (
+          caseCount > 0 ? (
             <DeleteInbox inbox={inbox} />
           ) : (
             <Tooltip.Default

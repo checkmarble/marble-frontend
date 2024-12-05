@@ -36,14 +36,10 @@ export type CredentialsDto = {
 };
 export type OutcomeDto = "approve" | "review" | "decline" | "block_and_review" | "unknown";
 export type ReviewStatusDto = "pending" | "approve" | "decline";
-export type PaginationCount = {
-    value: number;
-    is_max_count: boolean;
-};
 export type Pagination = {
+    has_next_page: boolean;
     start_index: number;
     end_index: number;
-    total_count: PaginationCount;
 };
 export type CaseStatusDto = "open" | "investigating" | "discarded" | "resolved";
 export type CaseContributorDto = {
