@@ -10,19 +10,8 @@ import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-ite
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { useMemo } from 'react';
 import { mapToObj, pick } from 'remeda';
-import { SanKeyChart } from '@app-builder/components/Scenario/TestRun/Graphs/SanKeyChart';
+import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
 import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
-
-export type VersionSummary = {
-  ref: {
-    type: string;
-    version: string;
-  };
-  test: {
-    type: string;
-    version: string;
-  };
-};
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
@@ -55,15 +44,9 @@ export default function TestRun() {
   const { run, iterations, currentScenario } = useLoaderData<typeof loader>();
   const { orgUsers } = useOrganizationUsers();
 
-  const versionSummary: VersionSummary = {
-    ref: {
-      type: iterations[run.refIterationId]!.type,
-      version: `V${iterations[run.refIterationId]!.version}`,
-    },
-    test: {
-      type: iterations[run.testIterationId]!.type,
-      version: `V${iterations[run.testIterationId]!.version}`,
-    },
+  const versions = {
+    ref: `V${iterations[run.refIterationId]!.version}`,
+    test: `V${iterations[run.testIterationId]!.version}`,
   };
 
   const creator = useMemo(
@@ -86,8 +69,8 @@ export default function TestRun() {
       <Page.Container>
         <Page.Content className="flex max-w-screen-lg flex-col gap-8">
           <TestRunDetails {...run} iterations={iterations} creator={creator} />
-          <SanKeyChart
-            versionSummary={versionSummary}
+          <DistributionOfDecisionChart
+            versions={versions}
             decisions={[
               { version: 'V1', outcome: 'approve', count: 10 },
               { version: 'V4', outcome: 'approve', count: 20 },
@@ -100,7 +83,7 @@ export default function TestRun() {
             ]}
           />
           <FilterTransactionByDecision
-            versionSummary={versionSummary}
+            versions={versions}
             rules={[
               {
                 version: 'V1',
@@ -178,6 +161,20 @@ export default function TestRun() {
                 status: 'error',
                 total: 15,
                 rule_id: 'rule-2',
+              },
+              {
+                version: 'V1',
+                name: 'Rule 3 name',
+                status: 'hit',
+                total: 15,
+                rule_id: 'rule-3',
+              },
+              {
+                version: 'V4',
+                name: 'Rule 3 name',
+                status: 'hit',
+                total: 15,
+                rule_id: 'rule-3',
               },
             ]}
           />

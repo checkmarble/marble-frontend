@@ -1,22 +1,30 @@
 import { TestRunRuleExecution } from '@app-builder/models/testrun';
-import { VersionSummary } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/test-run+/$testRunId';
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { entries, groupBy } from 'remeda';
+import {
+  entries,
+  flat,
+  groupBy,
+  isDeepEqual,
+  mapValues,
+  omit,
+  omitBy,
+  values,
+} from 'remeda';
 import { Collapsible, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { RuleExecutionChart } from './RuleExecutionChart';
+import { HamburgerChart, Versions } from './HamburgerGraph';
 
 const TestRunRuleName = ({
   rulesByVersion,
-  versionSummary: { ref, test },
+  versions: { ref, test },
 }: {
   rulesByVersion: Record<string, TestRunRuleExecution[]>;
-  versionSummary: VersionSummary;
+  versions: Versions;
 }) => {
-  const refRuleName = rulesByVersion[ref.version]![0]!.name;
-  const testRuleName = rulesByVersion[test.version]![0]!.name;
+  const refRuleName = rulesByVersion[ref]![0]!.name;
+  const testRuleName = rulesByVersion[test]![0]!.name;
 
   return (
     <div className="flex flex-col">
@@ -33,28 +41,28 @@ const TestRunRuleName = ({
 
 const TestRunRuleHitPercentage = ({
   rulesByVersion,
-  versionSummary: { ref, test },
+  versions: { ref, test },
 }: {
   rulesByVersion: Record<string, TestRunRuleExecution[]>;
-  versionSummary: VersionSummary;
+  versions: Versions;
 }) => {
   const refRuleHitPercentage = useMemo(() => {
-    const refRuleTotal = rulesByVersion[ref.version]!.reduce(
+    const refRuleTotal = rulesByVersion[ref]!.reduce(
       (acc, rule) => acc + rule.total,
       0,
     );
-    const refRuleHitTotal = rulesByVersion[ref.version]!.filter(
+    const refRuleHitTotal = rulesByVersion[ref]!.filter(
       (r) => r.status === 'hit',
     ).reduce((acc, rule) => acc + rule.total, 0);
     return Math.round((refRuleHitTotal * 100) / refRuleTotal);
   }, [rulesByVersion, ref]);
 
   const testRuleHitPercentage = useMemo(() => {
-    const testRuleTotal = rulesByVersion[test.version]!.reduce(
+    const testRuleTotal = rulesByVersion[test]!.reduce(
       (acc, rule) => acc + rule.total,
       0,
     );
-    const testRuleHitTotal = rulesByVersion[test.version]!.filter(
+    const testRuleHitTotal = rulesByVersion[test]!.filter(
       (r) => r.status === 'hit',
     ).reduce((acc, rule) => acc + rule.total, 0);
     return Math.round((testRuleHitTotal * 100) / testRuleTotal);
@@ -89,8 +97,10 @@ const TestRunRuleHitPercentage = ({
               ? 'arrow-forward'
               : 'dash'
           }
-          className={clsx('size-2.5', {
-            'text-purple-100': direction === 'up' || direction === 'down',
+          className={clsx({
+            'size-1.5': direction === 'equal',
+            'size-2.5 text-purple-100':
+              direction === 'up' || direction === 'down',
             'rotate-90': direction === 'down',
             '-rotate-90': direction === 'up',
             'text-green-100': direction === 'equal',
@@ -107,29 +117,20 @@ const TestRunRuleHitPercentage = ({
 const RuleExecution = ({
   id,
   rules,
-  versionSummary,
+  versions,
 }: {
   id: string;
-  rules: TestRunRuleExecution[];
-  versionSummary: VersionSummary;
+  rules: Record<string, TestRunRuleExecution[]>;
+  versions: Versions;
 }) => {
-  const rulesByVersion = useMemo(
-    () => groupBy(rules, (r) => r.version),
-    [rules],
-  );
+  const { t } = useTranslation(['decisions']);
 
   return (
     <Collapsible.Container defaultOpen={false} key={id}>
       <div className="grid-cols-ts-by-ds grid w-full items-center">
         <Collapsible.Title size="small" />
-        <TestRunRuleName
-          rulesByVersion={rulesByVersion}
-          versionSummary={versionSummary}
-        />
-        <TestRunRuleHitPercentage
-          rulesByVersion={rulesByVersion}
-          versionSummary={versionSummary}
-        />
+        <TestRunRuleName rulesByVersion={rules} versions={versions} />
+        <TestRunRuleHitPercentage rulesByVersion={rules} versions={versions} />
         {/* <div className="flex flex-row items-center gap-2">
           <span className="text-s bg-purple-10 inline-block rounded px-2 py-1.5 font-normal text-purple-100">
             +100
@@ -146,7 +147,40 @@ const RuleExecution = ({
         </div> */}
       </div>
       <Collapsible.Content>
-        <RuleExecutionChart rules={rules} versionSummary={versionSummary} />
+        <HamburgerChart
+          versions={versions}
+          items={flat(values(rules)).map((r) => ({
+            version: r.version,
+            count: r.total,
+            option: r.status,
+          }))}
+          mapping={{
+            hit: {
+              border: 'border-green-10',
+              background: 'bg-green-10',
+              text: 'text-grey-100',
+              name: t('decisions:rules.status.hit'),
+            },
+            no_hit: {
+              border: 'border-grey-10',
+              background: 'bg-grey-10',
+              text: 'text-grey-100',
+              name: t('decisions:rules.status.no_hit'),
+            },
+            error: {
+              border: 'border-red-10',
+              background: 'bg-red-10',
+              text: 'text-grey-100',
+              name: t('decisions:rules.status.error'),
+            },
+            snoozed: {
+              border: 'border-[#AAA6CC]',
+              background: 'bg-[#AAA6CC]',
+              text: 'text-grey-00',
+              name: t('decisions:rules.status.snoozed'),
+            },
+          }}
+        />
       </Collapsible.Content>
     </Collapsible.Container>
   );
@@ -154,18 +188,29 @@ const RuleExecution = ({
 
 export const FilterTransactionByDecision = ({
   rules,
-  versionSummary,
+  versions,
 }: {
   rules: TestRunRuleExecution[];
-  versionSummary: VersionSummary;
+  versions: Versions;
 }) => {
   const { t } = useTranslation(['scenarios']);
-  const [displayRulesChange, toggleDisplayRulesChange] = useState(true);
+  const [displayChangedRules, toggleChangedRulesDisplay] = useState(true);
 
-  const rulesByRuleId = useMemo(
-    () => groupBy(rules, (r) => r.rule_id),
-    [rules],
-  );
+  const rulesByRuleId = useMemo(() => {
+    const rulesSummary = mapValues(
+      groupBy(rules, ({ rule_id }) => rule_id),
+      (rb) => groupBy(rb, ({ version }) => version),
+    );
+
+    return displayChangedRules
+      ? omitBy(rulesSummary, (rs) =>
+          isDeepEqual(
+            rs[versions.ref]?.map((r) => omit(r, ['version'])),
+            rs[versions.test]?.map((r) => omit(r, ['version'])),
+          ),
+        )
+      : rulesSummary;
+  }, [displayChangedRules, rules]);
 
   return (
     <Collapsible.Container className="bg-grey-00">
@@ -179,8 +224,8 @@ export const FilterTransactionByDecision = ({
               {t('scenarios:testrun.show_rules_changes')}
             </span>
             <Switch
-              checked={displayRulesChange}
-              onCheckedChange={toggleDisplayRulesChange}
+              checked={displayChangedRules}
+              onCheckedChange={toggleChangedRulesDisplay}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -191,11 +236,7 @@ export const FilterTransactionByDecision = ({
               {/* <span>{t('scenarios:testrun.filters.score')}</span> */}
             </div>
             {entries(rulesByRuleId).map(([ruleId, rules]) => (
-              <RuleExecution
-                id={ruleId}
-                rules={rules}
-                versionSummary={versionSummary}
-              />
+              <RuleExecution id={ruleId} rules={rules} versions={versions} />
             ))}
           </div>
         </div>
