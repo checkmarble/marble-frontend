@@ -506,12 +506,12 @@ function RuleGroup({
   field: ControllerRenderProps<EditRuleFormValues, 'ruleGroup'>;
 }) {
   const { t } = useTranslation(handle.i18n);
-  const searchValue = React.useDeferredValue(field.value);
+  const deferredSearchValue = React.useDeferredValue(field.value);
   const ruleGroups = useRuleGroups();
 
   const matches = React.useMemo(
-    () => matchSorter(ruleGroups, searchValue),
-    [searchValue, ruleGroups],
+    () => matchSorter(ruleGroups, deferredSearchValue),
+    [deferredSearchValue, ruleGroups],
   );
 
   return (
@@ -545,7 +545,7 @@ function RuleGroup({
           {matches.map((item) => {
             return (
               <ComboboxItem key={item} value={item}>
-                <Highlight text={item} query={searchValue} />
+                <Highlight text={item} query={deferredSearchValue} />
               </ComboboxItem>
             );
           })}
