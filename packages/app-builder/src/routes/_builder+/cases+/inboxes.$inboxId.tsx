@@ -14,6 +14,7 @@ import {
 } from '@app-builder/components/Cases/Filters';
 import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { useCursorPagination } from '@app-builder/hooks/useCursorPagination';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
@@ -22,10 +23,10 @@ import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import { useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -69,50 +70,119 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Cases() {
-  const {
-    casesData: { items: cases, ...pagination },
-    filters,
-  } = useLoaderData<typeof loader>();
+  const { casesData: initialCasesData, filters: initialFilters } =
+    useLoaderData<typeof loader>();
   const inboxId = useParam('inboxId');
   const { t } = useTranslation(casesI18n);
 
+  const [casesData, setCasesData] = useState(initialCasesData);
+  const { items: cases, ...pagination } = casesData;
+
+  const [filters, setFilters] = useState(initialFilters);
+  if (initialFilters !== filters) {
+    setFilters(initialFilters);
+    setCasesData(initialCasesData);
+  }
+
+  const {
+    state: paginationState,
+    next,
+    previous,
+    reset,
+  } = useCursorPagination();
+
+  const fetcher = useFetcher<typeof loader>();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (paginationState.isPristine) {
+      return;
+    }
+
+    fetcher.submit(
+      qs.stringify(
+        {
+          statuses: filters.statuses ?? [],
+          dateRange: filters.dateRange
+            ? filters.dateRange.type === 'static'
+              ? {
+                  type: 'static',
+                  endDate: filters.dateRange.endDate || null,
+                  startDate: filters.dateRange.startDate || null,
+                }
+              : {
+                  type: 'dynamic',
+                  fromNow: filters.dateRange.fromNow,
+                }
+            : {},
+          ...(paginationState.cursor
+            ? {
+                offsetId: paginationState.cursor,
+                next: true,
+              }
+            : {}),
+        },
+        {
+          skipNulls: true,
+        },
+      ),
+      {
+        method: 'GET',
+      },
+    );
+  }, [paginationState, filters]);
+
+  useEffect(() => {
+    if (fetcher.data && fetcher.data.casesData.items.length !== 0) {
+      const { casesData: fetchedCasesData } = fetcher.data;
+      setCasesData(fetchedCasesData);
+    }
+  }, [fetcher.data, fetcher.state]);
+
   const navigateCasesList = useCallback(
     (casesFilters: CasesFilters, pagination?: PaginationParams) => {
-      navigate(
-        {
-          pathname: getRoute('/cases/inboxes/:inboxId', {
-            inboxId: fromUUID(inboxId),
-          }),
-          search: qs.stringify(
-            {
-              statuses: casesFilters.statuses ?? [],
-              dateRange: casesFilters.dateRange
-                ? casesFilters.dateRange.type === 'static'
-                  ? {
-                      type: 'static',
-                      endDate: casesFilters.dateRange.endDate || null,
-                      startDate: casesFilters.dateRange.startDate || null,
-                    }
-                  : {
-                      type: 'dynamic',
-                      fromNow: casesFilters.dateRange.fromNow,
-                    }
-                : {},
-              offsetId: pagination?.offsetId || null,
-              next: pagination?.next || null,
-              previous: pagination?.previous || null,
-            },
-            {
-              addQueryPrefix: true,
-              skipNulls: true,
-            },
-          ),
-        },
-        { replace: true },
-      );
+      if (!pagination) {
+        reset();
+        navigate(
+          {
+            pathname: getRoute('/cases/inboxes/:inboxId', {
+              inboxId: fromUUID(inboxId),
+            }),
+            search: qs.stringify(
+              {
+                statuses: casesFilters.statuses ?? [],
+                dateRange: casesFilters.dateRange
+                  ? casesFilters.dateRange.type === 'static'
+                    ? {
+                        type: 'static',
+                        endDate: casesFilters.dateRange.endDate || null,
+                        startDate: casesFilters.dateRange.startDate || null,
+                      }
+                    : {
+                        type: 'dynamic',
+                        fromNow: casesFilters.dateRange.fromNow,
+                      }
+                  : {},
+              },
+              {
+                addQueryPrefix: true,
+                skipNulls: true,
+              },
+            ),
+          },
+          { replace: true },
+        );
+        return;
+      }
+
+      if (pagination.next && pagination.offsetId) {
+        next(pagination.offsetId);
+      }
+      if (pagination.previous) {
+        previous();
+      }
     },
-    [navigate, inboxId],
+    [navigate, inboxId, next, previous, reset],
   );
 
   return (

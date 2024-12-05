@@ -158,13 +158,9 @@ export default function Decisions() {
   }, [paginationState, filters]);
 
   useEffect(() => {
-    if (fetcher.data) {
-      if (fetcher.data.decisionsData.items.length === 0) {
-        // TODO: Manage no result
-      } else {
-        const { decisionsData: fetchedDecisionsData } = fetcher.data;
-        setDecisionsData(fetchedDecisionsData);
-      }
+    if (fetcher.data && fetcher.data.decisionsData.items.length !== 0) {
+      const { decisionsData: fetchedDecisionsData } = fetcher.data;
+      setDecisionsData(fetchedDecisionsData);
     }
   }, [fetcher.data, fetcher.state]);
 
@@ -306,13 +302,7 @@ function AddToCase({
   );
 }
 
-const decisionIdToParams = (decisionId: string | null) => {
-  try {
-    return fromUUID(decisionId ?? '');
-  } catch {
-    return decisionId;
-  }
-};
+const decisionIdToParams = (decisionId: string | null) => {};
 function SearchById() {
   const { t } = useTranslation(handle.i18n);
   const [decisionId, setDecisionId] = useState<string | null>(null);
