@@ -306,5 +306,8 @@
   "edit_timestamp_extract.explanation.hour": "Heure de la journée, entre 0 et 23.",
   "edit_timestamp_extract.explanation.month": "Numéro du mois, entre 1 et 12.",
   "edit_timestamp_extract.explanation.year": "Jour dans l'année, entre 1 et 366.",
-  "edit_timestamp_extract.display_name": "{{operator}} de {{timestamp}}"
+  "edit_timestamp_extract.display_name": "{{operator}} de {{timestamp}}",
+  "edit_timestamp_extract.interpreted_in_timezone": "L'horodatage est interprété comme une date et une heure dans le fuseau horaire \"{{timezone}}\", tel que configuré sur l'organisation.",
+  "edit_timestamp_extract.missing_default_timezone_admin": "Aucun fuseau horaire n'a été configuré pour l'organisation. \nL'horodatage sera interprété comme une date et une heure dans le fuseau horaire UTC comme solution de repli. \nAccédez à la <DocLink>page des paramètres</DocLink> pour configurer le fuseau horaire.",
+  "edit_timestamp_extract.missing_default_timezone_non_admin": "Aucun fuseau horaire n'a été configuré pour l'organisation. \nL'horodatage sera interprété comme une date et une heure dans le fuseau horaire UTC comme solution de repli."
 }

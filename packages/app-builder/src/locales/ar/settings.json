@@ -106,5 +106,6 @@
   "scenenario_execution": "إعدادات تنفيذ السيناريو",
   "scenario_default_timezone.more_results_one": "{{count}} منطقة زمنية إضافية.\nقم بتحسين البحث لرؤيتهم.",
   "scenario_default_timezone.more_results_other": "{{count}} مناطق زمنية إضافية.\nقم بتحسين البحث لرؤيتهم.",
-  "scenario_default_timezone.no_match": "لا توجد منطقة زمنية تطابق بحثك"
+  "scenario_default_timezone.no_match": "لا توجد منطقة زمنية تطابق بحثك",
+  "scenario_default_timezone.not_set": "لم يتم ضبطه"
 }
