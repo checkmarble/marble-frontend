@@ -715,7 +715,7 @@ export function getCredentials(opts?: Oazapfts.RequestOpts) {
 /**
  * List decisions
  */
-export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, scenarioId, caseInboxId, reviewStatus, scheduledExecutionId, startDate, triggerObject, limit, next, offsetId, order, previous, sorting }: {
+export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, scenarioId, caseInboxId, reviewStatus, scheduledExecutionId, startDate, triggerObject, limit, offsetId, order, sorting }: {
     caseId?: string[];
     endDate?: string;
     hasCase?: boolean;
@@ -728,10 +728,8 @@ export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, s
     startDate?: string;
     triggerObject?: string[];
     limit?: number;
-    next?: boolean;
     offsetId?: string;
     order?: "ASC" | "DESC";
-    previous?: boolean;
     sorting?: "created_at";
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -758,10 +756,8 @@ export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, s
         start_date: startDate,
         "trigger_object[]": triggerObject,
         limit,
-        next,
         offset_id: offsetId,
         order,
-        previous,
         sorting
     }))}`, {
         ...opts
@@ -789,15 +785,13 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases({ status, inboxId, startDate, endDate, sorting, offsetId, previous, next, limit, order }: {
+export function listCases({ status, inboxId, startDate, endDate, sorting, offsetId, limit, order }: {
     status?: CaseStatusDto[];
     inboxId?: string[];
     startDate?: string;
     endDate?: string;
     sorting?: "created_at";
     offsetId?: string;
-    previous?: boolean;
-    next?: boolean;
     limit?: number;
     order?: "ASC" | "DESC";
 } = {}, opts?: Oazapfts.RequestOpts) {
@@ -819,8 +813,6 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, offset
         end_date: endDate,
         sorting,
         offset_id: offsetId,
-        previous,
-        next,
         limit,
         order
     }))}`, {

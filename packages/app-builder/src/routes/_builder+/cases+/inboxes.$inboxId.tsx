@@ -118,7 +118,6 @@ export default function Cases() {
           ...(paginationState.cursor
             ? {
                 offsetId: paginationState.cursor,
-                next: true,
               }
             : {}),
         },

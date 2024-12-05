@@ -145,7 +145,6 @@ export default function Decisions() {
           ...(paginationState.cursor
             ? {
                 offsetId: paginationState.cursor,
-                next: true,
               }
             : {}),
         },
