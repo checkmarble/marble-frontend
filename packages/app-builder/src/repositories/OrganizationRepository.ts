@@ -42,7 +42,7 @@ export function makeGetOrganizationRepository() {
         await marbleCoreApiClient.updateOrganization(organizationId, {
           default_scenario_timezone: args.defaultScenarioTimezone,
         });
-      return updatedOrganization;
+      return adaptOrganizationDto(updatedOrganization);
     },
   });
 }
