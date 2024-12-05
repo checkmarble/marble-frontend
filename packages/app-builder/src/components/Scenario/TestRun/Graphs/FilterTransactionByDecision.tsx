@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { entries, groupBy } from 'remeda';
 import { Collapsible, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { RuleExecutionChart } from './RuleExecutionChart';
 
 const TestRunRuleName = ({
   rulesByVersion,
@@ -145,7 +146,7 @@ const RuleExecution = ({
         </div> */}
       </div>
       <Collapsible.Content>
-        <div>World</div>
+        <RuleExecutionChart rules={rules} versionSummary={versionSummary} />
       </Collapsible.Content>
     </Collapsible.Container>
   );
