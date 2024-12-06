@@ -3,6 +3,7 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -16,7 +17,6 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { type InboxDto } from 'marble-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { safeRedirect } from 'remix-utils/safe-redirect';
@@ -86,7 +86,7 @@ export function UpdateInbox({
   inbox,
   redirectRoutePath,
 }: {
-  inbox: InboxDto;
+  inbox: Inbox;
   redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -121,7 +121,7 @@ export function UpdateInboxContent({
   inbox,
   redirectRoutePath,
 }: {
-  inbox: InboxDto;
+  inbox: Inbox;
   redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
