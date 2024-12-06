@@ -7,11 +7,11 @@ import {
   Root,
   Trigger,
 } from '@radix-ui/react-collapsible';
+import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 import * as React from 'react';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
-import { cva, VariantProps } from 'class-variance-authority';
 
 const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
   function CollapsibleContainer({ className, ...props }, ref) {

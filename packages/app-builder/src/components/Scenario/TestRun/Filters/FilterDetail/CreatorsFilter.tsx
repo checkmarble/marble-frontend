@@ -1,8 +1,9 @@
+import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Avatar, Input, SelectWithCombobox } from 'ui-design-system';
+
 import { useCreatorFilter } from '../TestRunsFiltersContext';
-import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 
 export function CreatorsFilter() {
   const [value, setSearchValue] = useState('');

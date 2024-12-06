@@ -1,8 +1,9 @@
+import { match } from 'ts-pattern';
+
 import { type TestRunFilterName } from '../filters';
+import { CreatorsFilter } from './CreatorsFilter';
 import { StartedAfterFilter } from './StartedAfterFilter';
 import { StatusesFilter } from './StatusesFilter';
-import { match } from 'ts-pattern';
-import { CreatorsFilter } from './CreatorsFilter';
 import { VersionsFilter } from './VersionsFilter';
 
 export function FilterDetail({

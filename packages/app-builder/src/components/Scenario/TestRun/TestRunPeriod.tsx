@@ -1,6 +1,6 @@
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
-import { ComponentProps } from 'react';
+import { type ComponentProps } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 export const TestRunPeriod = ({

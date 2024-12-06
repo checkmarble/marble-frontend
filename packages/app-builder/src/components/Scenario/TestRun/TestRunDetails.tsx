@@ -1,10 +1,11 @@
-import { User } from '@app-builder/models';
-import { ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
-import { TestRun } from '@app-builder/models/testrun';
-import { Avatar, Tag } from 'ui-design-system';
-import { TestRunStatus } from './TestRunStatus';
+import { type User } from '@app-builder/models';
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { type TestRun } from '@app-builder/models/testrun';
 import { useTranslation } from 'react-i18next';
+import { Avatar } from 'ui-design-system';
+
 import { TestRunPeriod } from './TestRunPeriod';
+import { TestRunStatus } from './TestRunStatus';
 import { TestRunVersions } from './TestRunVersions';
 
 export const TestRunDetails = ({

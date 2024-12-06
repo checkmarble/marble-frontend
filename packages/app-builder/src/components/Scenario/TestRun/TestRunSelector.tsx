@@ -7,8 +7,9 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import clsx from 'clsx';
 import { Avatar } from 'ui-design-system';
-import { TestRunStatus } from './TestRunStatus';
+
 import { TestRunPeriod } from './TestRunPeriod';
+import { TestRunStatus } from './TestRunStatus';
 import { TestRunVersions } from './TestRunVersions';
 
 export const TestRunSelector = ({

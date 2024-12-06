@@ -1,7 +1,4 @@
-import {
-  type TestRunStatus,
-  testRunStatuses,
-} from '@app-builder/models/testrun';
+import { testRunStatuses } from '@app-builder/models/testrun';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useCallback, useMemo } from 'react';

@@ -9,15 +9,15 @@ import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import {
-  useTestRunsFiltersContext,
-  useTestRunsFiltersPartition,
-  useClearFilter,
-  useClearAllFilters,
-} from './TestRunsFiltersContext';
-import { TestRunsFiltersMenu } from './TestRunsFiltersMenu';
 import { FilterDetail } from './FilterDetail';
 import { getFilterIcon, getFilterTKey } from './filters';
+import {
+  useClearAllFilters,
+  useClearFilter,
+  useTestRunsFiltersContext,
+  useTestRunsFiltersPartition,
+} from './TestRunsFiltersContext';
+import { TestRunsFiltersMenu } from './TestRunsFiltersMenu';
 
 export function TestRunsFiltersBar() {
   const { t } = useTranslation(['scenarios', 'common']);

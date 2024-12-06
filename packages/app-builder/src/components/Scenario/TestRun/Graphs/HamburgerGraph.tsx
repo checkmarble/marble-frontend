@@ -1,17 +1,17 @@
-import { useMemo, useState } from 'react';
-import { toggle } from 'radash';
-import { Button, RadioGroup, RadioGroupItem } from 'ui-design-system';
 import clsx from 'clsx';
+import { toggle } from 'radash';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   entries,
-  unique,
   groupBy,
   mapValues,
   omit,
-  sumBy,
   omitBy,
+  sumBy,
+  unique,
 } from 'remeda';
-import { useTranslation } from 'react-i18next';
+import { Button, RadioGroup, RadioGroupItem } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type Item<T extends string> = { version: string; count: number; option: T };
@@ -28,7 +28,7 @@ type Mapping<T extends string> = Record<
   }
 >;
 
-function SanKey<T extends string>({
+function Hamburger<T extends string>({
   version,
   summary,
   type,
@@ -131,7 +131,7 @@ export function HamburgerChart<T extends string>({
         </RadioGroupItem>
       </RadioGroup>
       <div className="flex h-60 w-full flex-row items-center justify-center gap-4 px-8">
-        <SanKey
+        <Hamburger
           type={type}
           legend={legend}
           version={ref}
@@ -139,7 +139,7 @@ export function HamburgerChart<T extends string>({
           mapping={mapping}
         />
         <Icon icon="arrow-forward" className="text-grey-100 h-4" />
-        <SanKey
+        <Hamburger
           type={type}
           legend={legend}
           version={test}

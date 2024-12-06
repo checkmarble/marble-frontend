@@ -2,13 +2,14 @@ import { FiltersDropdownMenu } from '@app-builder/components/Filters';
 import { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
-import { useTestRunsFiltersContext } from './TestRunsFiltersContext';
+
 import { FilterDetail } from './FilterDetail';
 import {
-  type TestRunFilterName,
   getFilterIcon,
   getFilterTKey,
+  type TestRunFilterName,
 } from './filters';
+import { useTestRunsFiltersContext } from './TestRunsFiltersContext';
 
 export function TestRunsFiltersMenu({
   children,

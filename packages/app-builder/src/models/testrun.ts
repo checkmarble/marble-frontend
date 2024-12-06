@@ -1,12 +1,13 @@
 import {
   type TestRunCreateInputDto,
-  type TestRunDto,
-  type TestRunStatusDto,
   type TestRunDecisionDataDto,
+  type TestRunDto,
   type TestRunRuleExecutionDataDto,
+  type TestRunStatusDto,
 } from 'marble-api/generated/marblecore-api';
-import { knownOutcomes } from './outcome';
 import { toUpperCase } from 'remeda';
+
+import { type knownOutcomes } from './outcome';
 
 type Outcome = (typeof knownOutcomes)[number];
 
@@ -26,23 +27,23 @@ export const testRunRuleStatuses: TestRunRuleStatus[] = [
   'snoozed',
 ];
 
-export interface TestRunRuleExecution {
+export interface TestRunRuleExecutionCount {
   version: string;
   name: string;
   status: TestRunRuleStatus;
   total: number;
-  rule_id: string;
+  ruleId: string;
 }
 
 export function adaptTestRunRuleExecution(
   dto: TestRunRuleExecutionDataDto,
-): TestRunRuleExecution {
+): TestRunRuleExecutionCount {
   return {
     version: dto.version,
     name: dto.name,
     status: dto.status,
     total: dto.total,
-    rule_id: dto.stable_rule_id,
+    ruleId: dto.stable_rule_id,
   };
 }
 

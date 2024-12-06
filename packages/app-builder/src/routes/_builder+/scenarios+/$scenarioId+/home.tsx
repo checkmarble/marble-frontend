@@ -13,6 +13,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
@@ -47,7 +48,6 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 import { useCurrentScenario, useScenarioIterations } from './_layout';
-import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,

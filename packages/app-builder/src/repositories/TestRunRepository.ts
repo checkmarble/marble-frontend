@@ -1,15 +1,15 @@
-import { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptTestRun,
   adaptTestRunCreateInputDto,
   adaptTestRunDecision,
   adaptTestRunRuleExecution,
-  TestRunDecision,
-  TestRunRuleExecution,
-  TestRunStatus,
-  testRunStatuses,
   type TestRun,
   type TestRunCreateInput,
+  type TestRunDecision,
+  type TestRunRuleExecutionCount,
+  type TestRunStatus,
+  testRunStatuses,
 } from '@app-builder/models/testrun';
 import { toUUID } from '@app-builder/utils/short-uuid';
 import { addDays } from 'date-fns';
@@ -23,7 +23,7 @@ export interface TestRunRepository {
   listDecisions(args: { testRunId: string }): Promise<TestRunDecision[]>;
   listRuleExecutions(args: {
     testRunId: string;
-  }): Promise<TestRunRuleExecution[]>;
+  }): Promise<TestRunRuleExecutionCount[]>;
 }
 
 const testruns: TestRun[] = [
@@ -50,97 +50,97 @@ const testrunDecisions: TestRunDecision[] = [
   { version: 'V1', outcome: 'block_and_review', count: 20 },
 ];
 
-const testrunRuleExecutions: TestRunRuleExecution[] = [
+const testrunRuleExecutions: TestRunRuleExecutionCount[] = [
   {
     version: 'V1',
     name: 'Rule 1 name',
     status: 'hit',
     total: 10,
-    rule_id: 'rule-1',
+    ruleId: 'rule-1',
   },
   {
     version: 'V4',
     name: 'Rule 1 name',
     status: 'hit',
     total: 15,
-    rule_id: 'rule-1',
+    ruleId: 'rule-1',
   },
   {
     version: 'V1',
     name: 'Rule 1 name',
     status: 'no_hit',
     total: 20,
-    rule_id: 'rule-1',
+    ruleId: 'rule-1',
   },
   {
     version: 'V4',
     name: 'Rule 1 name',
     status: 'no_hit',
     total: 15,
-    rule_id: 'rule-1',
+    ruleId: 'rule-1',
   },
   {
     version: 'V1',
     name: 'Rule 1 name',
     status: 'error',
     total: 5,
-    rule_id: 'rule-1',
+    ruleId: 'rule-1',
   },
   {
     version: 'V4',
     name: 'Rule 1 name',
     status: 'snoozed',
     total: 5,
-    rule_id: 'rule-1',
+    ruleId: 'rule-1',
   },
   {
     version: 'V1',
     name: 'Rule 2 name',
     status: 'no_hit',
     total: 5,
-    rule_id: 'rule-2',
+    ruleId: 'rule-2',
   },
   {
     version: 'V4',
     name: 'New Rule 2 name',
     status: 'no_hit',
     total: 0, // I don't know if this is a possible return from the backend but I'm adding it here to test the UI
-    rule_id: 'rule-2',
+    ruleId: 'rule-2',
   },
   {
     version: 'V1',
     name: 'Rule 2 name',
     status: 'hit',
     total: 15,
-    rule_id: 'rule-2',
+    ruleId: 'rule-2',
   },
   {
     version: 'V4',
     name: 'New Rule 2 name',
     status: 'hit',
     total: 50,
-    rule_id: 'rule-2',
+    ruleId: 'rule-2',
   },
   {
     version: 'V1',
     name: 'Rule 2 name',
     status: 'error',
     total: 15,
-    rule_id: 'rule-2',
+    ruleId: 'rule-2',
   },
   {
     version: 'V1',
     name: 'Rule 3 name',
     status: 'hit',
     total: 15,
-    rule_id: 'rule-3',
+    ruleId: 'rule-3',
   },
   {
     version: 'V4',
     name: 'Rule 3 name',
     status: 'hit',
     total: 15,
-    rule_id: 'rule-3',
+    ruleId: 'rule-3',
   },
 ];
 

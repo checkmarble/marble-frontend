@@ -1,9 +1,10 @@
+import { testRunStatuses as statuses } from '@app-builder/models/testrun';
 import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
-import { useStatusesFilter } from '../TestRunsFiltersContext';
+
 import { TestRunStatus } from '../../TestRunStatus';
-import { testRunStatuses as statuses } from '@app-builder/models/testrun';
+import { useStatusesFilter } from '../TestRunsFiltersContext';
 
 export function StatusesFilter() {
   const [value, setSearchValue] = useState('');
@@ -12,7 +13,7 @@ export function StatusesFilter() {
 
   const matches = useMemo(
     () => matchSorter(statuses, deferredValue),
-    [deferredValue, statuses],
+    [deferredValue],
   );
 
   return (

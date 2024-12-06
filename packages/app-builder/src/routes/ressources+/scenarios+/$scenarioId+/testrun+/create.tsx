@@ -5,12 +5,8 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOr
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
-import { Scenario } from '@app-builder/models/scenario';
-import { ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
-import {
-  useCurrentScenario,
-  useScenarioIterations,
-} from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import { type Scenario } from '@app-builder/models/scenario';
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';

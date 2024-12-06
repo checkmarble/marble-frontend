@@ -8,6 +8,7 @@ import {
 } from '@app-builder/components/Scenario/TestRun/Filters';
 import { testRunsFilterNames } from '@app-builder/components/Scenario/TestRun/Filters/filters';
 import { TestRunSelector } from '@app-builder/components/Scenario/TestRun/TestRunSelector';
+import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import {
   isForbiddenHttpError,
   isNotFoundHttpError,
@@ -24,10 +25,10 @@ import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { allPass, filter, mapToObj,pick } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { allPass, filter, pick, mapToObj } from 'remeda';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
+
 import { useCurrentScenario, useScenarioIterations } from '../_layout';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

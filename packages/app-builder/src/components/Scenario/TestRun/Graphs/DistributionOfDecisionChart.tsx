@@ -1,7 +1,8 @@
-import { Collapsible } from 'ui-design-system';
+import { type TestRunDecision } from '@app-builder/models/testrun';
 import { useTranslation } from 'react-i18next';
-import { TestRunDecision } from '@app-builder/models/testrun';
-import { HamburgerChart, Versions } from './HamburgerGraph';
+import { Collapsible } from 'ui-design-system';
+
+import { HamburgerChart, type Versions } from './HamburgerGraph';
 
 export const DistributionOfDecisionChart = ({
   decisions,

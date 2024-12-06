@@ -1,17 +1,18 @@
 import { Page } from '@app-builder/components';
+import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
+import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
+import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
+import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
+import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
+import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
-import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
-import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
-import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { useMemo } from 'react';
 import { mapToObj, pick } from 'remeda';
-import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
-import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
+
 import { useCurrentScenario, useScenarioIterations } from '../_layout';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -53,12 +54,12 @@ export default function TestRun() {
       ref: `V${iterations[run.refIterationId]!.version}`,
       test: `V${iterations[run.testIterationId]!.version}`,
     }),
-    [iterations],
+    [iterations, run.refIterationId, run.testIterationId],
   );
 
   const creator = useMemo(
     () => orgUsers.find((u) => u.userId === run.creatorId),
-    [orgUsers],
+    [orgUsers, run.creatorId],
   );
 
   return (

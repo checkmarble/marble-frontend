@@ -1,13 +1,13 @@
-import { forwardRef, type ComponentProps } from 'react';
 import {
-  Root,
-  Item,
   Indicator,
-  type RadioGroupProps as RadixRadioGroupsProps,
-  type RadioGroupItemProps as RadixRadioGroupItemProps,
+  Item,
   type RadioGroupIndicatorProps as RadixRadioGroupIndicatorProps,
+  type RadioGroupItemProps as RadixRadioGroupItemProps,
+  type RadioGroupProps as RadixRadioGroupsProps,
+  Root,
 } from '@radix-ui/react-radio-group';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { type ComponentProps,forwardRef } from 'react';
 
 export const radioGroup = cva([
   'flex flex-row w-fit',

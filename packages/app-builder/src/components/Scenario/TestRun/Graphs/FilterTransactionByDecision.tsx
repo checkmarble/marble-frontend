@@ -1,4 +1,4 @@
-import { TestRunRuleExecution } from '@app-builder/models/testrun';
+import { type TestRunRuleExecutionCount } from '@app-builder/models/testrun';
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,13 +14,14 @@ import {
 } from 'remeda';
 import { Collapsible, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { HamburgerChart, Versions } from './HamburgerGraph';
+
+import { HamburgerChart, type Versions } from './HamburgerGraph';
 
 const TestRunRuleName = ({
   rulesByVersion,
   versions: { ref, test },
 }: {
-  rulesByVersion: Record<string, TestRunRuleExecution[]>;
+  rulesByVersion: Record<string, TestRunRuleExecutionCount[]>;
   versions: Versions;
 }) => {
   const refRuleName = rulesByVersion[ref]![0]!.name;
@@ -29,12 +30,12 @@ const TestRunRuleName = ({
   return (
     <div className="flex flex-col">
       <span className="text-s font-normal">{testRuleName}</span>
-      {refRuleName !== testRuleName && (
+      {refRuleName !== testRuleName ? (
         <span className="text-grey-50 inline-flex flex-row items-center gap-2">
           <Icon icon="arrow-top-left" className="size-2" />
           <span className="text-xs">{refRuleName}</span>
         </span>
-      )}
+      ) : null}
     </div>
   );
 };
@@ -43,7 +44,7 @@ const TestRunRuleHitPercentage = ({
   rulesByVersion,
   versions: { ref, test },
 }: {
-  rulesByVersion: Record<string, TestRunRuleExecution[]>;
+  rulesByVersion: Record<string, TestRunRuleExecutionCount[]>;
   versions: Versions;
 }) => {
   const refRuleHitPercentage = useMemo(() => {
@@ -77,11 +78,11 @@ const TestRunRuleHitPercentage = ({
 
   return (
     <div className="flex flex-row items-center gap-2">
-      {direction === 'up' && (
+      {direction === 'up' ? (
         <span className="text-s text-grey-50 font-normal">
           {refRuleHitPercentage}%
         </span>
-      )}
+      ) : null}
       <div
         className={clsx(
           'flex flex-row items-center justify-center rounded p-1.5',
@@ -119,7 +120,7 @@ const RuleExecution = ({
   versions,
   key,
 }: {
-  rules: Record<string, TestRunRuleExecution[]>;
+  rules: Record<string, TestRunRuleExecutionCount[]>;
   versions: Versions;
   key?: string;
 }) => {
@@ -190,7 +191,7 @@ export const FilterTransactionByDecision = ({
   rules,
   versions,
 }: {
-  rules: TestRunRuleExecution[];
+  rules: TestRunRuleExecutionCount[];
   versions: Versions;
 }) => {
   const { t } = useTranslation(['scenarios']);
@@ -198,7 +199,7 @@ export const FilterTransactionByDecision = ({
 
   const rulesByRuleId = useMemo(() => {
     const rulesSummary = mapValues(
-      groupBy(rules, ({ rule_id }) => rule_id),
+      groupBy(rules, ({ ruleId: rule_id }) => rule_id),
       (rb) => groupBy(rb, ({ version }) => version),
     );
 
@@ -210,7 +211,7 @@ export const FilterTransactionByDecision = ({
           ),
         )
       : rulesSummary;
-  }, [displayChangedRules, rules]);
+  }, [displayChangedRules, rules, versions.ref, versions.test]);
 
   return (
     <Collapsible.Container className="bg-grey-00">
