@@ -11,20 +11,20 @@ import { toUpperCase } from 'remeda';
 type Outcome = (typeof knownOutcomes)[number];
 
 export type TestRunStatus = TestRunStatusDto;
-export const testRunStatuses = [
+export const testRunStatuses: TestRunStatus[] = [
   'up',
   'down',
   'pending',
   'unknown',
-] satisfies TestRunStatus[];
+];
 
 export type TestRunRuleStatus = TestRunRuleExecutionDataDto['status'];
-export const testRunRuleStatuses = [
+export const testRunRuleStatuses: TestRunRuleStatus[] = [
   'hit',
   'no_hit',
   'error',
   'snoozed',
-] satisfies TestRunRuleStatus[];
+];
 
 export interface TestRunRuleExecution {
   version: string;
@@ -77,7 +77,7 @@ export function adaptTestRun(dto: TestRunDto): TestRun {
   return {
     id: dto.id,
     scenarioId: dto.scenario_id,
-    refIterationId: dto.test_iteration_id,
+    refIterationId: dto.ref_iteration_id,
     testIterationId: dto.test_iteration_id,
     startDate: dto.start_date,
     endDate: dto.end_date,

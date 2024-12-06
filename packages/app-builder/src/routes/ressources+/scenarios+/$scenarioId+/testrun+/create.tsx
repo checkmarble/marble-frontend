@@ -5,6 +5,8 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOr
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { Scenario } from '@app-builder/models/scenario';
+import { ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import {
   useCurrentScenario,
   useScenarioIterations,
@@ -63,7 +65,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 }
 
-export function CreateTestRun({ children }: { children: React.ReactElement }) {
+export function CreateTestRun({
+  children,
+  currentScenario,
+  scenarioIterations,
+}: {
+  children: React.ReactElement;
+  currentScenario: Scenario;
+  scenarioIterations: ScenarioIterationWithType[];
+}) {
   const [open, setOpen] = useState(false);
   const hydrated = useHydrated();
   const navigation = useNavigation();
@@ -78,18 +88,25 @@ export function CreateTestRun({ children }: { children: React.ReactElement }) {
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} disabled={!hydrated} />
       <ModalV2.Content className="overflow-visible">
-        <CreateTestRunToContent />
+        <CreateTestRunToContent
+          currentScenario={currentScenario}
+          scenarioIterations={scenarioIterations}
+        />
       </ModalV2.Content>
     </ModalV2.Root>
   );
 }
 
-function CreateTestRunToContent() {
+function CreateTestRunToContent({
+  currentScenario,
+  scenarioIterations,
+}: {
+  currentScenario: Scenario;
+  scenarioIterations: ScenarioIterationWithType[];
+}) {
   const { t } = useTranslation(handle.i18n);
 
   const createTestRunFetcher = useFetcher<typeof action>();
-  const scenarioIterations = useScenarioIterations();
-  const currentScenario = useCurrentScenario();
   const refIterations = React.useMemo(
     () => scenarioIterations.filter(({ type }) => type === 'live version'),
     [scenarioIterations],

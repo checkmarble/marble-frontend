@@ -317,6 +317,8 @@ function QuickVersionAccess({
 
 function TestRunSection({ scenarioId }: { scenarioId: string }) {
   const { t } = useTranslation();
+  const currentScenario = useCurrentScenario();
+  const scenarioIterations = useScenarioIterations();
   const { testRuns } = useLoaderData<typeof loader>();
 
   const currentTestRun = React.useMemo(
@@ -354,7 +356,10 @@ function TestRunSection({ scenarioId }: { scenarioId: string }) {
           </CalloutV2>
 
           <div className="flex flex-row gap-4">
-            <CreateTestRun>
+            <CreateTestRun
+              currentScenario={currentScenario}
+              scenarioIterations={scenarioIterations}
+            >
               <Button variant="primary" className="isolate h-10 w-fit">
                 <Icon icon="plus" className="size-6" aria-hidden />
                 {t('scenarios:create_testrun.title')}

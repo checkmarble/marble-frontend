@@ -78,7 +78,7 @@ export function TestRunsFiltersBar() {
             </TestRunsFiltersMenu>
           ) : null}
         </div>
-        <ClearAllFiltersButton onPointerDown={clearAllFilters} />
+        <ClearAllFiltersButton onClick={clearAllFilters} />
       </div>
     </>
   );

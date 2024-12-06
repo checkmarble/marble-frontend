@@ -14,9 +14,14 @@ export function VersionsFilter({ type }: { type: 'ref' | 'test' }) {
   const deferredValue = useDeferredValue(value);
   const iterations = useScenarioIterations();
 
+  const filteredIterations = useMemo(
+    () => iterations.filter(({ type }) => type !== 'draft'),
+    [iterations],
+  );
+
   const matches = useMemo(
-    () => matchSorter(iterations, deferredValue, { keys: ['version'] }),
-    [deferredValue, iterations],
+    () => matchSorter(filteredIterations, deferredValue, { keys: ['version'] }),
+    [deferredValue, filteredIterations],
   );
 
   return (

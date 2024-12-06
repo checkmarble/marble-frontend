@@ -127,7 +127,7 @@ const RuleExecution = ({
 
   return (
     <Collapsible.Container defaultOpen={false} key={id}>
-      <div className="grid-cols-ts-by-ds grid w-full items-center">
+      <div className="grid w-full grid-cols-[9%_40%_25%_auto] items-center">
         <Collapsible.Title size="small" />
         <TestRunRuleName rulesByVersion={rules} versions={versions} />
         <TestRunRuleHitPercentage rulesByVersion={rules} versions={versions} />
@@ -229,7 +229,7 @@ export const FilterTransactionByDecision = ({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <div className="grid-cols-ts-by-ds text-s grid w-full font-semibold">
+            <div className="text-s grid w-full grid-cols-[9%_40%_25%_auto] font-semibold">
               <span />
               <span>{t('scenarios:testrun.filters.rule_name')}</span>
               <span>{t('scenarios:testrun.filters.alerts')}</span>

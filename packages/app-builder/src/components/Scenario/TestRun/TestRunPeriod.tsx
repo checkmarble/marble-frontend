@@ -1,7 +1,7 @@
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { ComponentProps } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 export const TestRunPeriod = ({
   startDate,
@@ -23,17 +23,21 @@ export const TestRunPeriod = ({
       )}
       {...props}
     >
-      {t('common:from')}
-      <span className="font-semibold">
-        {formatDateTime(new Date(+startDate), {
-          language,
-          timeStyle: undefined,
-        })}
-      </span>
-      {t('common:to')}
-      <span className="font-semibold">
-        {formatDateTime(new Date(+endDate), { language, timeStyle: undefined })}
-      </span>
+      <Trans
+        t={t}
+        i18nKey={'common:from_to'}
+        components={{ Date: <span className="font-semibold" /> }}
+        values={{
+          start_date: formatDateTime(new Date(+startDate), {
+            language,
+            timeStyle: undefined,
+          }),
+          end_date: formatDateTime(new Date(+endDate), {
+            language,
+            timeStyle: undefined,
+          }),
+        }}
+      />
     </span>
   );
 };

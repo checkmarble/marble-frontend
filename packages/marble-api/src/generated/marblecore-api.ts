@@ -696,11 +696,11 @@ export type TestRunCreateInputDto = {
 export type TestRunDecisionDataDto = {
     version: string;
     outcome: OutcomeDto;
-    phantom_outcome: OutcomeDto;
-    score: number;
-    phantom_score: number;
+    phantom_outcome?: OutcomeDto;
+    score?: number;
+    phantom_score?: number;
     total: number;
-    phantom_total: number;
+    phantom_total?: number;
 };
 export type TestRunRuleExecutionDataDto = {
     version: string;

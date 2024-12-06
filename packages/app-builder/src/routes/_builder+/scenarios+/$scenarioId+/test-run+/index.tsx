@@ -28,32 +28,17 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { allPass, filter, pick, mapToObj } from 'remeda';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
+import { useCurrentScenario, useScenarioIterations } from '../_layout';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const scenarioId = fromParams(params, 'scenarioId');
-  const { testRun, scenario } = await authService.isAuthenticated(request, {
+  const { testRun } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const [runs, scenarioIterations, currentScenario] = await Promise.all([
-    testRun.listTestRuns({ scenarioId }),
-    scenario.listScenarioIterations({ scenarioId }),
-    scenario.getScenario({ scenarioId }),
-  ]);
-
   try {
-    return json({
-      runs,
-      currentScenario,
-      iterations: mapToObj(scenarioIterations, (i) => [
-        i.id,
-        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), [
-          'version',
-          'type',
-        ]),
-      ]),
-    });
+    return json({ runs: await testRun.listTestRuns({ scenarioId }) });
   } catch (error) {
     // if scenario is deleted or user no longer have access, the user is redirected
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
@@ -66,9 +51,23 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function TestRuns() {
   const { t } = useTranslation(['scenarios']);
-  const { runs, iterations, currentScenario } = useLoaderData<typeof loader>();
+  const { runs } = useLoaderData<typeof loader>();
+  const currentScenario = useCurrentScenario();
+  const scenarioIterations = useScenarioIterations();
   const { orgUsers } = useOrganizationUsers();
   const [filters, setFilters] = useState<TestRunsFilters>({});
+
+  const iterations = useMemo(
+    () =>
+      mapToObj(scenarioIterations, (i) => [
+        i.id,
+        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), [
+          'version',
+          'type',
+        ]),
+      ]),
+    [scenarioIterations, currentScenario],
+  );
 
   const filteredRuns = useMemo(() => {
     const { statuses, startedAfter, creators, ref_versions, test_versions } =
@@ -137,7 +136,10 @@ export default function TestRuns() {
                   <TestRunsFiltersMenu filterNames={testRunsFilterNames}>
                     <FiltersButton />
                   </TestRunsFiltersMenu>
-                  <CreateTestRun>
+                  <CreateTestRun
+                    currentScenario={currentScenario}
+                    scenarioIterations={scenarioIterations}
+                  >
                     <Button variant="primary" className="isolate h-10 w-fit">
                       <Icon icon="plus" className="size-6" aria-hidden />
                       {t('scenarios:create_testrun.title')}
@@ -147,7 +149,7 @@ export default function TestRuns() {
               </div>
               <TestRunsFiltersBar />
               <div className="flex flex-col gap-2">
-                <div className="grid-cols-test-run text-s grid font-semibold">
+                <div className="text-s grid grid-cols-[30%_30%_8%_auto] font-semibold">
                   <span className="px-4">
                     {t('scenarios:testrun.filters.version')}
                   </span>

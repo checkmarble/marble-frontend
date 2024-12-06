@@ -12,42 +12,49 @@ import { useMemo } from 'react';
 import { mapToObj, pick } from 'remeda';
 import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
 import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
+import { useCurrentScenario, useScenarioIterations } from '../_layout';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const testRunId = fromParams(params, 'testRunId');
-  const scenarioId = fromParams(params, 'scenarioId');
-  const { testRun, scenario } = await authService.isAuthenticated(request, {
+  const { testRun } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const [run, iterations, currentScenario] = await Promise.all([
+  const [run, decisions, rules] = await Promise.all([
     testRun.getTestRun({ testRunId }),
-    scenario.listScenarioIterations({ scenarioId }),
-    scenario.getScenario({ scenarioId }),
+    testRun.listDecisions({ testRunId }),
+    testRun.listRuleExecutions({ testRunId }),
   ]);
 
-  return json({
-    run,
-    currentScenario,
-    iterations: mapToObj(iterations, (i) => [
-      i.id,
-      pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), [
-        'version',
-        'type',
-      ]),
-    ]),
-  });
+  return json({ run, decisions, rules });
 }
 
 export default function TestRun() {
-  const { run, iterations, currentScenario } = useLoaderData<typeof loader>();
+  const { run, decisions, rules } = useLoaderData<typeof loader>();
+  const currentScenario = useCurrentScenario();
+  const sourceIterations = useScenarioIterations();
   const { orgUsers } = useOrganizationUsers();
 
-  const versions = {
-    ref: `V${iterations[run.refIterationId]!.version}`,
-    test: `V${iterations[run.testIterationId]!.version}`,
-  };
+  const iterations = useMemo(
+    () =>
+      mapToObj(sourceIterations, (i) => [
+        i.id,
+        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), [
+          'version',
+          'type',
+        ]),
+      ]),
+    [sourceIterations, currentScenario],
+  );
+
+  const versions = useMemo(
+    () => ({
+      ref: `V${iterations[run.refIterationId]!.version}`,
+      test: `V${iterations[run.testIterationId]!.version}`,
+    }),
+    [iterations],
+  );
 
   const creator = useMemo(
     () => orgUsers.find((u) => u.userId === run.creatorId),
@@ -71,113 +78,9 @@ export default function TestRun() {
           <TestRunDetails {...run} iterations={iterations} creator={creator} />
           <DistributionOfDecisionChart
             versions={versions}
-            decisions={[
-              { version: 'V1', outcome: 'approve', count: 10 },
-              { version: 'V4', outcome: 'approve', count: 20 },
-              { version: 'V1', outcome: 'decline', count: 5 },
-              { version: 'V1', outcome: 'approve', count: 30 },
-              { version: 'V4', outcome: 'decline', count: 15 },
-              { version: 'V1', outcome: 'review', count: 9 },
-              { version: 'V4', outcome: 'review', count: 22 },
-              { version: 'V1', outcome: 'block_and_review', count: 20 },
-            ]}
+            decisions={decisions}
           />
-          <FilterTransactionByDecision
-            versions={versions}
-            rules={[
-              {
-                version: 'V1',
-                name: 'Rule 1 name',
-                status: 'hit',
-                total: 10,
-                rule_id: 'rule-1',
-              },
-              {
-                version: 'V4',
-                name: 'Rule 1 name',
-                status: 'hit',
-                total: 15,
-                rule_id: 'rule-1',
-              },
-              {
-                version: 'V1',
-                name: 'Rule 1 name',
-                status: 'no_hit',
-                total: 20,
-                rule_id: 'rule-1',
-              },
-              {
-                version: 'V4',
-                name: 'Rule 1 name',
-                status: 'no_hit',
-                total: 15,
-                rule_id: 'rule-1',
-              },
-              {
-                version: 'V1',
-                name: 'Rule 1 name',
-                status: 'error',
-                total: 5,
-                rule_id: 'rule-1',
-              },
-              {
-                version: 'V4',
-                name: 'Rule 1 name',
-                status: 'snoozed',
-                total: 5,
-                rule_id: 'rule-1',
-              },
-              {
-                version: 'V1',
-                name: 'Rule 2 name',
-                status: 'no_hit',
-                total: 5,
-                rule_id: 'rule-2',
-              },
-              {
-                version: 'V4',
-                name: 'New Rule 2 name',
-                status: 'no_hit',
-                total: 0, // I don't know if this is a possible return from the backend but I'm adding it here to test the UI
-                rule_id: 'rule-2',
-              },
-              {
-                version: 'V1',
-                name: 'Rule 2 name',
-                status: 'hit',
-                total: 15,
-                rule_id: 'rule-2',
-              },
-              {
-                version: 'V4',
-                name: 'New Rule 2 name',
-                status: 'hit',
-                total: 50,
-                rule_id: 'rule-2',
-              },
-              {
-                version: 'V1',
-                name: 'Rule 2 name',
-                status: 'error',
-                total: 15,
-                rule_id: 'rule-2',
-              },
-              {
-                version: 'V1',
-                name: 'Rule 3 name',
-                status: 'hit',
-                total: 15,
-                rule_id: 'rule-3',
-              },
-              {
-                version: 'V4',
-                name: 'Rule 3 name',
-                status: 'hit',
-                total: 15,
-                rule_id: 'rule-3',
-              },
-            ]}
-          />
+          <FilterTransactionByDecision versions={versions} rules={rules} />
         </Page.Content>
       </Page.Container>
     </Page.Main>
