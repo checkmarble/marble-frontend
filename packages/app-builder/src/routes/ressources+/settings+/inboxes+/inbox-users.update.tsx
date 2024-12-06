@@ -3,7 +3,10 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
+import {
+  type InboxUser,
+  tKeyForInboxUserRole,
+} from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -17,7 +20,6 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { type InboxUserDto } from 'marble-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -33,7 +35,7 @@ function getUpdateInboxUserFormSchema(
 ) {
   return z.object({
     id: z.string().uuid(),
-    inbox_id: z.string().uuid(),
+    inboxId: z.string().uuid(),
     role: z.enum(inboxUserRoles),
   });
 }
@@ -66,7 +68,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
     return redirect(
       getRoute('/settings/inboxes/:inboxId', {
-        inboxId: fromUUID(submission.value.inbox_id),
+        inboxId: fromUUID(submission.value.inboxId),
       }),
     );
   } catch (error) {
@@ -90,7 +92,7 @@ export function UpdateInboxUser({
   inboxUser,
   inboxUserRoles,
 }: {
-  inboxUser: InboxUserDto;
+  inboxUser: InboxUser;
   inboxUserRoles: readonly [string, ...string[]];
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -126,7 +128,7 @@ export function UpdateInboxUserContent({
   currentInboxUser,
   inboxUserRoles,
 }: {
-  currentInboxUser: InboxUserDto;
+  currentInboxUser: InboxUser;
   inboxUserRoles: readonly [string, ...string[]];
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -170,8 +172,8 @@ export function UpdateInboxUserContent({
             key={fields.id.key}
           />
           <input
-            {...getInputProps(fields.inbox_id, { type: 'hidden' })}
-            key={fields.inbox_id.key}
+            {...getInputProps(fields.inboxId, { type: 'hidden' })}
+            key={fields.inboxId.key}
           />
           <FormField
             name={fields.role.name}

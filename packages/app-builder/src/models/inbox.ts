@@ -46,12 +46,12 @@ export interface InboxUpdateBody {
   name: string;
 }
 
-export interface InboxUser {
+export type InboxUser = {
   id: string;
   inboxId: string;
   userId: string;
   role: string;
-}
+};
 
 export function adaptInboxUser(inboxUser: InboxUserDto): InboxUser {
   return {

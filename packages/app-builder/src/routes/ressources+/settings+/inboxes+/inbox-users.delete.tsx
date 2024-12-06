@@ -1,3 +1,4 @@
+import { type InboxUser } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -5,7 +6,6 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { Form, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { type InboxUserDto } from 'marble-api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
   );
 }
 
-export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUserDto }) {
+export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUser }) {
   const { t } = useTranslation(handle.i18n);
 
   const [open, setOpen] = useState(false);
@@ -65,7 +65,7 @@ export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUserDto }) {
   );
 }
 
-const DeleteInboxUserContent = ({ inboxUser }: { inboxUser: InboxUserDto }) => {
+const DeleteInboxUserContent = ({ inboxUser }: { inboxUser: InboxUser }) => {
   const { t } = useTranslation(handle.i18n);
 
   return (
@@ -77,7 +77,7 @@ const DeleteInboxUserContent = ({ inboxUser }: { inboxUser: InboxUserDto }) => {
       <div className="bg-grey-00 flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4">
           <input name="inboxUserId" value={inboxUser.id} type="hidden" />
-          <input name="inboxId" value={inboxUser.inbox_id} type="hidden" />
+          <input name="inboxId" value={inboxUser.inboxId} type="hidden" />
           <p className="text-center">
             {t('settings:inboxes.inbox_user.delete.content')}
           </p>

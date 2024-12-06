@@ -1,10 +1,10 @@
+import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { Form, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { type InboxDto } from 'marble-api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -35,7 +35,7 @@ export function DeleteInbox({
   inbox,
   disabled,
 }: {
-  inbox: InboxDto;
+  inbox: Inbox;
   disabled?: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);

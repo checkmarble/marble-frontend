@@ -1,5 +1,8 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
+import {
+  type InboxUser,
+  tKeyForInboxUserRole,
+} from '@app-builder/models/inbox';
 import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
 import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.create';
 import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.delete';
@@ -9,7 +12,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import {
   createColumnHelper,
@@ -17,7 +20,6 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
-import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, useTable } from 'ui-design-system';
@@ -28,27 +30,26 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const {
-    user,
-    apiClient,
-    inbox: inboxApi,
-  } = await authService.isAuthenticated(request, {
+  const { user, inbox: inboxApi } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const inboxId = fromParams(params, 'inboxId');
 
-  const [{ inbox }, inboxesList, inboxUserRoles] = await Promise.all([
-    apiClient.getInbox(inboxId),
+  const [inboxesList, inboxUserRoles] = await Promise.all([
     inboxApi.listInboxesWithCaseCount(),
     featureAccessService.getInboxUserRoles(),
   ]);
 
-  const inboxWithCaseCount = inboxesList.find((inbox) => inbox.id === inboxId);
+  const inbox = inboxesList.find((inbox) => inbox.id === inboxId);
+  if (!inbox) {
+    redirect(getRoute('/settings/inboxes/'));
+    return;
+  }
 
   return json({
     inbox,
-    caseCount: inboxWithCaseCount?.casesCount ?? 0,
+    caseCount: inbox.casesCount,
     inboxUserRoles,
     isEditInboxAvailable: featureAccessService.isEditInboxAvailable(user),
     isDeleteInboxAvailable: featureAccessService.isDeleteInboxAvailable(user),
@@ -61,7 +62,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 }
 
-const columnHelper = createColumnHelper<InboxUserDto>();
+const columnHelper = createColumnHelper<InboxUser>();
 
 export default function Inbox() {
   const {
@@ -79,7 +80,7 @@ export default function Inbox() {
 
   const columns = useMemo(() => {
     return [
-      columnHelper.accessor((row) => row.user_id, {
+      columnHelper.accessor((row) => row.userId, {
         id: 'name',
         header: t('settings:inboxes.name'),
         size: 200,
@@ -136,7 +137,7 @@ export default function Inbox() {
   });
 
   const nonInboxUsers = orgUsers.filter(
-    (user) => !inbox.users?.some((u) => u.user_id === user.userId),
+    (user) => !inbox.users?.some((u) => u.userId === user.userId),
   );
 
   return (
