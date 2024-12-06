@@ -64,17 +64,17 @@ export function FormSelectCaseTags({
   onOpenChange?: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['cases']);
-  const [value, setSearchValue] = React.useState('');
-  const searchValue = React.useDeferredValue(value);
+  const [searchValue, setSearchValue] = React.useState('');
+  const deferredSearchValue = React.useDeferredValue(searchValue);
 
   const matches = React.useMemo(
-    () => matchSorter(orgTags, searchValue, { keys: ['name'] }),
-    [orgTags, searchValue],
+    () => matchSorter(orgTags, deferredSearchValue, { keys: ['name'] }),
+    [orgTags, deferredSearchValue],
   );
 
   return (
     <FormSelectWithCombobox.Root
-      selectedValues={selectedTagIds}
+      selectedValue={selectedTagIds}
       searchValue={searchValue}
       onSearchValueChange={setSearchValue}
       onOpenChange={onOpenChange}

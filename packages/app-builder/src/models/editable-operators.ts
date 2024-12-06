@@ -1,6 +1,11 @@
 import { type TFunction } from 'i18next';
 import { assertNever } from 'typescript-utils';
 
+import {
+  type ValidTimestampExtractParts,
+  validTimestampExtractParts,
+} from './ast-node';
+
 export const undefinedAstNodeName = 'Undefined';
 
 // order is important for sorting
@@ -134,13 +139,21 @@ export type OperatorFunction =
   | MainAstOperatorFunction
   | FilterOperator
   | TimeAddOperator
+  | ValidTimestampExtractParts
   | AggregatorOperator;
 export function isOperatorFunction(value: string): value is OperatorFunction {
   return (
     isMainAstOperatorFunction(value) ||
     isFilterOperator(value) ||
     isTimeAddOperator(value) ||
-    isAggregatorOperator(value)
+    isAggregatorOperator(value) ||
+    isTimestampPart(value)
+  );
+}
+
+function isTimestampPart(value: string): value is ValidTimestampExtractParts {
+  return validTimestampExtractParts.includes(
+    value as ValidTimestampExtractParts,
   );
 }
 
@@ -199,6 +212,16 @@ export function getOperatorName(
         return t('scenarios:aggregator.min');
       case 'SUM':
         return t('scenarios:aggregator.sum');
+      case 'year':
+        return t('scenarios:timestamp_part.year');
+      case 'month':
+        return t('scenarios:timestamp_part.month');
+      case 'day_of_month':
+        return t('scenarios:timestamp_part.day_of_month');
+      case 'day_of_week':
+        return t('scenarios:timestamp_part.day_of_week');
+      case 'hour':
+        return t('scenarios:timestamp_part.hour');
       case undefinedAstNodeName:
         return '...';
       default:

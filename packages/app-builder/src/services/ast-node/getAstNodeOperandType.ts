@@ -9,6 +9,7 @@ import {
   isFuzzyMatchComparator,
   isTimeAdd,
   isTimeNow,
+  isTimestampExtract,
   isUndefinedAstNode,
   type TableModel,
 } from '@app-builder/models';
@@ -49,7 +50,8 @@ export function getAstNodeOperandType(
     isAggregation(astNode) ||
     isTimeAdd(astNode) ||
     isTimeNow(astNode) ||
-    isFuzzyMatchComparator(astNode)
+    isFuzzyMatchComparator(astNode) ||
+    isTimestampExtract(astNode)
   ) {
     return 'Function';
   }

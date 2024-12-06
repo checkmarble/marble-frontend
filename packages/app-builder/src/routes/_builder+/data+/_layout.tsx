@@ -50,7 +50,7 @@ export default function Data() {
     <Page.Main>
       <Page.Header className="justify-between">
         <div className="flex flex-row items-center">
-          <Icon icon="harddrive" className="mr-2 size-6" />
+          <Icon icon="harddrive" className="me-2 size-6" />
           {t('navigation:data')}
         </div>
       </Page.Header>

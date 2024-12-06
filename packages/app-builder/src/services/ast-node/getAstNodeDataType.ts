@@ -7,6 +7,7 @@ import {
   isFuzzyMatchComparator,
   isTimeAdd,
   isTimeNow,
+  isTimestampExtract,
   type TableModel,
 } from '@app-builder/models';
 import { dateTimeDataTypeSchema } from '@app-builder/utils/schema/dataTypeSchema';
@@ -57,6 +58,10 @@ export function getAstNodeDataType(
 
   if (isFuzzyMatchComparator(astNode)) {
     return 'Bool';
+  }
+
+  if (isTimestampExtract(astNode)) {
+    return 'Int';
   }
 
   if (isTimeNow(astNode) || isTimeAdd(astNode)) {

@@ -17,18 +17,18 @@ export function FormSelectEvents({
 }) {
   const { t } = useTranslation(['settings']);
 
-  const [value, setSearchValue] = React.useState('');
-  const searchValue = React.useDeferredValue(value);
+  const [searchValue, setSearchValue] = React.useState('');
+  const deferredSearchValue = React.useDeferredValue(searchValue);
 
   const matches = React.useMemo(
-    () => matchSorter(eventTypes, searchValue),
-    [searchValue],
+    () => matchSorter(eventTypes, deferredSearchValue),
+    [deferredSearchValue],
   );
 
   return (
     <FormSelectWithCombobox.Root
-      selectedValues={selectedEventTypes}
-      searchValue={value}
+      selectedValue={selectedEventTypes}
+      searchValue={searchValue}
       onSearchValueChange={setSearchValue}
     >
       <FormSelectWithCombobox.Select className={className}>
@@ -51,7 +51,7 @@ export function FormSelectEvents({
           {matches.map((event) => (
             <FormSelectWithCombobox.ComboboxItem key={event} value={event}>
               <EventType>
-                <Highlight text={event} query={searchValue} />
+                <Highlight text={event} query={deferredSearchValue} />
               </EventType>
             </FormSelectWithCombobox.ComboboxItem>
           ))}

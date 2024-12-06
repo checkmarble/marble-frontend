@@ -10,8 +10,10 @@ import {
   isPayload,
   isTimeAdd,
   isTimeNow,
+  isTimestampExtract,
   isUndefinedAstNode,
   type TimeAddAstNode,
+  type TimestampExtractAstNode,
 } from '@app-builder/models';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
@@ -65,6 +67,10 @@ export function getAstNodeDisplayName(
 
   if (isTimeNow(astNode)) {
     return context.t('scenarios:edit_date.now');
+  }
+
+  if (isTimestampExtract(astNode)) {
+    return getTimestampExtractDisplayName(astNode, context);
   }
 
   if (isFuzzyMatchComparator(astNode)) {
@@ -166,7 +172,9 @@ const pluralizeTemporalDurationUnit = (unit: number, type: string): string => {
 
 function getAggregatorDisplayName(
   astNode: AggregationAstNode,
-  context: { t: TFunctionDisplayName },
+  context: {
+    t: TFunctionDisplayName;
+  },
 ) {
   const { aggregator, label } = astNode.namedChildren;
   if (label?.constant !== undefined && label?.constant !== '') {
@@ -197,4 +205,25 @@ function getFuzzyMatchComparatorDisplayName(
   const formatLeft = getAstNodeDisplayName(left, context) || '?';
   const formatRight = getAstNodeDisplayName(right, context) || '?';
   return `${formatLeft} ≈ ${formatRight}`;
+}
+
+function getTimestampExtractDisplayName(
+  astNode: TimestampExtractAstNode,
+  context: AstNodeStringifierContext,
+) {
+  const part = astNode.namedChildren['part']?.constant ?? '';
+  const timestamp = astNode.namedChildren['timestamp'];
+
+  const timestampStr = getAstNodeDisplayName(timestamp, context);
+
+  if (timestampStr === '') {
+    return context.t('scenarios:edit_timestamp_extract.title');
+  }
+
+  return context.t('scenarios:edit_timestamp_extract.display_name', {
+    replace: {
+      operator: getOperatorName(context.t, part),
+      timestamp: timestampStr,
+    },
+  });
 }

@@ -76,7 +76,7 @@ export default function ListsPage() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="lists" className="mr-2 size-6" />
+        <Icon icon="lists" className="me-2 size-6" />
         {t('navigation:lists')}
       </Page.Header>
       <Page.Container>

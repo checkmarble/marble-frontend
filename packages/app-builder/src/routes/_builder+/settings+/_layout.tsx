@@ -27,6 +27,11 @@ export async function getSettings(
       to: getRoute('/settings/users'),
     });
   }
+  settings.push({
+    section: 'scenarios' as const,
+    title: 'scenarios' as const,
+    to: getRoute('/settings/scenarios'),
+  });
   if (featureAccessService.isReadAllInboxesAvailable(user)) {
     settings.push({
       section: 'case_manager' as const,
@@ -82,7 +87,7 @@ export default function Settings() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="settings" className="mr-2 size-6" />
+        <Icon icon="settings" className="me-2 size-6" />
         {t('navigation:settings')}
       </Page.Header>
       <div className="flex size-full flex-row overflow-hidden">

@@ -2,6 +2,7 @@ import {
   isAggregation,
   isFuzzyMatchComparator,
   isTimeAdd,
+  isTimestampExtract,
 } from '@app-builder/models';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import * as React from 'react';
@@ -17,6 +18,7 @@ import {
 import { AggregationEdit } from './AggregationEdit/AggregationEdit';
 import { FuzzyMatchComparatorEdit } from './FuzzyMatchComparatorEdit/FuzzyMatchComparatorEdit';
 import { TimeAddEdit } from './TimeAddEdit/TimeAddEdit';
+import { TimestampExtractEdit } from './TimestampExtract/TimestampExtract';
 
 const OperandEditModalContent = React.forwardRef<
   HTMLDivElement,
@@ -29,7 +31,7 @@ const OperandEditModalContent = React.forwardRef<
       ref={ref}
       hideOnInteractOutside={(event) => {
         event.stopPropagation();
-        // Prevent people from loosing their work by clicking accidentally outside the modal
+        // Prevent people from losing their work by clicking accidentally outside the modal
         return false;
       }}
       open={editModalOpen}
@@ -55,6 +57,17 @@ export function OperandEditModal() {
       <OperandEditModalContent size="small">
         <TimeAddEdit
           timeAddAstNode={initialEditableAstNode}
+          astNodeErrors={initialAstNodeErrors}
+          onSave={onEditSave}
+        />
+      </OperandEditModalContent>
+    );
+  }
+  if (isTimestampExtract(initialEditableAstNode)) {
+    return (
+      <OperandEditModalContent size="medium">
+        <TimestampExtractEdit
+          timestampExtractAstNode={initialEditableAstNode}
           astNodeErrors={initialAstNodeErrors}
           onSave={onEditSave}
         />
