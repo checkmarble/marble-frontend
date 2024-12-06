@@ -16,8 +16,12 @@ import {
 } from '@app-builder/components';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
-import { useCursorPagination } from '@app-builder/hooks/useCursorPagination';
-import { type PaginationParams } from '@app-builder/models/pagination';
+import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
+import { type Decision } from '@app-builder/models/decision';
+import {
+  type PaginatedResponse,
+  type PaginationParams,
+} from '@app-builder/models/pagination';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -25,7 +29,6 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import {
   Form,
-  useFetcher,
   useLoaderData,
   useNavigate,
   useRouteError,
@@ -33,7 +36,7 @@ import {
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
@@ -41,6 +44,34 @@ import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
+};
+
+export const buildQueryParams = (
+  filters: DecisionFilters,
+  offsetId: string | null,
+) => {
+  return {
+    outcomeAndReviewStatus: filters.outcomeAndReviewStatus ?? [],
+    triggerObject: filters.triggerObject ?? [],
+    dateRange: filters.dateRange
+      ? filters.dateRange.type === 'static'
+        ? {
+            type: 'static',
+            endDate: filters.dateRange.endDate || null,
+            startDate: filters.dateRange.startDate || null,
+          }
+        : {
+            type: 'dynamic',
+            fromNow: filters.dateRange.fromNow,
+          }
+      : {},
+    pivotValue: filters.pivotValue || null,
+    scenarioId: filters.scenarioId ?? [],
+    scheduledExecutionId: filters.scheduledExecutionId ?? [],
+    caseInboxId: filters.caseInboxId ?? [],
+    hasCase: filters?.hasCase ?? null,
+    offsetId,
+  };
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -90,79 +121,31 @@ export default function Decisions() {
   const { t } = useTranslation(handle.i18n);
   const {
     decisionsData: initialDecisionsData,
-    filters: initialFilters,
+    filters,
     scenarios,
     hasPivots,
     inboxes,
   } = useLoaderData<typeof loader>();
 
-  const [decisionsData, setDecisionsData] = useState(initialDecisionsData);
-  const { items: decisions, ...pagination } = decisionsData;
+  const { data, next, previous, reset, update } = useCursorPaginatedFetcher<
+    typeof loader,
+    PaginatedResponse<Decision>
+  >({
+    transform: (fetcherData) => fetcherData.decisionsData,
+    initialData: initialDecisionsData,
+    getQueryParams: (cursor) => buildQueryParams(filters, cursor),
+    validateData: (data) => data.items.length > 0,
+  });
+  const { items: decisions, ...pagination } = data;
 
-  const [filters, setFilters] = useState(initialFilters);
-  if (initialFilters !== filters) {
-    setFilters(initialFilters);
-    setDecisionsData(initialDecisionsData);
+  const [previousInitialDecisionsData, setPreviousInitialDecisionsData] =
+    useState(initialDecisionsData);
+  if (initialDecisionsData !== previousInitialDecisionsData) {
+    setPreviousInitialDecisionsData(initialDecisionsData);
+    update(initialDecisionsData);
   }
 
-  const {
-    state: paginationState,
-    next,
-    previous,
-    reset,
-  } = useCursorPagination();
-
-  const { data: fetcherData, submit } = useFetcher<typeof loader>();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (paginationState.isPristine) {
-      return;
-    }
-
-    submit(
-      qs.stringify(
-        {
-          outcomeAndReviewStatus: filters.outcomeAndReviewStatus ?? [],
-          triggerObject: filters.triggerObject ?? [],
-          dateRange: filters.dateRange
-            ? filters.dateRange.type === 'static'
-              ? {
-                  type: 'static',
-                  endDate: filters.dateRange.endDate || null,
-                  startDate: filters.dateRange.startDate || null,
-                }
-              : {
-                  type: 'dynamic',
-                  fromNow: filters.dateRange.fromNow,
-                }
-            : {},
-          pivotValue: filters.pivotValue || null,
-          scenarioId: filters.scenarioId ?? [],
-          scheduledExecutionId: filters.scheduledExecutionId ?? [],
-          caseInboxId: filters.caseInboxId ?? [],
-          hasCase: filters?.hasCase ?? null,
-          ...(paginationState.cursor
-            ? {
-                offsetId: paginationState.cursor,
-              }
-            : {}),
-        },
-        { skipNulls: true },
-      ),
-      {
-        method: 'GET',
-      },
-    );
-  }, [paginationState, filters, submit]);
-
-  useEffect(() => {
-    if (fetcherData && fetcherData.decisionsData.items.length !== 0) {
-      const { decisionsData: fetchedDecisionsData } = fetcherData;
-      setDecisionsData(fetchedDecisionsData);
-    }
-  }, [fetcherData]);
-
   const navigateDecisionList = useCallback(
     (decisionFilters: DecisionFilters, pagination?: PaginationParams) => {
       if (!pagination) {
@@ -170,35 +153,10 @@ export default function Decisions() {
         navigate(
           {
             pathname: getRoute('/decisions/'),
-            search: qs.stringify(
-              {
-                outcomeAndReviewStatus:
-                  decisionFilters.outcomeAndReviewStatus ?? [],
-                triggerObject: decisionFilters.triggerObject ?? [],
-                dateRange: decisionFilters.dateRange
-                  ? decisionFilters.dateRange.type === 'static'
-                    ? {
-                        type: 'static',
-                        endDate: decisionFilters.dateRange.endDate || null,
-                        startDate: decisionFilters.dateRange.startDate || null,
-                      }
-                    : {
-                        type: 'dynamic',
-                        fromNow: decisionFilters.dateRange.fromNow,
-                      }
-                  : {},
-                pivotValue: decisionFilters.pivotValue || null,
-                scenarioId: decisionFilters.scenarioId ?? [],
-                scheduledExecutionId:
-                  decisionFilters.scheduledExecutionId ?? [],
-                caseInboxId: decisionFilters.caseInboxId ?? [],
-                hasCase: decisionFilters?.hasCase ?? null,
-              },
-              {
-                addQueryPrefix: true,
-                skipNulls: true,
-              },
-            ),
+            search: qs.stringify(buildQueryParams(decisionFilters, null), {
+              skipNulls: true,
+              addQueryPrefix: true,
+            }),
           },
           { replace: true },
         );
