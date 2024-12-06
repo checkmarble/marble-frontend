@@ -44,6 +44,7 @@ import {
 } from '../Decisions/RulesExecutions/RulesExecutions';
 import { Score } from '../Decisions/Score';
 import { CaseDetailTriggerObject } from '../Decisions/TriggerObjectDetail';
+import { CasePivotValues } from './CasePivotValues';
 import { casesI18n } from './cases-i18n';
 import { RuleSnoozes } from './RuleSnoozes';
 
@@ -103,7 +104,7 @@ export function CaseDecisions({
       {decisions.map((row) => {
         return (
           <CollapsibleV2.Provider key={row.id}>
-            <div className="bg-grey-00 border-grey-10 col-span-full grid grid-cols-subgrid overflow-hidden rounded-md border">
+            <div className="bg-grey-00 border-grey-10 col-span-full grid grid-cols-subgrid rounded-md border">
               <div className="col-span-full grid grid-cols-subgrid items-center px-4 py-3">
                 <CollapsibleV2.Title className="border-grey-10 group rounded border outline-none transition-colors focus-visible:border-purple-100">
                   <Icon
@@ -318,73 +319,90 @@ function DecisionDetail({
   }
 
   return (
-    <div className="grid grid-cols-[2fr,_1fr] gap-x-4 gap-y-2 p-4">
-      <div className="flex flex-row items-center justify-between gap-2">
-        <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
-          {t('cases:case_detail.rules_execution', {
-            count: decisionDetail.ruleExecutions.length,
-          })}
-        </span>
-        <ShowHitOnlySwitch
-          checked={showHitOnly}
-          onCheckedChange={setShowHitOnly}
-        />
-      </div>
-      <div className="flex flex-row items-center justify-between gap-2">
-        <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
-          {t('cases:case_detail.trigger_object')}
-        </span>
-      </div>
-      <RulesExecutionsContainer className="h-fit">
-        {filteredRuleExecutions.map((ruleExecution) => {
-          const ruleSnoozes = decisionDetail.ruleSnoozes.filter(
-            (snooze) => snooze.ruleId === ruleExecution.ruleId,
-          );
+    <div className="flex flex-row gap-6 p-4">
+      <div className="flex h-fit flex-[2] flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
+            {t('cases:case_detail.rules_execution', {
+              count: decisionDetail.ruleExecutions.length,
+            })}
+          </span>
+          <ShowHitOnlySwitch
+            checked={showHitOnly}
+            onCheckedChange={setShowHitOnly}
+          />
+        </div>
+        <RulesExecutionsContainer className="h-fit">
+          {filteredRuleExecutions.map((ruleExecution) => {
+            const ruleSnoozes = decisionDetail.ruleSnoozes.filter(
+              (snooze) => snooze.ruleId === ruleExecution.ruleId,
+            );
 
-          return (
-            <RuleExecutionCollapsible key={ruleExecution.ruleId}>
-              <RuleExecutionTitle ruleExecution={ruleExecution} />
-              <RuleExecutionContent>
-                <RuleExecutionDescription
-                  description={ruleExecution.description}
-                />
-
-                <RuleExecutionDetail
-                  key={ruleExecution.ruleId}
-                  ruleExecution={ruleExecution}
-                  triggerObjectType={decisionDetail.triggerObjectType}
-                  astRuleData={{
-                    dataModel,
-                    customLists,
-                    databaseAccessors:
-                      decisionDetail.accessors.databaseAccessors,
-                    payloadAccessors: decisionDetail.accessors.payloadAccessors,
-                    operators: decisionDetail.operators,
-                    rules: decisionDetail.rules,
-                  }}
-                />
-
-                {featureAccess.isReadSnoozeAvailable &&
-                pivotValues.length > 0 ? (
-                  <RuleSnoozes
-                    ruleSnoozes={ruleSnoozes}
-                    pivotValues={pivotValues}
-                    isCreateSnoozeAvailable={
-                      featureAccess.isCreateSnoozeAvailable
-                    }
-                    decisionId={decision.id}
-                    ruleId={ruleExecution.ruleId}
+            return (
+              <RuleExecutionCollapsible key={ruleExecution.ruleId}>
+                <RuleExecutionTitle ruleExecution={ruleExecution} />
+                <RuleExecutionContent>
+                  <RuleExecutionDescription
+                    description={ruleExecution.description}
                   />
-                ) : null}
-              </RuleExecutionContent>
-            </RuleExecutionCollapsible>
-          );
-        })}
-      </RulesExecutionsContainer>
-      <CaseDetailTriggerObject
-        className="sticky top-0 h-fit max-h-[50dvh] overflow-auto"
-        triggerObject={decision.triggerObject}
-      />
+
+                  <RuleExecutionDetail
+                    key={ruleExecution.ruleId}
+                    ruleExecution={ruleExecution}
+                    triggerObjectType={decisionDetail.triggerObjectType}
+                    astRuleData={{
+                      dataModel,
+                      customLists,
+                      databaseAccessors:
+                        decisionDetail.accessors.databaseAccessors,
+                      payloadAccessors:
+                        decisionDetail.accessors.payloadAccessors,
+                      operators: decisionDetail.operators,
+                      rules: decisionDetail.rules,
+                    }}
+                  />
+
+                  {featureAccess.isReadSnoozeAvailable &&
+                  pivotValues.length > 0 ? (
+                    <RuleSnoozes
+                      ruleSnoozes={ruleSnoozes}
+                      pivotValues={pivotValues}
+                      isCreateSnoozeAvailable={
+                        featureAccess.isCreateSnoozeAvailable
+                      }
+                      decisionId={decision.id}
+                      ruleId={ruleExecution.ruleId}
+                    />
+                  ) : null}
+                </RuleExecutionContent>
+              </RuleExecutionCollapsible>
+            );
+          })}
+        </RulesExecutionsContainer>
+      </div>
+
+      <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
+        <div className="flex h-fit flex-col gap-2">
+          <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
+            <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
+              {t('cases:case_detail.pivot_values')}
+            </span>
+          </div>
+          <CasePivotValues pivotValues={pivotValues} />
+        </div>
+
+        <div className="flex h-fit flex-col gap-2">
+          <div className="flex flex-row items-center justify-between gap-2">
+            <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
+              {t('cases:case_detail.trigger_object')}
+            </span>
+          </div>
+          <CaseDetailTriggerObject
+            className="h-fit max-h-[50dvh] overflow-auto"
+            triggerObject={decision.triggerObject}
+          />
+        </div>
+      </div>
     </div>
   );
 }
