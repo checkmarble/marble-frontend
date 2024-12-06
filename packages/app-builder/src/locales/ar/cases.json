@@ -112,5 +112,7 @@
   "case_detail.add_rule_snooze.snooze_this_value": "وضع هذه القيمة في وضع السكون",
   "case_detail.add_rule_snooze.snoozed": "وضع السكون",
   "case_detail.history.event_detail.rule_snooze_created.validity": "صحة",
-  "case_detail.pivot_values.snooze_from_to": "من {{from}} ← إلى {{to}}"
+  "case_detail.pivot_values.snooze_from_to": "من {{from}} ← إلى {{to}}",
+  "case_detail.rules_execution.show_hit_only": "عرض الضربة فقط",
+  "case_detail.trigger_object": "كائن الزناد"
 }

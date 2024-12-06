@@ -31,6 +31,7 @@ export const iconNames = [
   'function',
   'harddrive',
   'helpcenter',
+  'history',
   'inbox',
   'left-panel-close',
   'left-panel-open',
