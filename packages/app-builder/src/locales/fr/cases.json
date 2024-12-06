@@ -112,5 +112,7 @@
   "case_detail.add_rule_snooze.snooze_this_value": "Mettre en veille cette valeur",
   "case_detail.add_rule_snooze.snoozed": "Mise en veille",
   "case_detail.history.event_detail.rule_snooze_created.validity": "validité",
-  "case_detail.pivot_values.snooze_from_to": "De {{de}} -> À {{à}}"
+  "case_detail.pivot_values.snooze_from_to": "De {{de}} -> À {{à}}",
+  "case_detail.rules_execution.show_hit_only": "Afficher uniquement les hits",
+  "case_detail.trigger_object": "Objet déclencheur"
 }

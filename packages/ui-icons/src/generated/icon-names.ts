@@ -57,6 +57,7 @@ export const iconNames = [
   'save',
   'scenarios',
   'schedule',
+  'scheduled-execution',
   'search',
   'send',
   'settings',
