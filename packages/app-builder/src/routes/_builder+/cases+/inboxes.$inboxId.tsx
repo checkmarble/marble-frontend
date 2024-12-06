@@ -14,25 +14,51 @@ import {
 } from '@app-builder/components/Cases/Filters';
 import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
-import { useCursorPagination } from '@app-builder/hooks/useCursorPagination';
+import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { type PaginationParams } from '@app-builder/models/pagination';
+import { type Case } from '@app-builder/models/cases';
+import {
+  type PaginatedResponse,
+  type PaginationParams,
+} from '@app-builder/models/pagination';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
+import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', ...casesI18n] satisfies Namespace,
+};
+
+export const buildQueryParams = (
+  filters: CasesFilters,
+  offsetId: string | null,
+) => {
+  return {
+    statuses: filters.statuses ?? [],
+    dateRange: filters.dateRange
+      ? filters.dateRange.type === 'static'
+        ? {
+            type: 'static',
+            endDate: filters.dateRange.endDate || null,
+            startDate: filters.dateRange.startDate || null,
+          }
+        : {
+            type: 'dynamic',
+            fromNow: filters.dateRange.fromNow,
+          }
+      : {},
+    offsetId,
+  };
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -70,74 +96,30 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Cases() {
-  const { casesData: initialCasesData, filters: initialFilters } =
+  const { t } = useTranslation(casesI18n);
+  const { casesData: initialCasesData, filters } =
     useLoaderData<typeof loader>();
   const inboxId = useParam('inboxId');
-  const { t } = useTranslation(casesI18n);
 
-  const [casesData, setCasesData] = useState(initialCasesData);
-  const { items: cases, ...pagination } = casesData;
+  const { data, next, previous, reset, update } = useCursorPaginatedFetcher<
+    typeof loader,
+    PaginatedResponse<Case>
+  >({
+    transform: (fetcherData) => fetcherData.casesData,
+    initialData: initialCasesData,
+    getQueryParams: (cursor) => buildQueryParams(filters, cursor),
+    validateData: (data) => data.items.length > 0,
+  });
+  const { items: cases, ...pagination } = data;
 
-  const [filters, setFilters] = useState(initialFilters);
-  if (initialFilters !== filters) {
-    setFilters(initialFilters);
-    setCasesData(initialCasesData);
+  const [previousInitialCasesData, setPreviousInitialCasesData] =
+    useState(initialCasesData);
+  if (initialCasesData !== previousInitialCasesData) {
+    setPreviousInitialCasesData(initialCasesData);
+    update(initialCasesData);
   }
 
-  const {
-    state: paginationState,
-    next,
-    previous,
-    reset,
-  } = useCursorPagination();
-
-  const { data: fetcherData, submit } = useFetcher<typeof loader>();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (paginationState.isPristine) {
-      return;
-    }
-
-    submit(
-      qs.stringify(
-        {
-          statuses: filters.statuses ?? [],
-          dateRange: filters.dateRange
-            ? filters.dateRange.type === 'static'
-              ? {
-                  type: 'static',
-                  endDate: filters.dateRange.endDate || null,
-                  startDate: filters.dateRange.startDate || null,
-                }
-              : {
-                  type: 'dynamic',
-                  fromNow: filters.dateRange.fromNow,
-                }
-            : {},
-          ...(paginationState.cursor
-            ? {
-                offsetId: paginationState.cursor,
-              }
-            : {}),
-        },
-        {
-          skipNulls: true,
-        },
-      ),
-      {
-        method: 'GET',
-      },
-    );
-  }, [paginationState, filters, submit]);
-
-  useEffect(() => {
-    if (fetcherData && fetcherData.casesData.items.length !== 0) {
-      const { casesData: fetchedCasesData } = fetcherData;
-      setCasesData(fetchedCasesData);
-    }
-  }, [fetcherData]);
-
   const navigateCasesList = useCallback(
     (casesFilters: CasesFilters, pagination?: PaginationParams) => {
       if (!pagination) {
@@ -147,27 +129,10 @@ export default function Cases() {
             pathname: getRoute('/cases/inboxes/:inboxId', {
               inboxId: fromUUID(inboxId),
             }),
-            search: qs.stringify(
-              {
-                statuses: casesFilters.statuses ?? [],
-                dateRange: casesFilters.dateRange
-                  ? casesFilters.dateRange.type === 'static'
-                    ? {
-                        type: 'static',
-                        endDate: casesFilters.dateRange.endDate || null,
-                        startDate: casesFilters.dateRange.startDate || null,
-                      }
-                    : {
-                        type: 'dynamic',
-                        fromNow: casesFilters.dateRange.fromNow,
-                      }
-                  : {},
-              },
-              {
-                addQueryPrefix: true,
-                skipNulls: true,
-              },
-            ),
+            search: qs.stringify(buildQueryParams(casesFilters, null), {
+              addQueryPrefix: true,
+              skipNulls: true,
+            }),
           },
           { replace: true },
         );
