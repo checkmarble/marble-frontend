@@ -25,7 +25,7 @@ import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { allPass, filter, mapToObj,pick } from 'remeda';
+import { allPass, filter, mapToObj, pick } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 

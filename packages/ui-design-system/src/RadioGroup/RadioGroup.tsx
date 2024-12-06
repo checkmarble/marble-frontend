@@ -7,7 +7,7 @@ import {
   Root,
 } from '@radix-ui/react-radio-group';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ComponentProps,forwardRef } from 'react';
+import { type ComponentProps, forwardRef } from 'react';
 
 export const radioGroup = cva([
   'flex flex-row w-fit',
