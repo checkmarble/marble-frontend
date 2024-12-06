@@ -91,7 +91,7 @@ export default function Cases() {
     reset,
   } = useCursorPagination();
 
-  const fetcher = useFetcher<typeof loader>();
+  const { data: fetcherData, submit } = useFetcher<typeof loader>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function Cases() {
       return;
     }
 
-    fetcher.submit(
+    submit(
       qs.stringify(
         {
           statuses: filters.statuses ?? [],
@@ -129,14 +129,14 @@ export default function Cases() {
         method: 'GET',
       },
     );
-  }, [paginationState, filters]);
+  }, [paginationState, filters, submit]);
 
   useEffect(() => {
-    if (fetcher.data && fetcher.data.casesData.items.length !== 0) {
-      const { casesData: fetchedCasesData } = fetcher.data;
+    if (fetcherData && fetcherData.casesData.items.length !== 0) {
+      const { casesData: fetchedCasesData } = fetcherData;
       setCasesData(fetchedCasesData);
     }
-  }, [fetcher.data, fetcher.state]);
+  }, [fetcherData]);
 
   const navigateCasesList = useCallback(
     (casesFilters: CasesFilters, pagination?: PaginationParams) => {

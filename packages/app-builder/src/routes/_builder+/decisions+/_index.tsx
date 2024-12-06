@@ -112,7 +112,7 @@ export default function Decisions() {
     reset,
   } = useCursorPagination();
 
-  const fetcher = useFetcher<typeof loader>();
+  const { data: fetcherData, submit } = useFetcher<typeof loader>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export default function Decisions() {
       return;
     }
 
-    fetcher.submit(
+    submit(
       qs.stringify(
         {
           outcomeAndReviewStatus: filters.outcomeAndReviewStatus ?? [],
@@ -154,14 +154,14 @@ export default function Decisions() {
         method: 'GET',
       },
     );
-  }, [paginationState, filters]);
+  }, [paginationState, filters, submit]);
 
   useEffect(() => {
-    if (fetcher.data && fetcher.data.decisionsData.items.length !== 0) {
-      const { decisionsData: fetchedDecisionsData } = fetcher.data;
+    if (fetcherData && fetcherData.decisionsData.items.length !== 0) {
+      const { decisionsData: fetchedDecisionsData } = fetcherData;
       setDecisionsData(fetchedDecisionsData);
     }
-  }, [fetcher.data, fetcher.state]);
+  }, [fetcherData]);
 
   const navigateDecisionList = useCallback(
     (decisionFilters: DecisionFilters, pagination?: PaginationParams) => {
@@ -301,7 +301,13 @@ function AddToCase({
   );
 }
 
-const decisionIdToParams = (decisionId: string | null) => {};
+const decisionIdToParams = (decisionId: string | null) => {
+  try {
+    return fromUUID(decisionId ?? '');
+  } catch {
+    return decisionId;
+  }
+};
 function SearchById() {
   const { t } = useTranslation(handle.i18n);
   const [decisionId, setDecisionId] = useState<string | null>(null);
