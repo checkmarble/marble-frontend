@@ -115,18 +115,18 @@ const TestRunRuleHitPercentage = ({
 };
 
 const RuleExecution = ({
-  id,
   rules,
   versions,
+  key,
 }: {
-  id: string;
   rules: Record<string, TestRunRuleExecution[]>;
   versions: Versions;
+  key?: string;
 }) => {
   const { t } = useTranslation(['decisions']);
 
   return (
-    <Collapsible.Container defaultOpen={false} key={id}>
+    <Collapsible.Container defaultOpen={false} key={key}>
       <div className="grid w-full grid-cols-[9%_40%_25%_auto] items-center">
         <Collapsible.Title size="small" />
         <TestRunRuleName rulesByVersion={rules} versions={versions} />
@@ -236,7 +236,7 @@ export const FilterTransactionByDecision = ({
               {/* <span>{t('scenarios:testrun.filters.score')}</span> */}
             </div>
             {entries(rulesByRuleId).map(([ruleId, rules]) => (
-              <RuleExecution id={ruleId} rules={rules} versions={versions} />
+              <RuleExecution key={ruleId} rules={rules} versions={versions} />
             ))}
           </div>
         </div>
