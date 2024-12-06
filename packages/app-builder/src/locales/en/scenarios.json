@@ -50,8 +50,6 @@
   "trigger.trigger_manual_execution.button": "Launch now",
   "testrun.description": "Ask for a decision using our API and get synchronous answers in real time",
   "testrun.current_run": "Current TestRun",
-  "testrun.history": "History",
-  "testrun.filters.id": "ID",
   "testrun.filters.rule_name": "Rule name",
   "testrun.filters.alerts": "Alerts",
   "testrun.filters.score": "Score",
