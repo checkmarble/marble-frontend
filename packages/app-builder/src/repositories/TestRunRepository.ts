@@ -192,7 +192,6 @@ export const makeGetTestRunRepository2 = () => {
     },
     listTestRuns: async ({ scenarioId }) => {
       const runs = await marbleCoreApiClient.listTestRuns(scenarioId);
-      console.log(runs);
       return runs.map(adaptTestRun);
     },
     listDecisions: async ({ testRunId }) => {

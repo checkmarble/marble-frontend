@@ -75,8 +75,8 @@ export function adaptTestRun(dto: TestRunDto): TestRun {
     scenarioId: dto.scenario_id,
     refIterationId: dto.ref_iteration_id,
     testIterationId: dto.test_iteration_id,
-    startDate: dto.start_date,
-    endDate: dto.end_date,
+    startDate: String(new Date(dto.start_date).getTime()),
+    endDate: String(new Date(dto.end_date).getTime()),
     creatorId: dto.creator_id,
     status: dto.status,
   };
@@ -94,6 +94,6 @@ export function adaptTestRunCreateInputDto(
   return {
     scenario_id: input.scenarioId,
     test_iteration_id: input.testIterationId,
-    end_date: input.endDate,
+    end_date: new Date(+input.endDate).toISOString(),
   };
 }
