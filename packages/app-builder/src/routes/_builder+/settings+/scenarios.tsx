@@ -9,19 +9,15 @@ import { useTranslation } from 'react-i18next';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { organization } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-
-  const [org, { user }] = await Promise.all([
-    organization.getCurrentOrganization(),
-    authService.isAuthenticated(request, {
+  const { organization: organizationsRepository, user } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
+    });
+
+  const organization = await organizationsRepository.getCurrentOrganization();
 
   return json({
-    organization: org,
+    organization,
     user,
   });
 }
