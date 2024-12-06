@@ -28,9 +28,9 @@ type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
 
 export function CursorPaginationButtons({
   items,
-  totalCount: { value: total, isMaxCount },
   startIndex,
   endIndex,
+  hasNextPage,
   onPaginationChange,
 }: CursorPaginationsButtonsProps) {
   const { t } = useTranslation(['common']);
@@ -54,24 +54,15 @@ export function CursorPaginationButtons({
   };
 
   const previousDisabled = start <= 1;
-  const nextDisabled = end === total && !isMaxCount;
+  const nextDisabled = !hasNextPage;
   return (
     <div className="flex items-center justify-end gap-2">
-      {isMaxCount ? (
-        <Trans
-          t={t}
-          i18nKey="common:items_displayed_out_of_total_over_max"
-          components={{ StartToEnd: <span style={{ fontWeight: 'bold' }} /> }}
-          values={{ start, end, total }}
-        />
-      ) : (
-        <Trans
-          t={t}
-          i18nKey="common:items_displayed_out_of_total"
-          components={{ StartToEnd: <span style={{ fontWeight: 'bold' }} /> }}
-          values={{ start, end, total }}
-        />
-      )}
+      <Trans
+        t={t}
+        i18nKey="common:items_displayed"
+        components={{ StartToEnd: <span style={{ fontWeight: 'bold' }} /> }}
+        values={{ start, end }}
+      />
 
       <Button
         onClick={fetchPrevious}
