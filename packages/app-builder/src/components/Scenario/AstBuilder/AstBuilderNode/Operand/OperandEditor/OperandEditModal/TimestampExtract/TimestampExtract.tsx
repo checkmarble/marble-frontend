@@ -203,7 +203,7 @@ function getNoTimezoneSetupWarning(
         t={t}
         i18nKey="scenarios:edit_timestamp_extract.missing_default_timezone_admin"
         components={{
-          DocLink: (
+          SettingsLink: (
             <Link
               className="text-m hover:text-purple-120 focus:text-purple-120 relative font-normal text-purple-100 hover:underline focus:underline"
               to={getRoute('/settings/scenarios')}

@@ -273,7 +273,7 @@
   "edit_timestamp_extract.explanation.hour": "Hour in the day, between 0 and 23.",
   "edit_timestamp_extract.interpreted_in_timezone": "The timestamp is interpreted as a date and time in the \"{{timezone}}\" timezone, as configured on the organization",
   "edit_timestamp_extract.missing_default_timezone_non_admin": "No timezone has been configured for the organization. The timestamp will be interpreted as a date and time in the UTC timezone as a fallback.",
-  "edit_timestamp_extract.missing_default_timezone_admin": "No timezone has been configured for the organization. The timestamp will be interpreted as a date and time in the UTC timezone as a fallback. Go to the <DocLink>settings page</DocLink> to configure the timezone.",
+  "edit_timestamp_extract.missing_default_timezone_admin": "No timezone has been configured for the organization. The timestamp will be interpreted as a date and time in the UTC timezone as a fallback. Go to the <SettingsLink>settings page</SettingsLink> to configure the timezone.",
   "timestamp_part.year": "Year",
   "timestamp_part.month": "Month",
   "timestamp_part.day_of_month": "Day of month",
