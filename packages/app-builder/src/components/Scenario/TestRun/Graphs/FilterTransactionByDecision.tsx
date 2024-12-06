@@ -157,8 +157,8 @@ const RuleExecution = ({
           }))}
           mapping={{
             hit: {
-              border: 'border-green-10',
-              background: 'bg-green-10',
+              border: 'border-green-50',
+              background: 'bg-green-50',
               text: 'text-grey-100',
               name: t('decisions:rules.status.hit'),
             },
@@ -169,8 +169,8 @@ const RuleExecution = ({
               name: t('decisions:rules.status.no_hit'),
             },
             error: {
-              border: 'border-red-10',
-              background: 'bg-red-10',
+              border: 'border-red-50',
+              background: 'bg-red-50',
               text: 'text-grey-100',
               name: t('decisions:rules.status.error'),
             },

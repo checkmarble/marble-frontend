@@ -152,7 +152,7 @@ export function HamburgerChart<T extends string>({
           <Button
             variant="tertiary"
             key={option}
-            className="text-grey-100 gap-3"
+            className="gap-3"
             onClick={() => updateLegend((prev) => toggle(prev, option))}
           >
             <div
@@ -162,7 +162,7 @@ export function HamburgerChart<T extends string>({
                 [mapping[option].background]: legend.includes(option),
               })}
             />
-            <span>{mapping[option].name}</span>
+            <span className="text-grey-100">{mapping[option].name}</span>
           </Button>
         ))}
       </div>
