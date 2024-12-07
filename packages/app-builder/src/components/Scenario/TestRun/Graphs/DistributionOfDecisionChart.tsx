@@ -14,7 +14,7 @@ export const DistributionOfDecisionChart = ({
   const { t } = useTranslation(['scenarios', 'decisions']);
 
   return (
-    <Collapsible.Container className="bg-grey-00" defaultOpen={false}>
+    <Collapsible.Container className="bg-grey-00" defaultOpen={true}>
       <Collapsible.Title>
         {t('scenarios:testrun.distribution')}
       </Collapsible.Title>

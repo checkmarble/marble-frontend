@@ -94,11 +94,13 @@ export function HamburgerChart<T extends string>({
   versions: Versions;
   mapping: Mapping<T>;
 }) {
+  ref = ref.replace('V', '');
+  test = test.replace('V', '');
   const { t } = useTranslation(['scenarios', 'decisions']);
 
   const options = useMemo(() => unique(items.map((i) => i.option)), [items]);
 
-  const [type, setTytpe] = useState<Type>('percentage');
+  const [type, setType] = useState<Type>('percentage');
   const [legend, updateLegend] = useState(options);
 
   const summaryByVersions = useMemo(
@@ -122,7 +124,7 @@ export function HamburgerChart<T extends string>({
 
   return (
     <div className="flex flex-col gap-8">
-      <RadioGroup onValueChange={(type) => setTytpe(type as Type)} value={type}>
+      <RadioGroup onValueChange={(type) => setType(type as Type)} value={type}>
         <RadioGroupItem value="absolute">
           {t('scenarios:testrun.distribution.absolute')}
         </RadioGroupItem>
