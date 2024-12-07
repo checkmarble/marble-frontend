@@ -56,5 +56,7 @@
   "errors.too_many_requests": "طلبات كثيرة جدًا. \nيرجى المحاولة مرة أخرى في وقت لاحق.",
   "hide": "يخفي",
   "more_options": "المزيد من الخيارات",
-  "show": "يعرض"
+  "show": "يعرض",
+  "from_to": "من <Date>{{start_date}}</Date> إلى <Date>{{end_date}}</Date>",
+  "live": "يعيش"
 }
