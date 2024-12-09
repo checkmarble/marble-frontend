@@ -48,6 +48,12 @@ export const useCursorPaginatedFetcher = <T, D = T>({
     });
   }, [paginationState, submit]);
 
+  const [previousInitialData, setPreviousInitialData] = useState(initialData);
+  if (initialData !== previousInitialData && paginationState.isPristine) {
+    setPreviousInitialData(initialData);
+    setData(initialData);
+  }
+
   if (fetcherData !== previousFetcherData && fetcherData) {
     const transformedData =
       'transform' in opts ? opts.transform(fetcherData) : (fetcherData as D);
@@ -60,7 +66,6 @@ export const useCursorPaginatedFetcher = <T, D = T>({
 
   return {
     data,
-    pagination: paginationState,
     update: setData,
     next,
     previous,

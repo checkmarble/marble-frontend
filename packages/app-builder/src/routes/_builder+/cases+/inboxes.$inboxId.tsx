@@ -30,7 +30,7 @@ import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -101,30 +101,16 @@ export default function Cases() {
     useLoaderData<typeof loader>();
   const inboxId = useParam('inboxId');
 
-  const {
-    data,
-    pagination: paginationState,
-    next,
-    previous,
-    reset,
-    update,
-  } = useCursorPaginatedFetcher<typeof loader, PaginatedResponse<Case>>({
+  const { data, next, previous, reset } = useCursorPaginatedFetcher<
+    typeof loader,
+    PaginatedResponse<Case>
+  >({
     transform: (fetcherData) => fetcherData.casesData,
     initialData: initialCasesData,
     getQueryParams: (cursor) => buildQueryParams(filters, cursor),
     validateData: (data) => data.items.length > 0,
   });
   const { items: cases, ...pagination } = data;
-
-  const [previousInitialCasesData, setPreviousInitialCasesData] =
-    useState(initialCasesData);
-  if (
-    initialCasesData !== previousInitialCasesData &&
-    paginationState.isPristine
-  ) {
-    setPreviousInitialCasesData(initialCasesData);
-    update(initialCasesData);
-  }
 
   const navigate = useNavigate();
   const navigateCasesList = useCallback(

@@ -127,30 +127,16 @@ export default function Decisions() {
     inboxes,
   } = useLoaderData<typeof loader>();
 
-  const {
-    data,
-    pagination: paginationState,
-    next,
-    previous,
-    reset,
-    update,
-  } = useCursorPaginatedFetcher<typeof loader, PaginatedResponse<Decision>>({
+  const { data, next, previous, reset } = useCursorPaginatedFetcher<
+    typeof loader,
+    PaginatedResponse<Decision>
+  >({
     transform: (fetcherData) => fetcherData.decisionsData,
     initialData: initialDecisionsData,
     getQueryParams: (cursor) => buildQueryParams(filters, cursor),
     validateData: (data) => data.items.length > 0,
   });
   const { items: decisions, ...pagination } = data;
-
-  const [previousInitialDecisionsData, setPreviousInitialDecisionsData] =
-    useState(initialDecisionsData);
-  if (
-    initialDecisionsData !== previousInitialDecisionsData &&
-    paginationState.isPristine
-  ) {
-    setPreviousInitialDecisionsData(initialDecisionsData);
-    update(initialDecisionsData);
-  }
 
   const navigate = useNavigate();
   const navigateDecisionList = useCallback(
