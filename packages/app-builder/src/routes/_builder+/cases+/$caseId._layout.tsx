@@ -6,6 +6,13 @@ import {
 } from '@app-builder/components';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CaseHistory } from '@app-builder/components/Cases/CaseHistory/CaseHistory';
+import {
+  RightSidebar,
+  RightSidebarDisclosureContent,
+  RightSidebarProvider,
+  RightSidebarTab,
+  RightSidebarTabContent,
+} from '@app-builder/components/Cases/CaseHistory/RightSidebar';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-status';
@@ -156,7 +163,7 @@ export default function CasePage() {
       <div className="flex size-full flex-col overflow-hidden">
         <div className="flex flex-1 flex-row overflow-hidden">
           <Page.Container>
-            <Page.Content>
+            <Page.Content className="max-w-screen-xl">
               <nav>
                 <ul className="flex flex-row gap-2">
                   <li>
@@ -186,10 +193,20 @@ export default function CasePage() {
             </Page.Content>
           </Page.Container>
 
-          <CaseHistory
-            className="bg-grey-00 border-s-grey-10 flex w-[470px] shrink-0 flex-col border-s p-6"
-            events={caseDetail.events}
-          />
+          <RightSidebarProvider>
+            <RightSidebar>
+              <RightSidebarTab
+                activeId="history"
+                icon="history"
+                label={t('cases:case_detail.history')}
+              />
+            </RightSidebar>
+            <RightSidebarDisclosureContent>
+              <RightSidebarTabContent activeId="history">
+                <CaseHistory events={caseDetail.events} />
+              </RightSidebarTabContent>
+            </RightSidebarDisclosureContent>
+          </RightSidebarProvider>
         </div>
         <div className="bg-grey-00 border-t-grey-10 flex shrink-0 flex-row items-center gap-4 border-t p-4">
           <AddComment caseId={caseDetail.id} />

@@ -2,6 +2,7 @@
 import type { Config } from 'tailwindcss';
 import defaultTheme from 'tailwindcss/defaultTheme';
 import { type PluginAPI } from 'tailwindcss/types/config';
+import tailwindcssAnimate from 'tailwindcss-animate';
 import tailwindcssRadix from 'tailwindcss-radix';
 
 export default {
@@ -205,6 +206,17 @@ export default {
           from: { height: 'var(--radix-collapsible-content-height)' },
           to: { height: '0' },
         },
+        overflow: {
+          '0%': {
+            overflow: 'hidden',
+          },
+          '99%': {
+            overflow: 'hidden',
+          },
+          '100%': {
+            overflow: 'visible',
+          },
+        },
       },
       animation: {
         'ping-slow': 'ping-slow 5s ease infinite',
@@ -225,11 +237,13 @@ export default {
           'slideRightAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1)',
         slideDown: 'slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1)',
         slideUp: 'slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1)',
+        overflow: 'overflow linear',
       },
     },
   },
   plugins: [
     tailwindcssRadix,
+    tailwindcssAnimate,
     function ({ addVariant }: PluginAPI) {
       addVariant('not-last', '&>*:not(:last-child)');
     },
