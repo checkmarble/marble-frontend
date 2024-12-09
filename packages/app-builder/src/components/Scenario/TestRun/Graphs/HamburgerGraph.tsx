@@ -94,7 +94,7 @@ export function HamburgerChart<T extends string>({
   versions: Versions;
   mapping: Mapping<T>;
 }) {
-  ref = ref.replace('V', '');
+  ref = ref.replace('V', ''); // temp fix, not final
   test = test.replace('V', '');
   const { t } = useTranslation(['scenarios', 'decisions']);
 
