@@ -761,7 +761,7 @@ export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, s
     } | {
         status: 403;
         data: string;
-    }>(`/decisions${QS.query(QS.explode({
+    }>(`/decisions/with-ranks${QS.query(QS.explode({
         "case_id[]": caseId,
         end_date: endDate,
         has_case: hasCase,
@@ -794,7 +794,7 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
     } | {
         status: 403;
         data: string;
-    }>("/decisions", oazapfts.json({
+    }>("/decisions/with-ranks", oazapfts.json({
         ...opts,
         method: "POST",
         body: createDecisionBody
