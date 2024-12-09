@@ -14,8 +14,13 @@ import {
 } from '@app-builder/components/Cases/Filters';
 import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { type PaginationParams } from '@app-builder/models/pagination';
+import { type Case } from '@app-builder/models/cases';
+import {
+  type PaginatedResponse,
+  type PaginationParams,
+} from '@app-builder/models/pagination';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
@@ -32,6 +37,28 @@ import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', ...casesI18n] satisfies Namespace,
+};
+
+export const buildQueryParams = (
+  filters: CasesFilters,
+  offsetId: string | null,
+) => {
+  return {
+    statuses: filters.statuses ?? [],
+    dateRange: filters.dateRange
+      ? filters.dateRange.type === 'static'
+        ? {
+            type: 'static',
+            endDate: filters.dateRange.endDate || null,
+            startDate: filters.dateRange.startDate || null,
+          }
+        : {
+            type: 'dynamic',
+            fromNow: filters.dateRange.fromNow,
+          }
+      : {},
+    offsetId,
+  };
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -69,50 +96,50 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Cases() {
-  const {
-    casesData: { items: cases, ...pagination },
-    filters,
-  } = useLoaderData<typeof loader>();
-  const inboxId = useParam('inboxId');
   const { t } = useTranslation(casesI18n);
+  const { casesData: initialCasesData, filters } =
+    useLoaderData<typeof loader>();
+  const inboxId = useParam('inboxId');
+
+  const { data, next, previous, reset } = useCursorPaginatedFetcher<
+    typeof loader,
+    PaginatedResponse<Case>
+  >({
+    transform: (fetcherData) => fetcherData.casesData,
+    initialData: initialCasesData,
+    getQueryParams: (cursor) => buildQueryParams(filters, cursor),
+    validateData: (data) => data.items.length > 0,
+  });
+  const { items: cases, ...pagination } = data;
 
   const navigate = useNavigate();
   const navigateCasesList = useCallback(
     (casesFilters: CasesFilters, pagination?: PaginationParams) => {
-      navigate(
-        {
-          pathname: getRoute('/cases/inboxes/:inboxId', {
-            inboxId: fromUUID(inboxId),
-          }),
-          search: qs.stringify(
-            {
-              statuses: casesFilters.statuses ?? [],
-              dateRange: casesFilters.dateRange
-                ? casesFilters.dateRange.type === 'static'
-                  ? {
-                      type: 'static',
-                      endDate: casesFilters.dateRange.endDate || null,
-                      startDate: casesFilters.dateRange.startDate || null,
-                    }
-                  : {
-                      type: 'dynamic',
-                      fromNow: casesFilters.dateRange.fromNow,
-                    }
-                : {},
-              offsetId: pagination?.offsetId || null,
-              next: pagination?.next || null,
-              previous: pagination?.previous || null,
-            },
-            {
+      if (!pagination) {
+        reset();
+        navigate(
+          {
+            pathname: getRoute('/cases/inboxes/:inboxId', {
+              inboxId: fromUUID(inboxId),
+            }),
+            search: qs.stringify(buildQueryParams(casesFilters, null), {
               addQueryPrefix: true,
               skipNulls: true,
-            },
-          ),
-        },
-        { replace: true },
-      );
+            }),
+          },
+          { replace: true },
+        );
+        return;
+      }
+
+      if (pagination.next && pagination.offsetId) {
+        next(pagination.offsetId);
+      }
+      if (pagination.previous) {
+        previous();
+      }
     },
-    [navigate, inboxId],
+    [navigate, inboxId, next, previous, reset],
   );
 
   return (

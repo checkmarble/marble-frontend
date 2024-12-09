@@ -1,5 +1,8 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
+import {
+  type InboxUser,
+  tKeyForInboxUserRole,
+} from '@app-builder/models/inbox';
 import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
 import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.create';
 import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.delete';
@@ -9,7 +12,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import {
   createColumnHelper,
@@ -17,7 +20,6 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
-import { type InboxUserDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, useTable } from 'ui-design-system';
@@ -28,24 +30,26 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { user, apiClient, cases } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { user, inbox: inboxApi } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const inboxId = fromParams(params, 'inboxId');
 
-  const [{ inbox }, caseList, inboxUserRoles] = await Promise.all([
-    apiClient.getInbox(inboxId),
-    cases.listCases({ inboxIds: [inboxId] }),
+  const [inboxesList, inboxUserRoles] = await Promise.all([
+    inboxApi.listInboxesWithCaseCount(),
     featureAccessService.getInboxUserRoles(),
   ]);
 
+  const inbox = inboxesList.find((inbox) => inbox.id === inboxId);
+  if (!inbox) {
+    redirect(getRoute('/settings/inboxes/'));
+    return;
+  }
+
   return json({
     inbox,
-    caseList,
+    caseCount: inbox.casesCount,
     inboxUserRoles,
     isEditInboxAvailable: featureAccessService.isEditInboxAvailable(user),
     isDeleteInboxAvailable: featureAccessService.isDeleteInboxAvailable(user),
@@ -58,11 +62,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 }
 
-const columnHelper = createColumnHelper<InboxUserDto>();
+const columnHelper = createColumnHelper<InboxUser>();
 
 export default function Inbox() {
   const {
-    caseList,
+    caseCount,
     inbox,
     inboxUserRoles,
     isEditInboxAvailable,
@@ -76,7 +80,7 @@ export default function Inbox() {
 
   const columns = useMemo(() => {
     return [
-      columnHelper.accessor((row) => row.user_id, {
+      columnHelper.accessor((row) => row.userId, {
         id: 'name',
         header: t('settings:inboxes.name'),
         size: 200,
@@ -133,7 +137,7 @@ export default function Inbox() {
   });
 
   const nonInboxUsers = orgUsers.filter(
-    (user) => !inbox.users?.some((u) => u.user_id === user.userId),
+    (user) => !inbox.users?.some((u) => u.userId === user.userId),
   );
 
   return (
@@ -155,13 +159,10 @@ export default function Inbox() {
             <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-4">
               <span className="font-bold">{t('settings:inboxes.name')}</span>
               {inbox.name}
-
               <span className="font-bold">
                 {t('settings:inboxes.inbox_details.case_count')}
               </span>
-              {caseList.totalCount.isMaxCount
-                ? caseList.totalCount.value + '+'
-                : caseList.totalCount.value}
+              {caseCount}
             </div>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
@@ -199,7 +200,7 @@ export default function Inbox() {
         </CollapsiblePaper.Container>
 
         {isDeleteInboxAvailable ? (
-          caseList.totalCount.value === 0 ? (
+          caseCount > 0 ? (
             <DeleteInbox inbox={inbox} />
           ) : (
             <Tooltip.Default
