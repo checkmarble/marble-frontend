@@ -181,26 +181,30 @@ export const makeGetTestRunRepository2 = () => {
 export const makeGetTestRunRepository = () => {
   return (marbleCoreApiClient: MarbleCoreApi): TestRunRepository => ({
     getTestRun: async ({ testRunId }) => {
-      const result = await marbleCoreApiClient.getTestRun(testRunId);
+      const { test_run: result } =
+        await marbleCoreApiClient.getTestRun(testRunId);
       return adaptTestRun(result);
     },
     launchTestRun: async (args) => {
-      const result = await marbleCoreApiClient.createTestRun(
+      const { test_run: result } = await marbleCoreApiClient.createTestRun(
         adaptTestRunCreateInputDto(args),
       );
       return adaptTestRun(result);
     },
     listTestRuns: async ({ scenarioId }) => {
-      const runs = await marbleCoreApiClient.listTestRuns(scenarioId);
+      const { test_runs: runs } =
+        await marbleCoreApiClient.listTestRuns(scenarioId);
       return runs.map(adaptTestRun);
     },
     listDecisions: async ({ testRunId }) => {
-      const result = await marbleCoreApiClient.getDecisionData(testRunId);
-      return result.decisions.map(adaptTestRunDecision);
+      const { decisions: result } =
+        await marbleCoreApiClient.getDecisionData(testRunId);
+      return result.map(adaptTestRunDecision);
     },
     listRuleExecutions: async ({ testRunId }) => {
-      const result = await marbleCoreApiClient.getRuleData(testRunId);
-      return result.rules.map(adaptTestRunRuleExecution);
+      const { rules: result } =
+        await marbleCoreApiClient.getRuleData(testRunId);
+      return result.map(adaptTestRunRuleExecution);
     },
   });
 };

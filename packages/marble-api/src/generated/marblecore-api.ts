@@ -698,11 +698,8 @@ export type TestRunCreateInputDto = {
 export type TestRunDecisionDataDto = {
     version: string;
     outcome: OutcomeDto;
-    phantom_outcome?: OutcomeDto;
     score?: number;
-    phantom_score?: number;
     total: number;
-    phantom_total?: number;
 };
 export type TestRunRuleExecutionDataDto = {
     version: string;
@@ -2850,7 +2847,9 @@ export function getRuleSnooze(ruleSnoozeId: string, opts?: Oazapfts.RequestOpts)
 export function listTestRuns(scenarioId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: TestRunDto[];
+        data: {
+            test_runs: TestRunDto[];
+        };
     } | {
         status: 401;
         data: string;
@@ -2868,8 +2867,10 @@ export function listTestRuns(scenarioId: string, opts?: Oazapfts.RequestOpts) {
  */
 export function createTestRun(testRunCreateInputDto: TestRunCreateInputDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: TestRunDto;
+        status: 201;
+        data: {
+            test_run: TestRunDto;
+        };
     } | {
         status: 401;
         data: string;
@@ -2891,7 +2892,9 @@ export function createTestRun(testRunCreateInputDto: TestRunCreateInputDto, opts
 export function getTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: TestRunDto;
+        data: {
+            test_run: TestRunDto;
+        };
     } | {
         status: 401;
         data: string;
@@ -2923,7 +2926,7 @@ export function getDecisionData(testRunId: string, opts?: Oazapfts.RequestOpts) 
     } | {
         status: 404;
         data: string;
-    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/decisiondatabyscore`, {
+    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/decision_data_by_score`, {
         ...opts
     }));
 }
@@ -2945,7 +2948,7 @@ export function getRuleData(testRunId: string, opts?: Oazapfts.RequestOpts) {
     } | {
         status: 404;
         data: string;
-    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/databyruleexecution`, {
+    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/data_by_rule_execution`, {
         ...opts
     }));
 }

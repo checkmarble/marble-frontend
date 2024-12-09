@@ -3293,9 +3293,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TestRunDto'
+                type: object
+                required:
+                  - test_runs
+                properties:
+                  test_runs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TestRunDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -3315,12 +3320,17 @@ paths:
               $ref: '#/components/schemas/TestRunCreateInputDto'
         required: true
       responses:
-        '200':
+        '201':
           description: Created test run
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TestRunDto'
+                type: object
+                required:
+                  - test_run
+                properties:
+                  test_run:
+                    $ref: '#/components/schemas/TestRunDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -3349,14 +3359,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TestRunDto'
+                type: object
+                required:
+                  - test_run
+                properties:
+                  test_run:
+                    $ref: '#/components/schemas/TestRunDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-  /scenario-testruns/{test_run_id}/decisiondatabyscore:
+  /scenario-testruns/{test_run_id}/decision_data_by_score:
     get:
       tags:
         - TestRun
@@ -3392,7 +3407,7 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-  /scenario-testruns/{test_run_id}/databyruleexecution:
+  /scenario-testruns/{test_run_id}/data_by_rule_execution:
     get:
       tags:
         - TestRun
@@ -5422,15 +5437,9 @@ components:
           type: string
         outcome:
           $ref: '#/components/schemas/OutcomeDto'
-        phantom_outcome:
-          $ref: '#/components/schemas/OutcomeDto'
         score:
           type: integer
-        phantom_score:
-          type: integer
         total:
-          type: integer
-        phantom_total:
           type: integer
     TestRunRuleExecutionDataDto:
       type: object
