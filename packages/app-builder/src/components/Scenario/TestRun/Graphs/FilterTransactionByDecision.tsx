@@ -219,28 +219,34 @@ export const FilterTransactionByDecision = ({
         {t('scenarios:testrun.transaction_by_decision')}
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="flex flex-col gap-8">
-          <div className="flex w-full flex-row items-center justify-end gap-2">
-            <span className="text-s text-grey-100 font-medium">
-              {t('scenarios:testrun.show_rules_changes')}
-            </span>
-            <Switch
-              checked={displayChangedRules}
-              onCheckedChange={toggleChangedRulesDisplay}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <div className="text-s grid w-full grid-cols-[9%_40%_25%_auto] font-semibold">
-              <span />
-              <span>{t('scenarios:testrun.filters.rule_name')}</span>
-              <span>{t('scenarios:testrun.filters.alerts')}</span>
-              {/* <span>{t('scenarios:testrun.filters.score')}</span> */}
+        {rules.length === 0 ? (
+          <span className="text-grey-50 inline-block w-full text-center font-semibold">
+            {t('scenarios:testrun.no_rules')}
+          </span>
+        ) : (
+          <div className="flex flex-col gap-8">
+            <div className="flex w-full flex-row items-center justify-end gap-2">
+              <span className="text-s text-grey-100 font-medium">
+                {t('scenarios:testrun.show_rules_changes')}
+              </span>
+              <Switch
+                checked={displayChangedRules}
+                onCheckedChange={toggleChangedRulesDisplay}
+              />
             </div>
-            {entries(rulesByRuleId).map(([ruleId, rules]) => (
-              <RuleExecution key={ruleId} rules={rules} versions={versions} />
-            ))}
+            <div className="flex flex-col gap-2">
+              <div className="text-s grid w-full grid-cols-[9%_40%_25%_auto] font-semibold">
+                <span />
+                <span>{t('scenarios:testrun.filters.rule_name')}</span>
+                <span>{t('scenarios:testrun.filters.alerts')}</span>
+                {/* <span>{t('scenarios:testrun.filters.score')}</span> */}
+              </div>
+              {entries(rulesByRuleId).map(([ruleId, rules]) => (
+                <RuleExecution key={ruleId} rules={rules} versions={versions} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </Collapsible.Content>
     </Collapsible.Container>
   );

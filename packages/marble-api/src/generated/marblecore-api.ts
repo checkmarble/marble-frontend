@@ -2848,7 +2848,7 @@ export function listTestRuns(scenarioId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            test_runs: TestRunDto[];
+            scenario_test_runs: TestRunDto[];
         };
     } | {
         status: 401;
@@ -2869,7 +2869,7 @@ export function createTestRun(testRunCreateInputDto: TestRunCreateInputDto, opts
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 201;
         data: {
-            test_run: TestRunDto;
+            scenario_test_run: TestRunDto;
         };
     } | {
         status: 401;
@@ -2893,7 +2893,7 @@ export function getTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            test_run: TestRunDto;
+            scenario_test_run: TestRunDto;
         };
     } | {
         status: 401;

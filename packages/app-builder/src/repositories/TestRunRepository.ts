@@ -181,20 +181,19 @@ export const makeGetTestRunRepository2 = () => {
 export const makeGetTestRunRepository = () => {
   return (marbleCoreApiClient: MarbleCoreApi): TestRunRepository => ({
     getTestRun: async ({ testRunId }) => {
-      const { test_run: result } =
-        await marbleCoreApiClient.getTestRun(testRunId);
-      return adaptTestRun(result);
+      const result = await marbleCoreApiClient.getTestRun(testRunId);
+      console.log('TestRun', result.scenario_test_run);
+      return adaptTestRun(result.scenario_test_run);
     },
     launchTestRun: async (args) => {
-      const { test_run: result } = await marbleCoreApiClient.createTestRun(
+      const result = await marbleCoreApiClient.createTestRun(
         adaptTestRunCreateInputDto(args),
       );
-      return adaptTestRun(result);
+      return adaptTestRun(result.scenario_test_run);
     },
     listTestRuns: async ({ scenarioId }) => {
-      const { test_runs: runs } =
-        await marbleCoreApiClient.listTestRuns(scenarioId);
-      return runs.map(adaptTestRun);
+      const result = await marbleCoreApiClient.listTestRuns(scenarioId);
+      return result.scenario_test_runs.map(adaptTestRun);
     },
     listDecisions: async ({ testRunId }) => {
       const { decisions: result } =

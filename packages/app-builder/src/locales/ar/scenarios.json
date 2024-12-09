@@ -343,5 +343,7 @@
   "edit_timestamp_extract.display_name": "{{operator}} من {{timestamp}}",
   "edit_timestamp_extract.interpreted_in_timezone": "يتم تفسير الطابع الزمني كتاريخ ووقت في المنطقة الزمنية \"{{timezone}}\"، كما تم تكوينها في المؤسسة",
   "edit_timestamp_extract.missing_default_timezone_admin": "لم يتم تكوين منطقة زمنية للمؤسسة. \nسيتم تفسير الطابع الزمني كتاريخ ووقت في المنطقة الزمنية UTC كبديل. \nانتقل إلى <DocLink>صفحة الإعدادات</DocLink> لتهيئة المنطقة الزمنية.",
-  "edit_timestamp_extract.missing_default_timezone_non_admin": "لم يتم تكوين منطقة زمنية للمؤسسة. \nسيتم تفسير الطابع الزمني كتاريخ ووقت في المنطقة الزمنية UTC كبديل."
+  "edit_timestamp_extract.missing_default_timezone_non_admin": "لم يتم تكوين منطقة زمنية للمؤسسة. \nسيتم تفسير الطابع الزمني كتاريخ ووقت في المنطقة الزمنية UTC كبديل.",
+  "testrun.no_decisisons": "لم يتم تسجيل أي قرارات بالفعل",
+  "testrun.no_rules": "لم يتم تفعيل أي قواعد بالفعل"
 }

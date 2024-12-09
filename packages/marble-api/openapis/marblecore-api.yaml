@@ -4,69 +4,69 @@ info:
   title: 'Marble Core API'
   description: 'Consume Marble internal endpoints'
 tags:
-  - name: Admin
-    description: Admin operations.
-  - name: Data Model
-    description: Operations about data model.
-  - name: Authorization
-    description: Operations about authorization.
-  - name: Analytics
-    description: Operations about analytics.
-  - name: ApiKeys
-    description: Operations about api keys.
-  - name: Users
-    description: Operations about users.
-  - name: Organizations
-    description: Operations about organizations.
-  - name: Decisions
-    description: Operations about decisions.
-  - name: Cases
-    description: Operations about cases.
-  - name: Ingestions
-    description: Operations about data ingestion.
-  - name: Scenarios
-    description: Operations about scenarios.
-  - name: Scenario Iterations
-    description: Operations about scenario iterations.
-  - name: Scenario Iteration Rules
-    description: Operations about scenario iteration rules.
-  - name: Scenario Publications
-    description: Operations about scenario publications.
-  - name: CustomLists
-    description: Operations about custom lists.
-  - name: Editor
-    description: Operations about editor.
-  - name: Tags
-    description: Operations about tags.
-  - name: Webhooks
-    description: Operations about webhooks.
-  - name: RuleSnoozes
-    description: Operations about rule snoozes.
-  - name: TestRun
-    description: Operations about testrun.
+- name: Admin
+  description: Admin operations.
+- name: Data Model
+  description: Operations about data model.
+- name: Authorization
+  description: Operations about authorization.
+- name: Analytics
+  description: Operations about analytics.
+- name: ApiKeys
+  description: Operations about api keys.
+- name: Users
+  description: Operations about users.
+- name: Organizations
+  description: Operations about organizations.
+- name: Decisions
+  description: Operations about decisions.
+- name: Cases
+  description: Operations about cases.
+- name: Ingestions
+  description: Operations about data ingestion.
+- name: Scenarios
+  description: Operations about scenarios.
+- name: Scenario Iterations
+  description: Operations about scenario iterations.
+- name: Scenario Iteration Rules
+  description: Operations about scenario iteration rules.
+- name: Scenario Publications
+  description: Operations about scenario publications.
+- name: CustomLists
+  description: Operations about custom lists.
+- name: Editor
+  description: Operations about editor.
+- name: Tags
+  description: Operations about tags.
+- name: Webhooks
+  description: Operations about webhooks.
+- name: RuleSnoozes
+  description: Operations about rule snoozes.
+- name: TestRun
+  description: Operations about testrun.
 servers:
-  - url: 'http://localhost:8080'
-    description: Local devlopment server
+- url: 'http://localhost:8080'
+  description: Local devlopment server
 paths:
   /token:
     post:
       tags:
-        - Authorization
+      - Authorization
       summary: Get an access token
       description: You need to suply either "X-API-Key" or “Authorization" header
       operationId: postToken
       security: []
       parameters:
-        - in: header
-          description: 'Valid Api Key token to generate a new access token'
-          name: X-API-Key
-          schema:
-            type: string
-        - in: header
-          description: 'Valid bearer token to generate a new access token'
-          name: Authorization
-          schema:
-            type: string
+      - in: header
+        description: 'Valid Api Key token to generate a new access token'
+        name: X-API-Key
+        schema:
+          type: string
+      - in: header
+        description: 'Valid bearer token to generate a new access token'
+        name: Authorization
+        schema:
+          type: string
       responses:
         '200':
           description: New access token
@@ -79,12 +79,12 @@ paths:
   /credentials:
     get:
       tags:
-        - Authorization
+      - Authorization
       summary: Get user credentials included in the token
       description: You need to suply either "X-API-Key" or “Authorization" header
       operationId: getCredentials
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: Credentials included in the token
@@ -99,101 +99,101 @@ paths:
   /decisions:
     get:
       tags:
-        - Decisions
+      - Decisions
       summary: List decisions
       operationId: listDecisions
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        # Filtering parameters
-        - name: case_id[]
-          description: decision case_ids used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-              format: uuid
-        - $ref: '#/components/parameters/end_date'
-        - name: has_case
-          description: Filter decisions that have a case associated with them or not (true or false, default returns all)
-          in: query
-          required: false
-          schema:
-            type: boolean
-        - name: outcome[]
-          description: decision outcomes used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/OutcomeDto'
-        - name: pivot_value
-          description: decision pivot value used to filter the list
-          in: query
-          required: false
-          schema:
+      # Filtering parameters
+      - name: case_id[]
+        description: decision case_ids used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
             type: string
-        - name: scenario_id[]
-          description: scenario IDs used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-              format: uuid
-        - name: case_inbox_id[]
-          description: inbox IDs used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-              format: uuid
-        - name: review_status[]
-          description: decision review statuses used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/ReviewStatusDto'
-        - name: scheduled_execution_id[]
-          description: scheduled execution IDs used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-              format: uuid
-        - $ref: '#/components/parameters/start_date'
-        - name: trigger_object[]
-          description: trigger objects used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-        # Pagination and sorting parameters
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/next'
-        - $ref: '#/components/parameters/offset_id'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/previous'
-        - name: sorting
-          description: the field used to sort the items
-          in: query
-          required: false
-          schema:
+            format: uuid
+      - $ref: '#/components/parameters/end_date'
+      - name: has_case
+        description: Filter decisions that have a case associated with them or not (true or false, default returns all)
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: outcome[]
+        description: decision outcomes used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutcomeDto'
+      - name: pivot_value
+        description: decision pivot value used to filter the list
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: scenario_id[]
+        description: scenario IDs used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
             type: string
-            enum:
-              - created_at
+            format: uuid
+      - name: case_inbox_id[]
+        description: inbox IDs used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      - name: review_status[]
+        description: decision review statuses used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewStatusDto'
+      - name: scheduled_execution_id[]
+        description: scheduled execution IDs used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      - $ref: '#/components/parameters/start_date'
+      - name: trigger_object[]
+        description: trigger objects used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      # Pagination and sorting parameters
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/next'
+      - $ref: '#/components/parameters/offset_id'
+      - $ref: '#/components/parameters/order'
+      - $ref: '#/components/parameters/previous'
+      - name: sorting
+        description: the field used to sort the items
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - created_at
       responses:
         '200':
           description: List of corresponding decisions
@@ -201,26 +201,26 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/Pagination'
-                  - type: object
-                    required:
-                      - items
-                    properties:
+                - $ref: '#/components/schemas/Pagination'
+                - type: object
+                  required:
+                  - items
+                  properties:
+                    items:
+                      type: array
                       items:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/DecisionDto'
+                        $ref: '#/components/schemas/DecisionDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
     post:
       tags:
-        - Decisions
+      - Decisions
       summary: Create a decision
       operationId: createDecision
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: 'Payload object used to be trigger the decision engine'
         content:
@@ -242,44 +242,44 @@ paths:
   /cases:
     get:
       tags:
-        - Cases
+      - Cases
       summary: List cases
       operationId: listCases
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: status[]
-          description: case statuses used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/CaseStatusDto'
-        - name: inbox_id[]
-          description: inbox IDs used to filter the list
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-              format: uuid
-        - $ref: '#/components/parameters/start_date'
-        - $ref: '#/components/parameters/end_date'
-        - name: sorting
-          description: the field used to sort the items
-          in: query
-          required: false
-          schema:
+      - name: status[]
+        description: case statuses used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseStatusDto'
+      - name: inbox_id[]
+        description: inbox IDs used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
             type: string
-            enum:
-              - created_at
-        - $ref: '#/components/parameters/offset_id'
-        - $ref: '#/components/parameters/previous'
-        - $ref: '#/components/parameters/next'
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/order'
+            format: uuid
+      - $ref: '#/components/parameters/start_date'
+      - $ref: '#/components/parameters/end_date'
+      - name: sorting
+        description: the field used to sort the items
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - created_at
+      - $ref: '#/components/parameters/offset_id'
+      - $ref: '#/components/parameters/previous'
+      - $ref: '#/components/parameters/next'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/order'
       responses:
         '200':
           description: List of corresponding cases
@@ -287,26 +287,26 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/Pagination'
-                  - type: object
-                    required:
-                      - items
-                    properties:
+                - $ref: '#/components/schemas/Pagination'
+                - type: object
+                  required:
+                  - items
+                  properties:
+                    items:
+                      type: array
                       items:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/CaseDto'
+                        $ref: '#/components/schemas/CaseDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
     post:
       tags:
-        - Cases
+      - Cases
       summary: Create a case
       operationId: createCase
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: 'Payload object used to create a case'
         content:
@@ -322,7 +322,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - case
+                - case
                 properties:
                   case:
                     $ref: '#/components/schemas/CaseDetailDto'
@@ -333,19 +333,19 @@ paths:
   /cases/{caseId}:
     get:
       tags:
-        - Cases
+      - Cases
       summary: Get a case by id
       operationId: getCase
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: caseId
-          description: ID of the case that needs to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: caseId
+        description: ID of the case that needs to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The case corresponding to the provided `caseId`
@@ -361,19 +361,19 @@ paths:
           $ref: '#/components/responses/404'
     patch:
       tags:
-        - Cases
+      - Cases
       summary: Update a case
       operationId: updateCase
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: caseId
-          description: ID of the case that needs to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: caseId
+        description: ID of the case that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Updated case object'
         content:
@@ -389,7 +389,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - case
+                - case
                 properties:
                   case:
                     $ref: '#/components/schemas/CaseDetailDto'
@@ -402,19 +402,19 @@ paths:
   /cases/{caseId}/decisions:
     post:
       tags:
-        - Cases
+      - Cases
       summary: Add decisions to a case
       operationId: addDecisionsToCase
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: caseId
-          description: ID of the case that needs to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: caseId
+        description: ID of the case that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Decision ids to add to case'
         content:
@@ -422,7 +422,7 @@ paths:
             schema:
               type: object
               required:
-                - decision_ids
+              - decision_ids
               properties:
                 decision_ids:
                   type: array
@@ -439,7 +439,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - case
+                - case
                 properties:
                   case:
                     $ref: '#/components/schemas/CaseDetailDto'
@@ -452,19 +452,19 @@ paths:
   /cases/{caseId}/comments:
     post:
       tags:
-        - Cases
+      - Cases
       summary: Add a comment to a case
       operationId: addCommentToCase
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: caseId
-          description: ID of the case that needs to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: caseId
+        description: ID of the case that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Comment to add to the case'
         required: true
@@ -473,7 +473,7 @@ paths:
             schema:
               type: object
               required:
-                - comment
+              - comment
               properties:
                 comment:
                   type: string
@@ -485,7 +485,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - case
+                - case
                 properties:
                   case:
                     $ref: '#/components/schemas/CaseDetailDto'
@@ -498,19 +498,19 @@ paths:
   /cases/{caseId}/case_tags:
     post:
       tags:
-        - Cases
+      - Cases
       summary: Define tags for a case
       operationId: updateTagsForCase
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: caseId
-          description: ID of the case that needs to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: caseId
+        description: ID of the case that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
@@ -518,7 +518,7 @@ paths:
             schema:
               type: object
               required:
-                - tag_ids
+              - tag_ids
               properties:
                 tag_ids:
                   type: array
@@ -534,7 +534,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - case
+                - case
                 properties:
                   case:
                     $ref: '#/components/schemas/CaseDetailDto'
@@ -547,19 +547,19 @@ paths:
   /cases/files/${caseFileId}/download_link:
     get:
       tags:
-        - Cases
+      - Cases
       summary: Download a case file
       operationId: downloadCaseFile
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: caseFileId
-          description: ID of the case file that needs to be downloaded
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: caseFileId
+        description: ID of the case file that needs to be downloaded
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Signed url to download the case file's content
@@ -568,7 +568,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - url
+                - url
                 properties:
                   url:
                     type: string
@@ -581,11 +581,11 @@ paths:
   /cases/review_decision:
     post:
       tags:
-        - Tags
+      - Tags
       summary: Review a decision
       operationId: reviewDecision
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: Tag object that needs to be added to the database
         content:
@@ -601,9 +601,9 @@ paths:
                 review_status:
                   $ref: '#/components/schemas/ReviewStatusDto'
               required:
-                - decision_id
-                - review_comment
-                - review_status
+              - decision_id
+              - review_comment
+              - review_status
         required: true
       responses:
         '200':
@@ -613,7 +613,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - case
+                - case
                 properties:
                   case:
                     $ref: '#/components/schemas/CaseDetailDto'
@@ -626,18 +626,18 @@ paths:
   /tags:
     get:
       tags:
-        - Tags
+      - Tags
       summary: List tags
       operationId: listTags
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: withCaseCount
-          description: whether the result should include the cases count
-          in: query
-          required: false
-          schema:
-            type: boolean
+      - name: withCaseCount
+        description: whether the result should include the cases count
+        in: query
+        required: false
+        schema:
+          type: boolean
       responses:
         '200':
           description: List of corresponding tags
@@ -646,7 +646,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - tags
+                - tags
                 properties:
                   tags:
                     type: array
@@ -658,11 +658,11 @@ paths:
           $ref: '#/components/responses/403'
     post:
       tags:
-        - Tags
+      - Tags
       summary: Create a tag
       operationId: createTag
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: Tag object that needs to be added to the database
         content:
@@ -670,8 +670,8 @@ paths:
             schema:
               type: object
               required:
-                - name
-                - color
+              - name
+              - color
               properties:
                 name:
                   type: string
@@ -686,7 +686,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - tag
+                - tag
                 properties:
                   tag:
                     $ref: '#/components/schemas/Tag'
@@ -697,19 +697,19 @@ paths:
   /tags/{tagId}:
     patch:
       tags:
-        - Tags
+      - Tags
       summary: Update a tag
       operationId: updateTag
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: tagId
-          description: ID of the tag that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: tagId
+        description: ID of the tag that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Updated tag object'
         content:
@@ -717,8 +717,8 @@ paths:
             schema:
               type: object
               required:
-                - name
-                - color
+              - name
+              - color
               properties:
                 name:
                   type: string
@@ -733,7 +733,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - tag
+                - tag
                 properties:
                   tag:
                     $ref: '#/components/schemas/Tag'
@@ -743,19 +743,19 @@ paths:
           $ref: '#/components/responses/403'
     delete:
       tags:
-        - Tags
+      - Tags
       summary: Delete a tag
       operationId: deleteTag
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: tagId
-          description: ID of the tag that need to be deleted
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: tagId
+        description: ID of the tag that need to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The deleted tag corresponding to the provided `tagId`
@@ -770,19 +770,19 @@ paths:
   /scheduled-executions:
     get:
       tags:
-        - ScheduledExecutions
+      - ScheduledExecutions
       summary: List Scheduled Executions
       operationId: listScheduledExecutions
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenario_id
-          description: ID of the scenario used to filter the list
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
+      - name: scenario_id
+        description: ID of the scenario used to filter the list
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: List of Scheduled Executions of the organization
@@ -791,7 +791,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - scheduled_executions
+                - scheduled_executions
                 properties:
                   scheduled_executions:
                     type: array
@@ -805,19 +805,19 @@ paths:
   /decisions/{decisionId}:
     get:
       tags:
-        - Decisions
+      - Decisions
       summary: Get a decision by id
       operationId: getDecision
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: decisionId
-          description: ID of the decision that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: decisionId
+        description: ID of the decision that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The decision corresponding to the provided `decisionId`
@@ -834,19 +834,19 @@ paths:
   /decisions/{decisionId}/active-snoozes:
     get:
       tags:
-        - Decisions
+      - Decisions
       summary: Get active snoozes for a decision
       operationId: getDecisionActiveSnoozes
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: decisionId
-          description: ID of the decision that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: decisionId
+        description: ID of the decision that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The active snoozes for the decision corresponding to the provided `decisionId`
@@ -855,7 +855,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - snoozes
+                - snoozes
                 properties:
                   snoozes:
                     $ref: '#/components/schemas/SnoozesOfDecisionDto'
@@ -868,19 +868,19 @@ paths:
   /decisions/{decisionId}/snooze:
     post:
       tags:
-        - Decisions
+      - Decisions
       summary: Create a snooze for a decision
       operationId: createSnoozeForDecision
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: decisionId
-          description: ID of the decision that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: decisionId
+        description: ID of the decision that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Snooze object that needs to be added to the database'
         content:
@@ -896,7 +896,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - snoozes
+                - snoozes
                 properties:
                   snoozes:
                     $ref: '#/components/schemas/SnoozesOfDecisionDto'
@@ -909,18 +909,18 @@ paths:
   /ingestion/{objectType}:
     post:
       tags:
-        - Ingestions
+      - Ingestions
       summary: Ingest some data
       operationId: createIngestion
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: objectType
-          description: Type of the data that needs to be ingested
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: objectType
+        description: Type of the data that needs to be ingested
+        in: path
+        required: true
+        schema:
+          type: string
       requestBody:
         description: 'Data that needs to be added to the database. The `objectType` is used to determine the type of the data'
         content:
@@ -940,18 +940,18 @@ paths:
   /ingestion/{objectType}/upload-logs:
     get:
       tags:
-        - Ingestions
+      - Ingestions
       summary: Get ingestion upload logs for an object type
       operationId: getIngestionUploadLogs
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: objectType
-          description: Type of the data that needs to be ingested
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: objectType
+        description: Type of the data that needs to be ingested
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Ingestion upload logs
@@ -970,11 +970,11 @@ paths:
   /custom-lists:
     get:
       tags:
-        - CustomList
+      - CustomList
       summary: List custom list
       operationId: listCustomLists
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: List of corresponding custom lists
@@ -983,7 +983,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - custom_lists
+                - custom_lists
                 properties:
                   custom_lists:
                     type: array
@@ -995,11 +995,11 @@ paths:
           $ref: '#/components/responses/403'
     post:
       tags:
-        - CustomList
+      - CustomList
       summary: Create a custom list
       operationId: createCustomList
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: Custom list object that needs to be added to the database
         content:
@@ -1015,7 +1015,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - custom_list
+                - custom_list
                 properties:
                   custom_list:
                     $ref: '#/components/schemas/CustomListDto'
@@ -1028,19 +1028,19 @@ paths:
   /custom-lists/{customListId}:
     get:
       tags:
-        - CustomList
+      - CustomList
       summary: Get values of the corresponding custom list
       operationId: getCustomList
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: customListId
-          description: ID of the custom list that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: customListId
+        description: ID of the custom list that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Values from the custom list corresponding to the provided `customListId`
@@ -1049,7 +1049,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - custom_list
+                - custom_list
                 properties:
                   custom_list:
                     $ref: '#/components/schemas/CustomListWithValuesDto'
@@ -1061,19 +1061,19 @@ paths:
           $ref: '#/components/responses/404'
     patch:
       tags:
-        - CustomList
+      - CustomList
       summary: Update a custom list
       operationId: updateCustomList
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: customListId
-          description: ID of the custom list that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: customListId
+        description: ID of the custom list that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Updated scenario object'
         content:
@@ -1092,7 +1092,7 @@ paths:
                   custom_list:
                     $ref: '#/components/schemas/CustomListDto'
                 required:
-                  - custom_list
+                - custom_list
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1101,19 +1101,19 @@ paths:
           $ref: '#/components/responses/404'
     delete:
       tags:
-        - CustomList
+      - CustomList
       summary: Delete a custom list
       operationId: deleteCustomList
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: customListId
-          description: ID of the custom list that need to be deleted
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: customListId
+        description: ID of the custom list that need to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The deleted custom list corresponding to the provided `customListId`
@@ -1130,19 +1130,19 @@ paths:
   /custom-lists/{customListId}/values:
     post:
       tags:
-        - CustomList
+      - CustomList
       summary: Create a custom list value
       operationId: createCustomListValue
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: customListId
-          description: ID of the custom list on which the value will be added
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: customListId
+        description: ID of the custom list on which the value will be added
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: Custom list value object that needs to be added to the database
         content:
@@ -1158,7 +1158,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - custom_list_value
+                - custom_list_value
                 properties:
                   custom_list_value:
                     $ref: '#/components/schemas/CustomListValueDto'
@@ -1173,26 +1173,26 @@ paths:
   /custom-lists/{customListId}/values/{customListValueId}:
     delete:
       tags:
-        - CustomList
+      - CustomList
       summary: Delete a custom list value
       operationId: deleteCustomListValue
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: customListId
-          description: ID of the custom list associated with the deleted value
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: customListValueId
-          description: ID of the custom value
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: customListId
+        description: ID of the custom list associated with the deleted value
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: customListValueId
+        description: ID of the custom value
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The deleted custom list value corresponding to the provided `customListId`
@@ -1209,11 +1209,11 @@ paths:
   /scenarios:
     get:
       tags:
-        - Scenarios
+      - Scenarios
       summary: List scenarios
       operationId: listScenarios
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: List of corresponding scenario
@@ -1229,11 +1229,11 @@ paths:
           $ref: '#/components/responses/403'
     post:
       tags:
-        - Scenarios
+      - Scenarios
       summary: Create a scenario
       operationId: createScenario
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: 'Scenario object that needs to be added to the database'
         content:
@@ -1257,19 +1257,19 @@ paths:
   /scenarios/{scenarioId}:
     get:
       tags:
-        - Scenarios
+      - Scenarios
       summary: Get a scenario by id
       operationId: getScenario
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioId
-          description: ID of the scenario that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioId
+        description: ID of the scenario that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The scenario corresponding to the provided `scenarioId`
@@ -1285,19 +1285,19 @@ paths:
           $ref: '#/components/responses/404'
     patch:
       tags:
-        - Scenarios
+      - Scenarios
       summary: Update a scenario
       operationId: updateScenario
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioId
-          description: ID of the scenario that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioId
+        description: ID of the scenario that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Updated scenario object'
         content:
@@ -1321,20 +1321,20 @@ paths:
   /scenario-iterations:
     get:
       tags:
-        - Scenario Iterations
+      - Scenario Iterations
       summary: List iterations
       description: List iterations corresponding to filters
       operationId: listScenarioIterations
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenario_id
-          description: ID of the scenario returned iterations should be linked to
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
+      - name: scenario_id
+        description: ID of the scenario returned iterations should be linked to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Scenario iterations corresponding to filters
@@ -1352,12 +1352,12 @@ paths:
           $ref: '#/components/responses/404'
     post:
       tags:
-        - Scenario Iterations
+      - Scenario Iterations
       summary: Create a scenario iteration
       description: Create a scenario iteration for a given `scenarioId`
       operationId: createScenarioIteration
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: 'Scenario iteration object to create and linked `scenarioId`'
         content:
@@ -1381,19 +1381,19 @@ paths:
   /scenario-iterations/{scenarioIterationId}:
     get:
       tags:
-        - Scenario Iterations
+      - Scenario Iterations
       summary: Get a scenario iteration by id
       operationId: getScenarioIteration
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioIterationId
+        description: ID of the scenario iteration that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The scenario iteration corresponding to the provided `scenarioIterationId`
@@ -1409,19 +1409,19 @@ paths:
           $ref: '#/components/responses/404'
     post:
       tags:
-        - Scenario Iterations
+      - Scenario Iterations
       summary: Create draft from a scenario iteration
       operationId: createDraftFromScenarioIteration
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration that need to be used as base for the draft
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioIterationId
+        description: ID of the scenario iteration that need to be used as base for the draft
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The create draft scenario iteration corresponding to the scenario iteration provided `scenarioIterationId`
@@ -1437,19 +1437,19 @@ paths:
           $ref: '#/components/responses/404'
     patch:
       tags:
-        - Scenario Iterations
+      - Scenario Iterations
       summary: Update a scenario iteration
       operationId: updateScenarioIteration
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioIterationId
+        description: ID of the scenario iteration that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Updated scenario iteration object'
         content:
@@ -1465,7 +1465,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - iteration
+                - iteration
                 properties:
                   iteration:
                     $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
@@ -1478,19 +1478,19 @@ paths:
   /scenario-iterations/{scenarioIterationId}/schedule-execution:
     post:
       tags:
-        - Scenario Iterations
+      - Scenario Iterations
       summary: Schedule a scenario execution
       operationId: scheduleScenarioExecution
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration that need to be scheduled
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioIterationId
+        description: ID of the scenario iteration that need to be scheduled
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '201':
           description: Data created
@@ -1503,19 +1503,19 @@ paths:
   /scenario-iterations/{scenarioIterationId}/validate:
     post:
       tags:
-        - Scenario Iterations
+      - Scenario Iterations
       summary: Validate a scenario iteration by id. A rule or trigger can be override in the body
       operationId: validateScenarioIteration
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Trigger or rule to validate'
         content:
@@ -1523,8 +1523,8 @@ paths:
             schema:
               type: object
               required:
-                - trigger_or_rule
-                - rule_id
+              - trigger_or_rule
+              - rule_id
               properties:
                 trigger_or_rule:
                   $ref: '#/components/schemas/NodeDto'
@@ -1540,7 +1540,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - scenario_validation
+                - scenario_validation
                 properties:
                   scenario_validation:
                     $ref: '#/components/schemas/ScenarioValidationDto'
@@ -1553,19 +1553,19 @@ paths:
   /scenario-iterations/{scenarioIterationId}/active-snoozes:
     get:
       tags:
-        - Scenario Iterations
+      - Scenario Iterations
       summary: Get active snoozes for a scenario iteration
       operationId: getScenarioIterationActiveSnoozes
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The active snoozes for the scenario iteration corresponding to the provided `scenarioIterationId`
@@ -1574,7 +1574,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - snoozes
+                - snoozes
                 properties:
                   snoozes:
                     $ref: '#/components/schemas/SnoozesOfIterationDto'
@@ -1587,19 +1587,19 @@ paths:
   /scenario-iterations/{scenarioIterationId}/commit:
     post:
       tags:
-        - Scenario Iterations
+      - Scenario Iterations
       summary: Commit a scenario iteration
       operationId: commitScenarioIteration
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The committed scenario iteration
@@ -1608,7 +1608,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - iteration
+                - iteration
                 properties:
                   iteration:
                     $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
@@ -1621,20 +1621,20 @@ paths:
   /scenario-iteration-rules:
     get:
       tags:
-        - Scenario Iteration Rules
+      - Scenario Iteration Rules
       summary: List rules
       description: List rules using provided filters
       operationId: listScenarioIterationRules
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioIterationId
-          description: ID of the scenario iteration returned rules should be linked to
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioIterationId
+        description: ID of the scenario iteration returned rules should be linked to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Scenario iterations rules corresponding to filters
@@ -1652,12 +1652,12 @@ paths:
           $ref: '#/components/responses/404'
     post:
       tags:
-        - Scenario Iteration Rules
+      - Scenario Iteration Rules
       summary: Create a scenario iteration rule
       description: Create a scenario iteration rule for a given `scenarioIterationId`
       operationId: createScenarioIterationRule
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: 'Scenario iteration rule object to create and linked `scenarioIterationId`'
         content:
@@ -1673,7 +1673,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - rule
+                - rule
                 properties:
                   rule:
                     $ref: '#/components/schemas/ScenarioIterationRuleDto'
@@ -1686,19 +1686,19 @@ paths:
   /scenario-iteration-rules/{ruleId}:
     get:
       tags:
-        - Scenario Iteration Rules
+      - Scenario Iteration Rules
       summary: Get a scenario iteration rule by id
       operationId: getScenarioIterationRule
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: ruleId
-          description: ID of the rule that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: ruleId
+        description: ID of the rule that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The scenario iteration rule corresponding to the provided `ruleId`
@@ -1707,7 +1707,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - rule
+                - rule
                 properties:
                   rule:
                     $ref: '#/components/schemas/ScenarioIterationRuleDto'
@@ -1719,19 +1719,19 @@ paths:
           $ref: '#/components/responses/404'
     patch:
       tags:
-        - Scenario Iteration Rules
+      - Scenario Iteration Rules
       summary: Update a scenario iteration rule
       operationId: updateScenarioIterationRule
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: ruleId
-          description: ID of the rule that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: ruleId
+        description: ID of the rule that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Updated scenario iteration rule object'
         content:
@@ -1747,7 +1747,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - rule
+                - rule
                 properties:
                   rule:
                     $ref: '#/components/schemas/ScenarioIterationRuleDto'
@@ -1759,19 +1759,19 @@ paths:
           $ref: '#/components/responses/404'
     delete:
       tags:
-        - Scenario Iteration Rules
+      - Scenario Iteration Rules
       summary: Delete a scenario iteration rule
       operationId: deleteScenarioIterationRule
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: ruleId
-          description: ID of the rule that need to be delete
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: ruleId
+        description: ID of the rule that need to be delete
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '204':
           description: The rule has been deleted
@@ -1784,27 +1784,27 @@ paths:
   /scenario-publications:
     get:
       tags:
-        - Scenario Publications
+      - Scenario Publications
       summary: List scenario publications
       description: List scenario publications using provided filters
       operationId: listScenarioPublications
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenario_id
-          description: ID of the scenario returned publications should be linked to
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: scenario_iteration_id
-          description: ID of the scenario iteration returned publications should be linked to
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
+      - name: scenario_id
+        description: ID of the scenario returned publications should be linked to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: scenario_iteration_id
+        description: ID of the scenario iteration returned publications should be linked to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Scenario publications corresponding to filters
@@ -1822,11 +1822,11 @@ paths:
           $ref: '#/components/responses/404'
     post:
       tags:
-        - Scenario Publications
+      - Scenario Publications
       summary: Create a scenario publication
       operationId: createScenarioPublication
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: 'Describe the scenario publication action'
         content:
@@ -1852,19 +1852,19 @@ paths:
   /scenario-publications/preparation:
     get:
       tags:
-        - Scenario Publications
+      - Scenario Publications
       summary: Get scenario publication preparation status
       operationId: getScenarioPublicationPreparationStatus
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenario_iteration_id
-          description: ID of the scenario iteration to check the preparation status
-          in: query
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenario_iteration_id
+        description: ID of the scenario iteration to check the preparation status
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The scenario publication preparation status
@@ -1880,18 +1880,18 @@ paths:
           $ref: '#/components/responses/404'
     post:
       tags:
-        - Scenario Publications
+      - Scenario Publications
       summary: Start scenario publication preparation
       operationId: startScenarioPublicationPreparation
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         content:
           application/json:
             schema:
               type: object
               required:
-                - scenario_iteration_id
+              - scenario_iteration_id
               properties:
                 scenario_iteration_id:
                   type: string
@@ -1909,19 +1909,19 @@ paths:
   /scenario-publications/{scenarioPublicationId}:
     get:
       tags:
-        - Scenario Publications
+      - Scenario Publications
       summary: Get a scenario publication by id
       operationId: getScenarioPublication
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioPublicationId
-          description: ID of the scenario publication that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioPublicationId
+        description: ID of the scenario publication that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The scenario publication corresponding to the provided `scenarioPublicationId`
@@ -1938,11 +1938,11 @@ paths:
   /data-model:
     get:
       tags:
-        - Data Model
+      - Data Model
       summary: Get the data model associated with the current organization (present in the JWT)
       operationId: getDataModel
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: The data model from the organization
@@ -1951,7 +1951,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - data_model
+                - data_model
                 properties:
                   data_model:
                     $ref: '#/components/schemas/DataModelDto'
@@ -1964,7 +1964,7 @@ paths:
   /data-model/tables:
     post:
       tags:
-        - Data Model
+      - Data Model
       summary: Create a new table on the data model
       operationId: postDataModelTable
       requestBody:
@@ -1975,7 +1975,7 @@ paths:
               $ref: '#/components/schemas/CreateTableBody'
         required: true
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '204':
           description: Empty response body
@@ -1988,17 +1988,17 @@ paths:
   /data-model/tables/{tableId}:
     patch:
       tags:
-        - Data Model
+      - Data Model
       summary: Update data model table
       operationId: patchDataModelTable
       parameters:
-        - name: tableId
-          description: ID of the table to update
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: tableId
+        description: ID of the table to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Describe the modifications to make to the table'
         content:
@@ -2007,7 +2007,7 @@ paths:
               $ref: '#/components/schemas/UpdateTableBody'
         required: true
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '204':
           description: Empty response body
@@ -2020,17 +2020,17 @@ paths:
   /data-model/tables/{tableId}/fields:
     post:
       tags:
-        - Data Model
+      - Data Model
       summary: Create a new field on a table from the data model
       operationId: postDataModelTableField
       parameters:
-        - name: tableId
-          description: ID of the table in which to create the field
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: tableId
+        description: ID of the table in which to create the field
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Describe the content of the field to create'
         content:
@@ -2039,7 +2039,7 @@ paths:
               $ref: '#/components/schemas/CreateTableFieldDto'
         required: true
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '204':
           description: Empty response body
@@ -2052,17 +2052,17 @@ paths:
   /data-model/fields/{fieldId}:
     patch:
       tags:
-        - Data Model
+      - Data Model
       summary: Update data model field
       operationId: patchDataModelField
       parameters:
-        - name: fieldId
-          description: ID of the field to update
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: fieldId
+        description: ID of the field to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: 'Describe the modifications to make to the field'
         content:
@@ -2071,7 +2071,7 @@ paths:
               $ref: '#/components/schemas/UpdateTableFieldDto'
         required: true
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '204':
           description: Empty response body
@@ -2084,7 +2084,7 @@ paths:
   /data-model/links:
     post:
       tags:
-        - Data Model
+      - Data Model
       summary: Create a new link on a table from the data model
       operationId: postDataModelTableLink
       requestBody:
@@ -2095,7 +2095,7 @@ paths:
               $ref: '#/components/schemas/CreateTableLinkBody'
         required: true
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '204':
           description: Empty response body
@@ -2108,11 +2108,11 @@ paths:
   /data-model/openapi:
     get:
       tags:
-        - Data Model
+      - Data Model
       summary: Get the OpenAPI specification of the client specific API for data ingestion and decision making
       operationId: getDataModelOpenApi
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: The OpenAPI specification of the client specific API for data ingestion and decision making
@@ -2127,18 +2127,18 @@ paths:
   /data-model/pivots:
     get:
       tags:
-        - Data Model
+      - Data Model
       summary: Get the pivots associated with the current organization (can be filtered by table_id)
       operationId: listDataModelPivots
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: table_id
-          description: ID of the table to get the pivots from
-          in: query
-          schema:
-            type: string
-            format: uuid
+      - name: table_id
+        description: ID of the table to get the pivots from
+        in: query
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The pivots corresponding to the current organization (and table_id if provided)
@@ -2152,18 +2152,18 @@ paths:
                     items:
                       $ref: '#/components/schemas/PivotDto'
                 required:
-                  - pivots
+                - pivots
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
     post:
       tags:
-        - Data Model
+      - Data Model
       summary: Create a pivot
       operationId: createDataModelPivot
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: 'Describe the pivot to create'
         content:
@@ -2182,7 +2182,7 @@ paths:
                   pivot:
                     $ref: '#/components/schemas/PivotDto'
                 required:
-                  - pivot
+                - pivot
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -2190,11 +2190,11 @@ paths:
   /analytics:
     get:
       tags:
-        - Analytics
+      - Analytics
       summary: List analytics associated with the current organization (present in the JWT)
       operationId: listAnalytics
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: The analytics corresponding to the current organization (present in the JWT)
@@ -2203,7 +2203,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - analytics
+                - analytics
                 properties:
                   analytics:
                     type: array
@@ -2218,11 +2218,11 @@ paths:
   /apikeys:
     get:
       tags:
-        - ApiKeys
+      - ApiKeys
       summary: List api keys associated with the current organization (present in the JWT)
       operationId: listApiKeys
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: The apikeys corresponding to the current organization (present in the JWT)
@@ -2231,7 +2231,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - api_keys
+                - api_keys
                 properties:
                   api_keys:
                     type: array
@@ -2245,11 +2245,11 @@ paths:
           $ref: '#/components/responses/404'
     post:
       tags:
-        - ApiKeys
+      - ApiKeys
       summary: Create an api key
       operationId: createApiKey
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: 'Describe the api key to create'
         content:
@@ -2265,7 +2265,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - api_key
+                - api_key
                 properties:
                   api_key:
                     $ref: '#/components/schemas/CreatedApiKeyDto'
@@ -2278,19 +2278,19 @@ paths:
   /apikeys/{apiKeyId}:
     delete:
       tags:
-        - ApiKeys
+      - ApiKeys
       summary: Delete an api key
       operationId: deleteApiKey
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: apiKeyId
-          description: ID of the api key that need to be deleted
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: apiKeyId
+        description: ID of the api key that need to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '204':
           description: The api key has been deleted
@@ -2303,12 +2303,12 @@ paths:
   /users:
     get:
       tags:
-        - Admin
-        - Users
+      - Admin
+      - Users
       summary: List all users present in the database
       operationId: listUsers
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: The list of users present in the database
@@ -2317,7 +2317,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - users
+                - users
                 properties:
                   users:
                     type: array
@@ -2331,12 +2331,12 @@ paths:
           $ref: '#/components/responses/404'
     post:
       tags:
-        - Admin
-        - Users
+      - Admin
+      - Users
       summary: Create a user
       operationId: createUser
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: Describe the user to create
         content:
@@ -2352,7 +2352,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - user
+                - user
                 properties:
                   user:
                     $ref: '#/components/schemas/UserDto'
@@ -2365,20 +2365,20 @@ paths:
   /users/{userId}:
     get:
       tags:
-        - Admin
-        - Users
+      - Admin
+      - Users
       summary: Get a user by id
       operationId: getUser
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: userId
-          description: ID of the user that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: userId
+        description: ID of the user that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The user corresponding to the provided `userId`
@@ -2387,7 +2387,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - user
+                - user
                 properties:
                   user:
                     $ref: '#/components/schemas/UserDto'
@@ -2399,20 +2399,20 @@ paths:
           $ref: '#/components/responses/404'
     delete:
       tags:
-        - Admin
-        - Users
+      - Admin
+      - Users
       summary: Delete a user by id
       operationId: deleteUser
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: userId
-          description: ID of the user that need to be deleted
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: userId
+        description: ID of the user that need to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '204':
           description: The user has been deleted
@@ -2424,20 +2424,20 @@ paths:
           $ref: '#/components/responses/404'
     patch:
       tags:
-        - Admin
-        - Users
+      - Admin
+      - Users
       summary: Update a user
       operationId: updateUser
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: userId
-          description: ID of the user that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: userId
+        description: ID of the user that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: Describe the user to update
         content:
@@ -2453,7 +2453,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - user
+                - user
                 properties:
                   user:
                     $ref: '#/components/schemas/UserDto'
@@ -2464,12 +2464,12 @@ paths:
   /organizations:
     get:
       tags:
-        - Admin
-        - Organizations
+      - Admin
+      - Organizations
       summary: List all organizations present in the database
       operationId: listOrganizations
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: The list of organizations present in the database
@@ -2478,7 +2478,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - organizations
+                - organizations
                 properties:
                   organizations:
                     type: array
@@ -2492,12 +2492,12 @@ paths:
           $ref: '#/components/responses/404'
     post:
       tags:
-        - Admin
-        - Organizations
+      - Admin
+      - Organizations
       summary: Create an organization
       operationId: createOrganization
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: Describe the organization to create
         content:
@@ -2513,7 +2513,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - organization
+                - organization
                 properties:
                   organization:
                     $ref: '#/components/schemas/OrganizationDto'
@@ -2524,20 +2524,20 @@ paths:
   /organizations/{organizationId}:
     get:
       tags:
-        - Admin
-        - Organizations
+      - Admin
+      - Organizations
       summary: Get an organization by id
       operationId: getOrganization
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: organizationId
-          description: ID of the organization that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: organizationId
+        description: ID of the organization that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The organization corresponding to the provided `organizationId`
@@ -2546,7 +2546,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - organization
+                - organization
                 properties:
                   organization:
                     $ref: '#/components/schemas/OrganizationDto'
@@ -2558,20 +2558,20 @@ paths:
           $ref: '#/components/responses/404'
     patch:
       tags:
-        - Admin
-        - Organizations
+      - Admin
+      - Organizations
       summary: Update an organization by id
       operationId: updateOrganization
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: organizationId
-          description: ID of the organization that need to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: organizationId
+        description: ID of the organization that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: Describe the organization to update
         content:
@@ -2587,7 +2587,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - organization
+                - organization
                 properties:
                   organization:
                     $ref: '#/components/schemas/OrganizationDto'
@@ -2599,20 +2599,20 @@ paths:
           $ref: '#/components/responses/404'
     delete:
       tags:
-        - Admin
-        - Organizations
+      - Admin
+      - Organizations
       summary: Delete an organization by id
       operationId: deleteOrganization
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: organizationId
-          description: ID of the organization that need to be deleted
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: organizationId
+        description: ID of the organization that need to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '204':
           description: The organization has been deleted
@@ -2625,20 +2625,20 @@ paths:
   /organizations/{organizationId}/users:
     get:
       tags:
-        - Admin
-        - Organizations
+      - Admin
+      - Organizations
       summary: List all users of an organization
       operationId: listOrganizationUsers
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: organizationId
-          description: ID of the organization
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: organizationId
+        description: ID of the organization
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The list of users of the organization
@@ -2647,7 +2647,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - users
+                - users
                 properties:
                   users:
                     type: array
@@ -2662,19 +2662,19 @@ paths:
   /editor/{scenarioId}/identifiers:
     get:
       tags:
-        - Editor
+      - Editor
       summary: List all identifiers
       operationId: listIdentifiers
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioId
-          description: ID of the scenario
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioId
+        description: ID of the scenario
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The list of identifiers
@@ -2683,8 +2683,8 @@ paths:
               schema:
                 type: object
                 required:
-                  - database_accessors
-                  - payload_accessors
+                - database_accessors
+                - payload_accessors
                 properties:
                   database_accessors:
                     type: array
@@ -2701,19 +2701,19 @@ paths:
   /editor/{scenarioId}/operators:
     get:
       tags:
-        - Editor
+      - Editor
       summary: List all operators
       operationId: listOperators
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenarioId
-          description: ID of the scenario
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenarioId
+        description: ID of the scenario
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The list of operators
@@ -2722,7 +2722,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - operators_accessors
+                - operators_accessors
                 properties:
                   operators_accessors:
                     type: array
@@ -2735,18 +2735,18 @@ paths:
   /inboxes:
     get:
       tags:
-        - Inboxes
+      - Inboxes
       summary: List all inboxes
       operationId: listInboxes
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: withCaseCount
-          description: whether the result should include the cases count
-          in: query
-          required: false
-          schema:
-            type: boolean
+      - name: withCaseCount
+        description: whether the result should include the cases count
+        in: query
+        required: false
+        schema:
+          type: boolean
       responses:
         '200':
           description: The list of inboxes
@@ -2755,7 +2755,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - inboxes
+                - inboxes
                 properties:
                   inboxes:
                     type: array
@@ -2767,11 +2767,11 @@ paths:
           $ref: '#/components/responses/403'
     post:
       tags:
-        - Inboxes
+      - Inboxes
       summary: Create an inbox
       operationId: createInbox
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: Describe the inbox to create
         content:
@@ -2787,7 +2787,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - inbox
+                - inbox
                 properties:
                   inbox:
                     $ref: '#/components/schemas/InboxDto'
@@ -2798,19 +2798,19 @@ paths:
   /inboxes/{inboxId}:
     get:
       tags:
-        - Inboxes
+      - Inboxes
       summary: Get an inbox by id
       operationId: getInbox
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: inboxId
-          description: ID of the inbox that needs to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: inboxId
+        description: ID of the inbox that needs to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The inbox corresponding to the provided `inboxId`
@@ -2819,7 +2819,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - inbox
+                - inbox
                 properties:
                   inbox:
                     $ref: '#/components/schemas/InboxDto'
@@ -2831,19 +2831,19 @@ paths:
           $ref: '#/components/responses/404'
     patch:
       tags:
-        - Inboxes
+      - Inboxes
       summary: Update an inbox
       operationId: updateInbox
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: inboxId
-          description: ID of the inbox that needs to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: inboxId
+        description: ID of the inbox that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: Describe the fields to update
         content:
@@ -2851,7 +2851,7 @@ paths:
             schema:
               type: object
               required:
-                - name
+              - name
               properties:
                 name:
                   type: string
@@ -2864,7 +2864,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - inbox
+                - inbox
                 properties:
                   inbox:
                     $ref: '#/components/schemas/InboxDto'
@@ -2874,19 +2874,19 @@ paths:
           $ref: '#/components/responses/403'
     delete:
       tags:
-        - Inboxes
+      - Inboxes
       summary: Delete an inbox
       operationId: deleteInbox
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: inboxId
-          description: ID of the inbox that needs to be deleted
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: inboxId
+        description: ID of the inbox that needs to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '204':
           description: The inbox has been deleted
@@ -2897,19 +2897,19 @@ paths:
   /inboxes/{inboxId}/users:
     get:
       tags:
-        - Inboxes
+      - Inboxes
       summary: List all users of an inbox
       operationId: listInboxUsers
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: inboxId
-          description: ID of the inbox
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: inboxId
+        description: ID of the inbox
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The list of users of the inbox
@@ -2918,7 +2918,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - inbox_users
+                - inbox_users
                 properties:
                   inbox_users:
                     type: array
@@ -2930,19 +2930,19 @@ paths:
           $ref: '#/components/responses/403'
     post:
       tags:
-        - Inboxes
+      - Inboxes
       summary: Add a user to an inbox
       operationId: addInboxUser
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: inboxId
-          description: ID of the inbox
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: inboxId
+        description: ID of the inbox
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: Describe the user to add to the inbox
         content:
@@ -2958,7 +2958,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - inbox_user
+                - inbox_user
                 properties:
                   inbox_user:
                     $ref: '#/components/schemas/InboxUserDto'
@@ -2969,11 +2969,11 @@ paths:
   /inbox_users:
     get:
       tags:
-        - Inboxes
+      - Inboxes
       summary: List all inbox users
       operationId: listAllInboxUsers
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: The list of all inbox users
@@ -2982,7 +2982,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - inbox_users
+                - inbox_users
                 properties:
                   inbox_users:
                     type: array
@@ -2995,19 +2995,19 @@ paths:
   /inbox_users/{inboxUserId}:
     get:
       tags:
-        - Inboxes
+      - Inboxes
       summary: Get an inbox user by id
       operationId: getInboxUser
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: inboxUserId
-          description: ID of the inbox user that needs to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: inboxUserId
+        description: ID of the inbox user that needs to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The inbox user corresponding to the provided `inboxUserId`
@@ -3016,7 +3016,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - inbox_user
+                - inbox_user
                 properties:
                   inbox_user:
                     $ref: '#/components/schemas/InboxUserDto'
@@ -3026,19 +3026,19 @@ paths:
           $ref: '#/components/responses/403'
     patch:
       tags:
-        - Inboxes
+      - Inboxes
       summary: Update an inbox user
       operationId: updateInboxUser
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: inboxUserId
-          description: ID of the inbox user that needs to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: inboxUserId
+        description: ID of the inbox user that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: Describe the fields to update
         content:
@@ -3046,7 +3046,7 @@ paths:
             schema:
               type: object
               required:
-                - role
+              - role
               properties:
                 role:
                   type: string
@@ -3059,7 +3059,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - inbox_user
+                - inbox_user
                 properties:
                   inbox_user:
                     $ref: '#/components/schemas/InboxUserDto'
@@ -3069,19 +3069,19 @@ paths:
           $ref: '#/components/responses/403'
     delete:
       tags:
-        - Inboxes
+      - Inboxes
       summary: Delete an inbox user
       operationId: deleteInboxUser
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: inboxUserId
-          description: ID of the inbox user that needs to be deleted
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: inboxUserId
+        description: ID of the inbox user that needs to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '204':
           description: The inbox user has been deleted
@@ -3092,11 +3092,11 @@ paths:
   /webhooks:
     get:
       tags:
-        - Webhooks
+      - Webhooks
       summary: List all webhooks
       operationId: listWebhooks
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
         '200':
           description: The list of webhooks
@@ -3105,7 +3105,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - webhooks
+                - webhooks
                 properties:
                   webhooks:
                     type: array
@@ -3117,11 +3117,11 @@ paths:
           $ref: '#/components/responses/403'
     post:
       tags:
-        - Webhooks
+      - Webhooks
       summary: Create a webhook
       operationId: createWebhook
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: Describe the webhook to create
         content:
@@ -3137,7 +3137,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - webhook
+                - webhook
                 properties:
                   webhook:
                     $ref: '#/components/schemas/WebhookWithSecretDto'
@@ -3148,19 +3148,19 @@ paths:
   /webhooks/{webhookId}:
     get:
       tags:
-        - Webhooks
+      - Webhooks
       summary: Get a webhook by id
       operationId: getWebhook
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: webhookId
-          description: ID of the webhook that needs to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: webhookId
+        description: ID of the webhook that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The webhook corresponding to the provided `webhookId`
@@ -3169,7 +3169,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - webhook
+                - webhook
                 properties:
                   webhook:
                     $ref: '#/components/schemas/WebhookWithSecretDto'
@@ -3179,19 +3179,19 @@ paths:
           $ref: '#/components/responses/403'
     patch:
       tags:
-        - Webhooks
+      - Webhooks
       summary: Update a webhook
       operationId: updateWebhook
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: webhookId
-          description: ID of the webhook that needs to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: webhookId
+        description: ID of the webhook that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         description: Describe the fields to update
         content:
@@ -3207,7 +3207,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - webhook
+                - webhook
                 properties:
                   webhook:
                     $ref: '#/components/schemas/WebhookDto'
@@ -3217,19 +3217,19 @@ paths:
           $ref: '#/components/responses/403'
     delete:
       tags:
-        - Webhooks
+      - Webhooks
       summary: Delete a webhook
       operationId: deleteWebhook
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: webhookId
-          description: ID of the webhook that needs to be updated
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: webhookId
+        description: ID of the webhook that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '204':
           description: The webhook user has been deleted
@@ -3240,19 +3240,19 @@ paths:
   /rule-snoozes/{rule_snooze_id}:
     get:
       tags:
-        - RuleSnoozes
+      - RuleSnoozes
       summary: Get a rule snooze by id
       operationId: getRuleSnooze
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: rule_snooze_id
-          description: ID of the rule snooze that needs to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: rule_snooze_id
+        description: ID of the rule snooze that needs to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The rule snooze corresponding to the provided `rule_snooze_id`
@@ -3261,7 +3261,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - snooze
+                - snooze
                 properties:
                   snooze:
                     $ref: '#/components/schemas/RuleSnoozeDto'
@@ -3274,19 +3274,19 @@ paths:
   /scenario-testrun:
     get:
       tags:
-        - TestRun
+      - TestRun
       summary: List all test runs for a scenario
       operationId: listTestRuns
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: scenario_id
-          description: ID of the scenario that need to be fetched
-          in: query
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: scenario_id
+        description: ID of the scenario that need to be fetched
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: List of corresponding test runs
@@ -3295,9 +3295,9 @@ paths:
               schema:
                 type: object
                 required:
-                  - test_runs
+                - scenario_test_runs
                 properties:
-                  test_runs:
+                  scenario_test_runs:
                     type: array
                     items:
                       $ref: '#/components/schemas/TestRunDto'
@@ -3307,11 +3307,11 @@ paths:
           $ref: '#/components/responses/403'
     post:
       tags:
-        - TestRun
+      - TestRun
       summary: Create a test run
       operationId: createTestRun
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         description: 'Test run object that needs to be added to the database'
         content:
@@ -3327,9 +3327,9 @@ paths:
               schema:
                 type: object
                 required:
-                  - test_run
+                - scenario_test_run
                 properties:
-                  test_run:
+                  scenario_test_run:
                     $ref: '#/components/schemas/TestRunDto'
         '401':
           $ref: '#/components/responses/401'
@@ -3340,19 +3340,19 @@ paths:
   /scenario-testruns/{test_run_id}:
     get:
       tags:
-        - TestRun
+      - TestRun
       summary: Get a test run by id
       operationId: getTestRun
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: test_run_id
-          description: ID of the test run that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: test_run_id
+        description: ID of the test run that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The test run corresponding to the provided `test_run_id`
@@ -3361,9 +3361,9 @@ paths:
               schema:
                 type: object
                 required:
-                  - test_run
+                - scenario_test_run
                 properties:
-                  test_run:
+                  scenario_test_run:
                     $ref: '#/components/schemas/TestRunDto'
         '401':
           $ref: '#/components/responses/401'
@@ -3374,19 +3374,19 @@ paths:
   /scenario-testruns/{test_run_id}/decision_data_by_score:
     get:
       tags:
-        - TestRun
+      - TestRun
       summary: Get decisions by score and outcome
       operationId: getDecisionData
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: test_run_id
-          description: ID of the test run that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: test_run_id
+        description: ID of the test run that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The list of decisions produced for the provided `test_run_id`
@@ -3395,7 +3395,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - decisions
+                - decisions
                 properties:
                   decisions:
                     type: array
@@ -3410,19 +3410,19 @@ paths:
   /scenario-testruns/{test_run_id}/data_by_rule_execution:
     get:
       tags:
-        - TestRun
+      - TestRun
       summary: Get rules execution distribution by status (hit, no hit, etxc)
       operationId: getRuleData
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: test_run_id
-          description: ID of the test run that need to be fetched
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: test_run_id
+        description: ID of the test run that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: The list of decision rules produced for the provided `test_run_id`
@@ -3431,7 +3431,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - rules
+                - rules
                 properties:
                   rules:
                     type: array
@@ -3500,14 +3500,14 @@ components:
       schema:
         type: string
         enum:
-          - ASC
-          - DESC
+        - ASC
+        - DESC
   schemas:
     OrganizationDto:
       type: object
       required:
-        - id
-        - name
+      - id
+      - name
       properties:
         id:
           type: string
@@ -3521,7 +3521,7 @@ components:
     CreateOrganizationBodyDto:
       type: object
       required:
-        - name
+      - name
       properties:
         name:
           type: string
@@ -3533,12 +3533,12 @@ components:
     UserDto:
       type: object
       required:
-        - user_id
-        - email
-        - first_name
-        - last_name
-        - role
-        - organization_id
+      - user_id
+      - email
+      - first_name
+      - last_name
+      - role
+      - organization_id
       properties:
         user_id:
           type: string
@@ -3557,11 +3557,11 @@ components:
     CreateUser:
       type: object
       required:
-        - email
-        - role
-        - organization_id
-        - first_name
-        - last_name
+      - email
+      - role
+      - organization_id
+      - first_name
+      - last_name
       properties:
         email:
           type: string
@@ -3577,11 +3577,11 @@ components:
     UpdateUser:
       type: object
       required:
-        - email
-        - role
-        - organization_id
-        - first_name
-        - last_name
+      - email
+      - role
+      - organization_id
+      - first_name
+      - last_name
       properties:
         email:
           type: string
@@ -3597,23 +3597,23 @@ components:
     AnalyticsDto:
       type: object
       required:
-        - embedding_type
-        - signed_embedding_url
+      - embedding_type
+      - signed_embedding_url
       properties:
         embedding_type:
           type: string
-          enum: [global_dashboard, unknown_embedding_type]
+          enum: [ global_dashboard, unknown_embedding_type ]
         signed_embedding_url:
           type: string
           format: uri
     ApiKeyDto:
       type: object
       required:
-        - id
-        - description
-        - organization_id
-        - prefix
-        - role
+      - id
+      - description
+      - organization_id
+      - prefix
+      - role
       properties:
         id:
           type: string
@@ -3630,8 +3630,8 @@ components:
     CreateApiKeyBody:
       type: object
       required:
-        - description
-        - role
+      - description
+      - role
       properties:
         description:
           type: string
@@ -3639,13 +3639,13 @@ components:
           type: string
     CreatedApiKeyDto:
       allOf:
-        - $ref: '#/components/schemas/ApiKeyDto'
-        - type: object
-          required:
-            - key
-          properties:
-            key:
-              type: string
+      - $ref: '#/components/schemas/ApiKeyDto'
+      - type: object
+        required:
+        - key
+        properties:
+          key:
+            type: string
     LinkToSingleDto:
       type: object
       properties:
@@ -3673,15 +3673,15 @@ components:
           type: string
           format: uuid
       required:
-        - id
-        - parent_table_name
-        - parent_table_id
-        - parent_field_name
-        - parent_field_id
-        - child_table_name
-        - child_table_id
-        - child_field_name
-        - child_field_id
+      - id
+      - parent_table_name
+      - parent_table_id
+      - parent_field_name
+      - parent_field_id
+      - child_table_name
+      - child_table_id
+      - child_field_name
+      - child_field_id
     FieldDto:
       type: object
       properties:
@@ -3689,7 +3689,7 @@ components:
           type: string
         data_type:
           type: string
-          enum: [Bool, Int, Float, String, Timestamp, unknown]
+          enum: [ Bool, Int, Float, String, Timestamp, unknown ]
         description:
           type: string
         is_enum:
@@ -3705,25 +3705,20 @@ components:
           type: array
           items:
             oneOf:
-              - type: string
-              - type: number
+            - type: string
+            - type: number
         unicity_constraint:
           type: string
-          enum:
-            [
-              no_unicity_constraint,
-              pending_unique_constraint,
-              active_unique_constraint,
-            ]
+          enum: [ no_unicity_constraint, pending_unique_constraint, active_unique_constraint ]
       required:
-        - id
-        - data_type
-        - description
-        - is_enum
-        - name
-        - nullable
-        - table_id
-        - unicity_constraint
+      - id
+      - data_type
+      - description
+      - is_enum
+      - name
+      - nullable
+      - table_id
+      - unicity_constraint
     TableDto:
       type: object
       properties:
@@ -3744,10 +3739,10 @@ components:
             type: object
             $ref: '#/components/schemas/LinkToSingleDto'
       required:
-        - id
-        - name
-        - description
-        - fields
+      - id
+      - name
+      - description
+      - fields
     DataModelDto:
       type: object
       properties:
@@ -3756,12 +3751,12 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/TableDto'
       required:
-        - tables
+      - tables
     CreateTableBody:
       type: object
       required:
-        - name
-        - description
+      - name
+      - description
       properties:
         name:
           type: string
@@ -3775,10 +3770,10 @@ components:
     CreateTableFieldDto:
       type: object
       required:
-        - name
-        - type
-        - nullable
-        - description
+      - name
+      - type
+      - nullable
+      - description
       properties:
         name:
           type: string
@@ -3786,7 +3781,7 @@ components:
           type: string
         type:
           type: string
-          enum: [Bool, Int, Float, String, Timestamp]
+          enum: [ Bool, Int, Float, String, Timestamp ]
         nullable:
           type: boolean
         is_enum:
@@ -3805,11 +3800,11 @@ components:
     CreateTableLinkBody:
       type: object
       required:
-        - name
-        - parent_table_id
-        - parent_field_id
-        - child_table_id
-        - child_field_id
+      - name
+      - parent_table_id
+      - parent_field_id
+      - child_table_id
+      - child_field_id
       properties:
         name:
           type: string
@@ -3824,9 +3819,9 @@ components:
     OpenAPISpec:
       type: object
       required:
-        - openapi
-        - tags
-        - paths
+      - openapi
+      - tags
+      - paths
       properties:
         info:
           type: object
@@ -3879,16 +3874,16 @@ components:
             type: string
             format: uuid
       required:
-        - id
-        - created_at
-        - base_table
-        - base_table_id
-        - pivot_table
-        - pivot_table_id
-        - field
-        - field_id
-        - path_links
-        - path_link_ids
+      - id
+      - created_at
+      - base_table
+      - base_table_id
+      - pivot_table
+      - pivot_table_id
+      - field
+      - field_id
+      - path_links
+      - path_link_ids
     PivotValueDto:
       type: object
       properties:
@@ -3900,8 +3895,8 @@ components:
           type: string
           nullable: true
       required:
-        - pivot_id
-        - pivot_value
+      - pivot_id
+      - pivot_value
     CreatePivotInputDto:
       type: object
       properties:
@@ -3917,13 +3912,13 @@ components:
             type: string
             format: uuid
       required:
-        - base_table_id
+      - base_table_id
     Token:
       type: object
       required:
-        - access_token
-        - token_type
-        - expires_at
+      - access_token
+      - token_type
+      - expires_at
       properties:
         access_token:
           type: string
@@ -3935,15 +3930,15 @@ components:
     CredentialsDto:
       type: object
       required:
-        - credentials
+      - credentials
       properties:
         credentials:
           type: object
           required:
-            - organization_id
-            - role
-            - actor_identity
-            - permissions
+          - organization_id
+          - role
+          - actor_identity
+          - permissions
           properties:
             organization_id:
               type: string
@@ -3971,8 +3966,8 @@ components:
     Error:
       type: object
       required:
-        - code
-        - message
+      - code
+      - message
       properties:
         code:
           type: integer
@@ -3980,19 +3975,19 @@ components:
           type: string
     OutcomeDto:
       type: string
-      enum: ['approve', 'review', 'decline', 'block_and_review', 'unknown']
+      enum: [ 'approve', 'review', 'decline', 'block_and_review', 'unknown' ]
     ReviewStatusDto:
       type: string
-      enum: ['pending', 'approve', 'decline']
+      enum: [ 'pending', 'approve', 'decline' ]
     RuleExecutionDto:
       type: object
       required:
-        - description
-        - name
-        - outcome
-        - result
-        - rule_id
-        - score_modifier
+      - description
+      - name
+      - outcome
+      - result
+      - rule_id
+      - score_modifier
       properties:
         error:
           $ref: '#/components/schemas/Error'
@@ -4002,7 +3997,7 @@ components:
           type: string
         outcome:
           type: string
-          enum: ['hit', 'no_hit', 'snoozed', 'error']
+          enum: [ 'hit', 'no_hit', 'snoozed', 'error' ]
         result:
           type: boolean
         rule_id:
@@ -4049,11 +4044,11 @@ components:
             version:
               type: integer
           required:
-            - id
-            - description
-            - name
-            - scenario_iteration_id
-            - version
+          - id
+          - description
+          - name
+          - scenario_iteration_id
+          - version
         score:
           type: integer
         trigger_object:
@@ -4064,25 +4059,25 @@ components:
           type: string
           format: uuid
       required:
-        - id
-        - created_at
-        - outcome
-        - pivot_values
-        - scenario
-        - score
-        - trigger_object
-        - trigger_object_type
+      - id
+      - created_at
+      - outcome
+      - pivot_values
+      - scenario
+      - score
+      - trigger_object
+      - trigger_object_type
     DecisionDetailDto:
       allOf:
-        - $ref: '#/components/schemas/DecisionDto'
-        - type: object
-          required:
-            - rules
-          properties:
-            rules:
-              type: array
-              items:
-                $ref: '#/components/schemas/RuleExecutionDto'
+      - $ref: '#/components/schemas/DecisionDto'
+      - type: object
+        required:
+        - rules
+        properties:
+          rules:
+            type: array
+            items:
+              $ref: '#/components/schemas/RuleExecutionDto'
     RuleSnoozeDto:
       type: object
       properties:
@@ -4107,22 +4102,22 @@ components:
           type: string
           format: uuid
       required:
-        - id
-        - pivot_value
-        - starts_at
-        - ends_at
-        - created_by_user
-        - created_from_rule_id
+      - id
+      - pivot_value
+      - starts_at
+      - ends_at
+      - created_by_user
+      - created_from_rule_id
     RuleSnoozeWithRuleIdDto:
       allOf:
-        - $ref: '#/components/schemas/RuleSnoozeDto'
-        - type: object
-          properties:
-            rule_id:
-              type: string
-              format: uuid
-          required:
-            - rule_id
+      - $ref: '#/components/schemas/RuleSnoozeDto'
+      - type: object
+        properties:
+          rule_id:
+            type: string
+            format: uuid
+        required:
+        - rule_id
     SnoozesOfDecisionDto:
       type: object
       properties:
@@ -4134,8 +4129,8 @@ components:
           items:
             $ref: '#/components/schemas/RuleSnoozeWithRuleIdDto'
       required:
-        - decision_id
-        - rule_snoozes
+      - decision_id
+      - rule_snoozes
     SnoozeDecisionInputDto:
       type: object
       properties:
@@ -4147,8 +4142,8 @@ components:
         comment:
           type: string
       required:
-        - rule_id
-        - duration
+      - rule_id
+      - duration
     RuleSnoozeInformationDto:
       type: object
       properties:
@@ -4161,9 +4156,9 @@ components:
         has_snoozes_active:
           type: boolean
       required:
-        - rule_id
-        - snooze_group_id
-        - has_snoozes_active
+      - rule_id
+      - snooze_group_id
+      - has_snoozes_active
     SnoozesOfIterationDto:
       type: object
       properties:
@@ -4175,22 +4170,22 @@ components:
           items:
             $ref: '#/components/schemas/RuleSnoozeInformationDto'
       required:
-        - iteration_id
-        - rule_snoozes
+      - iteration_id
+      - rule_snoozes
     CaseStatusDto:
       type: string
-      enum: ['open', 'investigating', 'discarded', 'resolved']
+      enum: [ 'open', 'investigating', 'discarded', 'resolved' ]
     CaseDto:
       type: object
       required:
-        - id
-        - created_at
-        - decisions_count
-        - name
-        - status
-        - inbox_id
-        - contributors
-        - tags
+      - id
+      - created_at
+      - decisions_count
+      - name
+      - status
+      - inbox_id
+      - contributors
+      - tags
       properties:
         id:
           type: string
@@ -4217,78 +4212,78 @@ components:
             $ref: '#/components/schemas/CaseTagDto'
     CaseDetailDto:
       allOf:
-        - $ref: '#/components/schemas/CaseDto'
-        - type: object
-          required:
-            - decisions
-            - events
-            - files
-          properties:
-            decisions:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  created_at:
-                    type: string
-                    format: date-time
-                  trigger_object:
-                    additionalProperties: true
-                  trigger_object_type:
-                    type: string
-                  outcome:
-                    $ref: '#/components/schemas/OutcomeDto'
-                  pivot_values:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/PivotValueDto'
-                  review_status:
-                    $ref: '#/components/schemas/ReviewStatusDto'
-                  scenario:
-                    type: object
-                    required:
-                      - id
-                      - name
-                      - description
-                      - scenario_iteration_id
-                      - version
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                      name:
-                        type: string
-                      description:
-                        type: string
-                      scenario_iteration_id:
-                        type: string
-                        format: uuid
-                      version:
-                        type: integer
-                  score:
-                    type: integer
-                  error:
-                    $ref: '#/components/schemas/Error'
-                required:
+      - $ref: '#/components/schemas/CaseDto'
+      - type: object
+        required:
+        - decisions
+        - events
+        - files
+        properties:
+          decisions:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                created_at:
+                  type: string
+                  format: date-time
+                trigger_object:
+                  additionalProperties: true
+                trigger_object_type:
+                  type: string
+                outcome:
+                  $ref: '#/components/schemas/OutcomeDto'
+                pivot_values:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PivotValueDto'
+                review_status:
+                  $ref: '#/components/schemas/ReviewStatusDto'
+                scenario:
+                  type: object
+                  required:
                   - id
-                  - created_at
-                  - trigger_object
-                  - trigger_object_type
-                  - outcome
-                  - pivot_values
-                  - scenario
-                  - score
-            events:
-              type: array
-              items:
-                $ref: '#/components/schemas/CaseEventDto'
-            files:
-              type: array
-              items:
-                $ref: '#/components/schemas/CaseFileDto'
+                  - name
+                  - description
+                  - scenario_iteration_id
+                  - version
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    scenario_iteration_id:
+                      type: string
+                      format: uuid
+                    version:
+                      type: integer
+                score:
+                  type: integer
+                error:
+                  $ref: '#/components/schemas/Error'
+              required:
+              - id
+              - created_at
+              - trigger_object
+              - trigger_object_type
+              - outcome
+              - pivot_values
+              - scenario
+              - score
+          events:
+            type: array
+            items:
+              $ref: '#/components/schemas/CaseEventDto'
+          files:
+            type: array
+            items:
+              $ref: '#/components/schemas/CaseFileDto'
     CaseEventDto:
       type: object
       discriminator:
@@ -4305,10 +4300,10 @@ components:
           rule_snooze_created: '#/components/schemas/RuleSnoozeCreatedDto'
           decision_reviewed: '#/components/schemas/DecisionReviewedEventDto'
       required:
-        - id
-        - case_id
-        - created_at
-        - event_type
+      - id
+      - case_id
+      - created_at
+      - event_type
       properties:
         id:
           type: string
@@ -4324,10 +4319,10 @@ components:
     CaseFileDto:
       type: object
       required:
-        - id
-        - case_id
-        - created_at
-        - file_name
+      - id
+      - case_id
+      - created_at
+      - file_name
       properties:
         id:
           type: string
@@ -4343,10 +4338,10 @@ components:
     CaseTagDto:
       type: object
       required:
-        - id
-        - case_id
-        - tag_id
-        - created_at
+      - id
+      - case_id
+      - tag_id
+      - created_at
       properties:
         id:
           type: string
@@ -4363,11 +4358,11 @@ components:
     Tag:
       type: object
       required:
-        - id
-        - name
-        - color
-        - organization_id
-        - created_at
+      - id
+      - name
+      - color
+      - organization_id
+      - created_at
       properties:
         id:
           type: string
@@ -4387,10 +4382,10 @@ components:
     CaseContributorDto:
       type: object
       required:
-        - id
-        - case_id
-        - user_id
-        - created_at
+      - id
+      - case_id
+      - user_id
+      - created_at
       properties:
         id:
           type: string
@@ -4406,154 +4401,154 @@ components:
           format: date-time
     CaseCreatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          properties:
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        properties:
+          user_id:
+            type: string
+            format: uuid
     CaseStatusUpdatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - new_value
-            - user_id
-          properties:
-            new_value:
-              $ref: '#/components/schemas/CaseStatusDto'
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        required:
+        - new_value
+        - user_id
+        properties:
+          new_value:
+            $ref: '#/components/schemas/CaseStatusDto'
+          user_id:
+            type: string
+            format: uuid
     CaseTagsUpdatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - new_value
-            - user_id
-          properties:
-            new_value:
-              type: string
-              description: comma separated list of tag ids
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        required:
+        - new_value
+        - user_id
+        properties:
+          new_value:
+            type: string
+            description: comma separated list of tag ids
+          user_id:
+            type: string
+            format: uuid
     DecisionAddedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          properties:
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        properties:
+          user_id:
+            type: string
+            format: uuid
     CommentAddedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - additional_note
-            - user_id
-          properties:
-            additional_note:
-              type: string
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        required:
+        - additional_note
+        - user_id
+        properties:
+          additional_note:
+            type: string
+          user_id:
+            type: string
+            format: uuid
     NameUpdatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - new_value
-            - user_id
-          properties:
-            new_value:
-              type: string
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        required:
+        - new_value
+        - user_id
+        properties:
+          new_value:
+            type: string
+          user_id:
+            type: string
+            format: uuid
     FileAddedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - additional_note
-            - user_id
-          properties:
-            additional_note:
-              type: string
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        required:
+        - additional_note
+        - user_id
+        properties:
+          additional_note:
+            type: string
+          user_id:
+            type: string
+            format: uuid
     InboxChangedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - new_value
-            - user_id
-          properties:
-            new_value:
-              type: string
-              format: uuid
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        required:
+        - new_value
+        - user_id
+        properties:
+          new_value:
+            type: string
+            format: uuid
+          user_id:
+            type: string
+            format: uuid
     RuleSnoozeCreatedDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - additional_note
-            - resource_type
-            - resource_id
-            - user_id
-          properties:
-            additional_note:
-              type: string
-            resource_id:
-              type: string
-              format: uuid
-            resource_type:
-              type: string
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        required:
+        - additional_note
+        - resource_type
+        - resource_id
+        - user_id
+        properties:
+          additional_note:
+            type: string
+          resource_id:
+            type: string
+            format: uuid
+          resource_type:
+            type: string
+          user_id:
+            type: string
+            format: uuid
     DecisionReviewedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
-        - type: object
-          required:
-            - additional_note
-            - new_value
-            - previous_value
-            - resource_id
-            - resource_type
-            - user_id
-          properties:
-            additional_note:
-              type: string
-              description: The note added by the user to justify the review
-            new_value:
-              type: string
-              format: uuid
-              description: The new review_status of the decision
-              enum: ['approve', 'decline']
-            previous_value:
-              type: string
-              format: uuid
-              description: The previous review_status of the decision
-            resource_id:
-              type: string
-              format: uuid
-              description: The id of the decision being reviewed
-            resource_type:
-              type: string
-              enum: ['decision']
-            user_id:
-              type: string
-              format: uuid
+      - $ref: '#/components/schemas/CaseEventDto'
+      - type: object
+        required:
+        - additional_note
+        - new_value
+        - previous_value
+        - resource_id
+        - resource_type
+        - user_id
+        properties:
+          additional_note:
+            type: string
+            description: The note added by the user to justify the review
+          new_value:
+            type: string
+            format: uuid
+            description: The new review_status of the decision
+            enum: [ 'approve', 'decline' ]
+          previous_value:
+            type: string
+            format: uuid
+            description: The previous review_status of the decision
+          resource_id:
+            type: string
+            format: uuid
+            description: The id of the decision being reviewed
+          resource_type:
+            type: string
+            enum: [ 'decision' ]
+          user_id:
+            type: string
+            format: uuid
     UpdateCaseBodyDto:
       type: object
       properties:
@@ -4567,8 +4562,8 @@ components:
     CreateCaseBodyDto:
       type: object
       required:
-        - name
-        - inbox_id
+      - name
+      - inbox_id
       properties:
         name:
           type: string
@@ -4583,18 +4578,18 @@ components:
     ScheduledExecutionDto:
       type: object
       required:
-        - finished_at
-        - id
-        - manual
-        - number_of_created_decisions
-        - number_of_evaluated_decisions
-        - number_of_planned_decisions
-        - scenario_id
-        - scenario_iteration_id
-        - scenario_name
-        - scenario_trigger_object_type
-        - started_at
-        - status
+      - finished_at
+      - id
+      - manual
+      - number_of_created_decisions
+      - number_of_evaluated_decisions
+      - number_of_planned_decisions
+      - scenario_id
+      - scenario_iteration_id
+      - scenario_name
+      - scenario_trigger_object_type
+      - started_at
+      - status
       properties:
         finished_at:
           format: date-time
@@ -4630,14 +4625,13 @@ components:
           type: string
         status:
           type: string
-          enum:
-            ['pending', 'processing', 'success', 'failure', 'partial_failure']
+          enum: [ 'pending', 'processing', 'success', 'failure', 'partial_failure' ]
     CreateDecisionBody:
       type: object
       required:
-        - scenario_id
-        - trigger_object
-        - object_type
+      - scenario_id
+      - trigger_object
+      - object_type
       properties:
         scenario_id:
           type: string
@@ -4649,11 +4643,11 @@ components:
     CustomListDto:
       type: object
       required:
-        - id
-        - name
-        - description
-        - created_at
-        - updated_at
+      - id
+      - name
+      - description
+      - created_at
+      - updated_at
       properties:
         id:
           type: string
@@ -4671,8 +4665,8 @@ components:
     CustomListValueDto:
       type: object
       required:
-        - id
-        - value
+      - id
+      - value
       properties:
         id:
           type: string
@@ -4681,20 +4675,20 @@ components:
           type: string
     CustomListWithValuesDto:
       allOf:
-        - $ref: '#/components/schemas/CustomListDto'
-        - type: object
-          required:
-            - values
-          properties:
-            values:
-              type: array
-              items:
-                $ref: '#/components/schemas/CustomListValueDto'
+      - $ref: '#/components/schemas/CustomListDto'
+      - type: object
+        required:
+        - values
+        properties:
+          values:
+            type: array
+            items:
+              $ref: '#/components/schemas/CustomListValueDto'
     CreateCustomListBodyDto:
       type: object
       required:
-        - name
-        - description
+      - name
+      - description
       properties:
         name:
           type: string
@@ -4703,8 +4697,8 @@ components:
     UpdateCustomListBodyDto:
       type: object
       required:
-        - name
-        - description
+      - name
+      - description
       properties:
         name:
           type: string
@@ -4713,7 +4707,7 @@ components:
     CreateCustomListValueBody:
       type: object
       required:
-        - value
+      - value
       properties:
         value:
           type: string
@@ -4735,7 +4729,7 @@ components:
             $ref: '#/components/schemas/OutcomeDto'
         decision_to_case_workflow_type:
           type: string
-          enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
+          enum: [ 'DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE' ]
         description:
           type: string
         live_version_id:
@@ -4749,14 +4743,14 @@ components:
         trigger_object_type:
           type: string
       required:
-        - id
-        - created_at
-        - decision_to_case_outcomes
-        - decision_to_case_workflow_type
-        - description
-        - name
-        - organization_id
-        - trigger_object_type
+      - id
+      - created_at
+      - decision_to_case_outcomes
+      - decision_to_case_workflow_type
+      - description
+      - name
+      - organization_id
+      - trigger_object_type
     ScenarioCreateInputDto:
       type: object
       properties:
@@ -4767,9 +4761,9 @@ components:
         trigger_object_type:
           type: string
       required:
-        - description
-        - name
-        - trigger_object_type
+      - description
+      - name
+      - trigger_object_type
     ScenarioUpdateInputDto:
       type: object
       properties:
@@ -4782,7 +4776,7 @@ components:
             $ref: '#/components/schemas/OutcomeDto'
         decision_to_case_workflow_type:
           type: string
-          enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
+          enum: [ 'DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE' ]
         description:
           type: string
         name:
@@ -4790,11 +4784,11 @@ components:
     ScenarioIterationDto:
       type: object
       required:
-        - id
-        - scenario_id
-        - version
-        - created_at
-        - updated_at
+      - id
+      - scenario_id
+      - version
+      - created_at
+      - updated_at
       properties:
         id:
           type: string
@@ -4813,39 +4807,39 @@ components:
           format: date-time
     ScenarioIterationWithBodyDto:
       allOf:
-        - $ref: '#/components/schemas/ScenarioIterationDto'
-        - type: object
-          required:
-            - body
-          properties:
-            body:
-              type: object
-              required:
-                - rules
-              properties:
-                trigger_condition_ast_expression:
-                  nullable: true
-                  allOf:
-                    - $ref: '#/components/schemas/NodeDto'
-                score_review_threshold:
-                  type: integer
-                  minimum: 0
-                score_block_and_review_threshold:
-                  type: integer
-                  minimum: 0
-                score_decline_threshold:
-                  type: integer
-                  minimum: 0
-                rules:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/ScenarioIterationRuleDto'
-                schedule:
-                  type: string
+      - $ref: '#/components/schemas/ScenarioIterationDto'
+      - type: object
+        required:
+        - body
+        properties:
+          body:
+            type: object
+            required:
+            - rules
+            properties:
+              trigger_condition_ast_expression:
+                nullable: true
+                allOf:
+                - $ref: '#/components/schemas/NodeDto'
+              score_review_threshold:
+                type: integer
+                minimum: 0
+              score_block_and_review_threshold:
+                type: integer
+                minimum: 0
+              score_decline_threshold:
+                type: integer
+                minimum: 0
+              rules:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScenarioIterationRuleDto'
+              schedule:
+                type: string
     CreateScenarioIterationBody:
       type: object
       required:
-        - scenario_id
+      - scenario_id
       properties:
         scenario_id:
           type: string
@@ -4856,7 +4850,7 @@ components:
             trigger_condition_ast_expression:
               nullable: true
               allOf:
-                - $ref: '#/components/schemas/NodeDto'
+              - $ref: '#/components/schemas/NodeDto'
             score_review_threshold:
               type: integer
               minimum: 0
@@ -4879,7 +4873,7 @@ components:
             trigger_condition_ast_expression:
               nullable: true
               allOf:
-                - $ref: '#/components/schemas/NodeDto'
+              - $ref: '#/components/schemas/NodeDto'
             score_review_threshold:
               type: integer
               minimum: 0
@@ -4911,34 +4905,34 @@ components:
         formula_ast_expression:
           nullable: true
           oneOf:
-            - $ref: '#/components/schemas/NodeDto'
+          - $ref: '#/components/schemas/NodeDto'
         score_modifier:
           type: integer
         created_at:
           type: string
           format: date-time
       required:
-        - id
-        - scenario_iteration_id
-        - display_order
-        - name
-        - description
-        - rule_group
-        - formula_ast_expression
-        - score_modifier
-        - created_at
+      - id
+      - scenario_iteration_id
+      - display_order
+      - name
+      - description
+      - rule_group
+      - formula_ast_expression
+      - score_modifier
+      - created_at
     ScenarioValidationDto:
       type: object
       required:
-        - trigger
-        - rules
-        - decision
+      - trigger
+      - rules
+      - decision
       properties:
         trigger:
           type: object
           required:
-            - errors
-            - trigger_evaluation
+          - errors
+          - trigger_evaluation
           properties:
             errors:
               type: array
@@ -4949,8 +4943,8 @@ components:
         rules:
           type: object
           required:
-            - errors
-            - rules
+          - errors
+          - rules
           properties:
             errors:
               type: array
@@ -4960,8 +4954,8 @@ components:
               additionalProperties:
                 type: object
                 required:
-                  - errors
-                  - rule_evaluation
+                - errors
+                - rule_evaluation
                 properties:
                   errors:
                     type: array
@@ -4972,7 +4966,7 @@ components:
         decision:
           type: object
           required:
-            - errors
+          - errors
           properties:
             errors:
               type: array
@@ -4995,17 +4989,17 @@ components:
         formula_ast_expression:
           nullable: true
           oneOf:
-            - $ref: '#/components/schemas/NodeDto'
+          - $ref: '#/components/schemas/NodeDto'
         score_modifier:
           type: integer
       required:
-        - scenario_iteration_id
-        - display_order
-        - name
-        - description
-        - rule_group
-        - formula_ast_expression
-        - score_modifier
+      - scenario_iteration_id
+      - display_order
+      - name
+      - description
+      - rule_group
+      - formula_ast_expression
+      - score_modifier
     UpdateScenarioIterationRuleBodyDto:
       type: object
       properties:
@@ -5020,28 +5014,28 @@ components:
         formula_ast_expression:
           nullable: true
           oneOf:
-            - $ref: '#/components/schemas/NodeDto'
+          - $ref: '#/components/schemas/NodeDto'
         score_modifier:
           type: integer
     ScenarioPublicationStatusDto:
       type: object
       required:
-        - preparation_status
-        - preparation_service_status
+      - preparation_status
+      - preparation_service_status
       properties:
         preparation_status:
           type: string
-          enum: ['required', 'ready_to_activate']
+          enum: [ 'required', 'ready_to_activate' ]
         preparation_service_status:
           type: string
-          enum: ['available', 'occupied']
+          enum: [ 'available', 'occupied' ]
     ScenarioPublication:
       type: object
       required:
-        - id
-        - created_at
-        - scenario_iteration_id
-        - publication_action
+      - id
+      - created_at
+      - scenario_iteration_id
+      - publication_action
       properties:
         id:
           type: string
@@ -5057,8 +5051,8 @@ components:
     CreateScenarioPublicationBody:
       type: object
       required:
-        - scenario_iteration_id
-        - publication_action
+      - scenario_iteration_id
+      - publication_action
       properties:
         scenario_iteration_id:
           type: string
@@ -5067,20 +5061,20 @@ components:
           $ref: '#/components/schemas/PublicationAction'
     PublicationAction:
       type: string
-      enum: ['publish', 'unpublish']
+      enum: [ 'publish', 'unpublish' ]
     ConstantDto:
       nullable: true
       example: 'some constant value'
       oneOf:
-        - type: string
-        - type: number
-        - type: boolean
-        - type: array
-          items:
-            $ref: '#/components/schemas/ConstantDto'
-        - type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ConstantDto'
+      - type: string
+      - type: number
+      - type: boolean
+      - type: array
+        items:
+          $ref: '#/components/schemas/ConstantDto'
+      - type: object
+        additionalProperties:
+          $ref: '#/components/schemas/ConstantDto'
     NodeDto:
       type: object
       properties:
@@ -5093,7 +5087,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NodeDto'
-          example: [{ constant: 4 }]
+          example: [ { constant: 4 } ]
         named_children:
           type: object
           additionalProperties:
@@ -5102,13 +5096,13 @@ components:
     NodeEvaluationDto:
       type: object
       required:
-        - return_value
-        - errors
+      - return_value
+      - errors
       properties:
         return_value:
           type: object
           required:
-            - is_omitted
+          - is_omitted
           properties:
             value:
               $ref: '#/components/schemas/ConstantDto'
@@ -5130,8 +5124,8 @@ components:
     ScenarioValidationErrorDto:
       type: object
       required:
-        - error
-        - message
+      - error
+      - message
       properties:
         error:
           $ref: '#/components/schemas/ScenarioValidationErrorCodeDto'
@@ -5140,18 +5134,18 @@ components:
     ScenarioValidationErrorCodeDto:
       type: string
       enum:
-        - DATA_MODEL_NOT_FOUND
-        - TRIGGER_OBJECT_NOT_FOUND
-        - TRIGGER_CONDITION_REQUIRED
-        - RULE_FORMULA_REQUIRED
-        - FORMULA_MUST_RETURN_BOOLEAN
-        - SCORE_THRESHOLD_MISSING
-        - SCORE_THRESHOLDS_MISMATCH
+      - DATA_MODEL_NOT_FOUND
+      - TRIGGER_OBJECT_NOT_FOUND
+      - TRIGGER_CONDITION_REQUIRED
+      - RULE_FORMULA_REQUIRED
+      - FORMULA_MUST_RETURN_BOOLEAN
+      - SCORE_THRESHOLD_MISSING
+      - SCORE_THRESHOLDS_MISMATCH
     EvaluationErrorDto:
       type: object
       required:
-        - error
-        - message
+      - error
+      - message
       properties:
         error:
           $ref: '#/components/schemas/EvaluationErrorCodeDto'
@@ -5164,43 +5158,43 @@ components:
     EvaluationErrorCodeDto:
       type: string
       enum:
-        - UNEXPECTED_ERROR
-        - UNDEFINED_FUNCTION
-        - WRONG_NUMBER_OF_ARGUMENTS
-        - MISSING_NAMED_ARGUMENT
-        - ARGUMENTS_MUST_BE_INT_OR_FLOAT
-        - ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME
-        - ARGUMENT_MUST_BE_INTEGER
-        - ARGUMENT_MUST_BE_STRING
-        - ARGUMENT_MUST_BE_BOOLEAN
-        - ARGUMENT_MUST_BE_LIST
-        - ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION
-        - ARGUMENT_MUST_BE_TIME
-        - ARGUMENT_REQUIRED
-        - ARGUMENT_INVALID_TYPE
-        - LIST_NOT_FOUND
-        - DATABASE_ACCESS_NOT_FOUND
-        - PAYLOAD_FIELD_NOT_FOUND
-        - NULL_FIELD_READ
-        - NO_ROWS_READ
-        - DIVISION_BY_ZERO
-        - PAYLOAD_FIELD_NOT_FOUND
-        - RUNTIME_EXPRESSION_ERROR
+      - UNEXPECTED_ERROR
+      - UNDEFINED_FUNCTION
+      - WRONG_NUMBER_OF_ARGUMENTS
+      - MISSING_NAMED_ARGUMENT
+      - ARGUMENTS_MUST_BE_INT_OR_FLOAT
+      - ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME
+      - ARGUMENT_MUST_BE_INTEGER
+      - ARGUMENT_MUST_BE_STRING
+      - ARGUMENT_MUST_BE_BOOLEAN
+      - ARGUMENT_MUST_BE_LIST
+      - ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION
+      - ARGUMENT_MUST_BE_TIME
+      - ARGUMENT_REQUIRED
+      - ARGUMENT_INVALID_TYPE
+      - LIST_NOT_FOUND
+      - DATABASE_ACCESS_NOT_FOUND
+      - PAYLOAD_FIELD_NOT_FOUND
+      - NULL_FIELD_READ
+      - NO_ROWS_READ
+      - DIVISION_BY_ZERO
+      - PAYLOAD_FIELD_NOT_FOUND
+      - RUNTIME_EXPRESSION_ERROR
     FuncAttributes:
       type: object
       required:
-        - name
+      - name
       properties:
         name:
           type: string
     UploadLog:
       type: object
       required:
-        - started_at
-        - finished_at
-        - status
-        - lines_processed
-        - num_rows_ingested
+      - started_at
+      - finished_at
+      - status
+      - lines_processed
+      - num_rows_ingested
       properties:
         started_at:
           type: string
@@ -5210,7 +5204,7 @@ components:
           format: date-time
         status:
           type: string
-          enum: ['success', 'failure', 'progressing', 'pending']
+          enum: [ 'success', 'failure', 'progressing', 'pending' ]
         lines_processed:
           type: integer
         num_rows_ingested:
@@ -5218,9 +5212,9 @@ components:
     Pagination:
       type: object
       required:
-        - start_index
-        - end_index
-        - total_count
+      - start_index
+      - end_index
+      - total_count
       properties:
         start_index:
           type: integer
@@ -5231,8 +5225,8 @@ components:
     PaginationCount:
       type: object
       required:
-        - value
-        - is_max_count
+      - value
+      - is_max_count
       properties:
         value:
           type: integer
@@ -5241,11 +5235,11 @@ components:
     InboxDto:
       type: object
       required:
-        - id
-        - name
-        - created_at
-        - updated_at
-        - status
+      - id
+      - name
+      - created_at
+      - updated_at
+      - status
       properties:
         id:
           type: string
@@ -5260,7 +5254,7 @@ components:
           format: date-time
         status:
           type: string
-          enum: [active, archived]
+          enum: [ active, archived ]
         users:
           type: array
           items:
@@ -5270,17 +5264,17 @@ components:
     CreateInboxBodyDto:
       type: object
       required:
-        - name
+      - name
       properties:
         name:
           type: string
     InboxUserDto:
       type: object
       required:
-        - id
-        - inbox_id
-        - user_id
-        - role
+      - id
+      - inbox_id
+      - user_id
+      - role
       properties:
         id:
           type: string
@@ -5296,8 +5290,8 @@ components:
     AddInboxUserBodyDto:
       type: object
       required:
-        - user_id
-        - role
+      - user_id
+      - role
       properties:
         user_id:
           type: string
@@ -5323,9 +5317,9 @@ components:
         rate_limit_duration:
           type: integer
       required:
-        - id
-        - secrets
-        - url
+      - id
+      - secrets
+      - url
     WebhookSecretDto:
       type: object
       properties:
@@ -5348,13 +5342,13 @@ components:
           type: string
     WebhookWithSecretDto:
       allOf:
-        - $ref: '#/components/schemas/WebhookDto'
-        - type: object
-          properties:
-            secrets:
-              type: array
-              items:
-                $ref: '#/components/schemas/WebhookSecretDto'
+      - $ref: '#/components/schemas/WebhookDto'
+      - type: object
+        properties:
+          secrets:
+            type: array
+            items:
+              $ref: '#/components/schemas/WebhookSecretDto'
     WebhookRegisterBodyDto:
       type: object
       properties:
@@ -5371,8 +5365,8 @@ components:
         rate_limit_duration:
           type: integer
       required:
-        - event_types
-        - url
+      - event_types
+      - url
     WebhookUpdateBodyDto:
       type: object
       properties:
@@ -5390,18 +5384,18 @@ components:
           type: integer
     TestRunStatusDto:
       type: string
-      enum: ['pending', 'up', 'down', 'unknown']
+      enum: [ 'pending', 'up', 'down', 'unknown' ]
     TestRunDto:
       type: object
       required:
-        - id
-        - scenario_id
-        - ref_iteration_id
-        - test_iteration_id
-        - start_date
-        - end_date
-        - creator_id
-        - status
+      - id
+      - scenario_id
+      - ref_iteration_id
+      - test_iteration_id
+      - start_date
+      - end_date
+      - creator_id
+      - status
       properties:
         id:
           type: string
@@ -5429,9 +5423,9 @@ components:
     TestRunDecisionDataDto:
       type: object
       required:
-        - version
-        - outcome
-        - total
+      - version
+      - outcome
+      - total
       properties:
         version:
           type: string
@@ -5444,11 +5438,11 @@ components:
     TestRunRuleExecutionDataDto:
       type: object
       required:
-        - version
-        - name
-        - status
-        - total
-        - stable_rule_id
+      - version
+      - name
+      - status
+      - total
+      - stable_rule_id
       properties:
         version:
           type: string
@@ -5456,7 +5450,7 @@ components:
           type: string
         status:
           type: string
-          enum: ['hit', 'no_hit', 'error', 'snoozed']
+          enum: [ 'hit', 'no_hit', 'error', 'snoozed' ]
         total:
           type: integer
         stable_rule_id:
@@ -5465,9 +5459,9 @@ components:
     TestRunCreateInputDto:
       type: object
       required:
-        - scenario_id
-        - test_iteration_id
-        - end_date
+      - scenario_id
+      - test_iteration_id
+      - end_date
       properties:
         scenario_id:
           type: string
