@@ -51,8 +51,8 @@ export default function TestRun() {
 
   const versions = useMemo(
     () => ({
-      ref: `V${iterations[run.refIterationId]!.version}`,
-      test: `V${iterations[run.testIterationId]!.version}`,
+      ref: `${iterations[run.refIterationId]!.version}`,
+      test: `${iterations[run.testIterationId]!.version}`,
     }),
     [iterations, run.refIterationId, run.testIterationId],
   );

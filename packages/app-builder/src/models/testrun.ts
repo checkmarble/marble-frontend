@@ -27,7 +27,7 @@ export interface TestRunRuleExecutionCount {
   name: string;
   status: TestRunRuleStatus;
   total: number;
-  ruleId: string;
+  ruleId: string | null;
 }
 
 export function adaptTestRunRuleExecution(
@@ -38,7 +38,7 @@ export function adaptTestRunRuleExecution(
     name: dto.name,
     status: dto.status,
     total: dto.total,
-    ruleId: dto.stable_rule_id,
+    ruleId: dto.stable_rule_id ? dto.stable_rule_id : null,
   };
 }
 

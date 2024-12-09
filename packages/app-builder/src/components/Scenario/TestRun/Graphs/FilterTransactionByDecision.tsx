@@ -24,6 +24,8 @@ const TestRunRuleName = ({
   rulesByVersion: Record<string, TestRunRuleExecutionCount[]>;
   versions: Versions;
 }) => {
+  console.log(rulesByVersion);
+  console.log({ ref, test });
   const refRuleName = rulesByVersion[ref]![0]!.name;
   const testRuleName = rulesByVersion[test]![0]!.name;
 
@@ -199,8 +201,9 @@ export const FilterTransactionByDecision = ({
 
   const rulesByRuleId = useMemo(() => {
     const rulesSummary = mapValues(
-      groupBy(rules, ({ ruleId: rule_id }) => rule_id),
-      (rb) => groupBy(rb, ({ version }) => version),
+      // TODO: discuss the best way of action here (what to do for rules without a stable id, should not happen in the long term)
+      groupBy(rules, ({ ruleId }) => ruleId ?? `random_${crypto.randomUUID()}`),
+      (rulesByVersion) => groupBy(rulesByVersion, ({ version }) => version),
     );
 
     return displayChangedRules

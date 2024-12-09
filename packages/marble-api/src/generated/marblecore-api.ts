@@ -706,7 +706,7 @@ export type TestRunRuleExecutionDataDto = {
     name: string;
     status: "hit" | "no_hit" | "error" | "snoozed";
     total: number;
-    stable_rule_id: string;
+    stable_rule_id?: string;
 };
 /**
  * Get an access token
