@@ -127,10 +127,14 @@ export default function Decisions() {
     inboxes,
   } = useLoaderData<typeof loader>();
 
-  const { data, next, previous, reset, update } = useCursorPaginatedFetcher<
-    typeof loader,
-    PaginatedResponse<Decision>
-  >({
+  const {
+    data,
+    pagination: paginationState,
+    next,
+    previous,
+    reset,
+    update,
+  } = useCursorPaginatedFetcher<typeof loader, PaginatedResponse<Decision>>({
     transform: (fetcherData) => fetcherData.decisionsData,
     initialData: initialDecisionsData,
     getQueryParams: (cursor) => buildQueryParams(filters, cursor),
@@ -140,7 +144,10 @@ export default function Decisions() {
 
   const [previousInitialDecisionsData, setPreviousInitialDecisionsData] =
     useState(initialDecisionsData);
-  if (initialDecisionsData !== previousInitialDecisionsData) {
+  if (
+    initialDecisionsData !== previousInitialDecisionsData &&
+    paginationState.isPristine
+  ) {
     setPreviousInitialDecisionsData(initialDecisionsData);
     update(initialDecisionsData);
   }

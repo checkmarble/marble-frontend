@@ -101,10 +101,14 @@ export default function Cases() {
     useLoaderData<typeof loader>();
   const inboxId = useParam('inboxId');
 
-  const { data, next, previous, reset, update } = useCursorPaginatedFetcher<
-    typeof loader,
-    PaginatedResponse<Case>
-  >({
+  const {
+    data,
+    pagination: paginationState,
+    next,
+    previous,
+    reset,
+    update,
+  } = useCursorPaginatedFetcher<typeof loader, PaginatedResponse<Case>>({
     transform: (fetcherData) => fetcherData.casesData,
     initialData: initialCasesData,
     getQueryParams: (cursor) => buildQueryParams(filters, cursor),
@@ -114,7 +118,10 @@ export default function Cases() {
 
   const [previousInitialCasesData, setPreviousInitialCasesData] =
     useState(initialCasesData);
-  if (initialCasesData !== previousInitialCasesData) {
+  if (
+    initialCasesData !== previousInitialCasesData &&
+    paginationState.isPristine
+  ) {
     setPreviousInitialCasesData(initialCasesData);
     update(initialCasesData);
   }

@@ -1,7 +1,7 @@
 import { type SerializeFrom } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import qs from 'qs';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useCursorPagination } from './useCursorPagination';
 
@@ -27,11 +27,7 @@ export const useCursorPaginatedFetcher = <T, D = T>({
 }: UseCursorPaginatedFetcherOptions<T, D>) => {
   const [previousFetcherData, setPreviousFetcherData] =
     useState<SerializeFrom<T> | null>(null);
-
   const [data, setData] = useState(initialData);
-  const updateData = useCallback((data: D) => {
-    setData(data);
-  }, []);
 
   const {
     state: paginationState,
@@ -50,7 +46,7 @@ export const useCursorPaginatedFetcher = <T, D = T>({
     submit(qs.stringify(queryParams, { skipNulls: true }), {
       method: 'GET',
     });
-  }, [paginationState, getQueryParams, submit]);
+  }, [paginationState, submit]);
 
   if (fetcherData !== previousFetcherData && fetcherData) {
     const transformedData =
@@ -64,7 +60,8 @@ export const useCursorPaginatedFetcher = <T, D = T>({
 
   return {
     data,
-    update: updateData,
+    pagination: paginationState,
+    update: setData,
     next,
     previous,
     reset,
