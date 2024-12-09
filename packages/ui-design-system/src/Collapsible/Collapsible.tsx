@@ -2,11 +2,12 @@ import * as Ariakit from '@ariakit/react';
 import {
   type CollapsibleContentProps,
   type CollapsibleProps,
-  type CollapsibleTriggerProps,
+  type CollapsibleTriggerProps as RadixCollapsibleProps,
   Content,
   Root,
   Trigger,
 } from '@radix-ui/react-collapsible';
+import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 import * as React from 'react';
 import { forwardRef } from 'react';
@@ -28,15 +29,30 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
   },
 );
 
+const collapsibleTitle = cva(
+  'group flex cursor-pointer items-center justify-between gap-4 font-semibold ',
+  {
+    variants: {
+      size: {
+        default: 'p-4 lg:p-6',
+        small: 'p-4',
+      },
+    },
+    defaultVariants: {
+      size: 'default',
+    },
+  },
+);
+
+export type CollapsibleTriggerProps = VariantProps<typeof collapsibleTitle> &
+  RadixCollapsibleProps;
+
 const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
-  function CollapsibleTitle({ className, children, ...props }, ref) {
+  function CollapsibleTitle({ className, children, size, ...props }, ref) {
     return (
       <Trigger
         ref={ref}
-        className={clsx(
-          'group flex cursor-pointer items-center justify-between gap-4 p-4 font-semibold lg:p-6',
-          className,
-        )}
+        className={collapsibleTitle({ size, className })}
         asChild
         {...props}
       >
