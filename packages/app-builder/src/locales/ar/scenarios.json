@@ -131,6 +131,8 @@
   "validation.evaluation_error.argument_must_be_boolean_other": "{{count}} يجب أن تكون المعاملات منطقية",
   "validation.evaluation_error.argument_must_be_list_one": "يجب أن يكون المعامل قائمة",
   "validation.evaluation_error.argument_must_be_list_other": "{{count}} يجب أن تكون المعاملات قوائم",
+  "validation.evaluation_error.argument_must_be_string_or_list_one": "يجب أن تكون الوسيطة سلسلة أو قائمة",
+  "validation.evaluation_error.argument_must_be_string_or_list_other": "يجب أن تكون الوسيطات {{count}} عبارة عن سلاسل أو قوائم",
   "validation.evaluation_error.argument_must_be_convertible_to_duration_one": "- يجب أن يكون المعامل مدة (duration).",
   "validation.evaluation_error.argument_must_be_convertible_to_duration_other": "{{count}} يجب أن تكون المعاملات مدة (duration).",
   "validation.evaluation_error.argument_must_be_time_one": "يجب أن يكون المعامل وقتًا (time).",

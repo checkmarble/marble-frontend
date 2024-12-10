@@ -22,6 +22,7 @@ export type EvaluationErrorViewModel =
         | 'ARGUMENT_MUST_BE_STRING'
         | 'ARGUMENT_MUST_BE_BOOLEAN'
         | 'ARGUMENT_MUST_BE_LIST'
+        | 'ARGUMENT_MUST_BE_STRING_OR_LIST'
         | 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION'
         | 'ARGUMENT_MUST_BE_TIME'
         | 'FUNCTION_ERROR'
@@ -188,6 +189,13 @@ const commonErrorMessages =
       case 'ARGUMENT_MUST_BE_LIST':
         return t(
           'scenarios:validation.evaluation_error.argument_must_be_list',
+          {
+            count: evaluationError.count,
+          },
+        );
+      case 'ARGUMENT_MUST_BE_STRING_OR_LIST':
+        return t(
+          'scenarios:validation.evaluation_error.argument_must_be_string_or_list',
           {
             count: evaluationError.count,
           },
