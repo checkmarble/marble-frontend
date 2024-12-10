@@ -80,9 +80,19 @@ export function CreateTestRun({
     }
   }, [navigation.state]);
 
+  const shouldAllowCreate = React.useMemo(
+    () =>
+      scenarioIterations.length > 1 &&
+      scenarioIterations.some((i) => i.type === 'live version'),
+    [scenarioIterations],
+  );
+
   return (
     <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger render={children} disabled={!hydrated} />
+      <ModalV2.Trigger
+        render={children}
+        disabled={!hydrated || !shouldAllowCreate}
+      />
       <ModalV2.Content className="overflow-visible">
         <CreateTestRunToContent
           currentScenario={currentScenario}

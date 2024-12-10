@@ -308,7 +308,7 @@
   "create_testrun.phantom_placeholder": "version de test",
   "create_testrun.ref": "Version de référence",
   "create_testrun.ref_placeholder": "Sélectionnez la version de référence",
-  "create_testrun.title": "Nouveau run",
+  "create_testrun.title": "Nouveau test",
   "testrun.current_run": "Test en cours",
   "testrun.description": "Demandez une décision grâce à notre API et obtenez des réponses synchrones en temps réel",
   "testrun.distribution": "Répartition des décisions",
@@ -347,5 +347,6 @@
   "testrun.no_decisisons": "Aucune décision déjà enregistrée",
   "testrun.no_rules": "Aucune règle déjà déclenchée",
   "testrun.rule.new": "Nouvelle règle",
-  "testrun.rule.old": "Ancienne règle"
+  "testrun.rule.old": "Ancienne règle",
+  "testrun.home": "Liste des comparaisons"
 }

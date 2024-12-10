@@ -347,5 +347,6 @@
   "testrun.no_decisisons": "لم يتم تسجيل أي قرارات بالفعل",
   "testrun.no_rules": "لم يتم تفعيل أي قواعد بالفعل",
   "testrun.rule.new": "قاعدة جديدة",
-  "testrun.rule.old": "القاعدة القديمة"
+  "testrun.rule.old": "القاعدة القديمة",
+  "testrun.home": "قائمة المقارنات"
 }
