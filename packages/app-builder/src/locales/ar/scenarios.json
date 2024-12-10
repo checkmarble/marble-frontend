@@ -39,6 +39,8 @@
   "operator.is_not_in": "لا يوجد في",
   "operator.contains": "يحتوي على",
   "operator.does_not_contain": "لا يحتوي على",
+  "operator.ends_with": "ينتهي ب",
+  "operator.starts_with": "يبدأ ب",
   "operator.contains_any_of": "يحتوي على أي من",
   "operator.contains_none_of": "لا يحتوي على أي من",
   "operator.is_empty": "فارغ",

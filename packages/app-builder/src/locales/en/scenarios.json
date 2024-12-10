@@ -114,6 +114,8 @@
   "operator.is_not_in": "is not in",
   "operator.contains": "contains",
   "operator.does_not_contain": "does not contain",
+  "operator.starts_with": "starts with",
+  "operator.ends_with": "ends with",
   "operator.contains_any_of": "contains any of",
   "operator.contains_none_of": "does not contain any of",
   "operator.is_empty": "is empty",
