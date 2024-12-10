@@ -96,7 +96,7 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
-  /decisions:
+  /decisions/with-ranks:
     get:
       tags:
         - Decisions
@@ -182,10 +182,8 @@ paths:
               type: string
         # Pagination and sorting parameters
         - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/next'
         - $ref: '#/components/parameters/offset_id'
         - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/previous'
         - name: sorting
           description: the field used to sort the items
           in: query
@@ -276,8 +274,6 @@ paths:
             enum:
               - created_at
         - $ref: '#/components/parameters/offset_id'
-        - $ref: '#/components/parameters/previous'
-        - $ref: '#/components/parameters/next'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/order'
       responses:
@@ -3469,20 +3465,6 @@ components:
       schema:
         type: string
         format: uuid
-    next:
-      in: query
-      name: next
-      description: Next page
-      required: false
-      schema:
-        type: boolean
-    previous:
-      in: query
-      name: previous
-      description: Previous page
-      required: false
-      schema:
-        type: boolean
     limit:
       in: query
       name: limit
@@ -5218,26 +5200,16 @@ components:
     Pagination:
       type: object
       required:
+        - has_next_page
         - start_index
         - end_index
-        - total_count
       properties:
+        has_next_page:
+          type: boolean
         start_index:
           type: integer
         end_index:
           type: integer
-        total_count:
-          $ref: '#/components/schemas/PaginationCount'
-    PaginationCount:
-      type: object
-      required:
-        - value
-        - is_max_count
-      properties:
-        value:
-          type: integer
-        is_max_count:
-          type: boolean
     InboxDto:
       type: object
       required:

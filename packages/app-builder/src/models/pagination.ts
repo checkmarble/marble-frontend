@@ -1,24 +1,21 @@
 import { type Pagination as PaginationDto } from 'marble-api';
 
 export type Pagination = {
-  totalCount: { value: number; isMaxCount: boolean };
+  hasNextPage: boolean;
   startIndex: number;
   endIndex: number;
 };
 
 export type PaginatedResponse<T> = {
   items: T[];
-  totalCount: { value: number; isMaxCount: boolean };
+  hasNextPage: boolean;
   startIndex: number;
   endIndex: number;
 };
 
 export function adaptPagination(paginationDto: PaginationDto): Pagination {
   return {
-    totalCount: {
-      value: paginationDto.total_count.value,
-      isMaxCount: paginationDto.total_count.is_max_count,
-    },
+    hasNextPage: paginationDto.has_next_page,
     startIndex: paginationDto.start_index,
     endIndex: paginationDto.end_index,
   };

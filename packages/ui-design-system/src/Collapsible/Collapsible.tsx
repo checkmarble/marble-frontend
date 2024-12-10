@@ -145,11 +145,17 @@ const CollapsibleV2Content = forwardRef<
       ref={ref}
       data-initial={initialRender || undefined}
       className={clsx(
-        'col-span-full grid grid-rows-[0fr] transition-all duration-200 data-[enter]:grid-rows-[1fr] data-[initial]:grid-rows-[1fr]',
+        'group col-span-full grid grid-rows-[0fr] transition-all duration-200 data-[enter]:grid-rows-[1fr] data-[initial]:grid-rows-[1fr]',
         className,
       )}
     >
-      <div className="overflow-hidden" {...props} />
+      <div
+        // The animation is used to remove the overflow-hidden class after the transition ends (overflow-hidden prevents sticky positioning).
+        // - Sync with the duration of the transition above.
+        // - The fill-mode-forwards is used to keep the final state of the animation (overflow: visible).
+        className="group-data-[enter]:animate-overflow group-data-[enter]:fill-mode-forwards overflow-hidden group-data-[enter]:duration-200"
+        {...props}
+      />
     </Ariakit.DisclosureContent>
   );
 });
