@@ -222,6 +222,8 @@
   "validation.evaluation_error.argument_must_be_boolean_other": "{{count}} arguments must be booleans",
   "validation.evaluation_error.argument_must_be_list_one": "argument must be a list",
   "validation.evaluation_error.argument_must_be_list_other": "{{count}} arguments must be lists",
+  "validation.evaluation_error.argument_must_be_string_or_list_one": "argument must be a string or a list",
+  "validation.evaluation_error.argument_must_be_string_or_list_other": "{{count}} arguments must be strings or lists",
   "validation.evaluation_error.argument_must_be_convertible_to_duration_one": "argument must be a duration",
   "validation.evaluation_error.argument_must_be_convertible_to_duration_other": "{{count}} arguments must be durations",
   "validation.evaluation_error.argument_must_be_time_one": "argument must be a time",
