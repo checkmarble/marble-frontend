@@ -69,7 +69,7 @@ function UploadFileContent({
       'application/vnd.ms-excel': ['.xls'],
       'text/*': ['.csv', '.txt'],
     },
-    multiple: false,
+    multiple: true,
     maxSize: MAX_FILE_SIZE,
   });
 
@@ -81,7 +81,6 @@ function UploadFileContent({
       // );
       return;
     }
-    const file = acceptedFiles[0];
     try {
       setLoading(true);
       const tokenResponse = await getAccessToken();
@@ -91,7 +90,9 @@ function UploadFileContent({
       }
 
       const formData = new FormData();
-      formData.append('file', file);
+      acceptedFiles.forEach((file) => {
+        formData.append('file[]', file);
+      });
 
       const response = await fetch(
         `${backendUrl}/cases/${caseDetail.id}/files`,
