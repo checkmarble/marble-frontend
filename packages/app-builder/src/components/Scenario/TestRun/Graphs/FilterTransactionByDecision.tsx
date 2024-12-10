@@ -1,5 +1,6 @@
 import { type TestRunRuleExecutionCount } from '@app-builder/models/testrun';
 import clsx from 'clsx';
+import { t } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -24,20 +25,44 @@ const TestRunRuleName = ({
   rulesByVersion: Record<string, TestRunRuleExecutionCount[]>;
   versions: Versions;
 }) => {
-  const refRuleName = rulesByVersion[ref]![0]!.name;
-  const testRuleName = rulesByVersion[test]![0]!.name;
+  const refRuleName = rulesByVersion[ref]?.[0]?.name;
+  const testRuleName = rulesByVersion[test]?.[0]?.name;
 
-  return (
-    <div className="flex flex-col">
-      <span className="text-s font-normal">{testRuleName}</span>
-      {refRuleName !== testRuleName ? (
-        <span className="text-grey-50 inline-flex flex-row items-center gap-2">
-          <Icon icon="arrow-top-left" className="size-2" />
-          <span className="text-xs">{refRuleName}</span>
+  if (refRuleName !== undefined && testRuleName !== undefined) {
+    return (
+      <div className="flex flex-col">
+        <span className="text-s font-normal">{testRuleName}</span>
+        {refRuleName !== testRuleName ? (
+          <span className="text-grey-50 inline-flex flex-row items-center gap-2">
+            <Icon icon="arrow-top-left" className="size-2" />
+            <span className="text-xs">{refRuleName}</span>
+          </span>
+        ) : null}
+      </div>
+    );
+  }
+
+  if (refRuleName === undefined && testRuleName !== undefined) {
+    return (
+      <div className="flex flex-row items-baseline gap-2">
+        <span className="text-s font-normal">{testRuleName}</span>
+        <span className="text-xs font-semibold text-green-100">
+          ({t('scenarios:testrun.rule.new')})
         </span>
-      ) : null}
-    </div>
-  );
+      </div>
+    );
+  }
+
+  if (refRuleName !== undefined && testRuleName === undefined) {
+    return (
+      <div className="flex flex-row items-baseline gap-2">
+        <span className="text-s font-normal">{refRuleName}</span>
+        <span className="text-grey-25 text-xs font-semibold">
+          ({t('scenarios:testrun.rule.old')})
+        </span>
+      </div>
+    );
+  }
 };
 
 const TestRunRuleHitPercentage = ({
@@ -48,33 +73,43 @@ const TestRunRuleHitPercentage = ({
   versions: Versions;
 }) => {
   const refRuleHitPercentage = useMemo(() => {
-    const refRuleTotal = rulesByVersion[ref]!.reduce(
+    const refRuleTotal = rulesByVersion[ref]?.reduce(
       (acc, rule) => acc + rule.total,
       0,
     );
-    const refRuleHitTotal = rulesByVersion[ref]!.filter(
-      (r) => r.status === 'hit',
-    ).reduce((acc, rule) => acc + rule.total, 0);
-    return Math.round((refRuleHitTotal * 100) / refRuleTotal);
+
+    const refRuleHitTotal = rulesByVersion[ref]
+      ?.filter((r) => r.status === 'hit')
+      .reduce((acc, rule) => acc + rule.total, 0);
+
+    return refRuleTotal && refRuleHitTotal
+      ? Math.round((refRuleHitTotal * 100) / refRuleTotal)
+      : undefined;
   }, [rulesByVersion, ref]);
 
   const testRuleHitPercentage = useMemo(() => {
-    const testRuleTotal = rulesByVersion[test]!.reduce(
+    const testRuleTotal = rulesByVersion[test]?.reduce(
       (acc, rule) => acc + rule.total,
       0,
     );
-    const testRuleHitTotal = rulesByVersion[test]!.filter(
-      (r) => r.status === 'hit',
-    ).reduce((acc, rule) => acc + rule.total, 0);
-    return Math.round((testRuleHitTotal * 100) / testRuleTotal);
+
+    const testRuleHitTotal = rulesByVersion[test]
+      ?.filter((r) => r.status === 'hit')
+      .reduce((acc, rule) => acc + rule.total, 0);
+
+    return testRuleTotal && testRuleHitTotal
+      ? Math.round((testRuleHitTotal * 100) / testRuleTotal)
+      : undefined;
   }, [rulesByVersion, test]);
 
   const direction =
-    refRuleHitPercentage - testRuleHitPercentage < 0
-      ? 'up'
-      : refRuleHitPercentage - testRuleHitPercentage > 0
-        ? 'down'
-        : 'equal';
+    refRuleHitPercentage && testRuleHitPercentage
+      ? refRuleHitPercentage - testRuleHitPercentage < 0
+        ? 'up'
+        : refRuleHitPercentage - testRuleHitPercentage > 0
+          ? 'down'
+          : 'equal'
+      : 'equal';
 
   return (
     <div className="flex flex-row items-center gap-2">
@@ -109,7 +144,7 @@ const TestRunRuleHitPercentage = ({
         />
       </div>
       <span className="text-s text-grey-100 font-medium">
-        {testRuleHitPercentage}%
+        {testRuleHitPercentage ?? refRuleHitPercentage}%
       </span>
     </div>
   );
@@ -132,20 +167,6 @@ const RuleExecution = ({
         <Collapsible.Title size="small" />
         <TestRunRuleName rulesByVersion={rules} versions={versions} />
         <TestRunRuleHitPercentage rulesByVersion={rules} versions={versions} />
-        {/* <div className="flex flex-row items-center gap-2">
-          <span className="text-s bg-purple-10 inline-block rounded px-2 py-1.5 font-normal text-purple-100">
-            +100
-          </span>
-          <div className="bg-purple-10 flex flex-row items-center justify-center rounded p-1.5">
-            <Icon
-              icon="arrow-forward"
-              className="size-2.5 -rotate-90 text-purple-100"
-            />
-          </div>
-          <span className="text-s bg-purple-10 inline-block rounded px-2 py-1.5 font-normal text-purple-100">
-            +120
-          </span>
-        </div> */}
       </div>
       <Collapsible.Content>
         <HamburgerChart
@@ -199,7 +220,6 @@ export const FilterTransactionByDecision = ({
 
   const rulesByRuleId = useMemo(() => {
     const rulesSummary = mapValues(
-      // TODO: discuss the best way of action here (what to do for rules without a stable id, should not happen in the long term)
       groupBy(rules, ({ ruleId }) => ruleId ?? `random_${crypto.randomUUID()}`),
       (rulesByVersion) => groupBy(rulesByVersion, ({ version }) => version),
     );
@@ -240,7 +260,6 @@ export const FilterTransactionByDecision = ({
                 <span />
                 <span>{t('scenarios:testrun.filters.rule_name')}</span>
                 <span>{t('scenarios:testrun.filters.alerts')}</span>
-                {/* <span>{t('scenarios:testrun.filters.score')}</span> */}
               </div>
               {entries(rulesByRuleId).map(([ruleId, rules]) => (
                 <RuleExecution key={ruleId} rules={rules} versions={versions} />

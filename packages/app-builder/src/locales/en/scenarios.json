@@ -62,6 +62,8 @@
   "testrun.filters.status": "Status",
   "testrun.no_decisisons": "No decisions already recorded",
   "testrun.no_rules": "No rules already triggered",
+  "testrun.rule.new": "New Rule",
+  "testrun.rule.old": "Old Rule",
   "testrun.status.up": "Ongoing",
   "testrun.status.down": "Archived",
   "testrun.status.unknown": "Unknown",
