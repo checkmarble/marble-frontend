@@ -182,7 +182,6 @@ export const makeGetTestRunRepository = () => {
   return (marbleCoreApiClient: MarbleCoreApi): TestRunRepository => ({
     getTestRun: async ({ testRunId }) => {
       const result = await marbleCoreApiClient.getTestRun(testRunId);
-      console.log('TestRun', result.scenario_test_run);
       return adaptTestRun(result.scenario_test_run);
     },
     launchTestRun: async (args) => {

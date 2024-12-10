@@ -390,7 +390,7 @@ function TestRunSection({ scenarioId }: { scenarioId: string }) {
                 })}
               >
                 {t('scenarios:home.other_versions_other', {
-                  count: testRuns.length - 1,
+                  count: testRuns.filter((tr) => tr.status != 'up').length,
                 })}
               </Link>
             ) : null}
