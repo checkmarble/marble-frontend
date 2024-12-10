@@ -196,6 +196,8 @@
   "operator.contains_any_of": "contient l'un des",
   "operator.contains_none_of": "ne contient aucun des",
   "operator.does_not_contain": "ne contient pas",
+  "operator.starts_with": "commence par",
+  "operator.ends_with": "se termine par",
   "operator.is_not_in": "n'est pas dans",
   "rules.rule_group": "Groupe de règles",
   "trigger.run_scenario.description": "Il existe deux manières d'exécuter un scénario (<DocLink>en savoir plus</DocLink>)",
