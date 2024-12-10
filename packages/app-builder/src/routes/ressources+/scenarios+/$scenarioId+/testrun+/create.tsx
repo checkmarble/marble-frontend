@@ -20,7 +20,8 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button, ModalV2 } from 'ui-design-system';
+import { Button, ModalV2, Tooltip } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -73,6 +74,7 @@ export function CreateTestRun({
   const [open, setOpen] = useState(false);
   const hydrated = useHydrated();
   const navigation = useNavigation();
+  const { t } = useTranslation(handle.i18n);
 
   React.useEffect(() => {
     if (navigation.state === 'loading') {
@@ -89,10 +91,21 @@ export function CreateTestRun({
 
   return (
     <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger
-        render={children}
-        disabled={!hydrated || !shouldAllowCreate}
-      />
+      {shouldAllowCreate ? (
+        <ModalV2.Trigger render={children} disabled={!hydrated} />
+      ) : (
+        <Tooltip.Default content={t('scenarios:testrun.not_allowed')}>
+          <Button
+            disabled
+            variant="primary"
+            className="isolate h-10 w-fit cursor-not-allowed"
+          >
+            <Icon icon="plus" className="size-6" aria-hidden />
+            {t('scenarios:create_testrun.title')}
+          </Button>
+        </Tooltip.Default>
+      )}
+
       <ModalV2.Content className="overflow-visible">
         <CreateTestRunToContent
           currentScenario={currentScenario}
