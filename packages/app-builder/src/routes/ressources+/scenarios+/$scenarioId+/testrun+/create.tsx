@@ -89,30 +89,30 @@ export function CreateTestRun({
     [scenarioIterations],
   );
 
-  return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      {shouldAllowCreate ? (
+  if (shouldAllowCreate)
+    return (
+      <ModalV2.Root open={open} setOpen={setOpen}>
         <ModalV2.Trigger render={children} disabled={!hydrated} />
-      ) : (
-        <Tooltip.Default content={t('scenarios:testrun.not_allowed')}>
-          <Button
-            disabled
-            variant="primary"
-            className="isolate h-10 w-fit cursor-not-allowed"
-          >
-            <Icon icon="plus" className="size-6" aria-hidden />
-            {t('scenarios:create_testrun.title')}
-          </Button>
-        </Tooltip.Default>
-      )}
+        <ModalV2.Content className="overflow-visible">
+          <CreateTestRunToContent
+            currentScenario={currentScenario}
+            scenarioIterations={scenarioIterations}
+          />
+        </ModalV2.Content>
+      </ModalV2.Root>
+    );
 
-      <ModalV2.Content className="overflow-visible">
-        <CreateTestRunToContent
-          currentScenario={currentScenario}
-          scenarioIterations={scenarioIterations}
-        />
-      </ModalV2.Content>
-    </ModalV2.Root>
+  return (
+    <Tooltip.Default content={t('scenarios:testrun.not_allowed')}>
+      <Button
+        disabled
+        variant="primary"
+        className="isolate h-10 w-fit cursor-not-allowed"
+      >
+        <Icon icon="plus" className="size-6" aria-hidden />
+        {t('scenarios:create_testrun.title')}
+      </Button>
+    </Tooltip.Default>
   );
 }
 
