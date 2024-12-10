@@ -24,8 +24,6 @@ const TestRunRuleName = ({
   rulesByVersion: Record<string, TestRunRuleExecutionCount[]>;
   versions: Versions;
 }) => {
-  console.log(rulesByVersion);
-  console.log({ ref, test });
   const refRuleName = rulesByVersion[ref]![0]!.name;
   const testRuleName = rulesByVersion[test]![0]!.name;
 

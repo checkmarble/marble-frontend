@@ -28,7 +28,7 @@ type Mapping<T extends string> = Record<
   }
 >;
 
-function Hamburger<T extends string>({
+export function Hamburger<T extends string>({
   version,
   summary,
   type,
@@ -51,7 +51,7 @@ function Hamburger<T extends string>({
 
   return (
     <div className="flex size-full flex-col items-center gap-4">
-      <span className="text-xs font-medium uppercase">{version}</span>
+      <span className="text-xs font-medium uppercase">{`V${version}`}</span>
       <div className="flex size-full flex-col gap-1">
         {pairs.length === 0 ? (
           <div className="border-grey-10 size-full rounded-lg border-2" />
@@ -103,9 +103,19 @@ export function HamburgerChart<T extends string>({
   const [type, setType] = useState<Type>('percentage');
   const [legend, updateLegend] = useState(options);
 
-  const summaryByVersions = useMemo(
-    () =>
-      mapValues(
+  const summaryByVersions = useMemo(() => {
+    const result = {
+      [ref]: {
+        total: 0,
+      },
+      [test]: {
+        total: 0,
+      },
+    };
+
+    return {
+      ...result,
+      ...mapValues(
         groupBy(items, (i) => i.version),
         (itemsByVersion) => ({
           total: sumBy(itemsByVersion as Item<T>[], (d) => d.count),
@@ -119,8 +129,8 @@ export function HamburgerChart<T extends string>({
           ),
         }),
       ),
-    [items],
-  );
+    };
+  }, [items, ref, test]);
 
   return (
     <div className="flex flex-col gap-8">

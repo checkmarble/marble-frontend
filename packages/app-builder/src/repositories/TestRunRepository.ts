@@ -40,103 +40,103 @@ const testruns: TestRun[] = [
 ];
 
 const testrunDecisions: TestRunDecision[] = [
-  { version: 'V1', outcome: 'approve', count: 10 },
-  { version: 'V4', outcome: 'approve', count: 20 },
-  { version: 'V1', outcome: 'decline', count: 5 },
-  { version: 'V1', outcome: 'approve', count: 30 },
-  { version: 'V4', outcome: 'decline', count: 15 },
-  { version: 'V1', outcome: 'review', count: 9 },
-  { version: 'V4', outcome: 'review', count: 22 },
-  { version: 'V1', outcome: 'block_and_review', count: 20 },
+  { version: '1', outcome: 'approve', count: 10 },
+  { version: '4', outcome: 'approve', count: 20 },
+  { version: '1', outcome: 'decline', count: 5 },
+  { version: '1', outcome: 'approve', count: 30 },
+  { version: '4', outcome: 'decline', count: 15 },
+  { version: '1', outcome: 'review', count: 9 },
+  { version: '4', outcome: 'review', count: 22 },
+  { version: '1', outcome: 'block_and_review', count: 20 },
 ];
 
 const testrunRuleExecutions: TestRunRuleExecutionCount[] = [
   {
-    version: 'V1',
+    version: '1',
     name: 'Rule 1 name',
     status: 'hit',
     total: 10,
     ruleId: 'rule-1',
   },
   {
-    version: 'V4',
+    version: '4',
     name: 'Rule 1 name',
     status: 'hit',
     total: 15,
     ruleId: 'rule-1',
   },
   {
-    version: 'V1',
+    version: '1',
     name: 'Rule 1 name',
     status: 'no_hit',
     total: 20,
     ruleId: 'rule-1',
   },
   {
-    version: 'V4',
+    version: '4',
     name: 'Rule 1 name',
     status: 'no_hit',
     total: 15,
     ruleId: 'rule-1',
   },
   {
-    version: 'V1',
+    version: '1',
     name: 'Rule 1 name',
     status: 'error',
     total: 5,
     ruleId: 'rule-1',
   },
   {
-    version: 'V4',
+    version: '4',
     name: 'Rule 1 name',
     status: 'snoozed',
     total: 5,
     ruleId: 'rule-1',
   },
   {
-    version: 'V1',
+    version: '1',
     name: 'Rule 2 name',
     status: 'no_hit',
     total: 5,
     ruleId: 'rule-2',
   },
   {
-    version: 'V4',
+    version: '4',
     name: 'New Rule 2 name',
     status: 'no_hit',
     total: 0, // I don't know if this is a possible return from the backend but I'm adding it here to test the UI
     ruleId: 'rule-2',
   },
   {
-    version: 'V1',
+    version: '1',
     name: 'Rule 2 name',
     status: 'hit',
     total: 15,
     ruleId: 'rule-2',
   },
   {
-    version: 'V4',
+    version: '4',
     name: 'New Rule 2 name',
     status: 'hit',
     total: 50,
     ruleId: 'rule-2',
   },
   {
-    version: 'V1',
+    version: '1',
     name: 'Rule 2 name',
     status: 'error',
     total: 15,
     ruleId: 'rule-2',
   },
   {
-    version: 'V1',
+    version: '1',
     name: 'Rule 3 name',
     status: 'hit',
     total: 15,
     ruleId: 'rule-3',
   },
   {
-    version: 'V4',
+    version: '4',
     name: 'Rule 3 name',
     status: 'hit',
     total: 15,
@@ -144,7 +144,7 @@ const testrunRuleExecutions: TestRunRuleExecutionCount[] = [
   },
 ];
 
-export const makeGetTestRunRepository2 = () => {
+export const makeGetTestRunRepository = () => {
   return (_: MarbleCoreApi): TestRunRepository => ({
     getTestRun: ({ testRunId }) => {
       const run = testruns.find((run) => run.id === testRunId);
@@ -178,7 +178,7 @@ export const makeGetTestRunRepository2 = () => {
   });
 };
 
-export const makeGetTestRunRepository = () => {
+export const makeGetTestRunRepository2 = () => {
   return (marbleCoreApiClient: MarbleCoreApi): TestRunRepository => ({
     getTestRun: async ({ testRunId }) => {
       const result = await marbleCoreApiClient.getTestRun(testRunId);
