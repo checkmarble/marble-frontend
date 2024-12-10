@@ -26,13 +26,16 @@ export const TestRunPeriod = ({
       <Trans
         t={t}
         i18nKey={'common:from_to'}
-        components={{ Date: <span className="font-semibold" /> }}
+        components={{
+          // Hack because remix cannot handle properly hydratation of Date
+          Date: <time suppressHydrationWarning className="font-semibold" />,
+        }}
         values={{
-          start_date: formatDateTime(new Date(+startDate), {
+          start_date: formatDateTime(startDate, {
             language,
             timeStyle: undefined,
           }),
-          end_date: formatDateTime(new Date(+endDate), {
+          end_date: formatDateTime(endDate, {
             language,
             timeStyle: undefined,
           }),

@@ -153,16 +153,14 @@ const TestRunRuleHitPercentage = ({
 const RuleExecution = ({
   rules,
   versions,
-  key,
 }: {
   rules: Record<string, TestRunRuleExecutionCount[]>;
   versions: Versions;
-  key?: string;
 }) => {
   const { t } = useTranslation(['decisions']);
 
   return (
-    <Collapsible.Container defaultOpen={false} key={key}>
+    <Collapsible.Container defaultOpen={false}>
       <div className="grid w-full grid-cols-[9%_40%_25%_auto] items-center">
         <Collapsible.Title size="small" />
         <TestRunRuleName rulesByVersion={rules} versions={versions} />

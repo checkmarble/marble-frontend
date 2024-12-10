@@ -77,7 +77,9 @@ export default function TestRuns() {
     return filter(runs, (r) =>
       allPass(r, [
         (r) => !statuses || !statuses.length || statuses.includes(r.status),
-        (r) => !startedAfter || +r.startDate > startedAfter.getTime(),
+        (r) =>
+          !startedAfter ||
+          new Date(r.startDate).getTime() > startedAfter.getTime(),
         (r) => !creators || !creators.length || creators.includes(r.creatorId),
         (r) =>
           !ref_versions ||

@@ -25,7 +25,7 @@ export const FormDateSelector = forwardRef<
   const handleSelect = (date?: Date) => {
     if (date) {
       selectDate(date);
-      input.change(String(date.getTime()));
+      input.change(date.toISOString());
       setOpen(false);
     }
   };
@@ -35,7 +35,7 @@ export const FormDateSelector = forwardRef<
       <input
         {...getInputProps(field, { type: 'hidden' })}
         ref={ref}
-        value={selectedDate?.getTime()}
+        value={selectedDate?.toISOString()}
         readOnly
         {...props}
       />
