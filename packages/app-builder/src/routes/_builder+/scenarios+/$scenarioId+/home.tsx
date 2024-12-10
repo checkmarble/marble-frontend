@@ -13,6 +13,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
@@ -54,15 +55,22 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
-  const { user, decision } = await authService.isAuthenticated(request, {
+  const {
+    user,
+    decision,
+    testRun: testRunRepository,
+  } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const scheduledExecutions = await decision.listScheduledExecutions({
-    scenarioId,
-  });
+  const [scheduledExecutions, testRuns] = await Promise.all([
+    decision.listScheduledExecutions({ scenarioId }),
+    testRunRepository.listTestRuns({
+      scenarioId,
+    }),
+  ]);
 
   return json({
     featureAccess: {
@@ -71,8 +79,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       isManualTriggerScenarioAvailable:
         featureAccessService.isManualTriggerScenarioAvailable(user),
       isWorkflowsAvailable: await featureAccessService.isWorkflowsAvailable(),
+      //isTestRunAvailable: await featureAccessService.isTestRunAvailable(),
+      isTestRunAvailable: true,
     },
     scheduledExecutions,
+    testRuns,
   });
 }
 
@@ -140,22 +151,24 @@ export default function ScenarioHome() {
               {currentScenario.triggerObjectType}
             </TriggerObjectTag>
             {featureAccess.isEditScenarioAvailable ? (
-              <UpdateScenario
-                defaultValue={{
-                  name: currentScenario.name,
-                  scenarioId: currentScenario.id,
-                  description: currentScenario.description,
-                }}
-              >
-                <Button
-                  variant="secondary"
-                  className="isolate h-10 w-fit"
-                  disabled={!hydrated}
+              <div className="flex flex-row gap-4">
+                <UpdateScenario
+                  defaultValue={{
+                    name: currentScenario.name,
+                    scenarioId: currentScenario.id,
+                    description: currentScenario.description,
+                  }}
                 >
-                  <Icon icon="edit-square" className="size-6" />
-                  <p>{t('scenarios:update_scenario.title')}</p>
-                </Button>
-              </UpdateScenario>
+                  <Button
+                    variant="secondary"
+                    className="isolate h-10 w-fit"
+                    disabled={!hydrated}
+                  >
+                    <Icon icon="edit-square" className="size-6" />
+                    <p>{t('scenarios:update_scenario.title')}</p>
+                  </Button>
+                </UpdateScenario>
+              </div>
             ) : null}
           </div>
         </div>
@@ -174,6 +187,9 @@ export default function ScenarioHome() {
             scheduledExecutions={scheduledExecutions}
             liveScenarioIteration={liveScenarioIteration}
           />
+          {featureAccess.isTestRunAvailable ? (
+            <TestRunSection scenarioId={currentScenario.id} />
+          ) : null}
           {featureAccess.isWorkflowsAvailable ? (
             <WorkflowSection scenario={currentScenario} />
           ) : null}
@@ -296,6 +312,92 @@ function QuickVersionAccess({
         </span>
       ) : null}
     </Link>
+  );
+}
+
+function TestRunSection({ scenarioId }: { scenarioId: string }) {
+  const { t } = useTranslation();
+  const currentScenario = useCurrentScenario();
+  const scenarioIterations = useScenarioIterations();
+  const { testRuns } = useLoaderData<typeof loader>();
+
+  const currentTestRun = React.useMemo(
+    () => testRuns.filter((r) => r.status === 'up'),
+    [testRuns],
+  );
+
+  const isExecutionOngoing = React.useMemo(
+    () => currentTestRun.length > 0,
+    [currentTestRun],
+  );
+
+  return (
+    <section className="flex flex-col gap-8">
+      <h2 className="text-grey-100 text-m font-semibold">
+        {t('scenarios:home.testrun')}
+      </h2>
+      <div className="flex max-w-[500px] flex-row gap-4">
+        <div
+          className={clsx(
+            'bg-grey-00 border-grey-10 relative flex h-fit flex-col gap-4 rounded-lg border p-8',
+            isExecutionOngoing && 'border-purple-100',
+          )}
+        >
+          {isExecutionOngoing ? (
+            <div className="text-grey-00 text-s absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t bg-purple-100 px-2 font-semibold">
+              <Spinner className="size-3" />
+              {t('scenarios:home.execution.batch.ongoing')}
+            </div>
+          ) : null}
+          <CalloutV2>
+            <div className="flex flex-col gap-4">
+              <span>{t('scenarios:testrun.description')}</span>
+            </div>
+          </CalloutV2>
+
+          <div className="flex flex-row gap-4">
+            <CreateTestRun
+              currentScenario={currentScenario}
+              scenarioIterations={scenarioIterations}
+            >
+              <Button variant="primary" className="isolate h-10 w-fit">
+                <Icon icon="plus" className="size-6" aria-hidden />
+                {t('scenarios:create_testrun.title')}
+              </Button>
+            </CreateTestRun>
+            {currentTestRun.length > 0 ? (
+              <Link
+                className={CtaClassName({
+                  variant: 'secondary',
+                  color: 'grey',
+                })}
+                to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
+                  scenarioId: fromUUID(scenarioId),
+                  testRunId: fromUUID(currentTestRun[0]!.id),
+                })}
+              >
+                {t('scenarios:testrun.current_run')}
+              </Link>
+            ) : null}
+            {testRuns.length > 1 ? (
+              <Link
+                className={CtaClassName({
+                  variant: 'secondary',
+                  color: 'grey',
+                })}
+                to={getRoute('/scenarios/:scenarioId/test-run', {
+                  scenarioId: fromUUID(scenarioId),
+                })}
+              >
+                {t('scenarios:home.other_versions_other', {
+                  count: testRuns.filter((tr) => tr.status != 'up').length,
+                })}
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

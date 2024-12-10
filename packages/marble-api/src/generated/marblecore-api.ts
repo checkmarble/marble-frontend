@@ -691,6 +691,19 @@ export type TestRunCreateInputDto = {
     test_iteration_id: string;
     end_date: string;
 };
+export type TestRunDecisionDataDto = {
+    version: string;
+    outcome: OutcomeDto;
+    score?: number;
+    total: number;
+};
+export type TestRunRuleExecutionDataDto = {
+    version: string;
+    name: string;
+    status: "hit" | "no_hit" | "error" | "snoozed";
+    total: number;
+    stable_rule_id?: string;
+};
 /**
  * Get an access token
  */
@@ -2822,7 +2835,9 @@ export function getRuleSnooze(ruleSnoozeId: string, opts?: Oazapfts.RequestOpts)
 export function listTestRuns(scenarioId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: TestRunDto[];
+        data: {
+            scenario_test_runs: TestRunDto[];
+        };
     } | {
         status: 401;
         data: string;
@@ -2840,8 +2855,10 @@ export function listTestRuns(scenarioId: string, opts?: Oazapfts.RequestOpts) {
  */
 export function createTestRun(testRunCreateInputDto: TestRunCreateInputDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: TestRunDto;
+        status: 201;
+        data: {
+            scenario_test_run: TestRunDto;
+        };
     } | {
         status: 401;
         data: string;
@@ -2863,7 +2880,9 @@ export function createTestRun(testRunCreateInputDto: TestRunCreateInputDto, opts
 export function getTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: TestRunDto;
+        data: {
+            scenario_test_run: TestRunDto;
+        };
     } | {
         status: 401;
         data: string;
@@ -2874,6 +2893,50 @@ export function getTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
         status: 404;
         data: string;
     }>(`/scenario-testruns/${encodeURIComponent(testRunId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Get decisions by score and outcome
+ */
+export function getDecisionData(testRunId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            decisions: TestRunDecisionDataDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/decision_data_by_score`, {
+        ...opts
+    }));
+}
+/**
+ * Get rules execution distribution by status (hit, no hit, etxc)
+ */
+export function getRuleData(testRunId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            rules: TestRunRuleExecutionDataDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/data_by_rule_execution`, {
         ...opts
     }));
 }

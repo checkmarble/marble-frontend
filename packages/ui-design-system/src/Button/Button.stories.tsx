@@ -1,7 +1,7 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 import { Icon } from 'ui-icons';
 
-import { Button, type ButtonProps, variantColors } from './Button';
+import { Button, type ButtonProps } from './Button';
 
 const Story: Meta<ButtonProps> = {
   component: Button,
@@ -13,9 +13,14 @@ const Story: Meta<ButtonProps> = {
   argTypes: {
     disabled: { control: 'boolean' },
     variant: {
-      table: {
-        disable: true,
-      },
+      control: { type: 'select' },
+      options: ['primary', 'secondary', 'tertiary', 'outline'],
+      name: 'Variant',
+    },
+    color: {
+      control: { type: 'select' },
+      options: ['purple', 'grey', 'green', 'red'],
+      name: 'Color',
     },
     children: {
       type: 'string',
@@ -40,37 +45,19 @@ const TemplateWithIcon: StoryFn<ButtonProps> = ({ children, ...args }) => {
 const primaryArgss = {
   variant: 'primary',
 } as const;
-const primaryArgTypes = {
-  color: {
-    control: { type: 'select' as const },
-    options: variantColors['primary'].slice(),
-    defaultValue: variantColors['primary'][0],
-  },
-};
 
 export const Primary = Template.bind({});
 Primary.args = primaryArgss;
-Primary.argTypes = primaryArgTypes;
 
 export const PrimaryWithIcon = TemplateWithIcon.bind({});
 PrimaryWithIcon.args = primaryArgss;
-PrimaryWithIcon.argTypes = primaryArgTypes;
 
 const secondaryArgs = {
   variant: 'secondary',
 } as const;
-const secondaryArgTypes = {
-  color: {
-    control: { type: 'select' as const },
-    options: variantColors['secondary'].slice(),
-    defaultValue: variantColors['secondary'][0],
-  },
-};
 
 export const Secondary = Template.bind({});
 Secondary.args = secondaryArgs;
-Secondary.argTypes = secondaryArgTypes;
 
 export const SecondaryWithIcon = TemplateWithIcon.bind({});
 SecondaryWithIcon.args = secondaryArgs;
-SecondaryWithIcon.argTypes = secondaryArgTypes;

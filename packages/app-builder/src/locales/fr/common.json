@@ -55,5 +55,7 @@
   "true": "Vrai",
   "understand": "Je comprends",
   "validation_error_one": "{{count}} erreur de validation",
-  "validation_error_other": "{{count}} erreurs de validation"
+  "validation_error_other": "{{count}} erreurs de validation",
+  "from_to": "Du <Date>{{start_date}}</Date> au <Date>{{end_date}}</Date>",
+  "live": "En direct"
 }
