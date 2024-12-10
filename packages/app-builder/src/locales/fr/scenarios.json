@@ -348,5 +348,6 @@
   "testrun.no_rules": "Aucune règle déjà déclenchée",
   "testrun.rule.new": "Nouvelle règle",
   "testrun.rule.old": "Ancienne règle",
-  "testrun.home": "Liste des comparaisons"
+  "testrun.home": "Liste des comparaisons",
+  "testrun.not_allowed": "Aucune version live ou version alternative disponible"
 }
