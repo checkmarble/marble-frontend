@@ -49,100 +49,114 @@ const testrunDecisions: TestRunDecision[] = [
 }));
 
 const testrunRuleExecutions: TestRunRuleExecutionCount[] = [
+  // {
+  //   version: '1',
+  //   name: 'Rule 1 name',
+  //   status: 'hit',
+  //   total: 10,
+  //   ruleId: 'rule-1',
+  // },
+  // {
+  //   version: '4',
+  //   name: 'Rule 1 name',
+  //   status: 'hit',
+  //   total: 15,
+  //   ruleId: 'rule-1',
+  // },
+  // {
+  //   version: '1',
+  //   name: 'Rule 1 name',
+  //   status: 'no_hit',
+  //   total: 20,
+  //   ruleId: 'rule-1',
+  // },
+  // {
+  //   version: '4',
+  //   name: 'Rule 1 name',
+  //   status: 'no_hit',
+  //   total: 15,
+  //   ruleId: 'rule-1',
+  // },
+  // {
+  //   version: '1',
+  //   name: 'Rule 1 name',
+  //   status: 'error',
+  //   total: 5,
+  //   ruleId: 'rule-1',
+  // },
+  // {
+  //   version: '4',
+  //   name: 'Rule 1 name',
+  //   status: 'snoozed',
+  //   total: 5,
+  //   ruleId: 'rule-1',
+  // },
+  // {
+  //   version: '1',
+  //   name: 'Rule 2 name',
+  //   status: 'no_hit',
+  //   total: 5,
+  //   ruleId: 'rule-2',
+  // },
+  // {
+  //   version: '4',
+  //   name: 'New Rule 2 name',
+  //   status: 'no_hit',
+  //   total: 0, // I don't know if this is a possible return from the backend but I'm adding it here to test the UI
+  //   ruleId: 'rule-2',
+  // },
+  // {
+  //   version: '1',
+  //   name: 'Rule 2 name',
+  //   status: 'hit',
+  //   total: 15,
+  //   ruleId: 'rule-2',
+  // },
+  // {
+  //   version: '4',
+  //   name: 'New Rule 2 name',
+  //   status: 'hit',
+  //   total: 50,
+  //   ruleId: 'rule-2',
+  // },
+  // {
+  //   version: '1',
+  //   name: 'Rule 2 name',
+  //   status: 'error',
+  //   total: 15,
+  //   ruleId: 'rule-2',
+  // },
+  // {
+  //   version: '1',
+  //   name: 'Rule 3 name',
+  //   status: 'hit',
+  //   total: 15,
+  //   ruleId: 'rule-3',
+  // },
+  // {
+  //   version: '4',
+  //   name: 'Rule 3 name',
+  //   status: 'no_hit',
+  //   total: 15,
+  //   ruleId: null,
+  // },
   {
     version: '1',
-    name: 'Rule 1 name',
+    name: 'Rule 4 name',
     status: 'hit',
-    total: 10,
-    ruleId: 'rule-1',
+    total: 15,
+    ruleId: 'rule-4',
   },
   {
     version: '4',
-    name: 'Rule 1 name',
+    name: 'Rule 4 name',
     status: 'hit',
     total: 15,
-    ruleId: 'rule-1',
-  },
-  {
-    version: '1',
-    name: 'Rule 1 name',
-    status: 'no_hit',
-    total: 20,
-    ruleId: 'rule-1',
-  },
-  {
-    version: '4',
-    name: 'Rule 1 name',
-    status: 'no_hit',
-    total: 15,
-    ruleId: 'rule-1',
-  },
-  {
-    version: '1',
-    name: 'Rule 1 name',
-    status: 'error',
-    total: 5,
-    ruleId: 'rule-1',
-  },
-  {
-    version: '4',
-    name: 'Rule 1 name',
-    status: 'snoozed',
-    total: 5,
-    ruleId: 'rule-1',
-  },
-  {
-    version: '1',
-    name: 'Rule 2 name',
-    status: 'no_hit',
-    total: 5,
-    ruleId: 'rule-2',
-  },
-  {
-    version: '4',
-    name: 'New Rule 2 name',
-    status: 'no_hit',
-    total: 0, // I don't know if this is a possible return from the backend but I'm adding it here to test the UI
-    ruleId: 'rule-2',
-  },
-  {
-    version: '1',
-    name: 'Rule 2 name',
-    status: 'hit',
-    total: 15,
-    ruleId: 'rule-2',
-  },
-  {
-    version: '4',
-    name: 'New Rule 2 name',
-    status: 'hit',
-    total: 50,
-    ruleId: 'rule-2',
-  },
-  {
-    version: '1',
-    name: 'Rule 2 name',
-    status: 'error',
-    total: 15,
-    ruleId: 'rule-2',
-  },
-  {
-    version: '1',
-    name: 'Rule 3 name',
-    status: 'hit',
-    total: 15,
-    ruleId: 'rule-3',
-  },
-  {
-    version: '4',
-    name: 'Rule 3 name',
-    status: 'no_hit',
-    total: 15,
-    ruleId: null,
+    ruleId: 'rule-4',
   },
 ];
 
-export const makeGetTestRunRepository2 = () => {
+export const makeGetTestRunRepository = () => {
   return (_: MarbleCoreApi): TestRunRepository => ({
     getTestRun: ({ testRunId }) => {
       const run = testruns.find((run) => run.id === testRunId);
@@ -151,7 +165,8 @@ export const makeGetTestRunRepository2 = () => {
         : Promise.reject(new Error('Test run not found'));
     },
     listTestRuns: () => Promise.resolve(testruns),
-    listDecisions: () => Promise.resolve(testrunDecisions),
+    listDecisions: () =>
+      Promise.resolve([{ version: '4', outcome: 'approve', count: 0 }]),
     listRuleExecutions: () => Promise.resolve(testrunRuleExecutions),
     launchTestRun: (args: TestRunCreateInput) => {
       const testRun: TestRun = {
@@ -176,7 +191,7 @@ export const makeGetTestRunRepository2 = () => {
   });
 };
 
-export const makeGetTestRunRepository = () => {
+export const makeGetTestRunRepository2 = () => {
   return (marbleCoreApiClient: MarbleCoreApi): TestRunRepository => ({
     getTestRun: async ({ testRunId }) => {
       const result = await marbleCoreApiClient.getTestRun(testRunId);

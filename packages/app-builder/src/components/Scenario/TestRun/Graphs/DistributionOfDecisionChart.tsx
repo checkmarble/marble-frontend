@@ -26,11 +26,13 @@ export const DistributionOfDecisionChart = ({
         ) : (
           <HamburgerChart
             versions={versions}
-            items={decisions.map((d) => ({
-              version: d.version,
-              count: d.count,
-              option: d.outcome,
-            }))}
+            items={decisions
+              .filter((d) => d.count > 0)
+              .map((d) => ({
+                version: d.version,
+                count: d.count,
+                option: d.outcome,
+              }))}
             mapping={{
               approve: {
                 background: 'bg-green-100',
