@@ -319,7 +319,6 @@
   "testrun.distribution.legend.review": "مراجعة",
   "testrun.distribution.percentage": "نسبة مئوية",
   "testrun.distribution.show": "عرض التوزيع",
-  "testrun.filters.alerts": "التنبيهات",
   "testrun.filters.creator": "الخالق",
   "testrun.filters.period": "فترة",
   "testrun.filters.ref_version": "المرجع. \nإصدار",
@@ -349,5 +348,6 @@
   "testrun.rule.new": "قاعدة جديدة",
   "testrun.rule.old": "القاعدة القديمة",
   "testrun.home": "قائمة المقارنات",
-  "testrun.not_allowed": "لا توجد نسخة حية أو نسخة بديلة متاحة"
+  "testrun.not_allowed": "لا توجد نسخة حية أو نسخة بديلة متاحة",
+  "testrun.filters.hit": "يضرب"
 }

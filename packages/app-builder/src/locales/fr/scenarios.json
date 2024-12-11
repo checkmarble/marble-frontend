@@ -318,7 +318,6 @@
   "testrun.distribution.legend.review": "A Revoir",
   "testrun.distribution.percentage": "Pourcentage",
   "testrun.distribution.show": "Afficher la distribution",
-  "testrun.filters.alerts": "Alertes",
   "testrun.filters.creator": "Créateur",
   "testrun.filters.period": "Période",
   "testrun.filters.ref_version": "Version de référence",
@@ -349,5 +348,6 @@
   "testrun.rule.new": "Nouvelle règle",
   "testrun.rule.old": "Ancienne règle",
   "testrun.home": "Liste des comparaisons",
-  "testrun.not_allowed": "Aucune version live ou version alternative disponible"
+  "testrun.not_allowed": "Aucune version live ou version alternative disponible",
+  "testrun.filters.hit": "Frapper"
 }
