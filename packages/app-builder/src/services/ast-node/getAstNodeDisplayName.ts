@@ -7,7 +7,9 @@ import {
   isCustomListAccess,
   isDatabaseAccess,
   isFuzzyMatchComparator,
+  isIsRounded,
   isPayload,
+  type IsRoundedAstNode,
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
@@ -20,6 +22,7 @@ import {
   getOperatorName,
   isAggregatorOperator,
 } from '@app-builder/models/editable-operators';
+import { formatNumber } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
@@ -75,6 +78,10 @@ export function getAstNodeDisplayName(
 
   if (isFuzzyMatchComparator(astNode)) {
     return getFuzzyMatchComparatorDisplayName(astNode, context);
+  }
+
+  if (isIsRounded(astNode)) {
+    return getIsRoundedDisplayName(astNode, context);
   }
 
   if (isUndefinedAstNode(astNode)) {
@@ -224,6 +231,29 @@ function getTimestampExtractDisplayName(
     replace: {
       operator: getOperatorName(context.t, part),
       timestamp: timestampStr,
+    },
+  });
+}
+
+function getIsRoundedDisplayName(
+  astNode: IsRoundedAstNode,
+  context: AstNodeStringifierContext,
+) {
+  const value = astNode.namedChildren.value;
+  const threshold = astNode.namedChildren.threshold.constant;
+
+  const valueStr = getAstNodeDisplayName(value, context);
+  if (valueStr === '') {
+    return context.t('scenarios:edit_is_rounded.title');
+  }
+
+  return context.t('scenarios:edit_is_rounded.display_name', {
+    replace: {
+      value: valueStr,
+      threshold: formatNumber(threshold, {
+        language: context.language,
+        style: undefined,
+      }),
     },
   });
 }

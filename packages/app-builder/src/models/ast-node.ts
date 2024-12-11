@@ -420,6 +420,32 @@ export function NewFuzzyMatchComparatorAstNode({
   };
 }
 
+export const isRoundedAstNodeName = 'IsRounded';
+export interface IsRoundedAstNode {
+  name: typeof isRoundedAstNodeName;
+  constant?: undefined;
+  children: [];
+  namedChildren: {
+    value: AstNode;
+    threshold: ConstantAstNode<number>;
+  };
+}
+
+export function NewIsRoundedAstNode(
+  value: AstNode = NewUndefinedAstNode(),
+  threshold: ConstantAstNode<number> = NewConstantAstNode({ constant: 1 }),
+): IsRoundedAstNode {
+  return {
+    name: isRoundedAstNodeName,
+    constant: undefined,
+    children: [],
+    namedChildren: {
+      value,
+      threshold,
+    },
+  };
+}
+
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === databaseAccessAstNodeName;
 }
@@ -478,10 +504,15 @@ export function isFuzzyMatchComparator(
   return isFuzzyMatch(firstChild) || isFuzzyMatchAnyOf(firstChild);
 }
 
+export function isIsRounded(node: AstNode): node is IsRoundedAstNode {
+  return node.name === isRoundedAstNodeName;
+}
+
 export type EditableAstNode =
   | AggregationAstNode
   | TimeAddAstNode
-  | FuzzyMatchComparatorAstNode;
+  | FuzzyMatchComparatorAstNode
+  | IsRoundedAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -493,7 +524,8 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isAggregation(node) ||
     isTimeAdd(node) ||
     isFuzzyMatchComparator(node) ||
-    isTimestampExtract(node)
+    isTimestampExtract(node) ||
+    isIsRounded(node)
   );
 }
 

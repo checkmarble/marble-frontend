@@ -1,6 +1,7 @@
 import {
   isAggregation,
   isFuzzyMatchComparator,
+  isIsRounded,
   isTimeAdd,
   isTimestampExtract,
 } from '@app-builder/models';
@@ -17,6 +18,7 @@ import {
 } from '../OperandEditorProvider';
 import { AggregationEdit } from './AggregationEdit/AggregationEdit';
 import { FuzzyMatchComparatorEdit } from './FuzzyMatchComparatorEdit/FuzzyMatchComparatorEdit';
+import { IsRoundedEdit } from './IsRoundedEdit/IsRoundedEdit';
 import { TimeAddEdit } from './TimeAddEdit/TimeAddEdit';
 import { TimestampExtractEdit } from './TimestampExtract/TimestampExtract';
 
@@ -90,6 +92,17 @@ export function OperandEditModal() {
       <OperandEditModalContent size="large">
         <AggregationEdit
           initialAggregationAstNode={initialEditableAstNode}
+          initialAstNodeErrors={initialAstNodeErrors}
+          onSave={onEditSave}
+        />
+      </OperandEditModalContent>
+    );
+  }
+  if (isIsRounded(initialEditableAstNode)) {
+    return (
+      <OperandEditModalContent size="large">
+        <IsRoundedEdit
+          initialIsRoundedAstNode={initialEditableAstNode}
           initialAstNodeErrors={initialAstNodeErrors}
           onSave={onEditSave}
         />

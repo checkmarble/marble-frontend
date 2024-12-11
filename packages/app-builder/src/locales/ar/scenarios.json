@@ -353,5 +353,10 @@
   "testrun.rule.old": "القاعدة القديمة",
   "testrun.home": "قائمة المقارنات",
   "testrun.not_allowed": "لا توجد نسخة حية أو نسخة بديلة متاحة",
-  "testrun.filters.hit": "يضرب"
+  "testrun.filters.hit": "يضرب",
+  "edit_is_rounded.display_name": "{{value}} هي مضاعفات {{threshold}}",
+  "edit_is_rounded.examples.caption": "أمثلة",
+  "edit_is_rounded.examples.result": "نتيجة",
+  "edit_is_rounded.examples.value": "قيمة",
+  "edit_is_rounded.title": "متعددة من العتبة"
 }
