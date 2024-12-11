@@ -9,6 +9,7 @@ import {
   flat,
   groupBy,
   isDeepEqual,
+  keys,
   mapValues,
   omit,
   omitBy,
@@ -256,6 +257,8 @@ export const FilterTransactionByDecision = ({
       : rulesSummary;
   }, [displayChangedRules, rules, versions]);
 
+  console.log('Rules By Id', rulesByRuleId);
+
   return (
     <Collapsible.Container className="bg-grey-00">
       <Collapsible.Title>
@@ -277,16 +280,22 @@ export const FilterTransactionByDecision = ({
                 onCheckedChange={toggleChangedRulesDisplay}
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <div className="text-s grid w-full grid-cols-[9%_40%_25%_auto] font-semibold">
-                <span />
-                <span>{t('scenarios:testrun.filters.rule_name')}</span>
-                <span>{t('testrun.filters.hit')}</span>
+            {keys(rulesByRuleId).length ? (
+              <div className="flex flex-col gap-2">
+                <div className="text-s grid w-full grid-cols-[9%_40%_25%_auto] font-semibold">
+                  <span />
+                  <span>{t('scenarios:testrun.filters.rule_name')}</span>
+                  <span>{t('testrun.filters.hit')}</span>
+                </div>
+                {entries(rulesByRuleId).map(([ruleId, rules]) => (
+                  <RuleExecution
+                    key={ruleId}
+                    rules={rules}
+                    versions={versions}
+                  />
+                ))}
               </div>
-              {entries(rulesByRuleId).map(([ruleId, rules]) => (
-                <RuleExecution key={ruleId} rules={rules} versions={versions} />
-              ))}
-            </div>
+            ) : null}
           </div>
         )}
       </Collapsible.Content>
