@@ -9,9 +9,9 @@ import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
-import { useMemo } from 'react';
+import { defer, type LoaderFunctionArgs } from '@remix-run/node';
+import { Await, useLoaderData } from '@remix-run/react';
+import { Suspense, useMemo } from 'react';
 import { mapToObj, pick } from 'remeda';
 
 import { useCurrentScenario, useScenarioIterations } from '../_layout';
@@ -23,13 +23,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const [run, decisions, rules] = await Promise.all([
-    testRun.getTestRun({ testRunId }),
-    testRun.listDecisions({ testRunId }),
-    testRun.listRuleExecutions({ testRunId }),
-  ]);
+  const decisions = testRun.listDecisions({ testRunId });
+  const rules = testRun.listRuleExecutions({ testRunId });
+  const run = await testRun.getTestRun({ testRunId });
 
-  return json({ run, decisions, rules });
+  return defer({ run, decisions, rules });
 }
 
 export default function TestRun() {
@@ -85,11 +83,26 @@ export default function TestRun() {
       <Page.Container>
         <Page.Content className="flex max-w-screen-lg flex-col gap-8">
           <TestRunDetails {...run} iterations={iterations} creator={creator} />
-          <DistributionOfDecisionChart
-            versions={versions}
-            decisions={decisions}
-          />
-          <FilterTransactionByDecision versions={versions} rules={rules} />
+          <Suspense fallback="Loading... to have a skeleton">
+            <Await resolve={decisions}>
+              {(decisions) => (
+                <DistributionOfDecisionChart
+                  versions={versions}
+                  decisions={decisions}
+                />
+              )}
+            </Await>
+          </Suspense>
+          <Suspense fallback="Loading... to have a skeleton">
+            <Await resolve={rules}>
+              {(rules) => (
+                <FilterTransactionByDecision
+                  versions={versions}
+                  rules={rules}
+                />
+              )}
+            </Await>
+          </Suspense>
         </Page.Content>
       </Page.Container>
     </Page.Main>
