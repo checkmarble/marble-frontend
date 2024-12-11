@@ -1,17 +1,10 @@
+import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { toggle } from 'radash';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  entries,
-  groupBy,
-  mapValues,
-  omit,
-  omitBy,
-  sumBy,
-  unique,
-} from 'remeda';
-import { Button, RadioGroup, RadioGroupItem } from 'ui-design-system';
+import { groupBy, keys, mapValues, omitBy, sumBy, unique } from 'remeda';
+import { Button, RadioGroup, RadioGroupItem, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type Item<T extends string> = { version: string; count: number; option: T };
@@ -41,17 +34,27 @@ export function Hamburger<T extends string>({
   legend: T[];
   mapping: Mapping<T>;
 }) {
-  const pairs = useMemo(
-    () =>
-      entries(omit(summary, ['total'])).filter(([status]) =>
-        legend.includes(status as T),
-      ),
-    [summary, legend],
-  );
+  const language = useFormatLanguage();
+
+  const pairs = useMemo(() => {
+    const result: [T, number][] = [];
+
+    for (const status of legend) {
+      if (summary[status] !== undefined) result.push([status, summary[status]]);
+    }
+
+    return result;
+  }, [summary, legend]);
 
   return (
     <div className="flex size-full flex-col items-center gap-4">
-      <span className="text-xs font-medium uppercase">{`V${version}`}</span>
+      <Tag
+        size="big"
+        color="grey-light"
+        className="border-grey-10 border px-4 py-2"
+      >
+        {`V${version}`}
+      </Tag>
       <div className="flex size-full flex-col gap-1">
         {pairs.length === 0 ? (
           <div className="border-grey-10 size-full rounded-lg border-2" />
@@ -60,22 +63,22 @@ export function Hamburger<T extends string>({
             <div
               key={status}
               style={{
-                flexBasis: `${Math.round(((count as number) * 100) / summary.total)}%`,
+                flexBasis: `${Math.round((count * 100) / summary.total)}%`,
               }}
               className={clsx(
                 'flex min-h-[24px] w-full shrink grow flex-row items-center justify-center rounded-[4px]',
-                mapping[status as T].background,
+                mapping[status].background,
               )}
             >
               <span
-                className={clsx(
-                  'text-s font-medium',
-                  mapping[status as T].text,
-                )}
+                className={clsx('text-s font-medium', mapping[status].text)}
               >
                 {type === 'percentage'
-                  ? `${Math.round(((count as number) * 100) / summary.total)}%`
-                  : count}
+                  ? `${Math.round((count * 100) / summary.total)}%`
+                  : formatNumber(count, {
+                      language,
+                      compactDisplay: 'short',
+                    })}
               </span>
             </div>
           ))
@@ -94,11 +97,18 @@ export function HamburgerChart<T extends string>({
   versions: Versions;
   mapping: Mapping<T>;
 }) {
-  ref = ref.replace('V', ''); // temp fix, not final
-  test = test.replace('V', '');
   const { t } = useTranslation(['scenarios', 'decisions']);
 
-  const options = useMemo(() => unique(items.map((i) => i.option)), [items]);
+  const options = useMemo(() => {
+    const foundOptions = unique(items.map((i) => i.option));
+    const orderedOptions: T[] = [];
+    for (const option of keys(mapping) as T[]) {
+      if (foundOptions.includes(option)) {
+        orderedOptions.push(option);
+      }
+    }
+    return orderedOptions;
+  }, [items, mapping]);
 
   const [type, setType] = useState<Type>('percentage');
   const [legend, updateLegend] = useState(options);
@@ -165,7 +175,18 @@ export function HamburgerChart<T extends string>({
             variant="tertiary"
             key={option}
             className="gap-3"
-            onClick={() => updateLegend((prev) => toggle(prev, option))}
+            onClick={() =>
+              updateLegend((prev) => {
+                const newLegend = toggle(prev, option);
+                const orderedOptions: T[] = [];
+                for (const option of keys(mapping) as T[]) {
+                  if (newLegend.includes(option)) {
+                    orderedOptions.push(option);
+                  }
+                }
+                return orderedOptions;
+              })
+            }
           >
             <div
               className={clsx('size-4 rounded-[4px]', {

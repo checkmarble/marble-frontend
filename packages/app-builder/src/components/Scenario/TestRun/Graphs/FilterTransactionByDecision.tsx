@@ -257,7 +257,7 @@ export const FilterTransactionByDecision = ({
               <div className="text-s grid w-full grid-cols-[9%_40%_25%_auto] font-semibold">
                 <span />
                 <span>{t('scenarios:testrun.filters.rule_name')}</span>
-                <span>{t('scenarios:testrun.filters.alerts')}</span>
+                <span>{t('testrun.filters.hit')}</span>
               </div>
               {entries(rulesByRuleId).map(([ruleId, rules]) => (
                 <RuleExecution key={ruleId} rules={rules} versions={versions} />

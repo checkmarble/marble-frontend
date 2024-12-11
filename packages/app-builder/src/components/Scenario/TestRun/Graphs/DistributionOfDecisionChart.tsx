@@ -38,12 +38,6 @@ export const DistributionOfDecisionChart = ({
                 text: 'text-grey-00',
                 name: t('decisions:outcome.approve'),
               },
-              review: {
-                background: 'bg-yellow-100',
-                border: 'border-yellow-100',
-                text: 'text-grey-100',
-                name: t('decisions:outcome.review'),
-              },
               decline: {
                 background: 'bg-red-100',
                 border: 'border-red-100',
@@ -55,6 +49,12 @@ export const DistributionOfDecisionChart = ({
                 border: 'border-orange-100',
                 text: 'text-grey-00',
                 name: t('decisions:outcome.block_and_review'),
+              },
+              review: {
+                background: 'bg-yellow-100',
+                border: 'border-yellow-100',
+                text: 'text-grey-100',
+                name: t('decisions:outcome.review'),
               },
             }}
           />

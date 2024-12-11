@@ -1,4 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { knownOutcomes } from '@app-builder/models/outcome';
 import {
   adaptTestRun,
   adaptTestRunCreateInputDto,
@@ -39,16 +40,11 @@ const testruns: TestRun[] = [
   },
 ];
 
-const testrunDecisions: TestRunDecision[] = [
-  { version: '1', outcome: 'approve', count: 10 },
-  { version: '4', outcome: 'approve', count: 20 },
-  { version: '1', outcome: 'decline', count: 5 },
-  { version: '1', outcome: 'approve', count: 30 },
-  { version: '4', outcome: 'decline', count: 15 },
-  { version: '1', outcome: 'review', count: 9 },
-  { version: '4', outcome: 'review', count: 22 },
-  { version: '1', outcome: 'block_and_review', count: 20 },
-];
+const testrunDecisions: TestRunDecision[] = [...Array(200000)].map(() => ({
+  version: Math.random() > 0.5 ? '1' : '4',
+  outcome: knownOutcomes[randomInteger(0, testRunStatuses.length - 1)]!,
+  count: randomInteger(1, 100),
+}));
 
 const testrunRuleExecutions: TestRunRuleExecutionCount[] = [
   {
@@ -144,7 +140,7 @@ const testrunRuleExecutions: TestRunRuleExecutionCount[] = [
   },
 ];
 
-export const makeGetTestRunRepository2 = () => {
+export const makeGetTestRunRepository = () => {
   return (_: MarbleCoreApi): TestRunRepository => ({
     getTestRun: ({ testRunId }) => {
       const run = testruns.find((run) => run.id === testRunId);
@@ -178,7 +174,7 @@ export const makeGetTestRunRepository2 = () => {
   });
 };
 
-export const makeGetTestRunRepository = () => {
+export const makeGetTestRunRepository2 = () => {
   return (marbleCoreApiClient: MarbleCoreApi): TestRunRepository => ({
     getTestRun: async ({ testRunId }) => {
       const result = await marbleCoreApiClient.getTestRun(testRunId);
