@@ -257,8 +257,6 @@ export const FilterTransactionByDecision = ({
       : rulesSummary;
   }, [displayChangedRules, rules, versions]);
 
-  console.log('Rules By Id', rulesByRuleId);
-
   return (
     <Collapsible.Container className="bg-grey-00">
       <Collapsible.Title>
