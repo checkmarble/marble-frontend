@@ -86,7 +86,7 @@ export function Hamburger<T extends string>({
                 className={clsx('text-s font-medium', mapping[status].text)}
               >
                 {type === 'percentage'
-                  ? formatNumber(Math.round((count * 100) / summary.total), {
+                  ? formatNumber((count * 100) / summary.total / 100, {
                       language,
                       style: 'percent',
                     })
