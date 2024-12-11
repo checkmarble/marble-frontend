@@ -82,9 +82,13 @@ const TestRunRuleHitPercentage = ({
       ?.filter((r) => r.status === 'hit')
       .reduce((acc, rule) => acc + rule.total, 0);
 
-    return refRuleTotal && refRuleHitTotal
-      ? Math.round((refRuleHitTotal * 100) / refRuleTotal)
-      : undefined;
+    if (refRuleTotal === undefined || refRuleHitTotal === undefined) {
+      return undefined;
+    }
+
+    return refRuleTotal === 0 || refRuleHitTotal === 0
+      ? 0
+      : Math.round((refRuleHitTotal * 100) / refRuleTotal);
   }, [rulesByVersion, ref]);
 
   const testRuleHitPercentage = useMemo(() => {
@@ -97,23 +101,32 @@ const TestRunRuleHitPercentage = ({
       ?.filter((r) => r.status === 'hit')
       .reduce((acc, rule) => acc + rule.total, 0);
 
-    return testRuleTotal && testRuleHitTotal
-      ? Math.round((testRuleHitTotal * 100) / testRuleTotal)
-      : undefined;
+    if (testRuleTotal === undefined || testRuleHitTotal === undefined) {
+      return undefined;
+    }
+
+    return testRuleTotal === 0 || testRuleHitTotal === 0
+      ? 0
+      : Math.round((testRuleHitTotal * 100) / testRuleTotal);
   }, [rulesByVersion, test]);
 
-  const direction =
-    refRuleHitPercentage && testRuleHitPercentage
-      ? refRuleHitPercentage - testRuleHitPercentage < 0
+  let direction = 'equal';
+
+  if (
+    refRuleHitPercentage !== undefined &&
+    testRuleHitPercentage !== undefined
+  ) {
+    direction =
+      refRuleHitPercentage - testRuleHitPercentage < 0
         ? 'up'
         : refRuleHitPercentage - testRuleHitPercentage > 0
           ? 'down'
-          : 'equal'
-      : 'equal';
+          : 'equal';
+  }
 
   return (
     <div className="flex flex-row items-center gap-2">
-      {direction === 'up' ? (
+      {direction !== 'equal' ? (
         <span className="text-s text-grey-50 font-normal">
           {refRuleHitPercentage}%
         </span>
@@ -144,7 +157,10 @@ const TestRunRuleHitPercentage = ({
         />
       </div>
       <span className="text-s text-grey-100 font-medium">
-        {testRuleHitPercentage ?? refRuleHitPercentage}%
+        {testRuleHitPercentage !== undefined
+          ? testRuleHitPercentage
+          : refRuleHitPercentage}
+        %
       </span>
     </div>
   );
