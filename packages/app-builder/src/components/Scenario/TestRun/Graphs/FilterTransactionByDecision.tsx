@@ -1,4 +1,5 @@
 import { type TestRunRuleExecutionCount } from '@app-builder/models/testrun';
+import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { t } from 'i18next';
 import { useMemo, useState } from 'react';
@@ -72,6 +73,8 @@ const TestRunRuleHitPercentage = ({
   rulesByVersion: Record<string, TestRunRuleExecutionCount[]>;
   versions: Versions;
 }) => {
+  const language = useFormatLanguage();
+
   const refRuleHitPercentage = useMemo(() => {
     const refRuleTotal = rulesByVersion[ref.value]?.reduce(
       (acc, rule) => acc + rule.total,
@@ -128,7 +131,10 @@ const TestRunRuleHitPercentage = ({
     <div className="flex flex-row items-center gap-2">
       {direction !== 'equal' ? (
         <span className="text-s text-grey-50 font-normal">
-          {refRuleHitPercentage}%
+          {formatNumber(refRuleHitPercentage! / 100, {
+            language,
+            style: 'percent',
+          })}
         </span>
       ) : null}
       <div
@@ -157,10 +163,12 @@ const TestRunRuleHitPercentage = ({
         />
       </div>
       <span className="text-s text-grey-100 font-medium">
-        {testRuleHitPercentage !== undefined
-          ? testRuleHitPercentage
-          : refRuleHitPercentage}
-        %
+        {formatNumber(
+          (testRuleHitPercentage !== undefined
+            ? testRuleHitPercentage
+            : refRuleHitPercentage)! / 100,
+          { language, style: 'percent' },
+        )}
       </span>
     </div>
   );
