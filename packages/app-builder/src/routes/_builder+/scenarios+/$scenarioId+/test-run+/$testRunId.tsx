@@ -2,6 +2,8 @@ import { Page } from '@app-builder/components';
 import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
 import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
 import { type Versions } from '@app-builder/components/Scenario/TestRun/Graphs/HamburgerGraph';
+import { DistributionOfDecisionChartSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/DistributionOfDecicionSkeleton';
+import { FilterTransactionByDecisionSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/FilterTransactionByDecicionSkeleton';
 import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
@@ -83,7 +85,7 @@ export default function TestRun() {
       <Page.Container>
         <Page.Content className="flex max-w-screen-lg flex-col gap-8">
           <TestRunDetails {...run} iterations={iterations} creator={creator} />
-          <Suspense fallback="Loading... to have a skeleton">
+          <Suspense fallback={<DistributionOfDecisionChartSkeleton />}>
             <Await resolve={decisions}>
               {(decisions) => (
                 <DistributionOfDecisionChart
@@ -93,7 +95,7 @@ export default function TestRun() {
               )}
             </Await>
           </Suspense>
-          <Suspense fallback="Loading... to have a skeleton">
+          <Suspense fallback={<FilterTransactionByDecisionSkeleton />}>
             <Await resolve={rules}>
               {(rules) => (
                 <FilterTransactionByDecision

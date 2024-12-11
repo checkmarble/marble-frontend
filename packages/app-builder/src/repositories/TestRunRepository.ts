@@ -40,7 +40,9 @@ const testruns: TestRun[] = [
   },
 ];
 
-const testrunDecisions: TestRunDecision[] = [...Array(200000)].map(() => ({
+const testrunDecisions: TestRunDecision[] = [
+  ...(Array(200000) as number[]),
+].map(() => ({
   version: Math.random() > 0.5 ? '1' : '4',
   outcome: knownOutcomes[randomInteger(0, testRunStatuses.length - 1)]!,
   count: randomInteger(1, 100),
@@ -134,13 +136,13 @@ const testrunRuleExecutions: TestRunRuleExecutionCount[] = [
   {
     version: '4',
     name: 'Rule 3 name',
-    status: 'hit',
+    status: 'no_hit',
     total: 15,
     ruleId: null,
   },
 ];
 
-export const makeGetTestRunRepository = () => {
+export const makeGetTestRunRepository2 = () => {
   return (_: MarbleCoreApi): TestRunRepository => ({
     getTestRun: ({ testRunId }) => {
       const run = testruns.find((run) => run.id === testRunId);
@@ -174,7 +176,7 @@ export const makeGetTestRunRepository = () => {
   });
 };
 
-export const makeGetTestRunRepository2 = () => {
+export const makeGetTestRunRepository = () => {
   return (marbleCoreApiClient: MarbleCoreApi): TestRunRepository => ({
     getTestRun: async ({ testRunId }) => {
       const result = await marbleCoreApiClient.getTestRun(testRunId);
