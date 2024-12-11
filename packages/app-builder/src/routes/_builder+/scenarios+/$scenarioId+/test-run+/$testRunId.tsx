@@ -1,6 +1,7 @@
 import { Page } from '@app-builder/components';
 import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
 import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
+import { type Versions } from '@app-builder/components/Scenario/TestRun/Graphs/HamburgerGraph';
 import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
@@ -50,10 +51,17 @@ export default function TestRun() {
   );
 
   const versions = useMemo(
-    () => ({
-      ref: `${iterations[run.refIterationId]!.version}`,
-      test: `${iterations[run.testIterationId]!.version}`,
-    }),
+    () =>
+      ({
+        ref: {
+          value: `${iterations[run.refIterationId]!.version}`,
+          type: iterations[run.refIterationId]!.type,
+        },
+        test: {
+          value: `${iterations[run.testIterationId]!.version}`,
+          type: iterations[run.testIterationId]!.type,
+        },
+      }) satisfies Versions,
     [iterations, run.refIterationId, run.testIterationId],
   );
 
