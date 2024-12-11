@@ -1,3 +1,4 @@
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { toggle } from 'radash';
@@ -10,7 +11,10 @@ import { Icon } from 'ui-icons';
 type Item<T extends string> = { version: string; count: number; option: T };
 type Type = 'absolute' | 'percentage';
 type Summary<T extends string> = { total: number } & Partial<Record<T, number>>;
-export type Versions = { ref: string; test: string };
+export type Versions = {
+  ref: { value: string; type: ScenarioIterationWithType['type'] };
+  test: { value: string; type: ScenarioIterationWithType['type'] };
+};
 type Mapping<T extends string> = Record<
   T,
   {
@@ -28,13 +32,14 @@ export function Hamburger<T extends string>({
   legend,
   mapping,
 }: {
-  version: string;
+  version: Versions['ref' | 'test'];
   type: Type;
   summary: Summary<T>;
   legend: T[];
   mapping: Mapping<T>;
 }) {
   const language = useFormatLanguage();
+  const { t } = useTranslation(['common']);
 
   const pairs = useMemo(() => {
     const result: [T, number][] = [];
@@ -51,9 +56,16 @@ export function Hamburger<T extends string>({
       <Tag
         size="big"
         color="grey-light"
-        className="border-grey-10 border px-4 py-2"
+        className="border-grey-10 gap-1 border px-4 py-2"
       >
-        {`V${version}`}
+        <span className="text-grey-100 font-semibold">
+          {`V${version.value}`}
+        </span>
+        {version.type === 'live version' ? (
+          <span className="font-semibold text-purple-100">
+            {t('common:live')}
+          </span>
+        ) : null}
       </Tag>
       <div className="flex size-full flex-col gap-1">
         {pairs.length === 0 ? (
@@ -115,10 +127,10 @@ export function HamburgerChart<T extends string>({
 
   const summaryByVersions = useMemo(() => {
     const result = {
-      [ref]: {
+      [ref.value]: {
         total: 0,
       },
-      [test]: {
+      [test.value]: {
         total: 0,
       },
     };
@@ -157,7 +169,7 @@ export function HamburgerChart<T extends string>({
           type={type}
           legend={legend}
           version={ref}
-          summary={summaryByVersions[ref] as Summary<T>}
+          summary={summaryByVersions[ref.value] as Summary<T>}
           mapping={mapping}
         />
         <Icon icon="arrow-forward" className="text-grey-100 h-4" />
@@ -165,7 +177,7 @@ export function HamburgerChart<T extends string>({
           type={type}
           legend={legend}
           version={test}
-          summary={summaryByVersions[test] as Summary<T>}
+          summary={summaryByVersions[test.value] as Summary<T>}
           mapping={mapping}
         />
       </div>

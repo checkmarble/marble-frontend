@@ -25,8 +25,8 @@ const TestRunRuleName = ({
   rulesByVersion: Record<string, TestRunRuleExecutionCount[]>;
   versions: Versions;
 }) => {
-  const refRuleName = rulesByVersion[ref]?.[0]?.name;
-  const testRuleName = rulesByVersion[test]?.[0]?.name;
+  const refRuleName = rulesByVersion[ref.value]?.[0]?.name;
+  const testRuleName = rulesByVersion[test.value]?.[0]?.name;
 
   if (refRuleName !== undefined && testRuleName !== undefined) {
     return (
@@ -73,12 +73,12 @@ const TestRunRuleHitPercentage = ({
   versions: Versions;
 }) => {
   const refRuleHitPercentage = useMemo(() => {
-    const refRuleTotal = rulesByVersion[ref]?.reduce(
+    const refRuleTotal = rulesByVersion[ref.value]?.reduce(
       (acc, rule) => acc + rule.total,
       0,
     );
 
-    const refRuleHitTotal = rulesByVersion[ref]
+    const refRuleHitTotal = rulesByVersion[ref.value]
       ?.filter((r) => r.status === 'hit')
       .reduce((acc, rule) => acc + rule.total, 0);
 
@@ -88,12 +88,12 @@ const TestRunRuleHitPercentage = ({
   }, [rulesByVersion, ref]);
 
   const testRuleHitPercentage = useMemo(() => {
-    const testRuleTotal = rulesByVersion[test]?.reduce(
+    const testRuleTotal = rulesByVersion[test.value]?.reduce(
       (acc, rule) => acc + rule.total,
       0,
     );
 
-    const testRuleHitTotal = rulesByVersion[test]
+    const testRuleHitTotal = rulesByVersion[test.value]
       ?.filter((r) => r.status === 'hit')
       .reduce((acc, rule) => acc + rule.total, 0);
 
@@ -225,12 +225,12 @@ export const FilterTransactionByDecision = ({
     return displayChangedRules
       ? omitBy(rulesSummary, (rs) =>
           isDeepEqual(
-            rs[versions.ref]?.map((r) => omit(r, ['version'])),
-            rs[versions.test]?.map((r) => omit(r, ['version'])),
+            rs[versions.ref.value]?.map((r) => omit(r, ['version'])),
+            rs[versions.test.value]?.map((r) => omit(r, ['version'])),
           ),
         )
       : rulesSummary;
-  }, [displayChangedRules, rules, versions.ref, versions.test]);
+  }, [displayChangedRules, rules, versions]);
 
   return (
     <Collapsible.Container className="bg-grey-00">
