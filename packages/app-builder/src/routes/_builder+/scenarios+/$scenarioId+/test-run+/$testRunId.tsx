@@ -25,15 +25,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const decisions = testRun.listDecisions({ testRunId });
-  const rules = testRun.listRuleExecutions({ testRunId });
+  const decisionsPromise = testRun.listDecisions({ testRunId });
+  const rulesPromise = testRun.listRuleExecutions({ testRunId });
   const run = await testRun.getTestRun({ testRunId });
 
-  return defer({ run, decisions, rules });
+  return defer({ run, decisionsPromise, rulesPromise });
 }
 
 export default function TestRun() {
-  const { run, decisions, rules } = useLoaderData<typeof loader>();
+  const { run, decisionsPromise, rulesPromise } =
+    useLoaderData<typeof loader>();
   const currentScenario = useCurrentScenario();
   const sourceIterations = useScenarioIterations();
   const { orgUsers } = useOrganizationUsers();
@@ -86,7 +87,7 @@ export default function TestRun() {
         <Page.Content className="flex max-w-screen-lg flex-col gap-8">
           <TestRunDetails {...run} iterations={iterations} creator={creator} />
           <Suspense fallback={<DistributionOfDecisionChartSkeleton />}>
-            <Await resolve={decisions}>
+            <Await resolve={decisionsPromise}>
               {(decisions) => (
                 <DistributionOfDecisionChart
                   versions={versions}
@@ -96,7 +97,7 @@ export default function TestRun() {
             </Await>
           </Suspense>
           <Suspense fallback={<FilterTransactionByDecisionSkeleton />}>
-            <Await resolve={rules}>
+            <Await resolve={rulesPromise}>
               {(rules) => (
                 <FilterTransactionByDecision
                   versions={versions}
