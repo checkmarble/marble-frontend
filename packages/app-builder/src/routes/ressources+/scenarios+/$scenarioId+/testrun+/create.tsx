@@ -5,10 +5,13 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOr
 import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { isStatusConflictHttpError } from '@app-builder/models';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
+import { captureUnexpectedRemixError } from '@app-builder/services/monitoring';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
@@ -47,7 +50,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   });
 
   if (submission.status !== 'success') {
-    return json(submission.reply());
+    return json({ success: false as const, ...submission.reply() });
   }
 
   try {
@@ -58,7 +61,43 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }),
     );
   } catch (error) {
-    return json(submission.reply());
+    console.log(submission.reply());
+    if (isStatusConflictHttpError(error)) {
+      const { getSession, commitSession } = serverServices.toastSessionService;
+      const session = await getSession(request);
+      setToastMessage(session, {
+        type: 'error',
+        messageKey: 'common:errors.data.duplicate_test_run',
+      });
+      return json(
+        {
+          success: false as const,
+          ...submission.reply({
+            formErrors: ['common:errors.data.duplicate_test_run'],
+            fieldErrors: {
+              testIterationId: ['common:errors.data.duplicate_test_run'],
+            },
+          }),
+        },
+        { headers: { 'Set-Cookie': await commitSession(session) } },
+      );
+    } else {
+      const { getSession, commitSession } = serverServices.toastSessionService;
+      const session = await getSession(request);
+      setToastMessage(session, {
+        type: 'error',
+        messageKey: 'common:errors.unknown',
+      });
+      captureUnexpectedRemixError(error, 'createTestRun@action', request);
+      // return json(submission.reply());
+      return json(
+        {
+          success: false as const,
+          ...submission.reply(),
+        },
+        { headers: { 'Set-Cookie': await commitSession(session) } },
+      );
+    }
   }
 }
 
@@ -66,10 +105,12 @@ export function CreateTestRun({
   children,
   currentScenario,
   scenarioIterations,
+  atLeastOneActiveTestRun,
 }: {
   children: React.ReactElement;
   currentScenario: Scenario;
   scenarioIterations: ScenarioIterationWithType[];
+  atLeastOneActiveTestRun: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const hydrated = useHydrated();
@@ -85,8 +126,9 @@ export function CreateTestRun({
   const shouldAllowCreate = React.useMemo(
     () =>
       scenarioIterations.length > 1 &&
-      scenarioIterations.some((i) => i.type === 'live version'),
-    [scenarioIterations],
+      scenarioIterations.some((i) => i.type === 'live version') &&
+      !atLeastOneActiveTestRun,
+    [scenarioIterations, atLeastOneActiveTestRun],
   );
 
   if (shouldAllowCreate)

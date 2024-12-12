@@ -57,5 +57,6 @@
   "more_options": "المزيد من الخيارات",
   "show": "يعرض",
   "from_to": "من <Date>{{start_date}}</Date> إلى <Date>{{end_date}}</Date>",
-  "live": "يعيش"
+  "live": "يعيش",
+  "errors.data.duplicate_test_run": "التشغيل التجريبي نشط بالفعل لهذا السيناريو"
 }

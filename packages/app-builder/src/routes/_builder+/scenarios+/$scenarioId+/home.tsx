@@ -359,6 +359,7 @@ function TestRunSection({ scenarioId }: { scenarioId: string }) {
             <CreateTestRun
               currentScenario={currentScenario}
               scenarioIterations={scenarioIterations}
+              atLeastOneActiveTestRun={currentTestRun.length > 0}
             >
               <Button variant="primary" className="isolate h-10 w-fit">
                 <Icon icon="plus" className="size-6" aria-hidden />
