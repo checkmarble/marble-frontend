@@ -103,7 +103,10 @@ export function CaseDecisions({
       </div>
       {decisions.map((row) => {
         return (
-          <CollapsibleV2.Provider key={row.id}>
+          <CollapsibleV2.Provider
+            key={row.id}
+            defaultOpen={decisions.length === 1}
+          >
             <div className="bg-grey-00 border-grey-10 col-span-full grid grid-cols-subgrid rounded-md border">
               <div className="col-span-full grid grid-cols-subgrid items-center px-4 py-3">
                 <CollapsibleV2.Title className="border-grey-10 group rounded border outline-none transition-colors focus-visible:border-purple-100">
@@ -146,7 +149,7 @@ export function CaseDecisions({
                 <DecisionActions decision={row} />
               </div>
               <CollapsibleV2.Content className="col-span-full">
-                <React.Suspense fallback={t('common:loading')}>
+                <React.Suspense fallback={<DecisionDetailSkeleton />}>
                   <Await resolve={caseDecisionsPromise}>
                     {([
                       dataModel,
@@ -426,6 +429,38 @@ function ShowHitOnlySwitch({
         {t('cases:case_detail.rules_execution.show_hit_only')}
       </label>
       <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
+    </div>
+  );
+}
+
+function DecisionDetailSkeleton() {
+  return (
+    <div className="flex flex-row gap-6 p-4">
+      <div className="flex h-fit flex-[2] flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <div className="bg-grey-10 h-4 w-32 animate-pulse rounded-md" />
+          <div className="bg-grey-10 h-4 w-32 animate-pulse rounded-md" />
+        </div>
+        <div className="bg-grey-10 h-12 animate-pulse rounded-lg" />
+        <div className="bg-grey-10 h-12 animate-pulse rounded-lg" />
+        <div className="bg-grey-10 h-12 animate-pulse rounded-lg" />
+      </div>
+
+      <div className="flex h-fit flex-1 flex-col gap-6">
+        <div className="flex h-fit flex-col gap-2">
+          <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
+            <div className="bg-grey-10 h-4 w-32 animate-pulse rounded-md" />
+          </div>
+          <div className="bg-grey-10 h-8 w-full animate-pulse rounded-md" />
+        </div>
+
+        <div className="flex h-fit flex-col gap-2">
+          <div className="flex flex-row items-center justify-between gap-2">
+            <div className="bg-grey-10 h-4 w-32 animate-pulse rounded-md" />
+          </div>
+          <div className="bg-grey-10 h-60 w-full animate-pulse rounded-md" />
+        </div>
+      </div>
     </div>
   );
 }
