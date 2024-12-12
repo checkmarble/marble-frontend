@@ -11,7 +11,6 @@ import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
-import { captureUnexpectedRemixError } from '@app-builder/services/monitoring';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
@@ -61,36 +60,23 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }),
     );
   } catch (error) {
-    if (isStatusConflictHttpError(error)) {
-      const { getSession, commitSession } = serverServices.toastSessionService;
-      const session = await getSession(request);
-      setToastMessage(session, {
-        type: 'error',
-        messageKey: 'common:errors.data.duplicate_test_run',
-      });
-      return json(
-        {
-          success: false as const,
-          ...submission.reply(),
-        },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
-      );
-    } else {
-      const { getSession, commitSession } = serverServices.toastSessionService;
-      const session = await getSession(request);
-      setToastMessage(session, {
-        type: 'error',
-        messageKey: 'common:errors.unknown',
-      });
-      captureUnexpectedRemixError(error, 'createTestRun@action', request);
-      return json(
-        {
-          success: false as const,
-          ...submission.reply(),
-        },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
-      );
-    }
+    const errMessage = isStatusConflictHttpError(error)
+      ? 'common:errors.data.duplicate_test_run'
+      : 'common:errors.unknown';
+
+    const { getSession, commitSession } = serverServices.toastSessionService;
+    const session = await getSession(request);
+    setToastMessage(session, {
+      type: 'error',
+      messageKey: errMessage,
+    });
+    return json(
+      {
+        success: false as const,
+        ...submission.reply(),
+      },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
   }
 }
 
