@@ -16,6 +16,7 @@ const oldToastMessageSchema = z.object({
     'common:errors.list.duplicate_list_name',
     'common:errors.list.duplicate_email',
     'common:errors.data.duplicate_field_name',
+    'common:errors.data.duplicate_test_run',
     'common:errors.data.duplicate_table_name',
     'common:errors.data.duplicate_link_name',
     'common:errors.add_to_case.invalid',

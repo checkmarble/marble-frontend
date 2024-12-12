@@ -70,6 +70,8 @@ export default function TestRuns() {
     [scenarioIterations, currentScenario],
   );
 
+  const atLeastOneActiveTestRun = runs.some((run) => run.status === 'up');
+
   const filteredRuns = useMemo(() => {
     const { statuses, startedAfter, creators, ref_versions, test_versions } =
       filters;
@@ -142,6 +144,7 @@ export default function TestRuns() {
                   <CreateTestRun
                     currentScenario={currentScenario}
                     scenarioIterations={scenarioIterations}
+                    atLeastOneActiveTestRun={atLeastOneActiveTestRun}
                   >
                     <Button variant="primary" className="isolate h-10 w-fit">
                       <Icon icon="plus" className="size-6" aria-hidden />

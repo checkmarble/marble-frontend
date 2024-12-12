@@ -20,6 +20,7 @@
   "errors.list.duplicate_list_name": "A list with this name already exist",
   "errors.list.duplicate_email": "This email is already used",
   "errors.data.duplicate_field_name": "A field with this name already exist",
+  "errors.data.duplicate_test_run": "A test run is already active for this scenario",
   "errors.data.duplicate_table_name": "A table with this name already exist",
   "errors.data.duplicate_link_name": "A link with this name already exist",
   "errors.add_to_case.invalid": "A decision already belongs to a case",
