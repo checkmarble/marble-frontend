@@ -27,7 +27,10 @@ export const LeftOperand = ({
 }: LeftOperandProps) => {
   const options = useOperandOptions([]);
   const leftOptions = useMemo(
-    () => options.filter((option) => option.dataType === 'Int'),
+    () =>
+      options.filter(
+        (option) => option.dataType === 'Int' || option.dataType === 'Float',
+      ),
     [options],
   );
 

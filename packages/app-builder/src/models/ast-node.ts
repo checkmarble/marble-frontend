@@ -420,9 +420,9 @@ export function NewFuzzyMatchComparatorAstNode({
   };
 }
 
-export const isRoundedAstNodeName = 'IsRounded';
-export interface IsRoundedAstNode {
-  name: typeof isRoundedAstNodeName;
+export const isMultipleOfAstNodeName = 'IsMultipleOf';
+export interface IsMultipleOfAstNode {
+  name: typeof isMultipleOfAstNodeName;
   constant?: undefined;
   children: [];
   namedChildren: {
@@ -431,12 +431,12 @@ export interface IsRoundedAstNode {
   };
 }
 
-export function NewIsRoundedAstNode(
+export function NewIsMultipleOfAstNode(
   value: AstNode = NewUndefinedAstNode(),
   threshold: ConstantAstNode<number> = NewConstantAstNode({ constant: 1 }),
-): IsRoundedAstNode {
+): IsMultipleOfAstNode {
   return {
-    name: isRoundedAstNodeName,
+    name: isMultipleOfAstNodeName,
     constant: undefined,
     children: [],
     namedChildren: {
@@ -504,15 +504,15 @@ export function isFuzzyMatchComparator(
   return isFuzzyMatch(firstChild) || isFuzzyMatchAnyOf(firstChild);
 }
 
-export function isIsRounded(node: AstNode): node is IsRoundedAstNode {
-  return node.name === isRoundedAstNodeName;
+export function isIsMultipleOf(node: AstNode): node is IsMultipleOfAstNode {
+  return node.name === isMultipleOfAstNodeName;
 }
 
 export type EditableAstNode =
   | AggregationAstNode
   | TimeAddAstNode
   | FuzzyMatchComparatorAstNode
-  | IsRoundedAstNode;
+  | IsMultipleOfAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -525,7 +525,7 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isTimeAdd(node) ||
     isFuzzyMatchComparator(node) ||
     isTimestampExtract(node) ||
-    isIsRounded(node)
+    isIsMultipleOf(node)
   );
 }
 

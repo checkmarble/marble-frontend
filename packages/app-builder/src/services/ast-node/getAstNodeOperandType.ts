@@ -7,7 +7,7 @@ import {
   isCustomListAccess,
   isDataAccessorAstNode,
   isFuzzyMatchComparator,
-  isIsRounded,
+  isIsMultipleOf,
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
@@ -53,7 +53,7 @@ export function getAstNodeOperandType(
     isTimeNow(astNode) ||
     isFuzzyMatchComparator(astNode) ||
     isTimestampExtract(astNode) ||
-    isIsRounded(astNode)
+    isIsMultipleOf(astNode)
   ) {
     return 'Function';
   }

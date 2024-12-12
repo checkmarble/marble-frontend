@@ -5,7 +5,7 @@ import {
   isConstant,
   isDataAccessorAstNode,
   isFuzzyMatchComparator,
-  isIsRounded,
+  isIsMultipleOf,
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
@@ -57,7 +57,7 @@ export function getAstNodeDataType(
     return field.dataType;
   }
 
-  if (isFuzzyMatchComparator(astNode) || isIsRounded(astNode)) {
+  if (isFuzzyMatchComparator(astNode) || isIsMultipleOf(astNode)) {
     return 'Bool';
   }
 

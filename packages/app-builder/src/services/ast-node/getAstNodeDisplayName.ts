@@ -7,9 +7,9 @@ import {
   isCustomListAccess,
   isDatabaseAccess,
   isFuzzyMatchComparator,
-  isIsRounded,
+  isIsMultipleOf,
+  type IsMultipleOfAstNode,
   isPayload,
-  type IsRoundedAstNode,
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
@@ -80,8 +80,8 @@ export function getAstNodeDisplayName(
     return getFuzzyMatchComparatorDisplayName(astNode, context);
   }
 
-  if (isIsRounded(astNode)) {
-    return getIsRoundedDisplayName(astNode, context);
+  if (isIsMultipleOf(astNode)) {
+    return getIsMultipleOfDisplayName(astNode, context);
   }
 
   if (isUndefinedAstNode(astNode)) {
@@ -235,8 +235,8 @@ function getTimestampExtractDisplayName(
   });
 }
 
-function getIsRoundedDisplayName(
-  astNode: IsRoundedAstNode,
+function getIsMultipleOfDisplayName(
+  astNode: IsMultipleOfAstNode,
   context: AstNodeStringifierContext,
 ) {
   const value = astNode.namedChildren.value;
@@ -244,10 +244,10 @@ function getIsRoundedDisplayName(
 
   const valueStr = getAstNodeDisplayName(value, context);
   if (valueStr === '') {
-    return context.t('scenarios:edit_is_rounded.title');
+    return context.t('scenarios:edit_is_multiple_of.title');
   }
 
-  return context.t('scenarios:edit_is_rounded.display_name', {
+  return context.t('scenarios:edit_is_multiple_of.display_name', {
     replace: {
       value: valueStr,
       threshold: formatNumber(threshold, {

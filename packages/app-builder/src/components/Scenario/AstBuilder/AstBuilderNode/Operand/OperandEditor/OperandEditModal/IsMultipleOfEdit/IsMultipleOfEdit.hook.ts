@@ -1,9 +1,9 @@
-import { type AstNode, type IsRoundedAstNode } from '@app-builder/models';
+import { type AstNode, type IsMultipleOfAstNode } from '@app-builder/models';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import { useReducer } from 'react';
 
-type EditIsRoundedState = {
+type EditIsMultipleOfState = {
   value: {
     astNode: AstNode;
     astNodeErrors?: AstNodeErrors;
@@ -14,14 +14,14 @@ type EditIsRoundedState = {
   };
 };
 
-type EditIsRoundedAction =
+type EditIsMultipleOfAction =
   | { type: 'setValue'; payload: { value: AstNode } }
   | { type: 'setThreshold'; payload: { threshold: number } };
 
-const editIsRoundedReducer = (
-  prevState: EditIsRoundedState,
-  action: EditIsRoundedAction,
-): EditIsRoundedState => {
+const editIsMultipleOfReducer = (
+  prevState: EditIsMultipleOfState,
+  action: EditIsMultipleOfAction,
+): EditIsMultipleOfState => {
   switch (action.type) {
     case 'setValue':
       return {
@@ -42,13 +42,13 @@ const editIsRoundedReducer = (
   }
 };
 
-const adaptIsRoundedState = ({
+const adaptIsMultipleOfState = ({
   initialState,
   initialErrors,
 }: {
-  initialState: IsRoundedAstNode;
+  initialState: IsMultipleOfAstNode;
   initialErrors: AstNodeErrors;
-}): EditIsRoundedState => {
+}): EditIsMultipleOfState => {
   const valueNode = initialState.namedChildren.value;
   const valueErrors = initialErrors.namedChildren['value'];
 
@@ -68,14 +68,14 @@ const adaptIsRoundedState = ({
   };
 };
 
-export const useIsRoundedEditState = (
-  initialState: IsRoundedAstNode,
+export const useIsMultipleOfEditState = (
+  initialState: IsMultipleOfAstNode,
   initialErrors: AstNodeErrors,
 ) => {
   const [state, dispatch] = useReducer(
-    editIsRoundedReducer,
+    editIsMultipleOfReducer,
     { initialState, initialErrors },
-    adaptIsRoundedState,
+    adaptIsMultipleOfState,
   );
 
   return {

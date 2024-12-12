@@ -7,7 +7,7 @@ import {
   NewConstantAstNode,
   NewCustomListAstNode,
   NewFuzzyMatchComparatorAstNode,
-  NewIsRoundedAstNode,
+  NewIsMultipleOfAstNode,
   NewTimeAddAstNode,
   NewTimeNowAstNode,
   NewTimestampExtractAstNode,
@@ -242,7 +242,7 @@ export function useOperandOptions(enumValues?: EnumValue[]) {
       NewTimeAddAstNode(),
       NewTimestampExtractAstNode(),
       NewTimeNowAstNode(),
-      NewIsRoundedAstNode(),
+      NewIsMultipleOfAstNode(),
       ...(enumValues ?? []).map((enumValue) =>
         NewConstantAstNode({ constant: enumValue }),
       ),
