@@ -61,7 +61,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }),
     );
   } catch (error) {
-    console.log(submission.reply());
     if (isStatusConflictHttpError(error)) {
       const { getSession, commitSession } = serverServices.toastSessionService;
       const session = await getSession(request);
@@ -72,12 +71,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       return json(
         {
           success: false as const,
-          ...submission.reply({
-            formErrors: ['common:errors.data.duplicate_test_run'],
-            fieldErrors: {
-              testIterationId: ['common:errors.data.duplicate_test_run'],
-            },
-          }),
+          ...submission.reply(),
         },
         { headers: { 'Set-Cookie': await commitSession(session) } },
       );
@@ -89,7 +83,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
         messageKey: 'common:errors.unknown',
       });
       captureUnexpectedRemixError(error, 'createTestRun@action', request);
-      // return json(submission.reply());
       return json(
         {
           success: false as const,
