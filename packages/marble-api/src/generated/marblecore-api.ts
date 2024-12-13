@@ -2901,7 +2901,10 @@ export function getTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
  */
 export function cancelTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 204;
+        status: 200;
+        data: {
+            scenario_test_run: TestRunDto;
+        };
     } | {
         status: 401;
         data: string;

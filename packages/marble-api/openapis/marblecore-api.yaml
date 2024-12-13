@@ -3384,8 +3384,17 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
-          description: The test run has been stopped
+        '200':
+          description: The cancelled test run corresponding to the provided `test_run_id`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - scenario_test_run
+                properties:
+                  scenario_test_run:
+                    $ref: '#/components/schemas/TestRunDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
