@@ -67,7 +67,7 @@ export function CancelTestRun({
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} disabled={!hydrated} />
       <ModalV2.Content className="overflow-visible">
-        <ModalV2.Title>{t('scenarios:testrun.cancel.title')}</ModalV2.Title>
+        <ModalV2.Title>{t('scenarios:testrun.cancel')}</ModalV2.Title>
         <cancelTestRunFetcher.Form
           className="flex flex-col gap-6 p-6"
           method="POST"
@@ -88,10 +88,10 @@ export function CancelTestRun({
             <ModalV2.Close
               render={<Button className="flex-1" variant="secondary" />}
             >
-              {t('common:no')}
+              {t('common:cancel')}
             </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">
-              {t('common:yes')}
+              {t('scenarios:testrun.cancel')}
             </Button>
           </div>
         </cancelTestRunFetcher.Form>

@@ -17,7 +17,6 @@ import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { mapToObj, pick } from 'remeda';
-import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -42,7 +41,6 @@ export default function TestRun() {
     useLoaderData<typeof loader>();
   const currentScenario = useCurrentScenario();
   const sourceIterations = useScenarioIterations();
-  const hydrated = useHydrated();
   const { orgUsers } = useOrganizationUsers();
   const { t } = useTranslation(['scenarios']);
 
@@ -93,7 +91,6 @@ export default function TestRun() {
             variant="secondary"
             color="red"
             className="isolate h-10 w-fit"
-            disabled={!hydrated}
           >
             <Icon icon="stop" className="text-grey-00 size-6" />
             <span className="text-grey-00">

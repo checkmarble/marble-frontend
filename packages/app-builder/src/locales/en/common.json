@@ -3,8 +3,6 @@
   "true": "True",
   "false": "False",
   "from_to": "From <Date>{{start_date}}</Date> to <Date>{{end_date}}</Date>",
-  "yes": "Yes",
-  "no": "No",
   "live": "Live",
   "auth.logout": "Log out",
   "search": "Search",

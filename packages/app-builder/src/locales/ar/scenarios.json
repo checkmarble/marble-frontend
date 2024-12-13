@@ -359,5 +359,7 @@
   "edit_is_multiple_of.examples.caption": "أمثلة",
   "edit_is_multiple_of.examples.result": "نتيجة",
   "edit_is_multiple_of.examples.value": "قيمة",
-  "edit_is_multiple_of.title": "متعددة من العتبة"
+  "edit_is_multiple_of.title": "متعددة من العتبة",
+  "testrun.cancel.callout": "هل أنت متأكد أنك تريد إلغاء الاختبار الحالي؟",
+  "testrun.cancel": "إيقاف الاختبار"
 }

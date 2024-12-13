@@ -157,7 +157,7 @@ const testrunRuleExecutions: TestRunRuleExecutionCount[] = [
   },
 ];
 
-export const makeGetTestRunRepository = () => {
+export const makeGetTestRunRepository2 = () => {
   return (_: MarbleCoreApi): TestRunRepository => ({
     getTestRun: ({ testRunId }) => {
       const run = testruns.find((run) => run.id === testRunId);
@@ -201,15 +201,15 @@ export const makeGetTestRunRepository = () => {
   });
 };
 
-export const makeGetTestRunRepository2 = () => {
+export const makeGetTestRunRepository = () => {
   return (marbleCoreApiClient: MarbleCoreApi): TestRunRepository => ({
     getTestRun: async ({ testRunId }) => {
       const result = await marbleCoreApiClient.getTestRun(testRunId);
       return adaptTestRun(result.scenario_test_run);
     },
-    cancelTestRun: async () => {
-      //await marbleCoreApiClient.cancelTestRun(testRunId);
-      return Promise.resolve();
+    cancelTestRun: async ({ testRunId }) => {
+      await marbleCoreApiClient.cancelTestRun(testRunId);
+      return;
     },
     launchTestRun: async (args) => {
       const { scenario_test_run } = await marbleCoreApiClient.createTestRun(
