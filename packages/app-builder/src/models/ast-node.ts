@@ -420,6 +420,32 @@ export function NewFuzzyMatchComparatorAstNode({
   };
 }
 
+export const isMultipleOfAstNodeName = 'IsMultipleOf';
+export interface IsMultipleOfAstNode {
+  name: typeof isMultipleOfAstNodeName;
+  constant?: undefined;
+  children: [];
+  namedChildren: {
+    value: AstNode;
+    divider: ConstantAstNode<number>;
+  };
+}
+
+export function NewIsMultipleOfAstNode(
+  value: AstNode = NewUndefinedAstNode(),
+  divider: ConstantAstNode<number> = NewConstantAstNode({ constant: 1 }),
+): IsMultipleOfAstNode {
+  return {
+    name: isMultipleOfAstNodeName,
+    constant: undefined,
+    children: [],
+    namedChildren: {
+      value,
+      divider,
+    },
+  };
+}
+
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === databaseAccessAstNodeName;
 }
@@ -478,10 +504,15 @@ export function isFuzzyMatchComparator(
   return isFuzzyMatch(firstChild) || isFuzzyMatchAnyOf(firstChild);
 }
 
+export function isIsMultipleOf(node: AstNode): node is IsMultipleOfAstNode {
+  return node.name === isMultipleOfAstNodeName;
+}
+
 export type EditableAstNode =
   | AggregationAstNode
   | TimeAddAstNode
-  | FuzzyMatchComparatorAstNode;
+  | FuzzyMatchComparatorAstNode
+  | IsMultipleOfAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -493,7 +524,8 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isAggregation(node) ||
     isTimeAdd(node) ||
     isFuzzyMatchComparator(node) ||
-    isTimestampExtract(node)
+    isTimestampExtract(node) ||
+    isIsMultipleOf(node)
   );
 }
 

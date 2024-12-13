@@ -7,6 +7,8 @@ import {
   isCustomListAccess,
   isDatabaseAccess,
   isFuzzyMatchComparator,
+  isIsMultipleOf,
+  type IsMultipleOfAstNode,
   isPayload,
   isTimeAdd,
   isTimeNow,
@@ -20,6 +22,7 @@ import {
   getOperatorName,
   isAggregatorOperator,
 } from '@app-builder/models/editable-operators';
+import { formatNumber } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
@@ -75,6 +78,10 @@ export function getAstNodeDisplayName(
 
   if (isFuzzyMatchComparator(astNode)) {
     return getFuzzyMatchComparatorDisplayName(astNode, context);
+  }
+
+  if (isIsMultipleOf(astNode)) {
+    return getIsMultipleOfDisplayName(astNode, context);
   }
 
   if (isUndefinedAstNode(astNode)) {
@@ -224,6 +231,29 @@ function getTimestampExtractDisplayName(
     replace: {
       operator: getOperatorName(context.t, part),
       timestamp: timestampStr,
+    },
+  });
+}
+
+function getIsMultipleOfDisplayName(
+  astNode: IsMultipleOfAstNode,
+  context: AstNodeStringifierContext,
+) {
+  const value = astNode.namedChildren.value;
+  const divider = astNode.namedChildren.divider.constant;
+
+  const valueStr = getAstNodeDisplayName(value, context);
+  if (valueStr === '') {
+    return context.t('scenarios:edit_is_multiple_of.title');
+  }
+
+  return context.t('scenarios:edit_is_multiple_of.display_name', {
+    replace: {
+      value: valueStr,
+      divider: formatNumber(divider, {
+        language: context.language,
+        style: undefined,
+      }),
     },
   });
 }

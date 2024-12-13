@@ -353,5 +353,11 @@
   "testrun.rule.old": "القاعدة القديمة",
   "testrun.home": "قائمة المقارنات",
   "testrun.not_allowed": "لا توجد نسخة حية أو نسخة بديلة متاحة",
-  "testrun.filters.hit": "يضرب"
+  "testrun.filters.hit": "يضرب",
+  "edit_is_multiple_of.display_name": "{{value}} هي مضاعفات {{divider}}",
+  "edit_is_multiple_of.label": "هو متعدد",
+  "edit_is_multiple_of.examples.caption": "أمثلة",
+  "edit_is_multiple_of.examples.result": "نتيجة",
+  "edit_is_multiple_of.examples.value": "قيمة",
+  "edit_is_multiple_of.title": "متعددة من العتبة"
 }
