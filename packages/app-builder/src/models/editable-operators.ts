@@ -24,6 +24,8 @@ const orderedMainAstOperatorFunctions = [
   'IsNotInList',
   'StringContains',
   'StringNotContain',
+  'StringStartsWith',
+  'StringEndsWith',
   'ContainsAnyOf',
   'ContainsNoneOf',
   'IsEmpty',
@@ -60,6 +62,8 @@ const binaryMainAstOperatorFunctions = [
   'IsNotInList',
   'StringContains',
   'StringNotContain',
+  'StringStartsWith',
+  'StringEndsWith',
   'ContainsAnyOf',
   'ContainsNoneOf',
   undefinedAstNodeName,
@@ -196,6 +200,10 @@ export function getOperatorName(
         return t('scenarios:operator.contains');
       case 'StringNotContain':
         return t('scenarios:operator.does_not_contain');
+      case 'StringStartsWith':
+        return t('scenarios:operator.starts_with');
+      case 'StringEndsWith':
+        return t('scenarios:operator.ends_with');
       case 'ContainsAnyOf':
         return t('scenarios:operator.contains_any_of');
       case 'ContainsNoneOf':
