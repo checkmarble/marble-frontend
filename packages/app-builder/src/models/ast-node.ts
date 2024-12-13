@@ -427,13 +427,13 @@ export interface IsMultipleOfAstNode {
   children: [];
   namedChildren: {
     value: AstNode;
-    threshold: ConstantAstNode<number>;
+    divider: ConstantAstNode<number>;
   };
 }
 
 export function NewIsMultipleOfAstNode(
   value: AstNode = NewUndefinedAstNode(),
-  threshold: ConstantAstNode<number> = NewConstantAstNode({ constant: 1 }),
+  divider: ConstantAstNode<number> = NewConstantAstNode({ constant: 1 }),
 ): IsMultipleOfAstNode {
   return {
     name: isMultipleOfAstNodeName,
@@ -441,7 +441,7 @@ export function NewIsMultipleOfAstNode(
     children: [],
     namedChildren: {
       value,
-      threshold,
+      divider,
     },
   };
 }

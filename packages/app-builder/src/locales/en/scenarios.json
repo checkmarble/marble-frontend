@@ -343,7 +343,7 @@
   "edit_fuzzy_match.examples.result": "result",
   "edit_fuzzy_match.operands.label": "Text to match",
   "edit_is_multiple_of.title": "Multiple of threshold",
-  "edit_is_multiple_of.display_name": "{{value}} is multiple of {{threshold}}",
+  "edit_is_multiple_of.display_name": "{{value}} is multiple of {{divider}}",
   "edit_is_multiple_of.label": "is multiple of",
   "edit_is_multiple_of.examples.caption": "Examples",
   "edit_is_multiple_of.examples.value": "Value",

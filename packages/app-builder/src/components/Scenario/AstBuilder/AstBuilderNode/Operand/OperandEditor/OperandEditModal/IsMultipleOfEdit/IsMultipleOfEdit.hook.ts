@@ -8,7 +8,7 @@ type EditIsMultipleOfState = {
     astNode: AstNode;
     astNodeErrors?: AstNodeErrors;
   };
-  threshold: {
+  divider: {
     value: number;
     astNodeErrors?: EvaluationError[];
   };
@@ -16,7 +16,7 @@ type EditIsMultipleOfState = {
 
 type EditIsMultipleOfAction =
   | { type: 'setValue'; payload: { value: AstNode } }
-  | { type: 'setThreshold'; payload: { threshold: number } };
+  | { type: 'setDivider'; payload: { divider: number } };
 
 const editIsMultipleOfReducer = (
   prevState: EditIsMultipleOfState,
@@ -31,11 +31,11 @@ const editIsMultipleOfReducer = (
           astNodeErrors: undefined,
         },
       };
-    case 'setThreshold':
+    case 'setDivider':
       return {
         ...prevState,
-        threshold: {
-          value: action.payload.threshold,
+        divider: {
+          value: action.payload.divider,
           astNodeErrors: [],
         },
       };
@@ -52,18 +52,17 @@ const adaptIsMultipleOfState = ({
   const valueNode = initialState.namedChildren.value;
   const valueErrors = initialErrors.namedChildren['value'];
 
-  const thresholdValue = initialState.namedChildren.threshold.constant ?? 1;
-  const thresholdErrors =
-    initialErrors.namedChildren['threshold']?.errors ?? [];
+  const dividerValue = initialState.namedChildren.divider.constant ?? 1;
+  const dividerErrors = initialErrors.namedChildren['divider']?.errors ?? [];
 
   return {
     value: {
       astNode: valueNode,
       astNodeErrors: valueErrors,
     },
-    threshold: {
-      value: thresholdValue,
-      astNodeErrors: thresholdErrors,
+    divider: {
+      value: dividerValue,
+      astNodeErrors: dividerErrors,
     },
   };
 };
@@ -83,9 +82,9 @@ export const useIsMultipleOfEditState = (
     setValue: (value: AstNode) => {
       dispatch({ type: 'setValue', payload: { value } });
     },
-    threshold: state.threshold,
-    setThreshold: (threshold: number) => {
-      dispatch({ type: 'setThreshold', payload: { threshold } });
+    divider: state.divider,
+    setDivider: (divider: number) => {
+      dispatch({ type: 'setDivider', payload: { divider } });
     },
   };
 };

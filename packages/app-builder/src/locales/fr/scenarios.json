@@ -355,7 +355,7 @@
   "testrun.not_allowed": "Aucune version live ou version alternative disponible",
   "testrun.filters.hit": "Frapper",
   "edit_is_multiple_of.title": "Multiple d'un palier",
-  "edit_is_multiple_of.display_name": "{{value}} est un multiple de {{threshold}}",
+  "edit_is_multiple_of.display_name": "{{value}} est un multiple de {{divider}}",
   "edit_is_multiple_of.label": "est un multiple de",
   "edit_is_multiple_of.examples.caption": "Exemples",
   "edit_is_multiple_of.examples.value": "Valeur",

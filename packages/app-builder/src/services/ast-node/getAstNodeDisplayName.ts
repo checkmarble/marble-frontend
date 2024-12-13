@@ -240,7 +240,7 @@ function getIsMultipleOfDisplayName(
   context: AstNodeStringifierContext,
 ) {
   const value = astNode.namedChildren.value;
-  const threshold = astNode.namedChildren.threshold.constant;
+  const divider = astNode.namedChildren.divider.constant;
 
   const valueStr = getAstNodeDisplayName(value, context);
   if (valueStr === '') {
@@ -250,7 +250,7 @@ function getIsMultipleOfDisplayName(
   return context.t('scenarios:edit_is_multiple_of.display_name', {
     replace: {
       value: valueStr,
-      threshold: formatNumber(threshold, {
+      divider: formatNumber(divider, {
         language: context.language,
         style: undefined,
       }),

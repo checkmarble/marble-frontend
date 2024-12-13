@@ -12,7 +12,7 @@ import { Button, ModalV2, Select } from 'ui-design-system';
 import { useIsMultipleOfEditState } from './IsMultipleOfEdit.hook';
 import { LeftOperand } from './LeftOperand';
 
-const thresholdOptions = [
+const dividerOptions = [
   { value: 1 },
   { value: 10 },
   { value: 100 },
@@ -37,7 +37,7 @@ export function IsMultipleOfEdit({
   const { t } = useTranslation(['scenarios', 'common']);
   const language = useFormatLanguage();
 
-  const { value, setValue, threshold, setThreshold } = useIsMultipleOfEditState(
+  const { value, setValue, divider, setDivider } = useIsMultipleOfEditState(
     initialIsMultipleOfAstNode,
     initialAstNodeErrors,
   );
@@ -45,7 +45,7 @@ export function IsMultipleOfEdit({
   const handleSave = () => {
     const isMultipleOfAstNode = NewIsMultipleOfAstNode(
       value.astNode,
-      NewConstantAstNode({ constant: threshold.value }),
+      NewConstantAstNode({ constant: divider.value }),
     );
     onSave(isMultipleOfAstNode);
   };
@@ -72,15 +72,15 @@ export function IsMultipleOfEdit({
               </span>
             </div>
             <Select.Default
-              value={threshold.value.toString()}
-              onValueChange={(value) => setThreshold(parseInt(value, 10))}
+              value={divider.value.toString()}
+              onValueChange={(value) => setDivider(parseInt(value, 10))}
             >
-              {thresholdOptions.map((thresholdOption) => (
+              {dividerOptions.map((dividerOption) => (
                 <Select.DefaultItem
-                  key={thresholdOption.value}
-                  value={thresholdOption.value.toString()}
+                  key={dividerOption.value}
+                  value={dividerOption.value.toString()}
                 >
-                  {formatNumber(thresholdOption.value, {
+                  {formatNumber(dividerOption.value, {
                     language,
                     style: undefined,
                   })}
@@ -90,7 +90,7 @@ export function IsMultipleOfEdit({
           </div>
         </div>
         <div className="flex flex-col gap-4">
-          <Examples threshold={threshold.value} />
+          <Examples divider={divider.value} />
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <ModalV2.Close
@@ -114,7 +114,7 @@ export function IsMultipleOfEdit({
   );
 }
 
-function Examples({ threshold }: { threshold: number }) {
+function Examples({ divider }: { divider: number }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const language = useFormatLanguage();
 
@@ -165,7 +165,7 @@ function Examples({ threshold }: { threshold: number }) {
               })}
             </td>
             <td className="text-grey-100 border-grey-10 border px-2 text-xs font-normal">
-              {t(`common:${left % threshold === 0}`)}
+              {t(`common:${left % divider === 0}`)}
             </td>
           </tr>
         ))}
