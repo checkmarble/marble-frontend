@@ -386,7 +386,7 @@ function TestRunSection({ scenarioId }: { scenarioId: string }) {
                   variant: 'secondary',
                   color: 'grey',
                 })}
-                to={getRoute('/scenarios/:scenarioId/test-run', {
+                to={getRoute('/scenarios/:scenarioId/test-run/', {
                   scenarioId: fromUUID(scenarioId),
                 })}
               >
