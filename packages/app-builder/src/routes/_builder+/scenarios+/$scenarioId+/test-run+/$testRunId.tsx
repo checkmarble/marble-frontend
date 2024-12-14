@@ -86,18 +86,20 @@ export default function TestRun() {
         />
         <p className="line-clamp-2 text-start">{currentScenario.name}</p>
         <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
-        <CancelTestRun testRunId={run.id}>
-          <Button
-            variant="secondary"
-            color="red"
-            className="isolate h-10 w-fit"
-          >
-            <Icon icon="stop" className="text-grey-00 size-6" />
-            <span className="text-grey-00">
-              {t('scenarios:testrun.cancel')}
-            </span>
-          </Button>
-        </CancelTestRun>
+        {run.status === 'up' ? (
+          <CancelTestRun testRunId={run.id}>
+            <Button
+              variant="secondary"
+              color="red"
+              className="isolate h-10 w-fit"
+            >
+              <Icon icon="stop" className="text-grey-00 size-6" />
+              <span className="text-grey-00">
+                {t('scenarios:testrun.cancel')}
+              </span>
+            </Button>
+          </CancelTestRun>
+        ) : null}
       </Page.Header>
 
       <Page.Container>
