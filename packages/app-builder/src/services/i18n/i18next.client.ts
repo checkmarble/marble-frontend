@@ -8,7 +8,6 @@ import { i18nConfig } from './i18n-config';
 
 export function makeI18nextClientService() {
   async function getI18nextClientInstance() {
-    // eslint-disable-next-line import/no-named-as-default-member
     await i18next
       .use(initReactI18next)
       .use(Fetch)

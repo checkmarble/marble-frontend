@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { NewAstNode, NewConstantAstNode } from '@app-builder/models';
 
 import {

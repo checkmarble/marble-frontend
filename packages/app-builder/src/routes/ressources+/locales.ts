@@ -21,11 +21,11 @@ export function loader({ request }: LoaderFunctionArgs) {
   const headers = new Headers();
 
   // On production, we want to add cache headerlocals to the response
-  // eslint-disable-next-line no-restricted-properties
+   
   if (process.env.NODE_ENV === 'production') {
     headers.set(
       'Cache-Control',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call
+       
       cacheHeader({
         maxAge: '1d',
         staleWhileRevalidate: '7d',

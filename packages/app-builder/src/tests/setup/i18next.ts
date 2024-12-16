@@ -3,7 +3,6 @@ import { resources } from '@app-builder/services/i18n/resources/resources.server
 import i18next, { type TFunction } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// eslint-disable-next-line import/no-named-as-default-member
 export const i18nextTest = (await i18next.use(initReactI18next).init({
   ...i18nConfig,
   lng: 'en',

@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-properties */
 import { vitePlugin as remix } from '@remix-run/dev';
 import { installGlobals } from '@remix-run/node';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
@@ -44,7 +43,6 @@ if (!isVitest) {
 }
 if (isSentryConfigured) {
   plugins.push(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     sentryVitePlugin({
       telemetry: false,
       release: {

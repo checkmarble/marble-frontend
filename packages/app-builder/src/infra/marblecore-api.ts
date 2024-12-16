@@ -27,13 +27,13 @@ function getMarbleCoreAPIClient({
       })
     : undefined;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const { defaults, servers, ...api } = marblecoreApi;
 
   //@ts-expect-error can't infer args
   return R.mapValues(api, (value) => (...args) => {
     // @ts-expect-error can't infer args
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+     
     return value(...args, { fetch, baseUrl });
   });
 }

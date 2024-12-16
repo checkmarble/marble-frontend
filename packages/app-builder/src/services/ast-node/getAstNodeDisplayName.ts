@@ -191,7 +191,7 @@ function getAggregatorDisplayName(
   if (isAggregatorOperator(aggregatorName)) {
     return getOperatorName(context.t, aggregatorName);
   }
-  // eslint-disable-next-line no-restricted-properties
+   
   if (process.env.NODE_ENV === 'development') {
     console.warn('Unhandled aggregator', aggregatorName);
   }
