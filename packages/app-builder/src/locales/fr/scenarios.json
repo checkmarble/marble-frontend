@@ -314,7 +314,6 @@
   "create_testrun.ref_placeholder": "Sélectionnez la version de référence",
   "create_testrun.title": "Nouveau test",
   "testrun.current_run": "Test en cours",
-  "testrun.description": "Demandez une décision grâce à notre API et obtenez des réponses synchrones en temps réel",
   "testrun.distribution": "Répartition des décisions",
   "testrun.distribution.absolute": "Absolu",
   "testrun.distribution.legend.block_and_review": "Bloquée et à revoir",
@@ -360,6 +359,7 @@
   "edit_is_multiple_of.examples.value": "Valeur",
   "edit_is_multiple_of.examples.result": "Resultat",
   "testrun.filters.hit": "Déclenchée",
-  "testrun.cancel": "Arrêter",
-  "testrun.cancel.callout": "Etes-vous sûr de vouloir arrêter le test en cours ?"
+  "testrun.cancel.callout": "Etes-vous sûr de vouloir arrêter le test en cours ?",
+  "testrun.cancel": "Arrêtez le test",
+  "testrun.description": "Testez et comparez une version de scénario avec une version en direct"
 }

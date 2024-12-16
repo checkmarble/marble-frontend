@@ -311,7 +311,6 @@
   "create_testrun.phantom": "النسخة الوهمية",
   "create_testrun.ref": "النسخة المرجعية",
   "testrun.distribution.legend.block_and_review": "حظر ومراجعة",
-  "testrun.description": "اطلب قرارًا باستخدام واجهة برمجة التطبيقات (API) الخاصة بنا واحصل على إجابات متزامنة في الوقت الفعلي",
   "create_testrun.phantom_placeholder": "النسخة الوهمية",
   "create_testrun.ref_placeholder": "حدد الإصدار المرجعي",
   "create_testrun.title": "اختبار جديد",
@@ -361,5 +360,6 @@
   "edit_is_multiple_of.examples.value": "قيمة",
   "edit_is_multiple_of.title": "متعددة من العتبة",
   "testrun.cancel.callout": "هل أنت متأكد أنك تريد إلغاء الاختبار الحالي؟",
-  "testrun.cancel": "إيقاف الاختبار"
+  "testrun.cancel": "أوقف الاختبار",
+  "testrun.description": "اختبار ومقارنة نسخة السيناريو مع نسخة حية"
 }

@@ -124,9 +124,6 @@ export default function TestRuns() {
       </Page.Header>
 
       <Page.Container>
-        <Page.Description>
-          {t('scenarios:testrun.description')}
-        </Page.Description>
         <Page.Content className="max-w-screen-lg">
           <div className="flex flex-col gap-4">
             <TestRunsFiltersProvider
