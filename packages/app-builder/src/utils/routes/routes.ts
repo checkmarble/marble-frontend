@@ -197,14 +197,15 @@ export const routes = [
                 "file": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions.tsx"
               },
               {
-                "id": "routes/_builder+/scenarios+/$scenarioId+/test-run",
-                "path": "test-run",
-                "file": "routes/_builder+/scenarios+/$scenarioId+/test-run.tsx"
+                "id": "routes/_builder+/scenarios+/$scenarioId+/test-run+/$testRunId",
+                "path": "test-run/:testRunId",
+                "file": "routes/_builder+/scenarios+/$scenarioId+/test-run+/$testRunId.tsx"
               },
               {
-                "id": "routes/_builder+/scenarios+/$scenarioId+/test-run_.$testRunId",
-                "path": "test-run/:testRunId",
-                "file": "routes/_builder+/scenarios+/$scenarioId+/test-run_.$testRunId.tsx"
+                "id": "routes/_builder+/scenarios+/$scenarioId+/test-run+/index",
+                "index": true,
+                "path": "test-run/",
+                "file": "routes/_builder+/scenarios+/$scenarioId+/test-run+/index.tsx"
               },
               {
                 "id": "routes/_builder+/scenarios+/$scenarioId+/workflow",
@@ -468,6 +469,11 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule",
         "path": "ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel",
+        "path": "ressources/scenarios/:scenarioId/testrun/:testRunId/cancel",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/testrun+/create",

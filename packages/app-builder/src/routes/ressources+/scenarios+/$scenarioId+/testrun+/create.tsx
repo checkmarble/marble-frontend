@@ -55,7 +55,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   try {
     await testRun.launchTestRun({ ...submission.value, scenarioId });
     return redirect(
-      getRoute('/scenarios/:scenarioId/test-run', {
+      getRoute('/scenarios/:scenarioId/test-run/', {
         scenarioId: fromUUID(scenarioId),
       }),
     );

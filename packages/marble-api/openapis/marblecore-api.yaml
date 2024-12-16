@@ -3367,6 +3367,40 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /scenario-testruns/{test_run_id}/cancel:
+    post:
+      tags:
+        - TestRun
+      summary: Cancel a test run by id
+      operationId: cancelTestRun
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: test_run_id
+          description: ID of the test run that need to be fetched
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The cancelled test run corresponding to the provided `test_run_id`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - scenario_test_run
+                properties:
+                  scenario_test_run:
+                    $ref: '#/components/schemas/TestRunDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scenario-testruns/{test_run_id}/decision_data_by_score:
     get:
       tags:

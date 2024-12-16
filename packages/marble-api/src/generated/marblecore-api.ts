@@ -2897,6 +2897,29 @@ export function getTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Cancel a test run by id
+ */
+export function cancelTestRun(testRunId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            scenario_test_run: TestRunDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/cancel`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
  * Get decisions by score and outcome
  */
 export function getDecisionData(testRunId: string, opts?: Oazapfts.RequestOpts) {

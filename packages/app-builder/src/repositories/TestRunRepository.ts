@@ -19,6 +19,7 @@ import short from 'short-uuid';
 
 export interface TestRunRepository {
   getTestRun(args: { testRunId: string }): Promise<TestRun>;
+  cancelTestRun(args: { testRunId: string }): Promise<void>;
   launchTestRun(args: TestRunCreateInput): Promise<TestRun>;
   listTestRuns(args: { scenarioId: string }): Promise<TestRun[]>;
   listDecisions(args: { testRunId: string }): Promise<TestRunDecision[]>;
@@ -164,6 +165,16 @@ export const makeGetTestRunRepository2 = () => {
         ? Promise.resolve(run)
         : Promise.reject(new Error('Test run not found'));
     },
+    cancelTestRun: ({ testRunId }) => {
+      const run = testruns.find((run) => run.id === testRunId);
+      if (!run) {
+        return Promise.reject(new Error('Test run not found'));
+      }
+
+      run.status = 'down';
+
+      return Promise.resolve();
+    },
     listTestRuns: () => Promise.resolve(testruns),
     listDecisions: () => Promise.resolve(testrunDecisions),
     listRuleExecutions: () => Promise.resolve(testrunRuleExecutions),
@@ -176,7 +187,7 @@ export const makeGetTestRunRepository2 = () => {
         startDate: new Date().toISOString(),
         endDate: args.endDate,
         creatorId: '96762987-8895-4af2-9c0a-2dffde09985c',
-        status: (testruns.length === 0
+        status: (!testruns.some((r) => r.status === 'up')
           ? testRunStatuses[0]
           : testRunStatuses[
               randomInteger(1, testRunStatuses.length - 1)
@@ -195,6 +206,10 @@ export const makeGetTestRunRepository = () => {
     getTestRun: async ({ testRunId }) => {
       const result = await marbleCoreApiClient.getTestRun(testRunId);
       return adaptTestRun(result.scenario_test_run);
+    },
+    cancelTestRun: async ({ testRunId }) => {
+      await marbleCoreApiClient.cancelTestRun(testRunId);
+      return;
     },
     launchTestRun: async (args) => {
       const { scenario_test_run } = await marbleCoreApiClient.createTestRun(
