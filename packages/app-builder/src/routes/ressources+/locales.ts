@@ -21,11 +21,11 @@ export function loader({ request }: LoaderFunctionArgs) {
   const headers = new Headers();
 
   // On production, we want to add cache headerlocals to the response
-   
+
   if (process.env.NODE_ENV === 'production') {
     headers.set(
       'Cache-Control',
-       
+
       cacheHeader({
         maxAge: '1d',
         staleWhileRevalidate: '7d',

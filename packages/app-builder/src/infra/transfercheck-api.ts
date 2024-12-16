@@ -27,13 +27,12 @@ function getTransfercheckAPIClient({
       })
     : undefined;
 
-   
   const { defaults, servers, ...api } = transfercheckApi;
 
   //@ts-expect-error can't infer args
   return R.mapValues(api, (value) => (...args) => {
     // @ts-expect-error can't infer args
-     
+
     return value(...args, { fetch, baseUrl });
   });
 }
