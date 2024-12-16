@@ -21,6 +21,7 @@ jobs:
     permissions:
       contents: read
       actions: read
+      id-token: 'write' # needed for using open id token to authenticate with GCP
     uses: ./.github/workflows/build_and_deploy.yaml
     with:
       environment: 'production'
