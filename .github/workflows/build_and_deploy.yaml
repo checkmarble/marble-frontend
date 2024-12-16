@@ -20,11 +20,6 @@ on:
         required: true
         description: 'Sentry Auth Token'
 
-permissions:
-  contents: read
-  actions: read
-  id-token: 'write' # needed for using open id token to authenticate with GCP
-
 jobs:
   main:
     runs-on: ubuntu-latest
