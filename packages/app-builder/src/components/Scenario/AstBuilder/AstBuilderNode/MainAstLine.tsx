@@ -18,6 +18,7 @@ import { Switch } from 'ui-design-system';
 import { AstBuilderNode } from './AstBuilderNode';
 import { Operator } from './Operator';
 
+// Do not forget to clean up all stuff related to previous nesting (e.g. translations, helpers, doc...)
 function NewNestedChild(node: AstNode) {
   return NewUndefinedAstNode({
     children: [node, NewUndefinedAstNode()],
@@ -58,46 +59,52 @@ export function MainAstBinaryOperatorLine({
 
   const evaluationErrors = useEvaluationErrors(treePath);
 
-  return (
-    <div className="flex justify-between gap-2">
-      <div className="flex flex-row flex-wrap items-center gap-2">
-        {!root ? <span className="text-grey-25">(</span> : null}
-        <AstBuilderNode
-          treePath={leftPath}
-          astNode={left}
-          onSave={(astNode) => {
-            setAstNodeAtPath(leftPath, astNode);
-          }}
-          viewOnly={viewOnly}
-        />
-        <Operator
-          value={mainAstNode.name}
-          setValue={(operator: (typeof operators)[number]) => {
-            setOperatorAtPath(treePath, operator);
-          }}
-          validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}
-          viewOnly={viewOnly}
-          operators={operators}
-        />
-        <AstBuilderNode
-          treePath={rightPath}
-          astNode={right}
-          onSave={(astNode) => {
-            setAstNodeAtPath(rightPath, astNode);
-          }}
-          viewOnly={viewOnly}
-        />
-        {!root ? <span className="text-grey-25">)</span> : null}
-      </div>
-      {root && !viewOnly ? (
-        <NestSwitch
-          checked={isNestedRight}
-          onCheckedChange={(checked) => {
-            if (checked) addNestedChild(rightPath, right);
-            else removeNestedChild(rightPath, right);
-          }}
-        />
+  const children = (
+    <>
+      {!root ? (
+        <span className="text-grey-100 border-grey-10 flex h-10 items-center justify-center rounded border px-2">
+          (
+        </span>
       ) : null}
+      <AstBuilderNode
+        treePath={leftPath}
+        astNode={left}
+        onSave={(astNode) => {
+          setAstNodeAtPath(leftPath, astNode);
+        }}
+        viewOnly={viewOnly}
+      />
+      <Operator
+        value={mainAstNode.name}
+        setValue={(operator: (typeof operators)[number]) => {
+          setOperatorAtPath(treePath, operator);
+        }}
+        validationStatus={evaluationErrors.length > 0 ? 'error' : 'valid'}
+        viewOnly={viewOnly}
+        operators={operators}
+      />
+      <AstBuilderNode
+        treePath={rightPath}
+        astNode={right}
+        onSave={(astNode) => {
+          setAstNodeAtPath(rightPath, astNode);
+        }}
+        viewOnly={viewOnly}
+      />
+      {!root ? (
+        <span className="text-grey-100 border-grey-10 flex h-10 items-center justify-center rounded border px-2">
+          )
+        </span>
+      ) : null}
+    </>
+  );
+
+  // remove the <div> root wrapper to flatten the structure and use a single root flex-wrap
+  if (!root) return children;
+
+  return (
+    <div className="inline-flex flex-row flex-wrap items-center gap-2">
+      {children}
     </div>
   );
 }
