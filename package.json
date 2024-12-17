@@ -25,7 +25,9 @@
   },
   "pnpm": {
     "overrides": {
-      "cookie": "^0.7.2"
+      "cookie": "^0.7.2",
+      "cross-spawn": ">=7.0.5",
+      "path-to-regexp": ">=0.1.12"
     }
   }
 }
