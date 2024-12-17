@@ -19,7 +19,6 @@ export function useCallbackRef<T extends (...args: any[]) => any>(
 
   // https://github.com/facebook/react/issues/19240
   return React.useMemo(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     () => ((...args) => callbackRef.current?.(...args)) as T,
     [],
   );

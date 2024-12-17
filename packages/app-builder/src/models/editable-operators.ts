@@ -236,7 +236,7 @@ export function getOperatorName(
         assertNever('Untranslated operator', operatorName);
     }
   }
-  // eslint-disable-next-line no-restricted-properties
+
   if (process.env.NODE_ENV === 'development') {
     console.warn('Unhandled operator', operatorName);
   }

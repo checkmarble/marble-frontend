@@ -1,4 +1,3 @@
-/* eslint-disable tailwindcss/no-custom-classname */
 import { type NodeProps } from 'reactflow';
 import { assertNever } from 'typescript-utils';
 import { Separator } from 'ui-design-system';

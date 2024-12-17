@@ -193,7 +193,6 @@ const getWeekInfo = (
     // @ts-expect-error Property 'weekInfo' does not exist on type 'Locale'.
     intl.weekInfo ??
     // @ts-expect-error Property 'getWeekInfo' does not exist on type 'Locale'.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     intl.getWeekInfo?.() ?? { firstDay: 1, weekend: [6, 7], minimalDays: 4 }
   );
 };

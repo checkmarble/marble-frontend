@@ -25,6 +25,7 @@ import {
 import * as Ariakit from '@ariakit/react';
 import { Fragment } from 'react/jsx-runtime';
 import { useTranslation } from 'react-i18next';
+import { noop } from 'typescript-utils';
 import { Icon } from 'ui-icons';
 
 import { LogicalOperatorLabel } from '../../RootAstBuilderNode/LogicalOperator';
@@ -239,7 +240,7 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
               </p>
               <Operator
                 value={operator?.constant as OperatorFunction}
-                setValue={() => {}}
+                setValue={noop}
                 operators={[operator?.constant as OperatorFunction]}
                 viewOnly
               />

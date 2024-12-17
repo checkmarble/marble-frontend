@@ -15,7 +15,6 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
   const navigate = useNavigate();
   const { t } = useTranslation(handle.i18n);
 
-  // eslint-disable-next-line no-restricted-properties
   const isDevMode = process.env.NODE_ENV === 'development';
 
   let title: string, subtitle: string | null;

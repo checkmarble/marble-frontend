@@ -5,7 +5,7 @@ import { test } from '@playwright/test';
  * More info at https://playwright.dev/docs/api/class-test#test-step
  */
 export function boxedStep(
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   target: Function,
   context: ClassMethodDecoratorContext,
 ) {

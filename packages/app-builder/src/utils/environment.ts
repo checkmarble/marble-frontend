@@ -53,7 +53,6 @@ const EnvVarsSchema = PublicEnvVarsSchema.merge(SecretEnvVarsSchema);
 type EnvVars = PublicEnvVars & SecretEnvVars;
 
 function getEnv<K extends keyof EnvVars>(envVarName: K) {
-  // eslint-disable-next-line no-restricted-properties
   return process.env[envVarName] as EnvVars[K];
 }
 
@@ -62,7 +61,6 @@ function getEnv<K extends keyof EnvVars>(envVarName: K) {
  * This is called at the beginning of the server and is only used for improved DX
  */
 export function checkEnv() {
-  // eslint-disable-next-line no-restricted-properties
   const result = EnvVarsSchema.safeParse(process.env);
   if (!result.success) {
     const { _errors, ...rest } = result.error.format();
@@ -101,7 +99,7 @@ export function getServerEnv<K extends keyof ServerEnvVars>(
   if (serverEnvVarName === 'FIREBASE_CONFIG') {
     return parseFirebaseConfigFromEnv() as ServerEnvVars[K];
   }
-  // eslint-disable-next-line no-restricted-properties
+
   return getEnv(serverEnvVarName) as ServerEnvVars[K];
 }
 

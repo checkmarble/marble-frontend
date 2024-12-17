@@ -46,7 +46,6 @@ function PageHeader({ className, ...props }: React.ComponentProps<'div'>) {
 
 function PageContainer({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    // eslint-disable-next-line tailwindcss/no-custom-classname
     <div
       className="scrollbar-gutter-stable size-full overflow-y-scroll"
       {...props}

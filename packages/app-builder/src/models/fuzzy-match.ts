@@ -39,7 +39,7 @@ export function getFuzzyMatchAlgorithmName(
         assertNever('Untranslated fuzzy match algorithm', fuzzyMatchAlgorithm);
     }
   }
-  // eslint-disable-next-line no-restricted-properties
+
   if (process.env.NODE_ENV === 'development') {
     console.warn('Unhandled fuzzy match algorithm', fuzzyMatchAlgorithm);
   }

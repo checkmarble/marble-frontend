@@ -1,4 +1,3 @@
-/* eslint-disable tailwindcss/no-custom-classname */
 import clsx from 'clsx';
 import { Handle, type NodeProps, Position } from 'reactflow';
 import { Icon } from 'ui-icons';
