@@ -1,6 +1,6 @@
 import { Page } from '@app-builder/components';
 import { serverServices } from '@app-builder/services/init.server';
-import { downloadBlob } from '@app-builder/utils/download-blob';
+import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
 import {
   json,
@@ -10,6 +10,7 @@ import {
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import swaggercss from 'swagger-ui-react/swagger-ui.css?url';
 import { Button } from 'ui-design-system';
@@ -56,10 +57,15 @@ export default function Api() {
             <Button
               variant="secondary"
               onClick={() => {
-                const blob = new Blob([JSON.stringify(openapi)], {
-                  type: 'application/json;charset=utf-8,',
-                });
-                void downloadBlob(blob, 'openapi.json');
+                try {
+                  const blob = new Blob([JSON.stringify(openapi)], {
+                    type: 'application/json;charset=utf-8,',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  void downloadFile(url, 'openapi.json');
+                } catch (error) {
+                  toast.error(t('common:errors.unknown'));
+                }
               }}
             >
               <Icon icon="download" className="me-2 size-6" />

@@ -1,15 +1,13 @@
 // This is an empirical value to wait for the download modal to open (in ms)
-// Usefull to await for downloadBlob and display a loading indicator
+// Usefull to await for downloadFile and display a loading indicator
 const TIME_TO_OPEN_DOWNLOAD_MODALE = 150;
 
 /**
- * Utility function to download a blob as a file in the browser
+ * Utility function to download a file in the browser
  */
-export async function downloadBlob(blob: Blob, filename?: string) {
+export async function downloadFile(url: string, filename?: string) {
   return new Promise<void>((resolve, reject) => {
     try {
-      const url = URL.createObjectURL(blob);
-
       const a = document.createElement('a');
       a.href = url;
       a.download = filename || 'download';
@@ -35,7 +33,7 @@ export async function downloadBlob(blob: Blob, filename?: string) {
 export class DownloadError extends Error {
   constructor(error: unknown) {
     super(
-      `Internal error: Failed to download decisions: ${
+      `Internal error: ${
         error instanceof Error ? error.message : 'unknown error'
       }`,
     );
