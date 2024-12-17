@@ -9,4 +9,5 @@ export default [
   ...reactConfig,
   ...tailwindcssConfig(tailwindConfigPath),
   ...vitestConfig,
+  { ignores: ['build'] },
 ];
