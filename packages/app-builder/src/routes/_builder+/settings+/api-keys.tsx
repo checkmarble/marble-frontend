@@ -92,7 +92,8 @@ export default function ApiKeys() {
               size: 100,
               cell: ({ cell }) => {
                 return (
-                  <div className="group-hover:text-grey-100 flex gap-2 text-transparent">
+                  // TODO: inject trigger inside <DeleteApiKey /> and use style directly on it (so we can remove the container div)
+                  <div className="group-hover:text-grey-100 focus-within:text-grey-100 text-transparent">
                     <DeleteApiKey apiKey={cell.row.original} />
                   </div>
                 );
@@ -127,7 +128,6 @@ export default function ApiKeys() {
                   return (
                     <Table.Row
                       key={row.id}
-                      tabIndex={0}
                       className="hover:bg-purple-05 group"
                       row={row}
                     />

@@ -8,7 +8,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import { Link, useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,8 +37,6 @@ const columnHelper = createColumnHelper<InboxWithCasesCount>();
 export default function Inboxes() {
   const { t } = useTranslation(['settings']);
   const { inboxes, isCreateInboxAvailable } = useLoaderData<typeof loader>();
-
-  const navigate = useNavigate();
 
   const columns = useMemo(() => {
     return [
@@ -80,6 +78,13 @@ export default function Inboxes() {
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     enableSorting: false,
+    rowLink: ({ id }) => (
+      <Link
+        to={getRoute('/settings/inboxes/:inboxId', {
+          inboxId: fromUUID(id),
+        })}
+      />
+    ),
   });
 
   return (
@@ -97,21 +102,7 @@ export default function Inboxes() {
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => {
-                  return (
-                    <Table.Row
-                      key={row.id}
-                      tabIndex={0}
-                      className="hover:bg-purple-05 cursor-pointer"
-                      row={row}
-                      onClick={() => {
-                        navigate(
-                          getRoute('/settings/inboxes/:inboxId', {
-                            inboxId: fromUUID(row.original.id),
-                          }),
-                        );
-                      }}
-                    />
-                  );
+                  return <Table.Row key={row.id} row={row} />;
                 })}
               </Table.Body>
             </Table.Container>

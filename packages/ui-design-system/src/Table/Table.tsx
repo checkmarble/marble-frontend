@@ -9,17 +9,27 @@ import {
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
-import { cloneElement, useMemo, useRef } from 'react';
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useMemo,
+  useRef,
+} from 'react';
 import { Icon } from 'ui-icons';
 
 import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
 
+const WithRowLinkContext = createContext(false);
+
 function TableContainer({
   className,
   scrollElementRef,
+  withRowLink,
   ...props
 }: React.ComponentProps<'table'> & {
   scrollElementRef: React.RefObject<HTMLDivElement>;
+  withRowLink: boolean;
 }) {
   return (
     <ScrollAreaV2
@@ -31,10 +41,12 @@ function TableContainer({
       orientation="both"
       type="auto"
     >
-      <table
-        className="isolate w-full table-fixed border-separate border-spacing-0"
-        {...props}
-      />
+      <WithRowLinkContext.Provider value={withRowLink}>
+        <table
+          className="isolate w-full table-fixed border-separate border-spacing-0"
+          {...props}
+        />
+      </WithRowLinkContext.Provider>
     </ScrollAreaV2>
   );
 }
@@ -128,17 +140,10 @@ function Header<TData extends RowData>({
 
 interface TableProps<TData extends RowData> extends TableOptions<TData> {
   /**
-   * Transform the row into a link.
-   *
-   * Be aware you need to use 'relative' class on other interactable cell elements to create a new stacking context and avoid z-index issues.
-   *
-   * @example
-   *  rowLink={(row) => <Link to={`/row/${row.id}`}>{row.name}</Link>}
-   *  ...
-   *   columnHelper.accessor({
-   *     ...
-   *     cell: ({ getValue }) => <Checkbox className="relative">{getValue()}</Checkbox>,
-   *    }),
+   * Transform the row into a link :
+   * - the link will be placed in a dedicated first column with width = 0.
+   * - the row will be clickable using the [redundant click event](https://inclusive-components.design/cards/#theredundantclickevent) pattern
+   * - the row will be highlighted on hover / focus-within (= when the link is focused).
    */
   rowLink?: (row: TData) => JSX.Element;
 }
@@ -156,8 +161,7 @@ function useCoreTable<TData extends RowData>({
       header: '',
       cell: ({ row }) =>
         cloneElement(rowLink(row.original), {
-          className:
-            "block size-0 overflow-hidden after:absolute after:inset-0 after:content-['']",
+          'data-column-id': internalRowLink,
         }),
     });
     return columns;
@@ -197,7 +201,7 @@ export function useVirtualTable<TData extends RowData>(
       return { paddingTop, paddingBottom };
     },
     getContainerProps: () => {
-      return { scrollElementRef };
+      return { scrollElementRef, withRowLink: options?.rowLink !== undefined };
     },
     isEmpty: rows.length === 0,
     rows: virtualRows.map(
@@ -221,7 +225,7 @@ export function useTable<TData extends RowData>(options: TableProps<TData>) {
       return { paddingTop: 0, paddingBottom: 0 };
     },
     getContainerProps: () => {
-      return { scrollElementRef };
+      return { scrollElementRef, withRowLink: options?.rowLink !== undefined };
     },
     rows,
   };
@@ -256,12 +260,34 @@ function Body({
 function Row<TData extends RowData>({
   row,
   className,
+  onClick,
   ...props
 }: Omit<React.ComponentProps<'tr'>, 'children'> & { row: Row<TData> }) {
+  const withRowLink = useContext(WithRowLinkContext);
+
   return (
-    // Scale-100 is a hack to bypass relative bug on <tr /> for Safari https://bugs.webkit.org/show_bug.cgi?id=240961
     <tr
-      className={clsx('even:bg-grey-02 relative h-12 scale-100', className)}
+      onClick={(e) => {
+        if (withRowLink) {
+          const rowLink = e.currentTarget.querySelector(
+            '[data-column-id="__internal-row-link"]',
+          );
+          if (
+            rowLink &&
+            rowLink !== e.target &&
+            rowLink instanceof HTMLAnchorElement
+          ) {
+            rowLink.click();
+          }
+        }
+        onClick?.(e);
+      }}
+      className={clsx(
+        'even:bg-grey-02 h-12',
+        withRowLink &&
+          'hover:bg-purple-05 focus-within:bg-purple-05 cursor-pointer',
+        className,
+      )}
       {...props}
     >
       {row.getVisibleCells().map((cell) => {

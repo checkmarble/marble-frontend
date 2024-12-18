@@ -149,7 +149,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
-          return <Table.Row key={row.id} tabIndex={0} row={row} />;
+          return <Table.Row key={row.id} row={row} />;
         })}
       </Table.Body>
     </Table.Container>

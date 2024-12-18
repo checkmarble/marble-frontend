@@ -2,7 +2,7 @@ import { type Case } from '@app-builder/models/cases';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { useNavigate } from '@remix-run/react';
+import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { useMemo } from 'react';
@@ -24,7 +24,6 @@ export function CasesList({
   className?: string;
 }) {
   const { t } = useTranslation(casesI18n);
-  const navigate = useNavigate();
   const language = useFormatLanguage();
 
   const columns = useMemo(
@@ -46,7 +45,7 @@ export function CasesList({
           const caseName = getValue();
           return (
             <Tooltip.Default content={caseName}>
-              <span className="text-grey-100 text-s isolate line-clamp-2 font-normal">
+              <span className="text-grey-100 text-s line-clamp-2 w-fit font-normal">
                 {caseName}
               </span>
             </Tooltip.Default>
@@ -99,6 +98,13 @@ export function CasesList({
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     enableSorting: false,
+    rowLink: ({ id }) => (
+      <Link
+        to={getRoute('/cases/:caseId', {
+          caseId: fromUUID(id),
+        })}
+      />
+    ),
   });
 
   return (
@@ -109,20 +115,7 @@ export function CasesList({
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
-          return (
-            <Table.Row
-              key={row.id}
-              className="hover:bg-purple-05 cursor-pointer"
-              row={row}
-              onClick={() => {
-                navigate(
-                  getRoute('/cases/:caseId', {
-                    caseId: fromUUID(row.original.id),
-                  }),
-                );
-              }}
-            />
-          );
+          return <Table.Row key={row.id} row={row} />;
         })}
       </Table.Body>
     </Table.Container>

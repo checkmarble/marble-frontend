@@ -216,14 +216,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
-          return (
-            <Table.Row
-              key={row.id}
-              tabIndex={0}
-              className="relative"
-              row={row}
-            />
-          );
+          return <Table.Row key={row.id} row={row} />;
         })}
       </Table.Body>
     </Table.Container>

@@ -121,7 +121,6 @@ export function DecisionsList({
               ),
               cell: ({ row }) => (
                 <Checkbox
-                  className="relative"
                   checked={row.getIsSelected()}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -157,7 +156,7 @@ export function DecisionsList({
         cell: ({ getValue, row }) => (
           <div className="flex flex-row items-center gap-2">
             <Tooltip.Default content={getValue()}>
-              <span className="text-grey-100 text-s isolate line-clamp-2 font-normal">
+              <span className="text-grey-100 text-s line-clamp-2 font-normal">
                 {getValue()}
               </span>
             </Tooltip.Default>
@@ -192,7 +191,7 @@ export function DecisionsList({
                 status={row.original.case.status}
               />
               <Tooltip.Default content={getValue()}>
-                <div className="bg-grey-02 isolate flex h-8 items-center justify-center rounded px-2">
+                <div className="bg-grey-02 flex h-8 items-center justify-center rounded px-2">
                   <span className="text-grey-100 text-s line-clamp-1 font-normal">
                     {getValue()}
                   </span>
@@ -288,14 +287,7 @@ export function DecisionsList({
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
-          return (
-            <Table.Row
-              key={row.id}
-              tabIndex={0}
-              className="hover:bg-purple-05 relative cursor-pointer"
-              row={row}
-            />
-          );
+          return <Table.Row key={row.id} row={row} />;
         })}
       </Table.Body>
     </Table.Container>

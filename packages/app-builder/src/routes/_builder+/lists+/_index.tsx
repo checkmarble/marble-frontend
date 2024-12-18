@@ -5,7 +5,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
+import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
   createColumnHelper,
@@ -44,8 +44,6 @@ export default function ListsPage() {
   const { t } = useTranslation(handle.i18n);
   const { customLists, isCreateListAvailable } = useLoaderData<typeof loader>();
 
-  const navigate = useNavigate();
-
   const columns = useMemo(
     () => [
       columnHelper.accessor('name', {
@@ -71,6 +69,13 @@ export default function ListsPage() {
       columnResizeMode: 'onChange',
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
+      rowLink: ({ id }) => (
+        <Link
+          to={getRoute('/lists/:listId', {
+            listId: fromUUID(id),
+          })}
+        />
+      ),
     });
 
   return (
@@ -99,18 +104,7 @@ export default function ListsPage() {
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>
                   {rows.map((row) => (
-                    <Table.Row
-                      key={row.id}
-                      className="hover:bg-purple-05 cursor-pointer"
-                      row={row}
-                      onClick={() => {
-                        navigate(
-                          getRoute('/lists/:listId', {
-                            listId: fromUUID(row.original.id),
-                          }),
-                        );
-                      }}
-                    />
+                    <Table.Row key={row.id} row={row} />
                   ))}
                 </Table.Body>
               </Table.Container>
