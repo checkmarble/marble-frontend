@@ -23,5 +23,18 @@
   "delete_value.title": "حذف هذه القيمة",
   "delete_value.value_content": "أنت على وشك حذف القيمة.",
   "delete_value.no_return": "هذه العملية غير قابلة للتراجع، هل ترغب في المتابعة؟",
-  "empty_custom_list_matches": "لا توجد قيمة تطابق بحثك."
+  "empty_custom_list_matches": "لا توجد قيمة تطابق بحثك.",
+  "download_values_as_csv": "قم بتنزيل القيم بتنسيق CSV",
+  "drop_csv_here": "قم بإسقاط ملف CSV الخاص بك هنا",
+  "errors.failure_message": "فشل التحميل بسبب الخطأ التالي: {{errorMessage}}",
+  "errors.request_timeout": "انتهت مهلة الطلب. \nيرجى المحاولة مرة أخرى.",
+  "pick_csv": "اختر ملف CSV",
+  "upload_csv.results": "نتائج",
+  "upload_csv.success": "تم التحميل بنجاح :",
+  "upload_csv.success.created_one": "تم إنشاء {{count}} قيمة جديدة",
+  "upload_csv.success.created_other": "تم إنشاء {{count}} قيم جديدة",
+  "upload_csv.success.deleted_one": "تم حذف {{count}} القيمة القديمة",
+  "upload_csv.success.deleted_other": "تم حذف {{count}} من القيم القديمة",
+  "upload_csv.success.existing_one": "{{count}} القيمة الحالية",
+  "upload_csv.success.existing_other": "{{count}} القيم الموجودة"
 }

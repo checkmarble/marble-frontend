@@ -1,13 +1,19 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { LoadingIcon } from '@app-builder/components/Spinner';
 import { DeleteList } from '@app-builder/routes/ressources+/lists+/delete';
 import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
 import { NewListValue } from '@app-builder/routes/ressources+/lists+/value_create';
 import { DeleteListValue } from '@app-builder/routes/ressources+/lists+/value_delete';
+import { useBackendInfo } from '@app-builder/services/auth/auth.client';
+import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
+import { downloadFile } from '@app-builder/utils/download-file';
+import useAsync from '@app-builder/utils/hooks/use-async';
+import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useRouteError } from '@remix-run/react';
+import { useLoaderData, useRevalidator, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
   createColumnHelper,
@@ -15,11 +21,23 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { useMemo } from 'react';
+import * as React from 'react';
+import { useDropzone } from 'react-dropzone-esm';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Input, Table, useVirtualTable } from 'ui-design-system';
+import { ClientOnly } from 'remix-utils/client-only';
+import {
+  Button,
+  type ButtonProps,
+  Input,
+  ModalV2,
+  Table,
+  useVirtualTable,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import * as z from 'zod';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, featureAccessService } = serverServices;
@@ -62,7 +80,7 @@ export default function Lists() {
   const listValues = customList.values ?? [];
   const { t } = useTranslation(handle.i18n);
 
-  const columns = useMemo(
+  const columns = React.useMemo(
     () => [
       columnHelper.accessor((row) => row.value, {
         id: 'value',
@@ -128,9 +146,14 @@ export default function Lists() {
         </div>
       </Page.Header>
       <Page.Container>
-        <Page.Description>{customList.description}</Page.Description>
+        {customList.description ? (
+          <Page.Description>{customList.description}</Page.Description>
+        ) : null}
         <Page.Content className="max-w-screen-xl">
-          {/* <ScenariosList scenarios={scenarios} /> */}
+          {listValues.length > 0 ? (
+            <DownloadAsCSV listId={customList.id} />
+          ) : null}
+          <UploadAsCsv listId={customList.id} />
           <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
             <div className="flex flex-row gap-2 lg:gap-4">
               <form className="flex grow items-center">
@@ -151,7 +174,7 @@ export default function Lists() {
               ) : null}
             </div>
             {virtualTable.isEmpty ? (
-              <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-grey-00 border-grey-10 flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
                 <p className="text-s font-medium">
                   {listValues.length > 0
                     ? t('lists:empty_custom_list_matches')
@@ -174,4 +197,350 @@ export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
   return <ErrorComponent error={error} />;
+}
+
+const DownloadAsCSVButton = React.forwardRef<
+  HTMLButtonElement,
+  Omit<ButtonProps, 'children'> & { loading?: boolean }
+>(function DownloadAsCSVButton({ className, loading, ...props }, ref) {
+  const { t } = useTranslation(handle.i18n);
+  return (
+    <Button
+      ref={ref}
+      variant="secondary"
+      className={clsx('w-fit', className)}
+      {...props}
+    >
+      <LoadingIcon
+        icon="download"
+        loading={loading ?? false}
+        className="size-6"
+      />
+      {t('lists:download_values_as_csv')}
+    </Button>
+  );
+});
+
+function ClientDownloadAsCSV({ listId }: { listId: string }) {
+  const { t } = useTranslation(handle.i18n);
+  const { getAccessToken, backendUrl } = useBackendInfo(
+    clientServices.authenticationClientService,
+  );
+
+  const [downloadCsv, { loading }] = useAsync(async (listId: string) => {
+    try {
+      const tokenResponse = await getAccessToken();
+      if (!tokenResponse.success) {
+        toast.error(t('common:errors.firebase_auth_error'));
+        return;
+      }
+      const response = await fetch(
+        `${backendUrl}/custom-lists/${listId}/values`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${tokenResponse.accessToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        toast.error(t('common:errors.unknown'));
+        return;
+      }
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get('Content-Disposition');
+      const filename =
+        contentDisposition?.split('filename=')[1] ?? 'list-values.csv';
+
+      const url = URL.createObjectURL(blob);
+      await downloadFile(url, filename);
+    } catch (error) {
+      toast.error(t('common:errors.unknown'));
+    }
+  });
+
+  return (
+    <DownloadAsCSVButton
+      loading={loading}
+      onClick={() => {
+        void downloadCsv(listId);
+      }}
+    />
+  );
+}
+
+function DownloadAsCSV({ listId }: { listId: string }) {
+  return (
+    <ClientOnly
+      fallback={<DownloadAsCSVButton className="cursor-wait" disabled />}
+    >
+      {() => <ClientDownloadAsCSV listId={listId} />}
+    </ClientOnly>
+  );
+}
+
+const UploadAsCsvDropzone = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentPropsWithoutRef<'div'>
+>(function UploadAsCsvDropzone({ className, ...props }, ref) {
+  return (
+    <div
+      ref={ref}
+      className={clsx(
+        'text-s flex h-40 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
+        className,
+      )}
+      {...props}
+    />
+  );
+});
+
+type State =
+  | {
+      open: boolean;
+      success: false;
+      message: string;
+    }
+  | {
+      open: boolean;
+      success: true;
+      total: {
+        existing: number;
+        deleted: number;
+        created: number;
+      };
+    };
+type Actions =
+  | {
+      type: 'success';
+      total: {
+        existing: number;
+        deleted: number;
+        created: number;
+      };
+    }
+  | {
+      type: 'error';
+      message: string;
+    }
+  | {
+      type: 'setOpen';
+      open: boolean;
+    };
+
+const initialState: State = {
+  open: false,
+  message: '',
+  success: false,
+};
+
+function modalReducer(state: State, action: Actions): State {
+  switch (action.type) {
+    case 'success':
+      return {
+        open: true,
+        success: true,
+        total: action.total,
+      };
+    case 'error':
+      return {
+        open: true,
+        success: false,
+        message: action.message,
+      };
+    case 'setOpen':
+      return {
+        // we don't want to reset the full state in case of a close animation
+        ...state,
+        open: action.open,
+      };
+    default:
+      return state;
+  }
+}
+
+function ClientUploadAsCsv({ listId }: { listId: string }) {
+  const { t } = useTranslation(handle.i18n);
+  const [modalState, dispatch] = React.useReducer(modalReducer, initialState);
+
+  const { getAccessToken, backendUrl } = useBackendInfo(
+    clientServices.authenticationClientService,
+  );
+
+  const revalidator = useRevalidator();
+  const [onDrop, { loading }] = useAsync(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (!file) {
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const tokenResponse = await getAccessToken();
+      if (!tokenResponse.success) {
+        toast.error(t('common:errors.firebase_auth_error'));
+        return;
+      }
+
+      const response = await fetch(
+        `${backendUrl}/custom-lists/${listId}/values/batch`,
+        {
+          method: 'POST',
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${tokenResponse.accessToken}`,
+          },
+        },
+      );
+      if (!response.ok) {
+        if (response.status === REQUEST_TIMEOUT) {
+          toast.error(t('lists:errors.request_timeout'));
+          return;
+        }
+        let errorMessage: string | undefined;
+        try {
+          const errorResponse = z
+            .object({
+              message: z.string(),
+            })
+            .parse(await response.json());
+          errorMessage = errorResponse.message;
+        } catch (error) {
+          errorMessage = (await response.text()).trim();
+        }
+
+        dispatch({
+          type: 'error',
+          message:
+            t('lists:errors.failure_message', {
+              replace: { errorMessage },
+            }) ?? t('common:global_error'),
+        });
+        return;
+      }
+
+      const { results } = z
+        .object({
+          results: z.object({
+            total_existing: z.number(),
+            total_deleted: z.number(),
+            total_created: z.number(),
+          }),
+        })
+        .parse(await response.json());
+
+      dispatch({
+        type: 'success',
+        total: {
+          existing: results.total_existing,
+          deleted: results.total_deleted,
+          created: results.total_created,
+        },
+      });
+      revalidator.revalidate();
+    } catch (error) {
+      dispatch({
+        type: 'error',
+        message:
+          error instanceof Error ? error.message : t('common:global_error'),
+      });
+    }
+  });
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: (acceptedFiles) => {
+      void onDrop(acceptedFiles);
+    },
+    accept: { 'text/*': ['.csv'] },
+    multiple: false,
+  });
+
+  return (
+    <UploadAsCsvDropzone
+      {...getRootProps()}
+      className={
+        isDragActive
+          ? 'bg-purple-10 border-purple-50 opacity-90'
+          : 'border-grey-50'
+      }
+    >
+      <input {...getInputProps()} />
+      <p>{t('lists:drop_csv_here')}</p>
+      <p className="text-grey-25 uppercase">{t('common:or')}</p>
+      <Button>
+        <LoadingIcon icon="upload" loading={loading} className="size-6" />
+        {t('lists:pick_csv')}
+      </Button>
+
+      <ModalV2.Root
+        open={modalState.open}
+        setOpen={(open) => {
+          dispatch({ type: 'setOpen', open });
+        }}
+      >
+        <ModalV2.Content onClick={(e) => e.stopPropagation()}>
+          <div className="bg-grey-00 text-s flex flex-col items-center gap-6 p-6">
+            <Icon
+              icon={modalState.success ? 'tick' : 'cross'}
+              className={clsx(
+                'size-[108px] rounded-full border-8',
+                modalState.success
+                  ? 'bg-purple-10 border-purple-10 text-purple-100'
+                  : 'bg-red-10 border-red-10 text-red-100',
+              )}
+            />
+            <div className="flex flex-col items-center gap-2 text-center">
+              <p className="text-l font-semibold">
+                {t('lists:upload_csv.results')}
+              </p>
+              {modalState.success ? (
+                <div className="flex flex-col items-start">
+                  <p>{t('lists:upload_csv.success')}</p>
+                  <ul className="list-inside list-disc text-start">
+                    <li>
+                      {t('lists:upload_csv.success.existing', {
+                        count: modalState.total.existing,
+                      })}
+                    </li>
+                    <li>
+                      {t('lists:upload_csv.success.deleted', {
+                        count: modalState.total.deleted,
+                      })}
+                    </li>
+                    <li>
+                      {t('lists:upload_csv.success.created', {
+                        count: modalState.total.created,
+                      })}
+                    </li>
+                  </ul>
+                </div>
+              ) : (
+                <p>{modalState.message}</p>
+              )}
+            </div>
+            <ModalV2.Close render={<Button />}>
+              <Icon icon="tick" className="size-6" />
+              {t('common:understand')}
+            </ModalV2.Close>
+          </div>
+        </ModalV2.Content>
+      </ModalV2.Root>
+    </UploadAsCsvDropzone>
+  );
+}
+
+function UploadAsCsv({ listId }: { listId: string }) {
+  return (
+    <ClientOnly
+      fallback={
+        <UploadAsCsvDropzone className="border-grey-50">
+          <LoadingIcon icon="upload" loading={true} className="size-6" />
+        </UploadAsCsvDropzone>
+      }
+    >
+      {() => <ClientUploadAsCsv listId={listId} />}
+    </ClientOnly>
+  );
 }

@@ -23,5 +23,18 @@
   "delete_list.content": "You are about to delete this list. This action is irreversible, do you want to proceed ?",
   "delete_value.title": "Delete this value",
   "delete_value.value_content": "You are about to delete the value",
-  "delete_value.no_return": "This action is irreversible, do you want to proceed ?"
+  "delete_value.no_return": "This action is irreversible, do you want to proceed ?",
+  "download_values_as_csv": "Download values as CSV",
+  "drop_csv_here": "Drop your CSV file here",
+  "pick_csv": "Pick a CSV file",
+  "upload_csv.results": "Results",
+  "upload_csv.success": "The upload is successful :",
+  "upload_csv.success.deleted_one": "{{count}} old value deleted",
+  "upload_csv.success.deleted_other": "{{count}} old values deleted",
+  "upload_csv.success.created_one": "{{count}} new value created",
+  "upload_csv.success.created_other": "{{count}} new values created",
+  "upload_csv.success.existing_one": "{{count}} existing value",
+  "upload_csv.success.existing_other": "{{count}} existing values",
+  "errors.request_timeout": "The request timed out. Please try again.",
+  "errors.failure_message": "Upload failed with the following error: {{errorMessage}}"
 }

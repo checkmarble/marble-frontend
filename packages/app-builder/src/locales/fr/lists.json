@@ -23,5 +23,18 @@
   "create_list.title": "Nouvelle liste",
   "create_list.name_placeholder": "Ajouter un nom à cette liste",
   "create_list.description_placeholder": "Ajouter une description",
-  "empty_custom_list_matches": "Aucune valeur ne correspond à votre recherche."
+  "empty_custom_list_matches": "Aucune valeur ne correspond à votre recherche.",
+  "download_values_as_csv": "Télécharger les valeurs au format CSV",
+  "drop_csv_here": "Déposez votre fichier CSV ici",
+  "errors.failure_message": "Le téléchargement a échoué avec l'erreur suivante : {{errorMessage}}",
+  "errors.request_timeout": "La requète a expiré. \nVeuillez réessayer.",
+  "pick_csv": "Choisissez un fichier CSV",
+  "upload_csv.results": "Résultats",
+  "upload_csv.success": "Le téléchargement a réussi :",
+  "upload_csv.success.created_one": "{{count}} nouvelle valeur créée",
+  "upload_csv.success.created_other": "{{count}} nouvelles valeurs créées",
+  "upload_csv.success.deleted_one": "{{count}} ancienne valeur supprimée",
+  "upload_csv.success.deleted_other": "{{count}} anciennes valeurs supprimées",
+  "upload_csv.success.existing_one": "{{count}} valeur existante",
+  "upload_csv.success.existing_other": "{{count}} valeurs existantes"
 }

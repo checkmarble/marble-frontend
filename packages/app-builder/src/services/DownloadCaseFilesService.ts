@@ -1,4 +1,4 @@
-import { DownloadError } from '@app-builder/utils/download-blob';
+import { DownloadError, downloadFile } from '@app-builder/utils/download-file';
 import { UnknownError } from '@app-builder/utils/unknown-error';
 import { useState } from 'react';
 import { z } from 'zod';
@@ -59,7 +59,7 @@ export function useDownloadCaseFiles(
         );
       }
       const { url } = fileDownloadUrlSchema.parse(await response.json());
-      await openFileLink(url);
+      await downloadFile(url);
     } catch (error) {
       if (
         error instanceof AlreadyDownloadingError ||
@@ -80,28 +80,4 @@ export function useDownloadCaseFiles(
     downloadCaseFile,
     downloadingCaseFile: downloading,
   };
-}
-
-const TIME_TO_OPEN_DOWNLOAD_MODALE = 150;
-
-async function openFileLink(url: string) {
-  return new Promise<void>((resolve, reject) => {
-    try {
-      const a = document.createElement('a');
-      a.href = url;
-      a.target = '_blank';
-
-      const clickHandler = () => {
-        setTimeout(() => {
-          removeEventListener('click', clickHandler);
-          resolve();
-        }, TIME_TO_OPEN_DOWNLOAD_MODALE);
-      };
-
-      a.addEventListener('click', clickHandler);
-      a.click();
-    } catch (error) {
-      reject(new DownloadError(error));
-    }
-  });
 }
