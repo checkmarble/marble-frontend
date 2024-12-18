@@ -145,7 +145,7 @@ function AlertsListTable({
         filterFn: arrIncludesExactSome,
         cell: ({ getValue }) => {
           const status = getValue();
-          return <AlertStatus className="relative" status={status} />;
+          return <AlertStatus status={status} />;
         },
       }),
       columnHelper.accessor((row) => row.message, {
@@ -215,14 +215,7 @@ function AlertsListTable({
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
-          return (
-            <Table.Row
-              key={row.id}
-              tabIndex={0}
-              className="hover:bg-purple-05 relative cursor-pointer"
-              row={row}
-            />
-          );
+          return <Table.Row key={row.id} row={row} />;
         })}
       </Table.Body>
     </Table.Container>

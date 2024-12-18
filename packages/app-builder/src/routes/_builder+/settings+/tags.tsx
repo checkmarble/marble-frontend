@@ -72,12 +72,18 @@ export default function Tags() {
               size: 100,
               cell: ({ cell }) => {
                 return (
-                  <div className="group-hover:text-grey-100 flex gap-2 text-transparent">
+                  <div className="flex gap-2">
                     {isEditTagAvailable ? (
-                      <UpdateTag tag={cell.row.original} />
+                      // TODO: inject trigger inside <UpdateTag /> and use style directly on it (so we can remove the container div)
+                      <div className="group-hover:text-grey-100 focus-within:text-grey-100 text-transparent">
+                        <UpdateTag tag={cell.row.original} />
+                      </div>
                     ) : null}
                     {isDeleteTagAvailable ? (
-                      <DeleteTag tag={cell.row.original} />
+                      //TODO: inject trigger inside <DeleteTag /> and use style directly on it (so we can remove the container div)
+                      <div className="group-hover:text-grey-100 focus-within:text-grey-100 text-transparent">
+                        <DeleteTag tag={cell.row.original} />
+                      </div>
                     ) : null}
                   </div>
                 );
@@ -112,7 +118,6 @@ export default function Tags() {
                   return (
                     <Table.Row
                       key={row.id}
-                      tabIndex={0}
                       className="hover:bg-purple-05 group"
                       row={row}
                     />

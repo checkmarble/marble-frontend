@@ -22,7 +22,7 @@ import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import { Link, useLoaderData } from '@remix-run/react';
 import {
   type ColumnFiltersState,
   createColumnHelper,
@@ -77,7 +77,6 @@ export default function Rules() {
   const scenarioId = useParam('scenarioId');
   const editorMode = useEditorMode();
 
-  const navigate = useNavigate();
   const { rules, ruleGroups } = useLoaderData<typeof loader>();
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
@@ -205,6 +204,7 @@ export default function Rules() {
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    rowLink: ({ id }) => <Link to={`./${fromUUID(id)}`} />,
   });
 
   return (
@@ -249,16 +249,7 @@ export default function Rules() {
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
           {hasRules ? (
-            rows.map((row) => (
-              <Table.Row
-                key={row.id}
-                className="hover:bg-purple-05 cursor-pointer"
-                row={row}
-                onClick={() => {
-                  navigate(`./${fromUUID(row.original.id)}`);
-                }}
-              />
-            ))
+            rows.map((row) => <Table.Row key={row.id} row={row} />)
           ) : (
             <tr className="h-28">
               <td colSpan={columns.length}>

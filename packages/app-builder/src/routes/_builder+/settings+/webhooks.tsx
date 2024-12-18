@@ -77,7 +77,7 @@ export default function Webhooks() {
               </span>
             );
           }
-          return <EventTypes className="relative" eventTypes={eventTypes} />;
+          return <EventTypes eventTypes={eventTypes} />;
         },
       }),
     ];
@@ -134,14 +134,7 @@ export default function Webhooks() {
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => {
-                  return (
-                    <Table.Row
-                      key={row.id}
-                      tabIndex={0}
-                      className="hover:bg-purple-05 cursor-pointer"
-                      row={row}
-                    />
-                  );
+                  return <Table.Row key={row.id} row={row} />;
                 })}
               </Table.Body>
             </Table.Container>

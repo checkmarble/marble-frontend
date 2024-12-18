@@ -112,18 +112,24 @@ export default function Users() {
               size: 50,
               cell: ({ cell }) => {
                 return (
-                  <div className="group-hover:text-grey-100 flex gap-2 text-transparent">
+                  <div className="flex gap-2">
                     {isEditUserAvailable ? (
-                      <UpdateUser
-                        user={cell.row.original}
-                        userRoles={userRoles}
-                      />
+                      // TODO: inject trigger inside <UpdateUser /> and use style directly on it (so we can remove the container div) */}
+                      <div className="group-hover:text-grey-100 focus-within:text-grey-100 text-transparent">
+                        <UpdateUser
+                          user={cell.row.original}
+                          userRoles={userRoles}
+                        />
+                      </div>
                     ) : null}
                     {isDeleteUserAvailable ? (
-                      <DeleteUser
-                        userId={cell.row.original.userId}
-                        currentUserId={user.actorIdentity.userId}
-                      />
+                      // TODO: inject trigger inside <DeleteUser /> and use style directly on it (so we can remove the container div) */}
+                      <div className="group-hover:text-grey-100 focus-within:text-grey-100 text-transparent">
+                        <DeleteUser
+                          userId={cell.row.original.userId}
+                          currentUserId={user.actorIdentity.userId}
+                        />
+                      </div>
                     ) : null}
                   </div>
                 );
@@ -167,7 +173,6 @@ export default function Users() {
                   return (
                     <Table.Row
                       key={row.id}
-                      tabIndex={0}
                       className="hover:bg-purple-05 group"
                       row={row}
                     />
