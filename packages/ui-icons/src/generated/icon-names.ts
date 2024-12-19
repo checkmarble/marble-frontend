@@ -43,6 +43,7 @@ export const iconNames = [
   'linked-services',
   'list',
   'lists',
+  'lock',
   'logout',
   'manage-search',
   'more-menu',
