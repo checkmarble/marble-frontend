@@ -8,6 +8,14 @@ import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inbox
 import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.delete';
 import { UpdateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.update';
 import { UpdateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/update';
+import {
+  getInboxUserRoles,
+  isCreateInboxUserAvailable,
+  isDeleteInboxAvailable,
+  isDeleteInboxUserAvailable,
+  isEditInboxAvailable,
+  isEditInboxUserAvailable,
+} from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
@@ -29,18 +37,17 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { user, inbox: inboxApi } = await authService.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const {
+    user,
+    inbox: inboxApi,
+    entitlements,
+  } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const inboxId = fromParams(params, 'inboxId');
-
-  const [inboxesList, inboxUserRoles] = await Promise.all([
-    inboxApi.listInboxesWithCaseCount(),
-    featureAccessService.getInboxUserRoles(),
-  ]);
-
+  const inboxesList = await inboxApi.listInboxesWithCaseCount();
   const inbox = inboxesList.find((inbox) => inbox.id === inboxId);
   if (!inbox) {
     redirect(getRoute('/settings/inboxes/'));
@@ -50,15 +57,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     inbox,
     caseCount: inbox.casesCount,
-    inboxUserRoles,
-    isEditInboxAvailable: featureAccessService.isEditInboxAvailable(user),
-    isDeleteInboxAvailable: featureAccessService.isDeleteInboxAvailable(user),
-    isCreateInboxUserAvailable:
-      featureAccessService.isCreateInboxUserAvailable(user),
-    isEditInboxUserAvailable:
-      featureAccessService.isEditInboxUserAvailable(user),
-    isDeleteInboxUserAvailable:
-      featureAccessService.isDeleteInboxUserAvailable(user),
+    inboxUserRoles: getInboxUserRoles(entitlements),
+    isEditInboxAvailable: isEditInboxAvailable(user),
+    isDeleteInboxAvailable: isDeleteInboxAvailable(user),
+    isCreateInboxUserAvailable: isCreateInboxUserAvailable(user),
+    isEditInboxUserAvailable: isEditInboxUserAvailable(user),
+    isDeleteInboxUserAvailable: isDeleteInboxUserAvailable(user),
   });
 }
 

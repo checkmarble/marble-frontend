@@ -4,6 +4,10 @@ import {
   tKeyForInboxUserRole,
 } from '@app-builder/models/inbox';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
+import {
+  isCreateInboxAvailable,
+  isReadAllInboxesAvailable,
+} from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -16,11 +20,11 @@ import * as R from 'remeda';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { inbox, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  if (!featureAccessService.isReadAllInboxesAvailable(user)) {
+  if (!isReadAllInboxesAvailable(user)) {
     return redirect(getRoute('/'));
   }
 
@@ -28,7 +32,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({
     inboxes,
-    isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable(user),
+    isCreateInboxAvailable: isCreateInboxAvailable(user),
   });
 }
 

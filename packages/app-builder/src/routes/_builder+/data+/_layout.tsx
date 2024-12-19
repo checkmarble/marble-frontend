@@ -1,5 +1,14 @@
 import { Page } from '@app-builder/components';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
+import {
+  isCreateDataModelFieldAvailable,
+  isCreateDataModelLinkAvailable,
+  isCreateDataModelPivotAvailable,
+  isCreateDataModelTableAvailable,
+  isEditDataModelFieldAvailable,
+  isEditDataModelInfoAvailable,
+  isIngestDataAvailable,
+} from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -13,7 +22,7 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { user, dataModelRepository } = await authService.isAuthenticated(
     request,
     {
@@ -25,19 +34,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({
     dataModel,
     dataModelFeatureAccess: {
-      isCreateDataModelTableAvailable:
-        featureAccessService.isCreateDataModelTableAvailable(user),
-      isEditDataModelInfoAvailable:
-        featureAccessService.isEditDataModelInfoAvailable(user),
-      isCreateDataModelFieldAvailable:
-        featureAccessService.isCreateDataModelFieldAvailable(user),
-      isEditDataModelFieldAvailable:
-        featureAccessService.isEditDataModelFieldAvailable(user),
-      isCreateDataModelLinkAvailable:
-        featureAccessService.isCreateDataModelLinkAvailable(user),
-      isCreateDataModelPivotAvailable:
-        featureAccessService.isCreateDataModelPivotAvailable(user),
-      isIngestDataAvailable: featureAccessService.isIngestDataAvailable(user),
+      isCreateDataModelTableAvailable: isCreateDataModelTableAvailable(user),
+      isEditDataModelInfoAvailable: isEditDataModelInfoAvailable(user),
+      isCreateDataModelFieldAvailable: isCreateDataModelFieldAvailable(user),
+      isEditDataModelFieldAvailable: isEditDataModelFieldAvailable(user),
+      isCreateDataModelLinkAvailable: isCreateDataModelLinkAvailable(user),
+      isCreateDataModelPivotAvailable: isCreateDataModelPivotAvailable(user),
+      isIngestDataAvailable: isIngestDataAvailable(user),
     },
   });
 }

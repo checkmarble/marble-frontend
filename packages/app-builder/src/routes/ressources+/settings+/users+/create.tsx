@@ -8,6 +8,7 @@ import {
   isStatusConflictHttpError,
   tKeyForUserRole,
 } from '@app-builder/models';
+import { getUserRoles } from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import {
@@ -42,15 +43,18 @@ function getCreateUserFormSchema(userRoles: readonly [string, ...string[]]) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService, csrfService, featureAccessService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { authService, csrfService } = serverServices;
+  const { apiClient, entitlements } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
   await csrfService.validate(request);
 
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
-    schema: getCreateUserFormSchema(await featureAccessService.getUserRoles()),
+    schema: getCreateUserFormSchema(getUserRoles(entitlements)),
   });
 
   if (submission.status !== 'success') {

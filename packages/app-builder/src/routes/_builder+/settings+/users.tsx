@@ -3,6 +3,13 @@ import { type User } from '@app-builder/models';
 import { CreateUser } from '@app-builder/routes/ressources+/settings+/users+/create';
 import { DeleteUser } from '@app-builder/routes/ressources+/settings+/users+/delete';
 import { UpdateUser } from '@app-builder/routes/ressources+/settings+/users+/update';
+import {
+  getUserRoles,
+  isCreateUserAvailable,
+  isDeleteUserAvailable,
+  isEditUserAvailable,
+  isReadUserAvailable,
+} from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
@@ -15,18 +22,15 @@ import * as R from 'remeda';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { user, inbox } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  if (!featureAccessService.isReadUserAvailable(user)) {
-    return redirect(getRoute('/'));
-  }
+  const { authService } = serverServices;
+  const { user, inbox, entitlements } = await authService.isAuthenticated(
+    request,
+    { failureRedirect: getRoute('/sign-in') },
+  );
 
-  const [inboxUsers, userRoles] = await Promise.all([
-    inbox.listAllInboxUsers(),
-    featureAccessService.getUserRoles(),
-  ]);
+  if (!isReadUserAvailable(user)) return redirect(getRoute('/'));
+
+  const inboxUsers = await inbox.listAllInboxUsers();
 
   const inboxUsersByUserId = R.pipe(
     inboxUsers,
@@ -44,10 +48,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({
     inboxUsersByUserId,
     user,
-    userRoles,
-    isCreateUserAvailable: featureAccessService.isCreateUserAvailable(user),
-    isEditUserAvailable: featureAccessService.isEditUserAvailable(user),
-    isDeleteUserAvailable: featureAccessService.isDeleteUserAvailable(user),
+    userRoles: getUserRoles(entitlements),
+    isCreateUserAvailable: isCreateUserAvailable(user),
+    isEditUserAvailable: isEditUserAvailable(user),
+    isDeleteUserAvailable: isDeleteUserAvailable(user),
   });
 }
 
