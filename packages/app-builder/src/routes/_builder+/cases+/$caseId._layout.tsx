@@ -72,7 +72,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const customListsPromise = customListsRepository.listCustomLists();
 
     const featureAccessPromise = Promise.resolve({
-      isReadSnoozeAvailable: isReadSnoozeAvailable(user),
+      isReadSnoozeAvailable: isReadSnoozeAvailable(user, entitlements),
       isCreateSnoozeAvailable: isCreateSnoozeAvailable(user, entitlements),
     });
 
