@@ -5,7 +5,7 @@ import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { tKeyForUserRole, type User } from '@app-builder/models';
-import { getUserRoles } from '@app-builder/services/feature-access.server';
+import { getUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import {

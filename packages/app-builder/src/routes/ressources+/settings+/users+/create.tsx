@@ -8,7 +8,7 @@ import {
   isStatusConflictHttpError,
   tKeyForUserRole,
 } from '@app-builder/models';
-import { getUserRoles } from '@app-builder/services/feature-access.server';
+import { getUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import {

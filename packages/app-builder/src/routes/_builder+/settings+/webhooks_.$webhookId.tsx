@@ -8,7 +8,7 @@ import {
   isDeleteWebhookAvailable,
   isEditWebhookAvailable,
   isReadWebhookAvailable,
-} from '@app-builder/services/feature-access.server';
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';

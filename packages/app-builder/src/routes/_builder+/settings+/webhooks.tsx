@@ -9,7 +9,7 @@ import {
   isDeleteWebhookAvailable,
   isEditWebhookAvailable,
   isReadWebhookAvailable,
-} from '@app-builder/services/feature-access.server';
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';

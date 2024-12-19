@@ -1,5 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import { isAnalyticsAvailable } from '@app-builder/services/feature-access.server';
+import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { notFound } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';

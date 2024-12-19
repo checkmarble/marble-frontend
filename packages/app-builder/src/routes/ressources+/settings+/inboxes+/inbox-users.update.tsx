@@ -7,7 +7,7 @@ import {
   type InboxUser,
   tKeyForInboxUserRole,
 } from '@app-builder/models/inbox';
-import { getInboxUserRoles } from '@app-builder/services/feature-access.server';
+import { getInboxUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';

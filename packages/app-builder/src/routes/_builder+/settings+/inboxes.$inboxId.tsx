@@ -15,7 +15,7 @@ import {
   isDeleteInboxUserAvailable,
   isEditInboxAvailable,
   isEditInboxUserAvailable,
-} from '@app-builder/services/feature-access.server';
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';

@@ -7,7 +7,7 @@ import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/
 import {
   isCreateInboxAvailable,
   isReadAllInboxesAvailable,
-} from '@app-builder/services/feature-access.server';
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';

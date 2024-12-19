@@ -20,7 +20,7 @@ import {
 import {
   isCreateInboxAvailable,
   isWorkflowsAvailable,
-} from '@app-builder/services/feature-access.server';
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';

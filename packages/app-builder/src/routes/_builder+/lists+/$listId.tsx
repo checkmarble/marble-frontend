@@ -10,7 +10,7 @@ import {
   isDeleteListAvailable,
   isDeleteListValueAvailable,
   isEditListAvailable,
-} from '@app-builder/services/feature-access.server';
+} from '@app-builder/services/feature-access';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';

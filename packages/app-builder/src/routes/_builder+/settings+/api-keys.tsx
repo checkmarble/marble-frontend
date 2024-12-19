@@ -11,7 +11,7 @@ import {
   isCreateApiKeyAvailable,
   isDeleteApiKeyAvailable,
   isReadApiKeyAvailable,
-} from '@app-builder/services/feature-access.server';
+} from '@app-builder/services/feature-access';
 import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';

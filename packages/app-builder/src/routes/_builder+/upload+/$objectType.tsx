@@ -3,7 +3,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
-import { isIngestDataAvailable } from '@app-builder/services/feature-access.server';
+import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
 import {

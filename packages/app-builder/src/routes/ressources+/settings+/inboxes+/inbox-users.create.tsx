@@ -5,7 +5,7 @@ import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type User } from '@app-builder/models';
 import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
-import { getInboxUserRoles } from '@app-builder/services/feature-access.server';
+import { getInboxUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';

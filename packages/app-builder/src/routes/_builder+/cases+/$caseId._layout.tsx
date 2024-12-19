@@ -20,7 +20,7 @@ import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
 import {
   isCreateSnoozeAvailable,
   isReadSnoozeAvailable,
-} from '@app-builder/services/feature-access.server';
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';

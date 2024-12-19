@@ -21,7 +21,7 @@ import {
   isManualTriggerScenarioAvailable,
   isTestRunAvailable,
   isWorkflowsAvailable,
-} from '@app-builder/services/feature-access.server';
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import {
   formatDateRelative,

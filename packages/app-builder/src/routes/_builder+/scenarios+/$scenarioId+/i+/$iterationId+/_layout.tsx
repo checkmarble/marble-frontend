@@ -2,7 +2,7 @@ import {
   type EditorMode,
   EditorModeContextProvider,
 } from '@app-builder/services/editor';
-import { isEditScenarioAvailable } from '@app-builder/services/feature-access.server';
+import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { findRuleValidation } from '@app-builder/services/validation';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
