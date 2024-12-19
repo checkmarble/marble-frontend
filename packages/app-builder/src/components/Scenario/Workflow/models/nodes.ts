@@ -1,3 +1,4 @@
+import { type StringTemplateAstNode } from '@app-builder/models';
 import { type Outcome } from '@app-builder/models/outcome';
 import { nanoid } from 'nanoid';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +29,7 @@ export function isTriggerData(data: NodeData): data is TriggerData {
 export interface CreateCaseAction {
   type: 'create-case';
   inboxId: string | null;
+  caseName?: StringTemplateAstNode | null;
 }
 
 export function isCreateCaseAction(data: NodeData): data is CreateCaseAction {
@@ -37,6 +39,7 @@ export function isCreateCaseAction(data: NodeData): data is CreateCaseAction {
 export interface AddToCaseIfPossibleAction {
   type: 'add-to-case-if-possible';
   inboxId: string | null;
+  caseName?: StringTemplateAstNode | null;
 }
 
 export function isAddToCaseIfPossibleAction(

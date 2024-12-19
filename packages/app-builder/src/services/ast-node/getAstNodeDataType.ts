@@ -6,6 +6,7 @@ import {
   isDataAccessorAstNode,
   isFuzzyMatchComparator,
   isIsMultipleOf,
+  isStringTemplateAstNode,
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
@@ -55,6 +56,10 @@ export function getAstNodeDataType(
   if (isDataAccessorAstNode(astNode)) {
     const field = getDataAccessorAstNodeField(astNode, context);
     return field.dataType;
+  }
+
+  if (isStringTemplateAstNode(astNode)) {
+    return 'String';
   }
 
   if (isFuzzyMatchComparator(astNode) || isIsMultipleOf(astNode)) {

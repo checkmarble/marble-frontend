@@ -117,11 +117,13 @@ export type ValidDecisionCreatedTrigger = z.infer<
 
 export const createCaseActionSchema = z.object({
   inboxId: z.string(),
+  caseName: z.any(),
 });
 export type ValidCreateCaseAction = z.infer<typeof createCaseActionSchema>;
 
 export const addToCaseIfPossibleActionSchema = z.object({
   inboxId: z.string(),
+  caseName: z.any(),
 });
 export type ValidAddToCaseIfPossibleAction = z.infer<
   typeof addToCaseIfPossibleActionSchema
@@ -164,6 +166,7 @@ export function adaptValidWorkflow(
         },
         action: {
           inboxId: scenario.decisionToCaseInboxId,
+          caseName: scenario.decisionToCaseNameTemplate,
         },
       };
     }
@@ -187,6 +190,7 @@ export function adaptScenarioUpdateWorkflowInput(
   return {
     decisionToCaseWorkflowType: workflow.type,
     decisionToCaseInboxId: workflow.action.inboxId,
+    decisionToCaseNameTemplate: workflow.action.caseName,
     decisionToCaseOutcomes: workflow.trigger.outcomes,
   };
 }

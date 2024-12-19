@@ -8,8 +8,8 @@ import {
   useWorkflowData,
   useWorkflowDataFeatureAccess,
 } from '../WorkflowProvider';
+import { CaseNameEditor } from './CaseNameEditor';
 import { SelectInbox } from './SelectInbox';
-import { defaultCaseName } from './shared';
 
 export function CreateCaseNode({
   id,
@@ -34,14 +34,13 @@ export function CreateCaseNode({
         inboxes={inboxes}
         isCreateInboxAvailable={isCreateInboxAvailable}
       />
-      <p className="flex flex-col gap-2">
-        <span className="whitespace-pre-wrap">
-          {t('workflows:detail_panel.create_case.default_name.helper')}
-        </span>
-        <span className="text-s border-grey-10 text-grey-50 bg-grey-02 rounded border p-2">
-          {defaultCaseName}
-        </span>
-      </p>
+      <CaseNameEditor
+        label={t('workflows:detail_panel.create_case.case_name.label')}
+        value={data.caseName}
+        onChange={(astNode) => {
+          updateNode(id, { ...data, caseName: astNode });
+        }}
+      />
     </>
   );
 }

@@ -328,12 +328,21 @@ export type UpdateCustomListBodyDto = {
 export type CreateCustomListValueBody = {
     value: string;
 };
+export type NodeDto = {
+    name?: string;
+    constant?: ConstantDto;
+    children?: NodeDto[];
+    named_children?: {
+        [key: string]: NodeDto;
+    };
+};
 export type ScenarioDto = {
     id: string;
     created_at: string;
     decision_to_case_inbox_id?: string;
     decision_to_case_outcomes: OutcomeDto[];
     decision_to_case_workflow_type: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
+    decision_to_case_name_template?: (NodeDto) | null;
     description: string;
     live_version_id?: string;
     name: string;
@@ -349,8 +358,13 @@ export type ScenarioUpdateInputDto = {
     decision_to_case_inbox_id?: string;
     decision_to_case_outcomes?: OutcomeDto[];
     decision_to_case_workflow_type?: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
+    decision_to_case_name_template?: NodeDto;
     description?: string;
     name?: string;
+};
+export type ScenarioAstValidateInputDto = {
+    node?: NodeDto;
+    return_type?: string;
 };
 export type ScenarioIterationDto = {
     id: string;
@@ -358,14 +372,6 @@ export type ScenarioIterationDto = {
     version: number | null;
     created_at: string;
     updated_at: string;
-};
-export type NodeDto = {
-    name?: string;
-    constant?: ConstantDto;
-    children?: NodeDto[];
-    named_children?: {
-        [key: string]: NodeDto;
-    };
 };
 export type ScenarioIterationRuleDto = {
     id: string;
@@ -1499,6 +1505,30 @@ export function updateScenario(scenarioId: string, scenarioUpdateInputDto: Scena
         ...opts,
         method: "PATCH",
         body: scenarioUpdateInputDto
+    })));
+}
+/**
+ * Validate an AST
+ */
+export function validateAstNode(scenarioId: string, scenarioAstValidateInputDto?: ScenarioAstValidateInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            ast_validation: NodeEvaluationDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenarios/${encodeURIComponent(scenarioId)}/validate-ast`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: scenarioAstValidateInputDto
     })));
 }
 /**

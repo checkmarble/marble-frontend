@@ -1314,6 +1314,46 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /scenarios/{scenarioId}/validate-ast:
+    post:
+      tags:
+        - Scenarios
+      summary: Validate an AST
+      operationId: validateAstNode
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scenarioId
+          description: ID of the scenario for which you need to validate the AST
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: The AST to validate
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioAstValidateInputDto'
+      responses:
+        '200':
+          description: The evaluation corresponding to the specified node
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ast_validation
+                properties:
+                  ast_validation:
+                    $ref: '#/components/schemas/NodeEvaluationDto'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
   /scenario-iterations:
     get:
       tags:
@@ -4752,6 +4792,11 @@ components:
         decision_to_case_workflow_type:
           type: string
           enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
+        decision_to_case_name_template:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/NodeDto'
         description:
           type: string
         live_version_id:
@@ -4786,6 +4831,15 @@ components:
         - description
         - name
         - trigger_object_type
+    ScenarioAstValidateInputDto:
+      type: object
+      properties:
+        node:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/NodeDto'
+        return_type:
+          type: string
     ScenarioUpdateInputDto:
       type: object
       properties:
@@ -4799,6 +4853,10 @@ components:
         decision_to_case_workflow_type:
           type: string
           enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
+        decision_to_case_name_template:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/NodeDto'
         description:
           type: string
         name:
