@@ -2,6 +2,7 @@ import {
   navigationI18n,
   SidebarButton,
   SidebarLink,
+  sidebarLink,
 } from '@app-builder/components';
 import {
   HelpCenter,
@@ -11,6 +12,7 @@ import {
   LeftSidebar,
   ToggleSidebar,
 } from '@app-builder/components/Layout/LeftSidebar';
+import { Nudge } from '@app-builder/components/Nudge';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
@@ -25,6 +27,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 import { getSettings } from './settings+/_layout';
@@ -77,6 +80,7 @@ export default function Builder() {
   const { user, orgUsers, organization, orgTags, featuresAccess } =
     useLoaderData<typeof loader>();
   useSegmentIdentification(user);
+  const { t } = useTranslation(handle.i18n);
 
   // Refresh is done in the JSX because it needs to be done in the browser
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
@@ -129,15 +133,33 @@ export default function Builder() {
                       Icon={(props) => <Icon icon="case-manager" {...props} />}
                     />
                   </li>
-                  {featuresAccess.isAnalyticsAvailable ? (
-                    <li>
+                  <li>
+                    {featuresAccess.isAnalyticsAvailable ? (
                       <SidebarLink
                         labelTKey="navigation:analytics"
                         to={getRoute('/analytics')}
                         Icon={(props) => <Icon icon="analytics" {...props} />}
                       />
-                    </li>
-                  ) : null}
+                    ) : (
+                      <div
+                        className={sidebarLink({
+                          isActive: false,
+                          state: 'disabled',
+                          className: 'relative',
+                        })}
+                      >
+                        <Icon icon="analytics" className="size-6 shrink-0" />
+                        <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                          {t('navigation:analytics')}
+                        </span>
+                        <Nudge
+                          className="size-6"
+                          content="navigation:analytics.nudge"
+                          link="https://checkmarble.com/docs"
+                        />
+                      </div>
+                    )}
+                  </li>
                 </ul>
               </nav>
               <nav className="p-2 pb-4">

@@ -23,6 +23,9 @@ export const sidebarLink = cva(
         true: 'bg-purple-10 text-purple-100',
         false: 'text-grey-100 hover:bg-purple-10 hover:text-purple-100',
       },
+      state: {
+        disabled: 'text-grey-25 hover:bg-transparent hover:text-grey-25',
+      },
     },
     defaultVariants: {
       isActive: false,

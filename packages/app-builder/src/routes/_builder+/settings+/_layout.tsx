@@ -1,12 +1,11 @@
 import { Page } from '@app-builder/components';
+import { Nudge } from '@app-builder/components/Nudge';
 import { type CurrentUser } from '@app-builder/models';
-import { type LicenseEntitlements } from '@app-builder/models/license';
 import {
   isReadAllInboxesAvailable,
   isReadApiKeyAvailable,
   isReadTagAvailable,
   isReadUserAvailable,
-  isReadWebhookAvailable,
 } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -22,10 +21,7 @@ export const handle = {
   i18n: ['navigation', 'settings'] satisfies Namespace,
 };
 
-export function getSettings(
-  user: CurrentUser,
-  entitlements: LicenseEntitlements,
-) {
+export function getSettings(user: CurrentUser) {
   const settings = [];
   if (isReadUserAvailable(user)) {
     settings.push({
@@ -60,7 +56,7 @@ export function getSettings(
       to: getRoute('/settings/api-keys'),
     });
   }
-  if (isReadWebhookAvailable(user, entitlements)) {
+  if (user.permissions.canManageWebhooks) {
     settings.push({
       section: 'api' as const,
       title: 'webhooks' as const,
@@ -76,7 +72,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const settings = getSettings(user, entitlements);
+  const settings = getSettings(user);
 
   const sections = R.pipe(
     settings,
@@ -84,12 +80,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     R.entries(),
   );
 
-  return { sections };
+  return { sections, entitlements };
 }
 
 export default function Settings() {
   const { t } = useTranslation(handle.i18n);
-  const { sections } = useLoaderData<typeof loader>();
+  const { sections, entitlements } = useLoaderData<typeof loader>();
 
   return (
     <Page.Main>
@@ -117,22 +113,38 @@ export default function Settings() {
                     <p className="font-bold">{t(`settings:${section}`)}</p>
                   </div>
                   <ul className="flex flex-col gap-1 pb-6">
-                    {settings.map((setting) => (
-                      <NavLink
-                        key={setting.title}
-                        className={({ isActive }) =>
-                          clsx(
-                            'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
-                            isActive
-                              ? 'bg-purple-10 text-purple-100'
-                              : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
-                          )
-                        }
-                        to={setting.to}
-                      >
-                        {t(`settings:${setting.title}`)}
-                      </NavLink>
-                    ))}
+                    {settings.map((setting) =>
+                      setting.title === 'webhooks' && !entitlements.webhooks ? (
+                        <div
+                          key={setting.title}
+                          className="text-grey-25 flex w-full flex-row gap-2 p-2"
+                        >
+                          <span className="text-s font-medium first-letter:capitalize">
+                            {t(`settings:${setting.title}`)}
+                          </span>
+                          <Nudge
+                            className="size-6"
+                            content={`settings:${setting.title}.nudge`}
+                            link="https://checkmarble.com/docs"
+                          />
+                        </div>
+                      ) : (
+                        <NavLink
+                          key={setting.title}
+                          className={({ isActive }) =>
+                            clsx(
+                              'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
+                              isActive
+                                ? 'bg-purple-10 text-purple-100'
+                                : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                            )
+                          }
+                          to={setting.to}
+                        >
+                          {t(`settings:${setting.title}`)}
+                        </NavLink>
+                      ),
+                    )}
                   </ul>
                 </nav>
               );

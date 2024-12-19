@@ -12,11 +12,11 @@ export const makeGetLicenseRepository = () => {
       //   await client.getEntitlements(organizationId);
       // return adaptLicenseEntitlements(licenseEntitlementsDto);
       return Promise.resolve({
-        ruleSnoozes: false,
         sso: false,
+        ruleSnoozes: false,
         userRoles: false,
         webhooks: false,
-        analytics: true,
+        analytics: false,
         testRun: false,
         workflows: false,
       });

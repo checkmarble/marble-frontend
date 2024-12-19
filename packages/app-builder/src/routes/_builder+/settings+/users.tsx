@@ -48,6 +48,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({
     inboxUsersByUserId,
     user,
+    entitlements,
     userRoles: getUserRoles(entitlements),
     isCreateUserAvailable: isCreateUserAvailable(user),
     isEditUserAvailable: isEditUserAvailable(user),
@@ -62,6 +63,7 @@ export default function Users() {
   const {
     inboxUsersByUserId,
     user,
+    entitlements,
     userRoles,
     isCreateUserAvailable,
     isEditUserAvailable,
@@ -166,7 +168,11 @@ export default function Users() {
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:users')}</span>
             {isCreateUserAvailable ? (
-              <CreateUser orgId={user.organizationId} userRoles={userRoles} />
+              <CreateUser
+                orgId={user.organizationId}
+                canEditRoles={entitlements.userRoles}
+                userRoles={userRoles}
+              />
             ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
