@@ -27,29 +27,24 @@ import { type Namespace } from 'i18next';
 import { Icon } from 'ui-icons';
 
 import { getSettings } from './settings+/_layout';
+import { isAnalyticsAvailable } from '@app-builder/services/feature-access.server';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { user, organization } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { authService } = serverServices;
+  const { user, organization, entitlements } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   if (!isMarbleCoreUser(user)) {
     throw forbidden('Only Marble Core users can access this app.');
   }
 
-  const [
-    organizationDetail,
-    orgUsers,
-    orgTags,
-    settings,
-    isAnalyticsAvailable,
-  ] = await Promise.all([
+  const [organizationDetail, orgUsers, orgTags, settings] = await Promise.all([
     organization.getCurrentOrganization(),
     organization.listUsers(),
     organization.listTags(),
-    getSettings(user, featureAccessService),
-    featureAccessService.isAnalyticsAvailable(user),
+    getSettings(user, entitlements),
   ]);
 
   const firstSettings = settings[0];
@@ -60,7 +55,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     organization: organizationDetail,
     orgTags,
     featuresAccess: {
-      isAnalyticsAvailable,
+      isAnalyticsAvailable: isAnalyticsAvailable(
+        user.permissions,
+        entitlements,
+      ),
       settings:
         firstSettings !== undefined
           ? {

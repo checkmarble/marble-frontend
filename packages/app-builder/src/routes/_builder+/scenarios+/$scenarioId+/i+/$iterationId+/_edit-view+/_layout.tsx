@@ -39,27 +39,27 @@ import { MenuButton, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { useCurrentScenarioValidation } from '../_layout';
+import {
+  isCreateDraftAvailable,
+  isDeploymentActionsAvailable,
+} from '@app-builder/services/feature-access.server';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { scenario, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const iterationId = fromParams(params, 'iterationId');
 
-  const isDeploymentActionsAvailable =
-    featureAccessService.isDeploymentActionsAvailable(user);
-  const isCreateDraftAvailable =
-    featureAccessService.isCreateDraftAvailable(user);
-  if (!isDeploymentActionsAvailable) {
+  if (!isDeploymentActionsAvailable(user)) {
     return json({
       isDeploymentActionsAvailable: false as const,
-      isCreateDraftAvailable,
+      isCreateDraftAvailable: isCreateDraftAvailable(user),
     });
   }
 
@@ -70,7 +70,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({
     isDeploymentActionsAvailable: true as const,
-    isCreateDraftAvailable,
+    isCreateDraftAvailable: isCreateDraftAvailable(user),
     publicationPreparationStatus,
   });
 }

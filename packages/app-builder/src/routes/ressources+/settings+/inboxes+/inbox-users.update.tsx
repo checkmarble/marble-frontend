@@ -7,6 +7,7 @@ import {
   type InboxUser,
   tKeyForInboxUserRole,
 } from '@app-builder/models/inbox';
+import { getInboxUserRoles } from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -45,17 +46,14 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-    featureAccessService,
   } = serverServices;
-  const { inbox } = await authService.isAuthenticated(request, {
+  const { inbox, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
-    schema: getUpdateInboxUserFormSchema(
-      await featureAccessService.getInboxUserRoles(),
-    ),
+    schema: getUpdateInboxUserFormSchema(getInboxUserRoles(entitlements)),
   });
 
   if (submission.status !== 'success') {

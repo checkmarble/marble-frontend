@@ -5,6 +5,7 @@ import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { tKeyForUserRole, type User } from '@app-builder/models';
+import { getUserRoles } from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import {
@@ -41,16 +42,18 @@ function getUpdateUserFormSchema(userRoles: readonly [string, ...string[]]) {
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
-    featureAccessService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { apiClient, entitlements } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
-    schema: getUpdateUserFormSchema(await featureAccessService.getUserRoles()),
+    schema: getUpdateUserFormSchema(getUserRoles(entitlements)),
   });
 
   if (submission.status !== 'success') {

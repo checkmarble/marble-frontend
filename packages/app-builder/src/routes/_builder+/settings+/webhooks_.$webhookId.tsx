@@ -4,6 +4,12 @@ import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { type WebhookSecret } from '@app-builder/models/webhook';
 import { DeleteWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/delete';
 import { UpdateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/update';
+import {
+  isCreateWebhookAvailable,
+  isDeleteWebhookAvailable,
+  isEditWebhookAvailable,
+  isReadWebhookAvailable,
+} from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -26,31 +32,23 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { webhookRepository, user } = await authService.isAuthenticated(
-    request,
-    {
+  const { authService } = serverServices;
+  const { webhookRepository, user, entitlements } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    },
-  );
-  if (!(await featureAccessService.isReadWebhookAvailable(user))) {
+    });
+
+  if (!isReadWebhookAvailable(user, entitlements))
     return redirect(getRoute('/'));
-  }
 
   const webhookId = params['webhookId'];
   invariant(webhookId, `webhookId is required`);
-
-  const [webhook, isEditWebhookAvailable, isDeleteWebhookAvailable] =
-    await Promise.all([
-      webhookRepository.getWebhook({ webhookId }),
-      featureAccessService.isCreateWebhookAvailable(user),
-      featureAccessService.isDeleteWebhookAvailable(user),
-    ]);
+  const webhook = await webhookRepository.getWebhook({ webhookId });
 
   return json({
     webhook,
-    isEditWebhookAvailable,
-    isDeleteWebhookAvailable,
+    isEditWebhookAvailable: isEditWebhookAvailable(user, entitlements),
+    isDeleteWebhookAvailable: isDeleteWebhookAvailable(user, entitlements),
   });
 }
 

@@ -5,6 +5,12 @@ import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
 import { NewListValue } from '@app-builder/routes/ressources+/lists+/value_create';
 import { DeleteListValue } from '@app-builder/routes/ressources+/lists+/value_delete';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
+import {
+  isCreateListValueAvailable,
+  isDeleteListAvailable,
+  isDeleteListValueAvailable,
+  isEditListAvailable,
+} from '@app-builder/services/feature-access.server';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
@@ -40,7 +46,7 @@ import { Icon } from 'ui-icons';
 import * as z from 'zod';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { user, customListsRepository } = await authService.isAuthenticated(
     request,
     {
@@ -54,12 +60,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     customList: customList,
     listFeatureAccess: {
-      isCreateListValueAvailable:
-        featureAccessService.isCreateListValueAvailable(user),
-      isDeleteListValueAvailable:
-        featureAccessService.isDeleteListValueAvailable(user),
-      isEditListAvailable: featureAccessService.isEditListAvailable(user),
-      isDeleteListAvailable: featureAccessService.isDeleteListAvailable(user),
+      isCreateListValueAvailable: isCreateListValueAvailable(user),
+      isDeleteListValueAvailable: isDeleteListValueAvailable(user),
+      isEditListAvailable: isEditListAvailable(user),
+      isDeleteListAvailable: isDeleteListAvailable(user),
     },
   });
 }

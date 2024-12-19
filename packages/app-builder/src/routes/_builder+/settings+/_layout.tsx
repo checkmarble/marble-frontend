@@ -1,6 +1,13 @@
 import { Page } from '@app-builder/components';
 import { type CurrentUser } from '@app-builder/models';
-import { type FeatureAccessService } from '@app-builder/services/feature-access.server';
+import { type LicenseEntitlements } from '@app-builder/models/license';
+import {
+  isReadAllInboxesAvailable,
+  isReadApiKeyAvailable,
+  isReadTagAvailable,
+  isReadUserAvailable,
+  isReadWebhookAvailable,
+} from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
@@ -15,12 +22,12 @@ export const handle = {
   i18n: ['navigation', 'settings'] satisfies Namespace,
 };
 
-export async function getSettings(
+export function getSettings(
   user: CurrentUser,
-  featureAccessService: FeatureAccessService,
+  entitlements: LicenseEntitlements,
 ) {
   const settings = [];
-  if (featureAccessService.isReadUserAvailable(user)) {
+  if (isReadUserAvailable(user)) {
     settings.push({
       section: 'users' as const,
       title: 'users' as const,
@@ -32,28 +39,28 @@ export async function getSettings(
     title: 'scenarios' as const,
     to: getRoute('/settings/scenarios'),
   });
-  if (featureAccessService.isReadAllInboxesAvailable(user)) {
+  if (isReadAllInboxesAvailable(user)) {
     settings.push({
       section: 'case_manager' as const,
       title: 'inboxes' as const,
       to: getRoute('/settings/inboxes/'),
     });
   }
-  if (featureAccessService.isReadTagAvailable(user)) {
+  if (isReadTagAvailable(user)) {
     settings.push({
       section: 'case_manager' as const,
       title: 'tags' as const,
       to: getRoute('/settings/tags'),
     });
   }
-  if (featureAccessService.isReadApiKeyAvailable(user)) {
+  if (isReadApiKeyAvailable(user)) {
     settings.push({
       section: 'api' as const,
       title: 'api' as const,
       to: getRoute('/settings/api-keys'),
     });
   }
-  if (await featureAccessService.isReadWebhookAvailable(user)) {
+  if (isReadWebhookAvailable(user, entitlements)) {
     settings.push({
       section: 'api' as const,
       title: 'webhooks' as const,
@@ -64,12 +71,12 @@ export async function getSettings(
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { user } = await authService.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { user, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const settings = await getSettings(user, featureAccessService);
+  const settings = getSettings(user, entitlements);
 
   const sections = R.pipe(
     settings,

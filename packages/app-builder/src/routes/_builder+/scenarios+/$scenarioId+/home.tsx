@@ -48,15 +48,22 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 import { useCurrentScenario, useScenarioIterations } from './_layout';
+import {
+  isEditScenarioAvailable,
+  isManualTriggerScenarioAvailable,
+  isTestRunAvailable,
+  isWorkflowsAvailable,
+} from '@app-builder/services/feature-access.server';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const {
     user,
+    entitlements,
     decision,
     testRun: testRunRepository,
   } = await authService.isAuthenticated(request, {
@@ -74,13 +81,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({
     featureAccess: {
-      isEditScenarioAvailable:
-        featureAccessService.isEditScenarioAvailable(user),
-      isManualTriggerScenarioAvailable:
-        featureAccessService.isManualTriggerScenarioAvailable(user),
-      isWorkflowsAvailable: await featureAccessService.isWorkflowsAvailable(),
-      //isTestRunAvailable: await featureAccessService.isTestRunAvailable(),
-      isTestRunAvailable: true,
+      isEditScenarioAvailable: isEditScenarioAvailable(user),
+      isManualTriggerScenarioAvailable: isManualTriggerScenarioAvailable(user),
+      isWorkflowsAvailable: isWorkflowsAvailable(entitlements),
+      isTestRunAvailable: isTestRunAvailable(entitlements),
     },
     scheduledExecutions,
     testRuns,

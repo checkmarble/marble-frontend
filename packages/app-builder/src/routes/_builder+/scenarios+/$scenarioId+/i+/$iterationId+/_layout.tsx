@@ -2,6 +2,7 @@ import {
   type EditorMode,
   EditorModeContextProvider,
 } from '@app-builder/services/editor';
+import { isEditScenarioAvailable } from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { findRuleValidation } from '@app-builder/services/validation';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
@@ -22,7 +23,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { user, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -38,11 +39,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }),
   ]);
 
-  const isEditScenarioAvailable =
-    featureAccessService.isEditScenarioAvailable(user);
-
   const editorMode: EditorMode =
-    isEditScenarioAvailable && R.isNullish(scenarioIteration.version)
+    isEditScenarioAvailable(user) && R.isNullish(scenarioIteration.version)
       ? 'edit'
       : 'view';
 
