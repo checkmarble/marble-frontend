@@ -17,6 +17,10 @@ import {
   type ScenarioUpdateWorkflowInput,
   scenarioUpdateWorkflowInputSchema,
 } from '@app-builder/models/scenario';
+import {
+  isCreateInboxAvailable,
+  isWorkflowsAvailable,
+} from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -31,10 +35,6 @@ import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 
 import { useCurrentScenario } from './_layout';
-import {
-  isCreateInboxAvailable,
-  isWorkflowsAvailable,
-} from '@app-builder/services/feature-access.server';
 
 export const handle = {
   i18n: workflowI18n satisfies Namespace,

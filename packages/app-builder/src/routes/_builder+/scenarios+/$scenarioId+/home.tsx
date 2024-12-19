@@ -16,6 +16,12 @@ import { type ScenarioIterationWithType } from '@app-builder/models/scenario-ite
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
+import {
+  isEditScenarioAvailable,
+  isManualTriggerScenarioAvailable,
+  isTestRunAvailable,
+  isWorkflowsAvailable,
+} from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import {
   formatDateRelative,
@@ -48,12 +54,6 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 import { useCurrentScenario, useScenarioIterations } from './_layout';
-import {
-  isEditScenarioAvailable,
-  isManualTriggerScenarioAvailable,
-  isTestRunAvailable,
-  isWorkflowsAvailable,
-} from '@app-builder/services/feature-access.server';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,

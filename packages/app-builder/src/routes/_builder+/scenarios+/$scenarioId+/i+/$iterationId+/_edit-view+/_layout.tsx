@@ -17,6 +17,10 @@ import { CreateDraftIteration } from '@app-builder/routes/ressources+/scenarios+
 import { DeactivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate';
 import { PrepareScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/prepare';
 import { useEditorMode } from '@app-builder/services/editor';
+import {
+  isCreateDraftAvailable,
+  isDeploymentActionsAvailable,
+} from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import {
   hasDecisionErrors,
@@ -39,10 +43,6 @@ import { MenuButton, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { useCurrentScenarioValidation } from '../_layout';
-import {
-  isCreateDraftAvailable,
-  isDeploymentActionsAvailable,
-} from '@app-builder/services/feature-access.server';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,

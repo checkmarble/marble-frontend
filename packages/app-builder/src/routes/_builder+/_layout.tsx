@@ -14,6 +14,7 @@ import {
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
+import { isAnalyticsAvailable } from '@app-builder/services/feature-access.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
@@ -27,7 +28,6 @@ import { type Namespace } from 'i18next';
 import { Icon } from 'ui-icons';
 
 import { getSettings } from './settings+/_layout';
-import { isAnalyticsAvailable } from '@app-builder/services/feature-access.server';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
@@ -55,10 +55,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     organization: organizationDetail,
     orgTags,
     featuresAccess: {
-      isAnalyticsAvailable: isAnalyticsAvailable(
-        user.permissions,
-        entitlements,
-      ),
+      isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
       settings:
         firstSettings !== undefined
           ? {

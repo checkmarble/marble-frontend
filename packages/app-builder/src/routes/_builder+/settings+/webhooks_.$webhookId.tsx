@@ -5,7 +5,6 @@ import { type WebhookSecret } from '@app-builder/models/webhook';
 import { DeleteWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/delete';
 import { UpdateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/update';
 import {
-  isCreateWebhookAvailable,
   isDeleteWebhookAvailable,
   isEditWebhookAvailable,
   isReadWebhookAvailable,
