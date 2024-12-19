@@ -1,38 +1,25 @@
 import { type LicenseApi } from '@app-builder/infra/license-api';
-import {
-  adaptLicenseValidation,
-  type LicenseValidation,
-} from '@app-builder/models/license';
+import { type LicenseEntitlements } from '@app-builder/models/license';
 
 export interface LicenseRepository {
-  validateLicenseKey(licenseKey: string): Promise<LicenseValidation>;
+  getEntitlements(organizationId: string): Promise<LicenseEntitlements>;
 }
 
-export function getLicenseRepository(
-  licenseAPIClient: LicenseApi,
-  devEnvironment: boolean,
-): LicenseRepository {
-  return {
-    validateLicenseKey: async (licenseKey: string) => {
-      if (devEnvironment) {
-        return Promise.resolve({
-          code: 'VALID',
-          entitlements: {
-            sso: true,
-            workflows: true,
-            analytics: true,
-            dataEnrichment: true,
-            userRoles: true,
-            // In dev environment (like docker-compose), webhooks are disabled since we do not have Convoy dedicated for dev
-            webhooks: false,
-            ruleSnoozes: true,
-          },
-        });
-      }
-      const licenseValidationDto =
-        await licenseAPIClient.validateLicense(licenseKey);
-
-      return adaptLicenseValidation(licenseValidationDto);
+export const makeGetLicenseRepository = () => {
+  return (_: LicenseApi): LicenseRepository => ({
+    getEntitlements: async (_: string) => {
+      // const licenseEntitlementsDto =
+      //   await client.getEntitlements(organizationId);
+      // return adaptLicenseEntitlements(licenseEntitlementsDto);
+      return Promise.resolve({
+        analytics: false,
+        ruleSnoozes: false,
+        sso: false,
+        testRun: false,
+        userRoles: false,
+        webhooks: false,
+        workflows: false,
+      });
     },
-  };
-}
+  });
+};

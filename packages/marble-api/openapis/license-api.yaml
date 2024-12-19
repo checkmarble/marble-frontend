@@ -7,70 +7,57 @@ servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
 paths:
-  /validate-license/{licenseKey}:
+  /entitlements/{organizationId}:
     get:
-      summary: Validate a license key
-      description: Returns the license information if the license key is valid
-      operationId: validateLicense
+      summary: Get the entitlements of an organization
+      description: Returns the entitlements of an organization
+      operationId: getEntitlements
       parameters:
-        - name: licenseKey
-          description: License key to validate
+        - name: organizationId
+          description: ID of the organization
           in: path
           required: true
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: License validation response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LicenseValidationDto'
+                $ref: '#/components/schemas/LicenseEntitlementsDto'
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
 components:
   schemas:
-    LicenseValidationDto:
+    LicenseEntitlementsDto:
       type: object
       properties:
-        license_validation_code:
-          type: string
-          enum:
-            - VALID
-            - EXPIRED
-            - NOT_FOUND
-            - OVERDUE
-            - SUSPENDED
-        license_entitlements:
-          type: object
-          properties:
-            sso:
-              type: boolean
-            workflows:
-              type: boolean
-            analytics:
-              type: boolean
-            data_enrichment:
-              type: boolean
-            user_roles:
-              type: boolean
-            webhooks:
-              type: boolean
-            rule_snoozes:
-              type: boolean
-          required:
-            - sso
-            - workflows
-            - analytics
-            - data_enrichment
-            - user_roles
-            - webhooks
-            - rule_snoozes
+        sso:
+          type: boolean
+        workflows:
+          type: boolean
+        analytics:
+          type: boolean
+        user_roles:
+          type: boolean
+        webhooks:
+          type: boolean
+        rule_snoozes:
+          type: boolean
+        test_run:
+          type: boolean
       required:
-        - license_validation_code
-        - license_entitlements
+        - sso
+        - workflows
+        - analytics
+        - user_roles
+        - webhooks
+        - rule_snoozes
+        - test_run
   responses:
     '401':
       description: Unauthorized
