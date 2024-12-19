@@ -17,6 +17,10 @@ import { CreateDraftIteration } from '@app-builder/routes/ressources+/scenarios+
 import { DeactivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate';
 import { PrepareScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/prepare';
 import { useEditorMode } from '@app-builder/services/editor';
+import {
+  isCreateDraftAvailable,
+  isDeploymentActionsAvailable,
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import {
   hasDecisionErrors,
@@ -45,21 +49,17 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { scenario, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const iterationId = fromParams(params, 'iterationId');
 
-  const isDeploymentActionsAvailable =
-    featureAccessService.isDeploymentActionsAvailable(user);
-  const isCreateDraftAvailable =
-    featureAccessService.isCreateDraftAvailable(user);
-  if (!isDeploymentActionsAvailable) {
+  if (!isDeploymentActionsAvailable(user)) {
     return json({
       isDeploymentActionsAvailable: false as const,
-      isCreateDraftAvailable,
+      isCreateDraftAvailable: isCreateDraftAvailable(user),
     });
   }
 
@@ -70,7 +70,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({
     isDeploymentActionsAvailable: true as const,
-    isCreateDraftAvailable,
+    isCreateDraftAvailable: isCreateDraftAvailable(user),
     publicationPreparationStatus,
   });
 }

@@ -8,7 +8,9 @@ import {
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
+import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
+import { WorkflowNudge } from '@app-builder/components/Scenario/Workflow/WorkflowNudge';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
@@ -16,6 +18,12 @@ import { type ScenarioIterationWithType } from '@app-builder/models/scenario-ite
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
+import {
+  isEditScenarioAvailable,
+  isManualTriggerScenarioAvailable,
+  isTestRunAvailable,
+  isWorkflowsAvailable,
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import {
   formatDateRelative,
@@ -54,9 +62,10 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const {
     user,
+    entitlements,
     decision,
     testRun: testRunRepository,
   } = await authService.isAuthenticated(request, {
@@ -74,13 +83,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({
     featureAccess: {
-      isEditScenarioAvailable:
-        featureAccessService.isEditScenarioAvailable(user),
-      isManualTriggerScenarioAvailable:
-        featureAccessService.isManualTriggerScenarioAvailable(user),
-      isWorkflowsAvailable: await featureAccessService.isWorkflowsAvailable(),
-      //isTestRunAvailable: await featureAccessService.isTestRunAvailable(),
-      isTestRunAvailable: true,
+      isEditScenarioAvailable: isEditScenarioAvailable(user),
+      isManualTriggerScenarioAvailable: isManualTriggerScenarioAvailable(user),
+      isWorkflowsAvailable: isWorkflowsAvailable(entitlements),
+      isTestRunAvailable: isTestRunAvailable(entitlements),
     },
     scheduledExecutions,
     testRuns,
@@ -189,10 +195,14 @@ export default function ScenarioHome() {
           />
           {featureAccess.isTestRunAvailable ? (
             <TestRunSection scenarioId={currentScenario.id} />
-          ) : null}
+          ) : (
+            <TestRunNudge />
+          )}
           {featureAccess.isWorkflowsAvailable ? (
             <WorkflowSection scenario={currentScenario} />
-          ) : null}
+          ) : (
+            <WorkflowNudge />
+          )}
           <ResourcesSection />
         </Page.Content>
       </Page.Container>
@@ -597,72 +607,62 @@ function WorkflowSection({ scenario }: { scenario: Scenario }) {
     <section className="flex flex-col gap-4">
       <h2 className="text-grey-100 text-m flex flex-row items-center gap-2 font-semibold">
         {t('scenarios:home.workflow')}
-
-        <Ariakit.HovercardProvider
-          showTimeout={0}
-          hideTimeout={0}
-          placement="right"
-        >
-          <Ariakit.HovercardAnchor
-            tabIndex={-1}
-            className="cursor-pointer text-purple-50 transition-colors hover:text-purple-100"
-          >
-            <Icon icon="tip" className="size-5" />
-          </Ariakit.HovercardAnchor>
-          <Ariakit.Hovercard
-            portal
-            gutter={8}
-            className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
-          >
-            {t('scenarios:home.workflow_description')}
-          </Ariakit.Hovercard>
-        </Ariakit.HovercardProvider>
       </h2>
-      <div className="flex flex-row gap-3">
-        {tag ? (
-          <div className="bg-purple-05 text-s flex h-10 flex-row items-center gap-2 rounded px-2 uppercase text-purple-100">
-            {tag}
-            {tooltip ? (
-              <Ariakit.HovercardProvider
-                showTimeout={0}
-                hideTimeout={0}
-                placement="right"
-              >
-                <Ariakit.HovercardAnchor
-                  tabIndex={-1}
-                  className="cursor-pointer text-purple-50 transition-colors hover:text-purple-100"
-                >
-                  <Icon icon="tip" className="size-5" />
-                </Ariakit.HovercardAnchor>
-                <Ariakit.Hovercard
-                  portal
-                  gutter={8}
-                  className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
-                >
-                  {tooltip}
-                </Ariakit.Hovercard>
-              </Ariakit.HovercardProvider>
+      <div className="flex max-w-[500px] flex-row gap-4">
+        <div className="bg-grey-00 border-grey-10 relative flex h-fit flex-col gap-4 rounded-lg border p-8">
+          <CalloutV2>
+            <div className="flex flex-col gap-4">
+              <span>{t('scenarios:home.workflow_description')}</span>
+            </div>
+          </CalloutV2>
+
+          <div className="flex flex-row gap-4">
+            {tag ? (
+              <div className="bg-purple-05 text-s flex h-10 flex-row items-center gap-2 rounded px-2 uppercase text-purple-100">
+                {tag}
+                {tooltip ? (
+                  <Ariakit.HovercardProvider
+                    showTimeout={0}
+                    hideTimeout={0}
+                    placement="right"
+                  >
+                    <Ariakit.HovercardAnchor
+                      tabIndex={-1}
+                      className="cursor-pointer text-purple-50 transition-colors hover:text-purple-100"
+                    >
+                      <Icon icon="tip" className="size-5" />
+                    </Ariakit.HovercardAnchor>
+                    <Ariakit.Hovercard
+                      portal
+                      gutter={8}
+                      className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
+                    >
+                      {tooltip}
+                    </Ariakit.Hovercard>
+                  </Ariakit.HovercardProvider>
+                ) : null}
+              </div>
             ) : null}
+            <Link
+              className={CtaClassName({
+                variant: isEdit ? 'secondary' : 'primary',
+                color: isEdit ? 'grey' : 'purple',
+              })}
+              to={getRoute('/scenarios/:scenarioId/workflow', {
+                scenarioId: fromUUID(scenario.id),
+              })}
+            >
+              <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-6" />
+              <p>
+                {t(
+                  isEdit
+                    ? 'scenarios:home.workflow.edit'
+                    : 'scenarios:home.workflow.create',
+                )}
+              </p>
+            </Link>
           </div>
-        ) : null}
-        <Link
-          className={CtaClassName({
-            variant: isEdit ? 'secondary' : 'primary',
-            color: isEdit ? 'grey' : 'purple',
-          })}
-          to={getRoute('/scenarios/:scenarioId/workflow', {
-            scenarioId: fromUUID(scenario.id),
-          })}
-        >
-          <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-6" />
-          <p>
-            {t(
-              isEdit
-                ? 'scenarios:home.workflow.edit'
-                : 'scenarios:home.workflow.create',
-            )}
-          </p>
-        </Link>
+        </div>
       </div>
     </section>
   );

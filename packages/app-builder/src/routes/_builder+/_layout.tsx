@@ -14,6 +14,7 @@ import {
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
+import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
@@ -29,27 +30,21 @@ import { Icon } from 'ui-icons';
 import { getSettings } from './settings+/_layout';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { user, organization } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { authService } = serverServices;
+  const { user, organization, entitlements } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   if (!isMarbleCoreUser(user)) {
     throw forbidden('Only Marble Core users can access this app.');
   }
 
-  const [
-    organizationDetail,
-    orgUsers,
-    orgTags,
-    settings,
-    isAnalyticsAvailable,
-  ] = await Promise.all([
+  const [organizationDetail, orgUsers, orgTags, settings] = await Promise.all([
     organization.getCurrentOrganization(),
     organization.listUsers(),
     organization.listTags(),
-    getSettings(user, featureAccessService),
-    featureAccessService.isAnalyticsAvailable(user),
+    getSettings(user, entitlements),
   ]);
 
   const firstSettings = settings[0];
@@ -60,7 +55,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     organization: organizationDetail,
     orgTags,
     featuresAccess: {
-      isAnalyticsAvailable,
+      isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
       settings:
         firstSettings !== undefined
           ? {

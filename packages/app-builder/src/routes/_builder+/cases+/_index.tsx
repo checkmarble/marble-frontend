@@ -1,5 +1,6 @@
 import { Page } from '@app-builder/components';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
+import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -10,7 +11,7 @@ import * as R from 'remeda';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { user, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -24,7 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   return json({
-    isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable(user),
+    isCreateInboxAvailable: isCreateInboxAvailable(user),
   });
 }
 

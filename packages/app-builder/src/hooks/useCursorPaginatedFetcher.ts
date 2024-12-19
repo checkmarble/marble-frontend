@@ -46,7 +46,7 @@ export const useCursorPaginatedFetcher = <T, D = T>({
     submit(qs.stringify(queryParams, { skipNulls: true }), {
       method: 'GET',
     });
-  }, [paginationState, submit]);
+  }, [paginationState, submit, getQueryParams]);
 
   const [previousInitialData, setPreviousInitialData] = useState(initialData);
   if (initialData !== previousInitialData && paginationState.isPristine) {

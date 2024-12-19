@@ -14,32 +14,29 @@ const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
     localDevlopmentServer: "http://localhost:8080"
 };
-export type LicenseValidationDto = {
-    license_validation_code: "VALID" | "EXPIRED" | "NOT_FOUND" | "OVERDUE" | "SUSPENDED";
-    license_entitlements: {
-        sso: boolean;
-        workflows: boolean;
-        analytics: boolean;
-        data_enrichment: boolean;
-        user_roles: boolean;
-        webhooks: boolean;
-        rule_snoozes: boolean;
-    };
+export type LicenseEntitlementsDto = {
+    sso: boolean;
+    workflows: boolean;
+    analytics: boolean;
+    user_roles: boolean;
+    webhooks: boolean;
+    rule_snoozes: boolean;
+    test_run: boolean;
 };
 /**
- * Validate a license key
+ * Get the entitlements of an organization
  */
-export function validateLicense(licenseKey: string, opts?: Oazapfts.RequestOpts) {
+export function getEntitlements(organizationId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: LicenseValidationDto;
+        data: LicenseEntitlementsDto;
     } | {
         status: 401;
         data: string;
     } | {
         status: 403;
         data: string;
-    }>(`/validate-license/${encodeURIComponent(licenseKey)}`, {
+    }>(`/entitlements/${encodeURIComponent(organizationId)}`, {
         ...opts
     }));
 }
