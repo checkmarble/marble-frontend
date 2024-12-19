@@ -8,6 +8,7 @@ import {
   isDataAccessorAstNode,
   isFuzzyMatchComparator,
   isIsMultipleOf,
+  isStringTemplateAstNode,
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
@@ -53,7 +54,8 @@ export function getAstNodeOperandType(
     isTimeNow(astNode) ||
     isFuzzyMatchComparator(astNode) ||
     isTimestampExtract(astNode) ||
-    isIsMultipleOf(astNode)
+    isIsMultipleOf(astNode) ||
+    isStringTemplateAstNode(astNode)
   ) {
     return 'Function';
   }

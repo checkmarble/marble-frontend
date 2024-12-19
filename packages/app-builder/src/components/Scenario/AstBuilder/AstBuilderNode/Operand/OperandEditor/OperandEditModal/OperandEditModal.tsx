@@ -2,6 +2,7 @@ import {
   isAggregation,
   isFuzzyMatchComparator,
   isIsMultipleOf,
+  isStringTemplateAstNode,
   isTimeAdd,
   isTimestampExtract,
 } from '@app-builder/models';
@@ -19,6 +20,7 @@ import {
 import { AggregationEdit } from './AggregationEdit/AggregationEdit';
 import { FuzzyMatchComparatorEdit } from './FuzzyMatchComparatorEdit/FuzzyMatchComparatorEdit';
 import { IsMultipleOfEdit } from './IsMultipleOfEdit/IsMultipleOfEdit';
+import { StringTemplateEdit } from './StringTemplateEdit/StringTemplateEdit';
 import { TimeAddEdit } from './TimeAddEdit/TimeAddEdit';
 import { TimestampExtractEdit } from './TimestampExtract/TimestampExtract';
 
@@ -104,6 +106,17 @@ export function OperandEditModal() {
         <IsMultipleOfEdit
           initialIsMultipleOfAstNode={initialEditableAstNode}
           initialAstNodeErrors={initialAstNodeErrors}
+          onSave={onEditSave}
+        />
+      </OperandEditModalContent>
+    );
+  }
+  if (isStringTemplateAstNode(initialEditableAstNode)) {
+    return (
+      <OperandEditModalContent size="medium">
+        <StringTemplateEdit
+          initialNode={initialEditableAstNode}
+          initialErrors={initialAstNodeErrors}
           onSave={onEditSave}
         />
       </OperandEditModalContent>

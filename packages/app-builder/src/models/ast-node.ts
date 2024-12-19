@@ -446,6 +446,26 @@ export function NewIsMultipleOfAstNode(
   };
 }
 
+export const stringTemplateAstNodeName = 'StringTemplate';
+export interface StringTemplateAstNode {
+  name: typeof stringTemplateAstNodeName;
+  constant?: undefined;
+  children: ConstantAstNode<string>[];
+  namedChildren: Record<string, AstNode>;
+}
+
+export function NewStringTemplateAstNode(
+  template: string = '',
+  variables: Record<string, AstNode> = {},
+): StringTemplateAstNode {
+  return {
+    name: stringTemplateAstNodeName,
+    constant: undefined,
+    children: [NewConstantAstNode({ constant: template })],
+    namedChildren: variables,
+  };
+}
+
 export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
   return node.name === databaseAccessAstNodeName;
 }
@@ -508,11 +528,18 @@ export function isIsMultipleOf(node: AstNode): node is IsMultipleOfAstNode {
   return node.name === isMultipleOfAstNodeName;
 }
 
+export function isStringTemplateAstNode(
+  node: AstNode,
+): node is StringTemplateAstNode {
+  return node.name === stringTemplateAstNodeName;
+}
+
 export type EditableAstNode =
   | AggregationAstNode
   | TimeAddAstNode
   | FuzzyMatchComparatorAstNode
-  | IsMultipleOfAstNode;
+  | IsMultipleOfAstNode
+  | StringTemplateAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -525,7 +552,8 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isTimeAdd(node) ||
     isFuzzyMatchComparator(node) ||
     isTimestampExtract(node) ||
-    isIsMultipleOf(node)
+    isIsMultipleOf(node) ||
+    isStringTemplateAstNode(node)
   );
 }
 
