@@ -136,7 +136,7 @@ export default function Builder() {
                     ) : (
                       <div className="text-grey-25 relative flex gap-2 p-2">
                         <Icon icon="analytics" className="size-6 shrink-0" />
-                        <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                        <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
                           {t('navigation:analytics')}
                         </span>
                         <Nudge

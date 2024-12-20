@@ -13,7 +13,7 @@ export const makeGetLicenseRepository = () => {
       // return adaptLicenseEntitlements(licenseEntitlementsDto);
       return Promise.resolve({
         sso: false,
-        ruleSnoozes: false,
+        ruleSnoozes: true,
         userRoles: false,
         webhooks: false,
         analytics: false,
