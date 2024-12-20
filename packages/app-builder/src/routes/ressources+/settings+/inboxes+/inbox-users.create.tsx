@@ -3,8 +3,10 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { Nudge } from '@app-builder/components/Nudge';
 import { type User } from '@app-builder/models';
 import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
+import { getInboxUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -17,6 +19,7 @@ import {
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,17 +46,14 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-    featureAccessService,
   } = serverServices;
-  const { inbox } = await authService.isAuthenticated(request, {
+  const { inbox, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
-    schema: getCreateInboxUserFormSchema(
-      await featureAccessService.getInboxUserRoles(),
-    ),
+    schema: getCreateInboxUserFormSchema(getInboxUserRoles(entitlements)),
   });
 
   if (submission.status !== 'success') {
@@ -88,10 +88,12 @@ export function CreateInboxUser({
   inboxId,
   users,
   inboxUserRoles,
+  canEditRoles,
 }: {
   inboxId: string;
   users: User[];
   inboxUserRoles: readonly [string, ...string[]];
+  canEditRoles: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = React.useState(false);
@@ -116,6 +118,7 @@ export function CreateInboxUser({
           currentInboxId={inboxId}
           users={users}
           inboxUserRoles={inboxUserRoles}
+          canEditRoles={canEditRoles}
         />
       </Modal.Content>
     </Modal.Root>
@@ -126,10 +129,12 @@ export function CreateInboxUserContent({
   currentInboxId,
   users,
   inboxUserRoles,
+  canEditRoles,
 }: {
   currentInboxId: string;
   users: User[];
   inboxUserRoles: readonly [string, ...string[]];
+  canEditRoles: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const schema = React.useMemo(
@@ -189,8 +194,22 @@ export function CreateInboxUserContent({
             name={fields.role.name}
             className="group flex flex-col gap-2"
           >
-            <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
-            <FormSelect.Default options={inboxUserRoles}>
+            <FormLabel className="flex gap-2">
+              <span className={clsx({ 'text-grey-25': !canEditRoles })}>
+                {t('settings:inboxes.inbox_details.role')}
+              </span>
+              {!canEditRoles ? (
+                <Nudge
+                  content={t('settings:users.role.nudge')}
+                  link="https://checkmarble.com/docs"
+                  className="size-6"
+                />
+              ) : null}
+            </FormLabel>
+            <FormSelect.Default
+              options={inboxUserRoles}
+              disabled={!canEditRoles}
+            >
               {inboxUserRoles.map((role) => (
                 <FormSelect.DefaultItem key={role} value={role}>
                   {t(tKeyForInboxUserRole(role))}

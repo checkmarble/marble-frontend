@@ -17,6 +17,10 @@ import {
   type ScenarioUpdateWorkflowInput,
   scenarioUpdateWorkflowInputSchema,
 } from '@app-builder/models/scenario';
+import {
+  isCreateInboxAvailable,
+  isWorkflowsAvailable,
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -41,22 +45,20 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-
+  const { authService } = serverServices;
   const scenarioId = fromParams(params, 'scenarioId');
+  const { user, entitlements, scenario, inbox, dataModelRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
-  if (!(await featureAccessService.isWorkflowsAvailable())) {
+  if (!isWorkflowsAvailable(entitlements)) {
     return redirect(
       getRoute('/scenarios/:scenarioId/home', {
         scenarioId: fromUUID(scenarioId),
       }),
     );
   }
-
-  const { user, scenario, inbox, dataModelRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
 
   const [scenarios, inboxes, pivotValues] = await Promise.all([
     scenario.listScenarios(),
@@ -75,7 +77,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     inboxes,
     hasPivotValue,
     workflowDataFeatureAccess: {
-      isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable(user),
+      isCreateInboxAvailable: isCreateInboxAvailable(user),
     },
   });
 }
@@ -83,24 +85,22 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export async function action({ request, params }: LoaderFunctionArgs) {
   const {
     authService,
-    featureAccessService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-
   const scenarioId = fromParams(params, 'scenarioId');
+  const { scenario, entitlements } = await authService.isAuthenticated(
+    request,
+    { failureRedirect: getRoute('/sign-in') },
+  );
 
-  if (!(await featureAccessService.isWorkflowsAvailable())) {
+  if (!isWorkflowsAvailable(entitlements)) {
     return redirect(
       getRoute('/scenarios/:scenarioId/home', {
         scenarioId: fromUUID(scenarioId),
       }),
     );
   }
-
-  const { scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
 
   const input = scenarioUpdateWorkflowInputSchema.parse(await request.json());
 
@@ -132,7 +132,6 @@ export default function Workflow() {
 
   const currentScenario = useCurrentScenario();
   const initialWorkflow = adaptValidWorkflow(currentScenario);
-
   const fetcher = useFetcher();
 
   const saveWorkflow = (workflow: ValidWorkflow) => {

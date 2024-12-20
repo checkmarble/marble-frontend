@@ -4,6 +4,8 @@
   "false": "False",
   "from_to": "From <Date>{{start_date}}</Date> to <Date>{{end_date}}</Date>",
   "live": "Live",
+  "premium": "Premium Feature",
+  "upgrade": "Upgrade now",
   "auth.logout": "Log out",
   "search": "Search",
   "error_one": "{{count}} error",

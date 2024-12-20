@@ -1,3 +1,4 @@
+import { type GetLicenseAPIClientWithAuth } from '@app-builder/infra/license-api';
 import {
   type GetMarbleCoreAPIClientWithAuth,
   type MarbleCoreApi,
@@ -12,6 +13,7 @@ import {
   type AuthFlashData,
   type CurrentUser,
 } from '@app-builder/models';
+import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
 import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
@@ -20,6 +22,7 @@ import { type DataModelRepository } from '@app-builder/repositories/DataModelRep
 import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
 import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
+import { type makeGetLicenseRepository } from '@app-builder/repositories/LicenseRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { type PartnerRepository } from '@app-builder/repositories/PartnerRepository';
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
@@ -63,6 +66,7 @@ interface AuthenticatedInfo {
   scenario: ScenarioRepository;
   scenarioIterationRuleRepository: ScenarioIterationRuleRepository;
   user: CurrentUser;
+  entitlements: LicenseEntitlements;
   inbox: InboxRepository;
 }
 
@@ -111,6 +115,7 @@ export type AuthPayload = z.infer<typeof schema>;
 interface MakeAuthenticationServerServiceArgs {
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
+  getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
   getUserRepository: (marbleCoreApiClient: MarbleCoreApi) => UserRepository;
   getInboxRepository: (marbleCoreApiClient: MarbleCoreApi) => InboxRepository;
   getEditorRepository: (marbleCoreApiClient: MarbleCoreApi) => EditorRepository;
@@ -157,6 +162,7 @@ interface MakeAuthenticationServerServiceArgs {
   getRuleSnoozeRepository: (
     marbleCoreApiClient: MarbleCoreApi,
   ) => RuleSnoozeRepository;
+  getLicenseRepository: ReturnType<typeof makeGetLicenseRepository>;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   csrfService: CSRF;
 }
@@ -168,6 +174,7 @@ function expectedErrors(error: unknown) {
 export function makeAuthenticationServerService({
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
+  getLicenseAPIClientWithAuth,
   getUserRepository,
   getInboxRepository,
   getEditorRepository,
@@ -186,6 +193,7 @@ export function makeAuthenticationServerService({
   getTransferAlertRepository,
   getWebhookRepository,
   getRuleSnoozeRepository,
+  getLicenseRepository,
   authSessionService,
   csrfService,
 }: MakeAuthenticationServerServiceArgs) {
@@ -224,11 +232,18 @@ export function makeAuthenticationServerService({
       const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(
         getTokenService(marbleToken.access_token),
       );
+      const licenseApiClient = getLicenseAPIClientWithAuth(
+        getTokenService(marbleToken.access_token),
+      );
       const user =
         await getUserRepository(marbleCoreApiClient).getCurrentUser();
+      const entitlements = await getLicenseRepository(
+        licenseApiClient,
+      ).getEntitlements(user.organizationId);
 
       authSession.set('authToken', marbleToken);
       authSession.set('user', user);
+      authSession.set('entitlements', entitlements);
       redirectUrl = options.successRedirect;
     } catch (error) {
       authSession.flash('authError', { message: adaptAuthErrors(error) });
@@ -274,11 +289,18 @@ export function makeAuthenticationServerService({
       const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(
         getTokenService(marbleToken.access_token),
       );
+      const licenseApiClient = getLicenseAPIClientWithAuth(
+        getTokenService(marbleToken.access_token),
+      );
       const user =
         await getUserRepository(marbleCoreApiClient).getCurrentUser();
+      const entitlements = await getLicenseRepository(
+        licenseApiClient,
+      ).getEntitlements(user.organizationId);
 
       authSession.set('authToken', marbleToken);
       authSession.set('user', user);
+      authSession.set('entitlements', entitlements);
 
       if (options?.successRedirect) {
         throw redirect(options.successRedirect, {
@@ -331,10 +353,13 @@ export function makeAuthenticationServerService({
 
     const marbleToken = authSession.get('authToken');
     const user = authSession.get('user');
+    const entitlements = authSession.get('entitlements');
+
     if (
       !marbleToken ||
       marbleToken.expires_at < new Date().toISOString() ||
-      !user
+      !user ||
+      !entitlements
     ) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
@@ -373,6 +398,7 @@ export function makeAuthenticationServerService({
       webhookRepository: getWebhookRepository(marbleCoreApiClient),
       ruleSnoozeRepository: getRuleSnoozeRepository(marbleCoreApiClient),
       user,
+      entitlements,
       inbox: getInboxRepository(marbleCoreApiClient),
     };
   }

@@ -63,14 +63,12 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { i18nextService, toastSessionService, csrfService, licenseService } =
-    serverServices;
+  const { i18nextService, toastSessionService, csrfService } = serverServices;
   const locale = await i18nextService.getLocale(request);
 
   const [toastSession, [csrfToken, csrfCookieHeader]] = await Promise.all([
     toastSessionService.getSession(request),
     csrfService.commitToken(request),
-    licenseService.getLicenseEntitlements(),
   ]);
 
   const toastMessage = getToastMessage(toastSession);
@@ -136,7 +134,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ExternalScripts />
       </head>
       <body className="selection:text-grey-00 h-screen w-full overflow-hidden antialiased selection:bg-purple-100">
-        <AuthenticityTokenProvider token={loaderData?.csrf ?? ''}>
+        <AuthenticityTokenProvider token={loaderData?.['csrf'] ?? ''}>
           <Tooltip.Provider>{children}</Tooltip.Provider>
         </AuthenticityTokenProvider>
         <script

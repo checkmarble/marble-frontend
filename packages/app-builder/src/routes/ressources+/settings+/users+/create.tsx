@@ -4,10 +4,12 @@ import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { Nudge } from '@app-builder/components/Nudge';
 import {
   isStatusConflictHttpError,
   tKeyForUserRole,
 } from '@app-builder/models';
+import { getUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import {
@@ -19,6 +21,7 @@ import {
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,15 +45,18 @@ function getCreateUserFormSchema(userRoles: readonly [string, ...string[]]) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService, csrfService, featureAccessService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { authService, csrfService } = serverServices;
+  const { apiClient, entitlements } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
   await csrfService.validate(request);
 
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
-    schema: getCreateUserFormSchema(await featureAccessService.getUserRoles()),
+    schema: getCreateUserFormSchema(getUserRoles(entitlements)),
   });
 
   if (submission.status !== 'success') {
@@ -94,8 +100,10 @@ export async function action({ request }: ActionFunctionArgs) {
 export function CreateUser({
   orgId,
   userRoles,
+  canEditRoles,
 }: {
   orgId: string;
+  canEditRoles: boolean;
   userRoles: readonly [string, ...string[]];
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -117,7 +125,11 @@ export function CreateUser({
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateUserContent orgId={orgId} userRoles={userRoles} />
+        <CreateUserContent
+          orgId={orgId}
+          canEditRoles={canEditRoles}
+          userRoles={userRoles}
+        />
       </Modal.Content>
     </Modal.Root>
   );
@@ -126,9 +138,11 @@ export function CreateUser({
 function CreateUserContent({
   orgId,
   userRoles,
+  canEditRoles,
 }: {
   orgId: string;
   userRoles: readonly [string, ...string[]];
+  canEditRoles: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -211,8 +225,26 @@ function CreateUserContent({
               name={fields.role.name}
               className="group flex flex-col gap-2"
             >
-              <FormLabel>{t('settings:users.role')}</FormLabel>
-              <FormSelect.Default options={userRoleOptions}>
+              <FormLabel className="flex flex-row gap-2">
+                <span
+                  className={clsx({
+                    'text-grey-25': !canEditRoles,
+                  })}
+                >
+                  {t('settings:users.role')}
+                </span>
+                {!canEditRoles ? (
+                  <Nudge
+                    content={t('settings:users.role.nudge')}
+                    link="https://checkmarble.com/docs"
+                    className="size-6"
+                  />
+                ) : null}
+              </FormLabel>
+              <FormSelect.Default
+                options={userRoleOptions}
+                disabled={!canEditRoles}
+              >
                 {userRoleOptions.map((role) => (
                   <FormSelect.DefaultItem key={role.value} value={role.value}>
                     {role.label}
