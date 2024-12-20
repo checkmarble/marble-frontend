@@ -16,7 +16,7 @@ export const TestRunNudge = () => {
         <div className="bg-grey-00 relative flex h-fit flex-col gap-4 rounded-lg border-2 border-purple-50 p-8">
           <Nudge
             className="absolute -right-3 -top-3 size-6"
-            content="scenarios:testrun.nudge"
+            content={t('scenarios:testrun.nudge')}
             link="https://checkmarble.com/docs"
           />
           <CalloutV2>

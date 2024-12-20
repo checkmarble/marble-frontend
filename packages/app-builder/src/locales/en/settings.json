@@ -1,5 +1,6 @@
 {
   "users": "Users",
+  "users.role.nudge": "Manage in a granular way what the user of your organization can do",
   "users.new_user": "New user",
   "users.new_user.create": "Create new user",
   "users.update_user": "Update user",
@@ -76,6 +77,7 @@
   "tags.cases": "Cases",
   "api": "API",
   "webhooks": "Webhooks",
+  "webhooks.nudge": "Get real time notification when something happens in your Marble instance",
   "webhook_details": "Webhook details",
   "webhook_secrets": "Webhook secrets",
   "webhooks.new_webhook": "New webhook",

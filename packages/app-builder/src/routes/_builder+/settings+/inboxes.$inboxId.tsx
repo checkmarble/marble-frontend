@@ -57,6 +57,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     inbox,
     caseCount: inbox.casesCount,
+    entitlements,
     inboxUserRoles: getInboxUserRoles(entitlements),
     isEditInboxAvailable: isEditInboxAvailable(user),
     isDeleteInboxAvailable: isDeleteInboxAvailable(user),
@@ -73,6 +74,7 @@ export default function Inbox() {
     caseCount,
     inbox,
     inboxUserRoles,
+    entitlements,
     isEditInboxAvailable,
     isDeleteInboxAvailable,
     isCreateInboxUserAvailable,
@@ -114,6 +116,7 @@ export default function Inbox() {
                         <UpdateInboxUser
                           inboxUser={cell.row.original}
                           inboxUserRoles={inboxUserRoles}
+                          canEditRoles={entitlements.userRoles}
                         />
                       </div>
                     ) : null}
@@ -136,6 +139,7 @@ export default function Inbox() {
     isEditInboxUserAvailable,
     orgUsers,
     t,
+    entitlements.userRoles,
   ]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
@@ -187,6 +191,7 @@ export default function Inbox() {
                 inboxId={inbox.id}
                 users={nonInboxUsers}
                 inboxUserRoles={inboxUserRoles}
+                canEditRoles={entitlements.userRoles}
               />
             ) : null}
           </CollapsiblePaper.Title>

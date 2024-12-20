@@ -71,10 +71,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const dataModelPromise = dataModelRepository.getDataModel();
     const customListsPromise = customListsRepository.listCustomLists();
 
-    const featureAccessPromise = Promise.resolve({
+    const featureAccess = {
       isReadSnoozeAvailable: isReadSnoozeAvailable(user, entitlements),
       isCreateSnoozeAvailable: isCreateSnoozeAvailable(user, entitlements),
-    });
+    };
 
     const decisionsDetailPromise = Promise.all(
       caseDetail.decisions.map(async ({ id }) => {
@@ -113,11 +113,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       caseDetail,
       inbox: currentInbox,
       user,
+      entitlements,
+      featureAccess,
       caseDecisionsPromise: Promise.all([
         dataModelPromise,
         customListsPromise,
         decisionsDetailPromise,
-        featureAccessPromise,
       ]),
     });
   } catch (error) {

@@ -87,6 +87,7 @@
   "case_detail.add_a_comment.placeholder": "Write a note",
   "case_detail.add_a_comment.post": "post a comment",
   "case_detail.add_rule_snooze.title": "Snooze a rule",
+  "case_detail.add_rule_snooze.nudge": "Snooze a rule to disable it temporarily",
   "case_detail.add_rule_snooze.callout": "Snoozing a rule for a specific pivot value will prevent it from triggering for a certain amount of time (<DocLink>learn more</DocLink>)",
   "case_detail.add_rule_snooze.comment.label": "Comment",
   "case_detail.add_rule_snooze.comment.placeholder": "Explain why you are snoozing this rule",

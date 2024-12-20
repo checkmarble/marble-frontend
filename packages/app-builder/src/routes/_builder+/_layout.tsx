@@ -2,7 +2,6 @@ import {
   navigationI18n,
   SidebarButton,
   SidebarLink,
-  sidebarLink,
 } from '@app-builder/components';
 import {
   HelpCenter,
@@ -43,14 +42,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw forbidden('Only Marble Core users can access this app.');
   }
 
-  const [organizationDetail, orgUsers, orgTags, settings] = await Promise.all([
+  const [organizationDetail, orgUsers, orgTags] = await Promise.all([
     organization.getCurrentOrganization(),
     organization.listUsers(),
     organization.listTags(),
-    getSettings(user, entitlements),
   ]);
 
-  const firstSettings = settings[0];
+  const firstSettings = getSettings(user)[0];
 
   return json({
     user,
@@ -59,15 +57,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     orgTags,
     featuresAccess: {
       isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
-      settings:
-        firstSettings !== undefined
-          ? {
-              isAvailable: true as const,
-              to: firstSettings.to,
-            }
-          : {
-              isAvailable: false as const,
-            },
+      settings: {
+        isAvailable: firstSettings !== undefined,
+        ...(firstSettings !== undefined && { to: firstSettings.to }),
+      },
     },
   });
 }
@@ -141,20 +134,14 @@ export default function Builder() {
                         Icon={(props) => <Icon icon="analytics" {...props} />}
                       />
                     ) : (
-                      <div
-                        className={sidebarLink({
-                          isActive: false,
-                          state: 'disabled',
-                          className: 'relative',
-                        })}
-                      >
+                      <div className="text-grey-25 relative flex gap-2 p-2">
                         <Icon icon="analytics" className="size-6 shrink-0" />
                         <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
                           {t('navigation:analytics')}
                         </span>
                         <Nudge
                           className="size-6"
-                          content="navigation:analytics.nudge"
+                          content={t('navigation:analytics.nudge')}
                           link="https://checkmarble.com/docs"
                         />
                       </div>
@@ -182,7 +169,7 @@ export default function Builder() {
                     <li key="navigation:settings">
                       <SidebarLink
                         labelTKey="navigation:settings"
-                        to={featuresAccess.settings.to}
+                        to={featuresAccess.settings.to as string}
                         Icon={(props) => <Icon icon="settings" {...props} />}
                       />
                     </li>

@@ -35,7 +35,7 @@ export const Nudge = ({ content, link, className }: NudgeProps) => {
       >
         <span className="text-m font-bold">{t('common:premium')}</span>
         <div className="flex flex-col items-center gap-2">
-          <p className="text-s text-center font-medium">{t(content)}</p>
+          <p className="text-s text-center font-medium">{content}</p>
           <a
             className="text-s text-purple-100 hover:underline"
             target="_blank"

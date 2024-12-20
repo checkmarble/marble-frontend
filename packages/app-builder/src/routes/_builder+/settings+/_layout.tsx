@@ -124,7 +124,7 @@ export default function Settings() {
                           </span>
                           <Nudge
                             className="size-6"
-                            content={`settings:${setting.title}.nudge`}
+                            content={t(`settings:${setting.title}.nudge`)}
                             link="https://checkmarble.com/docs"
                           />
                         </div>

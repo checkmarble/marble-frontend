@@ -234,7 +234,11 @@ function CreateUserContent({
                   {t('settings:users.role')}
                 </span>
                 {!canEditRoles ? (
-                  <Nudge content="tata" link="totot" className="size-6" />
+                  <Nudge
+                    content={t('settings:users.role.nudge')}
+                    link="https://checkmarble.com/docs"
+                    className="size-6"
+                  />
                 ) : null}
               </FormLabel>
               <FormSelect.Default

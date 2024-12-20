@@ -1,4 +1,5 @@
 import { type Pivot } from '@app-builder/models';
+import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type RuleSnooze } from '@app-builder/models/rule-snooze';
 import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -11,16 +12,19 @@ import { Icon } from 'ui-icons';
 
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { PivotDetails } from '../Data/PivotDetails';
+import { Nudge } from '../Nudge';
 import { casesI18n } from './cases-i18n';
 
 export function RuleSnoozes({
   ruleSnoozes,
   pivotValues,
   isCreateSnoozeAvailable,
+  entitlements,
   decisionId,
   ruleId,
 }: {
   ruleSnoozes: RuleSnooze[];
+  entitlements: LicenseEntitlements;
   pivotValues: {
     pivot: Pivot;
     value: string;
@@ -115,17 +119,29 @@ export function RuleSnoozes({
                     </Ariakit.Hovercard>
                   </Ariakit.HovercardProvider>
                 </div>
-              ) : isCreateSnoozeAvailable ? (
-                <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
-                  <Button className="h-8 w-fit pl-2">
-                    <Icon icon="snooze" className="size-6" />
-                    {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
-                  </Button>
-                </AddRuleSnooze>
+              ) : entitlements.ruleSnoozes ? (
+                isCreateSnoozeAvailable ? (
+                  <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
+                    <Button className="h-8 w-fit pl-2">
+                      <Icon icon="snooze" className="size-6" />
+                      {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
+                    </Button>
+                  </AddRuleSnooze>
+                ) : (
+                  <span className="text-grey-50 col-span-2 text-xs">
+                    {t('cases:case_detail.add_rule_snooze.no_access')}
+                  </span>
+                )
               ) : (
-                <span className="text-grey-50 col-span-2 text-xs">
-                  {t('cases:case_detail.add_rule_snooze.no_access')}
-                </span>
+                <Button className="h-8 w-fit pl-2" disabled>
+                  <Icon icon="snooze" className="size-6" />
+                  {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
+                  <Nudge
+                    className="absolute -right-3 -top-3 size-6"
+                    content={t('cases:case_detail.add_rule_snooze.nudge')}
+                    link="https://checkmarble.com/docs"
+                  />
+                </Button>
               )}
             </React.Fragment>
           );

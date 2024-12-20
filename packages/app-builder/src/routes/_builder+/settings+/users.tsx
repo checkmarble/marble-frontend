@@ -125,6 +125,7 @@ export default function Users() {
                         <UpdateUser
                           user={cell.row.original}
                           userRoles={userRoles}
+                          canEditRoles={entitlements.userRoles}
                         />
                       </div>
                     ) : null}
@@ -151,6 +152,7 @@ export default function Users() {
     t,
     user.actorIdentity.userId,
     userRoles,
+    entitlements.userRoles,
   ]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
