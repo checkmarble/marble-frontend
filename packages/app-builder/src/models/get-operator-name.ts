@@ -2,7 +2,7 @@ import type { TFunction } from 'i18next';
 import { assertNever } from 'typescript-utils';
 
 import { undefinedAstNodeName } from './astNode/ast-node';
-import { isOperatorFunction } from './modale-operators';
+import { isOperatorFunction } from './operator-functions';
 
 export function getOperatorName(
   t: TFunction<['common', 'scenarios'], undefined>,

@@ -4,7 +4,7 @@ import {
   type PayloadAstNode,
 } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { type OperatorFunction } from '@app-builder/models/modale-operators';
+import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import {
   type AstEditorStore,
   AstNodeEditorProvider,

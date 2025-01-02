@@ -1,8 +1,4 @@
 import {
-  isMainAstOperatorFunction,
-  type MainAstOperatorFunction,
-} from './astNode/builder-ast-node-node-operator';
-import {
   type ValidTimestampExtractParts,
   validTimestampExtractParts,
 } from './astNode/time';
@@ -49,24 +45,10 @@ export function isTimeAddOperator(value: string): value is TimeAddOperator {
   return (timeAddOperators as ReadonlyArray<string>).includes(value);
 }
 
-function isTimestampPart(value: string): value is ValidTimestampExtractParts {
+export function isTimestampPart(
+  value: string,
+): value is ValidTimestampExtractParts {
   return validTimestampExtractParts.includes(
     value as ValidTimestampExtractParts,
-  );
-}
-
-export type OperatorFunction =
-  | MainAstOperatorFunction
-  | AggregationFilterOperator
-  | TimeAddOperator
-  | ValidTimestampExtractParts
-  | AggregatorOperator;
-export function isOperatorFunction(value: string): value is OperatorFunction {
-  return (
-    isMainAstOperatorFunction(value) ||
-    isAggregationFilterOperator(value) ||
-    isTimeAddOperator(value) ||
-    isAggregatorOperator(value) ||
-    isTimestampPart(value)
   );
 }

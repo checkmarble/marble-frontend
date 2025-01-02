@@ -1,6 +1,6 @@
 import { undefinedAstNodeName } from '@app-builder/models/astNode/ast-node';
-import { getOperatorName } from '@app-builder/models/getOperatorName';
-import { type OperatorFunction } from '@app-builder/models/modale-operators';
+import { getOperatorName } from '@app-builder/models/get-operator-name';
+import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import { Trigger, Value } from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';

@@ -17,12 +17,12 @@ import {
   isDataAccessorAstNode,
 } from '@app-builder/models/astNode/data-accessor';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
-import { type OperatorFunction } from '@app-builder/models/modale-operators';
 import {
   getOperandTypeIcon,
   getOperandTypeTKey,
   type OperandType,
 } from '@app-builder/models/operand-type';
+import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import {
   useCustomListAccessCustomList,
   useDataAccessorAstNodeField,
