@@ -9,7 +9,7 @@ import {
 import {
   isOperatorFunction,
   type OperatorFunction,
-} from '@app-builder/models/editable-operators';
+} from '@app-builder/models/modale-operators';
 import * as R from 'remeda';
 
 export interface EditorRepository {

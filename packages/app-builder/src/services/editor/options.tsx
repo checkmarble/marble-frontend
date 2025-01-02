@@ -1,5 +1,9 @@
+import { type AstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
-import { type AstNode } from '@app-builder/models/astNode/ast-node';
+import {
+  isMainAstOperatorFunction,
+  sortMainAstOperatorFunctions,
+} from '@app-builder/models/astNode/builder-ast-node-node-operator';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
   type CustomListAccessAstNode,
@@ -28,10 +32,8 @@ import {
 } from '@app-builder/models/data-model';
 import {
   aggregatorOperators,
-  isMainAstOperatorFunction,
   type OperatorFunction,
-  sortMainAstOperatorFunctions,
-} from '@app-builder/models/editable-operators';
+} from '@app-builder/models/modale-operators';
 import { type OperandType } from '@app-builder/models/operand-type';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useFormatLanguage } from '@app-builder/utils/format';

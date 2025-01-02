@@ -10,7 +10,7 @@ import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
   type AggregatorOperator,
   aggregatorOperators,
-} from '@app-builder/models/editable-operators';
+} from '@app-builder/models/modale-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import { useDataModel } from '@app-builder/services/editor/options';

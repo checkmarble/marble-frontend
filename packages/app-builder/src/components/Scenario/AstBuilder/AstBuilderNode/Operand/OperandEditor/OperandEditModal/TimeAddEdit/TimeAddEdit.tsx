@@ -12,7 +12,7 @@ import {
   isTimeAddOperator,
   type TimeAddOperator,
   timeAddOperators,
-} from '@app-builder/models/editable-operators';
+} from '@app-builder/models/modale-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { dateDocHref } from '@app-builder/services/documentation-href';
 import {

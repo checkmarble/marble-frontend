@@ -1,8 +1,6 @@
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 
-import { undefinedAstNodeName } from '../editable-operators';
-
 export type AstNode = {
   name: string | null;
   constant?: ConstantType;
@@ -31,6 +29,11 @@ export function NewAstNode({
     children: children ?? [],
     namedChildren: namedChildren ?? {},
   };
+}
+
+export const undefinedAstNodeName = 'Undefined';
+export interface UndefinedAstNode extends Omit<AstNode, 'name'> {
+  name: typeof undefinedAstNodeName;
 }
 
 export function NewUndefinedAstNode({
@@ -73,10 +76,6 @@ export function adaptNodeDto(astNode: AstNode): NodeDto {
     children: astNode.children.map(adaptNodeDto),
     named_children: R.mapValues(astNode.namedChildren ?? {}, adaptNodeDto),
   };
-}
-
-export interface UndefinedAstNode extends Omit<AstNode, 'name'> {
-  name: typeof undefinedAstNodeName;
 }
 
 export function isUndefinedAstNode(node: AstNode): node is UndefinedAstNode {

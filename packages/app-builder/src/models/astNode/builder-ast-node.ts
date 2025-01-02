@@ -1,3 +1,9 @@
+import { type AggregationAstNode, isAggregation } from './aggregation';
+import {
+  type AstNode,
+  isUndefinedAstNode,
+  type UndefinedAstNode,
+} from './ast-node';
 import {
   type BinaryMainAstOperatorFunction,
   isBinaryMainAstOperatorFunction,
@@ -5,13 +11,7 @@ import {
   isUnaryMainAstOperatorFunction,
   type MainAstOperatorFunction,
   type UnaryMainAstOperatorFunction,
-} from '../editable-operators';
-import { type AggregationAstNode, isAggregation } from './aggregation';
-import {
-  type AstNode,
-  isUndefinedAstNode,
-  type UndefinedAstNode,
-} from './ast-node';
+} from './builder-ast-node-node-operator';
 import { type ConstantAstNode, isConstant } from './constant';
 import {
   type CustomListAccessAstNode,

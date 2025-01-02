@@ -17,7 +17,7 @@ import {
   isDataAccessorAstNode,
 } from '@app-builder/models/astNode/data-accessor';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
-import { type OperatorFunction } from '@app-builder/models/editable-operators';
+import { type OperatorFunction } from '@app-builder/models/modale-operators';
 import {
   getOperandTypeIcon,
   getOperandTypeTKey,
