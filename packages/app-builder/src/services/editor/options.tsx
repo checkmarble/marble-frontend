@@ -30,11 +30,9 @@ import {
   findDataModelTableByName,
   type TableModel,
 } from '@app-builder/models/data-model';
-import {
-  aggregatorOperators,
-  type OperatorFunction,
-} from '@app-builder/models/modale-operators';
+import { aggregatorOperators } from '@app-builder/models/modale-operators';
 import { type OperandType } from '@app-builder/models/operand-type';
+import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import * as React from 'react';

@@ -17,7 +17,7 @@ import {
 } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
-import { type OperatorFunction } from '@app-builder/models/modale-operators';
+import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
