@@ -250,8 +250,7 @@ function ClientDownloadAsCSV({ listId }: { listId: string }) {
       }
       const blob = await response.blob();
       const contentDisposition = response.headers.get('Content-Disposition');
-      const filename =
-        contentDisposition?.split('filename=')[1] ?? 'list-values.csv';
+      const filename = parseContentDisposition(contentDisposition);
 
       const url = URL.createObjectURL(blob);
       await downloadFile(url, filename);
@@ -268,6 +267,23 @@ function ClientDownloadAsCSV({ listId }: { listId: string }) {
       }}
     />
   );
+}
+
+function parseContentDisposition(header: string | null) {
+  if (!header) {
+    return 'list-values.csv';
+  }
+  const filenameMatch = header.match(/filename\*=UTF-8''([^;]+)/i);
+  if (filenameMatch && filenameMatch[1]) {
+    return decodeURIComponent(filenameMatch[1]);
+  }
+  // Fallback to simple filename
+  const simpleMatch = header.match(/filename="?([^";\n]+)"?/i);
+  if (simpleMatch && simpleMatch[1]) {
+    return simpleMatch[1];
+  }
+
+  return 'list-values.csv';
 }
 
 function DownloadAsCSV({ listId }: { listId: string }) {

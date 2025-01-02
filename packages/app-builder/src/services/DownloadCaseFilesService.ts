@@ -59,7 +59,7 @@ export function useDownloadCaseFiles(
         );
       }
       const { url } = fileDownloadUrlSchema.parse(await response.json());
-      await downloadFile(url);
+      await downloadFile(url, 'download');
     } catch (error) {
       if (
         error instanceof AlreadyDownloadingError ||
