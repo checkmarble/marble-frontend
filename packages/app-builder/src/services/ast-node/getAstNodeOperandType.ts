@@ -2,6 +2,10 @@ import {
   type AstNode,
   type DataModel,
   type EnumValue,
+  isUndefinedAstNode,
+  type TableModel,
+} from '@app-builder/models';
+import {
   isAggregation,
   isConstant,
   isCustomListAccess,
@@ -12,9 +16,7 @@ import {
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
-  isUndefinedAstNode,
-  type TableModel,
-} from '@app-builder/models';
+} from '@app-builder/models/ast-node';
 import { type OperandType } from '@app-builder/models/operand-type';
 import * as R from 'remeda';
 

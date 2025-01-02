@@ -1,16 +1,14 @@
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type AstNode, type CurrentUser, isAdmin } from '@app-builder/models';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
-  type AstNode,
-  type CurrentUser,
-  isAdmin,
-  NewConstantAstNode,
   type TimestampExtractAstNode,
   type TimestampFieldAstNode,
   type ValidTimestampExtractParts,
   validTimestampExtractParts,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/time';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { dateDocHref } from '@app-builder/services/documentation-href';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';

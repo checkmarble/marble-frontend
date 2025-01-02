@@ -1,11 +1,11 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { adaptAstNode } from '@app-builder/models';
 import {
-  adaptAstNode,
   type DatabaseAccessAstNode,
   isDatabaseAccess,
   isPayload,
   type PayloadAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import {
   isOperatorFunction,
   type OperatorFunction,

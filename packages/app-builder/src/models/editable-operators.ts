@@ -1,10 +1,11 @@
 import { type TFunction } from 'i18next';
 import { assertNever } from 'typescript-utils';
 
+import {} from './astNode/ast-node';
 import {
   type ValidTimestampExtractParts,
   validTimestampExtractParts,
-} from './ast-node';
+} from './astNode/time';
 
 export const undefinedAstNodeName = 'Undefined';
 

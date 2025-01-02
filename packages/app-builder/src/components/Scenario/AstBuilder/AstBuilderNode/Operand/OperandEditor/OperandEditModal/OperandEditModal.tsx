@@ -5,7 +5,7 @@ import {
   isStringTemplateAstNode,
   isTimeAdd,
   isTimestampExtract,
-} from '@app-builder/models';
+} from '@app-builder/models/ast-node';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import * as React from 'react';
 import { assertNever } from 'typescript-utils';

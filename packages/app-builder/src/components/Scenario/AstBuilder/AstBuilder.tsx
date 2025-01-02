@@ -1,8 +1,8 @@
+import { type DataModel } from '@app-builder/models';
 import {
   type DatabaseAccessAstNode,
-  type DataModel,
   type PayloadAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import {

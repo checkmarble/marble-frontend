@@ -1,6 +1,6 @@
+import { type AstNode, isUndefinedAstNode } from '@app-builder/models';
 import {
   type AggregationAstNode,
-  type AstNode,
   type FuzzyMatchComparatorAstNode,
   isAggregation,
   isConstant,
@@ -14,11 +14,10 @@ import {
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
-  isUndefinedAstNode,
   type StringTemplateAstNode,
   type TimeAddAstNode,
   type TimestampExtractAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/ast-node';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   getOperatorName,

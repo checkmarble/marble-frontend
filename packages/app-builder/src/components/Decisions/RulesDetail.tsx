@@ -1,10 +1,9 @@
 import { decisionsI18n, Paper } from '@app-builder/components';
+import { type AstNode, type DataModel } from '@app-builder/models';
 import {
-  type AstNode,
   type DatabaseAccessAstNode,
-  type DataModel,
   type PayloadAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type RuleExecution } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';

@@ -1,13 +1,13 @@
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type AstNode } from '@app-builder/models';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
-  type AstNode,
-  NewConstantAstNode,
   NewTimeAddAstNode,
   type TimeAddAstNode,
   type TimestampFieldAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/time';
 import {
   isTimeAddOperator,
   type TimeAddOperator,

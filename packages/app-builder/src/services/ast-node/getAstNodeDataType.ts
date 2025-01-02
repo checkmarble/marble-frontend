@@ -2,6 +2,9 @@ import {
   type AstNode,
   type DataModel,
   type DataType,
+  type TableModel,
+} from '@app-builder/models';
+import {
   isConstant,
   isDataAccessorAstNode,
   isFuzzyMatchComparator,
@@ -10,8 +13,7 @@ import {
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
-  type TableModel,
-} from '@app-builder/models';
+} from '@app-builder/models/ast-node';
 import { dateTimeDataTypeSchema } from '@app-builder/utils/schema/dataTypeSchema';
 import * as R from 'remeda';
 

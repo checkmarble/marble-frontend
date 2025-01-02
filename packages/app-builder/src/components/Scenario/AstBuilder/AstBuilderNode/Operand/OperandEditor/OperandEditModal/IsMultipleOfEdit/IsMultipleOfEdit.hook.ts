@@ -1,4 +1,5 @@
-import { type AstNode, type IsMultipleOfAstNode } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
+import { type IsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import { useReducer } from 'react';
