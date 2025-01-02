@@ -25,10 +25,8 @@ import {
   type TimestampExtractAstNode,
 } from '@app-builder/models/astNode/time';
 import { type CustomList } from '@app-builder/models/custom-list';
-import {
-  getOperatorName,
-  isAggregatorOperator,
-} from '@app-builder/models/editable-operators';
+import { getOperatorName } from '@app-builder/models/getOperatorName';
+import { isAggregatorOperator } from '@app-builder/models/modale-operators';
 import { formatNumber } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
