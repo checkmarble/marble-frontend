@@ -1,10 +1,10 @@
+import { isAggregation } from '@app-builder/models/astNode/aggregation';
+import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
+import { isFuzzyMatchComparator } from '@app-builder/models/astNode/strings';
 import {
-  isAggregation,
-  isFuzzyMatchComparator,
-  isIsMultipleOf,
   isTimeAdd,
   isTimestampExtract,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/time';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import * as React from 'react';
 import { assertNever } from 'typescript-utils';

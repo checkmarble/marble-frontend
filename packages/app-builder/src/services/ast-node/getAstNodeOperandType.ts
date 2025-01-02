@@ -2,18 +2,20 @@ import {
   type AstNode,
   type DataModel,
   type EnumValue,
-  isAggregation,
-  isConstant,
-  isCustomListAccess,
-  isDataAccessorAstNode,
-  isFuzzyMatchComparator,
-  isIsMultipleOf,
-  isTimeAdd,
-  isTimeNow,
-  isTimestampExtract,
   isUndefinedAstNode,
   type TableModel,
 } from '@app-builder/models';
+import { isAggregation } from '@app-builder/models/astNode/aggregation';
+import { isConstant } from '@app-builder/models/astNode/constant';
+import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
+import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
+import { isFuzzyMatchComparator } from '@app-builder/models/astNode/strings';
+import {
+  isTimeAdd,
+  isTimeNow,
+  isTimestampExtract,
+} from '@app-builder/models/astNode/time';
 import { type OperandType } from '@app-builder/models/operand-type';
 import * as R from 'remeda';
 

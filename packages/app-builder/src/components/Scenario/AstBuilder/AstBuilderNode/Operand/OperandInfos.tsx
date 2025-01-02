@@ -1,16 +1,22 @@
 import {
-  type AggregationAstNode,
   type AstNode,
-  type CustomListAccessAstNode,
-  type DataAccessorAstNode,
   type DataType,
   getDataTypeIcon,
   getDataTypeTKey,
-  isAggregation,
-  isCustomListAccess,
-  isDataAccessorAstNode,
-  isTimeAdd,
 } from '@app-builder/models';
+import {
+  type AggregationAstNode,
+  isAggregation,
+} from '@app-builder/models/astNode/aggregation';
+import {
+  type CustomListAccessAstNode,
+  isCustomListAccess,
+} from '@app-builder/models/astNode/custom-list';
+import {
+  type DataAccessorAstNode,
+  isDataAccessorAstNode,
+} from '@app-builder/models/astNode/data-accessor';
+import { isTimeAdd } from '@app-builder/models/astNode/time';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import {
   getOperandTypeIcon,

@@ -1,4 +1,5 @@
-import { type AstNode, isLeafOperandAstNode } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
+import { isLeafOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { type PathSegment, type Tree } from '@app-builder/utils/tree';
 import * as R from 'remeda';

@@ -10,12 +10,11 @@ import { Highlight } from '@app-builder/components/Highlight';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import {
-  type AstNode,
   type DatabaseAccessAstNode,
-  NewEmptyRuleAstNode,
   type PayloadAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';

@@ -1,11 +1,11 @@
 import { Callout } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type AstNode } from '@app-builder/models';
 import {
-  type AstNode,
   type FuzzyMatchComparatorAstNode,
   NewFuzzyMatchComparatorAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/strings';
 import {
   type FuzzyMatchAlgorithm,
   isEditableFuzzyMatchAlgorithm,

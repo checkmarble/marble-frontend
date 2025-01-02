@@ -1,18 +1,22 @@
+import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
+import { type AstNode } from '@app-builder/models/astNode/ast-node';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
-  type AstNode,
   type CustomListAccessAstNode,
+  NewCustomListAstNode,
+} from '@app-builder/models/astNode/custom-list';
+import {
   type DataAccessorAstNode,
   type DatabaseAccessAstNode,
-  NewAggregatorAstNode,
-  NewConstantAstNode,
-  NewCustomListAstNode,
-  NewFuzzyMatchComparatorAstNode,
-  NewIsMultipleOfAstNode,
+  type PayloadAstNode,
+} from '@app-builder/models/astNode/data-accessor';
+import { NewIsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
+import { NewFuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
+import {
   NewTimeAddAstNode,
   NewTimeNowAstNode,
   NewTimestampExtractAstNode,
-  type PayloadAstNode,
-} from '@app-builder/models/ast-node';
+} from '@app-builder/models/astNode/time';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type DataModel,

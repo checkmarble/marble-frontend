@@ -1,13 +1,15 @@
 import {
-  type DataAccessorAstNode,
   type DataModel,
   type DataModelField,
   findDataModelField,
   findDataModelTable,
-  isDatabaseAccess,
-  isPayload,
   type TableModel,
 } from '@app-builder/models';
+import {
+  type DataAccessorAstNode,
+  isDatabaseAccess,
+  isPayload,
+} from '@app-builder/models/astNode/data-accessor';
 import { assertNever } from 'typescript-utils';
 
 export function getDataAccessorAstNodeField(

@@ -1,9 +1,8 @@
+import { type Pivot, type TableModel } from '@app-builder/models';
 import {
   type DatabaseAccessAstNode,
   type PayloadAstNode,
-  type Pivot,
-  type TableModel,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type Decision,

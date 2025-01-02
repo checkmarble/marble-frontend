@@ -5,7 +5,7 @@ import {
 } from 'marble-api';
 import * as R from 'remeda';
 
-import { type ConstantType } from './ast-node';
+import { type ConstantType } from './astNode/ast-node';
 
 export type ReturnValue =
   | {
