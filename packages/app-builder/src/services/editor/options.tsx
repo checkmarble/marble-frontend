@@ -28,7 +28,6 @@ import {
 } from '@app-builder/models/data-model';
 import { aggregatorOperators } from '@app-builder/models/modale-operators';
 import { type OperandType } from '@app-builder/models/operand-type';
-import { type OperatorOption } from '@app-builder/models/operator-functions';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import * as React from 'react';
