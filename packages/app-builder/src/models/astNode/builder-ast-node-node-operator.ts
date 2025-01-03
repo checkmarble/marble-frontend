@@ -1,3 +1,5 @@
+import { undefinedAstNodeName } from './ast-node';
+
 // define a subset of MainAstOperatorFunction with only binary operators
 const binaryMainAstOperatorFunctions = [
   '=',
@@ -53,10 +55,12 @@ export function isMainAstOperatorFunction(
   value: string,
 ): value is MainAstOperatorFunction {
   return (
+    value === undefinedAstNodeName ||
     isBinaryMainAstOperatorFunction(value) ||
     isUnaryMainAstOperatorFunction(value)
   );
 }
 export type MainAstOperatorFunction =
+  | typeof undefinedAstNodeName
   | BinaryMainAstOperatorFunction
   | UnaryMainAstOperatorFunction;
