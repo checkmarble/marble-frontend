@@ -39,27 +39,24 @@ export function AstBuilderNode({
 }: AstBuilderNodeProps) {
   if (isMainAstBinaryNode(astNode)) {
     return (
-      <div className="flex w-full flex-col gap-2">
-        <MainAstBinaryOperatorLine
-          treePath={treePath}
-          mainAstNode={astNode}
-          viewOnly={viewOnly}
-          root={root}
-        />
-      </div>
+      // it looks like the previous container was not necessary anymore. It still need to be checked
+      <MainAstBinaryOperatorLine
+        treePath={treePath}
+        mainAstNode={astNode}
+        viewOnly={viewOnly}
+        root={root}
+      />
     );
   }
 
   if (isMainAstUnaryNode(astNode)) {
     return (
-      <div className="flex w-full flex-col gap-2">
-        <MainAstUnaryOperatorLine
-          treePath={treePath}
-          mainAstNode={astNode}
-          viewOnly={viewOnly}
-          root={root}
-        />
-      </div>
+      <MainAstUnaryOperatorLine
+        treePath={treePath}
+        mainAstNode={astNode}
+        viewOnly={viewOnly}
+        root={root}
+      />
     );
   }
 

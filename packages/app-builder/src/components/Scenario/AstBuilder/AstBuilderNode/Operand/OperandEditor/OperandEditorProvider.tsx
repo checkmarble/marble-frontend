@@ -238,6 +238,31 @@ export function useBottomOptions() {
       onSelect: () => void;
     }[] = [];
 
+    // probably should be moved to the end of the list, since they are always available (to help discoverability of all options + because they should'nt be the most important ones)
+    bottomOptions.push({
+      icon: 'helpcenter',
+      label: 'nest right',
+      onSelect: () => {
+        onSave(
+          NewUndefinedAstNode({
+            children: [NewUndefinedAstNode(), initialAstNode],
+          }),
+        );
+      },
+    });
+
+    bottomOptions.push({
+      icon: 'helpcenter',
+      label: 'nest left',
+      onSelect: () => {
+        onSave(
+          NewUndefinedAstNode({
+            children: [initialAstNode, NewUndefinedAstNode()],
+          }),
+        );
+      },
+    });
+
     if (!isUndefinedAstNode(initialAstNode)) {
       bottomOptions.push({
         icon: 'restart-alt',
