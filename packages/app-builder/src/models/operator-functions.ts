@@ -19,6 +19,7 @@ export type OperatorFunction =
   | TimeAddOperator
   | ValidTimestampExtractParts
   | AggregatorOperator;
+
 export function isOperatorFunction(value: string): value is OperatorFunction {
   return (
     isMainAstOperatorFunction(value) ||
