@@ -155,14 +155,11 @@ export function isMainAstNode(astNode: AstNode): astNode is MainAstNode {
     return false;
   }
 
-  if (Object.keys(astNode.namedChildren).length > 0) {
-    return false;
-  }
-  if (astNode.name == null || !isMainAstOperatorFunction(astNode.name)) {
+  if (astNode.name == null) {
     return false;
   }
 
-  return true;
+  return isMainAstOperatorFunction(astNode.name) || isUndefinedAstNode(astNode);
 }
 
 export function isMainAstUnaryNode(
@@ -171,8 +168,10 @@ export function isMainAstUnaryNode(
   if (!isMainAstNode(astNode)) return false;
 
   return (
+    isMainAstNode(astNode) &&
     astNode.children.length === 1 &&
-    isUnaryMainAstOperatorFunction(astNode.name)
+    (isUnaryMainAstOperatorFunction(astNode.name) ||
+      isUndefinedAstNode(astNode))
   );
 }
 
@@ -183,6 +182,7 @@ export function isMainAstBinaryNode(
 
   return (
     astNode.children.length === 2 &&
-    isBinaryMainAstOperatorFunction(astNode.name)
+    (isBinaryMainAstOperatorFunction(astNode.name) ||
+      isUndefinedAstNode(astNode))
   );
 }
