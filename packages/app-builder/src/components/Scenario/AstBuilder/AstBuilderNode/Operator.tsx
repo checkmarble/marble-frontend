@@ -1,6 +1,6 @@
 import { undefinedAstNodeName } from '@app-builder/models/astNode/ast-node';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
-import { type OperatorFunction } from '@app-builder/models/operator-functions';
+import { type OperatorOption } from '@app-builder/models/operator-functions';
 import { Trigger, Value } from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
@@ -46,7 +46,7 @@ const OperatorLabel = forwardRef<HTMLButtonElement, OperatorLabelProps>(
   },
 );
 
-interface OperatorProps<T extends OperatorFunction>
+interface OperatorProps<T extends OperatorOption>
   extends VariantProps<typeof operatorContainerClassnames> {
   value?: T;
   setValue: (operator: T) => void;
@@ -60,7 +60,7 @@ interface OperatorProps<T extends OperatorFunction>
  *
  * For now, this is not possible due to the Radix Select component not allowing for a custom label component
  */
-export function Operator<T extends OperatorFunction>({
+export function Operator<T extends OperatorOption>({
   value,
   setValue,
   operators,

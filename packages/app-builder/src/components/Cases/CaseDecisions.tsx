@@ -9,7 +9,7 @@ import {
   type DecisionDetail,
   type RuleExecution,
 } from '@app-builder/models/decision';
-import { type OperatorFunction } from '@app-builder/models/operator-functions';
+import { type OperatorOption } from '@app-builder/models/operator-functions';
 import { type RuleSnoozeWithRuleId } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
@@ -57,7 +57,7 @@ interface DecisionsDetail {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
   };
-  operators: OperatorFunction[];
+  operators: OperatorOption[];
   ruleSnoozes: RuleSnoozeWithRuleId[];
 }
 

@@ -4,7 +4,7 @@ import {
   type PayloadAstNode,
 } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { type OperatorFunction } from '@app-builder/models/operator-functions';
+import { type OperatorOption } from '@app-builder/models/operator-functions';
 import {
   type AstEditorStore,
   AstNodeEditorProvider,
@@ -18,7 +18,7 @@ interface AstBuilderProps {
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
+    operators: OperatorOption[];
     dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;

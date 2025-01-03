@@ -22,7 +22,7 @@ import {
   getOperandTypeTKey,
   type OperandType,
 } from '@app-builder/models/operand-type';
-import { type OperatorFunction } from '@app-builder/models/operator-functions';
+import { type OperatorOption } from '@app-builder/models/operator-functions';
 import {
   useCustomListAccessCustomList,
   useDataAccessorAstNodeField,
@@ -245,9 +245,9 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
                 {fieldName?.constant ?? '...'}
               </p>
               <Operator
-                value={operator?.constant as OperatorFunction}
+                value={operator?.constant as OperatorOption}
                 setValue={noop}
-                operators={[operator?.constant as OperatorFunction]}
+                operators={[operator?.constant as OperatorOption]}
                 viewOnly
               />
               <OperandLabel

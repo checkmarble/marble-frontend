@@ -7,7 +7,7 @@ import {
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type RuleExecution } from '@app-builder/models/decision';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
-import { type OperatorFunction } from '@app-builder/models/operator-functions';
+import { type OperatorOption } from '@app-builder/models/operator-functions';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { useAstNodeEditor } from '@app-builder/services/editor/ast-editor';
 import {
@@ -40,7 +40,7 @@ export function RulesDetail({
     rules: ScenarioIterationRule[];
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
+    operators: OperatorOption[];
     dataModel: DataModel;
     customLists: CustomList[];
   }>;
@@ -93,7 +93,7 @@ export function RuleExecutionDetail({
     rules: ScenarioIterationRule[];
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
+    operators: OperatorOption[];
     dataModel: DataModel;
     customLists: CustomList[];
   };
@@ -183,7 +183,7 @@ function RuleFormula({
   evaluation?: NodeEvaluation;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
-  operators: OperatorFunction[];
+  operators: OperatorOption[];
   dataModel: DataModel;
   customLists: CustomList[];
   triggerObjectType: string;

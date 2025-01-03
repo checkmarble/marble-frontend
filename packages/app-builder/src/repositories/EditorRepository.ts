@@ -7,8 +7,8 @@ import {
   type PayloadAstNode,
 } from '@app-builder/models/astNode/data-accessor';
 import {
-  isOperatorFunction,
-  type OperatorFunction,
+  isOperatorOption,
+  type OperatorOption,
 } from '@app-builder/models/operator-functions';
 import * as R from 'remeda';
 
@@ -17,7 +17,7 @@ export interface EditorRepository {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
   }>;
-  listOperators(args: { scenarioId: string }): Promise<OperatorFunction[]>;
+  listOperators(args: { scenarioId: string }): Promise<OperatorOption[]>;
 }
 
 export function makeGetEditorRepository() {
@@ -54,7 +54,7 @@ export function makeGetEditorRepository() {
       const operatorFunctions = R.pipe(
         operators_accessors,
         R.map(({ name }) => name),
-        R.filter(isOperatorFunction),
+        R.filter(isOperatorOption),
       );
 
       return operatorFunctions;
