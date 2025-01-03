@@ -84,10 +84,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const operatorsPromise = editor.listOperators({
-    scenarioId,
-  });
-
   const accessorsPromise = editor.listAccessors({
     scenarioId,
   });
@@ -98,7 +94,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     databaseAccessors: (await accessorsPromise).databaseAccessors,
     payloadAccessors: (await accessorsPromise).payloadAccessors,
-    operators: await operatorsPromise,
     dataModel: await dataModelPromise,
     customLists,
   });
@@ -183,13 +178,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function RuleDetail() {
   const { t } = useTranslation(handle.i18n);
 
-  const {
-    databaseAccessors,
-    payloadAccessors,
-    operators,
-    dataModel,
-    customLists,
-  } = useLoaderData<typeof loader>();
+  const { databaseAccessors, payloadAccessors, dataModel, customLists } =
+    useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -217,7 +207,6 @@ export default function RuleDetail() {
   const options = {
     databaseAccessors,
     payloadAccessors,
-    operators,
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
@@ -266,7 +255,6 @@ function RuleViewContent({
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorOption[];
     dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;
@@ -320,7 +308,6 @@ function RuleEditContent({
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorOption[];
     dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;
