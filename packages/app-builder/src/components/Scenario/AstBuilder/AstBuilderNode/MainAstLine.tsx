@@ -5,11 +5,11 @@ import {
   type MainAstBinaryNode,
   type MainAstUnaryNode,
 } from '@app-builder/models/astNode/builder-ast-node';
+import { allMainAstOperatorFunctions } from '@app-builder/models/astNode/builder-ast-node-node-operator';
 import {
   useAstNodeEditorActions,
   useEvaluationErrors,
 } from '@app-builder/services/editor/ast-editor';
-import { useMainAstOperatorFunctions } from '@app-builder/services/editor/options';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch } from 'ui-design-system';
@@ -46,7 +46,7 @@ export function MainAstBinaryOperatorLine({
     setAstNodeAtPath(stringPath, nestedChild);
   }
 
-  const operators = useMainAstOperatorFunctions();
+  const operators = allMainAstOperatorFunctions;
 
   const left = mainAstNode.children[0];
   const leftPath = `${treePath}.children.0`;
@@ -114,7 +114,7 @@ export function MainAstUnaryOperatorLine({
 }) {
   const { setAstNodeAtPath, setOperatorAtPath } = useAstNodeEditorActions();
 
-  const operators = useMainAstOperatorFunctions();
+  const operators = allMainAstOperatorFunctions;
 
   const left = mainAstNode.children[0];
   const leftPath = `${treePath}.children.0`;

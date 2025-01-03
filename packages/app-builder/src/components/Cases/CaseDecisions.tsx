@@ -9,7 +9,6 @@ import {
   type DecisionDetail,
   type RuleExecution,
 } from '@app-builder/models/decision';
-import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import { type RuleSnoozeWithRuleId } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
@@ -47,7 +46,7 @@ import { CasePivotValues } from './CasePivotValues';
 import { casesI18n } from './cases-i18n';
 import { RuleSnoozes } from './RuleSnoozes';
 
-interface DecisionsDetail {
+interface DecisionsDetailWithContext {
   decisionId: string;
   ruleExecutions: RuleExecution[];
   triggerObjectType: string;
@@ -57,7 +56,6 @@ interface DecisionsDetail {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
   };
-  operators: OperatorFunction[];
   ruleSnoozes: RuleSnoozeWithRuleId[];
 }
 
@@ -70,7 +68,7 @@ export function CaseDecisions({
     [
       TableModel[],
       CustomList[],
-      DecisionsDetail[],
+      DecisionsDetailWithContext[],
       {
         isReadSnoozeAvailable: boolean;
         isCreateSnoozeAvailable: boolean;
@@ -275,7 +273,7 @@ function DecisionDetail({
   featureAccess,
 }: {
   decision: Decision;
-  decisionsDetail: DecisionsDetail[];
+  decisionsDetail: DecisionsDetailWithContext[];
   dataModel: TableModel[];
   customLists: CustomList[];
   featureAccess: {
@@ -359,7 +357,6 @@ function DecisionDetail({
                         decisionDetail.accessors.databaseAccessors,
                       payloadAccessors:
                         decisionDetail.accessors.payloadAccessors,
-                      operators: decisionDetail.operators,
                       rules: decisionDetail.rules,
                     }}
                   />

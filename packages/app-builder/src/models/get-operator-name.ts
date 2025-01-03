@@ -2,13 +2,13 @@ import type { TFunction } from 'i18next';
 import { assertNever } from 'typescript-utils';
 
 import { undefinedAstNodeName } from './astNode/ast-node';
-import { isOperatorFunction } from './operator-functions';
+import { isOperatorOption } from './operator-functions';
 
 export function getOperatorName(
   t: TFunction<['common', 'scenarios'], undefined>,
   operatorName: string,
 ) {
-  if (isOperatorFunction(operatorName)) {
+  if (isOperatorOption(operatorName)) {
     switch (operatorName) {
       case '+':
         return '+';

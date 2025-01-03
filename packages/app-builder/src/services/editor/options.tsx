@@ -1,9 +1,5 @@
 import { type AstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
-import {
-  isMainAstOperatorFunction,
-  sortMainAstOperatorFunctions,
-} from '@app-builder/models/astNode/builder-ast-node-node-operator';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
   type CustomListAccessAstNode,
@@ -32,7 +28,6 @@ import {
 } from '@app-builder/models/data-model';
 import { aggregatorOperators } from '@app-builder/models/modale-operators';
 import { type OperandType } from '@app-builder/models/operand-type';
-import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import * as React from 'react';
@@ -55,9 +50,6 @@ const PayloadAccessors =
 const DataModelContext = createSimpleContext<DataModel>('DataModel');
 
 const CustomLists = createSimpleContext<CustomList[]>('CustomLists');
-
-const OperatorFunctions =
-  createSimpleContext<OperatorFunction[]>('OperatorFunctions');
 
 const TriggerObjectTable =
   createSimpleContext<TableModel>('TriggerObjectTable');
@@ -83,7 +75,6 @@ export const useDatabaseAccessors = DatabaseAccessors.useValue;
 export const usePayloadAccessors = PayloadAccessors.useValue;
 export const useDataModel = DataModelContext.useValue;
 export const useCustomLists = CustomLists.useValue;
-export const useOperatorFunctions = OperatorFunctions.useValue;
 export const useTriggerObjectTable = TriggerObjectTable.useValue;
 export const useGetAstNodeDataType = GetAstNodeDataTypeContext.useValue;
 export const useGetAstNodeDisplayName = GetAstNodeDisplayNameContext.useValue;
@@ -93,7 +84,6 @@ export function OptionsProvider({
   children,
   databaseAccessors,
   payloadAccessors,
-  operators,
   dataModel,
   customLists,
   triggerObjectType,
@@ -101,7 +91,6 @@ export function OptionsProvider({
   children: React.ReactNode;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
-  operators: OperatorFunction[];
   dataModel: DataModel;
   customLists: CustomList[];
   triggerObjectType: string;
@@ -149,23 +138,21 @@ export function OptionsProvider({
       <PayloadAccessors.Provider value={payloadAccessors}>
         <DataModelContext.Provider value={dataModel}>
           <CustomLists.Provider value={customLists}>
-            <OperatorFunctions.Provider value={operators}>
-              <TriggerObjectTable.Provider value={triggerObjectTable}>
-                <GetAstNodeDataTypeContext.Provider
-                  value={getAstNodeDataTypeValue}
+            <TriggerObjectTable.Provider value={triggerObjectTable}>
+              <GetAstNodeDataTypeContext.Provider
+                value={getAstNodeDataTypeValue}
+              >
+                <GetAstNodeDisplayNameContext.Provider
+                  value={getAstNodeDisplayNameValue}
                 >
-                  <GetAstNodeDisplayNameContext.Provider
-                    value={getAstNodeDisplayNameValue}
+                  <GetAstNodeOperandTypeContext.Provider
+                    value={getAstNodeOperandTypeValue}
                   >
-                    <GetAstNodeOperandTypeContext.Provider
-                      value={getAstNodeOperandTypeValue}
-                    >
-                      {children}
-                    </GetAstNodeOperandTypeContext.Provider>
-                  </GetAstNodeDisplayNameContext.Provider>
-                </GetAstNodeDataTypeContext.Provider>
-              </TriggerObjectTable.Provider>
-            </OperatorFunctions.Provider>
+                    {children}
+                  </GetAstNodeOperandTypeContext.Provider>
+                </GetAstNodeDisplayNameContext.Provider>
+              </GetAstNodeDataTypeContext.Provider>
+            </TriggerObjectTable.Provider>
           </CustomLists.Provider>
         </DataModelContext.Provider>
       </PayloadAccessors.Provider>
@@ -258,17 +245,6 @@ export function useOperandOptions(enumValues?: EnumValue[]) {
     getAstNodeOption,
     payloadAccessors,
   ]);
-}
-
-export function useMainAstOperatorFunctions() {
-  const operators = useOperatorFunctions();
-  return React.useMemo(
-    () =>
-      operators
-        .filter(isMainAstOperatorFunction)
-        .sort(sortMainAstOperatorFunctions),
-    [operators],
-  );
 }
 
 export function useCustomListAccessCustomList(

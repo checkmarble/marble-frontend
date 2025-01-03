@@ -20,7 +20,6 @@ const binaryMainAstOperatorFunctions = [
   'StringEndsWith',
   'ContainsAnyOf',
   'ContainsNoneOf',
-  undefinedAstNodeName,
 ] as const;
 export type BinaryMainAstOperatorFunction =
   (typeof binaryMainAstOperatorFunctions)[number];
@@ -33,30 +32,6 @@ export function isBinaryMainAstOperatorFunction(
   );
 }
 
-// order is important for sorting
-const orderedMainAstOperatorFunctions = [
-  '=',
-  '≠',
-  '<',
-  '<=',
-  '>',
-  '>=',
-  '+',
-  '-',
-  '*',
-  '/',
-  'IsInList',
-  'IsNotInList',
-  'StringContains',
-  'StringNotContain',
-  'StringStartsWith',
-  'StringEndsWith',
-  'ContainsAnyOf',
-  'ContainsNoneOf',
-  'IsEmpty',
-  'IsNotEmpty',
-  undefinedAstNodeName,
-] as const;
 // define a subset of MainAstOperatorFunction with only unary operators
 const unaryMainAstOperatorFunctions = ['IsEmpty', 'IsNotEmpty'] as const;
 export type UnaryMainAstOperatorFunction =
@@ -70,23 +45,22 @@ export function isUnaryMainAstOperatorFunction(
   );
 }
 
+// The order is important for sorting, it is the order in which the operators are displayed in the dropdown
+export const allMainAstOperatorFunctions = [
+  ...binaryMainAstOperatorFunctions,
+  ...unaryMainAstOperatorFunctions,
+] as const;
+
 export function isMainAstOperatorFunction(
   value: string,
 ): value is MainAstOperatorFunction {
   return (
+    value === undefinedAstNodeName ||
     isBinaryMainAstOperatorFunction(value) ||
     isUnaryMainAstOperatorFunction(value)
   );
 }
 export type MainAstOperatorFunction =
+  | typeof undefinedAstNodeName
   | BinaryMainAstOperatorFunction
   | UnaryMainAstOperatorFunction;
-
-export function sortMainAstOperatorFunctions(
-  lhs: MainAstOperatorFunction,
-  rhs: MainAstOperatorFunction,
-) {
-  const lhsIndex = orderedMainAstOperatorFunctions.indexOf(lhs);
-  const rhsIndex = orderedMainAstOperatorFunctions.indexOf(rhs);
-  return lhsIndex - rhsIndex;
-}
