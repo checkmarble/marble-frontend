@@ -1,15 +1,15 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { adaptAstNode } from '@app-builder/models';
 import {
-  adaptAstNode,
   type DatabaseAccessAstNode,
   isDatabaseAccess,
   isPayload,
   type PayloadAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import {
   isOperatorFunction,
   type OperatorFunction,
-} from '@app-builder/models/editable-operators';
+} from '@app-builder/models/operator-functions';
 import * as R from 'remeda';
 
 export interface EditorRepository {

@@ -1,18 +1,26 @@
+import { type AstNode } from '@app-builder/models';
+import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import {
-  type AstNode,
+  isMainAstOperatorFunction,
+  sortMainAstOperatorFunctions,
+} from '@app-builder/models/astNode/builder-ast-node-node-operator';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
+import {
   type CustomListAccessAstNode,
+  NewCustomListAstNode,
+} from '@app-builder/models/astNode/custom-list';
+import {
   type DataAccessorAstNode,
   type DatabaseAccessAstNode,
-  NewAggregatorAstNode,
-  NewConstantAstNode,
-  NewCustomListAstNode,
-  NewFuzzyMatchComparatorAstNode,
-  NewIsMultipleOfAstNode,
+  type PayloadAstNode,
+} from '@app-builder/models/astNode/data-accessor';
+import { NewIsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
+import { NewFuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
+import {
   NewTimeAddAstNode,
   NewTimeNowAstNode,
   NewTimestampExtractAstNode,
-  type PayloadAstNode,
-} from '@app-builder/models/ast-node';
+} from '@app-builder/models/astNode/time';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type DataModel,
@@ -22,13 +30,9 @@ import {
   findDataModelTableByName,
   type TableModel,
 } from '@app-builder/models/data-model';
-import {
-  aggregatorOperators,
-  isMainAstOperatorFunction,
-  type OperatorFunction,
-  sortMainAstOperatorFunctions,
-} from '@app-builder/models/editable-operators';
+import { aggregatorOperators } from '@app-builder/models/modale-operators';
 import { type OperandType } from '@app-builder/models/operand-type';
+import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import * as React from 'react';

@@ -1,16 +1,16 @@
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type AstNode } from '@app-builder/models';
 import {
   type AggregationAstNode,
   aggregationAstNodeName,
-  type AstNode,
-  NewConstantAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/aggregation';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
   type AggregatorOperator,
   aggregatorOperators,
-} from '@app-builder/models/editable-operators';
+} from '@app-builder/models/modale-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import { useDataModel } from '@app-builder/services/editor/options';

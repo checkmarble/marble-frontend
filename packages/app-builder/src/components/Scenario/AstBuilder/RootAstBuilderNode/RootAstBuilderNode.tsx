@@ -1,4 +1,7 @@
-import { isAndAstNode, isOrWithAndAstNode } from '@app-builder/models';
+import {
+  isAndAstNode,
+  isOrWithAndAstNode,
+} from '@app-builder/models/astNode/builder-ast-node';
 import { useRootAstNode } from '@app-builder/services/editor/ast-editor';
 
 import { AstBuilderNode } from '../AstBuilderNode';

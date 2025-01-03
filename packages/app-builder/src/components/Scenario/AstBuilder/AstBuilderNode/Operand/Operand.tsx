@@ -1,10 +1,10 @@
 import {
   type AstNode,
-  type ConstantAstNode,
   type ConstantType,
   type DataType,
-  isKnownOperandAstNode,
 } from '@app-builder/models';
+import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import { type ConstantAstNode } from '@app-builder/models/astNode/constant';
 import { type OperandType } from '@app-builder/models/operand-type';
 import {
   type AstNodeErrors,

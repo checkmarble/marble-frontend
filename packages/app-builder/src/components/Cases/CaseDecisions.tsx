@@ -1,16 +1,15 @@
+import { type Pivot, type TableModel } from '@app-builder/models';
 import {
   type DatabaseAccessAstNode,
   type PayloadAstNode,
-  type Pivot,
-  type TableModel,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type Decision,
   type DecisionDetail,
   type RuleExecution,
 } from '@app-builder/models/decision';
-import { type OperatorFunction } from '@app-builder/models/editable-operators';
+import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import { type RuleSnoozeWithRuleId } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';

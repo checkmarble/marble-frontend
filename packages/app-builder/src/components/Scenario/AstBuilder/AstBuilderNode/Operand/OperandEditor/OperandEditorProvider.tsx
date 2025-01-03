@@ -1,15 +1,19 @@
 import {
   type AstNode,
-  type ConstantAstNode,
   type ConstantType,
   type DataType,
-  type EditableAstNode,
-  isDatabaseAccess,
-  isEditableAstNode,
-  isPayload,
   isUndefinedAstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
+import {
+  type EditableAstNode,
+  isEditableAstNode,
+} from '@app-builder/models/astNode/builder-ast-node';
+import { type ConstantAstNode } from '@app-builder/models/astNode/constant';
+import {
+  isDatabaseAccess,
+  isPayload,
+} from '@app-builder/models/astNode/data-accessor';
 import { type OperandType } from '@app-builder/models/operand-type';
 import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
 import { useTriggerObjectTable } from '@app-builder/services/editor/options';

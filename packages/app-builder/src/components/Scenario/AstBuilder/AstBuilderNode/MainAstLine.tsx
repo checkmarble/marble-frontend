@@ -1,11 +1,10 @@
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
-  type AstNode,
   isMainAstBinaryNode,
   isMainAstUnaryNode,
   type MainAstBinaryNode,
   type MainAstUnaryNode,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/builder-ast-node';
 import {
   useAstNodeEditorActions,
   useEvaluationErrors,
