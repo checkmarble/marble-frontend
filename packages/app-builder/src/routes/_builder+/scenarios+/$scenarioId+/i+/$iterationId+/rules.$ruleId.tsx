@@ -17,7 +17,7 @@ import {
 } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
-import { type OperatorFunction } from '@app-builder/models/operator-functions';
+import { type OperatorOption } from '@app-builder/models/operator-functions';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
@@ -266,7 +266,7 @@ function RuleViewContent({
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
+    operators: OperatorOption[];
     dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;
@@ -320,7 +320,7 @@ function RuleEditContent({
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
+    operators: OperatorOption[];
     dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;

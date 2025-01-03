@@ -20,7 +20,6 @@ const binaryMainAstOperatorFunctions = [
   'StringEndsWith',
   'ContainsAnyOf',
   'ContainsNoneOf',
-  undefinedAstNodeName,
 ] as const;
 export type BinaryMainAstOperatorFunction =
   (typeof binaryMainAstOperatorFunctions)[number];

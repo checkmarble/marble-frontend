@@ -1,6 +1,7 @@
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 
+// AST node general types
 export type AstNode = {
   name: string | null;
   constant?: ConstantType;
@@ -16,7 +17,6 @@ export type ConstantType =
   | Array<ConstantType>
   | { [key: string]: ConstantType };
 
-// helper
 export function NewAstNode({
   name,
   constant,
@@ -47,6 +47,11 @@ export function NewUndefinedAstNode({
   };
 }
 
+export function isUndefinedAstNode(node: AstNode): node is UndefinedAstNode {
+  return node.name === undefinedAstNodeName;
+}
+
+// Helper functions to work with AST nodes
 export function NewEmptyTriggerAstNode(): AstNode {
   return NewAstNode({
     name: 'And',
@@ -60,6 +65,7 @@ export function NewEmptyRuleAstNode(): AstNode {
   });
 }
 
+// DTO adapter functions
 export function adaptAstNode(nodeDto: NodeDto): AstNode {
   return {
     name: nodeDto.name === undefined ? null : nodeDto.name,
@@ -76,8 +82,4 @@ export function adaptNodeDto(astNode: AstNode): NodeDto {
     children: astNode.children.map(adaptNodeDto),
     named_children: R.mapValues(astNode.namedChildren ?? {}, adaptNodeDto),
   };
-}
-
-export function isUndefinedAstNode(node: AstNode): node is UndefinedAstNode {
-  return node.name === undefinedAstNodeName;
 }
