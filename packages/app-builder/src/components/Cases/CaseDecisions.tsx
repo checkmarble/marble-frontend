@@ -47,7 +47,7 @@ import { CasePivotValues } from './CasePivotValues';
 import { casesI18n } from './cases-i18n';
 import { RuleSnoozes } from './RuleSnoozes';
 
-interface DecisionsDetail {
+interface DecisionsDetailWithContext {
   decisionId: string;
   ruleExecutions: RuleExecution[];
   triggerObjectType: string;
@@ -57,7 +57,6 @@ interface DecisionsDetail {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
   };
-  operators: OperatorOption[];
   ruleSnoozes: RuleSnoozeWithRuleId[];
 }
 
@@ -70,7 +69,7 @@ export function CaseDecisions({
     [
       TableModel[],
       CustomList[],
-      DecisionsDetail[],
+      DecisionsDetailWithContext[],
       {
         isReadSnoozeAvailable: boolean;
         isCreateSnoozeAvailable: boolean;
@@ -275,7 +274,7 @@ function DecisionDetail({
   featureAccess,
 }: {
   decision: Decision;
-  decisionsDetail: DecisionsDetail[];
+  decisionsDetail: DecisionsDetailWithContext[];
   dataModel: TableModel[];
   customLists: CustomList[];
   featureAccess: {
@@ -359,7 +358,6 @@ function DecisionDetail({
                         decisionDetail.accessors.databaseAccessors,
                       payloadAccessors:
                         decisionDetail.accessors.payloadAccessors,
-                      operators: decisionDetail.operators,
                       rules: decisionDetail.rules,
                     }}
                   />

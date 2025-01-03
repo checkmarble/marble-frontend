@@ -18,7 +18,6 @@ interface AstBuilderProps {
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorOption[];
     dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;

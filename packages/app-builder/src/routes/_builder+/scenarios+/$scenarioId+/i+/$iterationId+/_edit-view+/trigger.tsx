@@ -51,10 +51,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const [operators, accessors, dataModel, customLists] = await Promise.all([
-    editor.listOperators({
-      scenarioId,
-    }),
+  const [accessors, dataModel, customLists] = await Promise.all([
     editor.listAccessors({
       scenarioId,
     }),
@@ -65,7 +62,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
-    operators,
     dataModel,
     customLists,
   });
@@ -130,13 +126,8 @@ export default function Trigger() {
   const scenarioIteration = useCurrentScenarioIteration();
   const scenarioValidation = useCurrentScenarioValidation();
 
-  const {
-    databaseAccessors,
-    payloadAccessors,
-    operators,
-    dataModel,
-    customLists,
-  } = useLoaderData<typeof loader>();
+  const { databaseAccessors, payloadAccessors, dataModel, customLists } =
+    useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
   const editorMode = useEditorMode();
@@ -265,7 +256,6 @@ export default function Trigger() {
               options={{
                 databaseAccessors,
                 payloadAccessors,
-                operators,
                 dataModel,
                 customLists,
                 triggerObjectType: scenario.triggerObjectType,

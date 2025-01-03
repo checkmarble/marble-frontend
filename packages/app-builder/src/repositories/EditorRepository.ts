@@ -6,18 +6,13 @@ import {
   isPayload,
   type PayloadAstNode,
 } from '@app-builder/models/astNode/data-accessor';
-import {
-  isOperatorOption,
-  type OperatorOption,
-} from '@app-builder/models/operator-functions';
-import * as R from 'remeda';
 
 export interface EditorRepository {
   listAccessors(args: { scenarioId: string }): Promise<{
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
   }>;
-  listOperators(args: { scenarioId: string }): Promise<OperatorOption[]>;
+  // listOperators(args: { scenarioId: string }): Promise<OperatorOption[]>;
 }
 
 export function makeGetEditorRepository() {
@@ -46,18 +41,6 @@ export function makeGetEditorRepository() {
         databaseAccessors,
         payloadAccessors,
       };
-    },
-    listOperators: async ({ scenarioId }) => {
-      const { operators_accessors } =
-        await marbleCoreApiClient.listOperators(scenarioId);
-
-      const operatorFunctions = R.pipe(
-        operators_accessors,
-        R.map(({ name }) => name),
-        R.filter(isOperatorOption),
-      );
-
-      return operatorFunctions;
     },
   });
 }

@@ -90,9 +90,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         const accessorsPromise = editor.listAccessors({
           scenarioId: decisionDetail.scenario.id,
         });
-        const operatorsPromise = editor.listOperators({
-          scenarioId: decisionDetail.scenario.id,
-        });
 
         const ruleSnoozesPromise = decision
           .getDecisionActiveSnoozes(id)
@@ -105,7 +102,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
           pivots: await pivotsPromise,
           rules: await rulesPromise,
           accessors: await accessorsPromise,
-          operators: await operatorsPromise,
           ruleSnoozes: await ruleSnoozesPromise,
         };
       }),
