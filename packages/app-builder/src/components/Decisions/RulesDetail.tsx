@@ -6,8 +6,8 @@ import {
 } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type RuleExecution } from '@app-builder/models/decision';
-import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
+import { type OperatorFunction } from '@app-builder/models/operator-functions';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { useAstNodeEditor } from '@app-builder/services/editor/ast-editor';
 import {
