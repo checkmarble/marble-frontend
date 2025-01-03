@@ -12,7 +12,6 @@ export interface EditorRepository {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
   }>;
-  // listOperators(args: { scenarioId: string }): Promise<OperatorOption[]>;
 }
 
 export function makeGetEditorRepository() {
