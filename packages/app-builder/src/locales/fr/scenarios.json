@@ -361,5 +361,9 @@
   "testrun.filters.hit": "Déclenchée",
   "testrun.cancel.callout": "Etes-vous sûr de vouloir arrêter le test en cours ?",
   "testrun.cancel": "Arrêtez le test",
-  "testrun.description": "Testez et comparez une version de scénario avec une version en direct"
+  "testrun.description": "Testez et comparez une version de scénario avec une version en direct",
+  "edit_string_template.template_field.label": "Modèle",
+  "edit_string_template.template_field.placeholder": "Tapez un texte contenant une %variable%",
+  "edit_string_template.title": "Modèle de texte",
+  "edit_string_template.variables.label": "Variables"
 }

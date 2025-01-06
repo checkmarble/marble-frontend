@@ -7,7 +7,6 @@
   "action_node.create_case.empty_content": "Sélectionnez les informations manquantes pour terminer la configuration.",
   "action_node.create_case.entity": "investigation",
   "action_node.create_case.title": "Créer une nouvelle investigation",
-  "detail_panel.add_to_case_if_possible.default_name.helper": "Si aucune investigation correspondante n'est trouvée, le nom de l'investigation créée suivra ce modèle :",
   "detail_panel.add_to_case_if_possible.description": "Dans la boîte de réception sélectionnée, si une investigation ouverte correspond à la valeur pivot de la décision, ajoutez-y la décision. \nSi aucune investigation correspondante n'est trouvé, une nouvelle investigation sera créée avec un nom par défaut.",
   "detail_panel.add_to_case_if_possible.no_pivot": "Vous devez définir une <DocLink>valeur pivot</DocLink> pour ajouter la décision à une investigation.",
   "detail_panel.checklist.description": "Assurez-vous que tous les problèmes sont résolus avant d'enregistrer l'automatisation.",
@@ -30,7 +29,6 @@
   "detail_panel.confirm_delete_workflow.title": "Supprimer l'automatisation",
   "detail_panel.create_action_node.description": "Une action est une tâche exécutée par l'automatisation. \nChoisissez une action à ajouter à l'automatisation.",
   "detail_panel.create_action_node.title": "Choisissez une action",
-  "detail_panel.create_case.default_name.helper": "Le nom par défaut doit suivre ce modèle :",
   "detail_panel.create_case.description": "Créez une nouvelle investigation avec la décision créée. \nL'investigation sera créée dans la boîte de réception sélectionnée avec un nom par défaut.",
   "detail_panel.create_trigger_node.description": "Un déclencheur est un événement qui démarre l'automatisation. \nChoisissez un déclencheur pour démarrer l'automatisation.",
   "detail_panel.create_trigger_node.title": "Choisissez un déclencheur",
@@ -53,5 +51,7 @@
   "trigger_node.decision_created.content": "Sur <Scenario>{{scenarioName}}</Scenario> lorsque le résultat est :",
   "trigger_node.decision_created.empty_content": "Sélectionnez les informations manquantes pour terminer la configuration.",
   "trigger_node.decision_created.entity": "décision",
-  "trigger_node.decision_created.title": "Décision créée"
+  "trigger_node.decision_created.title": "Décision créée",
+  "detail_panel.add_to_case_if_possible.case_name.label": "Nom de l'investigation si aucune investigation correspondante n'est trouvée",
+  "detail_panel.create_case.case_name.label": "Nom de l'investigation"
 }

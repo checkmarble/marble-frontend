@@ -361,5 +361,9 @@
   "edit_is_multiple_of.title": "متعددة من العتبة",
   "testrun.cancel.callout": "هل أنت متأكد أنك تريد إلغاء الاختبار الحالي؟",
   "testrun.cancel": "أوقف الاختبار",
-  "testrun.description": "اختبار ومقارنة نسخة السيناريو مع نسخة حية"
+  "testrun.description": "اختبار ومقارنة نسخة السيناريو مع نسخة حية",
+  "edit_string_template.template_field.label": "نموذج",
+  "edit_string_template.template_field.placeholder": "اكتب نصًا يحتوي على %variable% فيه",
+  "edit_string_template.title": "قالب السلسلة",
+  "edit_string_template.variables.label": "المتغيرات"
 }
