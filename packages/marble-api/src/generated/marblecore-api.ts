@@ -364,7 +364,7 @@ export type ScenarioUpdateInputDto = {
 };
 export type ScenarioAstValidateInputDto = {
     node?: NodeDto;
-    expected_return_type?: "string" | "int" | "float" | "bool" | "datetime";
+    expected_return_type?: "string" | "int" | "float" | "bool";
 };
 export type ScenarioIterationDto = {
     id: string;
