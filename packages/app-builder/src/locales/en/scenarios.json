@@ -351,6 +351,7 @@
   "edit_is_multiple_of.examples.value": "Value",
   "edit_is_multiple_of.examples.result": "Result",
   "edit_string_template.title": "String template",
+  "edit_string_template.description": "Create a text with field values (<DocLink>learn more</DocLink>)",
   "edit_string_template.template_field.label": "Template",
   "edit_string_template.template_field.placeholder": "Type a text containing a %variable% in it",
   "edit_string_template.variables.label": "Variables",
