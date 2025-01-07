@@ -74,10 +74,10 @@ const adaptStringTemplateEditState = ({
   initialNode: StringTemplateAstNode;
   initialErrors: AstNodeErrors | undefined;
 }) => {
-  const template = initialNode.children[0]?.constant ?? '';
-  // const templateErrors = initialErrors.children[0]?.errors ?? [];
-
-  return { template, variables: initialNode.namedChildren };
+  return {
+    template: initialNode.children[0]?.constant ?? '',
+    variables: initialNode.namedChildren,
+  };
 };
 
 export const useStringTemplateEditState = (

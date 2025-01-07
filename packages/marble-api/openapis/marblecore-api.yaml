@@ -4838,8 +4838,9 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/NodeDto'
-        return_type:
+        expected_return_type:
           type: string
+          enum: ['string', 'int', 'float', 'bool', 'datetime']
     ScenarioUpdateInputDto:
       type: object
       properties:

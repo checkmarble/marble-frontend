@@ -1,4 +1,5 @@
 import { type AstNode } from '@app-builder/models';
+import { type ReturnValueType } from '@app-builder/models/node-evaluation';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -8,7 +9,7 @@ import { useCallback } from 'react';
 
 type AstValidationPayload = {
   node: AstNode;
-  returnType?: string;
+  expectedReturnType?: ReturnValueType;
 };
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -22,7 +23,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const res = await scenario.validateAst(scenarioId, {
     node: body.node,
-    returnType: body.returnType,
+    expectedReturnType: body.expectedReturnType,
   });
 
   console.dir(res, { depth: null });
@@ -34,10 +35,10 @@ export function useAstValidationFetcher(scenarioId: string) {
   const { submit, data } = useFetcher<typeof action>();
 
   const validate = useCallback(
-    (ast: AstNode, returnType?: string) => {
+    (ast: AstNode, expectedReturnType?: ReturnValueType) => {
       const args: AstValidationPayload = {
         node: ast,
-        returnType,
+        expectedReturnType,
       };
       submit(args, {
         method: 'POST',

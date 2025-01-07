@@ -11,6 +11,7 @@ import {
 import {
   adaptNodeEvaluation,
   type NodeEvaluation,
+  type ReturnValueType,
 } from '@app-builder/models/node-evaluation';
 import {
   adaptSnoozesOfIteration,
@@ -76,7 +77,7 @@ export interface ScenarioRepository {
   }): Promise<ScenarioValidation['rules']['ruleItems'][number]>;
   validateAst(
     scenarioId: string,
-    payload: { node: AstNode; returnType?: string },
+    payload: { node: AstNode; expectedReturnType?: ReturnValueType },
   ): Promise<NodeEvaluation>;
   commitScenarioIteration(args: {
     iterationId: string;
@@ -174,12 +175,12 @@ export function makeGetScenarioRepository() {
         ruleId,
       );
     },
-    validateAst: async (scenarioId, { node, returnType }) => {
+    validateAst: async (scenarioId, { node, expectedReturnType }) => {
       const { ast_validation } = await marbleCoreApiClient.validateAstNode(
         scenarioId,
         {
           node: adaptNodeDto(node),
-          return_type: returnType,
+          expected_return_type: expectedReturnType,
         },
       );
 

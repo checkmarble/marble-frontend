@@ -17,20 +17,6 @@ export const useDefaultCaseName = (triggerObjectType: string) => {
     });
   }, [defaultCaseTemplate]);
 
-  // const isDefaultCaseName = (astNode: StringTemplateAstNode) => {
-  //   return R.isDeepEqual(astNode, defaultCaseNameNode);
-  //   // if (astNode.children[0]?.constant !== defaultCaseTemplate) {
-  //   //   return false;
-  //   // }
-  //   // const objectIdVariable = astNode.namedChildren['object_id'];
-
-  //   // return (
-  //   //   objectIdVariable &&
-  //   //   isPayload(objectIdVariable) &&
-  //   //   objectIdVariable.children[0]?.constant === 'object_id'
-  //   // );
-  // };
-
   return {
     defaultCaseNameNode,
   };
