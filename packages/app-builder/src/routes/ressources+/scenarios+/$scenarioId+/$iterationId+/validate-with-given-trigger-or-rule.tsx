@@ -2,7 +2,7 @@ import { type AstNode } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useCallback } from 'react';
 
@@ -21,12 +21,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if ('rule' in body) {
     const validation = await scenario.validateRule({ iterationId, ...body });
 
-    return json(validation.ruleEvaluation);
+    return validation.ruleEvaluation;
   }
 
   const validation = await scenario.validateTrigger({ iterationId, ...body });
 
-  return json(validation.triggerEvaluation);
+  return validation.triggerEvaluation;
 }
 
 type TriggerValidationArgs = {

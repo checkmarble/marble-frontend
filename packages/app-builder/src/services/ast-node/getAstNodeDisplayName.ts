@@ -10,10 +10,12 @@ import {
   isIsMultipleOf,
   type IsMultipleOfAstNode,
   isPayload,
+  isStringTemplateAstNode,
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
   isUndefinedAstNode,
+  type StringTemplateAstNode,
   type TimeAddAstNode,
   type TimestampExtractAstNode,
 } from '@app-builder/models';
@@ -82,6 +84,10 @@ export function getAstNodeDisplayName(
 
   if (isIsMultipleOf(astNode)) {
     return getIsMultipleOfDisplayName(astNode, context);
+  }
+
+  if (isStringTemplateAstNode(astNode)) {
+    return getStringTemplateDisplayName(astNode, context);
   }
 
   if (isUndefinedAstNode(astNode)) {
@@ -256,4 +262,15 @@ function getIsMultipleOfDisplayName(
       }),
     },
   });
+}
+
+function getStringTemplateDisplayName(
+  astNode: StringTemplateAstNode,
+  context: AstNodeStringifierContext,
+) {
+  const value = astNode.children[0]?.constant ?? '';
+  if (!value) {
+    return context.t('scenarios:edit_string_template.title');
+  }
+  return value;
 }

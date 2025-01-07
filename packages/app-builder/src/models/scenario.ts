@@ -5,6 +5,12 @@ import {
 } from 'marble-api';
 import * as z from 'zod';
 
+import {
+  adaptAstNode,
+  adaptNodeDto,
+  isStringTemplateAstNode,
+  type StringTemplateAstNode,
+} from './ast-node';
 import { type Outcome, outcomes } from './outcome';
 
 type DecisionToCaseWorkflowType =
@@ -18,6 +24,7 @@ export interface Scenario {
   decisionToCaseInboxId?: string;
   decisionToCaseOutcomes: Outcome[];
   decisionToCaseWorkflowType: DecisionToCaseWorkflowType;
+  decisionToCaseNameTemplate: StringTemplateAstNode | null;
   description: string;
   liveVersionId?: string;
   name: string;
@@ -26,12 +33,20 @@ export interface Scenario {
 }
 
 export function adaptScenario(dto: ScenarioDto): Scenario {
+  const caseNameAstNode = dto.decision_to_case_name_template
+    ? adaptAstNode(dto.decision_to_case_name_template)
+    : null;
+
   return {
     id: dto.id,
     createdAt: dto.created_at,
     decisionToCaseInboxId: dto.decision_to_case_inbox_id,
     decisionToCaseOutcomes: dto.decision_to_case_outcomes,
     decisionToCaseWorkflowType: dto.decision_to_case_workflow_type,
+    decisionToCaseNameTemplate:
+      caseNameAstNode && isStringTemplateAstNode(caseNameAstNode)
+        ? caseNameAstNode
+        : null,
     description: dto.description,
     liveVersionId: dto.live_version_id,
     name: dto.name,
@@ -63,11 +78,13 @@ export const scenarioUpdateWorkflowInputSchema = z.discriminatedUnion(
       decisionToCaseWorkflowType: z.literal('CREATE_CASE'),
       decisionToCaseInboxId: z.string(),
       decisionToCaseOutcomes: z.array(z.enum(outcomes)),
+      decisionToCaseNameTemplate: z.any(),
     }),
     z.object({
       decisionToCaseWorkflowType: z.literal('ADD_TO_CASE_IF_POSSIBLE'),
       decisionToCaseInboxId: z.string(),
       decisionToCaseOutcomes: z.array(z.enum(outcomes)),
+      decisionToCaseNameTemplate: z.any(),
     }),
     z.object({
       decisionToCaseWorkflowType: z.literal('DISABLED'),
@@ -91,5 +108,8 @@ export function adaptScenarioUpdateInputDto(
     decision_to_case_inbox_id: input.decisionToCaseInboxId,
     decision_to_case_outcomes: input.decisionToCaseOutcomes,
     decision_to_case_workflow_type: input.decisionToCaseWorkflowType,
+    decision_to_case_name_template: adaptNodeDto(
+      input.decisionToCaseNameTemplate,
+    ),
   };
 }

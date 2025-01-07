@@ -17,11 +17,11 @@ import {
   type ScenarioUpdateWorkflowInput,
   scenarioUpdateWorkflowInputSchema,
 } from '@app-builder/models/scenario';
+import { OptionsProvider } from '@app-builder/services/editor/options';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import {
-  json,
   type LinksFunction,
   type LoaderFunctionArgs,
   redirect,
@@ -53,10 +53,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     );
   }
 
-  const { user, scenario, inbox, dataModelRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const {
+    user,
+    scenario,
+    inbox,
+    dataModelRepository,
+    editor,
+    customListsRepository,
+  } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const [scenarios, inboxes, pivotValues] = await Promise.all([
     scenario.listScenarios(),
@@ -70,14 +76,32 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     (pivot) => pivot.baseTable === currentScenario?.triggerObjectType,
   );
 
-  return json({
+  const [operators, accessors, dataModel, customLists] = await Promise.all([
+    editor.listOperators({
+      scenarioId,
+    }),
+    editor.listAccessors({
+      scenarioId,
+    }),
+    dataModelRepository.getDataModel(),
+    customListsRepository.listCustomLists(),
+  ]);
+
+  return {
     scenarios,
     inboxes,
     hasPivotValue,
     workflowDataFeatureAccess: {
       isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable(user),
     },
-  });
+    builderOptions: {
+      databaseAccessors: accessors.databaseAccessors,
+      payloadAccessors: accessors.payloadAccessors,
+      operators,
+      dataModel,
+      customLists,
+    },
+  };
 }
 
 export async function action({ request, params }: LoaderFunctionArgs) {
@@ -104,9 +128,25 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 
   const input = scenarioUpdateWorkflowInputSchema.parse(await request.json());
 
-  await scenario.updateScenarioWorkflow(scenarioId, input);
-
   const session = await getSession(request);
+
+  try {
+    await scenario.updateScenarioWorkflow(scenarioId, input);
+  } catch {
+    setToastMessage(session, {
+      type: 'error',
+      message: 'Something went wrong',
+    });
+    return redirect(
+      getRoute('/scenarios/:scenarioId/workflow', {
+        scenarioId: fromUUID(scenarioId),
+      }),
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
+  }
+
   const t = await getFixedT(request, ['workflows']);
   setToastMessage(session, {
     type: 'success',
@@ -127,8 +167,13 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Workflow() {
-  const { scenarios, inboxes, hasPivotValue, workflowDataFeatureAccess } =
-    useLoaderData<typeof loader>();
+  const {
+    scenarios,
+    inboxes,
+    hasPivotValue,
+    workflowDataFeatureAccess,
+    builderOptions,
+  } = useLoaderData<typeof loader>();
 
   const currentScenario = useCurrentScenario();
   const initialWorkflow = adaptValidWorkflow(currentScenario);
@@ -177,7 +222,14 @@ export default function Workflow() {
       >
         <div className="grid size-full grid-cols-[2fr_1fr]">
           <WorkflowFlow />
-          <DetailPanel onDelete={deleteWorkflow} onSave={saveWorkflow} />
+          <OptionsProvider
+            {...{
+              ...builderOptions,
+              triggerObjectType: currentScenario.triggerObjectType,
+            }}
+          >
+            <DetailPanel onDelete={deleteWorkflow} onSave={saveWorkflow} />
+          </OptionsProvider>
         </div>
       </WorkflowProvider>
     </Page.Main>

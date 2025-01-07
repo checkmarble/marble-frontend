@@ -3,11 +3,7 @@ import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-ite
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import {
-  json,
-  type LoaderFunctionArgs,
-  type SerializeFrom,
-} from '@remix-run/node';
+import { type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import { Outlet, useRouteError, useRouteLoaderData } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
@@ -31,12 +27,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }),
   ]);
 
-  return json({
+  return {
     currentScenario,
     scenarioIterations: scenarioIterations.map((dto) =>
       adaptScenarioIterationWithType(dto, currentScenario.liveVersionId),
     ),
-  });
+  };
 }
 
 export function useScenarioIterations() {
