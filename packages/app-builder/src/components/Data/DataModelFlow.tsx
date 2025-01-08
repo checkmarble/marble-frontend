@@ -20,7 +20,7 @@ import {
 } from 'reactflow';
 import reactflowStyles from 'reactflow/dist/style.css?url';
 import * as R from 'remeda';
-import { Button, MenuButton } from 'ui-design-system';
+import { Button, MenuButton, UX_DELAY_1S } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import {
@@ -300,7 +300,7 @@ function CustomControls() {
             <SchemaMenuMenuItem
               key={node.id}
               onClick={() => {
-                fitView({ nodes: [node], duration: 1000 });
+                fitView({ nodes: [node], duration: UX_DELAY_1S });
               }}
             >
               {node.data?.original.name ?? node.id}

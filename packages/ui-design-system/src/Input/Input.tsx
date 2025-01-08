@@ -4,6 +4,7 @@ import { forwardRef } from 'react';
 import { Icon, type IconName } from 'ui-icons';
 
 import { type inputBorderColor } from './Input.constants';
+import { debounce } from 'radash';
 
 export const input = cva(
   'bg-grey-00 text-s text-grey-100 placeholder:text-grey-25 disabled:bg-grey-05 peer block size-full rounded px-2 font-medium outline-none border focus:border-purple-100',
@@ -25,6 +26,7 @@ export interface InputProps extends React.ComponentPropsWithoutRef<'input'> {
   borderColor?: (typeof inputBorderColor)[number];
   startAdornment?: IconName;
   endAdornment?: IconName;
+  debounceMs?: number;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
@@ -33,10 +35,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     startAdornment,
     endAdornment,
     borderColor = 'grey-10',
+    onChange,
+    debounceMs: debounced,
     ...props
   },
   ref,
 ) {
+  if (debounced !== undefined && onChange !== undefined) {
+    onChange = debounce({ delay: debounced }, onChange);
+  }
   return (
     <div className={clsx('relative h-10', className)}>
       <input
@@ -46,6 +53,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           startAdornment && 'ps-10',
           endAdornment && 'pe-10',
         )}
+        onChange={(event) => {
+          onChange?.(event);
+        }}
         {...props}
       />
       {/* Order matter, for peer to work */}

@@ -35,7 +35,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
   const session = await getSession(request);
   const error = session.get('authError');
-
   return json({
     authError: error?.message,
     isSSOAvailable: await featureAccessService.isSSOAvailable(),

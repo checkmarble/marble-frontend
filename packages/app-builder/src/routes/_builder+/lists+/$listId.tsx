@@ -35,6 +35,7 @@ import {
   ModalV2,
   Table,
   useVirtualTable,
+  UX_DELAY_300MS,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import * as z from 'zod';
@@ -164,6 +165,7 @@ export default function Lists() {
                   aria-label={t('common:search')}
                   placeholder={t('common:search')}
                   startAdornment="search"
+                  debounceMs={UX_DELAY_300MS}
                   onChange={(event) => {
                     virtualTable.table.setGlobalFilter(event.target.value);
                   }}

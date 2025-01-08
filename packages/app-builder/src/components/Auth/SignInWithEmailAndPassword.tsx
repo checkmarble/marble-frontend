@@ -26,7 +26,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button, Input } from 'ui-design-system';
+import { Button, Input, UX_DELAY_1S } from 'ui-design-system';
 import * as z from 'zod';
 
 import { Spinner } from '../Spinner';
@@ -156,7 +156,7 @@ function ClientSignInWithEmailAndPasswordForm({
         if (!idToken) return;
         signIn({ type: 'email', idToken, csrf });
         // Hack to wait for the form to be submitted, otherwise the loading spinner will be flickering
-        await sleep(1000);
+        await sleep(UX_DELAY_1S);
       } catch (error) {
         if (error instanceof EmailUnverified) {
           navigate(getRoute('/email-verification'));

@@ -1,5 +1,11 @@
 import '@testing-library/jest-dom';
 
+declare global {
+  var jest: {
+    advanceTimersByTime: (ms: number) => void;
+  };
+}
+
 class MockPointerEvent extends Event {
   button: number;
   ctrlKey: boolean;
