@@ -283,6 +283,7 @@
   "edit_operand.data_type.number[]": "Number list",
   "edit_operand.data_type.boolean": "Boolean",
   "edit_operand.data_type.timestamp": "Timestamp",
+  "edit_operand.data_type.string.field_placeholder": "Select a string field...",
   "edit_operand.operator_type.list_one": "List",
   "edit_operand.operator_type.list_other": "Lists",
   "edit_operand.operator_type.field_one": "Field",
