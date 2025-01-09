@@ -125,7 +125,7 @@ export default function Users() {
                         <UpdateUser
                           user={cell.row.original}
                           userRoles={userRoles}
-                          canEditRoles={entitlements.userRoles}
+                          access={entitlements.userRoles}
                         />
                       </div>
                     ) : null}
@@ -172,7 +172,7 @@ export default function Users() {
             {isCreateUserAvailable ? (
               <CreateUser
                 orgId={user.organizationId}
-                canEditRoles={entitlements.userRoles}
+                access={entitlements.userRoles}
                 userRoles={userRoles}
               />
             ) : null}

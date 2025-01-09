@@ -27,6 +27,7 @@ import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 import { getSettings } from './settings+/_layout';
@@ -57,6 +58,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     orgTags,
     featuresAccess: {
       isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
+      analytics: entitlements.analytics,
       settings: {
         isAvailable: firstSettings !== undefined,
         ...(firstSettings !== undefined && { to: firstSettings.to }),
@@ -127,25 +129,50 @@ export default function Builder() {
                     />
                   </li>
                   <li>
-                    {featuresAccess.isAnalyticsAvailable ? (
-                      <SidebarLink
-                        labelTKey="navigation:analytics"
-                        to={getRoute('/analytics')}
-                        Icon={(props) => <Icon icon="analytics" {...props} />}
-                      />
-                    ) : (
-                      <div className="text-grey-25 relative flex gap-2 p-2">
-                        <Icon icon="analytics" className="size-6 shrink-0" />
-                        <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-                          {t('navigation:analytics')}
-                        </span>
-                        <Nudge
-                          className="size-6"
-                          content={t('navigation:analytics.nudge')}
-                          link="https://checkmarble.com/docs"
-                        />
-                      </div>
-                    )}
+                    {match(featuresAccess.analytics)
+                      .with('allowed', () =>
+                        featuresAccess.isAnalyticsAvailable ? (
+                          <SidebarLink
+                            labelTKey="navigation:analytics"
+                            to={getRoute('/analytics')}
+                            Icon={(props) => (
+                              <Icon icon="analytics" {...props} />
+                            )}
+                          />
+                        ) : null,
+                      )
+                      .with('restricted', () => (
+                        <div className="text-grey-25 relative flex gap-2 p-2">
+                          <Icon icon="analytics" className="size-6 shrink-0" />
+                          <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                            {t('navigation:analytics')}
+                          </span>
+                          <Nudge
+                            className="size-6"
+                            content={t('navigation:analytics.nudge')}
+                            link="https://checkmarble.com/docs"
+                          />
+                        </div>
+                      ))
+                      .with('test', () =>
+                        featuresAccess.isAnalyticsAvailable ? (
+                          <SidebarLink
+                            labelTKey="navigation:analytics"
+                            to={getRoute('/analytics')}
+                            Icon={(props) => (
+                              <Icon icon="analytics" {...props} />
+                            )}
+                          >
+                            <Nudge
+                              className="size-6"
+                              content={t('navigation:analytics.nudge')}
+                              link="https://checkmarble.com/docs"
+                              kind="test"
+                            />
+                          </SidebarLink>
+                        ) : null,
+                      )
+                      .exhaustive()}
                   </li>
                 </ul>
               </nav>

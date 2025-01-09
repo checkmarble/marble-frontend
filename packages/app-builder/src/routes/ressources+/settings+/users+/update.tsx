@@ -20,6 +20,7 @@ import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -91,11 +92,11 @@ export async function action({ request }: ActionFunctionArgs) {
 export function UpdateUser({
   user,
   userRoles,
-  canEditRoles,
+  access,
 }: {
   user: User;
   userRoles: readonly [string, ...string[]];
-  canEditRoles: boolean;
+  access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = React.useState(false);
@@ -117,11 +118,7 @@ export function UpdateUser({
         />
       </Modal.Trigger>
       <Modal.Content>
-        <UpdateUserContent
-          user={user}
-          userRoles={userRoles}
-          canEditRoles={canEditRoles}
-        />
+        <UpdateUserContent user={user} userRoles={userRoles} access={access} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -130,11 +127,11 @@ export function UpdateUser({
 function UpdateUserContent({
   user,
   userRoles,
-  canEditRoles,
+  access,
 }: {
   user: User;
   userRoles: readonly [string, ...string[]];
-  canEditRoles: boolean;
+  access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -215,22 +212,23 @@ function UpdateUserContent({
               <FormLabel className="flex gap-2">
                 <span
                   className={clsx({
-                    'text-grey-25': !canEditRoles,
+                    'text-grey-25': access === 'restricted',
                   })}
                 >
                   {t('settings:users.role')}
                 </span>
-                {!canEditRoles ? (
+                {access === 'allowed' ? null : (
                   <Nudge
                     content={t('settings:users.role.nudge')}
                     link="https://checkmarble.com/docs"
                     className="size-6"
+                    kind={access}
                   />
-                ) : null}
+                )}
               </FormLabel>
               <FormSelect.Default
                 options={userRoleOptions}
-                disabled={!canEditRoles}
+                disabled={access === 'restricted'}
               >
                 {userRoleOptions.map((role) => (
                   <FormSelect.DefaultItem key={role.value} value={role.value}>

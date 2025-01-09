@@ -7,11 +7,30 @@ servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
 paths:
-  /entitlements/{organizationId}:
+  /is-sso-available:
+    get:
+      summary: Check if SSO is enabled
+      description: Returns true if SSO is enabled
+      operationId: isSsoEnabled
+      responses:
+        '200':
+          description: SSO is enabled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_sso_enabled:
+                    type: boolean
+                required:
+                  - is_sso_enabled
+  /organizations/{organizationId}/feature_access:
     get:
       summary: Get the entitlements of an organization
       description: Returns the entitlements of an organization
       operationId: getEntitlements
+      security:
+        - bearerAuth: []
       parameters:
         - name: organizationId
           description: ID of the organization
@@ -26,38 +45,46 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LicenseEntitlementsDto'
+                type: object
+                properties:
+                  feature_access:
+                    $ref: '#/components/schemas/LicenseEntitlementsDto'
+                required:
+                  - feature_access
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
 components:
   schemas:
+    FeatureAccessDto:
+      type: string
+      enum: ['allowed', 'restricted', 'test']
     LicenseEntitlementsDto:
       type: object
       properties:
-        sso:
-          type: boolean
         workflows:
-          type: boolean
+          $ref: '#/components/schemas/FeatureAccessDto'
         analytics:
-          type: boolean
-        user_roles:
-          type: boolean
+          $ref: '#/components/schemas/FeatureAccessDto'
+        roles:
+          $ref: '#/components/schemas/FeatureAccessDto'
         webhooks:
-          type: boolean
+          $ref: '#/components/schemas/FeatureAccessDto'
         rule_snoozes:
-          type: boolean
+          $ref: '#/components/schemas/FeatureAccessDto'
         test_run:
-          type: boolean
+          $ref: '#/components/schemas/FeatureAccessDto'
+        sanctions:
+          $ref: '#/components/schemas/FeatureAccessDto'
       required:
-        - sso
         - workflows
         - analytics
-        - user_roles
+        - roles
         - webhooks
         - rule_snoozes
         - test_run
+        - sanctions
   responses:
     '401':
       description: Unauthorized

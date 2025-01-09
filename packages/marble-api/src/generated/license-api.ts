@@ -14,29 +14,45 @@ const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
     localDevlopmentServer: "http://localhost:8080"
 };
+export type FeatureAccessDto = "allowed" | "restricted" | "test";
 export type LicenseEntitlementsDto = {
-    sso: boolean;
-    workflows: boolean;
-    analytics: boolean;
-    user_roles: boolean;
-    webhooks: boolean;
-    rule_snoozes: boolean;
-    test_run: boolean;
+    workflows: FeatureAccessDto;
+    analytics: FeatureAccessDto;
+    roles: FeatureAccessDto;
+    webhooks: FeatureAccessDto;
+    rule_snoozes: FeatureAccessDto;
+    test_run: FeatureAccessDto;
+    sanctions: FeatureAccessDto;
 };
+/**
+ * Check if SSO is enabled
+ */
+export function isSsoEnabled(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            is_sso_enabled: boolean;
+        };
+    }>("/is-sso-available", {
+        ...opts
+    }));
+}
 /**
  * Get the entitlements of an organization
  */
 export function getEntitlements(organizationId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: LicenseEntitlementsDto;
+        data: {
+            feature_access: LicenseEntitlementsDto;
+        };
     } | {
         status: 401;
         data: string;
     } | {
         status: 403;
         data: string;
-    }>(`/entitlements/${encodeURIComponent(organizationId)}`, {
+    }>(`/organizations/${encodeURIComponent(organizationId)}/feature_access`, {
         ...opts
     }));
 }

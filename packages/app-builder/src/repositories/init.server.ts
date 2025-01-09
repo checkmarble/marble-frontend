@@ -1,4 +1,7 @@
-import { type GetLicenseAPIClientWithAuth } from '@app-builder/infra/license-api';
+import {
+  type GetLicenseAPIClientWithAuth,
+  type LicenseApi,
+} from '@app-builder/infra/license-api';
 import { type GetMarbleCoreAPIClientWithAuth } from '@app-builder/infra/marblecore-api';
 import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/transfercheck-api';
 
@@ -31,12 +34,14 @@ import { makeGetWebhookRepository } from './WebhookRepository';
 
 export function makeServerRepositories({
   sessionStorageRepositoryOptions,
+  getLicenseApiClientWithoutAuth,
   getLicenseAPIClientWithAuth,
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
 }: {
   devEnvironment: boolean;
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
+  getLicenseApiClientWithoutAuth: () => LicenseApi;
   getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
@@ -52,6 +57,7 @@ export function makeServerRepositories({
     lngStorageRepository: getLngStorageRepository(
       sessionStorageRepositoryOptions,
     ),
+    getLicenseApiClientWithoutAuth,
     getLicenseAPIClientWithAuth,
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,

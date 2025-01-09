@@ -23,6 +23,7 @@ import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
@@ -100,10 +101,10 @@ export async function action({ request }: ActionFunctionArgs) {
 export function CreateUser({
   orgId,
   userRoles,
-  canEditRoles,
+  access,
 }: {
   orgId: string;
-  canEditRoles: boolean;
+  access: FeatureAccessDto;
   userRoles: readonly [string, ...string[]];
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -127,7 +128,7 @@ export function CreateUser({
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <CreateUserContent
           orgId={orgId}
-          canEditRoles={canEditRoles}
+          access={access}
           userRoles={userRoles}
         />
       </Modal.Content>
@@ -138,11 +139,11 @@ export function CreateUser({
 function CreateUserContent({
   orgId,
   userRoles,
-  canEditRoles,
+  access,
 }: {
   orgId: string;
   userRoles: readonly [string, ...string[]];
-  canEditRoles: boolean;
+  access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -228,22 +229,23 @@ function CreateUserContent({
               <FormLabel className="flex flex-row gap-2">
                 <span
                   className={clsx({
-                    'text-grey-25': !canEditRoles,
+                    'text-grey-25': access === 'restricted',
                   })}
                 >
                   {t('settings:users.role')}
                 </span>
-                {!canEditRoles ? (
+                {access === 'allowed' ? null : (
                   <Nudge
                     content={t('settings:users.role.nudge')}
                     link="https://checkmarble.com/docs"
                     className="size-6"
+                    kind={access}
                   />
-                ) : null}
+                )}
               </FormLabel>
               <FormSelect.Default
                 options={userRoleOptions}
-                disabled={!canEditRoles}
+                disabled={access === 'restricted'}
               >
                 {userRoleOptions.map((role) => (
                   <FormSelect.DefaultItem key={role.value} value={role.value}>

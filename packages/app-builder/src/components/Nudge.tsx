@@ -12,9 +12,15 @@ type NudgeProps = {
   content: string;
   className?: string;
   link: string;
+  kind?: 'test' | 'restricted';
 };
 
-export const Nudge = ({ content, link, className }: NudgeProps) => {
+export const Nudge = ({
+  content,
+  link,
+  className,
+  kind = 'restricted',
+}: NudgeProps) => {
   const { t } = useTranslation(['scenarios', 'common']);
 
   return (
@@ -22,11 +28,17 @@ export const Nudge = ({ content, link, className }: NudgeProps) => {
       <HovercardAnchor
         tabIndex={-1}
         className={clsx(
-          'text-grey-00 flex flex-row items-center justify-center rounded bg-purple-50',
+          'text-grey-00 flex flex-row items-center justify-center rounded',
+          { 'bg-purple-100': kind === 'test' },
+          { 'bg-purple-50': kind === 'restricted' },
           className,
         )}
       >
-        <Icon icon="lock" className="size-3.5" aria-hidden />
+        <Icon
+          icon={kind === 'restricted' ? 'lock' : 'unlock-right'}
+          className="size-3.5"
+          aria-hidden
+        />
       </HovercardAnchor>
       <Hovercard
         portal

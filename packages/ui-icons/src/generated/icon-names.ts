@@ -76,6 +76,7 @@ export const iconNames = [
   'tip',
   'tree-schema',
   'trigger',
+  'unlock-right',
   'upload',
   'users',
   'version',

@@ -4,7 +4,7 @@ import { type LicenseEntitlements } from '@app-builder/models/license';
 export const isAnalyticsAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.analytics && permissions.canReadAnalytics;
+) => entitlements.analytics !== 'restricted' && permissions.canReadAnalytics;
 
 export const isReadUserAvailable = ({ role }: CurrentUser) =>
   role === 'ADMIN' || role === 'MARBLE_ADMIN';
@@ -21,7 +21,7 @@ export const isReadApiKeyAvailable = ({ permissions }: CurrentUser) =>
 export const isReadWebhookAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.webhooks && permissions.canManageWebhooks;
+) => entitlements.webhooks !== 'restricted' && permissions.canManageWebhooks;
 
 export const isCreateInboxAvailable = ({ permissions }: CurrentUser) =>
   permissions.canEditInboxes;
@@ -29,12 +29,12 @@ export const isCreateInboxAvailable = ({ permissions }: CurrentUser) =>
 export const isReadSnoozeAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.ruleSnoozes && permissions.canReadSnoozes;
+) => entitlements.ruleSnoozes !== 'restricted' && permissions.canReadSnoozes;
 
 export const isCreateSnoozeAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.ruleSnoozes && permissions.canCreateSnoozes;
+) => entitlements.ruleSnoozes !== 'restricted' && permissions.canCreateSnoozes;
 
 export const isCreateDataModelTableAvailable = ({ permissions }: CurrentUser) =>
   permissions.canEditDataModel;
@@ -80,10 +80,10 @@ export const isManualTriggerScenarioAvailable = ({
 }: CurrentUser) => permissions.canManageDecision;
 
 export const isWorkflowsAvailable = (entitlements: LicenseEntitlements) =>
-  entitlements.workflows;
+  entitlements.workflows !== 'restricted';
 
 export const isTestRunAvailable = (entitlements: LicenseEntitlements) =>
-  entitlements.testRun;
+  entitlements.testRun !== 'restricted';
 
 export const isDeploymentActionsAvailable = ({ permissions }: CurrentUser) =>
   permissions.canPublishScenario;
@@ -98,7 +98,7 @@ export const isDeleteApiKeyAvailable = ({ permissions }: CurrentUser) =>
   permissions.canCreateApiKey;
 
 export const getInboxUserRoles = (entitlements: LicenseEntitlements) =>
-  entitlements.userRoles
+  entitlements.userRoles !== 'restricted'
     ? (['admin', 'member'] as const)
     : (['admin'] as const);
 
@@ -127,7 +127,7 @@ export const isDeleteTagAvailable = ({ permissions }: CurrentUser) =>
   permissions.canEditInboxes;
 
 export const getUserRoles = (entitlements: LicenseEntitlements) =>
-  entitlements.userRoles
+  entitlements.userRoles !== 'restricted'
     ? (['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const)
     : (['ADMIN'] as const);
 
@@ -143,14 +143,14 @@ export const isDeleteUserAvailable = ({ permissions }: CurrentUser) =>
 export const isCreateWebhookAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.webhooks && permissions.canManageWebhooks;
+) => entitlements.webhooks !== 'restricted' && permissions.canManageWebhooks;
 
 export const isEditWebhookAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.webhooks && permissions.canManageWebhooks;
+) => entitlements.webhooks !== 'restricted' && permissions.canManageWebhooks;
 
 export const isDeleteWebhookAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.webhooks && permissions.canManageWebhooks;
+) => entitlements.webhooks !== 'restricted' && permissions.canManageWebhooks;

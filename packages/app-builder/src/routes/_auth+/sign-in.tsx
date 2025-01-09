@@ -25,13 +25,16 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, authSessionService } = serverServices;
+  const { authService, authSessionService, licenseService } = serverServices;
   await authService.isAuthenticated(request, {
     successRedirect: getRoute('/app-router'),
   });
   const session = await authSessionService.getSession(request);
   const error = session.get('authError');
-  return json({ authError: error?.message });
+  return json({
+    authError: error?.message,
+    isSsoEnabled: await licenseService.isSsoEnabled(),
+  });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -49,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
   const { t } = useTranslation(handle.i18n);
-  const { authError } = useLoaderData<typeof loader>();
+  const { authError, isSsoEnabled } = useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -66,27 +69,31 @@ export default function Login() {
 
   return (
     <div className="flex w-full flex-col items-center">
-      <div className="flex w-full flex-col gap-2">
-        <SignInWithGoogle
-          signIn={signIn}
-          // eslint-disable-next-line react/jsx-no-leaked-render
-          loading={loading && type === 'google'}
-        />
-        <SignInWithMicrosoft
-          signIn={signIn}
-          // eslint-disable-next-line react/jsx-no-leaked-render
-          loading={loading && type === 'microsoft'}
-        />
-      </div>
+      {isSsoEnabled ? (
+        <>
+          <div className="flex w-full flex-col gap-2">
+            <SignInWithGoogle
+              signIn={signIn}
+              // eslint-disable-next-line react/jsx-no-leaked-render
+              loading={loading && type === 'google'}
+            />
+            <SignInWithMicrosoft
+              signIn={signIn}
+              // eslint-disable-next-line react/jsx-no-leaked-render
+              loading={loading && type === 'microsoft'}
+            />
+          </div>
 
-      <div
-        className="my-4 flex w-full flex-row items-center gap-1"
-        role="separator"
-      >
-        <div className="bg-grey-10 h-px w-full" />
-        or
-        <div className="bg-grey-10 h-px w-full" />
-      </div>
+          <div
+            className="my-4 flex w-full flex-row items-center gap-1"
+            role="separator"
+          >
+            <div className="bg-grey-10 h-px w-full" />
+            or
+            <div className="bg-grey-10 h-px w-full" />
+          </div>
+        </>
+      ) : null}
       <div className="flex w-full flex-col items-center gap-2">
         <SignInWithEmailAndPassword
           signIn={signIn}

@@ -23,6 +23,7 @@ import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -91,11 +92,11 @@ export async function action({ request }: ActionFunctionArgs) {
 export function UpdateInboxUser({
   inboxUser,
   inboxUserRoles,
-  canEditRoles,
+  access,
 }: {
   inboxUser: InboxUser;
   inboxUserRoles: readonly [string, ...string[]];
-  canEditRoles: boolean;
+  access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = React.useState(false);
@@ -120,7 +121,7 @@ export function UpdateInboxUser({
         <UpdateInboxUserContent
           currentInboxUser={inboxUser}
           inboxUserRoles={inboxUserRoles}
-          canEditRoles={canEditRoles}
+          access={access}
         />
       </Modal.Content>
     </Modal.Root>
@@ -130,11 +131,11 @@ export function UpdateInboxUser({
 export function UpdateInboxUserContent({
   currentInboxUser,
   inboxUserRoles,
-  canEditRoles,
+  access,
 }: {
   currentInboxUser: InboxUser;
   inboxUserRoles: readonly [string, ...string[]];
-  canEditRoles: boolean;
+  access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const schema = React.useMemo(
@@ -187,22 +188,23 @@ export function UpdateInboxUserContent({
             <FormLabel className="flex gap-2">
               <span
                 className={clsx({
-                  'text-grey-25': !canEditRoles,
+                  'text-grey-25': access === 'restricted',
                 })}
               >
                 {t('settings:inboxes.inbox_details.role')}
               </span>
-              {!canEditRoles ? (
+              {access === 'allowed' ? null : (
                 <Nudge
                   content={t('settings:users.role.nudge')}
                   link="https://checkmarble.com/docs"
                   className="size-6"
+                  kind={access}
                 />
-              ) : null}
+              )}
             </FormLabel>
             <FormSelect.Default
               options={inboxUserRoleOptions}
-              disabled={!canEditRoles}
+              disabled={access === 'restricted'}
             >
               {inboxUserRoleOptions.map((role) => (
                 <FormSelect.DefaultItem key={role.value} value={role.value}>

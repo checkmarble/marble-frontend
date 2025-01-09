@@ -116,7 +116,7 @@ export default function Inbox() {
                         <UpdateInboxUser
                           inboxUser={cell.row.original}
                           inboxUserRoles={inboxUserRoles}
-                          canEditRoles={entitlements.userRoles}
+                          access={entitlements.userRoles}
                         />
                       </div>
                     ) : null}
@@ -191,7 +191,7 @@ export default function Inbox() {
                 inboxId={inbox.id}
                 users={nonInboxUsers}
                 inboxUserRoles={inboxUserRoles}
-                canEditRoles={entitlements.userRoles}
+                access={entitlements.userRoles}
               />
             ) : null}
           </CollapsiblePaper.Title>

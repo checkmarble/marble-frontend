@@ -28,6 +28,9 @@ function makeServerServices(repositories: ServerRepositories) {
     authSessionService,
     csrfService,
     toastSessionService,
+    licenseService: repositories.getLicenseRepository(
+      repositories.getLicenseApiClientWithoutAuth(),
+    ),
     authService: makeAuthenticationServerService({
       ...repositories,
       authSessionService,
@@ -51,12 +54,14 @@ function initServerServices() {
       baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
     });
 
-  const { getLicenseAPIClientWithAuth } = initializeLicenseAPIClient({
-    baseUrl: 'https://api.checkmarble.com',
-  });
+  const { getLicenseAPIClientWithAuth, licenseApi } =
+    initializeLicenseAPIClient({
+      baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+    });
 
   const serverRepositories = makeServerRepositories({
     devEnvironment,
+    getLicenseApiClientWithoutAuth: () => licenseApi,
     getLicenseAPIClientWithAuth,
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,

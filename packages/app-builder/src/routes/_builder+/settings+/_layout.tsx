@@ -15,6 +15,7 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -114,20 +115,62 @@ export default function Settings() {
                   </div>
                   <ul className="flex flex-col gap-1 pb-6">
                     {settings.map((setting) =>
-                      setting.title === 'webhooks' && !entitlements.webhooks ? (
-                        <div
-                          key={setting.title}
-                          className="text-grey-25 flex w-full flex-row gap-2 p-2"
-                        >
-                          <span className="text-s font-medium first-letter:capitalize">
-                            {t(`settings:${setting.title}`)}
-                          </span>
-                          <Nudge
-                            className="size-6"
-                            content={t(`settings:${setting.title}.nudge`)}
-                            link="https://checkmarble.com/docs"
-                          />
-                        </div>
+                      setting.title === 'webhooks' ? (
+                        match(entitlements.webhooks)
+                          .with('allowed', () => (
+                            <NavLink
+                              key={setting.title}
+                              className={({ isActive }) =>
+                                clsx(
+                                  'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
+                                  isActive
+                                    ? 'bg-purple-10 text-purple-100'
+                                    : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                                )
+                              }
+                              to={setting.to}
+                            >
+                              {t(`settings:${setting.title}`)}
+                            </NavLink>
+                          ))
+                          .with('restricted', () => (
+                            <div
+                              key={setting.title}
+                              className="text-grey-25 flex w-full flex-row gap-2 p-2"
+                            >
+                              <span className="text-s font-medium first-letter:capitalize">
+                                {t(`settings:${setting.title}`)}
+                              </span>
+                              <Nudge
+                                className="size-6"
+                                content={t(`settings:${setting.title}.nudge`)}
+                                link="https://checkmarble.com/docs"
+                              />
+                            </div>
+                          ))
+                          .with('test', () => (
+                            <NavLink
+                              key={setting.title}
+                              className={({ isActive }) =>
+                                clsx(
+                                  'text-s flex w-full cursor-pointer flex-row gap-2 rounded p-2 font-medium first-letter:capitalize',
+                                  isActive
+                                    ? 'bg-purple-10 text-purple-100'
+                                    : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                                )
+                              }
+                              to={setting.to}
+                            >
+                              {t(`settings:${setting.title}`)}
+                              <Nudge
+                                className="size-6"
+                                content={t(`settings:${setting.title}.nudge`)}
+                                link="https://checkmarble.com/docs"
+                                kind="test"
+                              />
+                            </NavLink>
+                          ))
+                          .exhaustive()
                       ) : (
                         <NavLink
                           key={setting.title}

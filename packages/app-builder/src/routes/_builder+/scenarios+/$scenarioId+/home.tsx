@@ -2,6 +2,7 @@ import { CopyToClipboardButton } from '@app-builder/components';
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { Nudge } from '@app-builder/components/Nudge';
 import { Page } from '@app-builder/components/Page';
 import {
   getFormattedLive,
@@ -21,8 +22,6 @@ import { createDecisionDocHref } from '@app-builder/services/documentation-href'
 import {
   isEditScenarioAvailable,
   isManualTriggerScenarioAvailable,
-  isTestRunAvailable,
-  isWorkflowsAvailable,
 } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -48,6 +47,7 @@ import {
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
@@ -85,8 +85,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     featureAccess: {
       isEditScenarioAvailable: isEditScenarioAvailable(user),
       isManualTriggerScenarioAvailable: isManualTriggerScenarioAvailable(user),
-      isWorkflowsAvailable: isWorkflowsAvailable(entitlements),
-      isTestRunAvailable: isTestRunAvailable(entitlements),
+      isWorkflowsAvailable: entitlements.workflows,
+      isTestRunAvailable: entitlements.testRun,
     },
     scheduledExecutions,
     testRuns,
@@ -193,15 +193,21 @@ export default function ScenarioHome() {
             scheduledExecutions={scheduledExecutions}
             liveScenarioIteration={liveScenarioIteration}
           />
-          {featureAccess.isTestRunAvailable ? (
-            <TestRunSection scenarioId={currentScenario.id} />
-          ) : (
+          {featureAccess.isTestRunAvailable === 'restricted' ? (
             <TestRunNudge />
-          )}
-          {featureAccess.isWorkflowsAvailable ? (
-            <WorkflowSection scenario={currentScenario} />
           ) : (
+            <TestRunSection
+              scenarioId={currentScenario.id}
+              access={featureAccess.isTestRunAvailable}
+            />
+          )}
+          {featureAccess.isWorkflowsAvailable === 'restricted' ? (
             <WorkflowNudge />
+          ) : (
+            <WorkflowSection
+              scenario={currentScenario}
+              access={featureAccess.isWorkflowsAvailable}
+            />
           )}
           <ResourcesSection />
         </Page.Content>
@@ -325,7 +331,13 @@ function QuickVersionAccess({
   );
 }
 
-function TestRunSection({ scenarioId }: { scenarioId: string }) {
+function TestRunSection({
+  scenarioId,
+  access,
+}: {
+  scenarioId: string;
+  access: FeatureAccessDto;
+}) {
   const { t } = useTranslation();
   const currentScenario = useCurrentScenario();
   const scenarioIterations = useScenarioIterations();
@@ -353,6 +365,14 @@ function TestRunSection({ scenarioId }: { scenarioId: string }) {
             isExecutionOngoing && 'border-purple-100',
           )}
         >
+          {access === 'test' ? (
+            <Nudge
+              className="absolute -right-3 -top-3 size-6"
+              content={t('scenarios:testrun.nudge')}
+              link="https://checkmarble.com/docs"
+              kind="test"
+            />
+          ) : null}
           {isExecutionOngoing ? (
             <div className="text-grey-00 text-s absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t bg-purple-100 px-2 font-semibold">
               <Spinner className="size-3" />
@@ -586,8 +606,14 @@ function ManualTriggerScenarioExecutionForm({
   );
 }
 
-function WorkflowSection({ scenario }: { scenario: Scenario }) {
-  const { t } = useTranslation(handle.i18n);
+function WorkflowSection({
+  scenario,
+  access,
+}: {
+  scenario: Scenario;
+  access: FeatureAccessDto;
+}) {
+  const { t } = useTranslation(['common', 'scenarios', 'workflows']);
 
   const isEdit = scenario.decisionToCaseWorkflowType !== 'DISABLED';
 
@@ -610,6 +636,14 @@ function WorkflowSection({ scenario }: { scenario: Scenario }) {
       </h2>
       <div className="flex max-w-[500px] flex-row gap-4">
         <div className="bg-grey-00 border-grey-10 relative flex h-fit flex-col gap-4 rounded-lg border p-8">
+          {access === 'test' ? (
+            <Nudge
+              className="absolute -right-3 -top-3 size-6"
+              content={t('workflows:nudge')}
+              link="https://checkmarble.com/docs"
+              kind="test"
+            />
+          ) : null}
           <CalloutV2>
             <div className="flex flex-col gap-4">
               <span>{t('scenarios:home.workflow_description')}</span>
