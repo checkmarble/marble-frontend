@@ -1,4 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { notFound } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';
@@ -14,13 +15,13 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { user, analytics } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  const isAnalyticsAvailable =
-    await featureAccessService.isAnalyticsAvailable(user);
-  if (!isAnalyticsAvailable) {
+  const { authService } = serverServices;
+  const { user, analytics, entitlements } = await authService.isAuthenticated(
+    request,
+    { failureRedirect: getRoute('/sign-in') },
+  );
+
+  if (!isAnalyticsAvailable(user, entitlements)) {
     return redirect(getRoute('/'));
   }
 

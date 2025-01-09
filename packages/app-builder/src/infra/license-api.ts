@@ -1,22 +1,54 @@
-import { licenseApi } from 'marble-api';
+import {
+  fetchWithAuthMiddleware,
+  licenseApi,
+  type TokenService,
+} from 'marble-api';
 import * as R from 'remeda';
 import { type FunctionKeys } from 'typescript-utils';
+
+//TODO: To remove
 
 export type LicenseApi = {
   [P in FunctionKeys<typeof licenseApi>]: (typeof licenseApi)[P];
 };
 
-function getLicenseAPIClient({ baseUrl }: { baseUrl: string }): LicenseApi {
+export type GetLicenseAPIClientWithAuth = (
+  tokenService: TokenService<string>,
+) => LicenseApi;
+
+function getLicenseAPIClient({
+  tokenService,
+  baseUrl,
+}: {
+  baseUrl: string;
+  tokenService?: TokenService<string>;
+}): LicenseApi {
+  const fetch = tokenService
+    ? fetchWithAuthMiddleware({
+        tokenService,
+        getAuthorizationHeader: (token) => ({
+          name: 'Authorization',
+          value: `Bearer ${token}`,
+        }),
+      })
+    : undefined;
+
   const { defaults, servers, ...api } = licenseApi;
 
   //@ts-expect-error can't infer args
   return R.mapValues(api, (value) => (...args) => {
     // @ts-expect-error can't infer args
-    return value(...args, { baseUrl });
+    return value(...args, { fetch, baseUrl });
   });
 }
-export function initializeLicenseAPIClient({ baseUrl }: { baseUrl: string }) {
+
+export function initializeLicenseAPIClient({ baseUrl }: { baseUrl: string }): {
+  licenseApi: LicenseApi;
+  getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
+} {
   return {
-    licenseAPIClient: getLicenseAPIClient({ baseUrl }),
+    licenseApi: getLicenseAPIClient({ baseUrl }),
+    getLicenseAPIClientWithAuth: (tokenService: TokenService<string>) =>
+      getLicenseAPIClient({ tokenService, baseUrl }),
   };
 }

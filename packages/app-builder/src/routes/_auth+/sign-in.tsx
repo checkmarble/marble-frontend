@@ -25,20 +25,15 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const {
-    authService,
-    authSessionService: { getSession },
-    featureAccessService,
-  } = serverServices;
+  const { authService, authSessionService, licenseService } = serverServices;
   await authService.isAuthenticated(request, {
     successRedirect: getRoute('/app-router'),
   });
-  const session = await getSession(request);
+  const session = await authSessionService.getSession(request);
   const error = session.get('authError');
-
   return json({
     authError: error?.message,
-    isSSOAvailable: await featureAccessService.isSSOAvailable(),
+    isSsoEnabled: await licenseService.isSsoEnabled(),
   });
 }
 
@@ -57,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
   const { t } = useTranslation(handle.i18n);
-  const { authError, isSSOAvailable } = useLoaderData<typeof loader>();
+  const { authError, isSsoEnabled } = useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -74,7 +69,7 @@ export default function Login() {
 
   return (
     <div className="flex w-full flex-col items-center">
-      {isSSOAvailable ? (
+      {isSsoEnabled ? (
         <>
           <div className="flex w-full flex-col gap-2">
             <SignInWithGoogle
@@ -99,7 +94,6 @@ export default function Login() {
           </div>
         </>
       ) : null}
-
       <div className="flex w-full flex-col items-center gap-2">
         <SignInWithEmailAndPassword
           signIn={signIn}

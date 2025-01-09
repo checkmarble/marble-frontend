@@ -1,4 +1,5 @@
 {
+  "nudge": "Automate your work and save time through workflows",
   "trigger": "trigger",
   "trigger_node.decision_created.title": "Decision created",
   "trigger_node.decision_created.entity": "decision",

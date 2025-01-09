@@ -10,9 +10,7 @@ import { CSRF } from 'remix-utils/csrf/server';
 
 import { makeAuthenticationServerService } from './auth/auth.server';
 import { makeSessionService } from './auth/session.server';
-import { makeFeatureAccessService } from './feature-access.server';
 import { makeI18nextServerService } from './i18n/i18next.server';
-import { makeLicenseServerService } from './license.server';
 
 function makeServerServices(repositories: ServerRepositories) {
   const csrfService = new CSRF({
@@ -26,24 +24,19 @@ function makeServerServices(repositories: ServerRepositories) {
   const toastSessionService = makeSessionService({
     sessionStorage: repositories.toastStorageRepository.toastStorage,
   });
-  const licenseService = makeLicenseServerService({
-    licenseKey: getServerEnv('LICENSE_KEY'),
-    licenseRepository: repositories.licenseRepository,
-  });
   return {
     authSessionService,
     csrfService,
     toastSessionService,
+    licenseService: repositories.getLicenseRepository(
+      repositories.getLicenseApiClientWithoutAuth(),
+    ),
     authService: makeAuthenticationServerService({
       ...repositories,
       authSessionService,
       csrfService,
     }),
     i18nextService: makeI18nextServerService(repositories.lngStorageRepository),
-    licenseService,
-    featureAccessService: makeFeatureAccessService({
-      getLicenseEntitlements: licenseService.getLicenseEntitlements,
-    }),
   };
 }
 
@@ -61,13 +54,15 @@ function initServerServices() {
       baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
     });
 
-  const { licenseAPIClient } = initializeLicenseAPIClient({
-    baseUrl: 'https://api.checkmarble.com',
-  });
+  const { getLicenseAPIClientWithAuth, licenseApi } =
+    initializeLicenseAPIClient({
+      baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+    });
 
   const serverRepositories = makeServerRepositories({
     devEnvironment,
-    licenseAPIClient,
+    getLicenseApiClientWithoutAuth: () => licenseApi,
+    getLicenseAPIClientWithAuth,
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,
     sessionStorageRepositoryOptions: {

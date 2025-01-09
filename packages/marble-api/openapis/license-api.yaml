@@ -7,70 +7,84 @@ servers:
   - url: 'http://localhost:8080'
     description: Local devlopment server
 paths:
-  /validate-license/{licenseKey}:
+  /is-sso-available:
     get:
-      summary: Validate a license key
-      description: Returns the license information if the license key is valid
-      operationId: validateLicense
+      summary: Check if SSO is enabled
+      description: Returns true if SSO is enabled
+      operationId: isSsoEnabled
+      responses:
+        '200':
+          description: SSO is enabled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_sso_enabled:
+                    type: boolean
+                required:
+                  - is_sso_enabled
+  /organizations/{organizationId}/feature_access:
+    get:
+      summary: Get the entitlements of an organization
+      description: Returns the entitlements of an organization
+      operationId: getEntitlements
+      security:
+        - bearerAuth: []
       parameters:
-        - name: licenseKey
-          description: License key to validate
+        - name: organizationId
+          description: ID of the organization
           in: path
           required: true
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: License validation response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LicenseValidationDto'
+                type: object
+                properties:
+                  feature_access:
+                    $ref: '#/components/schemas/LicenseEntitlementsDto'
+                required:
+                  - feature_access
         '401':
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
 components:
   schemas:
-    LicenseValidationDto:
+    FeatureAccessDto:
+      type: string
+      enum: ['allowed', 'restricted', 'test']
+    LicenseEntitlementsDto:
       type: object
       properties:
-        license_validation_code:
-          type: string
-          enum:
-            - VALID
-            - EXPIRED
-            - NOT_FOUND
-            - OVERDUE
-            - SUSPENDED
-        license_entitlements:
-          type: object
-          properties:
-            sso:
-              type: boolean
-            workflows:
-              type: boolean
-            analytics:
-              type: boolean
-            data_enrichment:
-              type: boolean
-            user_roles:
-              type: boolean
-            webhooks:
-              type: boolean
-            rule_snoozes:
-              type: boolean
-          required:
-            - sso
-            - workflows
-            - analytics
-            - data_enrichment
-            - user_roles
-            - webhooks
-            - rule_snoozes
+        workflows:
+          $ref: '#/components/schemas/FeatureAccessDto'
+        analytics:
+          $ref: '#/components/schemas/FeatureAccessDto'
+        roles:
+          $ref: '#/components/schemas/FeatureAccessDto'
+        webhooks:
+          $ref: '#/components/schemas/FeatureAccessDto'
+        rule_snoozes:
+          $ref: '#/components/schemas/FeatureAccessDto'
+        test_run:
+          $ref: '#/components/schemas/FeatureAccessDto'
+        sanctions:
+          $ref: '#/components/schemas/FeatureAccessDto'
       required:
-        - license_validation_code
-        - license_entitlements
+        - workflows
+        - analytics
+        - roles
+        - webhooks
+        - rule_snoozes
+        - test_run
+        - sanctions
   responses:
     '401':
       description: Unauthorized
