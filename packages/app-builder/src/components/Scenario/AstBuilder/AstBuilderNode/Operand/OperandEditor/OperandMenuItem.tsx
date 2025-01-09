@@ -58,6 +58,20 @@ function MenuItemLabel({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+export function FunctionOption({
+  displayName,
+  onClick,
+}: {
+  displayName: string;
+  onClick: () => void;
+}) {
+  return (
+    <MenuItemContainer onClick={onClick}>
+      <MenuItemLabel>{displayName}</MenuItemLabel>
+    </MenuItemContainer>
+  );
+}
+
 export function CoercedConstantOption({
   displayName,
   dataType,
@@ -89,6 +103,7 @@ export function OperandOption({
   dataType,
   operandType,
   displayName,
+  icon,
   onClick,
 }: {
   searchValue?: string;
@@ -96,15 +111,16 @@ export function OperandOption({
   dataType: DataType;
   operandType: OperandType;
   displayName: string;
+  icon?: IconName;
   onClick: () => void;
 }) {
-  const dataTypeIcon = getDataTypeIcon(dataType);
+  const optionIcon = icon ?? getDataTypeIcon(dataType);
 
   return (
     <MenuItemContainer
       onClick={onClick}
       className="group"
-      leftIcon={dataTypeIcon}
+      leftIcon={optionIcon}
     >
       <MenuItemLabel>
         {searchValue ? (

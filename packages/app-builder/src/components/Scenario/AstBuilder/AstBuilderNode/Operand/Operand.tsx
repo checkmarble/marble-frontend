@@ -10,6 +10,7 @@ import {
   type AstNodeErrors,
   type ValidationStatus,
 } from '@app-builder/services/validation/ast-node-validation';
+import { type OperandOption } from '@app-builder/types/operand-options';
 import { cva } from 'class-variance-authority';
 
 import { OperandEditor } from './OperandEditor';
@@ -39,12 +40,7 @@ export function Operand({
   viewOnly?: boolean;
   validationStatus: ValidationStatus;
   astNodeErrors?: AstNodeErrors;
-  options: {
-    astNode: AstNode;
-    dataType: DataType;
-    operandType: OperandType;
-    displayName: string;
-  }[];
+  options: OperandOption[];
   coerceToConstant?: (searchValue: string) => {
     astNode: ConstantAstNode<ConstantType>;
     displayName: string;

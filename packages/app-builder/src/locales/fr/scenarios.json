@@ -177,6 +177,8 @@
   "edit_operand.operator_type.function_other": "Fonctions",
   "edit_operand.operator_type.list_one": "Liste",
   "edit_operand.operator_type.list_other": "Listes",
+  "edit_operand.operator_type.modeling_one": "Modélisation",
+  "edit_operand.operator_type.modeling_other": "Modélisations",
   "edit_operand.placeholder": "Sélectionnez une valeur...",
   "edit_operand.result_one": "Résultat",
   "edit_operand.result_other": "Résultats",
@@ -190,7 +192,6 @@
   "enum_options": "Possibilités :",
   "logical_operator.and_button": "Condition",
   "logical_operator.or_button": "Groupe",
-  "nest": "opération sup.",
   "no_scheduled": "Ce scénario n'est pas exécuté de manière périodique.",
   "operator.contains": "contient",
   "operator.contains_any_of": "contient l'un des",
@@ -368,5 +369,8 @@
   "edit_string_template.variables.label": "Variables",
   "edit_string_template.description": "Créer un texte avec des valeurs de champs (<DocLink>en savoir plus</DocLink>)",
   "edit_operand.data_type.string.field_placeholder": "Sélectionnez un champ texte...",
-  "testrun.nudge": "Comparez une version en direct avec une nouvelle ou une ancienne sans compromettre les données en direct"
+  "testrun.nudge": "Comparez une version en direct avec une nouvelle ou une ancienne sans compromettre les données en direct",
+  "nesting.swap_operands": "Inverser l'ordre des valeurs",
+  "nesting.remove": "Supprimer l'imbrication",
+  "edit_operand.modeling.open_nesting": "Ouvrir l'imbrication"
 }

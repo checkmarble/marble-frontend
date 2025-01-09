@@ -15,7 +15,7 @@ import {
   SubMenuButton,
   SubMenuRoot,
 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Icon, type IconName } from 'ui-icons';
 
 import { useOperandEditorActions } from './OperandEditorProvider';
 import { OperandOption } from './OperandMenuItem';
@@ -49,6 +49,12 @@ interface OperandEditorDiscoveryResultsProps {
       dataType: DataType;
       operandType: OperandType;
     }[];
+    modelingOptions: {
+      astNode: AstNode;
+      displayName: string;
+      dataType: DataType;
+      operandType: OperandType;
+    }[];
   };
 }
 
@@ -58,6 +64,7 @@ export function OperandEditorDiscoveryResults({
     fieldOptions,
     customListOptions,
     functionOptions,
+    modelingOptions,
   },
 }: OperandEditorDiscoveryResultsProps) {
   const { onOptionClick } = useOperandEditorActions();
@@ -109,6 +116,15 @@ export function OperandEditorDiscoveryResults({
           />
         </Submenu>
       ) : null}
+
+      {modelingOptions.length > 0 ? (
+        <Submenu options={modelingOptions} onClick={onOptionClick}>
+          <OperandDiscoveryTitle
+            operandType="Modeling"
+            count={modelingOptions.length}
+          />
+        </Submenu>
+      ) : null}
     </>
   );
 }
@@ -124,6 +140,7 @@ function Submenu({
     displayName: string;
     dataType: DataType;
     operandType: OperandType;
+    icon?: IconName;
   }[];
   onClick: (option: AstNode) => void;
 }) {
@@ -143,11 +160,8 @@ function Submenu({
           <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pe-[calc(0.5rem-var(--scrollbar-width))]">
             {options.map((option) => (
               <OperandOption
+                {...option}
                 key={option.displayName}
-                astNode={option.astNode}
-                dataType={option.dataType}
-                operandType={option.operandType}
-                displayName={option.displayName}
                 onClick={() => onClick(option.astNode)}
               />
             ))}

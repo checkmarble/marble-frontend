@@ -10,7 +10,7 @@ import {
 } from '@app-builder/services/editor/ast-editor';
 import {
   useDefaultCoerceToConstant,
-  useGetAstNodeOption,
+  useGetAstNodeOperandProps,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
 import { useFormatReturnValue } from '@app-builder/services/editor/return-value';
@@ -82,14 +82,14 @@ export function OperandBuilderNode({
   onSave?: (astNode: AstNode) => void;
 }) {
   const enumValues = useEnumValuesFromNeighbour(treePath);
-  const getAstNodeOption = useGetAstNodeOption();
 
   const options = useOperandOptions(enumValues);
   const coerceToConstant = useDefaultCoerceToConstant();
 
-  const operandProps = React.useMemo(() => {
-    return getAstNodeOption(astNode, { enumValues });
-  }, [astNode, enumValues, getAstNodeOption]);
+  const getAstNodeOperandProps = useGetAstNodeOperandProps();
+  const astNodeOperandProps = React.useMemo(() => {
+    return getAstNodeOperandProps(astNode, { enumValues });
+  }, [astNode, enumValues, getAstNodeOperandProps]);
 
   const evaluation = useEvaluation(treePath);
   const formatReturnValue = useFormatReturnValue();
@@ -110,7 +110,7 @@ export function OperandBuilderNode({
       validationStatus={validationStatus}
       astNodeErrors={evaluation}
       returnValue={returnValue}
-      {...operandProps}
+      {...astNodeOperandProps}
     />
   );
 }
