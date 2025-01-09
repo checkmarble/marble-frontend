@@ -16,6 +16,8 @@ export type ReturnValue =
       isOmitted: true;
     };
 
+export type ReturnValueType = 'string' | 'int' | 'float' | 'bool';
+
 export type NonOmittedReturnValue = { value: ConstantType; isOmitted: false };
 
 export function hasReturnValue(

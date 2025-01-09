@@ -481,6 +481,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/testrun+/create.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/validate-ast",
+        "path": "ressources/scenarios/:scenarioId/validate-ast",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/validate-ast.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources+/scenarios+/create.tsx"

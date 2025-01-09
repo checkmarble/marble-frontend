@@ -49,7 +49,9 @@ export function LeftOperand({
 
   return (
     <Operand
-      placeholder={t('scenarios:edit_date.select_a_field')}
+      placeholder={t(
+        'scenarios:edit_operand.data_type.string.field_placeholder',
+      )}
       onSave={onChange}
       options={leftOptions}
       coerceToConstant={coerceToConstant}

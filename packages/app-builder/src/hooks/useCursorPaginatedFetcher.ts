@@ -1,3 +1,4 @@
+import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type SerializeFrom } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import qs from 'qs';
@@ -28,6 +29,7 @@ export const useCursorPaginatedFetcher = <T, D = T>({
   const [previousFetcherData, setPreviousFetcherData] =
     useState<SerializeFrom<T> | null>(null);
   const [data, setData] = useState(initialData);
+  const getQueryParamsRef = useCallbackRef(getQueryParams);
 
   const {
     state: paginationState,
@@ -42,11 +44,11 @@ export const useCursorPaginatedFetcher = <T, D = T>({
       return;
     }
 
-    const queryParams = getQueryParams?.(paginationState.cursor) ?? {};
+    const queryParams = getQueryParamsRef(paginationState.cursor) ?? {};
     submit(qs.stringify(queryParams, { skipNulls: true }), {
       method: 'GET',
     });
-  }, [paginationState, submit, getQueryParams]);
+  }, [paginationState, submit, getQueryParamsRef]);
 
   const [previousInitialData, setPreviousInitialData] = useState(initialData);
   if (initialData !== previousInitialData && paginationState.isPristine) {

@@ -30,10 +30,8 @@
   "detail_panel.inbox.label": "الصندوق الوارد",
   "detail_panel.inbox.placeholder": "اختيار الصندوق الوارد",
   "detail_panel.inbox.need_inbox_contact_admin": "يرجى التواصل مع المسؤول لإنشاء صندوق وارد",
-  "detail_panel.create_case.default_name.helper": "الاسم الافتراضي يجب أن يتبع هذا النموذج:",
   "detail_panel.add_to_case_if_possible.description": "في الصندوق الوارد المحدد، إذا كانت الحالة المفتوحة تتناسب مع قيمة المحور للقرار، أضف القرار إليها. إذا لم توجد حالة مطابقة، ستُنشأ حالة جديدة تلقائيًا باسم افتراضي.",
   "detail_panel.add_to_case_if_possible.no_pivot": "تحتاج إلى تحديد <DocLink>قيمة المحور</DocLink> لتضمين القرار في الحالة.",
-  "detail_panel.add_to_case_if_possible.default_name.helper": "إذا لم يتم العثور على حالة متطابقة،  تتبع اسم الحالة المُنشأة لهذا القالب:",
   "detail_panel.checklist.title": "قائمة التدقيق",
   "detail_panel.checklist.description": "التاكد من معالجة جميع المشاكل قبل حفظ سير العمل.",
   "detail_panel.checklist.no_issues": "لا توجد مشكلة",
@@ -53,5 +51,7 @@
   "detail_panel.confirm_delete_workflow.title": "حذف سير العمل",
   "detail_panel.confirm_delete_workflow.description": "هل أنت متأكد من حذف  سير العمل هذا؟",
   "toast.success.create_workflow": " تم إعداد سير العمل بنجاح.",
-  "toast.success.delete_workflow": "تم حذف سير العمل بنجاح."
+  "toast.success.delete_workflow": "تم حذف سير العمل بنجاح.",
+  "detail_panel.add_to_case_if_possible.case_name.label": "اسم الحالة إذا لم يتم العثور على حالة مطابقة",
+  "detail_panel.create_case.case_name.label": "اسم الحالة"
 }

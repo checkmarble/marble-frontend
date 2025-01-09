@@ -7,6 +7,9 @@ export const pivotValuesDocHref =
 export const fuzzyMatchingDocHref =
   'https://docs.checkmarble.com/docs/fuzzy-matching';
 
+export const stringTemplatingDocHref =
+  'https://docs.checkmarble.com/docs/string-templating';
+
 export const aggregationDocHref = 'https://docs.checkmarble.com/docs/average';
 
 export const dateDocHref = 'https://docs.checkmarble.com/docs/now-copy';

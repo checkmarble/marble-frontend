@@ -344,7 +344,7 @@
   "edit_timestamp_extract.explanation.year": "يوم في السنة من 1 إلى 366.",
   "edit_timestamp_extract.display_name": "{{operator}} من {{timestamp}}",
   "edit_timestamp_extract.interpreted_in_timezone": "يتم تفسير الطابع الزمني كتاريخ ووقت في المنطقة الزمنية \"{{timezone}}\"، كما تم تكوينها في المؤسسة",
-  "edit_timestamp_extract.missing_default_timezone_admin": "لم يتم تكوين منطقة زمنية للمؤسسة. \nسيتم تفسير الطابع الزمني كتاريخ ووقت في المنطقة الزمنية UTC كبديل. \nانتقل إلى <DocLink>صفحة الإعدادات</DocLink> لتهيئة المنطقة الزمنية.",
+  "edit_timestamp_extract.missing_default_timezone_admin": "لم يتم تكوين منطقة زمنية للمؤسسة. \nسيتم تفسير الطابع الزمني كتاريخ ووقت في المنطقة الزمنية UTC كبديل. \nانتقل إلى <SettingsLink>صفحة الإعدادات</SettingsLink> لتهيئة المنطقة الزمنية.",
   "edit_timestamp_extract.missing_default_timezone_non_admin": "لم يتم تكوين منطقة زمنية للمؤسسة. \nسيتم تفسير الطابع الزمني كتاريخ ووقت في المنطقة الزمنية UTC كبديل.",
   "testrun.no_decisisons": "لم يتم تسجيل أي قرارات بالفعل",
   "testrun.no_rules": "لم يتم تفعيل أي قواعد بالفعل",
@@ -361,5 +361,11 @@
   "edit_is_multiple_of.title": "متعددة من العتبة",
   "testrun.cancel.callout": "هل أنت متأكد أنك تريد إلغاء الاختبار الحالي؟",
   "testrun.cancel": "أوقف الاختبار",
-  "testrun.description": "اختبار ومقارنة نسخة السيناريو مع نسخة حية"
+  "testrun.description": "اختبار ومقارنة نسخة السيناريو مع نسخة حية",
+  "edit_string_template.template_field.label": "نموذج",
+  "edit_string_template.template_field.placeholder": "اكتب نصًا يحتوي على %variable% فيه",
+  "edit_string_template.title": "قالب السلسلة",
+  "edit_string_template.variables.label": "المتغيرات",
+  "edit_string_template.description": "قم بإنشاء نص بقيم الحقول (<DocLink>معرفة المزيد</DocLink>)",
+  "edit_operand.data_type.string.field_placeholder": "حدد حقل سلسلة..."
 }

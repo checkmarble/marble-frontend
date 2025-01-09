@@ -237,6 +237,7 @@ function CreateActionNode({ id }: { id: string }) {
               updateNode(id, {
                 type: 'create-case',
                 inboxId: null,
+                caseName: null,
               });
             }}
           >
@@ -250,6 +251,7 @@ function CreateActionNode({ id }: { id: string }) {
               updateNode(id, {
                 type: 'add-to-case-if-possible',
                 inboxId: null,
+                caseName: null,
               });
             }}
           >

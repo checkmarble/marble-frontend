@@ -344,7 +344,7 @@
   "edit_timestamp_extract.explanation.year": "Jour dans l'année, entre 1 et 366.",
   "edit_timestamp_extract.display_name": "{{operator}} de {{timestamp}}",
   "edit_timestamp_extract.interpreted_in_timezone": "L'horodatage est interprété comme une date et une heure dans le fuseau horaire \"{{timezone}}\", tel que configuré sur l'organisation.",
-  "edit_timestamp_extract.missing_default_timezone_admin": "Aucun fuseau horaire n'a été configuré pour l'organisation. \nL'horodatage sera interprété comme une date et une heure dans le fuseau horaire UTC comme solution de repli. \nAccédez à la <DocLink>page des paramètres</DocLink> pour configurer le fuseau horaire.",
+  "edit_timestamp_extract.missing_default_timezone_admin": "Aucun fuseau horaire n'a été configuré pour l'organisation. \nL'horodatage sera interprété comme une date et une heure dans le fuseau horaire UTC comme solution de repli. \nAccédez à la <SettingsLink>page des paramètres</SettingsLink> pour configurer le fuseau horaire.",
   "edit_timestamp_extract.missing_default_timezone_non_admin": "Aucun fuseau horaire n'a été configuré pour l'organisation. \nL'horodatage sera interprété comme une date et une heure dans le fuseau horaire UTC comme solution de repli.",
   "testrun.no_decisisons": "Aucune décision déjà enregistrée",
   "testrun.no_rules": "Aucune règle déjà déclenchée",
@@ -361,5 +361,11 @@
   "testrun.filters.hit": "Déclenchée",
   "testrun.cancel.callout": "Etes-vous sûr de vouloir arrêter le test en cours ?",
   "testrun.cancel": "Arrêtez le test",
-  "testrun.description": "Testez et comparez une version de scénario avec une version en direct"
+  "testrun.description": "Testez et comparez une version de scénario avec une version en direct",
+  "edit_string_template.template_field.label": "Modèle",
+  "edit_string_template.template_field.placeholder": "Tapez un texte contenant une %variable%",
+  "edit_string_template.title": "Modèle de texte",
+  "edit_string_template.variables.label": "Variables",
+  "edit_string_template.description": "Créer un texte avec des valeurs de champs (<DocLink>en savoir plus</DocLink>)",
+  "edit_operand.data_type.string.field_placeholder": "Sélectionnez un champ texte..."
 }
