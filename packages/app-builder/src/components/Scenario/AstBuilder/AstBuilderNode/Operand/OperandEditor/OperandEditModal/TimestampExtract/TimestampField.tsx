@@ -5,7 +5,7 @@ import {
 } from '@app-builder/models';
 import {
   useDefaultCoerceToConstant,
-  useGetAstNodeOption,
+  useGetAstNodeOperandProps,
   useTimestampFieldOptions,
 } from '@app-builder/services/editor/options';
 import {
@@ -40,8 +40,6 @@ export function TimestampField({
     [defaultCoerceToConstant],
   );
 
-  const getAstNodeOption = useGetAstNodeOption();
-
   const onSave = React.useCallback(
     (newSelection: AstNode) => {
       // Safeguard; should never happen and does not protect against every possible case (ex: if the astNode is not a Timestamp data type)
@@ -55,10 +53,10 @@ export function TimestampField({
     [onChange, t],
   );
 
-  const operandProps = React.useMemo(
-    () => getAstNodeOption(astNode),
-    [astNode, getAstNodeOption],
-  );
+  const getAstNodeOperandProps = useGetAstNodeOperandProps();
+  const astNodeOperandProps = React.useMemo(() => {
+    return getAstNodeOperandProps(astNode);
+  }, [astNode, getAstNodeOperandProps]);
 
   return (
     <Operand
@@ -68,7 +66,7 @@ export function TimestampField({
       coerceToConstant={coerceToConstant}
       validationStatus={validationStatus}
       astNodeErrors={astNodeErrors}
-      {...operandProps}
+      {...astNodeOperandProps}
     />
   );
 }
