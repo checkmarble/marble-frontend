@@ -1,14 +1,17 @@
+import { Callout } from '@app-builder/components/Callout';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import {
   type AstNode,
   NewStringTemplateAstNode,
   type StringTemplateAstNode,
 } from '@app-builder/models';
+import { stringTemplatingDocHref } from '@app-builder/services/documentation-href';
 import {
   type AstNodeErrors,
   computeLineErrors,
 } from '@app-builder/services/validation/ast-node-validation';
 import { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, ModalV2 } from 'ui-design-system';
 
@@ -56,6 +59,17 @@ export const StringTemplateEdit = ({
     <>
       <ModalV2.Title>{t('scenarios:edit_string_template.title')}</ModalV2.Title>
       <div className="flex flex-col gap-9 p-6">
+        <Callout variant="outlined">
+          <ModalV2.Description>
+            <Trans
+              t={t}
+              i18nKey="scenarios:edit_string_template.description"
+              components={{
+                DocLink: <ExternalLink href={stringTemplatingDocHref} />,
+              }}
+            />
+          </ModalV2.Description>
+        </Callout>
         <StringTemplateEditForm {...state} errors={initialErrors} />
         <div className="flex flex-1 flex-row gap-2">
           <ModalV2.Close
