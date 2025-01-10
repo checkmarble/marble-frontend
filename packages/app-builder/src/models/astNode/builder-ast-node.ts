@@ -25,6 +25,8 @@ import { isIsMultipleOf, type IsMultipleOfAstNode } from './multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
   isFuzzyMatchComparator,
+  isStringTemplateAstNode,
+  type StringTemplateAstNode,
 } from './strings';
 import {
   isTimeAdd,
@@ -38,7 +40,8 @@ export type EditableAstNode =
   | AggregationAstNode
   | TimeAddAstNode
   | FuzzyMatchComparatorAstNode
-  | IsMultipleOfAstNode;
+  | IsMultipleOfAstNode
+  | StringTemplateAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -51,7 +54,8 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isTimeAdd(node) ||
     isFuzzyMatchComparator(node) ||
     isTimestampExtract(node) ||
-    isIsMultipleOf(node)
+    isIsMultipleOf(node) ||
+    isStringTemplateAstNode(node)
   );
 }
 

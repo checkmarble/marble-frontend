@@ -6,6 +6,10 @@ import {
 import { type AstNode, NewUndefinedAstNode } from './ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
+////////////////////////
+// Fuzzy string matching
+////////////////////////
+
 export const fuzzyMatchAstNodeName = 'FuzzyMatch';
 export interface FuzzyMatchAstNode {
   name: typeof fuzzyMatchAstNodeName;
@@ -132,4 +136,34 @@ export function isFuzzyMatchComparator(
     return false;
   }
   return isFuzzyMatch(firstChild) || isFuzzyMatchAnyOf(firstChild);
+}
+
+////////////////////////
+// String templating ///
+////////////////////////
+
+export const stringTemplateAstNodeName = 'StringTemplate';
+export interface StringTemplateAstNode {
+  name: typeof stringTemplateAstNodeName;
+  constant?: undefined;
+  children: ConstantAstNode<string>[];
+  namedChildren: Record<string, AstNode>;
+}
+
+export function NewStringTemplateAstNode(
+  template: string = '',
+  variables: Record<string, AstNode> = {},
+): StringTemplateAstNode {
+  return {
+    name: stringTemplateAstNodeName,
+    constant: undefined,
+    children: [NewConstantAstNode({ constant: template })],
+    namedChildren: variables,
+  };
+}
+
+export function isStringTemplateAstNode(
+  node: AstNode,
+): node is StringTemplateAstNode {
+  return node.name === stringTemplateAstNodeName;
 }

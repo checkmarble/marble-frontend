@@ -1,5 +1,5 @@
 import { type AstNode } from './ast-node';
-import { type ConstantAstNode } from './constant';
+import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
 export const databaseAccessAstNodeName = 'DatabaseAccess';
 export interface DatabaseAccessAstNode {
@@ -23,6 +23,14 @@ export interface PayloadAstNode {
   constant?: undefined;
   children: [ConstantAstNode<string>];
   namedChildren: Record<string, never>;
+}
+
+export function NewPayloadAstNode(field: string): PayloadAstNode {
+  return {
+    name: payloadAstNodeName,
+    children: [NewConstantAstNode({ constant: field })],
+    namedChildren: {},
+  };
 }
 
 export function isPayload(node: AstNode): node is PayloadAstNode {
