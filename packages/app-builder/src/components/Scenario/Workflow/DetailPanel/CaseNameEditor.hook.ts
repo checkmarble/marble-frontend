@@ -1,7 +1,5 @@
-import {
-  NewPayloadAstNode,
-  NewStringTemplateAstNode,
-} from '@app-builder/models';
+import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
+import { NewStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { useMemo } from 'react';
 
 import { defaultCaseName } from './shared';

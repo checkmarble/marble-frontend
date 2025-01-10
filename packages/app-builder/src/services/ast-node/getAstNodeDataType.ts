@@ -4,16 +4,18 @@ import {
   type DataType,
   type TableModel,
 } from '@app-builder/models';
+import { isConstant } from '@app-builder/models/astNode/constant';
+import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import {
-  isConstant,
-  isDataAccessorAstNode,
   isFuzzyMatchComparator,
-  isIsMultipleOf,
   isStringTemplateAstNode,
+} from '@app-builder/models/astNode/strings';
+import {
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
-} from '@app-builder/models/ast-node';
+} from '@app-builder/models/astNode/time';
 import { dateTimeDataTypeSchema } from '@app-builder/utils/schema/dataTypeSchema';
 import * as R from 'remeda';
 

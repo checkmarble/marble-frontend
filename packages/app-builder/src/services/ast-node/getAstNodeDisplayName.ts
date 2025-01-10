@@ -1,23 +1,31 @@
 import { type AstNode, isUndefinedAstNode } from '@app-builder/models';
 import {
   type AggregationAstNode,
-  type FuzzyMatchComparatorAstNode,
   isAggregation,
-  isConstant,
-  isCustomListAccess,
+} from '@app-builder/models/astNode/aggregation';
+import { isConstant } from '@app-builder/models/astNode/constant';
+import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
+import {
   isDatabaseAccess,
-  isFuzzyMatchComparator,
+  isPayload,
+} from '@app-builder/models/astNode/data-accessor';
+import {
   isIsMultipleOf,
   type IsMultipleOfAstNode,
-  isPayload,
+} from '@app-builder/models/astNode/multiple-of';
+import {
+  type FuzzyMatchComparatorAstNode,
+  isFuzzyMatchComparator,
   isStringTemplateAstNode,
+  type StringTemplateAstNode,
+} from '@app-builder/models/astNode/strings';
+import {
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
-  type StringTemplateAstNode,
   type TimeAddAstNode,
   type TimestampExtractAstNode,
-} from '@app-builder/models/ast-node';
+} from '@app-builder/models/astNode/time';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import { isAggregatorOperator } from '@app-builder/models/modale-operators';

@@ -1,10 +1,10 @@
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
+import { type AstNode } from '@app-builder/models';
 import {
-  type AstNode,
   NewStringTemplateAstNode,
   type StringTemplateAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/strings';
 import { stringTemplatingDocHref } from '@app-builder/services/documentation-href';
 import {
   type AstNodeErrors,
