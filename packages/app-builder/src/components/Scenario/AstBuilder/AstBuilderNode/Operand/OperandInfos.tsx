@@ -22,7 +22,7 @@ import {
   getOperandTypeTKey,
   type OperandType,
 } from '@app-builder/models/operand-type';
-import { type OperatorOption } from '@app-builder/models/operator-functions';
+import { type OperatorOption } from '@app-builder/models/operator-options';
 import {
   useCustomListAccessCustomList,
   useDataAccessorAstNodeField,
