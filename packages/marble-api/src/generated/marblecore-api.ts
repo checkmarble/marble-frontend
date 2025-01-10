@@ -623,9 +623,6 @@ export type CreateOrganizationBodyDto = {
 export type UpdateOrganizationBodyDto = {
     default_scenario_timezone?: string;
 };
-export type FuncAttributes = {
-    name: string;
-};
 export type InboxUserDto = {
     id: string;
     inbox_id: string;
@@ -2494,25 +2491,6 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
         status: 403;
         data: string;
     }>(`/editor/${encodeURIComponent(scenarioId)}/identifiers`, {
-        ...opts
-    }));
-}
-/**
- * List all operators
- */
-export function listOperators(scenarioId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            operators_accessors: FuncAttributes[];
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    }>(`/editor/${encodeURIComponent(scenarioId)}/operators`, {
         ...opts
     }));
 }

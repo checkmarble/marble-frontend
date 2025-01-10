@@ -1,8 +1,5 @@
-import {
-  type AstNode,
-  NewUndefinedAstNode,
-  type StringTemplateAstNode,
-} from '@app-builder/models';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import { type StringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import { useMemo, useReducer } from 'react';
 

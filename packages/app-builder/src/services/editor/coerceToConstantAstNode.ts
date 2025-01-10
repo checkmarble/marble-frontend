@@ -1,4 +1,7 @@
-import { type ConstantAstNode, NewConstantAstNode } from '@app-builder/models';
+import {
+  type ConstantAstNode,
+  NewConstantAstNode,
+} from '@app-builder/models/astNode/constant';
 import * as R from 'remeda';
 
 export interface CoerceToConstantAstNodeOptions {

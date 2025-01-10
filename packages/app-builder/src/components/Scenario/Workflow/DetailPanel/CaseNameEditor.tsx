@@ -1,9 +1,9 @@
+import { type AstNode } from '@app-builder/models';
 import {
-  type AstNode,
   isStringTemplateAstNode,
   NewStringTemplateAstNode,
   type StringTemplateAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/strings';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useAstValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { useTriggerObjectTable } from '@app-builder/services/editor/options';

@@ -67,24 +67,18 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       scenario.getScenarioIteration({
         iterationId: currentDecision.scenario.scenarioIterationId,
       }),
-      editor.listOperators({
-        scenarioId: currentDecision.scenario.id,
-      }),
       editor.listAccessors({
         scenarioId: currentDecision.scenario.id,
       }),
       dataModelRepository.getDataModel(),
       customListsRepository.listCustomLists(),
-    ]).then(
-      ([scenarioIteration, operators, accessors, dataModel, customLists]) => ({
-        rules: scenarioIteration.rules,
-        databaseAccessors: accessors.databaseAccessors,
-        payloadAccessors: accessors.payloadAccessors,
-        operators,
-        dataModel,
-        customLists,
-      }),
-    );
+    ]).then(([scenarioIteration, accessors, dataModel, customLists]) => ({
+      rules: scenarioIteration.rules,
+      databaseAccessors: accessors.databaseAccessors,
+      payloadAccessors: accessors.payloadAccessors,
+      dataModel,
+      customLists,
+    }));
 
     return defer({
       decision: currentDecision,

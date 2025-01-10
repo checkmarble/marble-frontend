@@ -1,9 +1,9 @@
+import { type AstNode } from '@app-builder/models';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
-  type AstNode,
   type IsMultipleOfAstNode,
-  NewConstantAstNode,
   NewIsMultipleOfAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/multiple-of';
 import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';

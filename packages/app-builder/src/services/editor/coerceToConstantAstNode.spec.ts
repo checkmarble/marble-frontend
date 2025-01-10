@@ -1,4 +1,5 @@
-import { NewAstNode, NewConstantAstNode } from '@app-builder/models';
+import { NewAstNode } from '@app-builder/models';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 
 import {
   coerceToConstantAstNode,

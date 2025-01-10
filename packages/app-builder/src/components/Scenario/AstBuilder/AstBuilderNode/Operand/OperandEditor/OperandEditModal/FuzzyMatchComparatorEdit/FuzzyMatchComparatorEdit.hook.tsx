@@ -1,7 +1,5 @@
-import {
-  type AstNode,
-  type FuzzyMatchComparatorAstNode,
-} from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
+import { type FuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
 import {
   adaptFuzzyMatchComparatorLevel,
   adaptFuzzyMatchComparatorThreshold,

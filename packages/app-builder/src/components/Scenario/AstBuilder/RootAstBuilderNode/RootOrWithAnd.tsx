@@ -1,11 +1,13 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import {
-  type AndAstNode,
   type AstNode,
   NewAstNode,
   NewUndefinedAstNode,
-  type OrWithAndAstNode,
 } from '@app-builder/models';
+import {
+  type AndAstNode,
+  type OrWithAndAstNode,
+} from '@app-builder/models/astNode/builder-ast-node';
 import {
   useAstNodeEditorActions,
   useEvaluation,

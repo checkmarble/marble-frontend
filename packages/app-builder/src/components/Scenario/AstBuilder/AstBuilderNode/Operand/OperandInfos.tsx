@@ -1,22 +1,28 @@
 import {
-  type AggregationAstNode,
   type AstNode,
-  type CustomListAccessAstNode,
-  type DataAccessorAstNode,
   type DataType,
   getDataTypeIcon,
   getDataTypeTKey,
-  isAggregation,
-  isCustomListAccess,
-  isDataAccessorAstNode,
-  isTimeAdd,
 } from '@app-builder/models';
-import { type OperatorFunction } from '@app-builder/models/editable-operators';
+import {
+  type AggregationAstNode,
+  isAggregation,
+} from '@app-builder/models/astNode/aggregation';
+import {
+  type CustomListAccessAstNode,
+  isCustomListAccess,
+} from '@app-builder/models/astNode/custom-list';
+import {
+  type DataAccessorAstNode,
+  isDataAccessorAstNode,
+} from '@app-builder/models/astNode/data-accessor';
+import { isTimeAdd } from '@app-builder/models/astNode/time';
 import {
   getOperandTypeIcon,
   getOperandTypeTKey,
   type OperandType,
 } from '@app-builder/models/operand-type';
+import { type OperatorOption } from '@app-builder/models/operator-options';
 import {
   useCustomListAccessCustomList,
   useDataAccessorAstNodeField,
@@ -239,9 +245,9 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
                 {fieldName?.constant ?? '...'}
               </p>
               <Operator
-                value={operator?.constant as OperatorFunction}
+                value={operator?.constant as OperatorOption}
                 setValue={noop}
-                operators={[operator?.constant as OperatorFunction]}
+                operators={[operator?.constant as OperatorOption]}
                 viewOnly
               />
               <OperandLabel

@@ -1,13 +1,11 @@
 import { decisionsI18n, Paper } from '@app-builder/components';
+import { type AstNode, type DataModel } from '@app-builder/models';
 import {
-  type AstNode,
   type DatabaseAccessAstNode,
-  type DataModel,
   type PayloadAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type RuleExecution } from '@app-builder/models/decision';
-import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { useAstNodeEditor } from '@app-builder/services/editor/ast-editor';
@@ -41,7 +39,6 @@ export function RulesDetail({
     rules: ScenarioIterationRule[];
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
     dataModel: DataModel;
     customLists: CustomList[];
   }>;
@@ -94,7 +91,6 @@ export function RuleExecutionDetail({
     rules: ScenarioIterationRule[];
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
     dataModel: DataModel;
     customLists: CustomList[];
   };
@@ -140,7 +136,6 @@ export function RuleExecutionDetail({
         evaluation={ruleExecution.evaluation}
         databaseAccessors={astRuleData.databaseAccessors}
         payloadAccessors={astRuleData.payloadAccessors}
-        operators={astRuleData.operators}
         dataModel={astRuleData.dataModel}
         customLists={astRuleData.customLists}
         triggerObjectType={triggerObjectType}
@@ -175,7 +170,6 @@ function RuleFormula({
   databaseAccessors,
   evaluation,
   payloadAccessors,
-  operators,
   dataModel,
   customLists,
   triggerObjectType,
@@ -184,7 +178,6 @@ function RuleFormula({
   evaluation?: NodeEvaluation;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
-  operators: OperatorFunction[];
   dataModel: DataModel;
   customLists: CustomList[];
   triggerObjectType: string;
@@ -199,7 +192,6 @@ function RuleFormula({
         options={{
           databaseAccessors,
           payloadAccessors,
-          operators,
           dataModel,
           customLists,
           triggerObjectType,

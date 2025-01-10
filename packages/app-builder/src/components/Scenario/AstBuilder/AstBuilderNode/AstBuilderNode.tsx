@@ -1,8 +1,8 @@
+import { type AstNode } from '@app-builder/models';
 import {
-  type AstNode,
   isMainAstBinaryNode,
   isMainAstUnaryNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/builder-ast-node';
 import {
   useEnumValuesFromNeighbour,
   useEvaluation,
