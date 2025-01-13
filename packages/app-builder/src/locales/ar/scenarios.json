@@ -371,7 +371,7 @@
   "edit_operand.operator_type.modeling_one": "النمذجة",
   "edit_operand.operator_type.modeling_other": "النمذجة",
   "nesting.remove": "إزالة التعشيش",
-  "nesting.swap_operands": "عكس ترتيب القيم",
-  "edit_operand.modeling.open_nesting": "التعشيش المفتوح",
-  "nesting.add_right_nesting": "أضف التعشيش إلى اليمين"
+  "edit_operand.modeling.open_nesting": "فتح بين قوسين",
+  "nesting.add_right_nesting": "التفاف بين قوسين",
+  "nesting.swap_operands": "تبديل القيم"
 }

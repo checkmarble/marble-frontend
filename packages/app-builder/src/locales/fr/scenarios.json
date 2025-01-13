@@ -370,7 +370,8 @@
   "edit_string_template.description": "Créer un texte avec des valeurs de champs (<DocLink>en savoir plus</DocLink>)",
   "edit_operand.data_type.string.field_placeholder": "Sélectionnez un champ texte...",
   "testrun.nudge": "Comparez une version en direct avec une nouvelle ou une ancienne sans compromettre les données en direct",
-  "nesting.swap_operands": "Inverser l'ordre des valeurs",
+  "nesting.swap_operands": "Intervertir les valeurs",
   "nesting.remove": "Supprimer l'imbrication",
-  "edit_operand.modeling.open_nesting": "Ouvrir l'imbrication"
+  "edit_operand.modeling.open_nesting": "Ouvrir les parenthèses",
+  "nesting.add_right_nesting": "Mettre entre parenthèses"
 }
