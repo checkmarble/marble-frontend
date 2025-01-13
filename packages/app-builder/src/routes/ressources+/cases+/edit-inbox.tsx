@@ -125,7 +125,7 @@ export function EditCaseInbox({
               </FormSelect.DefaultItem>
             ))}
             {loadFetcher.state === 'loading' ? (
-              <div className="text-grey-100 h-10 p-2 first-letter:capitalize">
+              <div className="text-grey-00 h-10 p-2 first-letter:capitalize">
                 {t('common:loading')}
               </div>
             ) : null}

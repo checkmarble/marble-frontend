@@ -22,7 +22,7 @@ export function AuthError({
   return (
     <p
       className={clsx(
-        'text-m bg-red-05 w-full rounded-sm p-2 font-normal text-red-100',
+        'text-m bg-red-95 text-red-47 w-full rounded-sm p-2 font-normal',
         className,
       )}
     >

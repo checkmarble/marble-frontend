@@ -45,7 +45,7 @@ export function CasesList({
           const caseName = getValue();
           return (
             <Tooltip.Default content={caseName}>
-              <span className="text-grey-100 text-s line-clamp-2 w-fit font-normal">
+              <span className="text-grey-00 text-s line-clamp-2 w-fit font-normal">
                 {caseName}
               </span>
             </Tooltip.Default>
@@ -110,7 +110,7 @@ export function CasesList({
   return (
     <Table.Container
       {...getContainerProps()}
-      className={clsx('bg-grey-00', className)}
+      className={clsx('bg-grey-100', className)}
     >
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>

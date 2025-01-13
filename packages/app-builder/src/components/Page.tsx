@@ -12,7 +12,7 @@ function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <main
       className={clsx(
-        'bg-purple-02 flex flex-1 flex-col overflow-hidden',
+        'bg-purple-99 flex flex-1 flex-col overflow-hidden',
         className,
       )}
       {...props}
@@ -42,7 +42,7 @@ function PageHeader({
   return (
     <div
       className={clsx(
-        'border-b-grey-10 bg-grey-00 text-l text-grey-100 relative flex shrink-0 flex-row items-center border-b px-4 font-bold lg:px-6',
+        'border-b-grey-90 bg-grey-100 text-l text-grey-00 relative flex shrink-0 flex-row items-center border-b px-4 font-bold lg:px-6',
         headerHeight({ type: 'height' }),
         className,
       )}
@@ -67,7 +67,7 @@ function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <aside
       className={clsx(
-        'bg-purple-05 text-s flex flex-row gap-2 p-4 font-normal text-purple-100 lg:px-8 lg:py-4',
+        'bg-purple-98 text-s text-purple-65 flex flex-row gap-2 p-4 font-normal lg:px-8 lg:py-4',
         className,
       )}
       {...props}
@@ -91,7 +91,7 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 const pageBack = cva(
-  'border-grey-10 hover:bg-grey-02 flex items-center justify-center rounded-md border p-2',
+  'border-grey-90 hover:bg-grey-98 flex items-center justify-center rounded-md border p-2',
 );
 
 function PageBackButton({

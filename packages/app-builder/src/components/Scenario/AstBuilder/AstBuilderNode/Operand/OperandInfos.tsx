@@ -68,12 +68,12 @@ export function OperandInfos({
         gutter={gutter}
         shift={shift}
         portal
-        className="bg-grey-00 border-grey-10 flex max-h-[min(var(--popover-available-height),_400px)] max-w-[var(--popover-available-width)] rounded border shadow-md"
+        className="bg-grey-100 border-grey-90 flex max-h-[min(var(--popover-available-height),_400px)] max-w-[var(--popover-available-width)] rounded border shadow-md"
       >
         <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-auto p-4 pe-[calc(1rem-var(--scrollbar-width))]">
           <div className="flex flex-col gap-1">
             <TypeInfos operandType={operandType} dataType={dataType} />
-            <p className="text-grey-100 text-s text-ellipsis hyphens-auto font-normal">
+            <p className="text-grey-00 text-s text-ellipsis hyphens-auto font-normal">
               {displayName}
             </p>
           </div>
@@ -111,7 +111,7 @@ function TypeInfos({
         return (
           <span
             key={tKey}
-            className="inline-flex items-center gap-[2px] text-xs font-normal text-purple-50"
+            className="text-purple-82 inline-flex items-center gap-[2px] text-xs font-normal"
           >
             {icon ? <Icon icon={icon} className="size-3" /> : null}
             {t(tKey, { count: 1 })}
@@ -214,7 +214,7 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
 
   return (
     <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
-      <span className="text-center font-bold text-purple-100">
+      <span className="text-purple-65 text-center font-bold">
         {aggregator.constant}
       </span>
       <span className="font-bold">{aggregatedFieldName}</span>
@@ -227,15 +227,15 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
               type="text"
             />
             <div className="flex items-center gap-1">
-              {/* TODO: replace with OperandLabel for consistency, 
-              we may need to change the AggregatorEditableAstNode to register a valid Payload node (instead of the shorthand Constant) 
+              {/* TODO: replace with OperandLabel for consistency,
+              we may need to change the AggregatorEditableAstNode to register a valid Payload node (instead of the shorthand Constant)
               but it can be cumbersome for api compatibility (notably when getting the astNode from the server)
-              
+
               Should be stringified as a "payload access" with :
               - a field name (string) = fieldName?.constant
               - a table name (string) = tableName?.constant
               */}
-              <p className="bg-grey-02 whitespace-nowrap p-2 text-end">
+              <p className="bg-grey-98 whitespace-nowrap p-2 text-end">
                 {fieldName?.constant ?? '...'}
               </p>
               <Operator

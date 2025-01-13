@@ -28,9 +28,9 @@ export const Nudge = ({
       <HovercardAnchor
         tabIndex={-1}
         className={clsx(
-          'text-grey-00 flex flex-row items-center justify-center rounded',
-          { 'bg-purple-100': kind === 'test' },
-          { 'bg-purple-50': kind === 'restricted' },
+          'text-grey-100 flex flex-row items-center justify-center rounded',
+          { 'bg-purple-65': kind === 'test' },
+          { 'bg-purple-82': kind === 'restricted' },
           className,
         )}
       >
@@ -43,14 +43,14 @@ export const Nudge = ({
       <Hovercard
         portal
         gutter={8}
-        className="bg-grey-00 flex w-60 flex-col items-center gap-6 rounded border border-purple-50 p-4 shadow-lg"
+        className="bg-grey-100 border-purple-82 flex w-60 flex-col items-center gap-6 rounded border p-4 shadow-lg"
       >
         <span className="text-m font-bold">{t('common:premium')}</span>
         <div className="flex w-full flex-col items-center gap-2">
           <p className="text-s w-full text-center font-medium">{content}</p>
           {link ? (
             <a
-              className="text-s inline-block w-full text-center text-purple-100 hover:underline"
+              className="text-s text-purple-65 inline-block w-full text-center hover:underline"
               target="_blank"
               rel="noreferrer"
               href={link}

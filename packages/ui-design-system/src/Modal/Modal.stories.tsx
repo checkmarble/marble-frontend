@@ -17,7 +17,7 @@ const Template: StoryFn<typeof Modal> = (args) => (
     </Modal.Trigger>
     <Modal.Content>
       <Modal.Title>Modal title</Modal.Title>
-      <div className="bg-grey-00 flex flex-col gap-6 p-6">
+      <div className="bg-grey-100 flex flex-col gap-6 p-6">
         <Modal.Description>This is the the modal description</Modal.Description>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
@@ -43,7 +43,7 @@ const TemplateV2: StoryFn<typeof ModalV2> = (args) => (
     <ModalV2.Trigger render={<Button />}>Trigger</ModalV2.Trigger>
     <ModalV2.Content>
       <ModalV2.Title>ModalV2 title</ModalV2.Title>
-      <div className="bg-grey-00 flex flex-col gap-6 p-6">
+      <div className="bg-grey-100 flex flex-col gap-6 p-6">
         <ModalV2.Description>
           This is the the modal description
         </ModalV2.Description>

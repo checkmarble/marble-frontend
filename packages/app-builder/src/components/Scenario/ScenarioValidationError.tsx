@@ -14,7 +14,7 @@ export function EvaluationErrors({
         <span
           key={error}
           className={clsx(
-            'bg-red-05 text-s flex h-8 items-center justify-center rounded px-2 py-1 font-medium text-red-100',
+            'bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded px-2 py-1 font-medium',
             className,
           )}
         >

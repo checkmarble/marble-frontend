@@ -29,19 +29,19 @@ export function Checklist() {
   let content;
   if (validation.isValid) {
     content = (
-      <div className="border-grey-10 flex w-full flex-col gap-4 rounded-xl border p-4">
+      <div className="border-grey-90 flex w-full flex-col gap-4 rounded-xl border p-4">
         <Title
           icon="rule-settings"
           title={t('workflows:detail_panel.checklist.error.global.title')}
           scope={t('workflows:detail_panel.checklist.error.global.scope')}
         />
-        <Separator className="bg-grey-10" />
+        <Separator className="bg-grey-90" />
         <div className="flex flex-row items-center gap-2">
           <Icon
             icon="tick"
-            className="size-6 shrink-0 rounded-full text-green-100"
+            className="text-green-38 size-6 shrink-0 rounded-full"
           />
-          <span className="text-green-50">
+          <span className="text-green-68">
             {t('workflows:detail_panel.checklist.no_issues')}
           </span>
         </div>
@@ -63,7 +63,7 @@ export function Checklist() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        <p className="text-l text-grey-100 font-medium">
+        <p className="text-l text-grey-00 font-medium">
           {t('workflows:detail_panel.checklist.title')}
         </p>
         <p className="text-s text-grey-50">
@@ -82,13 +82,13 @@ function GlobalChecklist({ checklist }: { checklist: GlobalChecklistVM }) {
   }
 
   return (
-    <div className="border-grey-10 flex w-full flex-col gap-4 rounded-xl border p-4">
+    <div className="border-grey-90 flex w-full flex-col gap-4 rounded-xl border p-4">
       <Title
         icon="rule-settings"
         title={t('workflows:detail_panel.checklist.error.global.title')}
         scope={t('workflows:detail_panel.checklist.error.global.scope')}
       />
-      <Separator className="bg-grey-10" />
+      <Separator className="bg-grey-90" />
       <div className="flex w-full flex-col gap-2">
         {checklist.hasMissingTriggerNode ? (
           <Issue>
@@ -157,9 +157,9 @@ function NodeChecklistContent({
   const { selectNode } = useWorkflowActions();
 
   return (
-    <div className="border-grey-10 relative flex w-full flex-col gap-4 rounded-xl border p-4">
+    <div className="border-grey-90 relative flex w-full flex-col gap-4 rounded-xl border p-4">
       <Title icon={icon} title={title} scope={entity} />
-      <Separator className="bg-grey-10" />
+      <Separator className="bg-grey-90" />
       <div className="flex w-full flex-col gap-2">
         {checklist.hasInvalidConfig ? (
           <Issue>
@@ -227,8 +227,8 @@ function Issue({ children }: { children: React.ReactNode }) {
   }
   return (
     <div className="flex flex-row items-center gap-2">
-      <div className="bg-yellow-10 size-fit shrink-0 overflow-hidden rounded border border-yellow-50 p-1">
-        <Icon icon="warning" className="size-4 shrink-0 text-yellow-100" />
+      <div className="bg-yellow-90 border-yellow-75 size-fit shrink-0 overflow-hidden rounded border p-1">
+        <Icon icon="warning" className="size-4 shrink-0 text-yellow-50" />
       </div>
       {content}
     </div>
@@ -246,10 +246,10 @@ function Title({
 }) {
   return (
     <div className="flex flex-row items-center gap-2">
-      <div className="text-grey-100 bg-purple-10 size-fit shrink-0 overflow-hidden rounded-md p-1">
-        <Icon icon={icon} className="size-5 shrink-0 text-purple-100" />
+      <div className="text-grey-00 bg-purple-96 size-fit shrink-0 overflow-hidden rounded-md p-1">
+        <Icon icon={icon} className="text-purple-65 size-5 shrink-0" />
       </div>
-      <span className="text-grey-100 flex-1 font-semibold">{title}</span>
+      <span className="text-grey-00 flex-1 font-semibold">{title}</span>
       <Tag color="grey">{scope}</Tag>
     </div>
   );

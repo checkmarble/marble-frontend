@@ -21,7 +21,7 @@ export default function ForgotPassword() {
           components={{
             SignIn: (
               <Link
-                className="text-purple-100 underline"
+                className="text-purple-65 underline"
                 to={getRoute('/sign-in')}
               />
             ),

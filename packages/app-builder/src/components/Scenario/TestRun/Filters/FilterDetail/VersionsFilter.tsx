@@ -42,7 +42,7 @@ export function VersionsFilter({ type }: { type: 'ref' | 'test' }) {
                 value={iteration.id}
                 className="align-baseline"
               >
-                <span className="text-grey-100 text-s">
+                <span className="text-grey-00 text-s">
                   {`V${iteration.version}`}
                 </span>
               </SelectWithCombobox.ComboboxItem>

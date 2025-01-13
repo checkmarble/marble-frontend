@@ -72,7 +72,7 @@ export function ScheduleOptionEditor({
           </div>
           {scheduleOption.frequency === 'monthly' &&
           ['29', '30', '31'].includes(scheduleOption.scheduleDetail) ? (
-            <p className="text-s text-purple-100">
+            <p className="text-s text-purple-65">
               <Trans
                 t={t}
                 i18nKey="scenarios:trigger.schedule_scenario.monthly_warning"
@@ -117,7 +117,7 @@ const ScheduleFrequencySelect = ({
     <Select.Default value={value} onValueChange={onChange}>
       {scheduleFrequencyOptions.map(({ value, labelTKey }) => (
         <Select.DefaultItem className="min-w-[110px]" key={value} value={value}>
-          <span className="text-s text-grey-100">{t(labelTKey)}</span>
+          <span className="text-s text-grey-00">{t(labelTKey)}</span>
         </Select.DefaultItem>
       ))}
     </Select.Default>
@@ -159,7 +159,7 @@ const ScheduleDetailSelect = ({
           key={option}
           value={option}
         >
-          <span className="text-s text-grey-100">{displayName(option)}</span>
+          <span className="text-s text-grey-00">{displayName(option)}</span>
         </Select.DefaultItem>
       ))}
     </Select.Default>

@@ -20,7 +20,7 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
         defaultOpen={true}
         ref={ref}
         className={clsx(
-          'border-grey-10 flex w-full flex-col overflow-hidden rounded-lg border',
+          'border-grey-90 flex w-full flex-col overflow-hidden rounded-lg border',
           className,
         )}
         {...props}
@@ -61,7 +61,7 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
           <Icon
             icon="smallarrow-up"
             aria-hidden
-            className="border-grey-10 group-radix-state-open:rotate-180 size-6 rounded border transition-transform duration-200"
+            className="border-grey-90 group-radix-state-open:rotate-180 size-6 rounded border transition-transform duration-200"
           />
         </div>
       </Trigger>
@@ -70,7 +70,7 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
 );
 
 const content =
-  'border-grey-10 border-t radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden';
+  'border-grey-90 border-t radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden';
 
 const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
   function CollapsibleContent({ children, className, ...props }, ref) {

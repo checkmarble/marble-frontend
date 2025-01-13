@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { forwardRef } from 'react';
 
 export const linkClasses =
-  'hover:text-purple-120 focus:text-purple-120 font-semibold lowercase text-purple-100 hover:underline focus:underline';
+  'hover:text-purple-60 focus:text-purple-60 font-semibold lowercase text-purple-65 hover:underline focus:underline';
 
 export const ExternalLink = forwardRef<
   HTMLAnchorElement,

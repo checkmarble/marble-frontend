@@ -44,7 +44,7 @@ export function TestRunsFiltersBar() {
 
   return (
     <>
-      <Separator className="bg-grey-10" decorative />
+      <Separator className="bg-grey-90" decorative />
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row flex-wrap gap-2">
           {definedTestRunsFilterNames.map((filterName) => {

@@ -197,7 +197,7 @@ function AlertsListTable({
 
   if (rows.length === 0) {
     return (
-      <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+      <div className="bg-grey-100 border-grey-90 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
         <p className="text-s font-medium">
           {alerts.length === 0
             ? t('transfercheck:alerts.empty')
@@ -210,7 +210,7 @@ function AlertsListTable({
   return (
     <Table.Container
       {...getContainerProps()}
-      className={clsx('bg-grey-00', className)}
+      className={clsx('bg-grey-100', className)}
     >
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>

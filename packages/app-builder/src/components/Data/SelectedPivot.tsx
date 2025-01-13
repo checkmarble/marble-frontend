@@ -119,8 +119,8 @@ export function SelectedPivotPanel() {
 
   return (
     <Panel position="bottom-center">
-      <div className="bg-grey-00 border-grey-10 flex min-w-60 flex-col overflow-hidden rounded border drop-shadow-md">
-        <p className="text-l bg-grey-02 border-b-grey-10 border-b p-4 font-semibold">
+      <div className="bg-grey-100 border-grey-90 flex min-w-60 flex-col overflow-hidden rounded border drop-shadow-md">
+        <p className="text-l bg-grey-98 border-b-grey-90 border-b p-4 font-semibold">
           {t('data:view_pivot.title')}
         </p>
 

@@ -161,7 +161,7 @@ const FormSelectWithComboboxSelect = React.forwardRef<
   return (
     <SelectWithCombobox.Select
       ref={composedRef}
-      borderColor={meta.valid ? 'grey-10' : 'red-100'}
+      borderColor={meta.valid ? 'greyfigma-90' : 'redfigma-47'}
       {...props}
     />
   );

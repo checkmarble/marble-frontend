@@ -25,7 +25,7 @@ export function CaseTags({ caseTagIds }: { caseTagIds: string[] }) {
           <CaseTag key={caseTagId} tagId={caseTagId} />
         ))}
         {caseTagIds.length > 3 ? (
-          <div className="text-grey-100 bg-grey-05 flex h-6 items-center rounded-s px-2 text-xs font-normal">
+          <div className="text-grey-00 bg-grey-95 flex h-6 items-center rounded-s px-2 text-xs font-normal">
             {t('cases:case_detail.other_tags_count', {
               count: caseTagIds.length - 3,
             })}
@@ -44,10 +44,10 @@ export function CaseTag({ tagId }: { tagId: string }) {
 
   return (
     <div
-      className="bg-grey-05 flex h-6 items-center rounded px-2"
+      className="bg-grey-95 flex h-6 items-center rounded px-2"
       style={{ backgroundColor: tag?.color }}
     >
-      <span className="text-grey-100 line-clamp-1 text-xs font-normal">
+      <span className="text-grey-00 line-clamp-1 text-xs font-normal">
         {tag?.name || t('cases:case_detail.unknown_tag')}
       </span>
     </div>

@@ -66,8 +66,8 @@ export function IsMultipleOfEdit({
               }
               onChange={setValue}
             />
-            <div className="border-grey-10 bg-grey-02 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
-              <span className="text-s text-grey-100 font-medium">
+            <div className="border-grey-90 bg-grey-98 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
+              <span className="text-s text-grey-00 font-medium">
                 {t('scenarios:edit_is_multiple_of.label')}
               </span>
             </div>
@@ -119,16 +119,16 @@ function Examples({ divider }: { divider: number }) {
   const language = useFormatLanguage();
 
   return (
-    <table className="border-grey-10 table-auto border-collapse border">
+    <table className="border-grey-90 table-auto border-collapse border">
       <caption className="sr-only">
         {t('scenarios:edit_is_multiple_of.examples.caption')}
       </caption>
       <thead>
         <tr>
-          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-start text-xs font-normal capitalize">
+          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal capitalize">
             {t('scenarios:edit_is_multiple_of.examples.value')}
           </th>
-          <th className="text-grey-100 bg-grey-02 border-grey-10 border px-2 text-start text-xs font-normal capitalize">
+          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal capitalize">
             {t('scenarios:edit_is_multiple_of.examples.result')}
           </th>
         </tr>
@@ -158,13 +158,13 @@ function Examples({ divider }: { divider: number }) {
           },
         ].map(({ left }) => (
           <tr key={`${left}`}>
-            <td className="text-grey-100 border-grey-10 border px-2 text-xs font-normal">
+            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
               {formatNumber(left, {
                 language,
                 style: undefined,
               })}
             </td>
-            <td className="text-grey-100 border-grey-10 border px-2 text-xs font-normal">
+            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
               {t(`common:${left % divider === 0}`)}
             </td>
           </tr>

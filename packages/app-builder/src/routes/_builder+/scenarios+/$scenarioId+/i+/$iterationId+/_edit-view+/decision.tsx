@@ -181,7 +181,7 @@ export default function Decision() {
   const editorMode = useEditorMode();
 
   return (
-    <Collapsible.Container className="bg-grey-00 max-w-3xl">
+    <Collapsible.Container className="bg-grey-100 max-w-3xl">
       <Collapsible.Title>
         {t('scenarios:decision.score_based.title')}
       </Collapsible.Title>
@@ -379,5 +379,5 @@ function EditScoreThresholds() {
 
 const style = {
   errorMessage:
-    'bg-red-05 rounded px-2 py-1 h-8 flex items-center justify-center',
+    'bg-red-95 rounded px-2 py-1 h-8 flex items-center justify-center',
 } as const;

@@ -131,7 +131,7 @@ export default function TestRuns() {
               filterValues={filters}
             >
               <div className="flex flex-row items-center justify-between">
-                <span className="text-grey-100 text-l font-semibold">
+                <span className="text-grey-00 text-l font-semibold">
                   {t('scenarios:testrun.home')}
                 </span>
                 <div className="flex flex-row gap-4">

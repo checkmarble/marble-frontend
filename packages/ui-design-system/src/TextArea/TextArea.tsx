@@ -3,17 +3,17 @@ import clsx from 'clsx';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 
 export const textarea = cva(
-  'text-s text-grey-100 placeholder:text-grey-25 disabled:bg-grey-05 rounded p-2 font-medium outline-none border focus:border-purple-100 row-start-1 row-end-2 col-start-1 col-end-2',
+  'text-s text-grey-00 placeholder:text-grey-80 disabled:bg-grey-95 rounded p-2 font-medium outline-none border focus:border-purple-65 row-start-1 row-end-2 col-start-1 col-end-2',
   {
     variants: {
       borderColor: {
-        'grey-10': 'border-grey-10',
-        'red-25': 'border-red-25',
-        'red-100': 'border-red-100',
+        'greyfigma-90': 'border-grey-90',
+        'redfigma-87': 'border-red-87',
+        'redfigma-47': 'border-red-47',
       },
     },
     defaultVariants: {
-      borderColor: 'grey-10',
+      borderColor: 'greyfigma-90',
     },
   },
 );

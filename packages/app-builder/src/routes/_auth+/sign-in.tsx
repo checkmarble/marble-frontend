@@ -88,9 +88,9 @@ export default function Login() {
             className="my-4 flex w-full flex-row items-center gap-1"
             role="separator"
           >
-            <div className="bg-grey-10 h-px w-full" />
+            <div className="bg-grey-90 h-px w-full" />
             or
-            <div className="bg-grey-10 h-px w-full" />
+            <div className="bg-grey-90 h-px w-full" />
           </div>
         </>
       ) : null}
@@ -107,7 +107,7 @@ export default function Login() {
             components={{
               SignUp: (
                 <Link
-                  className="text-purple-100 underline"
+                  className="text-purple-65 underline"
                   to={getRoute('/sign-up')}
                 />
               ),
@@ -118,7 +118,7 @@ export default function Login() {
           />
         </p>
         <Link
-          className="w-fit text-xs text-purple-100 underline"
+          className="text-purple-65 w-fit text-xs underline"
           to={getRoute('/forgot-password')}
         >
           {t('auth:sign_in.forgot_password')}

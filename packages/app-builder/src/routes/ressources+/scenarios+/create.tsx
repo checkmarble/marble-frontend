@@ -179,14 +179,14 @@ function CreateScenarioContent() {
                 >
                   <Ariakit.HovercardAnchor
                     tabIndex={-1}
-                    className="text-grey-25 hover:text-grey-50 cursor-pointer transition-colors"
+                    className="text-grey-80 hover:text-grey-50 cursor-pointer transition-colors"
                   >
                     <Icon icon="tip" className="size-5" />
                   </Ariakit.HovercardAnchor>
                   <Ariakit.Hovercard
                     portal
                     gutter={4}
-                    className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
+                    className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded border p-2 shadow-md"
                   >
                     {t('scenarios:trigger_object.description')}
                   </Ariakit.Hovercard>

@@ -121,7 +121,7 @@ export default function Users() {
                   <div className="flex gap-2">
                     {isEditUserAvailable ? (
                       // TODO: inject trigger inside <UpdateUser /> and use style directly on it (so we can remove the container div) */}
-                      <div className="group-hover:text-grey-100 focus-within:text-grey-100 text-transparent">
+                      <div className="group-hover:text-grey-00 focus-within:text-grey-00 text-transparent">
                         <UpdateUser
                           user={cell.row.original}
                           userRoles={userRoles}
@@ -131,7 +131,7 @@ export default function Users() {
                     ) : null}
                     {isDeleteUserAvailable ? (
                       // TODO: inject trigger inside <DeleteUser /> and use style directly on it (so we can remove the container div) */}
-                      <div className="group-hover:text-grey-100 focus-within:text-grey-100 text-transparent">
+                      <div className="group-hover:text-grey-00 focus-within:text-grey-00 text-transparent">
                         <DeleteUser
                           userId={cell.row.original.userId}
                           currentUserId={user.actorIdentity.userId}
@@ -185,7 +185,7 @@ export default function Users() {
                   return (
                     <Table.Row
                       key={row.id}
-                      className="hover:bg-purple-05 group"
+                      className="hover:bg-purple-98 group"
                       row={row}
                     />
                   );

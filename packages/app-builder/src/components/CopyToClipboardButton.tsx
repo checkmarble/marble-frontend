@@ -17,7 +17,7 @@ export const CopyToClipboardButton = forwardRef<
     <button
       ref={ref}
       className={clsx(
-        'border-grey-10 text-grey-100 hover:bg-grey-05 active:bg-grey-10 flex min-h-8 w-fit shrink-0 cursor-pointer select-none items-center gap-3 break-all rounded border px-2 font-normal transition-colors',
+        'border-grey-90 text-grey-00 hover:bg-grey-95 active:bg-grey-90 flex min-h-8 w-fit shrink-0 cursor-pointer select-none items-center gap-3 break-all rounded border px-2 font-normal transition-colors',
         className,
       )}
       {...getCopyToClipboardProps(toCopy)}

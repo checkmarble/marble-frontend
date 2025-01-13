@@ -253,13 +253,13 @@ function VersionSelect({
     <ScenarioIterationMenu
       labelledScenarioIteration={labelledScenarioIteration}
     >
-      <MenuButton className="text-s text-grey-100 border-grey-10 flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-none focus:border-purple-100">
+      <MenuButton className="text-s text-grey-00 border-grey-90 focus:border-purple-65 flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-none">
         <p className="text-s ml-2 flex flex-row gap-1 font-semibold">
-          <span className="text-grey-100 capitalize">
+          <span className="text-grey-00 capitalize">
             {currentFormattedVersion}
           </span>
           {currentFormattedLive ? (
-            <span className="capitalize text-purple-100">
+            <span className="text-purple-65 capitalize">
               {currentFormattedLive}
             </span>
           ) : null}
@@ -267,7 +267,7 @@ function VersionSelect({
         <Icon
           aria-hidden
           icon="arrow-2-down"
-          className="text-grey-100 size-6 shrink-0"
+          className="text-grey-00 size-6 shrink-0"
         />
       </MenuButton>
     </ScenarioIterationMenu>

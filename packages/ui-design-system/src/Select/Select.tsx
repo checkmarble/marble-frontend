@@ -31,7 +31,7 @@ function SelectContent({
     <Portal>
       <Content
         className={clsx(
-          'bg-grey-00 border-grey-10 mt-2 rounded border shadow-md',
+          'bg-grey-100 border-grey-90 mt-2 rounded border shadow-md',
           className,
         )}
         position="popper"
@@ -62,21 +62,21 @@ function SelectViewport({
 }
 
 export const selectTrigger = cva(
-  'text-s text-grey-100 flex min-h-10 min-w-10 items-center justify-between border font-medium outline-none radix-state-open:border-purple-100 radix-state-open:text-purple-100 radix-disabled:border-grey-10 radix-disabled:bg-grey-05 radix-disabled:text-grey-50 radix-placeholder:text-grey-25 radix-placeholder:radix-state-open:text-grey-25',
+  'text-s text-grey-00 flex min-h-10 min-w-10 items-center justify-between border font-medium outline-none radix-state-open:border-purple-65 radix-state-open:text-purple-65 radix-disabled:border-grey-90 radix-disabled:bg-grey-95 radix-disabled:text-grey-50 radix-placeholder:text-grey-80 radix-placeholder:radix-state-open:text-grey-80',
   {
     variants: {
       backgroundColor: {
-        enabled: 'bg-grey-00',
-        disabled: 'bg-grey-02',
+        enabled: 'bg-grey-100',
+        disabled: 'bg-grey-98',
       },
       border: {
         square: 'gap-2 rounded p-2',
         rounded: 'rounded-full p-2',
       },
       borderColor: {
-        'grey-10': 'border-grey-10 focus:border-purple-100',
-        'red-100': 'border-red-100 focus:border-purple-100',
-        'red-25': 'border-red-25 focus:border-purple-100',
+        'greyfigma-90': 'border-grey-90 focus:border-purple-65',
+        'redfigma-47': 'border-red-47 focus:border-purple-65',
+        'redfigma-87': 'border-red-87 focus:border-purple-65',
       },
     },
   },
@@ -92,7 +92,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
       children,
       className,
       border = 'square',
-      borderColor = 'grey-10',
+      borderColor = 'greyfigma-90',
       disabled,
       ...props
     },
@@ -128,7 +128,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
         ref={ref}
         className={clsx(
           'text-s rounded-sm p-2 font-medium outline-none',
-          'radix-highlighted:bg-purple-05 radix-highlighted:text-purple-100',
+          'radix-highlighted:bg-purple-98 radix-highlighted:text-purple-65',
           className,
         )}
         {...props}
@@ -156,7 +156,7 @@ const SelectValue = forwardRef<HTMLDivElement, SelectValueProps>(
 
 const SelectArrow = () => (
   <SelectIcon
-    className="group-radix-state-open:rotate-180 text-grey-100 size-6 shrink-0"
+    className="group-radix-state-open:rotate-180 text-grey-00 size-6 shrink-0"
     asChild
   >
     <Icon icon="arrow-2-down" />

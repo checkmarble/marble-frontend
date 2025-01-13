@@ -16,7 +16,7 @@ export const Score = ({ score }: { score: number }) => {
 export const ScorePanel = ({ score }: { score: number }) => {
   const { t } = useTranslation(decisionsI18n);
   return (
-    <div className="text-grey-00 flex flex-1 flex-col items-center justify-center gap-2 rounded-lg bg-purple-100 p-2">
+    <div className="text-grey-100 bg-purple-65 flex flex-1 flex-col items-center justify-center gap-2 rounded-lg p-2">
       <div>{t('decisions:score')}</div>
       <div className="text-l font-semibold">{score}</div>
     </div>

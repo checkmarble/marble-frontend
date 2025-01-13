@@ -56,7 +56,7 @@ export function RightSidebarProvider({
 
 export function RightSidebar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-grey-00 border-s-grey-10 relative z-10 flex h-full w-10 flex-col gap-1 border-s p-1">
+    <div className="bg-grey-100 border-s-grey-90 relative z-10 flex h-full w-10 flex-col gap-1 border-s p-1">
       {children}
     </div>
   );
@@ -93,8 +93,8 @@ export const RightSidebarTab = React.forwardRef<
           });
         }}
         className={clsx(
-          'hover:bg-purple-10 active:bg-purple-10 flex size-8 items-center justify-center rounded-sm hover:text-purple-100 active:text-purple-100',
-          isExpanded && 'bg-purple-10 text-purple-100',
+          'hover:bg-purple-96 active:bg-purple-96 hover:text-purple-65 active:text-purple-65 flex size-8 items-center justify-center rounded-sm',
+          isExpanded && 'bg-purple-96 text-purple-65',
           className,
         )}
         {...props}
@@ -116,7 +116,7 @@ export function RightSidebarDisclosureContent({
   return (
     <div
       className={clsx(
-        'bg-grey-00 border-s-grey-10 absolute inset-y-0 left-0 w-[460px] shrink-0 border-s transition-all',
+        'bg-grey-100 border-s-grey-90 absolute inset-y-0 left-0 w-[460px] shrink-0 border-s transition-all',
         'scrollbar-gutter-stable flex flex-col overflow-y-scroll p-4 pr-[calc(1rem-var(--scrollbar-width))] lg:p-6 lg:pr-[calc(1.5rem-var(--scrollbar-width))]',
         state.open && 'translate-x-[-460px]',
       )}

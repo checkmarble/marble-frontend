@@ -77,7 +77,7 @@ export const CaseNameEditor = ({
       <div className="flex gap-2">
         <button
           onClick={() => setIsEditing(true)}
-          className="border-grey-10 text-s flex grow items-center overflow-hidden rounded border p-2"
+          className="border-grey-90 text-s flex grow items-center overflow-hidden rounded border p-2"
         >
           {caseNameContent}
         </button>
@@ -127,7 +127,7 @@ function getAstNodeDisplayElement(astNode: StringTemplateAstNode): ReactNode {
     <span className="truncate whitespace-pre-wrap text-nowrap">
       {splittedTemplate.map((el, i) =>
         STRING_TEMPLATE_VARIABLE_REGEXP.test(el) ? (
-          <code key={i} className="text-blue-100">
+          <code key={i} className="text-blue-58">
             {el}
           </code>
         ) : (

@@ -28,7 +28,7 @@ function SignInWithMicrosoftButton({
 
   return (
     <button
-      className="bg-grey-00 hover:bg-grey-05 active:bg-grey-10 relative flex h-10 w-full items-center border border-[#8C8C8C] p-px transition disabled:cursor-wait"
+      className="bg-grey-100 hover:bg-grey-95 active:bg-grey-90 relative flex h-10 w-full items-center border border-[#8C8C8C] p-px transition disabled:cursor-wait"
       onClick={() => {
         void onClick?.();
       }}

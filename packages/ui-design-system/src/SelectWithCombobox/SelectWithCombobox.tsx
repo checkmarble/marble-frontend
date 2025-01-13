@@ -65,7 +65,13 @@ const Select = forwardRef<
   HTMLButtonElement,
   Ariakit.SelectProps & VariantProps<typeof selectTrigger>
 >(function SelectWithComboboxPopoverTrigger(
-  { className, border = 'square', borderColor = 'grey-10', disabled, ...props },
+  {
+    className,
+    border = 'square',
+    borderColor = 'greyfigma-90',
+    disabled,
+    ...props
+  },
   ref,
 ) {
   return (
@@ -112,7 +118,7 @@ const Popover = forwardRef<HTMLDivElement, Ariakit.SelectPopoverProps>(
         fitViewport
         gutter={8}
         className={clsx(
-          'bg-grey-00 border-grey-10 max-h-[min(var(--popover-available-height),_300px)] -translate-y-1 rounded border opacity-0 shadow-md transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
+          'bg-grey-100 border-grey-90 max-h-[min(var(--popover-available-height),_300px)] -translate-y-1 rounded border opacity-0 shadow-md transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
           className,
         )}
         {...props}
@@ -146,7 +152,7 @@ const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
         ref={ref}
         {...props}
         className={clsx(
-          'data-[active-item]:bg-purple-05 group flex flex-row items-center gap-2 rounded p-2',
+          'data-[active-item]:bg-purple-98 group flex flex-row items-center gap-2 rounded p-2',
           props.className,
         )}
         render={<Ariakit.ComboboxItem render={props.render} />}
@@ -154,9 +160,9 @@ const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
         {isMultiple ? (
           <Ariakit.SelectItemCheck
             className={clsx(
-              'bg-grey-00 border-grey-10 flex shrink-0 items-center justify-center overflow-hidden rounded-sm border outline-none',
-              'group-aria-disabled:bg-grey-10 group-aria-disabled:text-grey-100',
-              'group-aria-selected:text-grey-00 group-aria-selected:border-purple-100 group-aria-selected:bg-purple-100',
+              'bg-grey-100 border-grey-90 flex shrink-0 items-center justify-center overflow-hidden rounded-sm border outline-none',
+              'group-aria-disabled:bg-grey-90 group-aria-disabled:text-grey-00',
+              'group-aria-selected:text-grey-100 group-aria-selected:border-purple-65 group-aria-selected:bg-purple-65',
             )}
           >
             <Icon icon="tick" />

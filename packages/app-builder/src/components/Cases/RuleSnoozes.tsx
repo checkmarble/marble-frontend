@@ -39,7 +39,7 @@ export function RuleSnoozes({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-grey-100 text-xs font-medium">
+      <div className="text-grey-00 text-xs font-medium">
         {t('cases:case_detail.pivot_values')}
       </div>
       <div className="grid grid-cols-[repeat(4,_max-content)] items-center gap-2">
@@ -66,9 +66,9 @@ export function RuleSnoozes({
                     className={clsx(
                       'cursor-pointer transition-colors',
                       pivot.type === 'field' &&
-                        'text-grey-25 hover:text-grey-50',
+                        'text-grey-80 hover:text-grey-50',
                       pivot.type === 'link' &&
-                        'text-purple-50 hover:text-purple-100',
+                        'hover:text-purple-65 text-purple-82',
                     )}
                   >
                     <Icon icon="tip" className="size-5" />
@@ -76,20 +76,20 @@ export function RuleSnoozes({
                   <Ariakit.Hovercard
                     portal
                     gutter={16}
-                    className="bg-grey-00 border-grey-10 flex w-fit rounded border p-2 shadow-md"
+                    className="bg-grey-100 border-grey-90 flex w-fit rounded border p-2 shadow-md"
                   >
                     <PivotDetails pivot={pivot} />
                   </Ariakit.Hovercard>
                 </Ariakit.HovercardProvider>
               </Tag>
-              <CopyToClipboardButton toCopy={value} className="bg-grey-00">
+              <CopyToClipboardButton toCopy={value} className="bg-grey-100">
                 <span className="text-s line-clamp-1 max-w-40 font-normal">
                   {value}
                 </span>
               </CopyToClipboardButton>
 
               {snooze ? (
-                <div className="text-s text-grey-00 flex h-8 flex-row items-center justify-center gap-1 rounded bg-[#AAA6CC] p-2 font-semibold">
+                <div className="text-s text-grey-100 flex h-8 flex-row items-center justify-center gap-1 rounded bg-[#AAA6CC] p-2 font-semibold">
                   <Icon icon="snooze" className="size-6" />
                   <span className="flex-1">
                     {t('cases:case_detail.add_rule_snooze.snoozed')}
@@ -109,9 +109,9 @@ export function RuleSnoozes({
                     <Ariakit.Hovercard
                       portal
                       gutter={16}
-                      className="bg-grey-00 border-grey-10 flex w-fit rounded border p-2 shadow-md"
+                      className="bg-grey-100 border-grey-90 flex w-fit rounded border p-2 shadow-md"
                     >
-                      <span className="text-grey-100 text-s">
+                      <span className="text-grey-00 text-s">
                         {t('cases:case_detail.pivot_values.snooze_from_to', {
                           from: formatDateTime(snooze.startsAt, { language }),
                           to: formatDateTime(snooze.endsAt, { language }),

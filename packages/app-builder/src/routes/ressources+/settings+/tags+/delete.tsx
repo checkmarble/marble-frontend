@@ -47,7 +47,7 @@ export function DeleteTag({ tag }: { tag: Tag }) {
     return (
       <Icon
         icon="delete"
-        className="group-hover:text-grey-25 size-6 shrink-0 cursor-not-allowed"
+        className="group-hover:text-grey-80 size-6 shrink-0 cursor-not-allowed"
         aria-label={t('settings:tags.delete_tag')}
       />
     );

@@ -26,7 +26,7 @@ export default function SignUp() {
 
   return (
     <div className="flex w-full flex-col items-center">
-      <p className="text-m text-grey-100 mb-4">
+      <p className="text-m text-grey-00 mb-4">
         <SendEmailVerificationDescription />
       </p>
       <SendEmailVerification />
@@ -37,7 +37,7 @@ export default function SignUp() {
           components={{
             SignIn: (
               <Link
-                className="text-purple-100 underline"
+                className="text-purple-65 underline"
                 to={getRoute('/sign-in')}
               />
             ),

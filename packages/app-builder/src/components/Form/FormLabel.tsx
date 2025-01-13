@@ -21,7 +21,7 @@ export const FormLabel = React.forwardRef<
     <LabelPrimitive.Root
       ref={ref}
       htmlFor={meta.id}
-      className={clsx(!meta.valid && 'text-red-100', className)}
+      className={clsx(!meta.valid && 'text-red-47', className)}
       {...props}
     />
   );

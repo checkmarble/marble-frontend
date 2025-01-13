@@ -141,7 +141,7 @@ export default function TransferDetailPage() {
       </Page.Header>
       <Page.Container>
         <Page.Content className="max-w-3xl">
-          <Collapsible.Container className="bg-grey-00 w-full">
+          <Collapsible.Container className="bg-grey-100 w-full">
             <Collapsible.Title>
               {t('transfercheck:transfer_detail.transfer_status.title')}
             </Collapsible.Title>
@@ -176,7 +176,7 @@ export default function TransferDetailPage() {
             </Collapsible.Content>
           </Collapsible.Container>
 
-          <Collapsible.Container className="bg-grey-00 w-full">
+          <Collapsible.Container className="bg-grey-100 w-full">
             <Collapsible.Title>
               {t('transfercheck:transfer_detail.transfer_data.title')}
             </Collapsible.Title>

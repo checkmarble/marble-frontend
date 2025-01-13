@@ -21,8 +21,8 @@ export const sidebarLink = cva(
   {
     variants: {
       isActive: {
-        true: 'bg-purple-10 text-purple-100',
-        false: 'text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+        true: 'bg-purple-96 text-purple-65',
+        false: 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
       },
     },
     defaultVariants: {
@@ -87,8 +87,8 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
         clsx(
           'text-s flex flex-row items-center gap-2 rounded px-4 py-2 font-medium',
           isActive
-            ? 'bg-purple-10 text-purple-100'
-            : 'text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+            ? 'bg-purple-96 text-purple-65'
+            : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
         )
       }
       to={to}

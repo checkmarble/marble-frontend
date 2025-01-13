@@ -26,9 +26,9 @@ export const TestRunDetails = ({
   const { t } = useTranslation(['common', 'scenarios']);
 
   return (
-    <div className="bg-grey-00 border-grey-10 flex flex-row gap-10 rounded-lg border p-8">
+    <div className="bg-grey-100 border-grey-90 flex flex-row gap-10 rounded-lg border p-8">
       <div className="flex flex-col gap-2">
-        <span className="text-grey-100 font-semibold">
+        <span className="text-grey-00 font-semibold">
           {t('scenarios:testrun.filters.version')}
         </span>
         <TestRunVersions
@@ -38,7 +38,7 @@ export const TestRunDetails = ({
         />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-grey-100 font-semibold">
+        <span className="text-grey-00 font-semibold">
           {t('scenarios:testrun.filters.period')}
         </span>
         <TestRunPeriod
@@ -48,7 +48,7 @@ export const TestRunDetails = ({
         />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-grey-100 font-semibold">
+        <span className="text-grey-00 font-semibold">
           {t('scenarios:testrun.filters.creator')}
         </span>
         <div className="flex flex-row items-center gap-4">
@@ -58,14 +58,14 @@ export const TestRunDetails = ({
             size="m"
           />
           {creator ? (
-            <span className="text-grey-100 text-s">
+            <span className="text-grey-00 text-s">
               {creator.firstName} {creator.lastName}
             </span>
           ) : null}
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-grey-100 font-semibold">
+        <span className="text-grey-00 font-semibold">
           {t('scenarios:testrun.filters.status')}
         </span>
         <div className="flex flex-row items-center gap-1">

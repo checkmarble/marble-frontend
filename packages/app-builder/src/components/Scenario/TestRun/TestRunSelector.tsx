@@ -40,8 +40,8 @@ export const TestRunSelector = ({
       className={clsx(
         'grid cursor-pointer grid-cols-[30%_30%_8%_auto] items-center rounded-lg border py-4 transition-colors',
         {
-          'bg-grey-00 hover:bg-grey-05 border-grey-10': status !== 'up',
-          'bg-purple-05 hover:bg-purple-10 border-purple-100': status === 'up',
+          'bg-grey-100 hover:bg-grey-95 border-grey-90': status !== 'up',
+          'bg-purple-98 hover:bg-purple-96 border-purple-65': status === 'up',
         },
       )}
     >

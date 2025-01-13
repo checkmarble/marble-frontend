@@ -38,7 +38,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
 
   return (
     <div className="relative z-0 flex flex-col gap-4 lg:gap-6">
-      <div className="border-e-grey-10 absolute inset-y-0 start-0 -z-10 w-3 border-e border-dashed" />
+      <div className="border-e-grey-90 absolute inset-y-0 start-0 -z-10 w-3 border-e border-dashed" />
       {events.map((event) => {
         const EventIcon = getEventIcon(event.eventType);
         const Title = getEventTitle(event, t);
@@ -51,7 +51,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
             {EventIcon}
             <span className="flex w-full flex-row items-baseline gap-2">
               <span className="flex-1 text-start">{Title}</span>
-              <span className="text-s text-grey-25 font-normal">
+              <span className="text-s text-grey-80 font-normal">
                 {formatDateRelative(event.createdAt, {
                   language,
                 })}
@@ -88,32 +88,32 @@ export function getEventIcon(eventType: CaseEventType) {
   switch (eventType) {
     case 'status_updated': {
       return (
-        <EventIcon className="bg-blue-10 text-blue-100" icon="manage-search" />
+        <EventIcon className="bg-blue-96 text-blue-58" icon="manage-search" />
       );
     }
     case 'case_created':
       return (
-        <EventIcon className="bg-blue-10 text-blue-100" icon="case-manager" />
+        <EventIcon className="bg-blue-96 text-blue-58" icon="case-manager" />
       );
     case 'decision_added':
-      return <EventIcon className="bg-blue-10 text-blue-100" icon="decision" />;
+      return <EventIcon className="bg-blue-96 text-blue-58" icon="decision" />;
     case 'tags_updated':
     case 'name_updated':
     case 'inbox_changed':
     case 'comment_added':
-      return <EventIcon className="bg-grey-10 text-grey-50" icon="edit" />;
+      return <EventIcon className="bg-grey-90 text-grey-50" icon="edit" />;
     case 'file_added':
       return (
-        <EventIcon className="bg-grey-10 text-grey-50" icon="attachment" />
+        <EventIcon className="bg-grey-90 text-grey-50" icon="attachment" />
       );
     case 'rule_snooze_created':
       return (
-        <EventIcon className="bg-purple-10 text-purple-100" icon="snooze" />
+        <EventIcon className="bg-purple-96 text-purple-65" icon="snooze" />
       );
     case 'decision_reviewed':
       return (
         <EventIcon
-          className="bg-purple-10 text-purple-100"
+          className="bg-purple-96 text-purple-65"
           icon="case-manager"
         />
       );
@@ -131,13 +131,13 @@ export function getEventTitle(
     case 'case_created': {
       if (event.userId) {
         return (
-          <span className="text-s text-grey-100 font-semibold">
+          <span className="text-s text-grey-00 font-semibold">
             {t('cases:case_detail.history.event_title.case_created')}
           </span>
         );
       } else {
         return (
-          <span className="text-s text-grey-100 font-semibold">
+          <span className="text-s text-grey-00 font-semibold">
             {t(
               'cases:case_detail.history.event_title.case_created_automatically',
             )}
@@ -147,7 +147,7 @@ export function getEventTitle(
     }
     case 'comment_added': {
       return (
-        <span className="text-s text-grey-100 font-semibold">
+        <span className="text-s text-grey-00 font-semibold">
           {t('cases:case_detail.history.event_title.comment_added')}
         </span>
       );
@@ -156,7 +156,7 @@ export function getEventTitle(
       //TODO(events): aggregate decision_added events to show the count
       const decisionCount = 1;
       return (
-        <span className="text-s text-grey-100 font-semibold">
+        <span className="text-s text-grey-00 font-semibold">
           {t('cases:case_detail.history.event_title.decision_added', {
             count: decisionCount,
           })}
@@ -165,12 +165,12 @@ export function getEventTitle(
     }
     case 'name_updated': {
       return (
-        <span className="text-s text-grey-100 font-semibold">
+        <span className="text-s text-grey-00 font-semibold">
           <Trans
             t={t}
             i18nKey="cases:case_detail.history.event_title.name_updated"
             components={{
-              Name: <span className="text-s text-grey-100 font-normal" />,
+              Name: <span className="text-s text-grey-00 font-normal" />,
             }}
             values={{
               name: event.newName,
@@ -181,21 +181,21 @@ export function getEventTitle(
     }
     case 'tags_updated': {
       return (
-        <span className="text-s text-grey-100 font-semibold">
+        <span className="text-s text-grey-00 font-semibold">
           {t('cases:case_detail.history.event_title.tags_updated')}
         </span>
       );
     }
     case 'inbox_changed': {
       return (
-        <span className="text-s text-grey-100 font-semibold">
+        <span className="text-s text-grey-00 font-semibold">
           {t('cases:case_detail.history.event_title.inbox_changed')}
         </span>
       );
     }
     case 'status_updated': {
       return (
-        <span className="text-s text-grey-100 font-semibold">
+        <span className="text-s text-grey-00 font-semibold">
           <Trans
             t={t}
             i18nKey="cases:case_detail.history.event_title.status_updated"
@@ -210,12 +210,12 @@ export function getEventTitle(
     }
     case 'file_added': {
       return (
-        <span className="text-s text-grey-100 font-semibold">
+        <span className="text-s text-grey-00 font-semibold">
           <Trans
             t={t}
             i18nKey="cases:case_detail.history.event_title.file_added"
             components={{
-              Name: <span className="text-s text-grey-100 font-normal" />,
+              Name: <span className="text-s text-grey-00 font-normal" />,
             }}
             values={{
               name: event.fileName || 'default file name',
@@ -226,13 +226,13 @@ export function getEventTitle(
     }
     case 'rule_snooze_created':
       return (
-        <span className="text-s text-grey-100 font-semibold">
+        <span className="text-s text-grey-00 font-semibold">
           {t('cases:case_detail.history.event_title.rule_snooze_created')}
         </span>
       );
     case 'decision_reviewed':
       return (
-        <span className="text-s text-grey-100 font-semibold">
+        <span className="text-s text-grey-00 font-semibold">
           <Trans
             t={t}
             i18nKey="cases:case_detail.history.event_title.decision_reviewed"
@@ -266,7 +266,7 @@ function Author({
   const user = getOrgUserById(userId);
 
   return (
-    <div className="text-grey-100 text-s flex items-center gap-1 whitespace-pre font-medium">
+    <div className="text-grey-00 text-s flex items-center gap-1 whitespace-pre font-medium">
       <Trans
         t={t}
         i18nKey={`cases:case_detail.history.event_detail.${type}`}
@@ -278,9 +278,7 @@ function Author({
               lastName={user?.lastName}
             />
           ),
-          User: (
-            <span className="text-s text-grey-100 font-normal capitalize" />
-          ),
+          User: <span className="text-s text-grey-00 font-normal capitalize" />,
         }}
         values={{
           user: getFullName(user) || t('cases:case_detail.unknown_user'),
@@ -297,7 +295,7 @@ function ByWorkflow({
 }) {
   const { t } = useTranslation(casesI18n);
   return (
-    <div className="text-grey-100 text-s font-medium">
+    <div className="text-grey-00 text-s font-medium">
       <Trans t={t} i18nKey={`cases:case_detail.history.event_detail.${type}`} />
     </div>
   );
@@ -348,7 +346,7 @@ function CommentAddedEventDetail({ event }: { event: CommentAddedEvent }) {
     <div className="flex flex-col gap-2">
       <Author userId={event.userId} type="added_by" />
       {event.comment ? (
-        <div className="text-s text-grey-100 whitespace-break-spaces font-normal">
+        <div className="text-s text-grey-00 whitespace-break-spaces font-normal">
           {event.comment}
         </div>
       ) : null}
@@ -366,11 +364,11 @@ function DecisionReviewedEventDetail({
   return (
     <div className="flex flex-col gap-2">
       <Author userId={event.userId} type="reviewed_by" />
-      <div className="text-s text-grey-100 whitespace-break-spaces font-normal">
+      <div className="text-s text-grey-00 whitespace-break-spaces font-normal">
         {event.reviewComment}
       </div>
       <Link
-        className="text-s hover:text-purple-120 focus:text-purple-120 relative font-normal text-purple-100 hover:underline focus:underline"
+        className="text-s hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-normal hover:underline focus:underline"
         to={getRoute('/decisions/:decisionId', {
           decisionId: fromUUID(event.decisionId),
         })}
@@ -389,11 +387,11 @@ function TagsUpdatedEventDetail({ event }: { event: CaseTagsUpdatedEvent }) {
     <div className="flex flex-col gap-2">
       <Author userId={event.userId} type="edited_by" />
       {event.tagIds.length === 0 ? (
-        <p className="text-grey-100 text-s font-normal first-letter:capitalize">
+        <p className="text-grey-00 text-s font-normal first-letter:capitalize">
           {t('cases:case_detail.history.event_detail.case_tags.none')}
         </p>
       ) : (
-        <div className="text-grey-100 text-s inline-flex flex-wrap whitespace-pre font-medium">
+        <div className="text-grey-00 text-s inline-flex flex-wrap whitespace-pre font-medium">
           <Trans
             t={t}
             i18nKey="cases:case_detail.history.event_detail.case_tags.new"
@@ -413,14 +411,14 @@ function RuleSnoozeCreatedDetail({ event }: { event: RuleSnoozeCreatedEvent }) {
     <div className="flex flex-col gap-2">
       <Author userId={event.userId} type="added_by" />
       {event.comment ? (
-        <div className="text-s text-grey-100 whitespace-break-spaces font-normal">
+        <div className="text-s text-grey-00 whitespace-break-spaces font-normal">
           {event.comment}
         </div>
       ) : null}
       <Ariakit.HovercardProvider placement="bottom-start" showTimeout={0}>
         <Ariakit.HovercardAnchor
           tabIndex={-1}
-          className="text-s inline-flex w-fit cursor-pointer items-center gap-1 font-normal text-purple-100"
+          className="text-s text-purple-65 inline-flex w-fit cursor-pointer items-center gap-1 font-normal"
         >
           {t(
             'cases:case_detail.history.event_detail.rule_snooze_created.load_details',
@@ -429,7 +427,7 @@ function RuleSnoozeCreatedDetail({ event }: { event: RuleSnoozeCreatedEvent }) {
         <Ariakit.Hovercard
           unmountOnHide
           portal
-          className="bg-grey-00 border-grey-10 flex w-96 rounded border p-2 shadow-md"
+          className="bg-grey-100 border-grey-90 flex w-96 rounded border p-2 shadow-md"
         >
           <RuleSnoozeDetail ruleSnoozeId={event.ruleSnoozeId} />
         </Ariakit.Hovercard>
@@ -450,18 +448,18 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
 
   if (isError) {
     return (
-      <div className="text-s text-red-100">{t('common:errors.unknown')}</div>
+      <div className="text-s text-red-47">{t('common:errors.unknown')}</div>
     );
   }
 
   return (
     <div className="grid w-full auto-rows-max grid-cols-[max-content_1fr] items-baseline gap-2">
-      <span className="text-grey-100 text-s font-medium first-letter:capitalize">
+      <span className="text-grey-00 text-s font-medium first-letter:capitalize">
         {t(
           'cases:case_detail.history.event_detail.rule_snooze_created.pivot_value',
         )}
       </span>
-      <span className="text-grey-100 text-s">
+      <span className="text-grey-00 text-s">
         {isLoading ? (
           <Spinner className="size-4" />
         ) : (
@@ -472,17 +470,17 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
           </CopyToClipboardButton>
         )}
       </span>
-      <span className="text-grey-100 text-s font-medium first-letter:capitalize">
+      <span className="text-grey-00 text-s font-medium first-letter:capitalize">
         {t(
           'cases:case_detail.history.event_detail.rule_snooze_created.created_from_decision',
         )}
       </span>
-      <span className="text-grey-100 text-s">
+      <span className="text-grey-00 text-s">
         {isLoading ? (
           <Spinner className="size-4" />
         ) : data.ruleSnoozeDetail.createdFromDecisionId ? (
           <Link
-            className="hover:text-purple-120 focus:text-purple-120 relative font-normal text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-normal hover:underline focus:underline"
             to={getRoute('/decisions/:decisionId', {
               decisionId: fromUUID(data.ruleSnoozeDetail.createdFromDecisionId),
             })}
@@ -495,17 +493,17 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
           '-'
         )}
       </span>
-      <span className="text-grey-100 text-s font-medium first-letter:capitalize">
+      <span className="text-grey-00 text-s font-medium first-letter:capitalize">
         {t(
           'cases:case_detail.history.event_detail.rule_snooze_created.created_from_rule',
         )}
       </span>
-      <span className="text-grey-100 text-s">
+      <span className="text-grey-00 text-s">
         {isLoading ? (
           <Spinner className="size-4" />
         ) : (
           <Link
-            className="hover:text-purple-120 focus:text-purple-120 relative font-normal text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-normal hover:underline focus:underline"
             to={getRoute(
               '/scenarios/:scenarioId/i/:iterationId/rules/:ruleId',
               {
@@ -526,12 +524,12 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
           </Link>
         )}
       </span>
-      <span className="text-grey-100 text-s font-medium first-letter:capitalize">
+      <span className="text-grey-00 text-s font-medium first-letter:capitalize">
         {t(
           'cases:case_detail.history.event_detail.rule_snooze_created.validity',
         )}
       </span>
-      <span className="text-grey-100 text-s">
+      <span className="text-grey-00 text-s">
         {t('cases:case_detail.pivot_values.snooze_from_to', {
           from: isLoading
             ? '--/--/----'

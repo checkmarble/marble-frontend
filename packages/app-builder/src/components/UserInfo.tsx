@@ -28,7 +28,7 @@ export function UserInfo({
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <button className="hover:bg-grey-05 active:bg-grey-10 group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
+        <button className="hover:bg-grey-95 active:bg-grey-90 group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
           <div className="inline-flex items-center gap-5">
             <Logo
               logo="logo"
@@ -49,7 +49,7 @@ export function UserInfo({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="bg-grey-00 border-grey-10 animate-slideUpAndFade w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto"
+          className="bg-grey-100 border-grey-90 animate-slideUpAndFade w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto"
           side="bottom"
           align="start"
           sideOffset={4}

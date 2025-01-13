@@ -96,7 +96,7 @@ export function EditOrgDefaultTimezone({
             <FormLabel className="font-semibold first-letter:capitalize">
               {t('settings:scenario_default_timezone.label')}
             </FormLabel>
-            <FormErrorOrDescription descriptionClassName="text-s text-red-100" />
+            <FormErrorOrDescription descriptionClassName="text-s text-red-47" />
           </div>
           <FormSelectWithCombobox.Control
             multiple={false}

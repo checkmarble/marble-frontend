@@ -12,7 +12,7 @@ function PaperContainer({
   return (
     <div
       className={clsx(
-        'border-grey-10 w-full rounded-lg border',
+        'border-grey-90 w-full rounded-lg border',
         'flex flex-col gap-4 p-4 lg:gap-6 lg:p-6',
         className,
       )}
@@ -31,7 +31,7 @@ function PaperTitle({
 >) {
   return (
     <p
-      className={clsx('text-m text-grey-100 font-semibold', className)}
+      className={clsx('text-m text-grey-00 font-semibold', className)}
       {...props}
     />
   );
@@ -49,7 +49,7 @@ const CollapsiblePaperContainer = forwardRef<
   return (
     <Collapsible.Container
       ref={ref}
-      className={clsx('bg-grey-00', className)}
+      className={clsx('bg-grey-100', className)}
       {...props}
     />
   );
@@ -60,7 +60,7 @@ const CollapsiblePaperTitle = forwardRef<
   React.ComponentPropsWithoutRef<typeof Collapsible.Title>
 >(function CollapsiblePaperContainer({ className, children, ...props }, ref) {
   return (
-    <Collapsible.Title ref={ref} className="bg-grey-02" {...props}>
+    <Collapsible.Title ref={ref} className="bg-grey-98" {...props}>
       <div
         className={clsx(
           'flex flex-1 flex-row items-center gap-2 text-start font-bold',

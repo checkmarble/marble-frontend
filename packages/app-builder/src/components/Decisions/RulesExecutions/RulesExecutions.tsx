@@ -29,7 +29,7 @@ export function RuleExecutionCollapsible({
     <CollapsibleV2.Provider>
       <div
         className={clsx(
-          'bg-grey-02 col-span-full grid grid-cols-subgrid gap-2 overflow-hidden rounded-lg p-2',
+          'bg-grey-98 col-span-full grid grid-cols-subgrid gap-2 overflow-hidden rounded-lg p-2',
           className,
         )}
         {...props}
@@ -44,7 +44,7 @@ export function RuleExecutionTitle({
   ruleExecution: RuleExecution;
 }) {
   return (
-    <CollapsibleV2.Title className="bg-grey-02 group col-span-full grid grid-cols-subgrid items-center outline-none">
+    <CollapsibleV2.Title className="bg-grey-98 group col-span-full grid grid-cols-subgrid items-center outline-none">
       <Icon
         icon="smallarrow-up"
         aria-hidden
@@ -76,9 +76,9 @@ export function RuleExecutionDescription({
 }) {
   if (!description) return null;
   return (
-    <div className="bg-purple-05 border-purple-10 flex flex-row gap-2 rounded border p-2">
-      <Icon icon="tip" className="size-5 shrink-0 text-purple-100" />
-      <span className="text-s font-normal text-purple-100">{description}</span>
+    <div className="bg-purple-98 border-purple-96 flex flex-row gap-2 rounded border p-2">
+      <Icon icon="tip" className="text-purple-65 size-5 shrink-0" />
+      <span className="text-s text-purple-65 font-normal">{description}</span>
     </div>
   );
 }

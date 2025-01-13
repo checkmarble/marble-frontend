@@ -4,7 +4,7 @@ import clsx from 'clsx';
  * A ping animation.
  * @param className - Use tex-color-* to customize ping color. Use border to make a "white" circle arround the ping.
  *
- * @example className="border-grey-00 absolute right-0 top-0 h-[10px] w-[10px] border-2 text-red-100"
+ * @example className="border-grey-100 absolute right-0 top-0 h-[10px] w-[10px] border-2 text-red-47"
  */
 export function Ping({ className }: { className?: string }) {
   return (

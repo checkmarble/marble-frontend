@@ -37,7 +37,7 @@ export function DefaultTooltip({
         >
           <div
             className={clsx(
-              'bg-grey-00 max-h-40 overflow-y-auto rounded p-2',
+              'bg-grey-100 max-h-40 overflow-y-auto rounded p-2',
               className,
             )}
           >
@@ -46,7 +46,7 @@ export function DefaultTooltip({
           <TooltipPrimitive.Arrow
             width={11}
             height={5}
-            className="fill-grey-00"
+            className="fill-grey-100"
           />
         </TooltipPrimitive.Content>
       </TooltipPrimitive.Portal>

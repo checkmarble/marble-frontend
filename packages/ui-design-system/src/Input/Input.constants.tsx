@@ -1,1 +1,5 @@
-export const inputBorderColor = ['grey-10', 'red-25', 'red-100'] as const;
+export const inputBorderColor = [
+  'greyfigma-90',
+  'redfigma-87',
+  'redfigma-47',
+] as const;

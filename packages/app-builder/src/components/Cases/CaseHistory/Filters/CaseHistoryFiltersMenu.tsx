@@ -56,7 +56,7 @@ const FiltersMenuItem = forwardRef<
   return (
     <FiltersDropdownMenu.Item {...props} ref={ref}>
       <Icon icon={icon} className="size-5" />
-      <span className="text-s text-grey-100 font-normal first-letter:capitalize">
+      <span className="text-s text-grey-00 font-normal first-letter:capitalize">
         {t(tKey)}
       </span>
     </FiltersDropdownMenu.Item>

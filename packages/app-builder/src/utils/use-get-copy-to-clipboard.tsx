@@ -13,13 +13,13 @@ export function useGetCopyToClipboard() {
       try {
         await navigator.clipboard.writeText(value);
         toast.success(() => (
-          <span className="text-s text-grey-100 font-normal first-letter:capitalize">
+          <span className="text-s text-grey-00 font-normal first-letter:capitalize">
             <Trans
               t={t}
               i18nKey="clipboard.copy"
               components={{
                 Value: (
-                  <span className="text-s text-grey-100 whitespace-pre-wrap break-all font-semibold" />
+                  <span className="text-s text-grey-00 whitespace-pre-wrap break-all font-semibold" />
                 ),
               }}
               values={{

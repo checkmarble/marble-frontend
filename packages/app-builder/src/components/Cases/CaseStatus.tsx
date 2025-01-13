@@ -12,10 +12,10 @@ export const caseStatusVariants = cva(
   {
     variants: {
       color: {
-        red: 'text-red-100 bg-red-10',
-        blue: 'text-blue-100 bg-blue-10',
-        grey: 'text-grey-50 bg-grey-10',
-        green: 'text-green-100 bg-green-10',
+        red: 'text-red-47 bg-red-95',
+        blue: 'text-blue-58 bg-blue-96',
+        grey: 'text-grey-50 bg-grey-90',
+        green: 'text-green-38 bg-green-94',
       },
       size: {
         small: undefined,

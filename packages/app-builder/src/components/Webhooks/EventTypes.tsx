@@ -35,7 +35,7 @@ export function FormSelectEvents({
         {selectedEventTypes.length > 0 ? (
           <EventTypes eventTypes={selectedEventTypes} />
         ) : (
-          <span className="text-grey-25 text-s">
+          <span className="text-grey-80 text-s">
             {t('settings:webhooks.event_types.placeholder')}
           </span>
         )}
@@ -90,7 +90,7 @@ export function EventTypes({
           <EventType key={event}>{event}</EventType>
         ))}
         {eventTypes.length > 3 ? (
-          <div className="text-grey-100 bg-grey-05 flex h-6 items-center rounded-full px-2 text-xs font-normal">
+          <div className="text-grey-00 bg-grey-95 flex h-6 items-center rounded-full px-2 text-xs font-normal">
             {`+${eventTypes.length - 3}`}
           </div>
         ) : null}
@@ -101,8 +101,8 @@ export function EventTypes({
 
 function EventType({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-grey-05 flex h-6 items-center rounded px-2">
-      <span className="text-grey-100 line-clamp-1 text-xs font-normal">
+    <div className="bg-grey-95 flex h-6 items-center rounded px-2">
+      <span className="text-grey-00 line-clamp-1 text-xs font-normal">
         {children}
       </span>
     </div>

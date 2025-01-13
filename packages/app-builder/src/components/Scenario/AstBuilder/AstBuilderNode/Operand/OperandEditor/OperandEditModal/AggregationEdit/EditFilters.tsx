@@ -109,7 +109,7 @@ export function EditFilters({
               {/* Row 1 */}
               <div
                 className={clsx(
-                  'border-grey-10 col-span-5 w-2 border-e',
+                  'border-grey-90 col-span-5 w-2 border-e',
                   isFirstCondition ? 'h-4' : 'h-2',
                 )}
               />
@@ -117,11 +117,11 @@ export function EditFilters({
               {/* Row 2 */}
               <div
                 className={clsx(
-                  'border-grey-10 col-start-1 border-e',
+                  'border-grey-90 col-start-1 border-e',
                   isLastCondition && 'h-5',
                 )}
               />
-              <div className="border-grey-10 col-start-2 h-5 border-b" />
+              <div className="border-grey-90 col-start-2 h-5 border-b" />
               <LogicalOperatorLabel
                 operator={isFirstCondition ? 'where' : 'and'}
                 type="contained"

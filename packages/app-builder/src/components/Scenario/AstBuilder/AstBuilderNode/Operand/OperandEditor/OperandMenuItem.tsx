@@ -27,7 +27,7 @@ function MenuItemContainer({
   return (
     <MenuItem
       className={clsx(
-        'data-[active-item]:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none',
+        'data-[active-item]:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none',
         className,
       )}
       {...props}
@@ -50,7 +50,7 @@ function MenuItemLabel({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={clsx(
-        'text-grey-100 text-s w-full break-all text-start font-normal',
+        'text-grey-00 text-s w-full break-all text-start font-normal',
         className,
       )}
       {...props}
@@ -89,7 +89,7 @@ export function CoercedConstantOption({
     <MenuItemContainer onClick={onClick} leftIcon={dataTypeIcon}>
       <MenuItemLabel>{displayName}</MenuItemLabel>
       {constantDataTypeTKey ? (
-        <span className="text-s shrink-0 font-semibold text-purple-100">
+        <span className="text-s text-purple-65 shrink-0 font-semibold">
           {t(constantDataTypeTKey)}
         </span>
       ) : null}
@@ -132,7 +132,7 @@ export function OperandOption({
       <OperandInfos
         gutter={24}
         shift={-8}
-        className="size-5 shrink-0 text-transparent group-data-[active-item]:text-purple-50 group-data-[active-item]:hover:text-purple-100"
+        className="group-data-[active-item]:hover:text-purple-65 group-data-[active-item]:text-purple-82 size-5 shrink-0 text-transparent"
         astNode={astNode}
         dataType={dataType}
         operandType={operandType}
