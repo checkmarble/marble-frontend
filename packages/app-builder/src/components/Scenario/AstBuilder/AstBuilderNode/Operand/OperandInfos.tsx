@@ -20,7 +20,7 @@ import {
 import {
   useCustomListAccessCustomList,
   useDataAccessorAstNodeField,
-  useGetAstNodeOption,
+  useGetAstNodeOperandProps,
 } from '@app-builder/services/editor/options';
 import * as Ariakit from '@ariakit/react';
 import { Fragment } from 'react/jsx-runtime';
@@ -201,7 +201,7 @@ function DataAccessorDescription({
 }
 
 function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
-  const getAstNodeOption = useGetAstNodeOption();
+  const getAstNodeOperandProps = useGetAstNodeOperandProps();
   const { aggregator, tableName, fieldName, filters } = astNode.namedChildren;
   if (
     !tableName.constant &&
@@ -246,7 +246,7 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
               />
               <OperandLabel
                 interactionMode="viewer"
-                {...getAstNodeOption(value)}
+                {...getAstNodeOperandProps(value)}
               />
             </div>
           </Fragment>

@@ -10,7 +10,7 @@ import {
 } from '@app-builder/services/editor/ast-editor';
 import {
   useDefaultCoerceToConstant,
-  useGetAstNodeOption,
+  useGetAstNodeOperandProps,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
 import { useFormatReturnValue } from '@app-builder/services/editor/return-value';
@@ -39,27 +39,24 @@ export function AstBuilderNode({
 }: AstBuilderNodeProps) {
   if (isMainAstBinaryNode(astNode)) {
     return (
-      <div className="flex w-full flex-col gap-2">
-        <MainAstBinaryOperatorLine
-          treePath={treePath}
-          mainAstNode={astNode}
-          viewOnly={viewOnly}
-          root={root}
-        />
-      </div>
+      // it looks like the previous container was not necessary anymore. It still need to be checked
+      <MainAstBinaryOperatorLine
+        treePath={treePath}
+        mainAstNode={astNode}
+        viewOnly={viewOnly}
+        root={root}
+      />
     );
   }
 
   if (isMainAstUnaryNode(astNode)) {
     return (
-      <div className="flex w-full flex-col gap-2">
-        <MainAstUnaryOperatorLine
-          treePath={treePath}
-          mainAstNode={astNode}
-          viewOnly={viewOnly}
-          root={root}
-        />
-      </div>
+      <MainAstUnaryOperatorLine
+        treePath={treePath}
+        mainAstNode={astNode}
+        viewOnly={viewOnly}
+        root={root}
+      />
     );
   }
 
@@ -85,14 +82,14 @@ export function OperandBuilderNode({
   onSave?: (astNode: AstNode) => void;
 }) {
   const enumValues = useEnumValuesFromNeighbour(treePath);
-  const getAstNodeOption = useGetAstNodeOption();
 
   const options = useOperandOptions(enumValues);
   const coerceToConstant = useDefaultCoerceToConstant();
 
-  const operandProps = React.useMemo(() => {
-    return getAstNodeOption(astNode, { enumValues });
-  }, [astNode, enumValues, getAstNodeOption]);
+  const getAstNodeOperandProps = useGetAstNodeOperandProps();
+  const astNodeOperandProps = React.useMemo(() => {
+    return getAstNodeOperandProps(astNode, { enumValues });
+  }, [astNode, enumValues, getAstNodeOperandProps]);
 
   const evaluation = useEvaluation(treePath);
   const formatReturnValue = useFormatReturnValue();
@@ -113,7 +110,7 @@ export function OperandBuilderNode({
       validationStatus={validationStatus}
       astNodeErrors={evaluation}
       returnValue={returnValue}
-      {...operandProps}
+      {...astNodeOperandProps}
     />
   );
 }

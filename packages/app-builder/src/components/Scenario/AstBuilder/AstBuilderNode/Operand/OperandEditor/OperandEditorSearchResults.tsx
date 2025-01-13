@@ -6,6 +6,7 @@ import { MenuGroup, MenuGroupLabel } from 'ui-design-system';
 
 import {
   useCoerceToConstant,
+  useInitialAstNode,
   useOperandEditorActions,
   useOptions,
   useSearchValue,
@@ -15,6 +16,7 @@ import { CoercedConstantOption, OperandOption } from './OperandMenuItem';
 export function OperandEditorSearchResults() {
   const { t } = useTranslation(scenarioI18n);
   const searchValue = useSearchValue();
+  const initialAstNode = useInitialAstNode();
   const { onOptionClick } = useOperandEditorActions();
 
   const coerceToConstant = useCoerceToConstant();
@@ -33,16 +35,21 @@ export function OperandEditorSearchResults() {
   const options = useOptions();
   const matchOptions = React.useMemo(() => {
     return matchSorter(options, searchValue, {
-      keys: ['displayName'],
-    }).map((option) => ({
-      key: `${option.displayName}-${option.dataType}-${option.operandType}`,
-      ...option,
-      searchValue,
-      onClick: () => {
-        onOptionClick(option.astNode);
-      },
-    }));
-  }, [onOptionClick, options, searchValue]);
+      keys: ['displayName', 'searchShortcut'],
+    }).map(({ createNode, ...option }) => {
+      const astNode = createNode({ searchValue, initialAstNode });
+
+      return {
+        key: `${option.displayName}-${option.dataType}-${option.operandType}`,
+        ...option,
+        astNode,
+        searchValue,
+        onClick: () => {
+          onOptionClick(astNode);
+        },
+      };
+    });
+  }, [onOptionClick, options, searchValue, initialAstNode]);
 
   return (
     <>

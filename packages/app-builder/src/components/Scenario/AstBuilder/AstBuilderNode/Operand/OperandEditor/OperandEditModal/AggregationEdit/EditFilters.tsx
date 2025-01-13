@@ -10,7 +10,7 @@ import {
 } from '@app-builder/models/editable-operators';
 import {
   useDefaultCoerceToConstant,
-  useGetAstNodeOption,
+  useGetAstNodeOperandProps,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
 import {
@@ -201,15 +201,15 @@ function FilterValue({
   // TODO: try to get enum values from the left operand
   const filterOptions = useOperandOptions([]);
   const coerceToConstant = useDefaultCoerceToConstant();
-  const getAstNodeOption = useGetAstNodeOption();
+  const getAstNodeOperandProps = useGetAstNodeOperandProps();
 
-  const operandProps = useMemo(() => {
-    return getAstNodeOption(filterValue);
-  }, [filterValue, getAstNodeOption]);
+  const astNodeOperandProps = useMemo(() => {
+    return getAstNodeOperandProps(filterValue);
+  }, [filterValue, getAstNodeOperandProps]);
 
   return (
     <Operand
-      {...operandProps}
+      {...astNodeOperandProps}
       onSave={onSave}
       options={filterOptions}
       coerceToConstant={coerceToConstant}

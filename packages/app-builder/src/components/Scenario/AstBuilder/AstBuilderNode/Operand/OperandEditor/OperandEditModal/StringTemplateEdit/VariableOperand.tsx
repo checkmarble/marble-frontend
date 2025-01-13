@@ -1,6 +1,6 @@
 import { type AstNode } from '@app-builder/models';
 import {
-  useGetAstNodeOption,
+  useGetAstNodeOperandProps,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
 import {
@@ -36,10 +36,10 @@ export const VariableOperand = ({
     [options],
   );
 
-  const getAstNodeOption = useGetAstNodeOption();
-  const operandProps = useMemo(
-    () => getAstNodeOption(astNode),
-    [astNode, getAstNodeOption],
+  const getAstNodeOperandProps = useGetAstNodeOperandProps();
+  const astNodeOperandProps = useMemo(
+    () => getAstNodeOperandProps(astNode),
+    [astNode, getAstNodeOperandProps],
   );
 
   return (
@@ -48,7 +48,7 @@ export const VariableOperand = ({
       options={leftOptions}
       astNodeErrors={astNodeErrors}
       validationStatus={validationStatus}
-      {...operandProps}
+      {...astNodeOperandProps}
     />
   );
 };

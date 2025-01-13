@@ -8,6 +8,7 @@ export type OperandType =
   | 'Field'
   | 'Function'
   | 'Undefined'
+  | 'Modeling'
   | 'unknown';
 
 export function getOperandTypeIcon(
@@ -22,6 +23,8 @@ export function getOperandTypeIcon(
       return 'function';
     case 'Enum':
       return 'enum';
+    case 'Modeling':
+      return 'modeling';
     default:
       return undefined;
   }
@@ -39,6 +42,8 @@ export function getOperandTypeTKey(
       return 'edit_operand.operator_type.function';
     case 'Enum':
       return 'edit_operand.operator_type.enum';
+    case 'Modeling':
+      return 'edit_operand.operator_type.modeling';
     default:
       return undefined;
   }

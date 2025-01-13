@@ -91,7 +91,7 @@ export default function Builder() {
               <SidebarLink
                 labelTKey="navigation:transfercheck.transfers"
                 to={getRoute('/transfercheck/transfers/')}
-                Icon={(props) => <Icon icon="arrows-right-left" {...props} />}
+                Icon={(props) => <Icon icon="transfercheck" {...props} />}
               />
             </li>
             <li>
