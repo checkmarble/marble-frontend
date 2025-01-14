@@ -1,6 +1,7 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { CreateList } from '@app-builder/routes/ressources+/lists+/create';
+import { isCreateListAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -19,7 +20,7 @@ import { Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { user, customListsRepository } = await authService.isAuthenticated(
     request,
     {
@@ -30,7 +31,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({
     customLists,
-    isCreateListAvailable: featureAccessService.isCreateListAvailable(user),
+    isCreateListAvailable: isCreateListAvailable(user),
   });
 }
 

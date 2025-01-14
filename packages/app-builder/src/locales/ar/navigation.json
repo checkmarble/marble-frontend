@@ -28,5 +28,6 @@
   "expand": "يوسع",
   "transfercheck.alerts": "التنبيهات",
   "transfercheck.alerts.received": "التنبيهات المستلمة",
-  "transfercheck.alerts.sent": "التنبيهات المرسلة"
+  "transfercheck.alerts.sent": "التنبيهات المرسلة",
+  "analytics.nudge": "تحليل قراراتك"
 }

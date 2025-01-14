@@ -53,5 +53,6 @@
   "toast.success.create_workflow": " تم إعداد سير العمل بنجاح.",
   "toast.success.delete_workflow": "تم حذف سير العمل بنجاح.",
   "detail_panel.add_to_case_if_possible.case_name.label": "اسم الحالة إذا لم يتم العثور على حالة مطابقة",
-  "detail_panel.create_case.case_name.label": "اسم الحالة"
+  "detail_panel.create_case.case_name.label": "اسم الحالة",
+  "nudge": "اسمح لـ Marble بالتعامل مع المهام المتكررة من خلال سير العمل حتى تتمكن من التركيز على ما يهم حقًا"
 }

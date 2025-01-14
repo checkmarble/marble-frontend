@@ -1,38 +1,35 @@
 import { type LicenseApi } from '@app-builder/infra/license-api';
 import {
-  adaptLicenseValidation,
-  type LicenseValidation,
+  adaptLicenseEntitlements,
+  type LicenseEntitlements,
 } from '@app-builder/models/license';
 
 export interface LicenseRepository {
-  validateLicenseKey(licenseKey: string): Promise<LicenseValidation>;
+  getEntitlements(organizationId: string): Promise<LicenseEntitlements>;
+  isSsoEnabled(): Promise<boolean>;
 }
 
-export function getLicenseRepository(
-  licenseAPIClient: LicenseApi,
-  devEnvironment: boolean,
-): LicenseRepository {
-  return {
-    validateLicenseKey: async (licenseKey: string) => {
-      if (devEnvironment) {
-        return Promise.resolve({
-          code: 'VALID',
-          entitlements: {
-            sso: true,
-            workflows: true,
-            analytics: true,
-            dataEnrichment: true,
-            userRoles: true,
-            // In dev environment (like docker-compose), webhooks are disabled since we do not have Convoy dedicated for dev
-            webhooks: false,
-            ruleSnoozes: true,
-          },
-        });
+export const makeGetLicenseRepository = () => {
+  return (client: LicenseApi): LicenseRepository => ({
+    getEntitlements: async (organizationId: string) => {
+      if (import.meta.env.PROD) {
+        const { feature_access } = await client.getEntitlements(organizationId);
+        if (!import.meta.env.PROD) {
+          feature_access.webhooks = 'restricted';
+          feature_access.analytics = 'restricted';
+        }
+        return adaptLicenseEntitlements(feature_access);
       }
-      const licenseValidationDto =
-        await licenseAPIClient.validateLicense(licenseKey);
-
-      return adaptLicenseValidation(licenseValidationDto);
+      return Promise.resolve({
+        sanctions: 'allowed',
+        ruleSnoozes: 'test',
+        userRoles: 'allowed',
+        webhooks: 'restricted',
+        analytics: 'restricted',
+        workflows: 'allowed',
+        testRun: 'allowed',
+      });
     },
-  };
-}
+    isSsoEnabled: async () => (await client.isSsoEnabled()).is_sso_enabled,
+  });
+};

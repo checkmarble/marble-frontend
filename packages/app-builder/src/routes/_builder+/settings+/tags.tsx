@@ -2,6 +2,12 @@ import { CollapsiblePaper, Page } from '@app-builder/components';
 import { CreateTag } from '@app-builder/routes/ressources+/settings+/tags+/create';
 import { DeleteTag } from '@app-builder/routes/ressources+/settings+/tags+/delete';
 import { UpdateTag } from '@app-builder/routes/ressources+/settings+/tags+/update';
+import {
+  isCreateTagAvailable,
+  isDeleteTagAvailable,
+  isEditTagAvailable,
+  isReadTagAvailable,
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -13,21 +19,20 @@ import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { organization, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  if (!featureAccessService.isReadTagAvailable(user)) {
-    return redirect(getRoute('/'));
-  }
+
+  if (!isReadTagAvailable(user)) return redirect(getRoute('/'));
 
   const tags = await organization.listTags({ withCaseCount: true });
 
   return json({
     tags,
-    isCreateTagAvailable: featureAccessService.isCreateTagAvailable(user),
-    isEditTagAvailable: featureAccessService.isEditTagAvailable(user),
-    isDeleteTagAvailable: featureAccessService.isDeleteTagAvailable(user),
+    isCreateTagAvailable: isCreateTagAvailable(user),
+    isEditTagAvailable: isEditTagAvailable(user),
+    isDeleteTagAvailable: isDeleteTagAvailable(user),
   });
 }
 

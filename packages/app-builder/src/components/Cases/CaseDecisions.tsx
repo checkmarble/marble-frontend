@@ -11,6 +11,7 @@ import {
   type RuleExecution,
 } from '@app-builder/models/decision';
 import { type OperatorFunction } from '@app-builder/models/editable-operators';
+import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type RuleSnoozeWithRuleId } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
@@ -64,19 +65,18 @@ interface DecisionsDetail {
 
 export function CaseDecisions({
   decisions,
+  featureAccess,
+  entitlements,
   caseDecisionsPromise,
 }: {
   decisions: Decision[];
+  featureAccess: {
+    isReadSnoozeAvailable: boolean;
+    isCreateSnoozeAvailable: boolean;
+  };
+  entitlements: LicenseEntitlements;
   caseDecisionsPromise: Promise<
-    [
-      TableModel[],
-      CustomList[],
-      DecisionsDetail[],
-      {
-        isReadSnoozeAvailable: boolean;
-        isCreateSnoozeAvailable: boolean;
-      },
-    ]
+    [TableModel[], CustomList[], DecisionsDetail[]]
   >;
 }) {
   const { t } = useTranslation(casesI18n);
@@ -151,12 +151,7 @@ export function CaseDecisions({
               <CollapsibleV2.Content className="col-span-full">
                 <React.Suspense fallback={<DecisionDetailSkeleton />}>
                   <Await resolve={caseDecisionsPromise}>
-                    {([
-                      dataModel,
-                      customLists,
-                      decisionsDetail,
-                      featureAccess,
-                    ]) => {
+                    {([dataModel, customLists, decisionsDetail]) => {
                       return (
                         <DecisionDetail
                           key={row.id}
@@ -164,6 +159,7 @@ export function CaseDecisions({
                           decisionsDetail={decisionsDetail}
                           dataModel={dataModel}
                           customLists={customLists}
+                          entitlements={entitlements}
                           featureAccess={featureAccess}
                         />
                       );
@@ -273,12 +269,14 @@ function DecisionDetail({
   decisionsDetail,
   dataModel,
   customLists,
+  entitlements,
   featureAccess,
 }: {
   decision: Decision;
   decisionsDetail: DecisionsDetail[];
   dataModel: TableModel[];
   customLists: CustomList[];
+  entitlements: LicenseEntitlements;
   featureAccess: {
     isReadSnoozeAvailable: boolean;
     isCreateSnoozeAvailable: boolean;
@@ -365,11 +363,11 @@ function DecisionDetail({
                     }}
                   />
 
-                  {featureAccess.isReadSnoozeAvailable &&
-                  pivotValues.length > 0 ? (
+                  {pivotValues.length > 0 ? (
                     <RuleSnoozes
                       ruleSnoozes={ruleSnoozes}
                       pivotValues={pivotValues}
+                      entitlements={entitlements}
                       isCreateSnoozeAvailable={
                         featureAccess.isCreateSnoozeAvailable
                       }

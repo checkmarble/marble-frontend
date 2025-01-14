@@ -7,6 +7,11 @@ import {
 import { type ApiKey, type CreatedApiKey } from '@app-builder/models/api-keys';
 import { CreateApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/create';
 import { DeleteApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/delete';
+import {
+  isCreateApiKeyAvailable,
+  isDeleteApiKeyAvailable,
+  isReadApiKeyAvailable,
+} from '@app-builder/services/feature-access';
 import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -18,14 +23,11 @@ import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, authSessionService, featureAccessService } =
-    serverServices;
+  const { authService, authSessionService } = serverServices;
   const { apiKey, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  if (!featureAccessService.isReadApiKeyAvailable(user)) {
-    return redirect(getRoute('/'));
-  }
+  if (!isReadApiKeyAvailable(user)) return redirect(getRoute('/'));
   const apiKeys = await apiKey.listApiKeys();
 
   const authSession = await authSessionService.getSession(request);
@@ -42,10 +44,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     {
       apiKeys,
       createdApiKey,
-      isCreateApiKeyAvailable:
-        featureAccessService.isCreateApiKeyAvailable(user),
-      isDeleteApiKeyAvailable:
-        featureAccessService.isDeleteApiKeyAvailable(user),
+      isCreateApiKeyAvailable: isCreateApiKeyAvailable(user),
+      isDeleteApiKeyAvailable: isDeleteApiKeyAvailable(user),
     },
     {
       headers,

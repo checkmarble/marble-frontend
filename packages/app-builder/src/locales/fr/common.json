@@ -58,5 +58,9 @@
   "validation_error_other": "{{count}} erreurs de validation",
   "from_to": "Du <Date>{{start_date}}</Date> au <Date>{{end_date}}</Date>",
   "live": "En direct",
-  "errors.data.duplicate_test_run": "Un test est déjà actif pour ce scénario"
+  "errors.data.duplicate_test_run": "Un test est déjà actif pour ce scénario",
+  "check_on_docs": "En savoir plus sur notre documentation",
+  "github_banner": "Aimez-vous l'application Marble ? Dites le nous en nous attribuant une étoile sur",
+  "premium": "Fonctionnalité Premium",
+  "upgrade": "Mettre à niveau maintenant"
 }

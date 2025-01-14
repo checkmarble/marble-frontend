@@ -28,5 +28,6 @@
   "transfercheck.alerts": "Alertes",
   "transfercheck.alerts.received": "Alertes reçues",
   "transfercheck.alerts.sent": "Alertes envoyées",
-  "transfercheck.transfers": "Transferts"
+  "transfercheck.transfers": "Transferts",
+  "analytics.nudge": "Analysez vos décisions à travers un tableau de bord graphique"
 }

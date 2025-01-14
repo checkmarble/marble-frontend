@@ -17,6 +17,10 @@ import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-status';
 import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
+import {
+  isCreateSnoozeAvailable,
+  isReadSnoozeAvailable,
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -44,9 +48,10 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const {
     user,
+    entitlements,
     cases,
     inbox,
     dataModelRepository,
@@ -66,17 +71,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const dataModelPromise = dataModelRepository.getDataModel();
     const customListsPromise = customListsRepository.listCustomLists();
 
-    const featureAccessPromise = Promise.all([
-      featureAccessService.isReadSnoozeAvailable({
-        permissions: user.permissions,
-      }),
-      featureAccessService.isCreateSnoozeAvailable({
-        permissions: user.permissions,
-      }),
-    ]).then(([isReadSnoozeAvailable, isCreateSnoozeAvailable]) => ({
-      isReadSnoozeAvailable,
-      isCreateSnoozeAvailable,
-    }));
+    const featureAccess = {
+      isReadSnoozeAvailable: isReadSnoozeAvailable(user, entitlements),
+      isCreateSnoozeAvailable: isCreateSnoozeAvailable(user, entitlements),
+    };
 
     const decisionsDetailPromise = Promise.all(
       caseDetail.decisions.map(async ({ id }) => {
@@ -115,11 +113,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       caseDetail,
       inbox: currentInbox,
       user,
+      entitlements,
+      featureAccess,
       caseDecisionsPromise: Promise.all([
         dataModelPromise,
         customListsPromise,
         decisionsDetailPromise,
-        featureAccessPromise,
       ]),
     });
   } catch (error) {

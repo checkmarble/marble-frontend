@@ -3,6 +3,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
+import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -31,16 +32,13 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { apiClient, user, dataModelRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
-  const isIngestDataAvailable =
-    featureAccessService.isIngestDataAvailable(user);
-  if (!isIngestDataAvailable) {
-    return redirect(getRoute('/data'));
-  }
+
+  if (!isIngestDataAvailable(user)) redirect(getRoute('/data'));
 
   const objectType = params['objectType'];
   if (!objectType) {

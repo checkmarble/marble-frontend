@@ -367,5 +367,6 @@
   "edit_string_template.title": "Modèle de texte",
   "edit_string_template.variables.label": "Variables",
   "edit_string_template.description": "Créer un texte avec des valeurs de champs (<DocLink>en savoir plus</DocLink>)",
-  "edit_operand.data_type.string.field_placeholder": "Sélectionnez un champ texte..."
+  "edit_operand.data_type.string.field_placeholder": "Sélectionnez un champ texte...",
+  "testrun.nudge": "Comparez une version en direct avec une nouvelle ou une ancienne sans compromettre les données en direct"
 }
