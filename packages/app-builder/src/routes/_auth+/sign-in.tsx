@@ -17,6 +17,7 @@ import {
   useLoaderData,
   useSearchParams,
 } from '@remix-run/react';
+import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 
@@ -30,10 +31,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
     successRedirect: getRoute('/app-router'),
   });
   const session = await authSessionService.getSession(request);
-  const error = session.get('authError');
+  const [backendError, isSsoEnabled] = await tryit(
+    licenseService.isSsoEnabled,
+  )();
+
   return json({
-    authError: error?.message,
-    isSsoEnabled: await licenseService.isSsoEnabled(),
+    authError: backendError
+      ? 'BackendUnavailable'
+      : session.get('authError')?.message,
+    isSsoEnabled,
   });
 }
 
