@@ -5,7 +5,7 @@ import {
 } from '@ariakit/react/hovercard';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { CtaClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type NudgeProps = {
@@ -59,9 +59,18 @@ export const Nudge = ({
             </a>
           ) : null}
         </div>
-        <Button variant="primary" className="mt-4">
+        <a
+          className={CtaClassName({
+            variant: 'primary',
+            color: 'purple',
+            className: 'mt-4',
+          })}
+          href="https://checkmarble.com/upgrade"
+          target="_blank"
+          rel="noreferrer"
+        >
           {t('common:upgrade')}
-        </Button>
+        </a>
       </Hovercard>
     </HovercardProvider>
   );

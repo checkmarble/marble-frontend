@@ -1,5 +1,5 @@
 {
-  "nudge": "Automate your work and save time through workflows",
+  "nudge": "Let Marble handle repetitive tasks through workflows so you can focus on what truly matters",
   "trigger": "trigger",
   "trigger_node.decision_created.title": "Decision created",
   "trigger_node.decision_created.entity": "decision",

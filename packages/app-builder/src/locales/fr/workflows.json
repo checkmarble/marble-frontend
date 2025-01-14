@@ -53,5 +53,6 @@
   "trigger_node.decision_created.entity": "décision",
   "trigger_node.decision_created.title": "Décision créée",
   "detail_panel.add_to_case_if_possible.case_name.label": "Nom de l'investigation si aucune investigation correspondante n'est trouvée",
-  "detail_panel.create_case.case_name.label": "Nom de l'investigation"
+  "detail_panel.create_case.case_name.label": "Nom de l'investigation",
+  "nudge": "Laissez Marble gérer les tâches répétitives via les workflow afin que vous puissiez vous concentrer sur ce qui compte vraiment"
 }

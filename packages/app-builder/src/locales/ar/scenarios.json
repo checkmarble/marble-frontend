@@ -367,5 +367,6 @@
   "edit_string_template.title": "قالب السلسلة",
   "edit_string_template.variables.label": "المتغيرات",
   "edit_string_template.description": "قم بإنشاء نص بقيم الحقول (<DocLink>معرفة المزيد</DocLink>)",
-  "edit_operand.data_type.string.field_placeholder": "حدد حقل سلسلة..."
+  "edit_operand.data_type.string.field_placeholder": "حدد حقل سلسلة...",
+  "testrun.nudge": "قارن الإصدار المباشر بإصدار جديد أو أقدم دون المساس بالبيانات المباشرة"
 }

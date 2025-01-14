@@ -58,5 +58,9 @@
   "show": "يعرض",
   "from_to": "من <Date>{{start_date}}</Date> إلى <Date>{{end_date}}</Date>",
   "live": "يعيش",
-  "errors.data.duplicate_test_run": "التشغيل التجريبي نشط بالفعل لهذا السيناريو"
+  "errors.data.duplicate_test_run": "التشغيل التجريبي نشط بالفعل لهذا السيناريو",
+  "check_on_docs": "تعرف على المزيد حول وثائقنا",
+  "github_banner": "هل أعجبك تطبيق ماربل؟ \nادعم مجهود المصدر المفتوح من خلال إعطائنا نجمة",
+  "premium": "ميزة متميزة",
+  "upgrade": "قم بالترقية الآن"
 }
