@@ -20,6 +20,10 @@ export const GithubBanner = () => {
             className="underline"
             target="_blank"
             rel="noreferrer"
+            onClick={() => {
+              localStorage.setItem('show-github-banner', 'false');
+              setVisibility('false');
+            }}
           >
             Github
           </a>
