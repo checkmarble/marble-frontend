@@ -56,7 +56,7 @@ export const StringTemplateEditForm = ({
           <div className="ml-8 grid grid-cols-[150px_1fr] gap-x-4 gap-y-2">
             {variableNames.map((name) => (
               <Fragment key={name}>
-                <div className="text-s bg-grey-02 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
+                <div className="text-s bg-grey-98 text-purple-65 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold">
                   <span className="max-w-[140px] truncate" title={name}>
                     {name}
                   </span>

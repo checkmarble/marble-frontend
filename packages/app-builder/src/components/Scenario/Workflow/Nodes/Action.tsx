@@ -11,7 +11,7 @@ export function Action({ id, data, selected }: NodeProps<ActionData>) {
   return (
     <NodeContainer id={id} selected={selected}>
       <NodeTitle data={data} />
-      <Separator className="bg-grey-10" />
+      <Separator className="bg-grey-90" />
       <ActionContent data={data} />
     </NodeContainer>
   );

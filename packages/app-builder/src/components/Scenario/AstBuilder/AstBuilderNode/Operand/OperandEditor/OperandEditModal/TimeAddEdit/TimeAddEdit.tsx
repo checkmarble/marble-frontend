@@ -203,7 +203,9 @@ export function TimeAddEdit({
                 })
               }
               borderColor={
-                value.errors.duration.length > 0 ? 'red-100' : 'grey-10'
+                value.errors.duration.length > 0
+                  ? 'redfigma-47'
+                  : 'greyfigma-90'
               }
               min="0"
               placeholder="0"

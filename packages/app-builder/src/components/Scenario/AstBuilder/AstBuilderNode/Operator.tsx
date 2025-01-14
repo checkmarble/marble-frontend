@@ -12,14 +12,14 @@ import { Select, type SelectTriggerProps } from 'ui-design-system';
 export const operatorContainerClassnames = cva(
   [
     'flex h-10 min-w-[40px] items-center justify-between outline-none gap-2 rounded px-2 border',
-    'bg-grey-00 disabled:border-grey-02 disabled:bg-grey-02',
-    'radix-state-open:border-purple-100  radix-state-open:bg-purple-05',
+    'bg-grey-100 disabled:border-grey-98 disabled:bg-grey-98',
+    'radix-state-open:border-purple-65  radix-state-open:bg-purple-98',
   ],
   {
     variants: {
       validationStatus: {
-        valid: 'border-grey-10 focus:border-purple-100',
-        error: 'border-red-100 focus:border-purple-100',
+        valid: 'border-grey-90 focus:border-purple-65',
+        error: 'border-red-47 focus:border-purple-65',
       },
     },
   },
@@ -40,7 +40,7 @@ const OperatorLabel = forwardRef<HTMLButtonElement, OperatorLabelProps>(
         className={operatorContainerClassnames({ validationStatus, className })}
         {...props}
       >
-        <span className="text-s text-grey-100 w-full text-center font-medium">
+        <span className="text-s text-grey-00 w-full text-center font-medium">
           <Value placeholder="..." />
         </span>
       </Trigger>
@@ -93,7 +93,7 @@ export function Operator<T extends OperatorFunction>({
                 value={operator}
               >
                 <Select.ItemText>
-                  <span className="text-s text-grey-100 font-semibold">
+                  <span className="text-s text-grey-00 font-semibold">
                     {getOperatorName(t, operator)}
                   </span>
                 </Select.ItemText>

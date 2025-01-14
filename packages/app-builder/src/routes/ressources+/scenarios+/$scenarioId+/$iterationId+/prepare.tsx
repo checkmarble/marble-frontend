@@ -206,7 +206,7 @@ function PrepareScenarioVersionContent({
               >
                 <Icon
                   icon="tip"
-                  className="size-6 text-purple-50 hover:text-purple-100"
+                  className="hover:text-purple-65 text-purple-82 size-6"
                 />
               </Tooltip.Default>
             </FormField>

@@ -41,7 +41,7 @@ export default function Cases() {
         {t('navigation:case_manager')}
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
-        <div className="border-e-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">
+        <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">
           <div className="flex flex-row items-center gap-2">
             <Icon icon="inbox" className="size-5" />
             <p className="font-bold">{t('cases:case.inboxes')}</p>
@@ -56,8 +56,8 @@ export default function Cases() {
                         clsx(
                           'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium',
                           isActive
-                            ? 'bg-purple-10 text-purple-100'
-                            : 'text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                            ? 'bg-purple-96 text-purple-65'
+                            : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
                         )
                       }
                       to={getRoute('/cases/inboxes/:inboxId', {

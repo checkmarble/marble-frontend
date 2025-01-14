@@ -84,7 +84,7 @@ export default function WebhookDetail() {
               {webhook.eventTypes.length > 0 ? (
                 <EventTypes eventTypes={webhook.eventTypes} />
               ) : (
-                <span className="text-grey-25 text-s">
+                <span className="text-grey-80 text-s">
                   {t('settings:webhooks.event_types.placeholder')}
                 </span>
               )}
@@ -131,7 +131,7 @@ const WebhookValue = ({ children }: { children: React.ReactNode }) => {
   if (children === null || children === undefined) {
     return <span className="text-s text-grey-50">-</span>;
   }
-  return <span className="text-s text-grey-100">{children}</span>;
+  return <span className="text-s text-grey-00">{children}</span>;
 };
 
 const columnHelper = createColumnHelper<WebhookSecret>();

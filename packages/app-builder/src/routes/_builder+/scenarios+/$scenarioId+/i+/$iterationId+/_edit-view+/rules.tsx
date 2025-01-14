@@ -101,7 +101,7 @@ export default function Rules() {
             <span className="flex items-center gap-2">
               <span className="flex w-2 items-center justify-center">
                 {hasErrors ? (
-                  <Ping className="relative box-content size-[6px] border border-transparent text-red-100" />
+                  <Ping className="text-red-47 relative box-content size-[6px] border border-transparent" />
                 ) : null}
               </span>
               <Highlight
@@ -145,7 +145,7 @@ export default function Rules() {
           if (!scoreModifier) return '';
           return (
             <span
-              className={scoreModifier < 0 ? 'text-green-100' : 'text-red-100'}
+              className={scoreModifier < 0 ? 'text-green-38' : 'text-red-47'}
             >
               {formatNumber(scoreModifier, {
                 language,
@@ -245,7 +245,7 @@ export default function Rules() {
         <RulesFiltersBar />
       </RulesFiltersProvider>
 
-      <Table.Container {...getContainerProps()} className="bg-grey-00">
+      <Table.Container {...getContainerProps()} className="bg-grey-100">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
           {hasRules ? (

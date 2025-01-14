@@ -13,10 +13,10 @@ export const TestRunStatus = ({ status }: { status: TestRStatus }) => {
         border="square"
         size="big"
         color="purple"
-        className="gap-2 bg-purple-100"
+        className="bg-purple-65 gap-2"
       >
-        <Spinner className="text-grey-00 size-3" />
-        <span className="text-s text-grey-00 font-semibold">
+        <Spinner className="text-grey-100 size-3" />
+        <span className="text-s text-grey-100 font-semibold">
           {t('scenarios:testrun.status.up')}
         </span>
       </Tag>

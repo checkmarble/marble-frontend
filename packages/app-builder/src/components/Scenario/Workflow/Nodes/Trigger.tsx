@@ -10,7 +10,7 @@ export function Trigger({ id, selected, data }: NodeProps<TriggerData>) {
   return (
     <TriggerNodeContainer id={id} selected={selected}>
       <NodeTitle data={data} />
-      <Separator className="bg-grey-10" />
+      <Separator className="bg-grey-90" />
       <TriggerContent data={data} />
     </TriggerNodeContainer>
   );

@@ -32,10 +32,10 @@ function SignInWithGoogleButton({
       onClick={onClick}
       disabled={loading}
     >
-      <div className="bg-grey-00 flex h-full w-10 shrink-0 items-center justify-center rounded-s-[3px]">
+      <div className="bg-grey-100 flex h-full w-10 shrink-0 items-center justify-center rounded-s-[3px]">
         <Logo logo="google-logo" className="size-6" />
       </div>
-      <span className="text-s text-grey-00 w-full whitespace-nowrap text-center align-middle font-medium">
+      <span className="text-s text-grey-100 w-full whitespace-nowrap text-center align-middle font-medium">
         {t('auth:sign_in.google')}
       </span>
       <span className="absolute end-0 mx-2 size-4">

@@ -15,7 +15,7 @@ export const FormTextArea = React.forwardRef<
   return (
     <TextArea
       ref={ref}
-      borderColor={meta.valid ? 'grey-10' : 'red-100'}
+      borderColor={meta.valid ? 'greyfigma-90' : 'redfigma-47'}
       {...props}
       {...getTextareaProps(meta, {
         ariaDescribedBy: description ? meta.descriptionId : undefined,

@@ -66,7 +66,7 @@ export function RootAnd({
   return (
     <>
       <div className="text-s grid grid-cols-[8px_16px_max-content_1fr_max-content]">
-        <div className="text-s bg-grey-02 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold text-purple-100">
+        <div className="text-s bg-grey-98 text-purple-65 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold">
           {triggerObjectTable.name}
         </div>
         {andAstNodeChildren.map(({ child, key, treePath }, childIndex) => {
@@ -121,7 +121,7 @@ function AndOperand({
       {/* Row 1 */}
       <div
         className={clsx(
-          'border-grey-10 col-span-5 w-2 border-e',
+          'border-grey-90 col-span-5 w-2 border-e',
           isFirstCondition ? 'h-4' : 'h-2',
         )}
       />
@@ -129,11 +129,11 @@ function AndOperand({
       {/* Row 2 */}
       <div
         className={clsx(
-          'border-grey-10 col-start-1 border-e',
+          'border-grey-90 col-start-1 border-e',
           isLastCondition && 'h-5',
         )}
       />
-      <div className="border-grey-10 col-start-2 h-5 border-b" />
+      <div className="border-grey-90 col-start-2 h-5 border-b" />
       <LogicalOperatorLabel
         operator={isFirstCondition ? 'where' : 'and'}
         className="col-start-3"

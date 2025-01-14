@@ -66,7 +66,7 @@ export default function Webhooks() {
           const eventTypes = getValue();
           if (eventTypes.length === 0) {
             return (
-              <span className="text-grey-25 text-s">
+              <span className="text-grey-80 text-s">
                 {t('settings:webhooks.event_types.placeholder')}
               </span>
             );

@@ -122,7 +122,7 @@ const CreateApiKeyContent = () => {
         {...getFormProps(form)}
       >
         <ModalV2.Title>{t('settings:api_keys.new_api_key')}</ModalV2.Title>
-        <div className="bg-grey-00 flex flex-col gap-6 p-6">
+        <div className="bg-grey-100 flex flex-col gap-6 p-6">
           <AuthenticityTokenInput />
           <FormField
             name={fields.description.name}

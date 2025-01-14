@@ -83,7 +83,7 @@ export function EditCaseStatus({
   return (
     <DropdownMenu.Root open={dropdownOpen} onOpenChange={setDropdownOpen}>
       <div className="flex flex-row items-center gap-4">
-        <span className="text-s text-grey-100 font-medium capitalize">
+        <span className="text-s text-grey-00 font-medium capitalize">
           {t('cases:case.status')}
         </span>
         <DropdownMenu.Trigger
@@ -105,7 +105,7 @@ export function EditCaseStatus({
         </DropdownMenu.Trigger>
       </div>
       <DropdownMenu.Content
-        className="bg-grey-00 border-grey-10 z-50 rounded border p-2 shadow-md will-change-[transform,opacity]"
+        className="bg-grey-100 border-grey-90 z-50 rounded border p-2 shadow-md will-change-[transform,opacity]"
         side="bottom"
         align="end"
         sideOffset={8}
@@ -126,7 +126,7 @@ export function EditCaseStatus({
             >
               <Modal.Trigger asChild>
                 <DropdownMenu.Item
-                  className="radix-highlighted:bg-purple-05 flex flex-row items-center gap-2 rounded p-2 align-baseline outline-none transition-colors"
+                  className="radix-highlighted:bg-purple-98 flex flex-row items-center gap-2 rounded p-2 align-baseline outline-none transition-colors"
                   onSelect={(event) => {
                     handleDialogItemSelect();
                     event.preventDefault();
@@ -203,7 +203,7 @@ function ModalContent({
           {...getInputProps(fields.nextStatus, { type: 'hidden' })}
           key={fields.nextStatus.key}
         />
-        <div className="text-grey-100 text-s flex flex-row items-center justify-center gap-6 font-medium capitalize">
+        <div className="text-grey-00 text-s flex flex-row items-center justify-center gap-6 font-medium capitalize">
           <div className="flex w-full flex-1 flex-row items-center justify-end gap-2">
             <Trans
               t={t}

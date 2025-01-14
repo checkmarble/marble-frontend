@@ -13,8 +13,8 @@ import { alertsI18n } from './alerts-i18n';
 export const alertStatusVariants = cva(undefined, {
   variants: {
     color: {
-      red: 'text-red-100',
-      blue: 'text-blue-100',
+      red: 'text-red-47',
+      blue: 'text-blue-58',
       grey: 'text-grey-50',
     },
     variant: {
@@ -26,17 +26,17 @@ export const alertStatusVariants = cva(undefined, {
     {
       variant: 'contained',
       color: 'red',
-      className: 'bg-red-10',
+      className: 'bg-red-95',
     },
     {
       variant: 'contained',
       color: 'blue',
-      className: 'bg-blue-10',
+      className: 'bg-blue-96',
     },
     {
       variant: 'contained',
       color: 'grey',
-      className: 'bg-grey-10',
+      className: 'bg-grey-90',
     },
   ],
 });

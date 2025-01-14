@@ -207,7 +207,7 @@ export default function CasePage() {
             </RightSidebarDisclosureContent>
           </RightSidebarProvider>
         </div>
-        <div className="bg-grey-00 border-t-grey-10 flex shrink-0 flex-row items-center gap-4 border-t p-4">
+        <div className="bg-grey-100 border-t-grey-90 flex shrink-0 flex-row items-center gap-4 border-t p-4">
           <AddComment caseId={caseDetail.id} />
           <UploadFile caseDetail={caseDetail}>
             <Button

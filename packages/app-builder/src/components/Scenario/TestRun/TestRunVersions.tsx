@@ -22,22 +22,22 @@ export const TestRunVersions = ({
       <Tag
         size="big"
         color="grey-light"
-        className="border-grey-10 gap-1 border px-4 py-2"
+        className="border-grey-90 gap-1 border px-4 py-2"
       >
-        <span className="text-grey-100 font-semibold">
+        <span className="text-grey-00 font-semibold">
           {`V${iterations[refIterationId]?.version}`}
         </span>
         {iterations[refIterationId]?.type === 'live version' ? (
-          <span className="font-semibold text-purple-100">
+          <span className="text-purple-65 font-semibold">
             {t('common:live')}
           </span>
         ) : null}
       </Tag>
-      <Icon icon="arrow-range" className="text-grey-100 size-5" />
+      <Icon icon="arrow-range" className="text-grey-00 size-5" />
       <Tag
         size="big"
         color="grey-light"
-        className="border-grey-10 border px-4 py-2"
+        className="border-grey-90 border px-4 py-2"
       >
         {`V${iterations[testIterationId]?.version}`}
       </Tag>

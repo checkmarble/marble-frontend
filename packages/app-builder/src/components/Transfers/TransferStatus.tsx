@@ -17,13 +17,13 @@ interface TransferStatusButtonProps {
 }
 
 const transferStatusRadioButtonVariants = cva(
-  'border-grey-10 flex cursor-pointer rounded border p-4 font-medium transition peer-focus:outline peer-focus:outline-2 peer-focus:outline-purple-100',
+  'border-grey-90 flex cursor-pointer rounded border p-4 font-medium transition peer-focus:outline peer-focus:outline-2 peer-focus:outline-purple-65',
   {
     variants: {
       status: {
-        neutral: 'bg-green-10 hover:bg-green-05 text-green-100',
-        suspected_fraud: 'bg-yellow-10 hover:bg-yellow-05 text-yellow-100',
-        confirmed_fraud: 'bg-red-10 hover:bg-red-05 text-red-100',
+        neutral: 'bg-green-94 hover:bg-green-94 text-green-38',
+        suspected_fraud: 'bg-yellow-90 hover:bg-yellow-90 text-yellow-50',
+        confirmed_fraud: 'bg-red-95 hover:bg-red-95 text-red-47',
       },
     },
   },
@@ -52,10 +52,10 @@ export function TransferStatusRadioButton({
       >
         {t(`transfercheck:transfer_detail.status.${value}`)}
       </label>
-      <span className="pointer-events-none absolute -inset-px rounded border-2 border-transparent transition-colors peer-checked:border-purple-100" />
+      <span className="peer-checked:border-purple-65 pointer-events-none absolute -inset-px rounded border-2 border-transparent transition-colors" />
       <Icon
         icon="tick"
-        className="text-grey-00 absolute right-0 top-0 hidden size-4 -translate-y-1/2 translate-x-1/2 rounded-full bg-purple-100 peer-checked:block"
+        className="text-grey-100 bg-purple-65 absolute right-0 top-0 hidden size-4 -translate-y-1/2 translate-x-1/2 rounded-full peer-checked:block"
       />
     </div>
   );

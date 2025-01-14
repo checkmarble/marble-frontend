@@ -85,19 +85,19 @@ export function CaseDecisions({
   return (
     <div className="grid grid-cols-[repeat(2,_max-content)_2fr_1fr_repeat(3,_max-content)] gap-x-6 gap-y-2">
       <div className="col-span-full grid grid-cols-subgrid px-4">
-        <div className="text-grey-100 text-s col-start-2 font-semibold">
+        <div className="text-grey-00 text-s col-start-2 font-semibold">
           {t('decisions:created_at')}
         </div>
-        <div className="text-grey-100 text-s font-semibold">
+        <div className="text-grey-00 text-s font-semibold">
           {t('decisions:scenario.name')}
         </div>
-        <div className="text-grey-100 text-s font-semibold">
+        <div className="text-grey-00 text-s font-semibold">
           {t('decisions:trigger_object.type')}
         </div>
-        <div className="text-grey-100 text-s font-semibold">
+        <div className="text-grey-00 text-s font-semibold">
           {t('decisions:score')}
         </div>
-        <div className="text-grey-100 text-s font-semibold">
+        <div className="text-grey-00 text-s font-semibold">
           {t('decisions:outcome')}
         </div>
       </div>
@@ -107,9 +107,9 @@ export function CaseDecisions({
             key={row.id}
             defaultOpen={decisions.length === 1}
           >
-            <div className="bg-grey-00 border-grey-10 col-span-full grid grid-cols-subgrid rounded-md border">
+            <div className="bg-grey-100 border-grey-90 col-span-full grid grid-cols-subgrid rounded-md border">
               <div className="col-span-full grid grid-cols-subgrid items-center px-4 py-3">
-                <CollapsibleV2.Title className="border-grey-10 group rounded border outline-none transition-colors focus-visible:border-purple-100">
+                <CollapsibleV2.Title className="border-grey-90 focus-visible:border-purple-65 group rounded border outline-none transition-colors">
                   <Icon
                     icon="smallarrow-up"
                     aria-hidden
@@ -128,18 +128,18 @@ export function CaseDecisions({
                       to={getRoute('/scenarios/:scenarioId', {
                         scenarioId: fromUUID(row.scenario.id),
                       })}
-                      className="hover:text-purple-120 focus:text-purple-120 relative line-clamp-2 font-semibold text-purple-100 hover:underline focus:underline"
+                      className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative line-clamp-2 font-semibold hover:underline focus:underline"
                     >
                       {row.scenario.name}
                     </Link>
                   </Tooltip.Default>
-                  <div className="border-grey-10 text-grey-100 rounded-full border px-3 py-1 font-semibold">
+                  <div className="border-grey-90 text-grey-00 rounded-full border px-3 py-1 font-semibold">
                     {`V${row.scenario.version}`}
                   </div>
                 </div>
                 <div>
                   <Tooltip.Default content={row.triggerObjectType}>
-                    <span className="text-grey-100 text-s line-clamp-2 w-fit break-all font-normal">
+                    <span className="text-grey-00 text-s line-clamp-2 w-fit break-all font-normal">
                       {row.triggerObjectType}
                     </span>
                   </Tooltip.Default>
@@ -193,7 +193,7 @@ function OutcomeAndReviewStatusWithModal({ decision }: { decision: Decision }) {
           <OutcomeAndReviewStatus
             outcome={decision.outcome}
             reviewStatus={decision.reviewStatus}
-            className="hover:bg-orange-25 transition-colors"
+            className="hover:bg-orange-87 transition-colors"
           />
         </Ariakit.DialogDisclosure>
         <ReviewDecisionModal
@@ -223,7 +223,7 @@ function DecisionActions({ decision }: { decision: Decision }) {
       <MenuRoot rtl={i18n.dir() === 'rtl'}>
         <MenuButton
           render={
-            <button className="hover:bg-purple-05 active:bg-purple-10 rounded">
+            <button className="hover:bg-purple-98 active:bg-purple-96 rounded">
               <Icon icon="more-menu" className="size-6" />
               <span className="sr-only">{t('common:more_options')}</span>
             </button>
@@ -231,7 +231,7 @@ function DecisionActions({ decision }: { decision: Decision }) {
         />
         <MenuPopover modal className="flex flex-col gap-2 p-2">
           <MenuItem
-            className="data-[active-item]:bg-purple-05 group flex flex-row gap-2 rounded p-2 outline-none"
+            className="data-[active-item]:bg-purple-98 group flex flex-row gap-2 rounded p-2 outline-none"
             render={
               <Link
                 to={getRoute('/decisions/:decisionId', {
@@ -244,7 +244,7 @@ function DecisionActions({ decision }: { decision: Decision }) {
           </MenuItem>
           {withReviewDecisionModal ? (
             <MenuItem
-              className="data-[active-item]:bg-purple-05 group flex flex-row gap-2 rounded p-2 outline-none"
+              className="data-[active-item]:bg-purple-98 group flex flex-row gap-2 rounded p-2 outline-none"
               render={
                 <Ariakit.DialogDisclosure store={reviewDecisionModalStore} />
               }
@@ -323,7 +323,7 @@ function DecisionDetail({
     <div className="flex flex-row gap-6 p-4">
       <div className="flex h-fit flex-[2] flex-col gap-2">
         <div className="flex flex-row items-center justify-between gap-2">
-          <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
+          <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
             {t('cases:case_detail.rules_execution', {
               count: decisionDetail.ruleExecutions.length,
             })}
@@ -385,7 +385,7 @@ function DecisionDetail({
       <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
         <div className="flex h-fit flex-col gap-2">
           <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
-            <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
+            <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
               {t('cases:case_detail.pivot_values')}
             </span>
           </div>
@@ -394,7 +394,7 @@ function DecisionDetail({
 
         <div className="flex h-fit flex-col gap-2">
           <div className="flex flex-row items-center justify-between gap-2">
-            <span className="text-grey-100 text-xs font-medium first-letter:capitalize">
+            <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
               {t('cases:case_detail.trigger_object')}
             </span>
           </div>
@@ -422,7 +422,7 @@ function ShowHitOnlySwitch({
     <div className="flex flex-row items-center gap-2">
       <label
         htmlFor={id}
-        className="text-grey-100 cursor-pointer select-none text-xs"
+        className="text-grey-00 cursor-pointer select-none text-xs"
       >
         {t('cases:case_detail.rules_execution.show_hit_only')}
       </label>
@@ -436,27 +436,27 @@ function DecisionDetailSkeleton() {
     <div className="flex flex-row gap-6 p-4">
       <div className="flex h-fit flex-[2] flex-col gap-2">
         <div className="flex flex-row items-center justify-between gap-2">
-          <div className="bg-grey-10 h-4 w-32 animate-pulse rounded-md" />
-          <div className="bg-grey-10 h-4 w-32 animate-pulse rounded-md" />
+          <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
+          <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
         </div>
-        <div className="bg-grey-10 h-12 animate-pulse rounded-lg" />
-        <div className="bg-grey-10 h-12 animate-pulse rounded-lg" />
-        <div className="bg-grey-10 h-12 animate-pulse rounded-lg" />
+        <div className="bg-grey-90 h-12 animate-pulse rounded-lg" />
+        <div className="bg-grey-90 h-12 animate-pulse rounded-lg" />
+        <div className="bg-grey-90 h-12 animate-pulse rounded-lg" />
       </div>
 
       <div className="flex h-fit flex-1 flex-col gap-6">
         <div className="flex h-fit flex-col gap-2">
           <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
-            <div className="bg-grey-10 h-4 w-32 animate-pulse rounded-md" />
+            <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
           </div>
-          <div className="bg-grey-10 h-8 w-full animate-pulse rounded-md" />
+          <div className="bg-grey-90 h-8 w-full animate-pulse rounded-md" />
         </div>
 
         <div className="flex h-fit flex-col gap-2">
           <div className="flex flex-row items-center justify-between gap-2">
-            <div className="bg-grey-10 h-4 w-32 animate-pulse rounded-md" />
+            <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
           </div>
-          <div className="bg-grey-10 h-60 w-full animate-pulse rounded-md" />
+          <div className="bg-grey-90 h-60 w-full animate-pulse rounded-md" />
         </div>
       </div>
     </div>

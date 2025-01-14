@@ -25,7 +25,7 @@ export function EditLevel({ level, setLevel, errors }: EditLevelProps) {
 
   return (
     <div className="flex flex-1 flex-col gap-2">
-      <label htmlFor="level" className="text-m text-grey-100 font-normal">
+      <label htmlFor="level" className="text-m text-grey-00 font-normal">
         {t('scenarios:edit_fuzzy_match.level.label')}
       </label>
       <Select.Root value={level} onValueChange={setLevel}>
@@ -35,7 +35,7 @@ export function EditLevel({ level, setLevel, errors }: EditLevelProps) {
             validationStatus: errors.length > 0 ? 'error' : 'valid',
           })}
         >
-          <span className="text-s text-grey-100 w-full text-center font-medium">
+          <span className="text-s text-grey-00 w-full text-center font-medium">
             <Select.Value placeholder="..." />
           </span>
         </Select.Trigger>
@@ -49,7 +49,7 @@ export function EditLevel({ level, setLevel, errors }: EditLevelProps) {
                   value={level}
                 >
                   <Select.ItemText>
-                    <span className="text-s text-grey-100 font-semibold uppercase">
+                    <span className="text-s text-grey-00 font-semibold uppercase">
                       {t(`scenarios:edit_fuzzy_match.level.${level}`, {
                         defaultValue: level,
                       })}

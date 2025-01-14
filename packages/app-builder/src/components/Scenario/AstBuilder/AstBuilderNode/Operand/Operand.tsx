@@ -88,13 +88,13 @@ export function Operand({
 }
 
 const defaultClassnames = cva(
-  'bg-grey-02 flex size-fit min-h-[40px] min-w-[40px] items-center justify-between rounded px-2 outline-none',
+  'bg-grey-98 flex size-fit min-h-[40px] min-w-[40px] items-center justify-between rounded px-2 outline-none',
   {
     variants: {
       validationStatus: {
-        valid: 'border border-grey-02',
-        error: 'border border-red-100',
-        'light-error': 'border border-red-25',
+        valid: 'border border-grey-98',
+        error: 'border border-red-47',
+        'light-error': 'border border-red-87',
       },
     },
     defaultVariants: {

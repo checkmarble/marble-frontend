@@ -12,7 +12,13 @@ export const Combobox = React.forwardRef<
   HTMLInputElement,
   Ariakit.ComboboxProps & VariantProps<typeof selectTrigger>
 >(function Combobox(
-  { className, border = 'square', borderColor = 'grey-10', disabled, ...props },
+  {
+    className,
+    border = 'square',
+    borderColor = 'greyfigma-90',
+    disabled,
+    ...props
+  },
   ref,
 ) {
   return (
@@ -43,7 +49,7 @@ export const ComboboxPopover = React.forwardRef<
       fitViewport
       gutter={8}
       className={clsx(
-        'bg-grey-00 border-grey-10 max-h-[min(var(--popover-available-height),_300px)] -translate-y-1 rounded border opacity-0 shadow-md transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
+        'bg-grey-100 border-grey-90 max-h-[min(var(--popover-available-height),_300px)] -translate-y-1 rounded border opacity-0 shadow-md transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
         className,
       )}
       {...props}
@@ -60,7 +66,7 @@ export const ComboboxItem = React.forwardRef<
       ref={ref}
       {...props}
       className={clsx(
-        'data-[active-item]:bg-purple-05 hover:bg-purple-05 group flex flex-row items-center gap-2 rounded p-2',
+        'data-[active-item]:bg-purple-98 hover:bg-purple-98 group flex flex-row items-center gap-2 rounded p-2',
         props.className,
       )}
     />

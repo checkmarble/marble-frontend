@@ -75,7 +75,7 @@ export function RootOrWithAnd({
                   type="contained"
                 />
                 <div className="col-span-2 flex flex-1 items-center">
-                  <div className="bg-grey-10 h-px w-full" />
+                  <div className="bg-grey-90 h-px w-full" />
                 </div>
               </>
             ) : null}

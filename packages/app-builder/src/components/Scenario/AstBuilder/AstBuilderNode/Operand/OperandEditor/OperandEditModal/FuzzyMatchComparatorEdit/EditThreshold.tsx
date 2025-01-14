@@ -23,7 +23,7 @@ export function EditThreshold({
 
   return (
     <div className="flex flex-1 flex-col gap-2">
-      <label htmlFor="threshold" className="text-m text-grey-100 font-normal">
+      <label htmlFor="threshold" className="text-m text-grey-00 font-normal">
         {t('scenarios:edit_fuzzy_match.threshold.label')}
       </label>
       <Input
@@ -46,7 +46,7 @@ export function EditThreshold({
           }
           setThreshold(newThreshold);
         }}
-        borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
+        borderColor={errors.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
         min={0}
         max={100}
       />

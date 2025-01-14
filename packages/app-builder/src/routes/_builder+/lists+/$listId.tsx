@@ -96,7 +96,7 @@ export default function Lists() {
           const value = getValue();
           return (
             <div className="group flex items-center justify-between">
-              <p className="text-grey-100 text-s font-medium">{value}</p>
+              <p className="text-grey-00 text-s font-medium">{value}</p>
               {listFeatureAccess.isDeleteListValueAvailable ? (
                 <DeleteListValue
                   listId={customList.id}
@@ -104,7 +104,7 @@ export default function Lists() {
                   value={value}
                 >
                   <button
-                    className="group-hover:text-grey-100 text-transparent transition-colors duration-200 ease-in-out"
+                    className="group-hover:text-grey-00 text-transparent transition-colors duration-200 ease-in-out"
                     name="delete"
                     tabIndex={-1}
                   >
@@ -178,7 +178,7 @@ export default function Lists() {
               ) : null}
             </div>
             {virtualTable.isEmpty ? (
-              <div className="bg-grey-00 border-grey-10 flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-grey-100 border-grey-90 flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
                 <p className="text-s font-medium">
                   {listValues.length > 0
                     ? t('lists:empty_custom_list_matches')
@@ -482,13 +482,13 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
       {...getRootProps()}
       className={
         isDragActive
-          ? 'bg-purple-10 border-purple-50 opacity-90'
+          ? 'bg-purple-96 border-purple-82 opacity-90'
           : 'border-grey-50'
       }
     >
       <input {...getInputProps()} />
       <p>{t('lists:drop_csv_here')}</p>
-      <p className="text-grey-25 uppercase">{t('common:or')}</p>
+      <p className="text-grey-80 uppercase">{t('common:or')}</p>
       <Button>
         <LoadingIcon icon="upload" loading={loading} className="size-6" />
         {t('lists:pick_csv')}
@@ -501,14 +501,14 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
         }}
       >
         <ModalV2.Content onClick={(e) => e.stopPropagation()}>
-          <div className="bg-grey-00 text-s flex flex-col items-center gap-6 p-6">
+          <div className="bg-grey-100 text-s flex flex-col items-center gap-6 p-6">
             <Icon
               icon={modalState.success ? 'tick' : 'cross'}
               className={clsx(
                 'size-[108px] rounded-full border-8',
                 modalState.success
-                  ? 'bg-purple-10 border-purple-10 text-purple-100'
-                  : 'bg-red-10 border-red-10 text-red-100',
+                  ? 'bg-purple-96 border-purple-96 text-purple-65'
+                  : 'bg-red-95 border-red-95 text-red-47',
               )}
             />
             <div className="flex flex-col items-center gap-2 text-center">

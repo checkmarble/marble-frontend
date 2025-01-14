@@ -19,13 +19,13 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
       className={clsx(
         'inline-flex items-center justify-center',
         {
-          'bg-purple-10 text-purple-100': color === 'purple',
-          'bg-green-10 text-green-100': color === 'green',
-          'bg-yellow-10 text-yellow-100': color === 'yellow',
-          'bg-orange-10 text-orange-100': color === 'orange',
-          'bg-red-10 text-red-100': color === 'red',
-          'bg-grey-05 text-grey-100': color === 'grey',
-          'bg-grey-00 text-grey-100': color === 'grey-light',
+          'bg-purple-96 text-purple-65': color === 'purple',
+          'bg-green-94 text-green-38': color === 'green',
+          'bg-yellow-90 text-yellow-50': color === 'yellow',
+          'bg-orange-95 text-orange-50': color === 'orange',
+          'bg-red-95 text-red-47': color === 'red',
+          'bg-grey-95 text-grey-00': color === 'grey',
+          'bg-grey-100 text-grey-00': color === 'grey-light',
         },
         {
           'rounded-full': border === 'rounded',

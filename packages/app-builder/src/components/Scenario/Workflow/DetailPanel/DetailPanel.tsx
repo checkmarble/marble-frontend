@@ -42,11 +42,11 @@ export function DetailPanel({ onSave, onDelete }: DetailPanelProps) {
 
   return (
     // eslint-disable-next-line tailwindcss/no-custom-classname -- nokey class ensures that ReactFlow onKeyDown event is not triggered (ex: delete node)
-    <div className="border-grey-10 bg-grey-00 nokey flex h-full flex-col overflow-hidden border-s">
+    <div className="border-grey-90 bg-grey-100 nokey flex h-full flex-col overflow-hidden border-s">
       <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
         <DetailPanelContent />
       </div>
-      <Separator className="bg-grey-10" />
+      <Separator className="bg-grey-90" />
       <div className="flex items-center justify-center gap-4 p-4">
         <ModalV2.Root>
           <ModalV2.Trigger render={<Button className="w-full" color="red" />}>
@@ -117,7 +117,7 @@ function DetailPanelContent() {
     return (
       <>
         <NodeTitle data={selectedNode.data} />
-        <Separator className="bg-grey-10" />
+        <Separator className="bg-grey-90" />
         <TriggerNode id={selectedNode.id} data={selectedNode.data} />
       </>
     );
@@ -127,7 +127,7 @@ function DetailPanelContent() {
     return (
       <>
         <NodeTitle data={selectedNode.data} />
-        <Separator className="bg-grey-10" />
+        <Separator className="bg-grey-90" />
         <ActionNode id={selectedNode.id} data={selectedNode.data} />
       </>
     );
@@ -141,13 +141,13 @@ function NoSelectedNodes() {
 
   return (
     <>
-      <p className="text-l text-grey-100 font-medium">
+      <p className="text-l text-grey-00 font-medium">
         {t('workflows:detail_panel.no_selected_nodes.title')}
       </p>
-      <p className="text-s text-grey-100">
+      <p className="text-s text-grey-00">
         {t('workflows:detail_panel.no_selected_nodes.description')}
       </p>
-      <Separator className="bg-grey-10" />
+      <Separator className="bg-grey-90" />
       <Checklist />
     </>
   );
@@ -159,10 +159,10 @@ function MultipleSelectedNodes() {
 
   return (
     <>
-      <p className="text-l text-grey-100 font-medium">
+      <p className="text-l text-grey-00 font-medium">
         {t('workflows:detail_panel.multiple_selected_nodes.title')}
       </p>
-      <p className="text-s text-grey-100">
+      <p className="text-s text-grey-00">
         {t('workflows:detail_panel.multiple_selected_nodes.description')}
       </p>
       <Button onClick={clearSelection}>
@@ -189,11 +189,11 @@ function CreateTriggerNode({ id }: { id: string }) {
 
   return (
     <>
-      <p className="text-l text-grey-100 font-medium">
+      <p className="text-l text-grey-00 font-medium">
         {t('workflows:detail_panel.create_trigger_node.title')}
       </p>
       <Callout>
-        <p className="text-s text-grey-100">
+        <p className="text-s text-grey-00">
           {t('workflows:detail_panel.create_trigger_node.description')}
         </p>
       </Callout>
@@ -222,11 +222,11 @@ function CreateActionNode({ id }: { id: string }) {
 
   return (
     <>
-      <p className="text-l text-grey-100 font-medium">
+      <p className="text-l text-grey-00 font-medium">
         {t('workflows:detail_panel.create_action_node.title')}
       </p>
       <Callout>
-        <p className="text-s text-grey-100">
+        <p className="text-s text-grey-00">
           {t('workflows:detail_panel.create_action_node.description')}
         </p>
       </Callout>
@@ -269,14 +269,14 @@ function NodeTitle({ data }: { data: TriggerData | ActionData }) {
 
   return (
     <div className="flex flex-row gap-2">
-      <div className="text-grey-100 bg-purple-10 flex aspect-square max-h-14 items-center justify-center rounded-md p-2">
-        <Icon icon={icon} className="size-9 rounded-md text-purple-100" />
+      <div className="text-grey-00 bg-purple-96 flex aspect-square max-h-14 items-center justify-center rounded-md p-2">
+        <Icon icon={icon} className="text-purple-65 size-9 rounded-md" />
       </div>
       <div className="flex flex-1 flex-col gap-2">
         <Tag color="grey" className="w-fit">
           {entity}
         </Tag>
-        <span className="text-grey-100 flex-1 font-semibold">{title}</span>
+        <span className="text-grey-00 flex-1 font-semibold">{title}</span>
       </div>
       <div className="flex max-h-14 items-center">
         <Tag size="big" border="square">

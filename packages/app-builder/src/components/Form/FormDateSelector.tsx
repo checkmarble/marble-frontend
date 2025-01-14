@@ -44,13 +44,13 @@ export const FormDateSelector = forwardRef<
           <Icon
             icon="calendar-month"
             className={clsx('size-6', {
-              'text-grey-100': selectedDate,
+              'text-grey-00': selectedDate,
               'text-grey-50': !selectedDate,
             })}
           />
           <span
             className={clsx('font-normal', {
-              'text-grey-100': selectedDate,
+              'text-grey-00': selectedDate,
               'text-grey-50': !selectedDate,
             })}
           >
@@ -63,7 +63,7 @@ export const FormDateSelector = forwardRef<
           </span>
         </PopoverDisclosure>
         <Popover
-          className="bg-grey-00 border-grey-05 isolate rounded-md border p-4"
+          className="bg-grey-100 border-grey-95 isolate rounded-md border p-4"
           gutter={8}
         >
           <Calendar

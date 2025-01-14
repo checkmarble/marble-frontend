@@ -95,7 +95,7 @@ export default function Settings() {
         {t('navigation:settings')}
       </Page.Header>
       <div className="flex size-full flex-row overflow-hidden">
-        <div className="border-e-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-e p-4">
+        <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-e p-4">
           <div className="flex flex-col">
             {sections.map(([section, settings]) => {
               if (settings.length === 0) return null;
@@ -124,8 +124,8 @@ export default function Settings() {
                                 clsx(
                                   'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
                                   isActive
-                                    ? 'bg-purple-10 text-purple-100'
-                                    : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                                    ? 'bg-purple-96 text-purple-65'
+                                    : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
                                 )
                               }
                               to={setting.to}
@@ -136,7 +136,7 @@ export default function Settings() {
                           .with('restricted', () => (
                             <div
                               key={setting.title}
-                              className="text-grey-25 flex w-full flex-row gap-2 p-2"
+                              className="text-grey-80 flex w-full flex-row gap-2 p-2"
                             >
                               <span className="text-s font-medium first-letter:capitalize">
                                 {t(`settings:${setting.title}`)}
@@ -155,8 +155,8 @@ export default function Settings() {
                                 clsx(
                                   'text-s flex w-full cursor-pointer flex-row gap-2 rounded p-2 font-medium first-letter:capitalize',
                                   isActive
-                                    ? 'bg-purple-10 text-purple-100'
-                                    : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                                    ? 'bg-purple-96 text-purple-65'
+                                    : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
                                 )
                               }
                               to={setting.to}
@@ -178,8 +178,8 @@ export default function Settings() {
                             clsx(
                               'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
                               isActive
-                                ? 'bg-purple-10 text-purple-100'
-                                : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                                ? 'bg-purple-96 text-purple-65'
+                                : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
                             )
                           }
                           to={setting.to}

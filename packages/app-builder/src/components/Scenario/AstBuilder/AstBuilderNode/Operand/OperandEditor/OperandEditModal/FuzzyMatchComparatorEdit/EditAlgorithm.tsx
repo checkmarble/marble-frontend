@@ -33,7 +33,7 @@ export function EditAlgorithm({
   if (isEditableFuzzyMatchAlgorithm(algorithm)) {
     return (
       <div className="flex flex-1 flex-col gap-2">
-        <label htmlFor="algorithm" className="text-m text-grey-100 font-normal">
+        <label htmlFor="algorithm" className="text-m text-grey-00 font-normal">
           {t('scenarios:edit_fuzzy_match.algorithm.label')}
         </label>
         <Select.Root value={algorithm} onValueChange={setAlgorithm}>
@@ -43,7 +43,7 @@ export function EditAlgorithm({
               validationStatus: errors.length > 0 ? 'error' : 'valid',
             })}
           >
-            <span className="text-s text-grey-100 w-full text-center font-medium">
+            <span className="text-s text-grey-00 w-full text-center font-medium">
               <Select.Value placeholder="..." />
             </span>
             <Tooltip.Default
@@ -53,7 +53,7 @@ export function EditAlgorithm({
             >
               <Icon
                 icon="tip"
-                className="size-5 shrink-0 text-purple-50 transition-colors hover:text-purple-100"
+                className="hover:text-purple-65 text-purple-82 size-5 shrink-0 transition-colors"
               />
             </Tooltip.Default>
           </Select.Trigger>
@@ -93,10 +93,10 @@ export function EditAlgorithm({
 
   return (
     <div className="flex flex-1 flex-col gap-2">
-      <span className="text-m text-grey-100 font-normal">
+      <span className="text-m text-grey-00 font-normal">
         {t('scenarios:edit_fuzzy_match.threshold.label')}
       </span>
-      <div className="bg-grey-02 border-grey-10 flex h-10 items-center justify-center rounded border p-2 text-center">
+      <div className="bg-grey-98 border-grey-90 flex h-10 items-center justify-center rounded border p-2 text-center">
         <FuzzyMatchAlgorithmLabel fuzzyMatchAlgorithm={algorithm} />
       </div>
       <EvaluationErrors
@@ -115,7 +115,7 @@ function FuzzyMatchAlgorithmLabel({
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   return (
-    <span className="text-s text-grey-100 font-semibold">
+    <span className="text-s text-grey-00 font-semibold">
       {getFuzzyMatchAlgorithmName(t, fuzzyMatchAlgorithm)}
     </span>
   );

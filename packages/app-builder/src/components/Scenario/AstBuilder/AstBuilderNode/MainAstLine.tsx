@@ -213,7 +213,7 @@ const NestingParenthesis = ({
     <MenuRoot>
       <MenuButton
         render={
-          <button className="text-grey-100 border-grey-10 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-05 flex h-10 items-center justify-center rounded border px-2" />
+          <button className="text-grey-00 border-grey-90 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-98 flex h-10 items-center justify-center rounded border px-2" />
         }
       >
         {children}
@@ -222,7 +222,7 @@ const NestingParenthesis = ({
         {!props.unary ? (
           <MenuItem
             onClick={props.invertOperands}
-            className="data-[active-item]:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
+            className="data-[active-item]:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
           >
             <Icon
               aria-hidden="true"
@@ -230,7 +230,7 @@ const NestingParenthesis = ({
               icon="swap"
             />
             <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-              <div className="text-grey-100 text-s w-full break-all text-start font-normal">
+              <div className="text-grey-00 text-s w-full break-all text-start font-normal">
                 {t('scenarios:nesting.swap_operands')}
               </div>
             </div>
@@ -238,7 +238,7 @@ const NestingParenthesis = ({
         ) : null}
         <MenuItem
           onClick={addRightNesting}
-          className="data-[active-item]:bg-purple-05 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
+          className="data-[active-item]:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
         >
           <Icon
             aria-hidden="true"
@@ -246,22 +246,22 @@ const NestingParenthesis = ({
             icon="parentheses"
           />
           <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-            <div className="text-grey-100 text-s w-full break-all text-start font-normal">
+            <div className="text-grey-00 text-s w-full break-all text-start font-normal">
               {t('scenarios:nesting.add_right_nesting')}
             </div>
           </div>
         </MenuItem>
         <MenuItem
           onClick={removeNesting}
-          className="data-[active-item]:bg-red-10 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
+          className="data-[active-item]:bg-red-95 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
         >
           <Icon
             aria-hidden="true"
-            className="col-start-1 size-5 shrink-0 text-red-100"
+            className="text-red-43 col-start-1 size-5 shrink-0"
             icon="delete"
           />
           <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-            <div className="text-grey-100 text-s w-full break-all text-start font-normal">
+            <div className="text-grey-00 text-s w-full break-all text-start font-normal">
               {t('scenarios:nesting.remove')}
             </div>
           </div>

@@ -349,7 +349,7 @@ function CreateFieldContent({
                         {t('data:edit_field.is_unique.toggle')}
                       </p>
                       {field.value ? (
-                        <p className="text-xs text-red-100">
+                        <p className="text-red-47 text-xs">
                           {t(
                             'data:edit_field.is_unique.warning_creation_asynchronous',
                           )}

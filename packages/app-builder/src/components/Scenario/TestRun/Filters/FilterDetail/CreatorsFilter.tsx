@@ -40,7 +40,7 @@ export function CreatorsFilter() {
                     lastName={user.lastName}
                     size="m"
                   />
-                  <span className="text-grey-100 text-s">
+                  <span className="text-grey-00 text-s">
                     {user.firstName} {user.lastName}
                   </span>
                 </div>

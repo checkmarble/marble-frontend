@@ -273,7 +273,7 @@ function VersionSection({
 
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-grey-100 text-m font-semibold">
+      <h2 className="text-grey-00 text-m font-semibold">
         {t('scenarios:home.versions', {
           count: scenarioIterations.length,
         })}
@@ -289,7 +289,7 @@ function VersionSection({
           <ScenarioIterationMenu
             labelledScenarioIteration={labelledOtherVersions}
           >
-            <MenuButton className="text-s text-grey-100 font-semibold outline-none transition-colors hover:text-purple-100 focus:text-purple-100">
+            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 font-semibold outline-none transition-colors">
               {t('scenarios:home.other_versions', {
                 count: otherVersions.length,
               })}
@@ -317,13 +317,13 @@ function QuickVersionAccess({
         scenarioId: fromUUID(scenarioIteration.scenarioId),
         iterationId: fromUUID(scenarioIteration.id),
       })}
-      className="bg-grey-00 border-grey-10 text-grey-100 text-s hover:bg-grey-05 active:bg-grey-10 flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
+      className="bg-grey-100 border-grey-90 text-grey-00 text-s hover:bg-grey-95 active:bg-grey-90 flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
     >
-      <span className="text-grey-100 text-s font-semibold capitalize">
+      <span className="text-grey-00 text-s font-semibold capitalize">
         {currentFormattedVersion}
       </span>
       {currentFormattedLive ? (
-        <span className="text-s font-semibold capitalize text-purple-100">
+        <span className="text-s text-purple-65 font-semibold capitalize">
           {currentFormattedLive}
         </span>
       ) : null}
@@ -355,14 +355,14 @@ function TestRunSection({
 
   return (
     <section className="flex flex-col gap-8">
-      <h2 className="text-grey-100 text-m font-semibold">
+      <h2 className="text-grey-00 text-m font-semibold">
         {t('scenarios:home.testrun')}
       </h2>
       <div className="flex max-w-[500px] flex-row gap-4">
         <div
           className={clsx(
-            'bg-grey-00 border-grey-10 relative flex h-fit flex-col gap-4 rounded-lg border p-8',
-            isExecutionOngoing && 'border-purple-100',
+            'bg-grey-100 border-grey-90 relative flex h-fit flex-col gap-4 rounded-lg border p-8',
+            isExecutionOngoing && 'border-purple-65',
           )}
         >
           {access === 'test' ? (
@@ -373,7 +373,7 @@ function TestRunSection({
             />
           ) : null}
           {isExecutionOngoing ? (
-            <div className="text-grey-00 text-s absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t bg-purple-100 px-2 font-semibold">
+            <div className="text-grey-100 text-s bg-purple-65 absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t px-2 font-semibold">
               <Spinner className="size-3" />
               {t('scenarios:home.execution.batch.ongoing')}
             </div>
@@ -468,12 +468,12 @@ function ExecutionSection({
 
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-grey-100 text-m font-semibold">
+      <h2 className="text-grey-00 text-m font-semibold">
         {t('scenarios:home.execution')}
       </h2>
       <div className="flex max-w-5xl flex-row gap-4">
-        <div className="bg-grey-00 border-grey-10 flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8">
-          <h3 className="text-grey-100 text-l font-bold">
+        <div className="bg-grey-100 border-grey-90 flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8">
+          <h3 className="text-grey-00 text-l font-bold">
             {t('scenarios:home.execution.real_time')}
           </h3>
           <CalloutV2>
@@ -487,7 +487,7 @@ function ExecutionSection({
                   }}
                 />
               </span>
-              <span className="text-grey-100 text-s inline-flex items-center whitespace-pre font-semibold">
+              <span className="text-grey-00 text-s inline-flex items-center whitespace-pre font-semibold">
                 {isLive ? (
                   <Trans
                     t={t}
@@ -511,29 +511,29 @@ function ExecutionSection({
         </div>
         <div
           className={clsx(
-            'bg-grey-00 border-grey-10 relative flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8',
-            isExecutionOngoing && 'border-purple-100',
+            'bg-grey-100 border-grey-90 relative flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8',
+            isExecutionOngoing && 'border-purple-65',
           )}
         >
           {isExecutionOngoing ? (
-            <div className="text-grey-00 text-s absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t bg-purple-100 px-2 font-semibold">
+            <div className="text-grey-100 text-s bg-purple-65 absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t px-2 font-semibold">
               <Spinner className="size-3" />
               {t('scenarios:home.execution.batch.ongoing')}
             </div>
           ) : null}
-          <h3 className="text-grey-100 text-l font-bold">
+          <h3 className="text-grey-00 text-l font-bold">
             {t('scenarios:home.execution.batch')}
           </h3>
           <CalloutV2>
             <div className="flex flex-col gap-4">
               <span>{t('scenarios:home.execution.batch.callout')}</span>
               {formattedSchedule ? (
-                <span className="text-grey-100 text-s text-balance font-semibold">
+                <span className="text-grey-00 text-s text-balance font-semibold">
                   <Trans
                     t={t}
                     i18nKey="scenarios:scheduled"
                     components={{
-                      ScheduleLocale: <span className="text-purple-100" />,
+                      ScheduleLocale: <span className="text-purple-65" />,
                     }}
                     values={{
                       schedule: formattedSchedule,
@@ -630,11 +630,11 @@ function WorkflowSection({
 
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-grey-100 text-m flex flex-row items-center gap-2 font-semibold">
+      <h2 className="text-grey-00 text-m flex flex-row items-center gap-2 font-semibold">
         {t('scenarios:home.workflow')}
       </h2>
       <div className="flex max-w-[500px] flex-row gap-4">
-        <div className="bg-grey-00 border-grey-10 relative flex h-fit flex-col gap-4 rounded-lg border p-8">
+        <div className="bg-grey-100 border-grey-90 relative flex h-fit flex-col gap-4 rounded-lg border p-8">
           {access === 'test' ? (
             <Nudge
               className="absolute -right-3 -top-3 size-6"
@@ -651,7 +651,7 @@ function WorkflowSection({
 
           <div className="flex flex-row gap-4">
             {tag ? (
-              <div className="bg-purple-05 text-s flex h-10 flex-row items-center gap-2 rounded px-2 uppercase text-purple-100">
+              <div className="bg-purple-98 text-s text-purple-65 flex h-10 flex-row items-center gap-2 rounded px-2 uppercase">
                 {tag}
                 {tooltip ? (
                   <Ariakit.HovercardProvider
@@ -661,14 +661,14 @@ function WorkflowSection({
                   >
                     <Ariakit.HovercardAnchor
                       tabIndex={-1}
-                      className="cursor-pointer text-purple-50 transition-colors hover:text-purple-100"
+                      className="text-purple-82 hover:text-purple-65 cursor-pointer transition-colors"
                     >
                       <Icon icon="tip" className="size-5" />
                     </Ariakit.HovercardAnchor>
                     <Ariakit.Hovercard
                       portal
                       gutter={8}
-                      className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
+                      className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded border p-2 shadow-md"
                     >
                       {tooltip}
                     </Ariakit.Hovercard>
@@ -733,7 +733,7 @@ function ResourcesSection() {
   const { t } = useTranslation(handle.i18n);
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-grey-100 text-m font-semibold">
+      <h2 className="text-grey-00 text-m font-semibold">
         {t('scenarios:home.resources')}
       </h2>
       <div className="flex flex-row gap-4">
@@ -741,12 +741,12 @@ function ResourcesSection() {
           <a
             key={tKey}
             href={href}
-            className="border-grey-10 group flex flex-col overflow-hidden rounded border outline-none transition-colors hover:border-purple-100 focus:border-purple-100"
+            className="border-grey-90 hover:border-purple-65 focus:border-purple-65 group flex flex-col overflow-hidden rounded border outline-none transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
             <img src={src} alt="" />
-            <span className="border-grey-10 bg-grey-00 text-s flex flex-row items-center justify-between border-t p-4 font-semibold transition-colors group-hover:border-purple-100 group-focus:border-purple-100">
+            <span className="border-grey-90 bg-grey-100 text-s group-hover:border-purple-65 group-focus:border-purple-65 flex flex-row items-center justify-between border-t p-4 font-semibold transition-colors">
               {t(tKey)}
               <Icon aria-hidden icon="arrow-right" className="size-6" />
             </span>

@@ -32,7 +32,7 @@ export function Calendar({
         [UI.Month]: 'flex flex-col gap-4',
         [UI.MonthCaption]: 'bloc text-center',
         [UI.CaptionLabel]:
-          'text-grey-100 text-s font-medium capitalize items-center whitespace-nowrap h-10 flex justify-center',
+          'text-grey-00 text-s font-medium capitalize items-center whitespace-nowrap h-10 flex justify-center',
         [UI.Nav]: 'absolute top-0 left-0 right-0',
         [UI.PreviousMonthButton]: clsx(
           CtaClassName({
@@ -52,21 +52,21 @@ export function Calendar({
         [UI.MonthGrid]: 'w-full border-none',
         [UI.Weekdays]: 'flex w-full',
         [UI.Weekday]:
-          'flex items-center justify-center size-12 text-xs font-semibold text-grey-100',
+          'flex items-center justify-center size-12 text-xs font-semibold text-grey-00',
         [UI.Weeks]: 'border-none',
         [UI.Week]: 'flex w-full',
         [UI.Day]: 'flex p-0',
         [UI.DayButton]:
-          'size-12 text-s font-medium outline-1 outline-purple-100',
+          'size-12 text-s font-medium outline-1 outline-purple-65',
         [SelectionState.selected]: clsx(
           'transition-colors',
-          props.mode === 'single' && 'rounded bg-purple-100 text-grey-00 ',
+          props.mode === 'single' && 'rounded bg-purple-65 text-grey-100 ',
         ),
-        [SelectionState.range_start]: 'text-grey-00 bg-purple-100 rounded-s',
-        [SelectionState.range_end]: 'text-grey-00 bg-purple-100 rounded-e',
-        [SelectionState.range_middle]: 'text-purple-100 bg-purple-05',
-        [DayFlag.outside]: 'text-grey-25',
-        [DayFlag.disabled]: 'text-grey-10',
+        [SelectionState.range_start]: 'text-grey-100 bg-purple-65 rounded-s',
+        [SelectionState.range_end]: 'text-grey-100 bg-purple-65 rounded-e',
+        [SelectionState.range_middle]: 'text-purple-65 bg-purple-98',
+        [DayFlag.outside]: 'text-grey-80',
+        [DayFlag.disabled]: 'text-grey-90',
         [DayFlag.today]:
           'after:absolute after:bottom-0 after:left-0 after:right-0 after:content-["."] after:text-l after:text-center relative after:pointer-events-none',
         [DayFlag.hidden]: 'invisible',

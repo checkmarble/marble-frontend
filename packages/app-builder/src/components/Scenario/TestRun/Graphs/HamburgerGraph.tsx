@@ -56,20 +56,20 @@ export function Hamburger<T extends string>({
       <Tag
         size="big"
         color="grey-light"
-        className="border-grey-10 gap-1 border px-4 py-2"
+        className="border-grey-90 gap-1 border px-4 py-2"
       >
-        <span className="text-grey-100 font-semibold">
+        <span className="text-grey-00 font-semibold">
           {`V${version.value}`}
         </span>
         {version.type === 'live version' ? (
-          <span className="font-semibold text-purple-100">
+          <span className="text-purple-65 font-semibold">
             {t('common:live')}
           </span>
         ) : null}
       </Tag>
       <div className="flex size-full flex-col gap-1">
         {pairs.length === 0 ? (
-          <div className="border-grey-10 size-full rounded-lg border-2" />
+          <div className="border-grey-90 size-full rounded-lg border-2" />
         ) : (
           pairs.map(([status, count]) => (
             <div
@@ -175,7 +175,7 @@ export function HamburgerChart<T extends string>({
           summary={summaryByVersions[ref.value] as Summary<T>}
           mapping={mapping}
         />
-        <Icon icon="arrow-forward" className="text-grey-100 h-4" />
+        <Icon icon="arrow-forward" className="text-grey-00 h-4" />
         <Hamburger
           type={type}
           legend={legend}
@@ -210,7 +210,7 @@ export function HamburgerChart<T extends string>({
                 [mapping[option].background]: legend.includes(option),
               })}
             />
-            <span className="text-grey-100">{mapping[option].name}</span>
+            <span className="text-grey-00">{mapping[option].name}</span>
           </Button>
         ))}
       </div>

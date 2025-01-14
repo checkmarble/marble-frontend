@@ -214,7 +214,7 @@ const NewCaseFields = ({
   const { t } = useTranslation(handle.i18n);
   return (
     <>
-      <p className="text-s text-grey-100 font-semibold first-letter:capitalize">
+      <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
         {t('decisions:add_to_case.new_case.informations')}
       </p>
       <FormField
@@ -271,7 +271,7 @@ const AddToCaseFields = ({ control }: { control: Control<AddToCaseForm> }) => {
   const { t } = useTranslation(handle.i18n);
   return (
     <>
-      <p className="text-s text-grey-100 font-semibold first-letter:capitalize">
+      <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
         {t('decisions:add_to_case.new_case.attribution')}
       </p>
       <FormField

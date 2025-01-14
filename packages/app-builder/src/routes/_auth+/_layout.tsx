@@ -19,7 +19,7 @@ export default function AuthLayout() {
       <div className="flex size-full max-w-screen-xl flex-row justify-center gap-20 md:p-20">
         <div className="hidden flex-col justify-center gap-6 py-6 md:flex">
           <div className="flex h-fit flex-col justify-end gap-6">
-            <h1 className="text-grey-00 text-balance text-[30px] font-medium leading-tight lg:text-[44px]">
+            <h1 className="text-grey-100 text-balance text-[30px] font-medium leading-tight lg:text-[44px]">
               <Trans
                 t={t}
                 i18nKey="auth:great_rules_right_tools"
@@ -28,7 +28,7 @@ export default function AuthLayout() {
                 }}
               />
             </h1>
-            <p className="text-m lg:text-l text-grey-00 text-balance">
+            <p className="text-m lg:text-l text-grey-100 text-balance">
               {t('auth:marble_description')}
             </p>
           </div>
@@ -48,10 +48,10 @@ export default function AuthLayout() {
           </div>
         </div>
         <div className="flex w-full max-w-96 flex-col items-center justify-center">
-          <div className="bg-grey-00 relative flex h-fit w-full flex-col items-center rounded-lg px-5 text-center sm:px-10">
+          <div className="bg-grey-100 relative flex h-fit w-full flex-col items-center rounded-lg px-5 text-center sm:px-10">
             <Logo
               logo="logo-standard"
-              className="text-grey-100 mb-6 mt-5 size-full max-h-20 max-w-60 sm:mt-10"
+              className="text-grey-00 mb-6 mt-5 size-full max-h-20 max-w-60 sm:mt-10"
               preserveAspectRatio="xMinYMid meet"
               aria-labelledby="marble"
             />

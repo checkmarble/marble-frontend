@@ -107,7 +107,7 @@ export function ScheduledExecutionFilter() {
             );
           })}
           {showSpinner ? (
-            <div className="text-grey-100 h-10 p-2 first-letter:capitalize">
+            <div className="text-grey-00 h-10 p-2 first-letter:capitalize">
               {t('common:loading')}
             </div>
           ) : matches.length === 0 ? (

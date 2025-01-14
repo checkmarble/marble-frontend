@@ -267,7 +267,7 @@ export function EditField({
                         ) : null}
                         {uniqueSettingDisabled.reason ===
                         'cannot_toggle_index_pending' ? (
-                          <p className="text-xs text-red-50">
+                          <p className="text-red-74 text-xs">
                             {t(
                               'data:edit_field.is_unique.cannot_toggle_index_pending',
                             )}
@@ -275,7 +275,7 @@ export function EditField({
                         ) : null}
                         {uniqueSettingDisabled.reason ===
                         'cannot_untoggle_field_linked' ? (
-                          <p className="text-xs text-red-50">
+                          <p className="text-red-74 text-xs">
                             {t(
                               'data:edit_field.is_unique.cannot_untoggle_field_linked',
                             )}
@@ -284,7 +284,7 @@ export function EditField({
                         {field.value &&
                         inputField.unicityConstraint ===
                           'no_unicity_constraint' ? (
-                          <p className="text-xs text-red-50">
+                          <p className="text-red-74 text-xs">
                             {t(
                               'data:edit_field.is_unique.warning_creation_asynchronous',
                             )}
@@ -292,7 +292,7 @@ export function EditField({
                         ) : null}
                         {inputField.unicityConstraint ===
                           'active_unique_constraint' && !field.value ? (
-                          <p className="text-xs text-red-50">
+                          <p className="text-red-74 text-xs">
                             {t('data:edit_field.is_unique.warning_untoggle')}
                           </p>
                         ) : null}

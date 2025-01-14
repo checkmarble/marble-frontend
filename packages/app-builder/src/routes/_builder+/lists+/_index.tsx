@@ -92,7 +92,7 @@ export default function ListsPage() {
               {isCreateListAvailable ? <CreateList /> : null}
             </div>
             {isEmpty ? (
-              <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-grey-100 border-grey-90 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
                 <p className="text-s font-medium">
                   {t('lists:empty_custom_lists_list')}
                 </p>
@@ -100,7 +100,7 @@ export default function ListsPage() {
             ) : (
               <Table.Container
                 {...getContainerProps()}
-                className="bg-grey-00 max-h-[70dvh]"
+                className="bg-grey-100 max-h-[70dvh]"
               >
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>

@@ -28,7 +28,7 @@ const ScrollAreaScrollbar = forwardRef<
   <Scrollbar
     ref={ref}
     className={clsx(
-      'bg-grey-02 radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-05 radix-orientation-horizontal:flex-col flex touch-none select-none p-0.5 transition',
+      'bg-grey-98 radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-95 radix-orientation-horizontal:flex-col flex touch-none select-none p-0.5 transition',
       className,
     )}
     orientation={orientation}
@@ -43,7 +43,7 @@ const ScrollAreaThumb = forwardRef<
 >(({ className, ...props }, ref) => (
   <Thumb
     ref={ref}
-    className={clsx('bg-grey-25 relative flex-1 rounded-lg', className)}
+    className={clsx('bg-grey-80 relative flex-1 rounded-lg', className)}
     {...props}
   />
 ));
@@ -53,7 +53,7 @@ const ScrollAreaCorner = forwardRef<
   HTMLDivElement,
   ScrollAreaCornerProps & RefAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <Corner ref={ref} className={clsx('bg-grey-05', className)} {...props} />
+  <Corner ref={ref} className={clsx('bg-grey-95', className)} {...props} />
 ));
 ScrollAreaCorner.displayName = Corner?.displayName;
 
@@ -123,18 +123,18 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(
         {orientation !== 'vertical' ? (
           <Scrollbar
             orientation="horizontal"
-            className="hover:bg-grey-10 m-px flex h-1 touch-none select-none flex-col rounded-full transition-colors"
+            className="hover:bg-grey-90 m-px flex h-1 touch-none select-none flex-col rounded-full transition-colors"
           >
-            <Thumb className="bg-grey-25 hover:bg-grey-50 flex-1 rounded-full" />
+            <Thumb className="bg-grey-80 hover:bg-grey-50 flex-1 rounded-full" />
           </Scrollbar>
         ) : null}
 
         {orientation !== 'horizontal' ? (
           <Scrollbar
             orientation="vertical"
-            className="hover:bg-grey-10 m-px flex w-1 touch-none select-none flex-row rounded-full transition-colors"
+            className="hover:bg-grey-90 m-px flex w-1 touch-none select-none flex-row rounded-full transition-colors"
           >
-            <Thumb className="bg-grey-25 hover:bg-grey-50 flex-1 rounded-full" />
+            <Thumb className="bg-grey-80 hover:bg-grey-50 flex-1 rounded-full" />
           </Scrollbar>
         ) : null}
 

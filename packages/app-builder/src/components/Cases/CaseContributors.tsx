@@ -32,7 +32,7 @@ export function CaseContributors({
                   firstName={user?.firstName}
                   lastName={user?.lastName}
                 />
-                <div className="text-grey-100 text-xs font-normal capitalize">
+                <div className="text-grey-00 text-xs font-normal capitalize">
                   {getFullName(user) || t('cases:case_detail.unknown_user')}
                 </div>
               </div>
@@ -49,7 +49,7 @@ export function CaseContributors({
               <Avatar
                 key={contributor.id}
                 className={cx(
-                  'border-grey-00 border-2',
+                  'border-grey-100 border-2',
                   index === 0 && 'z-30',
                   index === 1 && 'z-20',
                   index === 2 && 'z-10',
@@ -62,7 +62,7 @@ export function CaseContributors({
           })}
         </div>
         {contributors.length > 3 ? (
-          <div className="text-s text-grey-100 font-normal">
+          <div className="text-s text-grey-00 font-normal">
             +{contributors.length - 3}
           </div>
         ) : null}

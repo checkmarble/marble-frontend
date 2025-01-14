@@ -28,9 +28,9 @@ const operandContainerClassnames = cva(
   {
     variants: {
       interactionMode: {
-        viewer: 'bg-grey-02',
+        viewer: 'bg-grey-98',
         editor:
-          'bg-grey-00 aria-expanded:bg-purple-05 aria-expanded:border-purple-100',
+          'bg-grey-100 aria-expanded:bg-purple-98 aria-expanded:border-purple-65',
       },
       validationStatus: {
         valid: '',
@@ -44,35 +44,35 @@ const operandContainerClassnames = cva(
         interactionMode: 'editor',
         validationStatus: 'valid',
         className:
-          'border enabled:aria-[expanded=false]:border-grey-10 enabled:aria-[expanded=false]:focus:border-purple-100',
+          'border enabled:aria-[expanded=false]:border-grey-90 enabled:aria-[expanded=false]:focus:border-purple-65',
       },
       {
         interactionMode: 'editor',
         validationStatus: 'error',
         className:
-          'border enabled:aria-[expanded=false]:border-red-100 enabled:aria-[expanded=false]:focus:border-purple-100',
+          'border enabled:aria-[expanded=false]:border-red-47 enabled:aria-[expanded=false]:focus:border-purple-65',
       },
       {
         interactionMode: 'editor',
         validationStatus: 'light-error',
         className:
-          'border enabled:aria-[expanded=false]:border-red-25 enabled:aria-[expanded=false]:focus:border-purple-100',
+          'border enabled:aria-[expanded=false]:border-red-87 enabled:aria-[expanded=false]:focus:border-purple-65',
       },
       // viewer cases
       {
         interactionMode: 'viewer',
         validationStatus: 'valid',
-        className: 'border border-grey-02',
+        className: 'border border-grey-98',
       },
       {
         interactionMode: 'viewer',
         validationStatus: 'error',
-        className: 'border border-red-100',
+        className: 'border border-red-47',
       },
       {
         interactionMode: 'viewer',
         validationStatus: 'light-error',
-        className: 'border border-red-25',
+        className: 'border border-red-87',
       },
     ],
     defaultVariants: {
@@ -133,7 +133,7 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
           <OperandInfos
             gutter={16}
             shift={-16}
-            className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
+            className="group-hover:hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent transition-colors"
             astNode={astNode}
             dataType={dataType}
             operandType={operandType}
@@ -153,7 +153,7 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
           <OperandInfos
             gutter={16}
             shift={-16}
-            className="size-5 shrink-0 text-transparent transition-colors group-hover:text-purple-50 group-hover:hover:text-purple-100"
+            className="group-hover:hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent transition-colors"
             astNode={astNode}
             dataType={dataType}
             operandType={operandType}
@@ -180,13 +180,13 @@ export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
 );
 
 const typeInfosClassnames = cva(
-  'flex items-center justify-center rounded-sm p-1 text-grey-100',
+  'flex items-center justify-center rounded-sm p-1 text-grey-00',
   {
     variants: {
       interactionMode: {
-        viewer: 'bg-grey-10',
+        viewer: 'bg-grey-90',
         editor:
-          'bg-grey-02 group-aria-expanded:bg-purple-10 group-aria-expanded:text-purple-100',
+          'bg-grey-98 group-aria-expanded:bg-purple-96 group-aria-expanded:text-purple-65',
       },
     },
   },
@@ -232,12 +232,12 @@ function TypeInfos({ operandType, dataType, interactionMode }: TypeInfosProps) {
 }
 
 const operandDisplayName = cva(
-  'text-s font-medium group-aria-expanded:text-purple-100 break-all',
+  'text-s font-medium group-aria-expanded:text-purple-65 break-all',
   {
     variants: {
       type: {
-        placeholder: 'text-grey-25',
-        value: 'text-grey-100',
+        placeholder: 'text-grey-80',
+        value: 'text-grey-00',
       },
     },
     defaultVariants: {

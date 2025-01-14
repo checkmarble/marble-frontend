@@ -172,7 +172,7 @@ export function CreateInboxUserContent({
         <Modal.Title>
           {t('settings:inboxes.inbox_details.add_member')}
         </Modal.Title>
-        <div className="bg-grey-00 flex flex-col gap-6 p-6">
+        <div className="bg-grey-100 flex flex-col gap-6 p-6">
           <input
             {...getInputProps(fields.inboxId, { type: 'hidden' })}
             key={fields.inboxId.key}

@@ -33,7 +33,7 @@ export const FormErrorOrDescription = React.forwardRef<
         id={errorId}
         className={
           errorClassName ??
-          'text-s font-medium text-red-100 transition-opacity duration-200 ease-in-out'
+          'text-s text-red-47 font-medium transition-opacity duration-200 ease-in-out'
         }
         {...props}
       >
@@ -49,7 +49,7 @@ export const FormErrorOrDescription = React.forwardRef<
         id={descriptionId}
         className={
           descriptionClassName ??
-          'text-s text-grey-25 font-medium transition-opacity duration-200 ease-in-out'
+          'text-s text-grey-80 font-medium transition-opacity duration-200 ease-in-out'
         }
         {...props}
       >

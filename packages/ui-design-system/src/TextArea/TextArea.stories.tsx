@@ -5,12 +5,12 @@ import { TextArea } from './TextArea';
 const Story: Meta<typeof TextArea> = {
   component: TextArea,
   title: 'TextArea',
-  args: { disabled: false, borderColor: 'grey-10' },
+  args: { disabled: false, borderColor: 'greyfigma-90' },
   argTypes: {
     disabled: { control: 'boolean' },
     borderColor: {
       control: { type: 'radio' },
-      options: ['grey-10', 'red-25', 'red-100'],
+      options: ['greyfigma-90', 'redfigma-87', 'redfigma-47'],
     },
   },
 };

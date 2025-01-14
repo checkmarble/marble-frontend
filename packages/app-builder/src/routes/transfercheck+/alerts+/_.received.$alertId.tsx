@@ -80,7 +80,7 @@ export default function ReceivedAlertDetailPage() {
 
       <Page.Container>
         <Page.Content className="max-w-3xl">
-          <Collapsible.Container className="bg-grey-00 w-full">
+          <Collapsible.Container className="bg-grey-100 w-full">
             <Collapsible.Title>
               {t('transfercheck:alert_detail.alert_data.title')}
             </Collapsible.Title>

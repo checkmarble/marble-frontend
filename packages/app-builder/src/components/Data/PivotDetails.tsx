@@ -17,7 +17,7 @@ export function PivotDetails({ pivot }: { pivot: Pivot }) {
         <span className="text-grey-50 text-s">
           {t('data:view_pivot.table')}
         </span>
-        <span className="text-m text-grey-100">{pivot.baseTable}</span>
+        <span className="text-m text-grey-00">{pivot.baseTable}</span>
 
         <span className="text-grey-50 text-s">
           {t('data:view_pivot.definition')}
@@ -33,7 +33,7 @@ export function PivotDetails({ pivot }: { pivot: Pivot }) {
       <PivotType type="link" />
 
       <span className="text-grey-50 text-s">{t('data:view_pivot.table')}</span>
-      <span className="text-m text-grey-100">
+      <span className="text-m text-grey-00">
         {pivot.baseTable}→{pivot.pivotTable}
       </span>
 

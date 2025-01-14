@@ -9,7 +9,7 @@ interface TriggerObjectTagProps {
 export function TriggerObjectTag({ children }: TriggerObjectTagProps) {
   const { t } = useTranslation(['scenarios']);
   return (
-    <div className="text-s bg-purple-05 flex h-10 items-center gap-2 rounded p-2 font-normal text-purple-100">
+    <div className="text-s bg-purple-98 text-purple-65 flex h-10 items-center gap-2 rounded p-2 font-normal">
       {children}
 
       <Ariakit.HovercardProvider
@@ -19,14 +19,14 @@ export function TriggerObjectTag({ children }: TriggerObjectTagProps) {
       >
         <Ariakit.HovercardAnchor
           tabIndex={-1}
-          className="cursor-pointer text-purple-50 transition-colors hover:text-purple-100"
+          className="hover:text-purple-65 text-purple-82 cursor-pointer transition-colors"
         >
           <Icon icon="tip" className="size-5" />
         </Ariakit.HovercardAnchor>
         <Ariakit.Hovercard
           portal
           gutter={16}
-          className="bg-grey-00 border-grey-10 flex w-fit max-w-80 rounded border p-2 shadow-md"
+          className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded border p-2 shadow-md"
         >
           {t('scenarios:trigger_object.description')}
         </Ariakit.Hovercard>

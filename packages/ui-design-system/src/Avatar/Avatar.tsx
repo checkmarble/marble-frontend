@@ -7,7 +7,7 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const avatar = cva(
-  'inline-flex select-none items-center justify-center overflow-hidden rounded-full bg-purple-25 shrink-0',
+  'inline-flex select-none items-center justify-center overflow-hidden rounded-full bg-purple-96 shrink-0',
   {
     variants: {
       size: {
@@ -58,7 +58,7 @@ export function Avatar({
         }
       />
       <Fallback
-        className="text-grey-100 flex size-full items-center justify-center text-center font-normal uppercase"
+        className="text-grey-00 flex size-full items-center justify-center text-center font-normal uppercase"
         delayMs={src ? 400 : 0}
       >
         {`${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}` || '👤'}

@@ -81,7 +81,7 @@ export default function SentAlertDetailPage() {
               color,
               variant: 'contained',
               className:
-                'text-s border-grey-10 flex min-h-[40px] min-w-[40px] items-center justify-between gap-2 rounded border p-2 font-medium',
+                'text-s border-grey-90 flex min-h-[40px] min-w-[40px] items-center justify-between gap-2 rounded border p-2 font-medium',
             })}
           >
             {t(tKey)}
@@ -91,7 +91,7 @@ export default function SentAlertDetailPage() {
 
       <Page.Container>
         <Page.Content className="max-w-3xl">
-          <Collapsible.Container className="bg-grey-00 w-full">
+          <Collapsible.Container className="bg-grey-100 w-full">
             <Collapsible.Title>
               {t('transfercheck:alert_detail.alert_data.title')}
             </Collapsible.Title>

@@ -156,11 +156,11 @@ export function DecisionsList({
         cell: ({ getValue, row }) => (
           <div className="flex flex-row items-center gap-2">
             <Tooltip.Default content={getValue()}>
-              <span className="text-grey-100 text-s line-clamp-2 font-normal">
+              <span className="text-grey-00 text-s line-clamp-2 font-normal">
                 {getValue()}
               </span>
             </Tooltip.Default>
-            <div className="border-grey-10 text-grey-100 rounded-full border px-3 py-1 font-semibold">
+            <div className="border-grey-90 text-grey-00 rounded-full border px-3 py-1 font-semibold">
               {`V${row.original.scenario.version}`}
             </div>
           </div>
@@ -172,7 +172,7 @@ export function DecisionsList({
         size: 100,
         minSize: 100,
         cell: ({ getValue }) => (
-          <span className="text-grey-100 text-s line-clamp-2 break-words font-normal">
+          <span className="text-grey-00 text-s line-clamp-2 break-words font-normal">
             {getValue()}
           </span>
         ),
@@ -191,15 +191,15 @@ export function DecisionsList({
                 status={row.original.case.status}
               />
               <Tooltip.Default content={getValue()}>
-                <div className="bg-grey-02 flex h-8 items-center justify-center rounded px-2">
-                  <span className="text-grey-100 text-s line-clamp-1 font-normal">
+                <div className="bg-grey-98 flex h-8 items-center justify-center rounded px-2">
+                  <span className="text-grey-00 text-s line-clamp-1 font-normal">
                     {getValue()}
                   </span>
                 </div>
               </Tooltip.Default>
             </div>
           ) : (
-            <span className="bg-grey-02 text-grey-100 text-s flex size-8 items-center justify-center rounded font-normal">
+            <span className="bg-grey-98 text-grey-00 text-s flex size-8 items-center justify-center rounded font-normal">
               {getValue()}
             </span>
           ),
@@ -215,7 +215,7 @@ export function DecisionsList({
             <div className="relative flex flex-col gap-1">
               {pivotValues.map((pivotValue) => (
                 <Tooltip.Default key={pivotValue.id} content={pivotValue.value}>
-                  <span className="text-grey-100 text-s line-clamp-1 text-ellipsis">
+                  <span className="text-grey-00 text-s line-clamp-1 text-ellipsis">
                     {pivotValue.value}
                   </span>
                 </Tooltip.Default>
@@ -282,7 +282,7 @@ export function DecisionsList({
   return (
     <Table.Container
       {...getContainerProps()}
-      className={clsx('bg-grey-00', className)}
+      className={clsx('bg-grey-100', className)}
     >
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>

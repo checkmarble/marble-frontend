@@ -130,7 +130,7 @@ function UploadFileContent({
           className={clsx(
             'text-s flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
             isDragActive
-              ? 'bg-purple-10 border-purple-50 opacity-90'
+              ? 'bg-purple-96 border-purple-82 opacity-90'
               : 'border-grey-50',
           )}
         >
@@ -140,7 +140,7 @@ function UploadFileContent({
             <>
               <p className="text-center">{t('cases:drop_file_cta')}</p>
               <p>{t('cases:drop_file_accepted_types')}</p>
-              <p className="text-grey-25 uppercase">{t('common:or')}</p>
+              <p className="text-grey-80 uppercase">{t('common:or')}</p>
               <Button>
                 <Icon icon="plus" className="size-6" />
                 {t('cases:pick_file_cta')}
