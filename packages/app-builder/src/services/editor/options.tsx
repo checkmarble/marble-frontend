@@ -357,7 +357,7 @@ export function useGetModelingOperations() {
         operandType: 'Modeling',
         displayName: t('scenarios:edit_operand.modeling.open_nesting'),
         searchShortcut: '(',
-        icon: 'split-left',
+        icon: 'parentheses',
       },
     ];
   }, [t]);

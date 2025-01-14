@@ -243,7 +243,7 @@ const NestingParenthesis = ({
           <Icon
             aria-hidden="true"
             className="col-start-1 size-5 shrink-0"
-            icon="split-right"
+            icon="parentheses"
           />
           <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
             <div className="text-grey-100 text-s w-full break-all text-start font-normal">
