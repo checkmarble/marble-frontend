@@ -188,7 +188,7 @@ export function UpdateInboxUserContent({
             <FormLabel className="flex gap-2">
               <span
                 className={clsx({
-                  'text-grey-25': access === 'restricted',
+                  'text-grey-80': access === 'restricted',
                 })}
               >
                 {t('settings:inboxes.inbox_details.role')}

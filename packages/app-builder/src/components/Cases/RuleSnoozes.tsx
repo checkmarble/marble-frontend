@@ -143,7 +143,7 @@ export function RuleSnoozes({
                       <Icon icon="snooze" className="size-6" />
                       {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
                       <Nudge
-                        className="border-purple-25 absolute -right-3 -top-3 size-6 border"
+                        className="border-purple-96 absolute -right-3 -top-3 size-6 border"
                         content={t('cases:case_detail.add_rule_snooze.nudge')}
                         link="https://docs.checkmarble.com/docs/rule-snoozes"
                       />
@@ -158,7 +158,7 @@ export function RuleSnoozes({
                             'cases:case_detail.add_rule_snooze.snooze_this_value',
                           )}
                           <Nudge
-                            className="absolute -right-3 -top-3 size-6 border border-purple-50"
+                            className="border-purple-82 absolute -right-3 -top-3 size-6 border"
                             kind="test"
                             content={t(
                               'cases:case_detail.add_rule_snooze.nudge',
