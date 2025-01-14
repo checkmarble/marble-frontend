@@ -29,7 +29,6 @@
   "errors.data.duplicate_link_name": "Un lien avec ce nom existe déjà",
   "errors.data.duplicate_table_name": "Une table portant ce nom existe déjà",
   "errors.firebase_auth_error": "Une erreur d'authentification s'est produite. \nEssayez de vous connecter à nouveau.",
-  "errors.firebase_network_error": "Une erreur réseau s'est produite. \nEssayez de vous connecter à nouveau.",
   "errors.forbidden.subtitle": "Vous n'êtes pas autorisé à accéder à cette page",
   "errors.forbidden.title": "Accès interdit",
   "errors.list.duplicate_email": "Cet email est déjà utilisé",
@@ -62,5 +61,7 @@
   "check_on_docs": "En savoir plus sur notre documentation",
   "github_banner": "Aimez-vous l'application Marble ? Dites le nous en nous attribuant une étoile sur",
   "premium": "Fonctionnalité Premium",
-  "upgrade": "Mettre à niveau maintenant"
+  "upgrade": "Mettre à niveau maintenant",
+  "errors.backend_unvailable": "L'application Marble ne peut pas communiquer avec le backend Marble. \nVérifiez votre configuration ou réessayez ultérieurement.",
+  "errors.firebase_network_error": "Marble a quelques difficultés à se connecter à Firebase. \nVérifiez la configuration de Firebase ou réessayez ultérieurement."
 }

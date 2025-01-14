@@ -9,6 +9,7 @@ const errorLabels: Record<AuthErrors, ParseKeys<typeof authI18n>> = {
   NoAccount: 'auth:errors.no_account',
   CSRFError: 'auth:errors.csrf_error',
   Unknown: 'common:errors.unknown',
+  BackendUnavailable: 'common:errors.backend_unvailable',
 };
 
 export function AuthError({
