@@ -11,6 +11,7 @@ import {
   NewTimeAddAstNode,
   NewTimeNowAstNode,
   NewTimestampExtractAstNode,
+  NewUndefinedAstNode,
   type PayloadAstNode,
 } from '@app-builder/models/ast-node';
 import { type CustomList } from '@app-builder/models/custom-list';
@@ -29,6 +30,7 @@ import {
   sortMainAstOperatorFunctions,
 } from '@app-builder/models/editable-operators';
 import { type OperandType } from '@app-builder/models/operand-type';
+import { type OperandOption } from '@app-builder/types/operand-options';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import * as React from 'react';
@@ -184,7 +186,30 @@ export function useGetEnumValuesFromNeighbour() {
   );
 }
 
-export function useGetAstNodeOption() {
+export function useGetOperandOption() {
+  const getAstNodeDataType = useGetAstNodeDataType();
+  const getAstNodeOperandType = useGetAstNodeOperandType();
+  const getAstNodeDisplayName = useGetAstNodeDisplayName();
+
+  return React.useCallback(
+    (
+      astNode: AstNode,
+      context: {
+        enumValues?: EnumValue[];
+      } = {},
+    ) => {
+      return {
+        createNode: () => astNode,
+        dataType: getAstNodeDataType(astNode),
+        operandType: getAstNodeOperandType(astNode, context),
+        displayName: getAstNodeDisplayName(astNode),
+      };
+    },
+    [getAstNodeDataType, getAstNodeOperandType, getAstNodeDisplayName],
+  );
+}
+
+export function useGetAstNodeOperandProps() {
   const getAstNodeDataType = useGetAstNodeDataType();
   const getAstNodeOperandType = useGetAstNodeOperandType();
   const getAstNodeDisplayName = useGetAstNodeDisplayName();
@@ -210,7 +235,7 @@ export function useGetAstNodeOption() {
 export function useTimestampFieldOptions() {
   const databaseAccessors = useDatabaseAccessors();
   const payloadAccessors = usePayloadAccessors();
-  const getAstNodeOption = useGetAstNodeOption();
+  const getAstNodeOption = useGetOperandOption();
 
   return React.useMemo(() => {
     return [
@@ -228,10 +253,11 @@ export function useOperandOptions(enumValues?: EnumValue[]) {
   const databaseAccessors = useDatabaseAccessors();
   const payloadAccessors = usePayloadAccessors();
   const customLists = useCustomLists();
-  const getAstNodeOption = useGetAstNodeOption();
+  const getAstNodeOption = useGetOperandOption();
+  const modelingOperations = useGetModelingOperations();
 
-  return React.useMemo(() => {
-    return [
+  return React.useMemo<OperandOption[]>(() => {
+    const astNodeOptions = [
       ...databaseAccessors,
       ...payloadAccessors,
       ...customLists.map(({ id }) => NewCustomListAstNode(id)),
@@ -247,12 +273,15 @@ export function useOperandOptions(enumValues?: EnumValue[]) {
         NewConstantAstNode({ constant: enumValue }),
       ),
     ].map((astNode) => getAstNodeOption(astNode, { enumValues }));
+
+    return [...astNodeOptions, ...modelingOperations];
   }, [
     customLists,
     databaseAccessors,
     enumValues,
     getAstNodeOption,
     payloadAccessors,
+    modelingOperations,
   ]);
 }
 
@@ -311,4 +340,25 @@ export function useDefaultCoerceToConstant() {
     },
     [getAstNodeDataType, getAstNodeDisplayName, t],
   );
+}
+
+export function useGetModelingOperations() {
+  const { t } = useTranslation(['common', 'scenarios']);
+
+  return React.useMemo<OperandOption[]>(() => {
+    return [
+      {
+        createNode: ({ initialAstNode }) => {
+          return NewUndefinedAstNode({
+            children: [initialAstNode, NewUndefinedAstNode()],
+          });
+        },
+        dataType: 'unknown',
+        operandType: 'Modeling',
+        displayName: t('scenarios:edit_operand.modeling.open_nesting'),
+        searchShortcut: '(',
+        icon: 'parentheses',
+      },
+    ];
+  }, [t]);
 }

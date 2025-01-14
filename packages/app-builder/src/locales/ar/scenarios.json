@@ -220,7 +220,6 @@
   "edit_date.now.description": "الوقت الذي يُنفَّذ فيه السيناريو",
   "edit_date.date": "التاريخ",
   "enum_options": "خيارات:",
-  "nest": "Nest",
   "edit_fuzzy_match.string_similarity": "تطابق النص",
   "edit_fuzzy_match.fuzzy_match": "مطابقة",
   "edit_fuzzy_match.fuzzy_match_any_of": "تطابق مع أي من",
@@ -368,5 +367,11 @@
   "edit_string_template.variables.label": "المتغيرات",
   "edit_string_template.description": "قم بإنشاء نص بقيم الحقول (<DocLink>معرفة المزيد</DocLink>)",
   "edit_operand.data_type.string.field_placeholder": "حدد حقل سلسلة...",
-  "testrun.nudge": "قارن الإصدار المباشر بإصدار جديد أو أقدم دون المساس بالبيانات المباشرة"
+  "testrun.nudge": "قارن الإصدار المباشر بإصدار جديد أو أقدم دون المساس بالبيانات المباشرة",
+  "edit_operand.operator_type.modeling_one": "النمذجة",
+  "edit_operand.operator_type.modeling_other": "النمذجة",
+  "nesting.remove": "إزالة التعشيش",
+  "edit_operand.modeling.open_nesting": "فتح بين قوسين",
+  "nesting.add_right_nesting": "التفاف بين قوسين",
+  "nesting.swap_operands": "تبديل القيم"
 }

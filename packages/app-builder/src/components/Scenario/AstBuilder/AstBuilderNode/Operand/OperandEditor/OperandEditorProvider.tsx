@@ -10,10 +10,10 @@ import {
   isUndefinedAstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
-import { type OperandType } from '@app-builder/models/operand-type';
 import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
 import { useTriggerObjectTable } from '@app-builder/services/editor/options';
 import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
+import { type OperandOption } from '@app-builder/types/operand-options';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import * as React from 'react';
@@ -34,12 +34,7 @@ type OperandEditorState = {
    */
   initialAstNode: AstNode;
   initialAstNodeErrors: AstNodeErrors;
-  options: {
-    astNode: AstNode;
-    dataType: DataType;
-    operandType: OperandType;
-    displayName: string;
-  }[];
+  options: OperandOption[];
   searchValue: string;
   coerceToConstant?: (searchValue: string) => {
     astNode: ConstantAstNode<ConstantType>;
@@ -58,12 +53,7 @@ interface OperandEditorActions {
   setOperandEditorOpen: (
     open: boolean,
     astNode: AstNode,
-    options: {
-      astNode: AstNode;
-      dataType: DataType;
-      operandType: OperandType;
-      displayName: string;
-    }[],
+    options: OperandOption[],
     coerceToConstant?: (searchValue: string) => {
       astNode: ConstantAstNode<ConstantType>;
       displayName: string;
@@ -285,23 +275,31 @@ export function useBottomOptions() {
   }, [copyPasteAST, initialAstNode, onEdit, onSave, t]);
 }
 
-export function useDiscoveryResults() {
+export function useDiscoveryResults(initialAstNode: AstNode) {
   const options = useOptions();
   const triggerObjectTable = useTriggerObjectTable();
   return React.useMemo(() => {
     return R.pipe(
-      options,
+      R.pipe(
+        options,
+        R.map((option) => ({
+          ...option,
+          astNode: option.createNode({ initialAstNode }),
+        })),
+      ),
       R.groupBy((option) => option.operandType),
-      ({ Enum, CustomList, Function, Field }) => {
+      ({ Enum, CustomList, Function, Field, Modeling }) => {
         const fieldOptions = Field
           ? R.pipe(
               Field,
               R.groupBy((option) => {
-                if (isDatabaseAccess(option.astNode)) {
-                  const { path, tableName } = option.astNode.namedChildren;
+                const astNode = option.createNode({ initialAstNode });
+
+                if (isDatabaseAccess(astNode)) {
+                  const { path, tableName } = astNode.namedChildren;
                   return [tableName.constant, ...path.constant].join('.');
                 }
-                if (isPayload(option.astNode)) {
+                if (isPayload(astNode)) {
                   return triggerObjectTable.name;
                 }
               }),
@@ -316,8 +314,9 @@ export function useDiscoveryResults() {
           fieldOptions,
           customListOptions: CustomList ?? [],
           functionOptions: Function ?? [],
+          modelingOptions: Modeling ?? [],
         };
       },
     );
-  }, [options, triggerObjectTable.name]);
+  }, [options, triggerObjectTable.name, initialAstNode]);
 }
