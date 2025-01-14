@@ -2,8 +2,11 @@ import { Link, useNavigate } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { ClientOnly } from 'remix-utils/client-only';
 import { Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+import { GithubBanner } from './GithubBanner';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return (
@@ -31,16 +34,23 @@ export const headerHeight = cva(undefined, {
   },
 });
 
-function PageHeader({ className, ...props }: React.ComponentProps<'div'>) {
+function PageHeader({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<'div'>) {
   return (
     <div
       className={clsx(
-        'border-b-grey-10 bg-grey-00 text-l text-grey-100 flex shrink-0 flex-row items-center border-b px-4 font-bold lg:px-6',
+        'border-b-grey-10 bg-grey-00 text-l text-grey-100 relative flex shrink-0 flex-row items-center border-b px-4 font-bold lg:px-6',
         headerHeight({ type: 'height' }),
         className,
       )}
       {...props}
-    />
+    >
+      <ClientOnly fallback={null}>{() => <GithubBanner />}</ClientOnly>
+      {children}
+    </div>
   );
 }
 

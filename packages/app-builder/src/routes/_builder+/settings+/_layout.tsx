@@ -144,7 +144,7 @@ export default function Settings() {
                               <Nudge
                                 className="size-6"
                                 content={t(`settings:${setting.title}.nudge`)}
-                                link="https://checkmarble.com/docs"
+                                link="https://docs.checkmarble.com/docs/introduction-3"
                               />
                             </div>
                           ))
@@ -165,7 +165,7 @@ export default function Settings() {
                               <Nudge
                                 className="size-6"
                                 content={t(`settings:${setting.title}.nudge`)}
-                                link="https://checkmarble.com/docs"
+                                link="https://docs.checkmarble.com/docs/introduction-3"
                                 kind="test"
                               />
                             </NavLink>

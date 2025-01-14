@@ -363,8 +363,7 @@ function DecisionDetail({
                     }}
                   />
 
-                  {featureAccess.isReadSnoozeAvailable &&
-                  pivotValues.length > 0 ? (
+                  {pivotValues.length > 0 ? (
                     <RuleSnoozes
                       ruleSnoozes={ruleSnoozes}
                       pivotValues={pivotValues}

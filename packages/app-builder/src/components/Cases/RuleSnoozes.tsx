@@ -7,6 +7,7 @@ import * as Ariakit from '@ariakit/react';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -119,29 +120,60 @@ export function RuleSnoozes({
                     </Ariakit.Hovercard>
                   </Ariakit.HovercardProvider>
                 </div>
-              ) : entitlements.ruleSnoozes ? (
-                isCreateSnoozeAvailable ? (
-                  <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
-                    <Button className="h-8 w-fit pl-2">
+              ) : (
+                match(entitlements.ruleSnoozes)
+                  .with('allowed', () =>
+                    isCreateSnoozeAvailable ? (
+                      <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
+                        <Button className="h-8 w-fit pl-2">
+                          <Icon icon="snooze" className="size-6" />
+                          {t(
+                            'cases:case_detail.add_rule_snooze.snooze_this_value',
+                          )}
+                        </Button>
+                      </AddRuleSnooze>
+                    ) : (
+                      <span className="text-grey-50 col-span-2 text-xs">
+                        {t('cases:case_detail.add_rule_snooze.no_access')}
+                      </span>
+                    ),
+                  )
+                  .with('restricted', () => (
+                    <Button className="relative h-8 w-fit pl-2" disabled>
                       <Icon icon="snooze" className="size-6" />
                       {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
+                      <Nudge
+                        className="border-purple-25 absolute -right-3 -top-3 size-6 border"
+                        content={t('cases:case_detail.add_rule_snooze.nudge')}
+                        link="https://docs.checkmarble.com/docs/rule-snoozes"
+                      />
                     </Button>
-                  </AddRuleSnooze>
-                ) : (
-                  <span className="text-grey-50 col-span-2 text-xs">
-                    {t('cases:case_detail.add_rule_snooze.no_access')}
-                  </span>
-                )
-              ) : (
-                <Button className="h-8 w-fit pl-2" disabled>
-                  <Icon icon="snooze" className="size-6" />
-                  {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
-                  <Nudge
-                    className="absolute -right-3 -top-3 size-6"
-                    content={t('cases:case_detail.add_rule_snooze.nudge')}
-                    link="https://checkmarble.com/docs"
-                  />
-                </Button>
+                  ))
+                  .with('test', () =>
+                    isCreateSnoozeAvailable ? (
+                      <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
+                        <Button className="relative h-8 w-fit pl-2">
+                          <Icon icon="snooze" className="size-6" />
+                          {t(
+                            'cases:case_detail.add_rule_snooze.snooze_this_value',
+                          )}
+                          <Nudge
+                            className="absolute -right-3 -top-3 size-6 border border-purple-50"
+                            kind="test"
+                            content={t(
+                              'cases:case_detail.add_rule_snooze.nudge',
+                            )}
+                            link="https://docs.checkmarble.com/docs/rule-snoozes"
+                          />
+                        </Button>
+                      </AddRuleSnooze>
+                    ) : (
+                      <span className="text-grey-50 col-span-2 text-xs">
+                        {t('cases:case_detail.add_rule_snooze.no_access')}
+                      </span>
+                    ),
+                  )
+                  .exhaustive()
               )}
             </React.Fragment>
           );

@@ -369,7 +369,6 @@ function TestRunSection({
             <Nudge
               className="absolute -right-3 -top-3 size-6"
               content={t('scenarios:testrun.nudge')}
-              link="https://checkmarble.com/docs"
               kind="test"
             />
           ) : null}
@@ -640,7 +639,7 @@ function WorkflowSection({
             <Nudge
               className="absolute -right-3 -top-3 size-6"
               content={t('workflows:nudge')}
-              link="https://checkmarble.com/docs"
+              link="https://docs.checkmarble.com/docs/introduction-5"
               kind="test"
             />
           ) : null}

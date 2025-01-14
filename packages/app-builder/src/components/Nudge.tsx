@@ -11,7 +11,7 @@ import { Icon } from 'ui-icons';
 type NudgeProps = {
   content: string;
   className?: string;
-  link: string;
+  link?: string;
   kind?: 'test' | 'restricted';
 };
 
@@ -46,16 +46,18 @@ export const Nudge = ({
         className="bg-grey-00 flex w-60 flex-col items-center gap-6 rounded border border-purple-50 p-4 shadow-lg"
       >
         <span className="text-m font-bold">{t('common:premium')}</span>
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-s text-center font-medium">{content}</p>
-          <a
-            className="text-s text-purple-100 hover:underline"
-            target="_blank"
-            rel="noreferrer"
-            href={link}
-          >
-            {link}
-          </a>
+        <div className="flex w-full flex-col items-center gap-2">
+          <p className="text-s w-full text-center font-medium">{content}</p>
+          {link ? (
+            <a
+              className="text-s inline-block w-full text-center text-purple-100 hover:underline"
+              target="_blank"
+              rel="noreferrer"
+              href={link}
+            >
+              {t('common:check_on_docs')}
+            </a>
+          ) : null}
         </div>
         <Button variant="primary" className="mt-4">
           {t('common:upgrade')}

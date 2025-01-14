@@ -17,7 +17,7 @@ export const WorkflowNudge = () => {
           <Nudge
             className="absolute -right-3 -top-3 size-6"
             content={t('workflows:nudge')}
-            link="https://checkmarble.com/docs"
+            link="https://docs.checkmarble.com/docs/introduction-5"
           />
           <CalloutV2>
             <div className="flex flex-col gap-4">

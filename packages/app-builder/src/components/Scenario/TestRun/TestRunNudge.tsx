@@ -17,7 +17,6 @@ export const TestRunNudge = () => {
           <Nudge
             className="absolute -right-3 -top-3 size-6"
             content={t('scenarios:testrun.nudge')}
-            link="https://checkmarble.com/docs"
           />
           <CalloutV2>
             <div className="flex flex-col gap-4">

@@ -150,7 +150,6 @@ export default function Builder() {
                           <Nudge
                             className="size-6"
                             content={t('navigation:analytics.nudge')}
-                            link="https://checkmarble.com/docs"
                           />
                         </div>
                       ))
@@ -166,7 +165,6 @@ export default function Builder() {
                             <Nudge
                               className="size-6"
                               content={t('navigation:analytics.nudge')}
-                              link="https://checkmarble.com/docs"
                               kind="test"
                             />
                           </SidebarLink>

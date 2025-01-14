@@ -204,7 +204,6 @@ export function CreateInboxUserContent({
               {access === 'allowed' ? null : (
                 <Nudge
                   content={t('settings:users.role.nudge')}
-                  link="https://checkmarble.com/docs"
                   className="size-6"
                   kind={access}
                 />
