@@ -1,4 +1,5 @@
 import {
+  type AstNode,
   isMainAstNode,
   type MainAstBinaryNode,
   type MainAstUnaryNode,
@@ -17,6 +18,10 @@ import { Icon } from 'ui-icons';
 import { AstBuilderNode } from './AstBuilderNode';
 import { Operator } from './Operator';
 
+function isMainAstNodeWithChildren(astNode: AstNode): boolean {
+  return isMainAstNode(astNode) && astNode.children.length > 0;
+}
+
 export function MainAstBinaryOperatorLine({
   treePath,
   mainAstNode,
@@ -30,8 +35,8 @@ export function MainAstBinaryOperatorLine({
 }) {
   const { setAstNodeAtPath, setOperatorAtPath } = useAstNodeEditorActions();
   const hasDirectNestedChildren =
-    isMainAstNode(mainAstNode.children[0]) &&
-    isMainAstNode(mainAstNode.children[1]);
+    isMainAstNodeWithChildren(mainAstNode.children[0]) &&
+    isMainAstNodeWithChildren(mainAstNode.children[1]);
 
   function removeNesting() {
     const nestedChild = mainAstNode.children[0];
