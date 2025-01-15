@@ -229,7 +229,7 @@ function CreateUserContent({
               <FormLabel className="flex flex-row gap-2">
                 <span
                   className={clsx({
-                    'text-grey-25': access === 'restricted',
+                    'text-grey-80': access === 'restricted',
                   })}
                 >
                   {t('settings:users.role')}
