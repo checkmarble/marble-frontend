@@ -9,27 +9,30 @@ export interface LicenseRepository {
   isSsoEnabled(): Promise<boolean>;
 }
 
-export const makeGetLicenseRepository = () => {
-  return (client: LicenseApi): LicenseRepository => ({
+export const makeGetLicenseRepository =
+  (isDev: boolean) =>
+  (client: LicenseApi): LicenseRepository => ({
     getEntitlements: async (organizationId: string) => {
-      if (import.meta.env.PROD) {
-        const { feature_access } = await client.getEntitlements(organizationId);
-        if (!import.meta.env.PROD) {
-          feature_access.webhooks = 'restricted';
-          feature_access.analytics = 'restricted';
-        }
-        return adaptLicenseEntitlements(feature_access);
+      const accesses: LicenseEntitlements = !isDev
+        ? adaptLicenseEntitlements(
+            (await client.getEntitlements(organizationId)).feature_access,
+          )
+        : {
+            sanctions: 'allowed',
+            ruleSnoozes: 'allowed',
+            userRoles: 'allowed',
+            workflows: 'allowed',
+            testRun: 'allowed',
+            analytics: 'allowed',
+            webhooks: 'allowed',
+          };
+
+      if (isDev) {
+        accesses.webhooks = 'restricted';
+        accesses.analytics = 'restricted';
       }
-      return Promise.resolve({
-        sanctions: 'allowed',
-        ruleSnoozes: 'test',
-        userRoles: 'allowed',
-        webhooks: 'restricted',
-        analytics: 'restricted',
-        workflows: 'allowed',
-        testRun: 'allowed',
-      });
+
+      return accesses;
     },
     isSsoEnabled: async () => (await client.isSsoEnabled()).is_sso_enabled,
   });
-};
