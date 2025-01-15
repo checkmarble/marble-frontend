@@ -8,26 +8,23 @@ export const TestRunNudge = () => {
   const { t } = useTranslation(['scenarios']);
 
   return (
-    <section className="flex flex-col gap-8">
-      <h2 className="text-grey-00 text-m font-semibold">
+    <section className="bg-grey-100 border-purple-82 relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border-2 p-8">
+      <h3 className="text-grey-00 text-l font-bold">
         {t('scenarios:home.testrun')}
-      </h2>
-      <div className="flex max-w-[500px] flex-row gap-4">
-        <div className="bg-grey-100 border-purple-82 relative flex h-fit flex-col gap-4 rounded-lg border-2 p-8">
-          <Nudge
-            className="absolute -right-3 -top-3 size-6"
-            content={t('scenarios:testrun.nudge')}
-          />
-          <CalloutV2>
-            <div className="flex flex-col gap-4">
-              <span>{t('scenarios:testrun.description')}</span>
-            </div>
-          </CalloutV2>
-          <Button variant="primary" disabled className="isolate h-10 w-fit">
-            <Icon icon="plus" className="size-6" aria-hidden />
-            {t('scenarios:create_testrun.title')}
-          </Button>
-        </div>
+      </h3>
+
+      <Nudge
+        className="absolute -right-3 -top-3 size-6"
+        content={t('scenarios:testrun.nudge')}
+      />
+
+      <CalloutV2>{t('scenarios:testrun.description')}</CalloutV2>
+
+      <div className="flex flex-row gap-4">
+        <Button variant="primary" disabled className="isolate h-10 w-fit">
+          <Icon icon="plus" className="size-6" aria-hidden />
+          {t('scenarios:create_testrun.title')}
+        </Button>
       </div>
     </section>
   );

@@ -33,6 +33,7 @@ import { makeGetUserRepository } from './UserRepository';
 import { makeGetWebhookRepository } from './WebhookRepository';
 
 export function makeServerRepositories({
+  devEnvironment,
   sessionStorageRepositoryOptions,
   getLicenseApiClientWithoutAuth,
   getLicenseAPIClientWithAuth,
@@ -80,7 +81,7 @@ export function makeServerRepositories({
     getWebhookRepository: makeGetWebhookRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
-    getLicenseRepository: makeGetLicenseRepository(),
+    getLicenseRepository: makeGetLicenseRepository(devEnvironment),
   };
 }
 
