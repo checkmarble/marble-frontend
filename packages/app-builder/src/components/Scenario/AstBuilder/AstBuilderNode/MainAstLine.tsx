@@ -1,4 +1,5 @@
 import {
+  isMainAstNode,
   type MainAstBinaryNode,
   type MainAstUnaryNode,
   NewUndefinedAstNode,
@@ -28,6 +29,9 @@ export function MainAstBinaryOperatorLine({
   root?: boolean;
 }) {
   const { setAstNodeAtPath, setOperatorAtPath } = useAstNodeEditorActions();
+  const hasDirectNestedChildren =
+    isMainAstNode(mainAstNode.children[0]) &&
+    isMainAstNode(mainAstNode.children[1]);
 
   function removeNesting() {
     const nestedChild = mainAstNode.children[0];
@@ -65,7 +69,7 @@ export function MainAstBinaryOperatorLine({
 
   const children = (
     <div className="group/nest contents">
-      {!root ? (
+      {!root || hasDirectNestedChildren ? (
         <NestingParenthesis
           invertOperands={invertOperands}
           removeNesting={removeNesting}
@@ -99,7 +103,7 @@ export function MainAstBinaryOperatorLine({
         }}
         viewOnly={viewOnly}
       />
-      {!root ? (
+      {!root || hasDirectNestedChildren ? (
         <NestingParenthesis
           invertOperands={invertOperands}
           removeNesting={removeNesting}
@@ -213,7 +217,7 @@ const NestingParenthesis = ({
     <MenuRoot>
       <MenuButton
         render={
-          <button className="text-grey-00 border-grey-90 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-98 flex h-10 items-center justify-center rounded border px-2" />
+          <button className="text-grey-00 border-grey-90 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-95 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-50 flex h-10 items-center justify-center rounded border px-2" />
         }
       >
         {children}
