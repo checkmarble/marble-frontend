@@ -3,9 +3,13 @@ import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
-import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  type SortingState,
+} from '@tanstack/react-table';
 import clsx from 'clsx';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
@@ -18,13 +22,20 @@ const columnHelper = createColumnHelper<Case>();
 
 export function CasesList({
   className,
+  onSortingChange,
   cases,
 }: {
   cases: Case[];
+  onSortingChange: (state: SortingState) => void;
   className?: string;
 }) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  useEffect(() => {
+    onSortingChange(sorting);
+  }, [sorting, onSortingChange]);
 
   const columns = useMemo(
     () => [
@@ -32,6 +43,7 @@ export function CasesList({
         id: 'status',
         header: t('cases:case.status'),
         size: 50,
+        enableSorting: false,
         cell: ({ getValue }) => (
           <CaseStatus size="big" type="first-letter" status={getValue()} />
         ),
@@ -41,6 +53,7 @@ export function CasesList({
         header: t('cases:case.name'),
         size: 200,
         minSize: 120,
+        enableSorting: false,
         cell: ({ getValue }) => {
           const caseName = getValue();
           return (
@@ -71,11 +84,13 @@ export function CasesList({
         header: t('cases:case.decisions'),
         size: 60,
         minSize: 60,
+        enableSorting: false,
       }),
       columnHelper.accessor(({ tags }) => tags, {
         id: 'tags',
         header: t('cases:case.tags'),
         size: 100,
+        enableSorting: false,
         cell: ({ getValue }) => (
           <div className="p-2">
             <CaseTags caseTagIds={getValue().map(({ tagId }) => tagId)} />
@@ -87,17 +102,23 @@ export function CasesList({
         header: t('cases:case.contributors'),
         size: 80,
         minSize: 80,
+        enableSorting: false,
         cell: ({ getValue }) => <CaseContributors contributors={getValue()} />,
       }),
     ],
     [language, t],
   );
+
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: cases,
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
-    enableSorting: false,
+    state: {
+      sorting,
+    },
+    manualSorting: true,
+    onSortingChange: setSorting,
     rowLink: ({ id }) => (
       <Link
         to={getRoute('/cases/:caseId', {
