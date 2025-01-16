@@ -33,7 +33,7 @@ export function StatusesFilter() {
                 value={status.value}
               >
                 <AlertStatus status={status.value} />
-                <span className="text-grey-100 text-s font-normal first-letter:capitalize">
+                <span className="text-grey-00 text-s font-normal first-letter:capitalize">
                   {status.label}
                 </span>
               </SelectWithCombobox.ComboboxItem>

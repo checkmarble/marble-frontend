@@ -4,6 +4,12 @@ import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { type Webhook } from '@app-builder/models/webhook';
 import { CreateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/create';
 import { webhooksSetupDocHref } from '@app-builder/services/documentation-href';
+import {
+  isCreateWebhookAvailable,
+  isDeleteWebhookAvailable,
+  isEditWebhookAvailable,
+  isReadWebhookAvailable,
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -20,34 +26,22 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { webhookRepository, user } = await authService.isAuthenticated(
-    request,
-    {
+  const { authService } = serverServices;
+  const { webhookRepository, user, entitlements } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    },
-  );
-  if (!(await featureAccessService.isReadWebhookAvailable(user))) {
-    return redirect(getRoute('/'));
-  }
+    });
 
-  const [
-    webhooks,
-    isCreateWebhookAvailable,
-    isEditWebhookAvailable,
-    isDeleteWebhookAvailable,
-  ] = await Promise.all([
-    webhookRepository.listWebhooks(),
-    featureAccessService.isCreateWebhookAvailable(user),
-    featureAccessService.isCreateWebhookAvailable(user),
-    featureAccessService.isDeleteWebhookAvailable(user),
-  ]);
+  if (!isReadWebhookAvailable(user, entitlements))
+    return redirect(getRoute('/'));
+
+  const webhooks = await webhookRepository.listWebhooks();
 
   return json({
     webhooks,
-    isCreateWebhookAvailable,
-    isEditWebhookAvailable,
-    isDeleteWebhookAvailable,
+    isCreateWebhookAvailable: isCreateWebhookAvailable(user, entitlements),
+    isEditWebhookAvailable: isEditWebhookAvailable(user, entitlements),
+    isDeleteWebhookAvailable: isDeleteWebhookAvailable(user, entitlements),
   });
 }
 
@@ -72,7 +66,7 @@ export default function Webhooks() {
           const eventTypes = getValue();
           if (eventTypes.length === 0) {
             return (
-              <span className="text-grey-25 text-s">
+              <span className="text-grey-80 text-s">
                 {t('settings:webhooks.event_types.placeholder')}
               </span>
             );

@@ -1,6 +1,7 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { CreateList } from '@app-builder/routes/ressources+/lists+/create';
+import { isCreateListAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -19,7 +20,7 @@ import { Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { user, customListsRepository } = await authService.isAuthenticated(
     request,
     {
@@ -30,7 +31,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({
     customLists,
-    isCreateListAvailable: featureAccessService.isCreateListAvailable(user),
+    isCreateListAvailable: isCreateListAvailable(user),
   });
 }
 
@@ -91,7 +92,7 @@ export default function ListsPage() {
               {isCreateListAvailable ? <CreateList /> : null}
             </div>
             {isEmpty ? (
-              <div className="bg-grey-00 border-grey-10 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-grey-100 border-grey-90 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
                 <p className="text-s font-medium">
                   {t('lists:empty_custom_lists_list')}
                 </p>
@@ -99,7 +100,7 @@ export default function ListsPage() {
             ) : (
               <Table.Container
                 {...getContainerProps()}
-                className="bg-grey-00 max-h-[70dvh]"
+                className="bg-grey-100 max-h-[70dvh]"
               >
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>

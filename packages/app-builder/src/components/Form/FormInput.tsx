@@ -34,7 +34,7 @@ export const FormInput = React.forwardRef<
   return (
     <Input
       ref={ref}
-      borderColor={meta.valid ? 'grey-10' : 'red-100'}
+      borderColor={meta.valid ? 'greyfigma-90' : 'redfigma-47'}
       {...inputProps}
       {...getInputProps(meta, {
         type,

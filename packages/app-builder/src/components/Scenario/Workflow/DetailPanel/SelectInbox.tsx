@@ -50,14 +50,14 @@ export function SelectInbox({
       selectedValue={selectedInboxId}
       onSelectedValueChange={onSelectedInboxIdChange}
     >
-      <SelectWithCombobox.Label className="text-grey-100 first-letter:capitalize">
+      <SelectWithCombobox.Label className="text-grey-00 first-letter:capitalize">
         {t('workflows:detail_panel.inbox.label')}*
       </SelectWithCombobox.Label>
       <SelectWithCombobox.Select>
         {selectedInbox ? (
-          <span className="text-grey-100">{selectedInbox.name}</span>
+          <span className="text-grey-00">{selectedInbox.name}</span>
         ) : (
-          <span className="text-grey-25">
+          <span className="text-grey-80">
             {t('workflows:detail_panel.inbox.placeholder')}
           </span>
         )}

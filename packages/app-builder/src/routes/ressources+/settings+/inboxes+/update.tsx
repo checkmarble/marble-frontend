@@ -148,7 +148,7 @@ export function UpdateInboxContent({
         {...getFormProps(form)}
       >
         <Modal.Title>{t('settings:inboxes.update_inbox')}</Modal.Title>
-        <div className="bg-grey-00 flex flex-col gap-6 p-6">
+        <div className="bg-grey-100 flex flex-col gap-6 p-6">
           <input
             {...getInputProps(fields.id, { type: 'hidden' })}
             key={fields.id.key}

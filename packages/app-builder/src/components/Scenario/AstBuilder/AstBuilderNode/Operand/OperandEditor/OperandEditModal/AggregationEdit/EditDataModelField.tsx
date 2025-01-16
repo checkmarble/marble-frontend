@@ -68,7 +68,7 @@ export const EditDataModelField = ({
           size: displayValue.length > 20 ? 'long' : 'short',
           className,
         })}
-        borderColor={errors.length > 0 ? 'red-100' : 'grey-10'}
+        borderColor={errors.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
       >
         {displayValue}
       </SelectWithCombobox.Select>
@@ -89,8 +89,8 @@ export const EditDataModelField = ({
 const selectDisplayText = cva(undefined, {
   variants: {
     type: {
-      placeholder: 'text-grey-25',
-      value: 'text-grey-100',
+      placeholder: 'text-grey-80',
+      value: 'text-grey-00',
     },
     size: {
       long: 'break-all',

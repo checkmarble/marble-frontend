@@ -17,7 +17,7 @@ export default function CaseFilesPage() {
 
   if (caseDetail.files.length === 0) {
     return (
-      <div className="bg-grey-00 border-grey-10 rounded-lg border p-4">
+      <div className="bg-grey-100 border-grey-90 rounded-lg border p-4">
         <span className="text-grey-50 text-s whitespace-pre">
           <Trans
             t={t}
@@ -43,7 +43,7 @@ function AddYourFirstFile({
 }) {
   return (
     <UploadFile caseDetail={caseDetail}>
-      <button className="text-purple-50 hover:text-purple-100 hover:underline">
+      <button className="hover:text-purple-65 text-purple-82 hover:underline">
         {children}
       </button>
     </UploadFile>

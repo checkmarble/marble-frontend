@@ -91,7 +91,7 @@ export default function Builder() {
               <SidebarLink
                 labelTKey="navigation:transfercheck.transfers"
                 to={getRoute('/transfercheck/transfers/')}
-                Icon={(props) => <Icon icon="arrows-right-left" {...props} />}
+                Icon={(props) => <Icon icon="transfercheck" {...props} />}
               />
             </li>
             <li>
@@ -137,9 +137,9 @@ export function ErrorBoundary() {
   // Handle Marble Admins, do not capture error in Sentry
   if (isRouteErrorResponse(error) && error.status === CONFLICT) {
     errorComponent = (
-      <div className="bg-purple-05 flex size-full items-center justify-center">
-        <div className="bg-grey-00 flex max-w-md flex-col items-center gap-4 rounded-2xl p-10 text-center shadow-md">
-          <h1 className="text-l text-purple-110 font-semibold">
+      <div className="bg-purple-98 flex size-full items-center justify-center">
+        <div className="bg-grey-100 flex max-w-md flex-col items-center gap-4 rounded-2xl p-10 text-center shadow-md">
+          <h1 className="text-l text-purple-60 font-semibold">
             {t('common:error_boundary.marble_admin.title')}
           </h1>
           <p className="text-s mb-6">
@@ -168,8 +168,8 @@ export function ErrorBoundary() {
   }
 
   return (
-    <div className="bg-purple-05 flex size-full items-center justify-center">
-      <div className="bg-grey-00 flex max-w-md rounded-2xl p-10 shadow-md">
+    <div className="bg-purple-98 flex size-full items-center justify-center">
+      <div className="bg-grey-100 flex max-w-md rounded-2xl p-10 shadow-md">
         {errorComponent}
       </div>
     </div>

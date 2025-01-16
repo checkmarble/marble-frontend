@@ -6,6 +6,7 @@ import { MenuGroup, MenuGroupLabel } from 'ui-design-system';
 
 import {
   useCoerceToConstant,
+  useInitialAstNode,
   useOperandEditorActions,
   useOptions,
   useSearchValue,
@@ -15,6 +16,7 @@ import { CoercedConstantOption, OperandOption } from './OperandMenuItem';
 export function OperandEditorSearchResults() {
   const { t } = useTranslation(scenarioI18n);
   const searchValue = useSearchValue();
+  const initialAstNode = useInitialAstNode();
   const { onOptionClick } = useOperandEditorActions();
 
   const coerceToConstant = useCoerceToConstant();
@@ -33,16 +35,21 @@ export function OperandEditorSearchResults() {
   const options = useOptions();
   const matchOptions = React.useMemo(() => {
     return matchSorter(options, searchValue, {
-      keys: ['displayName'],
-    }).map((option) => ({
-      key: `${option.displayName}-${option.dataType}-${option.operandType}`,
-      ...option,
-      searchValue,
-      onClick: () => {
-        onOptionClick(option.astNode);
-      },
-    }));
-  }, [onOptionClick, options, searchValue]);
+      keys: ['displayName', 'searchShortcut'],
+    }).map(({ createNode, ...option }) => {
+      const astNode = createNode({ searchValue, initialAstNode });
+
+      return {
+        key: `${option.displayName}-${option.dataType}-${option.operandType}`,
+        ...option,
+        astNode,
+        searchValue,
+        onClick: () => {
+          onOptionClick(astNode);
+        },
+      };
+    });
+  }, [onOptionClick, options, searchValue, initialAstNode]);
 
   return (
     <>
@@ -57,12 +64,12 @@ export function OperandEditorSearchResults() {
       <MenuGroup className="flex w-full flex-col gap-1">
         <div className="flex min-h-10 select-none flex-row items-center gap-1 p-2">
           <span className="flex w-full items-baseline gap-1">
-            <MenuGroupLabel className="text-grey-100 text-m flex items-baseline whitespace-pre font-semibold">
+            <MenuGroupLabel className="text-grey-00 text-m flex items-baseline whitespace-pre font-semibold">
               {t('scenarios:edit_operand.result', {
                 count: matchOptions.length,
               })}
             </MenuGroupLabel>
-            <span className="text-grey-25 text-xs font-medium">
+            <span className="text-grey-80 text-xs font-medium">
               {matchOptions.length}
             </span>
           </span>

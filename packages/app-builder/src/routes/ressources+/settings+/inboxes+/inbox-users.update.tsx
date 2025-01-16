@@ -3,10 +3,12 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { Nudge } from '@app-builder/components/Nudge';
 import {
   type InboxUser,
   tKeyForInboxUserRole,
 } from '@app-builder/models/inbox';
+import { getInboxUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -19,7 +21,9 @@ import {
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -45,17 +49,14 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-    featureAccessService,
   } = serverServices;
-  const { inbox } = await authService.isAuthenticated(request, {
+  const { inbox, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
-    schema: getUpdateInboxUserFormSchema(
-      await featureAccessService.getInboxUserRoles(),
-    ),
+    schema: getUpdateInboxUserFormSchema(getInboxUserRoles(entitlements)),
   });
 
   if (submission.status !== 'success') {
@@ -91,9 +92,11 @@ export async function action({ request }: ActionFunctionArgs) {
 export function UpdateInboxUser({
   inboxUser,
   inboxUserRoles,
+  access,
 }: {
   inboxUser: InboxUser;
   inboxUserRoles: readonly [string, ...string[]];
+  access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = React.useState(false);
@@ -118,6 +121,7 @@ export function UpdateInboxUser({
         <UpdateInboxUserContent
           currentInboxUser={inboxUser}
           inboxUserRoles={inboxUserRoles}
+          access={access}
         />
       </Modal.Content>
     </Modal.Root>
@@ -127,9 +131,11 @@ export function UpdateInboxUser({
 export function UpdateInboxUserContent({
   currentInboxUser,
   inboxUserRoles,
+  access,
 }: {
   currentInboxUser: InboxUser;
   inboxUserRoles: readonly [string, ...string[]];
+  access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const schema = React.useMemo(
@@ -166,7 +172,7 @@ export function UpdateInboxUserContent({
         {...getFormProps(form)}
       >
         <Modal.Title>{t('settings:inboxes.inbox_user.update')}</Modal.Title>
-        <div className="bg-grey-00 flex flex-col gap-6 p-6">
+        <div className="bg-grey-100 flex flex-col gap-6 p-6">
           <input
             {...getInputProps(fields.id, { type: 'hidden' })}
             key={fields.id.key}
@@ -179,8 +185,26 @@ export function UpdateInboxUserContent({
             name={fields.role.name}
             className="group flex flex-col gap-2"
           >
-            <FormLabel>{t('settings:inboxes.inbox_details.role')}</FormLabel>
-            <FormSelect.Default options={inboxUserRoleOptions}>
+            <FormLabel className="flex gap-2">
+              <span
+                className={clsx({
+                  'text-grey-80': access === 'restricted',
+                })}
+              >
+                {t('settings:inboxes.inbox_details.role')}
+              </span>
+              {access === 'allowed' ? null : (
+                <Nudge
+                  content={t('settings:users.role.nudge')}
+                  className="size-6"
+                  kind={access}
+                />
+              )}
+            </FormLabel>
+            <FormSelect.Default
+              options={inboxUserRoleOptions}
+              disabled={access === 'restricted'}
+            >
               {inboxUserRoleOptions.map((role) => (
                 <FormSelect.DefaultItem key={role.value} value={role.value}>
                   {role.label}

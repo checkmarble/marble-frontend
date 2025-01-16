@@ -13,11 +13,12 @@ export const handle = {
 
 export default function CasePage() {
   const { t } = useTranslation(handle.i18n);
-  const { caseDetail, caseDecisionsPromise } = useCurrentCase();
+  const { caseDetail, caseDecisionsPromise, featureAccess, entitlements } =
+    useCurrentCase();
 
   if (caseDetail.decisions.length === 0) {
     return (
-      <div className="bg-grey-00 border-grey-10 rounded-lg border p-4">
+      <div className="bg-grey-100 border-grey-90 rounded-lg border p-4">
         <span className="text-grey-50 text-s whitespace-pre">
           <Trans
             t={t}
@@ -25,7 +26,7 @@ export default function CasePage() {
             components={{
               Link: (
                 <Link
-                  className="text-purple-50 hover:text-purple-100 hover:underline"
+                  className="hover:text-purple-65 text-purple-82 hover:underline"
                   to={getRoute('/decisions/')}
                 />
               ),
@@ -39,6 +40,8 @@ export default function CasePage() {
   return (
     <CaseDecisions
       decisions={caseDetail.decisions}
+      featureAccess={featureAccess}
+      entitlements={entitlements}
       caseDecisionsPromise={caseDecisionsPromise}
     />
   );

@@ -1,4 +1,5 @@
 import { type Pivot } from '@app-builder/models';
+import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type RuleSnooze } from '@app-builder/models/rule-snooze';
 import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -6,21 +7,25 @@ import * as Ariakit from '@ariakit/react';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { PivotDetails } from '../Data/PivotDetails';
+import { Nudge } from '../Nudge';
 import { casesI18n } from './cases-i18n';
 
 export function RuleSnoozes({
   ruleSnoozes,
   pivotValues,
   isCreateSnoozeAvailable,
+  entitlements,
   decisionId,
   ruleId,
 }: {
   ruleSnoozes: RuleSnooze[];
+  entitlements: LicenseEntitlements;
   pivotValues: {
     pivot: Pivot;
     value: string;
@@ -34,7 +39,7 @@ export function RuleSnoozes({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-grey-100 text-xs font-medium">
+      <div className="text-grey-00 text-xs font-medium">
         {t('cases:case_detail.pivot_values')}
       </div>
       <div className="grid grid-cols-[repeat(4,_max-content)] items-center gap-2">
@@ -61,9 +66,9 @@ export function RuleSnoozes({
                     className={clsx(
                       'cursor-pointer transition-colors',
                       pivot.type === 'field' &&
-                        'text-grey-25 hover:text-grey-50',
+                        'text-grey-80 hover:text-grey-50',
                       pivot.type === 'link' &&
-                        'text-purple-50 hover:text-purple-100',
+                        'hover:text-purple-65 text-purple-82',
                     )}
                   >
                     <Icon icon="tip" className="size-5" />
@@ -71,20 +76,20 @@ export function RuleSnoozes({
                   <Ariakit.Hovercard
                     portal
                     gutter={16}
-                    className="bg-grey-00 border-grey-10 flex w-fit rounded border p-2 shadow-md"
+                    className="bg-grey-100 border-grey-90 flex w-fit rounded border p-2 shadow-md"
                   >
                     <PivotDetails pivot={pivot} />
                   </Ariakit.Hovercard>
                 </Ariakit.HovercardProvider>
               </Tag>
-              <CopyToClipboardButton toCopy={value} className="bg-grey-00">
+              <CopyToClipboardButton toCopy={value} className="bg-grey-100">
                 <span className="text-s line-clamp-1 max-w-40 font-normal">
                   {value}
                 </span>
               </CopyToClipboardButton>
 
               {snooze ? (
-                <div className="text-s text-grey-00 flex h-8 flex-row items-center justify-center gap-1 rounded bg-[#AAA6CC] p-2 font-semibold">
+                <div className="text-s text-grey-100 flex h-8 flex-row items-center justify-center gap-1 rounded bg-[#AAA6CC] p-2 font-semibold">
                   <Icon icon="snooze" className="size-6" />
                   <span className="flex-1">
                     {t('cases:case_detail.add_rule_snooze.snoozed')}
@@ -104,9 +109,9 @@ export function RuleSnoozes({
                     <Ariakit.Hovercard
                       portal
                       gutter={16}
-                      className="bg-grey-00 border-grey-10 flex w-fit rounded border p-2 shadow-md"
+                      className="bg-grey-100 border-grey-90 flex w-fit rounded border p-2 shadow-md"
                     >
-                      <span className="text-grey-100 text-s">
+                      <span className="text-grey-00 text-s">
                         {t('cases:case_detail.pivot_values.snooze_from_to', {
                           from: formatDateTime(snooze.startsAt, { language }),
                           to: formatDateTime(snooze.endsAt, { language }),
@@ -115,17 +120,60 @@ export function RuleSnoozes({
                     </Ariakit.Hovercard>
                   </Ariakit.HovercardProvider>
                 </div>
-              ) : isCreateSnoozeAvailable ? (
-                <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
-                  <Button className="h-8 w-fit pl-2">
-                    <Icon icon="snooze" className="size-6" />
-                    {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
-                  </Button>
-                </AddRuleSnooze>
               ) : (
-                <span className="text-grey-50 col-span-2 text-xs">
-                  {t('cases:case_detail.add_rule_snooze.no_access')}
-                </span>
+                match(entitlements.ruleSnoozes)
+                  .with('allowed', () =>
+                    isCreateSnoozeAvailable ? (
+                      <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
+                        <Button className="h-8 w-fit pl-2">
+                          <Icon icon="snooze" className="size-6" />
+                          {t(
+                            'cases:case_detail.add_rule_snooze.snooze_this_value',
+                          )}
+                        </Button>
+                      </AddRuleSnooze>
+                    ) : (
+                      <span className="text-grey-50 col-span-2 text-xs">
+                        {t('cases:case_detail.add_rule_snooze.no_access')}
+                      </span>
+                    ),
+                  )
+                  .with('restricted', () => (
+                    <Button className="relative h-8 w-fit pl-2" disabled>
+                      <Icon icon="snooze" className="size-6" />
+                      {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
+                      <Nudge
+                        className="border-purple-96 absolute -right-3 -top-3 size-6 border"
+                        content={t('cases:case_detail.add_rule_snooze.nudge')}
+                        link="https://docs.checkmarble.com/docs/rule-snoozes"
+                      />
+                    </Button>
+                  ))
+                  .with('test', () =>
+                    isCreateSnoozeAvailable ? (
+                      <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
+                        <Button className="relative h-8 w-fit pl-2">
+                          <Icon icon="snooze" className="size-6" />
+                          {t(
+                            'cases:case_detail.add_rule_snooze.snooze_this_value',
+                          )}
+                          <Nudge
+                            className="border-purple-82 absolute -right-3 -top-3 size-6 border"
+                            kind="test"
+                            content={t(
+                              'cases:case_detail.add_rule_snooze.nudge',
+                            )}
+                            link="https://docs.checkmarble.com/docs/rule-snoozes"
+                          />
+                        </Button>
+                      </AddRuleSnooze>
+                    ) : (
+                      <span className="text-grey-50 col-span-2 text-xs">
+                        {t('cases:case_detail.add_rule_snooze.no_access')}
+                      </span>
+                    ),
+                  )
+                  .exhaustive()
               )}
             </React.Fragment>
           );

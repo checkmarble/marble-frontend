@@ -71,11 +71,11 @@ export function OutcomeAndReviewStatus({
           <OutcomeTag border="square" size="big" outcome="block_and_review" />
         }
       >
-        <div className="bg-orange-10 flex size-8 shrink-0 items-center justify-center rounded">
-          <Icon icon="policy" className="size-6 text-orange-100" />
+        <div className="bg-orange-95 flex size-8 shrink-0 items-center justify-center rounded">
+          <Icon icon="policy" className="size-6 text-orange-50" />
         </div>
       </Tooltip.Default>
-      <span className="text-s text-grey-25 self-center font-semibold">→</span>
+      <span className="text-s text-grey-80 self-center font-semibold">→</span>
       <ReviewStatusTag
         border="square"
         size="big"

@@ -27,7 +27,7 @@ export function DecisionDetailTriggerObject({
   const parsedTriggerObject = useParsedTriggerObject(triggerObject);
 
   return (
-    <Collapsible.Container className="bg-grey-00">
+    <Collapsible.Container className="bg-grey-100">
       <Collapsible.Title>
         {t('decisions:trigger_object.type')}
       </Collapsible.Title>
@@ -59,7 +59,7 @@ export function CaseDetailTriggerObject({
   return (
     <div
       className={clsx(
-        'text-s text-grey-100 bg-grey-02 grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4',
+        'text-s text-grey-00 bg-grey-98 grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4',
         className,
       )}
     >

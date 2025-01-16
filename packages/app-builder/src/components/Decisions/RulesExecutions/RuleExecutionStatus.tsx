@@ -24,7 +24,7 @@ export function RuleExecutionStatus({
   return (
     <div className="inline-flex h-8 gap-1">
       {isHit ? (
-        <span className="bg-purple-10 text-s flex items-center justify-center rounded p-2 font-semibold text-purple-100">
+        <span className="bg-purple-96 text-s text-purple-65 flex items-center justify-center rounded p-2 font-semibold">
           {formatNumber(ruleExecution.scoreModifier, {
             language,
             signDisplay: 'exceptZero',
@@ -34,13 +34,13 @@ export function RuleExecutionStatus({
       <span
         className={clsx(
           'text-s flex flex-1 items-center justify-center rounded p-2 font-semibold capitalize',
-          isRuleExecutionHit(ruleExecution) && 'bg-green-10 text-green-100',
+          isRuleExecutionHit(ruleExecution) && 'bg-green-94 text-green-38',
           getRuleExecutionStatusColor(ruleExecution) === 'grey' &&
-            'bg-grey-10 text-grey-100',
+            'bg-grey-90 text-grey-00',
           getRuleExecutionStatusColor(ruleExecution) === 'lavender' &&
-            'text-grey-00 bg-[#AAA6CC]',
+            'text-grey-100 bg-[#AAA6CC]',
           getRuleExecutionStatusColor(ruleExecution) === 'red' &&
-            'bg-red-10 text-red-100',
+            'bg-red-95 text-red-47',
         )}
       >
         {getRuleExecutionStatusLabel(t, ruleExecution)}

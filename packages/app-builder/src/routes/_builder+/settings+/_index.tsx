@@ -10,12 +10,12 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const settings = await getSettings(user, featureAccessService);
+  const settings = getSettings(user);
   const firstSettings = settings[0];
 
   if (firstSettings) {

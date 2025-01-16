@@ -166,7 +166,7 @@ export default function Trigger() {
   const getCopyToClipboardProps = useGetCopyToClipboard();
   return (
     <>
-      <Collapsible.Container className="bg-grey-00 max-w-3xl">
+      <Collapsible.Container className="bg-grey-100 max-w-3xl">
         <Collapsible.Title>
           {t('scenarios:trigger.run_scenario.title')}
         </Collapsible.Title>
@@ -200,7 +200,7 @@ export default function Trigger() {
                           ScenarioIdLabel: <code className="select-none" />,
                           ScenarioIdValue: (
                             <code
-                              className="border-grey-10 cursor-pointer select-none rounded-sm border px-1"
+                              className="border-grey-90 cursor-pointer select-none rounded-sm border px-1"
                               {...getCopyToClipboardProps(
                                 scenarioIteration.scenarioId,
                               )}
@@ -235,7 +235,7 @@ export default function Trigger() {
         </Collapsible.Content>
       </Collapsible.Container>
 
-      <Collapsible.Container className="bg-grey-00 max-w-3xl">
+      <Collapsible.Container className="bg-grey-100 max-w-3xl">
         <Collapsible.Title>
           {t('scenarios:trigger.trigger_object.title')}
         </Collapsible.Title>

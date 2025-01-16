@@ -271,7 +271,7 @@ function RuleViewContent({
       </Callout>
 
       <div className="flex flex-col gap-4">
-        <div className="bg-purple-10 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal text-purple-100">
+        <div className="bg-purple-96 text-purple-65 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal">
           <Trans
             t={t}
             i18nKey="scenarios:rules.consequence.score_modifier"
@@ -286,7 +286,7 @@ function RuleViewContent({
             }}
           />
         </div>
-        <Paper.Container className="bg-grey-00 max-w-3xl">
+        <Paper.Container className="bg-grey-100 max-w-3xl">
           <AstBuilder
             options={options}
             astEditorStore={astEditorStore}
@@ -364,7 +364,7 @@ function RuleEditContent({
 
   return (
     <Page.Content>
-      <Collapsible.Container className="bg-grey-00 max-w-3xl">
+      <Collapsible.Container className="bg-grey-100 max-w-3xl">
         <Collapsible.Title>
           {t('scenarios:edit_rule.informations')}
         </Collapsible.Title>
@@ -434,7 +434,7 @@ function RuleEditContent({
         </Collapsible.Content>
       </Collapsible.Container>
 
-      <Collapsible.Container className="bg-grey-00 max-w-3xl">
+      <Collapsible.Container className="bg-grey-100 max-w-3xl">
         <Collapsible.Title>
           {t('scenarios:edit_rule.formula')}
         </Collapsible.Title>
@@ -452,7 +452,7 @@ function RuleEditContent({
       </Collapsible.Container>
 
       <div className="sticky bottom-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6">
-        <div className="bg-grey-00 border-grey-10 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
+        <div className="bg-grey-100 border-grey-90 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
           <DeleteRule
             ruleId={rule.id}
             iterationId={rule.scenarioIterationId}

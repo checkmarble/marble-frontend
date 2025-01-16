@@ -8,6 +8,14 @@ import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inbox
 import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.delete';
 import { UpdateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.update';
 import { UpdateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/update';
+import {
+  getInboxUserRoles,
+  isCreateInboxUserAvailable,
+  isDeleteInboxAvailable,
+  isDeleteInboxUserAvailable,
+  isEditInboxAvailable,
+  isEditInboxUserAvailable,
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
@@ -29,18 +37,17 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { user, inbox: inboxApi } = await authService.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const {
+    user,
+    inbox: inboxApi,
+    entitlements,
+  } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const inboxId = fromParams(params, 'inboxId');
-
-  const [inboxesList, inboxUserRoles] = await Promise.all([
-    inboxApi.listInboxesWithCaseCount(),
-    featureAccessService.getInboxUserRoles(),
-  ]);
-
+  const inboxesList = await inboxApi.listInboxesWithCaseCount();
   const inbox = inboxesList.find((inbox) => inbox.id === inboxId);
   if (!inbox) {
     redirect(getRoute('/settings/inboxes/'));
@@ -50,15 +57,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     inbox,
     caseCount: inbox.casesCount,
-    inboxUserRoles,
-    isEditInboxAvailable: featureAccessService.isEditInboxAvailable(user),
-    isDeleteInboxAvailable: featureAccessService.isDeleteInboxAvailable(user),
-    isCreateInboxUserAvailable:
-      featureAccessService.isCreateInboxUserAvailable(user),
-    isEditInboxUserAvailable:
-      featureAccessService.isEditInboxUserAvailable(user),
-    isDeleteInboxUserAvailable:
-      featureAccessService.isDeleteInboxUserAvailable(user),
+    entitlements,
+    inboxUserRoles: getInboxUserRoles(entitlements),
+    isEditInboxAvailable: isEditInboxAvailable(user),
+    isDeleteInboxAvailable: isDeleteInboxAvailable(user),
+    isCreateInboxUserAvailable: isCreateInboxUserAvailable(user),
+    isEditInboxUserAvailable: isEditInboxUserAvailable(user),
+    isDeleteInboxUserAvailable: isDeleteInboxUserAvailable(user),
   });
 }
 
@@ -69,6 +74,7 @@ export default function Inbox() {
     caseCount,
     inbox,
     inboxUserRoles,
+    entitlements,
     isEditInboxAvailable,
     isDeleteInboxAvailable,
     isCreateInboxUserAvailable,
@@ -106,16 +112,17 @@ export default function Inbox() {
                   <div className="flex gap-2">
                     {isEditInboxUserAvailable ? (
                       // TODO: inject trigger inside <UpdateTag /> and use style directly on it (so we can remove the container div)
-                      <div className="group-hover:text-grey-100 focus-within:text-grey-100 text-transparent">
+                      <div className="group-hover:text-grey-00 focus-within:text-grey-00 text-transparent">
                         <UpdateInboxUser
                           inboxUser={cell.row.original}
                           inboxUserRoles={inboxUserRoles}
+                          access={entitlements.userRoles}
                         />
                       </div>
                     ) : null}
                     {isDeleteInboxUserAvailable ? (
                       // TODO: inject trigger inside <UpdateTag /> and use style directly on it (so we can remove the container div)
-                      <div className="group-hover:text-grey-100 focus-within:text-grey-100 text-transparent">
+                      <div className="group-hover:text-grey-00 focus-within:text-grey-00 text-transparent">
                         <DeleteInboxUser inboxUser={cell.row.original} />
                       </div>
                     ) : null}
@@ -132,6 +139,7 @@ export default function Inbox() {
     isEditInboxUserAvailable,
     orgUsers,
     t,
+    entitlements.userRoles,
   ]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
@@ -183,6 +191,7 @@ export default function Inbox() {
                 inboxId={inbox.id}
                 users={nonInboxUsers}
                 inboxUserRoles={inboxUserRoles}
+                access={entitlements.userRoles}
               />
             ) : null}
           </CollapsiblePaper.Title>
@@ -194,7 +203,7 @@ export default function Inbox() {
                   return (
                     <Table.Row
                       key={row.id}
-                      className="hover:bg-purple-05 group"
+                      className="hover:bg-purple-98 group"
                       row={row}
                     />
                   );

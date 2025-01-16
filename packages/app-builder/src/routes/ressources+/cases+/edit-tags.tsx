@@ -86,7 +86,7 @@ export function EditCaseTags({
           {t('cases:case.tags')}
         </div>
         <div className="flex flex-row gap-2">
-          <p className="bg-grey-00 text-s text-grey-25">
+          <p className="bg-grey-100 text-s text-grey-80">
             {t('cases:case_detail.empty_tag_list')}
           </p>
 
@@ -94,24 +94,24 @@ export function EditCaseTags({
             <Tooltip.Trigger tabIndex={-1}>
               <Icon
                 icon="tip"
-                className="text-grey-10 size-5 shrink-0 outline-none transition-colors hover:text-purple-100"
+                className="text-grey-90 hover:text-purple-65 size-5 shrink-0 outline-none transition-colors"
               />
             </Tooltip.Trigger>
             <Tooltip.Portal>
               <Tooltip.Content
                 side="right"
                 sideOffset={4}
-                className="bg-grey-00 border-grey-10 flex max-h-[400px] max-w-[300px] overflow-y-auto overflow-x-hidden rounded border p-2 shadow-md"
+                className="bg-grey-100 border-grey-90 flex max-h-[400px] max-w-[300px] overflow-y-auto overflow-x-hidden rounded border p-2 shadow-md"
               >
                 {isAdmin(user) ? (
                   <Link
                     to={getRoute('/settings/tags')}
-                    className="text-purple-100 underline"
+                    className="text-purple-65 underline"
                   >
                     {t('cases:case_detail.empty_tag_list.create_tag')}
                   </Link>
                 ) : (
-                  <p className="bg-grey-00 text-s text-grey-50">
+                  <p className="bg-grey-100 text-s text-grey-50">
                     {t('cases:case_detail.empty_tag_list.info')}
                   </p>
                 )}

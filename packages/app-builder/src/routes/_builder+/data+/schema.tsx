@@ -42,7 +42,7 @@ export default function Data() {
     <div className="flex size-full flex-col">
       <DataModelFlow dataModel={dataModel} pivots={pivots}>
         <div className="absolute left-2 top-2 z-10 lg:left-6 lg:top-6">
-          <nav className="bg-grey-00 border-grey-10 w-fit rounded border p-2 drop-shadow-md">
+          <nav className="bg-grey-100 border-grey-90 w-fit rounded border p-2 drop-shadow-md">
             <ul className="flex flex-row gap-2">
               <li>
                 <TabLink

@@ -276,7 +276,9 @@ export function AggregationEdit({
                 })
               }
               borderColor={
-                aggregation.errors.label.length > 0 ? 'red-100' : 'grey-10'
+                aggregation.errors.label.length > 0
+                  ? 'redfigma-47'
+                  : 'greyfigma-90'
               }
             />
             <EvaluationErrors

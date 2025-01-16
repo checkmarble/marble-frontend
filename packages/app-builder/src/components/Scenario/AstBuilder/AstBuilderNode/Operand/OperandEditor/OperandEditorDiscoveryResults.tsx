@@ -15,7 +15,7 @@ import {
   SubMenuButton,
   SubMenuRoot,
 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Icon, type IconName } from 'ui-icons';
 
 import { useOperandEditorActions } from './OperandEditorProvider';
 import { OperandOption } from './OperandMenuItem';
@@ -49,6 +49,12 @@ interface OperandEditorDiscoveryResultsProps {
       dataType: DataType;
       operandType: OperandType;
     }[];
+    modelingOptions: {
+      astNode: AstNode;
+      displayName: string;
+      dataType: DataType;
+      operandType: OperandType;
+    }[];
   };
 }
 
@@ -58,6 +64,7 @@ export function OperandEditorDiscoveryResults({
     fieldOptions,
     customListOptions,
     functionOptions,
+    modelingOptions,
   },
 }: OperandEditorDiscoveryResultsProps) {
   const { onOptionClick } = useOperandEditorActions();
@@ -109,6 +116,15 @@ export function OperandEditorDiscoveryResults({
           />
         </Submenu>
       ) : null}
+
+      {modelingOptions.length > 0 ? (
+        <Submenu options={modelingOptions} onClick={onOptionClick}>
+          <OperandDiscoveryTitle
+            operandType="Modeling"
+            count={modelingOptions.length}
+          />
+        </Submenu>
+      ) : null}
     </>
   );
 }
@@ -124,13 +140,14 @@ function Submenu({
     displayName: string;
     dataType: DataType;
     operandType: OperandType;
+    icon?: IconName;
   }[];
   onClick: (option: AstNode) => void;
 }) {
   const { i18n } = useTranslation();
   return (
     <SubMenuRoot rtl={i18n.dir() === 'rtl'}>
-      <SubMenuButton className="data-[active-item]:bg-purple-05 flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2 outline-none">
+      <SubMenuButton className="data-[active-item]:bg-purple-98 flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2 outline-none">
         {children}
         <Icon
           aria-hidden="true"
@@ -143,11 +160,8 @@ function Submenu({
           <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pe-[calc(0.5rem-var(--scrollbar-width))]">
             {options.map((option) => (
               <OperandOption
+                {...option}
                 key={option.displayName}
-                astNode={option.astNode}
-                dataType={option.dataType}
-                operandType={option.operandType}
-                displayName={option.displayName}
                 onClick={() => onClick(option.astNode)}
               />
             ))}
@@ -183,18 +197,18 @@ function OperandDiscoveryTitle({
       {icon ? (
         <Icon
           aria-hidden="true"
-          className="size-5 shrink-0 text-purple-100"
+          className="text-purple-65 size-5 shrink-0"
           icon={icon}
         />
       ) : null}
       {tKey ? (
-        <span className="text-grey-100 text-m flex flex-1 flex-row items-baseline gap-1 break-all">
+        <span className="text-grey-00 text-m flex flex-1 flex-row items-baseline gap-1 break-all">
           <Ariakit.Role.span className="font-semibold" render={renderLabel}>
             {t(tKey, {
               count: count,
             })}
           </Ariakit.Role.span>
-          <span className="text-grey-25 text-xs font-medium">{count}</span>
+          <span className="text-grey-80 text-xs font-medium">{count}</span>
         </span>
       ) : null}
     </div>
@@ -205,7 +219,7 @@ function FieldByPathLabel({ path, count }: { path: string; count: number }) {
   const { t } = useTranslation('scenarios');
 
   return (
-    <span className="text-grey-100 text-s flex select-none flex-row items-baseline gap-1 break-all pl-9">
+    <span className="text-grey-00 text-s flex select-none flex-row items-baseline gap-1 break-all pl-9">
       <Trans
         t={t}
         i18nKey="edit_operand.operator_discovery.from"
@@ -216,7 +230,7 @@ function FieldByPathLabel({ path, count }: { path: string; count: number }) {
           path,
         }}
       />
-      <span className="text-grey-25 text-xs font-medium">{count}</span>
+      <span className="text-grey-80 text-xs font-medium">{count}</span>
     </span>
   );
 }

@@ -31,7 +31,7 @@ export function AlertData({ alert }: AlertDataProps) {
         <div className="flex flex-col gap-2">
           <Tooltip.Default
             content={
-              <span className="text-grey-100 text-s">
+              <span className="text-grey-00 text-s">
                 {formatDateTime(alert.createdAt, {
                   language,
                 })}
@@ -53,17 +53,17 @@ export function AlertData({ alert }: AlertDataProps) {
         <span className="text-grey-50 text-s">
           {t('transfercheck:alert.transfer_end_to_end_id')}
         </span>
-        <span className="text-grey-100 text-s">{alert.transferEndToEndId}</span>
+        <span className="text-grey-00 text-s">{alert.transferEndToEndId}</span>
 
         <span className="text-grey-50 text-s">
           {t('transfercheck:alert.sender_iban')}
         </span>
-        <span className="text-grey-100 text-s">{alert.senderIban}</span>
+        <span className="text-grey-00 text-s">{alert.senderIban}</span>
 
         <span className="text-grey-50 text-s">
           {t('transfercheck:alert.beneficiary_iban')}
         </span>
-        <span className="text-grey-100 text-s">{alert.beneficiaryIban}</span>
+        <span className="text-grey-00 text-s">{alert.beneficiaryIban}</span>
       </div>
     </div>
   );

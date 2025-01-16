@@ -17,7 +17,7 @@ export const V1: StoryFn = () => (
           <li
             className={clsx(
               'flex w-48 flex-col px-3 py-2 shadow-sm',
-              index % 2 === 0 ? 'bg-grey-10' : 'bg-grey-00',
+              index % 2 === 0 ? 'bg-grey-90' : 'bg-grey-100',
             )}
             key={index}
           >
@@ -46,7 +46,7 @@ export const V2: StoryFn = () => (
         <li
           className={clsx(
             'flex w-48 flex-col px-3 py-2 shadow-sm',
-            index % 2 === 0 ? 'bg-grey-10' : 'bg-grey-00',
+            index % 2 === 0 ? 'bg-grey-90' : 'bg-grey-100',
           )}
           key={index}
         >

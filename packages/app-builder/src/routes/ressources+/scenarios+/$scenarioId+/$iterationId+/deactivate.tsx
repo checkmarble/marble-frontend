@@ -172,7 +172,7 @@ function DeactivateScenarioVersionContent({
                 {t('scenarios:deployment_modal.deactivate.change_is_immediate')}
               </FormLabel>
             </FormField>
-            <p className="text-grey-25 text-xs font-medium">
+            <p className="text-grey-80 text-xs font-medium">
               {t('scenarios:deployment_modal.deactivate.helper')}
             </p>
           </div>

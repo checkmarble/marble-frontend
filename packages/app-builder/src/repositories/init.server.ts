@@ -1,4 +1,7 @@
-import { type LicenseApi } from '@app-builder/infra/license-api';
+import {
+  type GetLicenseAPIClientWithAuth,
+  type LicenseApi,
+} from '@app-builder/infra/license-api';
 import { type GetMarbleCoreAPIClientWithAuth } from '@app-builder/infra/marblecore-api';
 import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/transfercheck-api';
 
@@ -10,7 +13,7 @@ import { makeGetDataModelRepository } from './DataModelRepository';
 import { makeGetDecisionRepository } from './DecisionRepository';
 import { makeGetEditorRepository } from './EditorRepository';
 import { makeGetInboxRepository } from './InboxRepository';
-import { getLicenseRepository } from './LicenseRepository';
+import { makeGetLicenseRepository } from './LicenseRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
 import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
@@ -32,13 +35,15 @@ import { makeGetWebhookRepository } from './WebhookRepository';
 export function makeServerRepositories({
   devEnvironment,
   sessionStorageRepositoryOptions,
-  licenseAPIClient,
+  getLicenseApiClientWithoutAuth,
+  getLicenseAPIClientWithAuth,
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
 }: {
   devEnvironment: boolean;
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
-  licenseAPIClient: LicenseApi;
+  getLicenseApiClientWithoutAuth: () => LicenseApi;
+  getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
 }) {
@@ -53,6 +58,8 @@ export function makeServerRepositories({
     lngStorageRepository: getLngStorageRepository(
       sessionStorageRepositoryOptions,
     ),
+    getLicenseApiClientWithoutAuth,
+    getLicenseAPIClientWithAuth,
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,
     getUserRepository: makeGetUserRepository(),
@@ -74,7 +81,7 @@ export function makeServerRepositories({
     getWebhookRepository: makeGetWebhookRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
-    licenseRepository: getLicenseRepository(licenseAPIClient, devEnvironment),
+    getLicenseRepository: makeGetLicenseRepository(devEnvironment),
   };
 }
 

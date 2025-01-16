@@ -14,7 +14,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
   const { case: caseDetail, createdAt, scenario, triggerObjectType } = decision;
 
   return (
-    <Collapsible.Container className="bg-grey-00">
+    <Collapsible.Container className="bg-grey-100">
       <Collapsible.Title>
         {t('decisions:decision_detail.title')}
       </Collapsible.Title>
@@ -30,7 +30,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
             to={getRoute('/scenarios/:scenarioId', {
               scenarioId: fromUUID(scenario.id),
             })}
-            className="hover:text-purple-120 focus:text-purple-120 font-semibold text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
           >
             {scenario.name}
           </Link>
@@ -41,7 +41,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
               scenarioId: fromUUID(scenario.id),
               iterationId: fromUUID(scenario.scenarioIterationId),
             })}
-            className="hover:text-purple-120 focus:text-purple-120 font-semibold text-purple-100 hover:underline focus:underline"
+            className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
           >
             {`V${scenario.version}`}
           </Link>
@@ -61,7 +61,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUID(caseDetail.id),
                 })}
-                className="hover:text-purple-120 focus:text-purple-120 font-semibold text-purple-100 hover:underline focus:underline"
+                className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
               >
                 {caseDetail.name}
               </Link>

@@ -4,6 +4,11 @@ import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { type WebhookSecret } from '@app-builder/models/webhook';
 import { DeleteWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/delete';
 import { UpdateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/update';
+import {
+  isDeleteWebhookAvailable,
+  isEditWebhookAvailable,
+  isReadWebhookAvailable,
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -26,31 +31,23 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { webhookRepository, user } = await authService.isAuthenticated(
-    request,
-    {
+  const { authService } = serverServices;
+  const { webhookRepository, user, entitlements } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    },
-  );
-  if (!(await featureAccessService.isReadWebhookAvailable(user))) {
+    });
+
+  if (!isReadWebhookAvailable(user, entitlements))
     return redirect(getRoute('/'));
-  }
 
   const webhookId = params['webhookId'];
   invariant(webhookId, `webhookId is required`);
-
-  const [webhook, isEditWebhookAvailable, isDeleteWebhookAvailable] =
-    await Promise.all([
-      webhookRepository.getWebhook({ webhookId }),
-      featureAccessService.isCreateWebhookAvailable(user),
-      featureAccessService.isDeleteWebhookAvailable(user),
-    ]);
+  const webhook = await webhookRepository.getWebhook({ webhookId });
 
   return json({
     webhook,
-    isEditWebhookAvailable,
-    isDeleteWebhookAvailable,
+    isEditWebhookAvailable: isEditWebhookAvailable(user, entitlements),
+    isDeleteWebhookAvailable: isDeleteWebhookAvailable(user, entitlements),
   });
 }
 
@@ -87,7 +84,7 @@ export default function WebhookDetail() {
               {webhook.eventTypes.length > 0 ? (
                 <EventTypes eventTypes={webhook.eventTypes} />
               ) : (
-                <span className="text-grey-25 text-s">
+                <span className="text-grey-80 text-s">
                   {t('settings:webhooks.event_types.placeholder')}
                 </span>
               )}
@@ -134,7 +131,7 @@ const WebhookValue = ({ children }: { children: React.ReactNode }) => {
   if (children === null || children === undefined) {
     return <span className="text-s text-grey-50">-</span>;
   }
-  return <span className="text-s text-grey-100">{children}</span>;
+  return <span className="text-s text-grey-00">{children}</span>;
 };
 
 const columnHelper = createColumnHelper<WebhookSecret>();

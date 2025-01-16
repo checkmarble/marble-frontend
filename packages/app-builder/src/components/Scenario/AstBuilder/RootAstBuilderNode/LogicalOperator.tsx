@@ -9,11 +9,11 @@ const logicalOperatorClassnames = cva(
     variants: {
       type: {
         text: '',
-        contained: 'bg-grey-02',
+        contained: 'bg-grey-98',
       },
       validationStatus: {
-        valid: 'text-grey-25',
-        error: 'text-red-100 border-red-100',
+        valid: 'text-grey-80',
+        error: 'text-red-47 border-red-47',
       },
     },
     compoundVariants: [
@@ -25,7 +25,7 @@ const logicalOperatorClassnames = cva(
       {
         type: 'contained',
         validationStatus: 'valid',
-        className: 'border-grey-02',
+        className: 'border-grey-98',
       },
     ],
   },

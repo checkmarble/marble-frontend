@@ -92,7 +92,7 @@ const FormSelectTrigger = React.forwardRef<
   return (
     <Select.Trigger
       ref={composedRef}
-      borderColor={valid ? 'grey-10' : 'red-100'}
+      borderColor={valid ? 'greyfigma-90' : 'redfigma-47'}
       {...props}
     />
   );

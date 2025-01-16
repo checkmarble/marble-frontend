@@ -3,6 +3,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
+import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -31,16 +32,13 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { apiClient, user, dataModelRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
-  const isIngestDataAvailable =
-    featureAccessService.isIngestDataAvailable(user);
-  if (!isIngestDataAvailable) {
-    return redirect(getRoute('/data'));
-  }
+
+  if (!isIngestDataAvailable(user)) redirect(getRoute('/data'));
 
   const objectType = params['objectType'];
   if (!objectType) {
@@ -188,7 +186,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         className={clsx(
           'text-s flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
           isDragActive
-            ? 'bg-purple-10 border-purple-50 opacity-90'
+            ? 'bg-purple-96 border-purple-82 opacity-90'
             : 'border-grey-50',
         )}
       >
@@ -197,7 +195,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         {!loading ? (
           <>
             <p>{t('upload:drop_file_cta')}</p>
-            <p className="text-grey-25 uppercase">{t('common:or')}</p>
+            <p className="text-grey-80 uppercase">{t('common:or')}</p>
             <Button>
               <Icon icon="plus" className="size-6" />
               {t('upload:pick_file_cta')}
@@ -232,14 +230,14 @@ const ResultModal = ({
   return (
     <Modal.Root open={isOpen} onOpenChange={onOpenChange}>
       <Modal.Content>
-        <div className="bg-grey-00 text-s flex flex-col items-center gap-6 p-6">
+        <div className="bg-grey-100 text-s flex flex-col items-center gap-6 p-6">
           <Icon
             icon={icon}
             className={clsx(
               'size-[108px] rounded-full border-8',
               modalContent.success
-                ? 'bg-purple-10 border-purple-10 text-purple-100'
-                : 'bg-red-10 border-red-10 text-red-100',
+                ? 'bg-purple-96 border-purple-96 text-purple-65'
+                : 'bg-red-95 border-red-95 text-red-47',
             )}
           />
           <div className="flex flex-col items-center gap-2">
@@ -345,7 +343,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
   });
 
   return (
-    <Paper.Container className="bg-grey-00 mb-10 w-full">
+    <Paper.Container className="bg-grey-100 mb-10 w-full">
       <Paper.Title> {t('upload:past_uploads')} </Paper.Title>
       <Table.Container {...getContainerProps()} className="max-h-96">
         <Table.Header headerGroups={table.getHeaderGroups()} />
@@ -361,10 +359,10 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
 
 const getStatusIcon = (status: string) => {
   if (status === 'success') {
-    return <Icon icon="tick" className="size-6 text-green-100" />;
+    return <Icon icon="tick" className="text-green-38 size-6" />;
   }
   if (status === 'failure') {
-    return <Icon icon="cross" className="size-6 text-red-100" />;
+    return <Icon icon="cross" className="text-red-47 size-6" />;
   }
   return <Icon icon="restart-alt" className="text-grey-50 size-6" />;
 };
@@ -417,7 +415,7 @@ export default function Upload() {
                   download={`${objectType}_template.csv`}
                   className={clsx(
                     'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
-                    'hover:bg-grey-05 active:bg-grey-10 bg-grey-00 border-grey-10 text-grey-100 disabled:text-grey-50 disabled:border-grey-05 disabled:bg-grey-05 focus:border-purple-100',
+                    'hover:bg-grey-95 active:bg-grey-90 bg-grey-100 border-grey-90 text-grey-00 disabled:text-grey-50 disabled:border-grey-95 disabled:bg-grey-95 focus:border-purple-65',
                   )}
                 >
                   <Icon icon="download" className="me-2 size-6" />

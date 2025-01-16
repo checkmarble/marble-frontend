@@ -112,30 +112,30 @@ function ScenarioIterationContent({
       <MenuContent>
         <div className="flex flex-col gap-2 overflow-y-auto p-2">
           {!matches.length ? (
-            <div className="text-grey-25 w-full text-center">
+            <div className="text-grey-80 w-full text-center">
               {t('common:help_center.no_results')}
             </div>
           ) : null}
           {matches.map((iteration) => (
             <MenuItem
               key={iteration.id}
-              className="border-grey-05 bg-grey-00 data-[active-item]:bg-purple-05 flex scroll-my-2 flex-row items-center justify-between gap-2 rounded border p-2 outline-none data-[active-item]:border-purple-100"
+              className="border-grey-95 bg-grey-100 data-[active-item]:bg-purple-98 data-[active-item]:border-purple-65 flex scroll-my-2 flex-row items-center justify-between gap-2 rounded border p-2 outline-none"
               render={<Link to={iteration.linkTo} />}
             >
               <span className="text-s flex flex-row gap-1 font-semibold">
                 <Highlight
-                  className="text-grey-100 capitalize"
+                  className="text-grey-00 capitalize"
                   query={searchValue}
                   text={iteration.formattedVersion}
                 />
                 {iteration.formattedLive ? (
-                  <span className="capitalize text-purple-100">
+                  <span className="text-purple-65 capitalize">
                     {iteration.formattedLive}
                   </span>
                 ) : null}
               </span>
               <Highlight
-                className="text-grey-25 text-xs"
+                className="text-grey-80 text-xs"
                 query={searchValue}
                 text={iteration.formattedUpdatedAt}
               />

@@ -12,7 +12,7 @@ const FilterPopoverContent = forwardRef<
       <Popover.Content
         ref={ref}
         className={clsx(
-          'animate-slideUpAndFade bg-grey-00 border-grey-10 rounded border shadow-md will-change-[transform,opacity]',
+          'animate-slideUpAndFade bg-grey-100 border-grey-90 rounded border shadow-md will-change-[transform,opacity]',
           className,
         )}
         side="bottom"
@@ -39,7 +39,7 @@ const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(
       <FilterPopover.Anchor
         ref={ref}
         className={clsx(
-          'bg-purple-05 flex h-10 flex-row items-center rounded',
+          'bg-purple-98 flex h-10 flex-row items-center rounded',
           className,
         )}
         {...props}
@@ -56,7 +56,7 @@ const FilterItemTrigger = forwardRef<
     <FilterPopover.Trigger
       ref={ref}
       className={clsx(
-        '-mr-1 flex h-full flex-row items-center gap-1 rounded border border-solid border-transparent px-2 text-purple-100 outline-none focus:border-purple-100',
+        'text-purple-65 focus:border-purple-65 -mr-1 flex h-full flex-row items-center gap-1 rounded border border-solid border-transparent px-2 outline-none',
         className,
       )}
       {...props}
@@ -72,12 +72,12 @@ const FilterItemClear = forwardRef<
     <button
       ref={ref}
       className={clsx(
-        '-ml-1 h-full rounded border border-solid border-transparent px-2 outline-none focus:border-purple-100',
+        'focus:border-purple-65 -ml-1 h-full rounded border border-solid border-transparent px-2 outline-none',
         className,
       )}
       {...props}
     >
-      <Icon icon="cross" className="size-5 shrink-0 text-purple-100" />
+      <Icon icon="cross" className="text-purple-65 size-5 shrink-0" />
     </button>
   );
 });

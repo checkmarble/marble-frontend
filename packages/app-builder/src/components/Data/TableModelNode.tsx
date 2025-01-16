@@ -119,7 +119,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         header: () => (
           <div className="flex justify-between gap-2 p-4">
             <div className="flex flex-col gap-2 text-start">
-              <span className="text-grey-100 text-[30px]">{data.name}</span>
+              <span className="text-grey-00 text-[30px]">{data.name}</span>
               <FormatDescription description={data.description || ''} />
             </div>
             <div className="flex flex-row gap-2">
@@ -131,22 +131,20 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           columnHelper.accessor((row) => row.name, {
             id: 'name',
             header: () => (
-              <span className="text-grey-100 flex p-2 text-start font-medium">
+              <span className="text-grey-00 flex p-2 text-start font-medium">
                 {t('data:field_name')}
               </span>
             ),
             cell: ({ getValue }) => {
               return (
-                <span className="text-grey-100 font-semibold">
-                  {getValue()}
-                </span>
+                <span className="text-grey-00 font-semibold">{getValue()}</span>
               );
             },
           }),
           columnHelper.accessor((row) => row.displayType, {
             id: 'displayType',
             header: () => (
-              <span className="text-grey-100 flex p-2 text-start font-medium">
+              <span className="text-grey-00 flex p-2 text-start font-medium">
                 {t('data:field_type')}
               </span>
             ),
@@ -154,7 +152,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           columnHelper.accessor((row) => row.description, {
             id: 'description',
             header: () => (
-              <span className="text-grey-100 flex p-2 text-start font-medium">
+              <span className="text-grey-00 flex p-2 text-start font-medium">
                 {t('data:description')}
               </span>
             ),
@@ -192,7 +190,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   });
 
   return (
-    <div className="border-grey-50 bg-grey-00 overflow-hidden rounded-xl border">
+    <div className="border-grey-50 bg-grey-100 overflow-hidden rounded-xl border">
       <table
         className={clsx(
           'isolate table-auto border-collapse',
@@ -203,7 +201,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr
               key={headerGroup.id}
-              className="bg-grey-02 border-b-grey-25 border-b"
+              className="bg-grey-98 border-b-grey-80 border-b"
             >
               {/* This is the handle for the left side of the table */}
               <th></th>
@@ -227,13 +225,13 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               <tr
                 key={row.id}
                 className={clsx(
-                  'border-t-grey-25 relative scale-100 border-t',
+                  'border-t-grey-80 relative scale-100 border-t',
                   !displayPivot &&
                     isEditDataModelFieldAvailable &&
-                    'hover:bg-purple-10 group',
+                    'hover:bg-purple-96 group',
                   displayPivot &&
                     isFieldPartOfPivot(row.original.id) &&
-                    'bg-purple-10',
+                    'bg-purple-96',
                   displayPivot &&
                     !isFieldPartOfPivot(row.original.id) &&
                     'opacity-20',
@@ -290,7 +288,7 @@ function EditDataModelField({
     <EditField field={field} linksToThisTable={linksToThisTable}>
       <button
         disabled={displayPivot}
-        className="group-hover:text-grey-100 focus:text-grey-100 block overflow-hidden text-transparent after:absolute after:inset-0 after:content-['']"
+        className="group-hover:text-grey-00 focus:text-grey-00 block overflow-hidden text-transparent after:absolute after:inset-0 after:content-['']"
       >
         <Icon icon="edit-square" className="size-5" />
       </button>
@@ -305,7 +303,7 @@ function FormatDescription({ description }: { description: string }) {
     <span
       className={clsx(
         'relative font-normal first-letter:capitalize',
-        description ? 'text-grey-100' : 'text-grey-25',
+        description ? 'text-grey-00' : 'text-grey-80',
       )}
     >
       {description || t('data:empty_description')}

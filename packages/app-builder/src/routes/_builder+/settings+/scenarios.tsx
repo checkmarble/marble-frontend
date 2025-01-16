@@ -47,7 +47,7 @@ export default function Users() {
                 {organization.defaultScenarioTimezone ? (
                   <span>{organization.defaultScenarioTimezone}</span>
                 ) : (
-                  <span className="text-red-100">
+                  <span className="text-red-47">
                     {t('settings:scenario_default_timezone.not_set')}
                   </span>
                 )}

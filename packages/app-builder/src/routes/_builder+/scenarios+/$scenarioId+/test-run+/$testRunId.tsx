@@ -93,8 +93,8 @@ export default function TestRun() {
               color="red"
               className="isolate h-10 w-fit"
             >
-              <Icon icon="stop" className="text-grey-00 size-6" />
-              <span className="text-grey-00">
+              <Icon icon="stop" className="text-grey-100 size-6" />
+              <span className="text-grey-100">
                 {t('scenarios:testrun.cancel')}
               </span>
             </Button>

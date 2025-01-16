@@ -1,38 +1,38 @@
 import { type LicenseApi } from '@app-builder/infra/license-api';
 import {
-  adaptLicenseValidation,
-  type LicenseValidation,
+  adaptLicenseEntitlements,
+  type LicenseEntitlements,
 } from '@app-builder/models/license';
 
 export interface LicenseRepository {
-  validateLicenseKey(licenseKey: string): Promise<LicenseValidation>;
+  getEntitlements(organizationId: string): Promise<LicenseEntitlements>;
+  isSsoEnabled(): Promise<boolean>;
 }
 
-export function getLicenseRepository(
-  licenseAPIClient: LicenseApi,
-  devEnvironment: boolean,
-): LicenseRepository {
-  return {
-    validateLicenseKey: async (licenseKey: string) => {
-      if (devEnvironment) {
-        return Promise.resolve({
-          code: 'VALID',
-          entitlements: {
-            sso: true,
-            workflows: true,
-            analytics: true,
-            dataEnrichment: true,
-            userRoles: true,
-            // In dev environment (like docker-compose), webhooks are disabled since we do not have Convoy dedicated for dev
-            webhooks: false,
-            ruleSnoozes: true,
-          },
-        });
+export const makeGetLicenseRepository =
+  (isDev: boolean) =>
+  (client: LicenseApi): LicenseRepository => ({
+    getEntitlements: async (organizationId: string) => {
+      const accesses: LicenseEntitlements = !isDev
+        ? adaptLicenseEntitlements(
+            (await client.getEntitlements(organizationId)).feature_access,
+          )
+        : {
+            sanctions: 'allowed',
+            ruleSnoozes: 'allowed',
+            userRoles: 'allowed',
+            workflows: 'allowed',
+            testRun: 'allowed',
+            analytics: 'allowed',
+            webhooks: 'allowed',
+          };
+
+      if (isDev) {
+        accesses.webhooks = 'restricted';
+        accesses.analytics = 'restricted';
       }
-      const licenseValidationDto =
-        await licenseAPIClient.validateLicense(licenseKey);
 
-      return adaptLicenseValidation(licenseValidationDto);
+      return accesses;
     },
-  };
-}
+    isSsoEnabled: async () => (await client.isSsoEnabled()).is_sso_enabled,
+  });

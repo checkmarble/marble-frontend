@@ -17,6 +17,7 @@ import {
   useLoaderData,
   useSearchParams,
 } from '@remix-run/react';
+import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 
@@ -25,20 +26,20 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const {
-    authService,
-    authSessionService: { getSession },
-    featureAccessService,
-  } = serverServices;
+  const { authService, authSessionService, licenseService } = serverServices;
   await authService.isAuthenticated(request, {
     successRedirect: getRoute('/app-router'),
   });
-  const session = await getSession(request);
-  const error = session.get('authError');
+  const session = await authSessionService.getSession(request);
+  const [backendError, isSsoEnabled] = await tryit(
+    licenseService.isSsoEnabled,
+  )();
 
   return json({
-    authError: error?.message,
-    isSSOAvailable: await featureAccessService.isSSOAvailable(),
+    authError: backendError
+      ? 'BackendUnavailable'
+      : session.get('authError')?.message,
+    isSsoEnabled,
   });
 }
 
@@ -57,7 +58,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
   const { t } = useTranslation(handle.i18n);
-  const { authError, isSSOAvailable } = useLoaderData<typeof loader>();
+  const { authError, isSsoEnabled } = useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -74,7 +75,7 @@ export default function Login() {
 
   return (
     <div className="flex w-full flex-col items-center">
-      {isSSOAvailable ? (
+      {isSsoEnabled ? (
         <>
           <div className="flex w-full flex-col gap-2">
             <SignInWithGoogle
@@ -93,13 +94,12 @@ export default function Login() {
             className="my-4 flex w-full flex-row items-center gap-1"
             role="separator"
           >
-            <div className="bg-grey-10 h-px w-full" />
+            <div className="bg-grey-90 h-px w-full" />
             or
-            <div className="bg-grey-10 h-px w-full" />
+            <div className="bg-grey-90 h-px w-full" />
           </div>
         </>
       ) : null}
-
       <div className="flex w-full flex-col items-center gap-2">
         <SignInWithEmailAndPassword
           signIn={signIn}
@@ -113,7 +113,7 @@ export default function Login() {
             components={{
               SignUp: (
                 <Link
-                  className="text-purple-100 underline"
+                  className="text-purple-65 underline"
                   to={getRoute('/sign-up')}
                 />
               ),
@@ -124,7 +124,7 @@ export default function Login() {
           />
         </p>
         <Link
-          className="w-fit text-xs text-purple-100 underline"
+          className="text-purple-65 w-fit text-xs underline"
           to={getRoute('/forgot-password')}
         >
           {t('auth:sign_in.forgot_password')}

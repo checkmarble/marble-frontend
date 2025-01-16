@@ -4,10 +4,12 @@ import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { Nudge } from '@app-builder/components/Nudge';
 import {
   isStatusConflictHttpError,
   tKeyForUserRole,
 } from '@app-builder/models';
+import { getUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import {
@@ -19,7 +21,9 @@ import {
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
@@ -42,15 +46,18 @@ function getCreateUserFormSchema(userRoles: readonly [string, ...string[]]) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService, csrfService, featureAccessService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { authService, csrfService } = serverServices;
+  const { apiClient, entitlements } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
   await csrfService.validate(request);
 
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
-    schema: getCreateUserFormSchema(await featureAccessService.getUserRoles()),
+    schema: getCreateUserFormSchema(getUserRoles(entitlements)),
   });
 
   if (submission.status !== 'success') {
@@ -94,8 +101,10 @@ export async function action({ request }: ActionFunctionArgs) {
 export function CreateUser({
   orgId,
   userRoles,
+  access,
 }: {
   orgId: string;
+  access: FeatureAccessDto;
   userRoles: readonly [string, ...string[]];
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -117,7 +126,11 @@ export function CreateUser({
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateUserContent orgId={orgId} userRoles={userRoles} />
+        <CreateUserContent
+          orgId={orgId}
+          access={access}
+          userRoles={userRoles}
+        />
       </Modal.Content>
     </Modal.Root>
   );
@@ -126,9 +139,11 @@ export function CreateUser({
 function CreateUserContent({
   orgId,
   userRoles,
+  access,
 }: {
   orgId: string;
   userRoles: readonly [string, ...string[]];
+  access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -211,8 +226,26 @@ function CreateUserContent({
               name={fields.role.name}
               className="group flex flex-col gap-2"
             >
-              <FormLabel>{t('settings:users.role')}</FormLabel>
-              <FormSelect.Default options={userRoleOptions}>
+              <FormLabel className="flex flex-row gap-2">
+                <span
+                  className={clsx({
+                    'text-grey-80': access === 'restricted',
+                  })}
+                >
+                  {t('settings:users.role')}
+                </span>
+                {access === 'allowed' ? null : (
+                  <Nudge
+                    content={t('settings:users.role.nudge')}
+                    className="size-6"
+                    kind={access}
+                  />
+                )}
+              </FormLabel>
+              <FormSelect.Default
+                options={userRoleOptions}
+                disabled={access === 'restricted'}
+              >
                 {userRoleOptions.map((role) => (
                   <FormSelect.DefaultItem key={role.value} value={role.value}>
                     {role.label}

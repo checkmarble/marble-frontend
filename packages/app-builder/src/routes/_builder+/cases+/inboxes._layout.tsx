@@ -1,6 +1,7 @@
 import { Page } from '@app-builder/components';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
+import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -16,7 +17,7 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
+  const { authService } = serverServices;
   const { user, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -25,7 +26,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({
     inboxes,
-    isCreateInboxAvailable: featureAccessService.isCreateInboxAvailable(user),
+    isCreateInboxAvailable: isCreateInboxAvailable(user),
   });
 }
 
@@ -40,7 +41,7 @@ export default function Cases() {
         {t('navigation:case_manager')}
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
-        <div className="border-e-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">
+        <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">
           <div className="flex flex-row items-center gap-2">
             <Icon icon="inbox" className="size-5" />
             <p className="font-bold">{t('cases:case.inboxes')}</p>
@@ -55,8 +56,8 @@ export default function Cases() {
                         clsx(
                           'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium',
                           isActive
-                            ? 'bg-purple-10 text-purple-100'
-                            : 'text-grey-100 hover:bg-purple-10 hover:text-purple-100',
+                            ? 'bg-purple-96 text-purple-65'
+                            : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
                         )
                       }
                       to={getRoute('/cases/inboxes/:inboxId', {

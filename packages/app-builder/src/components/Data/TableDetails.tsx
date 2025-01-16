@@ -106,7 +106,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
           <NavLink
             className={clsx(
               'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
-              'hover:bg-purple-110 active:bg-purple-120 text-grey-00 focus:border-grey-100 bg-purple-100 disabled:bg-purple-50',
+              'hover:bg-purple-60 active:bg-purple-60 text-grey-100 focus:border-grey-00 bg-purple-65 disabled:bg-purple-82',
             )}
             to={getRoute('/upload/:objectType', {
               objectType: tableModel.name,
@@ -120,7 +120,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
       <CollapsiblePaper.Content>
         <div className="flex flex-col gap-6">
           {isEditDataModelInfoAvailable ? (
-            <div className="before:hover:bg-grey-05 text-grey-100 group relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out hover:cursor-pointer">
+            <div className="before:hover:bg-grey-95 text-grey-00 group relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out hover:cursor-pointer">
               <EditTable table={tableModel}>
                 <div className="flex flex-row gap-5">
                   <FormatDescription
@@ -128,7 +128,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
                   />
                   <Icon
                     icon="edit-square"
-                    className="group-hover:text-grey-100 relative size-6 text-transparent transition-colors ease-in-out"
+                    className="group-hover:text-grey-00 relative size-6 text-transparent transition-colors ease-in-out"
                   />
                 </div>
               </EditTable>
@@ -249,7 +249,7 @@ function TableDetailFields({
               <div className="flex size-full items-center justify-center">
                 <Icon
                   icon="tick"
-                  className="size-6 shrink-0 justify-center text-green-100"
+                  className="text-green-38 size-6 shrink-0 justify-center"
                 />
               </div>
             );
@@ -281,7 +281,7 @@ function TableDetailFields({
                   field={cell.row.original}
                   linksToThisTable={linksToThisTable}
                 >
-                  <div className="group-hover:text-grey-100 group-hover:bg-grey-02 group-hover:border-grey-50 group-hover:hover:bg-grey-05 group-hover:active:bg-grey-10 relative cursor-pointer rounded border p-2 text-transparent transition-colors ease-in-out">
+                  <div className="group-hover:text-grey-00 group-hover:bg-grey-98 group-hover:border-grey-50 group-hover:hover:bg-grey-95 group-hover:active:bg-grey-90 relative cursor-pointer rounded border p-2 text-transparent transition-colors ease-in-out">
                     <Icon icon="edit-square" className="size-6" />
                   </div>
                 </EditField>
@@ -390,7 +390,7 @@ function FormatDescription({ description }: { description: string }) {
     <span
       className={clsx(
         'relative first-letter:capitalize',
-        description ? 'text-grey-100' : 'text-grey-25',
+        description ? 'text-grey-00' : 'text-grey-80',
       )}
     >
       {description || t('data:empty_description')}

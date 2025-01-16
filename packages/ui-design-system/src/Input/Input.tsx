@@ -6,17 +6,17 @@ import { Icon, type IconName } from 'ui-icons';
 import { type inputBorderColor } from './Input.constants';
 
 export const input = cva(
-  'bg-grey-00 text-s text-grey-100 placeholder:text-grey-25 disabled:bg-grey-05 peer block size-full rounded px-2 font-medium outline-none border focus:border-purple-100',
+  'bg-grey-100 text-s text-grey-00 placeholder:text-grey-80 disabled:bg-grey-95 peer block size-full rounded px-2 font-medium outline-none border focus:border-purple-65',
   {
     variants: {
       borderColor: {
-        'grey-10': 'border-grey-10',
-        'red-25': 'border-red-25',
-        'red-100': 'border-red-100',
+        'greyfigma-90': 'border-grey-90',
+        'redfigma-87': 'border-red-87',
+        'redfigma-47': 'border-red-47',
       },
     },
     defaultVariants: {
-      borderColor: 'grey-10',
+      borderColor: 'greyfigma-90',
     },
   },
 );
@@ -32,7 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     className,
     startAdornment,
     endAdornment,
-    borderColor = 'grey-10',
+    borderColor = 'greyfigma-90',
     ...props
   },
   ref,
@@ -53,7 +53,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         <div
           className={clsx(
             'pointer-events-none absolute flex items-center',
-            'text-grey-50 peer-focus:text-grey-100',
+            'text-grey-50 peer-focus:text-grey-00',
             'inset-y-0 start-0 ps-2',
           )}
         >
@@ -64,7 +64,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         <div
           className={clsx(
             'pointer-events-none absolute flex items-center',
-            'text-grey-50 peer-focus:text-grey-100',
+            'text-grey-50 peer-focus:text-grey-00',
             'inset-y-0 end-0 pe-2',
           )}
         >

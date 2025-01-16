@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { Ping } from './Ping';
 
 const corner_ping = cva(
-  'border-grey-00 absolute box-content size-[6px] border-2 text-red-100',
+  'border-grey-100 absolute box-content size-[6px] border-2 text-red-47',
   {
     variants: {
       position: {

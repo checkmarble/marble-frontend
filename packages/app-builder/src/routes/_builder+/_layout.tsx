@@ -11,9 +11,11 @@ import {
   LeftSidebar,
   ToggleSidebar,
 } from '@app-builder/components/Layout/LeftSidebar';
+import { Nudge } from '@app-builder/components/Nudge';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
+import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
@@ -24,35 +26,30 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 import { getSettings } from './settings+/_layout';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { user, organization } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { authService } = serverServices;
+  const { user, organization, entitlements } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   if (!isMarbleCoreUser(user)) {
     throw forbidden('Only Marble Core users can access this app.');
   }
 
-  const [
-    organizationDetail,
-    orgUsers,
-    orgTags,
-    settings,
-    isAnalyticsAvailable,
-  ] = await Promise.all([
+  const [organizationDetail, orgUsers, orgTags] = await Promise.all([
     organization.getCurrentOrganization(),
     organization.listUsers(),
     organization.listTags(),
-    getSettings(user, featureAccessService),
-    featureAccessService.isAnalyticsAvailable(user),
   ]);
 
-  const firstSettings = settings[0];
+  const firstSettings = getSettings(user)[0];
 
   return json({
     user,
@@ -60,16 +57,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     organization: organizationDetail,
     orgTags,
     featuresAccess: {
-      isAnalyticsAvailable,
-      settings:
-        firstSettings !== undefined
-          ? {
-              isAvailable: true as const,
-              to: firstSettings.to,
-            }
-          : {
-              isAvailable: false as const,
-            },
+      isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
+      analytics: entitlements.analytics,
+      settings: {
+        isAvailable: firstSettings !== undefined,
+        ...(firstSettings !== undefined && { to: firstSettings.to }),
+      },
     },
   });
 }
@@ -82,6 +75,7 @@ export default function Builder() {
   const { user, orgUsers, organization, orgTags, featuresAccess } =
     useLoaderData<typeof loader>();
   useSegmentIdentification(user);
+  const { t } = useTranslation(handle.i18n);
 
   // Refresh is done in the JSX because it needs to be done in the browser
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
@@ -134,15 +128,50 @@ export default function Builder() {
                       Icon={(props) => <Icon icon="case-manager" {...props} />}
                     />
                   </li>
-                  {featuresAccess.isAnalyticsAvailable ? (
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:analytics"
-                        to={getRoute('/analytics')}
-                        Icon={(props) => <Icon icon="analytics" {...props} />}
-                      />
-                    </li>
-                  ) : null}
+                  <li>
+                    {match(featuresAccess.analytics)
+                      .with('allowed', () =>
+                        featuresAccess.isAnalyticsAvailable ? (
+                          <SidebarLink
+                            labelTKey="navigation:analytics"
+                            to={getRoute('/analytics')}
+                            Icon={(props) => (
+                              <Icon icon="analytics" {...props} />
+                            )}
+                          />
+                        ) : null,
+                      )
+                      .with('restricted', () => (
+                        <div className="text-grey-80 relative flex gap-2 p-2">
+                          <Icon icon="analytics" className="size-6 shrink-0" />
+                          <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                            {t('navigation:analytics')}
+                          </span>
+                          <Nudge
+                            className="size-6"
+                            content={t('navigation:analytics.nudge')}
+                          />
+                        </div>
+                      ))
+                      .with('test', () =>
+                        featuresAccess.isAnalyticsAvailable ? (
+                          <SidebarLink
+                            labelTKey="navigation:analytics"
+                            to={getRoute('/analytics')}
+                            Icon={(props) => (
+                              <Icon icon="analytics" {...props} />
+                            )}
+                          >
+                            <Nudge
+                              className="size-6"
+                              content={t('navigation:analytics.nudge')}
+                              kind="test"
+                            />
+                          </SidebarLink>
+                        ) : null,
+                      )
+                      .exhaustive()}
+                  </li>
                 </ul>
               </nav>
               <nav className="p-2 pb-4">
@@ -165,7 +194,7 @@ export default function Builder() {
                     <li key="navigation:settings">
                       <SidebarLink
                         labelTKey="navigation:settings"
-                        to={featuresAccess.settings.to}
+                        to={featuresAccess.settings.to as string}
                         Icon={(props) => <Icon icon="settings" {...props} />}
                       />
                     </li>

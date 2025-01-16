@@ -31,7 +31,7 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
 
   return (
     <div className="m-auto flex flex-col items-center gap-4">
-      <h1 className="text-l text-purple-110 font-semibold">{title}</h1>
+      <h1 className="text-l text-purple-60 font-semibold">{title}</h1>
       {subtitle ? <p className="text-s mb-6">{subtitle}</p> : null}
 
       <div className="mb-1">

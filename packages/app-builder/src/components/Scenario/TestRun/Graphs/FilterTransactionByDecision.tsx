@@ -48,7 +48,7 @@ const TestRunRuleName = ({
     return (
       <div className="flex flex-row items-baseline gap-2">
         <span className="text-s font-normal">{testRuleName}</span>
-        <span className="text-xs font-semibold text-green-100">
+        <span className="text-green-38 text-xs font-semibold">
           ({t('scenarios:testrun.rule.new')})
         </span>
       </div>
@@ -59,7 +59,7 @@ const TestRunRuleName = ({
     return (
       <div className="flex flex-row items-baseline gap-2">
         <span className="text-s font-normal">{refRuleName}</span>
-        <span className="text-grey-25 text-xs font-semibold">
+        <span className="text-grey-80 text-xs font-semibold">
           ({t('scenarios:testrun.rule.old')})
         </span>
       </div>
@@ -142,8 +142,8 @@ const TestRunRuleHitPercentage = ({
         className={clsx(
           'flex flex-row items-center justify-center rounded p-1.5',
           {
-            'bg-purple-10': direction === 'up' || direction === 'down',
-            'bg-grey-05': direction === 'equal',
+            'bg-purple-96': direction === 'up' || direction === 'down',
+            'bg-grey-95': direction === 'equal',
           },
         )}
       >
@@ -155,15 +155,15 @@ const TestRunRuleHitPercentage = ({
           }
           className={clsx({
             'size-1.5': direction === 'equal',
-            'size-2.5 text-purple-100':
+            'text-purple-65 size-2.5':
               direction === 'up' || direction === 'down',
             'rotate-90': direction === 'down',
             '-rotate-90': direction === 'up',
-            'text-green-100': direction === 'equal',
+            'text-green-38': direction === 'equal',
           })}
         />
       </div>
-      <span className="text-s text-grey-100 font-medium">
+      <span className="text-s text-grey-00 font-medium">
         {formatNumber(
           (testRuleHitPercentage !== undefined
             ? testRuleHitPercentage
@@ -201,27 +201,27 @@ const RuleExecution = ({
           }))}
           mapping={{
             hit: {
-              border: 'border-green-50',
-              background: 'bg-green-50',
-              text: 'text-grey-100',
+              border: 'border-green-68',
+              background: 'bg-green-68',
+              text: 'text-grey-00',
               name: t('decisions:rules.status.hit'),
             },
             no_hit: {
-              border: 'border-grey-10',
-              background: 'bg-grey-10',
-              text: 'text-grey-100',
+              border: 'border-grey-90',
+              background: 'bg-grey-90',
+              text: 'text-grey-00',
               name: t('decisions:rules.status.no_hit'),
             },
             error: {
-              border: 'border-red-50',
-              background: 'bg-red-50',
-              text: 'text-grey-100',
+              border: 'border-red-74',
+              background: 'bg-red-74',
+              text: 'text-grey-00',
               name: t('decisions:rules.status.error'),
             },
             snoozed: {
               border: 'border-[#AAA6CC]',
               background: 'bg-[#AAA6CC]',
-              text: 'text-grey-00',
+              text: 'text-grey-100',
               name: t('decisions:rules.status.snoozed'),
             },
           }}
@@ -258,7 +258,7 @@ export const FilterTransactionByDecision = ({
   }, [displayChangedRules, rules, versions]);
 
   return (
-    <Collapsible.Container className="bg-grey-00">
+    <Collapsible.Container className="bg-grey-100">
       <Collapsible.Title>
         {t('scenarios:testrun.transaction_by_decision')}
       </Collapsible.Title>
@@ -270,7 +270,7 @@ export const FilterTransactionByDecision = ({
         ) : (
           <div className="flex flex-col gap-8">
             <div className="flex w-full flex-row items-center justify-end gap-2">
-              <span className="text-s text-grey-100 font-medium">
+              <span className="text-s text-grey-00 font-medium">
                 {t('scenarios:testrun.show_rules_changes')}
               </span>
               <Switch

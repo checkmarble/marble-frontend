@@ -63,19 +63,19 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
       className={clsx(
         'flex flex-1 flex-col items-center justify-center gap-2 rounded-lg p-2',
         {
-          'bg-green-10': color === 'green',
-          'bg-yellow-10': color === 'yellow',
-          'bg-orange-10': color === 'orange',
-          'bg-red-10': color === 'red',
+          'bg-green-94': color === 'green',
+          'bg-yellow-90': color === 'yellow',
+          'bg-orange-95': color === 'orange',
+          'bg-red-95': color === 'red',
         },
       )}
     >
       <div
         className={clsx('text-s', {
-          'text-green-50': color === 'green',
-          'text-yellow-50': color === 'yellow',
+          'text-green-68': color === 'green',
+          'text-yellow-75': color === 'yellow',
           'text-orange-50': color === 'orange',
-          'text-red-50': color === 'red',
+          'text-red-74': color === 'red',
         })}
       >
         {t('decisions:outcome')}
@@ -84,10 +84,10 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
         className={clsx(
           'text-l text-center font-semibold first-letter:capitalize',
           {
-            'text-green-100': color === 'green',
-            'text-yellow-100': color === 'yellow',
-            'text-orange-100': color === 'orange',
-            'text-red-100': color === 'red',
+            'text-green-38': color === 'green',
+            'text-yellow-50': color === 'yellow',
+            'text-orange-50': color === 'orange',
+            'text-red-47': color === 'red',
           },
         )}
       >

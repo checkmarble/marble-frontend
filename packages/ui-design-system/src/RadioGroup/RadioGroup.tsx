@@ -13,7 +13,7 @@ export const radioGroup = cva([
   'flex flex-row w-fit',
   'p-1',
   'rounded-lg',
-  'bg-purple-05',
+  'bg-purple-98',
 ]);
 
 export type RadioGroupProps = VariantProps<typeof radioGroup> &
@@ -30,10 +30,10 @@ export const radioGroupItem = cva([
   'flex-row',
   'items-center',
   'gap-2',
-  'text-purple-50',
+  'text-purple-82',
   'text-s',
   'font-medium',
-  'data-[state=checked]:bg-purple-100 data-[state=checked]:text-grey-00',
+  'data-[state=checked]:bg-purple-65 data-[state=checked]:text-grey-100',
   'px-2',
   'py-1',
   'rounded-[4px]',

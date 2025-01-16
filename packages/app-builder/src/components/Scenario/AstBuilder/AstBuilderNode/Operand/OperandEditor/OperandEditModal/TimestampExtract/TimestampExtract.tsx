@@ -196,14 +196,14 @@ function getNoTimezoneSetupWarning(
   t: TFunction<['scenarios']>,
 ): React.ReactNode {
   return isAdmin(currentUser) ? (
-    <span className="text-red-100">
+    <span className="text-red-47">
       <Trans
         t={t}
         i18nKey="scenarios:edit_timestamp_extract.missing_default_timezone_admin"
         components={{
           SettingsLink: (
             <Link
-              className="text-m hover:text-purple-120 focus:text-purple-120 relative font-normal text-purple-100 hover:underline focus:underline"
+              className="text-m hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-normal hover:underline focus:underline"
               to={getRoute('/settings/scenarios')}
             />
           ),
@@ -211,7 +211,7 @@ function getNoTimezoneSetupWarning(
       />
     </span>
   ) : (
-    <span className="text-red-100">
+    <span className="text-red-47">
       {t('scenarios:edit_timestamp_extract.missing_default_timezone_non_admin')}
     </span>
   );

@@ -10,6 +10,7 @@ import {
   type AstNodeErrors,
   type ValidationStatus,
 } from '@app-builder/services/validation/ast-node-validation';
+import { type OperandOption } from '@app-builder/types/operand-options';
 import { cva } from 'class-variance-authority';
 
 import { OperandEditor } from './OperandEditor';
@@ -39,12 +40,7 @@ export function Operand({
   viewOnly?: boolean;
   validationStatus: ValidationStatus;
   astNodeErrors?: AstNodeErrors;
-  options: {
-    astNode: AstNode;
-    dataType: DataType;
-    operandType: OperandType;
-    displayName: string;
-  }[];
+  options: OperandOption[];
   coerceToConstant?: (searchValue: string) => {
     astNode: ConstantAstNode<ConstantType>;
     displayName: string;
@@ -92,13 +88,13 @@ export function Operand({
 }
 
 const defaultClassnames = cva(
-  'bg-grey-02 flex size-fit min-h-[40px] min-w-[40px] items-center justify-between rounded px-2 outline-none',
+  'bg-grey-98 flex size-fit min-h-[40px] min-w-[40px] items-center justify-between rounded px-2 outline-none',
   {
     variants: {
       validationStatus: {
-        valid: 'border border-grey-02',
-        error: 'border border-red-100',
-        'light-error': 'border border-red-25',
+        valid: 'border border-grey-98',
+        error: 'border border-red-47',
+        'light-error': 'border border-red-87',
       },
     },
     defaultVariants: {

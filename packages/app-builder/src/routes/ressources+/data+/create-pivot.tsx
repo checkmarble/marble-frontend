@@ -190,7 +190,7 @@ function CreatePivotContent({
     >
       <FormProvider {...formMethods}>
         <ModalV2.Title>{t('data:create_pivot.title')}</ModalV2.Title>
-        <div className="bg-grey-00 flex flex-col gap-6 p-6">
+        <div className="bg-grey-100 flex flex-col gap-6 p-6">
           <Callout variant="outlined">
             <ModalV2.Description className="whitespace-pre text-wrap">
               <Trans

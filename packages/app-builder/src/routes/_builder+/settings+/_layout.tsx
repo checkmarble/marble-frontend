@@ -1,6 +1,12 @@
 import { Page } from '@app-builder/components';
+import { Nudge } from '@app-builder/components/Nudge';
 import { type CurrentUser } from '@app-builder/models';
-import { type FeatureAccessService } from '@app-builder/services/feature-access.server';
+import {
+  isReadAllInboxesAvailable,
+  isReadApiKeyAvailable,
+  isReadTagAvailable,
+  isReadUserAvailable,
+} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
@@ -9,18 +15,16 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'settings'] satisfies Namespace,
 };
 
-export async function getSettings(
-  user: CurrentUser,
-  featureAccessService: FeatureAccessService,
-) {
+export function getSettings(user: CurrentUser) {
   const settings = [];
-  if (featureAccessService.isReadUserAvailable(user)) {
+  if (isReadUserAvailable(user)) {
     settings.push({
       section: 'users' as const,
       title: 'users' as const,
@@ -32,28 +36,28 @@ export async function getSettings(
     title: 'scenarios' as const,
     to: getRoute('/settings/scenarios'),
   });
-  if (featureAccessService.isReadAllInboxesAvailable(user)) {
+  if (isReadAllInboxesAvailable(user)) {
     settings.push({
       section: 'case_manager' as const,
       title: 'inboxes' as const,
       to: getRoute('/settings/inboxes/'),
     });
   }
-  if (featureAccessService.isReadTagAvailable(user)) {
+  if (isReadTagAvailable(user)) {
     settings.push({
       section: 'case_manager' as const,
       title: 'tags' as const,
       to: getRoute('/settings/tags'),
     });
   }
-  if (featureAccessService.isReadApiKeyAvailable(user)) {
+  if (isReadApiKeyAvailable(user)) {
     settings.push({
       section: 'api' as const,
       title: 'api' as const,
       to: getRoute('/settings/api-keys'),
     });
   }
-  if (await featureAccessService.isReadWebhookAvailable(user)) {
+  if (user.permissions.canManageWebhooks) {
     settings.push({
       section: 'api' as const,
       title: 'webhooks' as const,
@@ -64,12 +68,12 @@ export async function getSettings(
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, featureAccessService } = serverServices;
-  const { user } = await authService.isAuthenticated(request, {
+  const { authService } = serverServices;
+  const { user, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const settings = await getSettings(user, featureAccessService);
+  const settings = getSettings(user);
 
   const sections = R.pipe(
     settings,
@@ -77,12 +81,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     R.entries(),
   );
 
-  return { sections };
+  return { sections, entitlements };
 }
 
 export default function Settings() {
   const { t } = useTranslation(handle.i18n);
-  const { sections } = useLoaderData<typeof loader>();
+  const { sections, entitlements } = useLoaderData<typeof loader>();
 
   return (
     <Page.Main>
@@ -91,7 +95,7 @@ export default function Settings() {
         {t('navigation:settings')}
       </Page.Header>
       <div className="flex size-full flex-row overflow-hidden">
-        <div className="border-e-grey-10 bg-grey-00 flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-e p-4">
+        <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-e p-4">
           <div className="flex flex-col">
             {sections.map(([section, settings]) => {
               if (settings.length === 0) return null;
@@ -110,22 +114,80 @@ export default function Settings() {
                     <p className="font-bold">{t(`settings:${section}`)}</p>
                   </div>
                   <ul className="flex flex-col gap-1 pb-6">
-                    {settings.map((setting) => (
-                      <NavLink
-                        key={setting.title}
-                        className={({ isActive }) =>
-                          clsx(
-                            'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
-                            isActive
-                              ? 'bg-purple-10 text-purple-100'
-                              : 'bg-grey-00 text-grey-100 hover:bg-purple-10 hover:text-purple-100',
-                          )
-                        }
-                        to={setting.to}
-                      >
-                        {t(`settings:${setting.title}`)}
-                      </NavLink>
-                    ))}
+                    {settings.map((setting) =>
+                      setting.title === 'webhooks' ? (
+                        match(entitlements.webhooks)
+                          .with('allowed', () => (
+                            <NavLink
+                              key={setting.title}
+                              className={({ isActive }) =>
+                                clsx(
+                                  'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
+                                  isActive
+                                    ? 'bg-purple-96 text-purple-65'
+                                    : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                                )
+                              }
+                              to={setting.to}
+                            >
+                              {t(`settings:${setting.title}`)}
+                            </NavLink>
+                          ))
+                          .with('restricted', () => (
+                            <div
+                              key={setting.title}
+                              className="text-grey-80 flex w-full flex-row gap-2 p-2"
+                            >
+                              <span className="text-s font-medium first-letter:capitalize">
+                                {t(`settings:${setting.title}`)}
+                              </span>
+                              <Nudge
+                                className="size-6"
+                                content={t(`settings:${setting.title}.nudge`)}
+                                link="https://docs.checkmarble.com/docs/introduction-3"
+                              />
+                            </div>
+                          ))
+                          .with('test', () => (
+                            <NavLink
+                              key={setting.title}
+                              className={({ isActive }) =>
+                                clsx(
+                                  'text-s flex w-full cursor-pointer flex-row gap-2 rounded p-2 font-medium first-letter:capitalize',
+                                  isActive
+                                    ? 'bg-purple-96 text-purple-65'
+                                    : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                                )
+                              }
+                              to={setting.to}
+                            >
+                              {t(`settings:${setting.title}`)}
+                              <Nudge
+                                className="size-6"
+                                content={t(`settings:${setting.title}.nudge`)}
+                                link="https://docs.checkmarble.com/docs/introduction-3"
+                                kind="test"
+                              />
+                            </NavLink>
+                          ))
+                          .exhaustive()
+                      ) : (
+                        <NavLink
+                          key={setting.title}
+                          className={({ isActive }) =>
+                            clsx(
+                              'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
+                              isActive
+                                ? 'bg-purple-96 text-purple-65'
+                                : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                            )
+                          }
+                          to={setting.to}
+                        >
+                          {t(`settings:${setting.title}`)}
+                        </NavLink>
+                      ),
+                    )}
                   </ul>
                 </nav>
               );

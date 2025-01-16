@@ -35,7 +35,7 @@ function TableContainer({
     <ScrollAreaV2
       ref={scrollElementRef}
       className={clsx(
-        'border-grey-10 border-spacing-0 rounded-lg border',
+        'border-grey-90 border-spacing-0 rounded-lg border',
         className,
       )}
       orientation="both"
@@ -62,7 +62,7 @@ function TableTH<TData extends RowData, TValue>({
       colSpan={header.colSpan}
       style={{ width: header.getSize() }}
       className={clsx(
-        'border-grey-10 bg-grey-00 relative h-12 w-full border-b border-r px-4 last:border-r-0',
+        'border-grey-90 bg-grey-100 relative h-12 w-full border-b border-r px-4 last:border-r-0',
         {
           'cursor-pointer select-none': header.column.getCanSort(),
         },
@@ -94,14 +94,14 @@ function Header<TData extends RowData>({
                 <th
                   colSpan={header.colSpan}
                   key={header.id}
-                  className="bg-grey-00 border-grey-10 w-0 border-b"
+                  className="bg-grey-100 border-grey-90 w-0 border-b"
                 ></th>
               );
             }
             return (
               <Table.TH header={header} key={header.id}>
                 {header.isPlaceholder ? null : (
-                  <div className="text-s text-grey-100 flex flex-row items-center font-semibold">
+                  <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
                     <p className="flex flex-1">
                       {flexRender(header.column.columnDef.header, context)}
                     </p>
@@ -112,7 +112,7 @@ function Header<TData extends RowData>({
                     {header.column.getCanResize() ? (
                       <div
                         className={clsx(
-                          'hover:bg-grey-10 active:bg-grey-50 absolute right-0 h-full w-1 cursor-col-resize touch-none select-none',
+                          'hover:bg-grey-90 active:bg-grey-50 absolute right-0 h-full w-1 cursor-col-resize touch-none select-none',
                           // Hack to take scroll bar into account
                           index === headerGroup.headers.length - 1 && 'right-2',
                         )}
@@ -283,9 +283,9 @@ function Row<TData extends RowData>({
         onClick?.(e);
       }}
       className={clsx(
-        'even:bg-grey-02 h-12',
+        'even:bg-grey-98 h-12',
         withRowLink &&
-          'hover:bg-purple-05 focus-within:bg-purple-05 cursor-pointer',
+          'hover:bg-purple-98 focus-within:bg-purple-98 cursor-pointer',
         className,
       )}
       {...props}
@@ -316,7 +316,7 @@ function DefaultTable<TData extends RowData>({
   getContainerProps,
 }: ReturnType<typeof useTable<TData>>) {
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-00 max-h-96">
+    <Table.Container {...getContainerProps()} className="bg-grey-100 max-h-96">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => (

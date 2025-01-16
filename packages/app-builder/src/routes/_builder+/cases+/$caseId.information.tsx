@@ -19,7 +19,7 @@ export default function CasePage() {
   const language = useFormatLanguage();
 
   return (
-    <div className="bg-grey-00 border-grey-10 grid grid-cols-[max-content_1fr] grid-rows-[repeat(5,_minmax(40px,_min-content))] items-center gap-2 rounded-lg border p-4 lg:p-6">
+    <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_1fr] grid-rows-[repeat(5,_minmax(40px,_min-content))] items-center gap-2 rounded-lg border p-4 lg:p-6">
       <EditCaseName caseId={caseDetail.id} name={caseDetail.name} />
       <div className="text-s font-semibold first-letter:capitalize">
         {t('cases:case.date')}

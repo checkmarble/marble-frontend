@@ -45,7 +45,7 @@ export function CaseHistory({
     >
       <div className={clsx('relative flex flex-col gap-4 lg:gap-6', className)}>
         <div className="flex flex-row items-center justify-between gap-4">
-          <span className="text-m text-grey-100 ml-2 font-bold">
+          <span className="text-m text-grey-00 ml-2 font-bold">
             {t('cases:case_detail.history')}
           </span>
           <CaseHistoryFiltersMenu filterNames={caseHistoryFilterNames}>

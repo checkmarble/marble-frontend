@@ -25,7 +25,7 @@ export const DurationUnitSelect = ({
       {options.map((option) => (
         <Select.Item key={option} value={option}>
           <Select.ItemText>
-            <span className="text-s text-grey-100">
+            <span className="text-s text-grey-00">
               {t(`scenarios:edit_date.duration_unit_${option}`)}
             </span>
           </Select.ItemText>

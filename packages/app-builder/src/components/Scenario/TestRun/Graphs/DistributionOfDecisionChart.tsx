@@ -14,7 +14,7 @@ export const DistributionOfDecisionChart = ({
   const { t } = useTranslation(['scenarios', 'decisions']);
 
   return (
-    <Collapsible.Container className="bg-grey-00" defaultOpen={true}>
+    <Collapsible.Container className="bg-grey-100" defaultOpen={true}>
       <Collapsible.Title>
         {t('scenarios:testrun.distribution')}
       </Collapsible.Title>
@@ -35,27 +35,27 @@ export const DistributionOfDecisionChart = ({
               }))}
             mapping={{
               approve: {
-                background: 'bg-green-100',
-                border: 'border-green-100',
-                text: 'text-grey-00',
+                background: 'bg-green-38',
+                border: 'border-green-38',
+                text: 'text-grey-100',
                 name: t('decisions:outcome.approve'),
               },
               decline: {
-                background: 'bg-red-100',
-                border: 'border-red-100',
-                text: 'text-grey-00',
+                background: 'bg-red-47',
+                border: 'border-red-47',
+                text: 'text-grey-100',
                 name: t('decisions:outcome.decline'),
               },
               block_and_review: {
-                background: 'bg-orange-100',
-                border: 'border-orange-100',
-                text: 'text-grey-00',
+                background: 'bg-orange-50',
+                border: 'border-orange-50',
+                text: 'text-grey-100',
                 name: t('decisions:outcome.block_and_review'),
               },
               review: {
-                background: 'bg-yellow-100',
-                border: 'border-yellow-100',
-                text: 'text-grey-100',
+                background: 'bg-yellow-50',
+                border: 'border-yellow-50',
+                text: 'text-grey-00',
                 name: t('decisions:outcome.review'),
               },
             }}

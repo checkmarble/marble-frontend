@@ -155,7 +155,7 @@ function HelpCenterContent({
           })}
         </div>
       </Ariakit.TabList>
-      <div className="border-grey-10 bg-grey-02 flex h-full flex-col overflow-hidden border-y">
+      <div className="border-grey-90 bg-grey-98 flex h-full flex-col overflow-hidden border-y">
         <Ariakit.TabPanel
           tabId={deferredTabId}
           className="flex flex-col overflow-hidden"
@@ -163,14 +163,14 @@ function HelpCenterContent({
           <MenuContent>
             <div className="flex flex-col gap-2 overflow-y-auto p-2">
               {!currentResources.length ? (
-                <div className="text-grey-25 w-full text-center">
+                <div className="text-grey-80 w-full text-center">
                   {t('common:help_center.no_results')}
                 </div>
               ) : null}
               {currentResources.map((resource) => (
                 <MenuItem
                   key={`${resource.category}-${resource.label}`}
-                  className="border-grey-05 bg-grey-00 data-[active-item]:bg-purple-05 flex scroll-my-2 flex-col gap-2 rounded border p-2 outline-none data-[active-item]:border-purple-100"
+                  className="border-grey-95 bg-grey-100 data-[active-item]:bg-purple-98 data-[active-item]:border-purple-65 flex scroll-my-2 flex-col gap-2 rounded border p-2 outline-none"
                   render={
                     // eslint-disable-next-line jsx-a11y/anchor-has-content
                     <a href={resource.href} target="_blank" rel="noreferrer" />
@@ -199,7 +199,7 @@ function HelpCenterContent({
         </div>
       ) : null}
 
-      <div className="border-t-grey-10 bg-grey-02 flex gap-4 border-t p-2 text-xs">
+      <div className="border-t-grey-90 bg-grey-98 flex gap-4 border-t p-2 text-xs">
         <div className="flex items-center gap-1 whitespace-nowrap">
           <Kbd className="aspect-square">
             ▲<span className="sr-only">Arrow key up</span>
@@ -238,7 +238,7 @@ const CategoryTab = React.forwardRef<HTMLButtonElement, Ariakit.TabProps>(
     return (
       <Ariakit.Tab
         ref={composedRef}
-        className="aria-selected:bg-purple-10 aria-selected:border-purple-10 text-grey-100 bg-grey-05 border-grey-05 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize aria-selected:text-purple-100 data-[active-item]:border-purple-100"
+        className="aria-selected:bg-purple-96 aria-selected:border-purple-96 text-grey-00 bg-grey-95 border-grey-95 aria-selected:text-purple-65 data-[active-item]:border-purple-65 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize"
         accessibleWhenDisabled={false}
         {...props}
       />

@@ -10,7 +10,7 @@ import {
 } from '@app-builder/models/modale-operators';
 import {
   useDefaultCoerceToConstant,
-  useGetAstNodeOption,
+  useGetAstNodeOperandProps,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
 import {
@@ -109,7 +109,7 @@ export function EditFilters({
               {/* Row 1 */}
               <div
                 className={clsx(
-                  'border-grey-10 col-span-5 w-2 border-e',
+                  'border-grey-90 col-span-5 w-2 border-e',
                   isFirstCondition ? 'h-4' : 'h-2',
                 )}
               />
@@ -117,11 +117,11 @@ export function EditFilters({
               {/* Row 2 */}
               <div
                 className={clsx(
-                  'border-grey-10 col-start-1 border-e',
+                  'border-grey-90 col-start-1 border-e',
                   isLastCondition && 'h-5',
                 )}
               />
-              <div className="border-grey-10 col-start-2 h-5 border-b" />
+              <div className="border-grey-90 col-start-2 h-5 border-b" />
               <LogicalOperatorLabel
                 operator={isFirstCondition ? 'where' : 'and'}
                 type="contained"
@@ -202,15 +202,15 @@ function FilterValue({
   // TODO: try to get enum values from the left operand
   const filterOptions = useOperandOptions([]);
   const coerceToConstant = useDefaultCoerceToConstant();
-  const getAstNodeOption = useGetAstNodeOption();
+  const getAstNodeOperandProps = useGetAstNodeOperandProps();
 
-  const operandProps = useMemo(() => {
-    return getAstNodeOption(filterValue);
-  }, [filterValue, getAstNodeOption]);
+  const astNodeOperandProps = useMemo(() => {
+    return getAstNodeOperandProps(filterValue);
+  }, [filterValue, getAstNodeOperandProps]);
 
   return (
     <Operand
-      {...operandProps}
+      {...astNodeOperandProps}
       onSave={onSave}
       options={filterOptions}
       coerceToConstant={coerceToConstant}

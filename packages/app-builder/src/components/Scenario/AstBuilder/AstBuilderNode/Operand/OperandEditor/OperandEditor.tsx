@@ -9,6 +9,7 @@ import {
   type AstNodeErrors,
   type ValidationStatus,
 } from '@app-builder/services/validation/ast-node-validation';
+import { type OperandOption } from '@app-builder/types/operand-options';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +33,7 @@ import {
   OperandEditorProvider,
   useBottomOptions,
   useDiscoveryResults,
+  useInitialAstNode,
   useOperandEditorActions,
   useOperandEditorOpen,
   useSearchValue,
@@ -60,12 +62,7 @@ export function OperandEditor({
   onSave: (astNode: AstNode) => void;
   validationStatus: ValidationStatus;
   astNodeErrors?: AstNodeErrors;
-  options: {
-    astNode: AstNode;
-    dataType: DataType;
-    operandType: OperandType;
-    displayName: string;
-  }[];
+  options: OperandOption[];
   coerceToConstant?: (searchValue: string) => {
     astNode: ConstantAstNode<ConstantType>;
     displayName: string;
@@ -103,7 +100,8 @@ function OperandEditorContent() {
 
   const bottomOptions = useBottomOptions();
   const searchValue = useSearchValue();
-  const discoveryResults = useDiscoveryResults();
+  const initialAstNode = useInitialAstNode();
+  const discoveryResults = useDiscoveryResults(initialAstNode);
 
   return (
     <>
@@ -143,14 +141,14 @@ interface BottomOptionProps {
 
 function BottomOptions({ options }: { options: BottomOptionProps[] }) {
   return (
-    <div className="border-t-grey-10 sticky bottom-0 flex shrink-0 flex-row gap-2 overflow-x-auto border-t p-2">
+    <div className="border-t-grey-90 sticky bottom-0 flex shrink-0 flex-row gap-2 overflow-x-auto border-t p-2">
       {options.map(({ icon, label, onSelect }) => (
         <MenuItem
           key={label}
           render={
             <Button
               variant="secondary"
-              className="data-[active-item]:bg-purple-05 scroll-mx-2 data-[active-item]:border-purple-100"
+              className="data-[active-item]:bg-purple-98 data-[active-item]:border-purple-65 scroll-mx-2"
               onClick={onSelect}
             >
               <Icon icon={icon} className="size-4" />
@@ -173,12 +171,7 @@ function OperandMenu({
   children: React.ReactNode;
   astNode: AstNode;
   astNodeErrors?: AstNodeErrors;
-  options: {
-    astNode: AstNode;
-    dataType: DataType;
-    operandType: OperandType;
-    displayName: string;
-  }[];
+  options: OperandOption[];
   coerceToConstant?: (searchValue: string) => {
     astNode: ConstantAstNode<ConstantType>;
     displayName: string;

@@ -1,7 +1,7 @@
 import { type AstNode } from '@app-builder/models';
 import {
   useDefaultCoerceToConstant,
-  useGetAstNodeOption,
+  useGetAstNodeOperandProps,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
 import {
@@ -47,12 +47,10 @@ export function RightOperand({
     [defaultCoerceToConstant],
   );
 
-  const getAstNodeOption = useGetAstNodeOption();
-
-  const operandProps = React.useMemo(
-    () => getAstNodeOption(astNode),
-    [astNode, getAstNodeOption],
-  );
+  const getAstNodeOperandProps = useGetAstNodeOperandProps();
+  const astNodeOperandProps = React.useMemo(() => {
+    return getAstNodeOperandProps(astNode);
+  }, [astNode, getAstNodeOperandProps]);
 
   return (
     <Operand
@@ -64,7 +62,7 @@ export function RightOperand({
       coerceToConstant={coerceToConstant}
       validationStatus={validationStatus}
       astNodeErrors={astNodeErrors}
-      {...operandProps}
+      {...astNodeOperandProps}
     />
   );
 }

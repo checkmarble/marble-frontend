@@ -246,7 +246,7 @@ function ActivateScenarioVersionContent({
               >
                 <Icon
                   icon="tip"
-                  className="size-6 text-purple-50 hover:text-purple-100"
+                  className="hover:text-purple-65 text-purple-82 size-6"
                 />
               </Tooltip.Default>
             </FormField>
@@ -303,7 +303,7 @@ function RuleSnoozeDetail() {
 
   if (isError) {
     return (
-      <div className="text-s text-red-100">{t('common:errors.unknown')}</div>
+      <div className="text-s text-red-47">{t('common:errors.unknown')}</div>
     );
   }
 
@@ -343,12 +343,12 @@ function RuleSnoozeDetail() {
                   <Icon
                     className={clsx(
                       'size-5 shrink-0',
-                      hasSnoozesActive === true && 'text-green-100',
-                      hasSnoozesActive === false && 'text-red-100',
+                      hasSnoozesActive === true && 'text-green-38',
+                      hasSnoozesActive === false && 'text-red-47',
                     )}
                     icon={hasSnoozesActive ? 'tick' : 'cross'}
                   />
-                  <span className="text-s text-grey-100 font-normal">
+                  <span className="text-s text-grey-00 font-normal">
                     {rule.name}
                   </span>
                 </li>

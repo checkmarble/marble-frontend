@@ -137,7 +137,7 @@ function DateRangeFilterFromNowPicker({
   return (
     <div className={clsx('flex flex-col gap-4 p-4', className)}>
       <div className="flex items-center">
-        <p className="text-grey-25 text-s font-normal first-letter:capitalize">
+        <p className="text-grey-80 text-s font-normal first-letter:capitalize">
           {title}
         </p>
       </div>
@@ -148,7 +148,7 @@ function DateRangeFilterFromNowPicker({
             onClick={() => {
               onFromNowSelect(duration);
             }}
-            className="text-s hover:bg-purple-05 active:bg-purple-10 bg-grey-00 text-grey-100 border-grey-00 flex h-10 items-center rounded border p-2 outline-none hover:text-purple-100 focus:border-purple-100"
+            className="text-s hover:bg-purple-98 active:bg-purple-96 bg-grey-100 text-grey-00 border-grey-100 hover:text-purple-65 focus:border-purple-65 flex h-10 items-center rounded border p-2 outline-none"
           >
             <time dateTime={duration}>
               {formatDuration(duration, language)}
@@ -189,7 +189,7 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
           className,
         )}
       >
-        <time className="text-grey-100" dateTime={fromNow}>
+        <time className="text-grey-00" dateTime={fromNow}>
           {formatDuration(fromNow, language)}
         </time>
       </div>
@@ -234,8 +234,8 @@ function FormatStaticDate({
     <time
       dateTime={dateTime}
       className={clsx(
-        'border-grey-10 h-10 w-fit rounded border p-2',
-        date ? 'text-grey-100' : 'text-grey-50',
+        'border-grey-90 h-10 w-fit rounded border p-2',
+        date ? 'text-grey-00' : 'text-grey-50',
         className,
       )}
     >
