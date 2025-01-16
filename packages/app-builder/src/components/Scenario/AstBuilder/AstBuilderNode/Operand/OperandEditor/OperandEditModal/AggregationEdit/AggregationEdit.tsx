@@ -5,6 +5,14 @@ import { type AstNode } from '@app-builder/models';
 import {
   type AggregationAstNode,
   aggregationAstNodeName,
+  type AggregationFilterAstNode,
+  type AggregationFilterOperator,
+  type BinaryAggregationFilterOperator,
+  binaryAggregationFilterOperators,
+  type GetAggregationFilterOperator,
+  isUnaryAggregationFilter,
+  type UnaryAggregationFilterOperator,
+  unaryAggregationFilterOperators,
 } from '@app-builder/models/astNode/aggregation';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
@@ -47,17 +55,44 @@ export interface AggregationViewModel {
     aggregatedField: EvaluationError[];
   };
 }
-export interface FilterViewModel {
-  operator: string | null;
+export type FilterViewModel<
+  T extends AggregationFilterOperator = AggregationFilterOperator,
+> = {
+  operator: T | null;
   filteredField: DataModelField | null;
-  value: { astNode: AstNode; astNodeErrors?: AstNodeErrors };
   errors: {
     filter: EvaluationError[];
     operator: EvaluationError[];
     filteredField: EvaluationError[];
     value: EvaluationError[];
   };
-}
+} & (T extends UnaryAggregationFilterOperator
+  ? { value?: undefined }
+  : {
+      value: { astNode: AstNode; astNodeErrors?: AstNodeErrors };
+    });
+
+export const isUnaryFilterModel = (
+  filter: FilterViewModel,
+): filter is FilterViewModel<UnaryAggregationFilterOperator> => {
+  return (
+    !!filter.operator &&
+    (
+      unaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>
+    ).includes(filter.operator)
+  );
+};
+
+export const isBinaryFilterModel = (
+  filter: FilterViewModel,
+): filter is FilterViewModel<BinaryAggregationFilterOperator> => {
+  return (
+    filter.operator === null ||
+    (
+      binaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>
+    ).includes(filter.operator)
+  );
+};
 
 export const adaptAggregationViewModel = (
   initialAggregationAstNode: AggregationAstNode,
@@ -114,20 +149,26 @@ export const adaptAggregationViewModel = (
   };
 };
 
-function adaptFilterViewModel(
-  filterAstNode: AggregationAstNode['namedChildren']['filters']['children'][number],
+function adaptFilterViewModel<
+  T extends AggregationFilterAstNode = AggregationFilterAstNode,
+>(
+  filterAstNode: T,
   initialAstNodeErrors: AstNodeErrors,
-): FilterViewModel {
+): FilterViewModel<GetAggregationFilterOperator<T>> {
   return {
     operator: filterAstNode.namedChildren.operator.constant,
     filteredField: {
       tableName: filterAstNode.namedChildren.tableName?.constant,
       fieldName: filterAstNode.namedChildren.fieldName?.constant,
     },
-    value: {
-      astNode: filterAstNode.namedChildren.value,
-      astNodeErrors: initialAstNodeErrors.namedChildren['value'],
-    },
+    ...(isUnaryAggregationFilter(filterAstNode)
+      ? {}
+      : {
+          value: {
+            astNode: filterAstNode.namedChildren.value,
+            astNodeErrors: initialAstNodeErrors.namedChildren['value'],
+          },
+        }),
     errors: {
       filter: initialAstNodeErrors.errors,
       operator: computeValidationForNamedChildren(
@@ -140,36 +181,41 @@ function adaptFilterViewModel(
         initialAstNodeErrors,
         ['tableName', 'fieldName'],
       ),
-      value: computeValidationForNamedChildren(
-        filterAstNode,
-        initialAstNodeErrors,
-        'value',
-      ),
+      ...(isUnaryAggregationFilter(filterAstNode)
+        ? {}
+        : {
+            value: computeValidationForNamedChildren(
+              filterAstNode,
+              initialAstNodeErrors,
+              'value',
+            ),
+          }),
     },
-  };
+  } as FilterViewModel<GetAggregationFilterOperator<T>>;
 }
 
 export const adaptAggregationAstNode = (
   aggregationViewModel: AggregationViewModel,
 ): AggregationAstNode => {
   const filters = aggregationViewModel.filters.map(
-    (filter: FilterViewModel) => ({
-      name: 'Filter' as const,
-      constant: undefined,
-      children: [],
-      namedChildren: {
-        operator: NewConstantAstNode({
-          constant: filter.operator,
-        }),
-        tableName: NewConstantAstNode({
-          constant: filter.filteredField?.tableName ?? null,
-        }),
-        fieldName: NewConstantAstNode({
-          constant: filter.filteredField?.fieldName ?? null,
-        }),
-        value: filter.value.astNode,
-      },
-    }),
+    (filter: FilterViewModel) =>
+      ({
+        name: 'Filter' as const,
+        constant: undefined,
+        children: [],
+        namedChildren: {
+          operator: NewConstantAstNode({
+            constant: filter.operator,
+          }),
+          tableName: NewConstantAstNode({
+            constant: filter.filteredField?.tableName ?? null,
+          }),
+          fieldName: NewConstantAstNode({
+            constant: filter.filteredField?.fieldName ?? null,
+          }),
+          value: filter.value?.astNode,
+        },
+      }) as AggregationFilterAstNode,
   );
   return {
     name: aggregationAstNodeName,

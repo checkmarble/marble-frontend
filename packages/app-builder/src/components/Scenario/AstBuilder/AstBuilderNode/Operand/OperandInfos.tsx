@@ -7,6 +7,7 @@ import {
 import {
   type AggregationAstNode,
   isAggregation,
+  isBinaryAggregationFilter,
 } from '@app-builder/models/astNode/aggregation';
 import {
   type CustomListAccessAstNode,
@@ -225,7 +226,7 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
       </span>
       <span className="font-bold">{aggregatedFieldName}</span>
       {filters.children.map((filter, index) => {
-        const { operator, fieldName, value } = filter.namedChildren;
+        const { operator, fieldName } = filter.namedChildren;
         return (
           <Fragment key={`filter_${index}`}>
             <LogicalOperatorLabel
@@ -250,10 +251,12 @@ function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
                 operators={[operator?.constant as OperatorOption]}
                 viewOnly
               />
-              <OperandLabel
-                interactionMode="viewer"
-                {...getAstNodeOperandProps(value)}
-              />
+              {isBinaryAggregationFilter(filter) ? (
+                <OperandLabel
+                  interactionMode="viewer"
+                  {...getAstNodeOperandProps(filter.namedChildren.value)}
+                />
+              ) : null}
             </div>
           </Fragment>
         );

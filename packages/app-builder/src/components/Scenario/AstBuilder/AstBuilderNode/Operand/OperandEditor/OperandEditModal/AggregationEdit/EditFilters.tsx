@@ -7,7 +7,8 @@ import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   aggregationFilterOperators,
   isAggregationFilterOperator,
-} from '@app-builder/models/modale-operators';
+  isUnaryAggregationFilterOperator,
+} from '@app-builder/models/astNode/aggregation';
 import {
   useDefaultCoerceToConstant,
   useGetAstNodeOperandProps,
@@ -30,7 +31,7 @@ import { Icon } from 'ui-icons';
 
 import { Operator } from '../../../../Operator';
 import { Operand } from '../../../Operand';
-import { type FilterViewModel } from './AggregationEdit';
+import { type FilterViewModel, isBinaryFilterModel } from './AggregationEdit';
 import { type DataModelField, EditDataModelField } from './EditDataModelField';
 
 const newFilterValidation = () => ({
@@ -68,15 +69,46 @@ export function EditFilters({
     filterIndex: number,
   ): void => {
     onChange(
-      value.map((filter, index) =>
-        index === filterIndex
-          ? {
-              ...filter,
-              ...newFieldValue,
-              validation: newFilterValidation(),
+      value.map((filter, index) => {
+        if (index !== filterIndex) {
+          return filter;
+        }
+
+        if ('operator' in newFieldValue && !!newFieldValue.operator) {
+          const isOldOpUnary = isUnaryAggregationFilterOperator(
+            filter.operator,
+          );
+          const isNewOpUnary = isUnaryAggregationFilterOperator(
+            newFieldValue.operator,
+          );
+          const isBinaryToUnary = !isOldOpUnary && isNewOpUnary;
+          const isUnaryToBinary = isOldOpUnary && !isNewOpUnary;
+
+          if (isBinaryToUnary || isUnaryToBinary) {
+            if (isBinaryToUnary) {
+              return {
+                operator: newFieldValue.operator,
+                filteredField: filter.filteredField,
+                value: undefined,
+                errors: newFilterValidation(),
+              };
+            } else {
+              return {
+                operator: newFieldValue.operator,
+                filteredField: filter.filteredField,
+                value: { astNode: NewUndefinedAstNode() },
+                errors: newFilterValidation(),
+              };
             }
-          : filter,
-      ),
+          }
+        }
+
+        return {
+          ...filter,
+          ...newFieldValue,
+          errors: newFilterValidation(),
+        };
+      }),
     );
   };
 
@@ -104,6 +136,8 @@ export function EditFilters({
         {value.map((filter, filterIndex) => {
           const isFirstCondition = filterIndex === 0;
           const isLastCondition = filterIndex === value.length - 1;
+          const binaryFilter = isBinaryFilterModel(filter);
+
           return (
             <Fragment key={filterIndex}>
               {/* Row 1 */}
@@ -152,21 +186,23 @@ export function EditFilters({
                     }
                     operators={aggregationFilterOperators}
                   />
-                  <FilterValue
-                    filterValue={filter.value.astNode}
-                    onSave={(astNode) =>
-                      onFilterChange({ value: { astNode } }, filterIndex)
-                    }
-                    astNodeErrors={filter.value.astNodeErrors}
-                    validationStatus={
-                      filter.errors.value.length > 0 ? 'error' : 'valid'
-                    }
-                  />
+                  {binaryFilter ? (
+                    <FilterValue
+                      filterValue={filter.value.astNode}
+                      onSave={(astNode) =>
+                        onFilterChange({ value: { astNode } }, filterIndex)
+                      }
+                      astNodeErrors={filter.value.astNodeErrors}
+                      validationStatus={
+                        filter.errors.value.length > 0 ? 'error' : 'valid'
+                      }
+                    />
+                  ) : null}
                 </div>
                 <EvaluationErrors
                   errors={adaptEvaluationErrorViewModels([
                     ...filter.errors.filter,
-                    ...filter.errors.value,
+                    ...(isBinaryFilterModel(filter) ? filter.errors.value : []),
                   ]).map(getNodeEvaluationErrorMessage)}
                 />
               </div>

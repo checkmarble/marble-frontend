@@ -19,25 +19,6 @@ export function isAggregatorOperator(
   return (aggregatorOperators as ReadonlyArray<string>).includes(value);
 }
 
-export const aggregationFilterOperators = [
-  '=',
-  '!=',
-  '>',
-  '<',
-  '>=',
-  '<=',
-  'IsInList',
-  'IsNotInList',
-] as const;
-export type AggregationFilterOperator =
-  (typeof aggregationFilterOperators)[number];
-
-export function isAggregationFilterOperator(
-  value: string,
-): value is AggregationFilterOperator {
-  return (aggregationFilterOperators as ReadonlyArray<string>).includes(value);
-}
-
 export const timeAddOperators = ['+', '-'] as const;
 export type TimeAddOperator = (typeof timeAddOperators)[number];
 
