@@ -80,10 +80,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     (pivot) => pivot.baseTable === currentScenario?.triggerObjectType,
   );
 
-  const [operators, accessors, dataModel, customLists] = await Promise.all([
-    editor.listOperators({
-      scenarioId,
-    }),
+  const [accessors, dataModel, customLists] = await Promise.all([
     editor.listAccessors({
       scenarioId,
     }),
@@ -101,7 +98,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     builderOptions: {
       databaseAccessors: accessors.databaseAccessors,
       payloadAccessors: accessors.payloadAccessors,
-      operators,
       dataModel,
       customLists,
     },

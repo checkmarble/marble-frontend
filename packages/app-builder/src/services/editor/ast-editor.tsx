@@ -1,8 +1,6 @@
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
-import {
-  isBinaryMainAstOperatorFunction,
-  isUnaryMainAstOperatorFunction,
-} from '@app-builder/models/editable-operators';
+import { isUnaryMainAstOperatorFunction } from '@app-builder/models/astNode/builder-ast-node-node-operator';
+import { isBinaryMainAstOperatorFunction } from '@app-builder/models/astNode/builder-ast-node-node-operator';
 import {
   NewNodeEvaluation,
   type NodeEvaluation,

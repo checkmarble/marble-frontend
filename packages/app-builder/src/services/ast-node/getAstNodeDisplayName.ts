@@ -1,29 +1,34 @@
+import { type AstNode, isUndefinedAstNode } from '@app-builder/models';
 import {
   type AggregationAstNode,
-  type AstNode,
-  type FuzzyMatchComparatorAstNode,
   isAggregation,
-  isConstant,
-  isCustomListAccess,
+} from '@app-builder/models/astNode/aggregation';
+import { isConstant } from '@app-builder/models/astNode/constant';
+import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
+import {
   isDatabaseAccess,
-  isFuzzyMatchComparator,
+  isPayload,
+} from '@app-builder/models/astNode/data-accessor';
+import {
   isIsMultipleOf,
   type IsMultipleOfAstNode,
-  isPayload,
+} from '@app-builder/models/astNode/multiple-of';
+import {
+  type FuzzyMatchComparatorAstNode,
+  isFuzzyMatchComparator,
   isStringTemplateAstNode,
+  type StringTemplateAstNode,
+} from '@app-builder/models/astNode/strings';
+import {
   isTimeAdd,
   isTimeNow,
   isTimestampExtract,
-  isUndefinedAstNode,
-  type StringTemplateAstNode,
   type TimeAddAstNode,
   type TimestampExtractAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/time';
 import { type CustomList } from '@app-builder/models/custom-list';
-import {
-  getOperatorName,
-  isAggregatorOperator,
-} from '@app-builder/models/editable-operators';
+import { getOperatorName } from '@app-builder/models/get-operator-name';
+import { isAggregatorOperator } from '@app-builder/models/modale-operators';
 import { formatNumber } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';

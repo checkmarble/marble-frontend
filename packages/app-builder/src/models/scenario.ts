@@ -5,12 +5,11 @@ import {
 } from 'marble-api';
 import * as z from 'zod';
 
+import { adaptAstNode, adaptNodeDto } from './astNode/ast-node';
 import {
-  adaptAstNode,
-  adaptNodeDto,
   isStringTemplateAstNode,
   type StringTemplateAstNode,
-} from './ast-node';
+} from './astNode/strings';
 import { type Outcome, outcomes } from './outcome';
 
 type DecisionToCaseWorkflowType =

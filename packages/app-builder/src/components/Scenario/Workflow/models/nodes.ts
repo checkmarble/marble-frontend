@@ -1,4 +1,4 @@
-import { type StringTemplateAstNode } from '@app-builder/models';
+import { type StringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { type Outcome } from '@app-builder/models/outcome';
 import { nanoid } from 'nanoid';
 import { useTranslation } from 'react-i18next';

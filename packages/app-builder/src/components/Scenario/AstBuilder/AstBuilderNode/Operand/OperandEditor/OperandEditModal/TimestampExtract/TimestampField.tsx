@@ -1,8 +1,8 @@
+import { type AstNode } from '@app-builder/models';
 import {
-  type AstNode,
   isTimestampFieldAstNode,
   type TimestampFieldAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/time';
 import {
   useDefaultCoerceToConstant,
   useGetAstNodeOperandProps,

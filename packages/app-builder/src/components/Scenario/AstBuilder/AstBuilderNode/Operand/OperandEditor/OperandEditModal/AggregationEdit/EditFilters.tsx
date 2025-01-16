@@ -5,9 +5,9 @@ import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilde
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
-  filterOperators,
-  isFilterOperator,
-} from '@app-builder/models/editable-operators';
+  aggregationFilterOperators,
+  isAggregationFilterOperator,
+} from '@app-builder/models/modale-operators';
 import {
   useDefaultCoerceToConstant,
   useGetAstNodeOperandProps,
@@ -139,7 +139,8 @@ export function EditFilters({
                   />
                   <Operator
                     value={
-                      filter.operator && isFilterOperator(filter.operator)
+                      filter.operator &&
+                      isAggregationFilterOperator(filter.operator)
                         ? filter.operator
                         : undefined
                     }
@@ -149,7 +150,7 @@ export function EditFilters({
                     validationStatus={
                       filter.errors.operator.length > 0 ? 'error' : 'valid'
                     }
-                    operators={filterOperators}
+                    operators={aggregationFilterOperators}
                   />
                   <FilterValue
                     filterValue={filter.value.astNode}

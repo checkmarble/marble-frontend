@@ -1,16 +1,14 @@
+import { type Pivot, type TableModel } from '@app-builder/models';
 import {
   type DatabaseAccessAstNode,
   type PayloadAstNode,
-  type Pivot,
-  type TableModel,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type Decision,
   type DecisionDetail,
   type RuleExecution,
 } from '@app-builder/models/decision';
-import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type RuleSnoozeWithRuleId } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
@@ -49,7 +47,7 @@ import { CasePivotValues } from './CasePivotValues';
 import { casesI18n } from './cases-i18n';
 import { RuleSnoozes } from './RuleSnoozes';
 
-interface DecisionsDetail {
+interface DecisionsDetailWithContext {
   decisionId: string;
   ruleExecutions: RuleExecution[];
   triggerObjectType: string;
@@ -59,7 +57,6 @@ interface DecisionsDetail {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
   };
-  operators: OperatorFunction[];
   ruleSnoozes: RuleSnoozeWithRuleId[];
 }
 
@@ -76,7 +73,7 @@ export function CaseDecisions({
   };
   entitlements: LicenseEntitlements;
   caseDecisionsPromise: Promise<
-    [TableModel[], CustomList[], DecisionsDetail[]]
+    [TableModel[], CustomList[], DecisionsDetailWithContext[]]
   >;
 }) {
   const { t } = useTranslation(casesI18n);
@@ -273,7 +270,7 @@ function DecisionDetail({
   featureAccess,
 }: {
   decision: Decision;
-  decisionsDetail: DecisionsDetail[];
+  decisionsDetail: DecisionsDetailWithContext[];
   dataModel: TableModel[];
   customLists: CustomList[];
   entitlements: LicenseEntitlements;
@@ -358,7 +355,6 @@ function DecisionDetail({
                         decisionDetail.accessors.databaseAccessors,
                       payloadAccessors:
                         decisionDetail.accessors.payloadAccessors,
-                      operators: decisionDetail.operators,
                       rules: decisionDetail.rules,
                     }}
                   />

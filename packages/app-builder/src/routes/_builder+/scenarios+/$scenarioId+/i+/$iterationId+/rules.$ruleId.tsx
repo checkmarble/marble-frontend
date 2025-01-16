@@ -10,15 +10,13 @@ import { Highlight } from '@app-builder/components/Highlight';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import {
-  type AstNode,
   type DatabaseAccessAstNode,
-  NewEmptyRuleAstNode,
   type PayloadAstNode,
-} from '@app-builder/models';
+} from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
-import { type OperatorFunction } from '@app-builder/models/editable-operators';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
@@ -85,10 +83,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const operatorsPromise = editor.listOperators({
-    scenarioId,
-  });
-
   const accessorsPromise = editor.listAccessors({
     scenarioId,
   });
@@ -99,7 +93,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     databaseAccessors: (await accessorsPromise).databaseAccessors,
     payloadAccessors: (await accessorsPromise).payloadAccessors,
-    operators: await operatorsPromise,
     dataModel: await dataModelPromise,
     customLists,
   });
@@ -184,13 +177,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function RuleDetail() {
   const { t } = useTranslation(handle.i18n);
 
-  const {
-    databaseAccessors,
-    payloadAccessors,
-    operators,
-    dataModel,
-    customLists,
-  } = useLoaderData<typeof loader>();
+  const { databaseAccessors, payloadAccessors, dataModel, customLists } =
+    useLoaderData<typeof loader>();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -218,7 +206,6 @@ export default function RuleDetail() {
   const options = {
     databaseAccessors,
     payloadAccessors,
-    operators,
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
@@ -267,7 +254,6 @@ function RuleViewContent({
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
     dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;
@@ -321,7 +307,6 @@ function RuleEditContent({
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];
-    operators: OperatorFunction[];
     dataModel: DataModel;
     customLists: CustomList[];
     triggerObjectType: string;

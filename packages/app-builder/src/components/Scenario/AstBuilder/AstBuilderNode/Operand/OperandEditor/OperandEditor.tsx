@@ -1,9 +1,9 @@
 import {
   type AstNode,
-  type ConstantAstNode,
   type ConstantType,
   type DataType,
 } from '@app-builder/models';
+import { type ConstantAstNode } from '@app-builder/models/astNode/constant';
 import { type OperandType } from '@app-builder/models/operand-type';
 import {
   type AstNodeErrors,
