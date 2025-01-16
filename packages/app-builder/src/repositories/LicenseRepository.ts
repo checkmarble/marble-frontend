@@ -5,27 +5,28 @@ import {
 } from '@app-builder/models/license';
 
 export interface LicenseRepository {
-  getEntitlements(organizationId: string): Promise<LicenseEntitlements>;
+  getEntitlements(organizationId?: string): Promise<LicenseEntitlements>;
   isSsoEnabled(): Promise<boolean>;
 }
 
 export const makeGetLicenseRepository =
   (isDev: boolean) =>
   (client: LicenseApi): LicenseRepository => ({
-    getEntitlements: async (organizationId: string) => {
-      const accesses: LicenseEntitlements = !isDev
-        ? adaptLicenseEntitlements(
-            (await client.getEntitlements(organizationId)).feature_access,
-          )
-        : {
-            sanctions: 'allowed',
-            ruleSnoozes: 'allowed',
-            userRoles: 'allowed',
-            workflows: 'allowed',
-            testRun: 'allowed',
-            analytics: 'allowed',
-            webhooks: 'allowed',
-          };
+    getEntitlements: async (organizationId) => {
+      const accesses: LicenseEntitlements =
+        !isDev && organizationId
+          ? adaptLicenseEntitlements(
+              (await client.getEntitlements(organizationId)).feature_access,
+            )
+          : {
+              sanctions: 'allowed',
+              ruleSnoozes: 'allowed',
+              userRoles: 'allowed',
+              workflows: 'allowed',
+              testRun: 'allowed',
+              analytics: 'allowed',
+              webhooks: 'allowed',
+            };
 
       if (isDev) {
         accesses.webhooks = 'restricted';
