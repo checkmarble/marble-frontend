@@ -105,6 +105,7 @@
   "case_detail.review_decision.review_status.label": "Review status",
   "case_detail.review_decision.review_status.placeholder": "Select a review status",
   "case_detail.review_decision": "Review",
+  "search.placeholder": "Search by name",
   "filters.date_range.title": "creation date is:",
   "change_status_modal.title": "Change Case’s status",
   "change_status_modal.description.from": "from <Status/>",
