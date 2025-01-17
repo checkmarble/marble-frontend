@@ -86,7 +86,6 @@ export function CasesFiltersProvider({
   const { isDirty } = formMethods.formState;
   const submitCasesFilters = useCallbackRef(() => {
     const formValues = formMethods.getValues();
-    console.log('Form Values', formValues);
     _submitCasesFilters({
       ...formValues,
       dateRange: formValues.dateRange ?? undefined,
