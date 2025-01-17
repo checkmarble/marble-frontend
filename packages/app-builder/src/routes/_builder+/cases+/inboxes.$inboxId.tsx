@@ -112,8 +112,6 @@ export default function Cases() {
   } = useLoaderData<typeof loader>();
   const inboxId = useParam('inboxId');
 
-  console.log('Filters', filters);
-
   const { data, next, previous, reset } = useCursorPaginatedFetcher<
     typeof loader,
     PaginatedResponse<Case>

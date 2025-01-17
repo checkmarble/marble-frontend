@@ -819,12 +819,13 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases({ status, inboxId, startDate, endDate, sorting, offsetId, limit, order }: {
+export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order }: {
     status?: CaseStatusDto[];
     inboxId?: string[];
     startDate?: string;
     endDate?: string;
     sorting?: "created_at";
+    name?: string;
     offsetId?: string;
     limit?: number;
     order?: "ASC" | "DESC";
@@ -846,6 +847,7 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, offset
         start_date: startDate,
         end_date: endDate,
         sorting,
+        name,
         offset_id: offsetId,
         limit,
         order

@@ -38,13 +38,12 @@ const CasesFiltersContext = createSimpleContext<CasesFiltersContextValue>(
 export type CasesFiltersForm = {
   statuses: CaseStatus[];
   dateRange: DateRangeFilterForm;
-  name: string;
+  name?: string;
 };
 
 const emptyCasesFilters: CasesFiltersForm = {
   statuses: [],
   dateRange: null,
-  name: '',
 };
 
 function adaptFilterValues({
