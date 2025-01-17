@@ -30,10 +30,10 @@ import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { omit } from 'remeda';
-import { Button } from 'ui-design-system';
+import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -102,6 +102,27 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }
   }
 }
+
+const SearchByName = () => {
+  const { t } = useTranslation(['cases', 'common']);
+  const [value, setValue] = useState<string>();
+
+  return (
+    <div className="flex gap-1">
+      <Input
+        type="search"
+        aria-label={t('cases:search.placeholder')}
+        placeholder={t('cases:search.placeholder')}
+        value={value ?? ''}
+        onChange={(e) => setValue(e.target.value)}
+        startAdornment="search"
+      />
+      <Button type="submit" disabled={!value}>
+        {t('common:search')}
+      </Button>
+    </div>
+  );
+};
 
 export default function Cases() {
   const { t } = useTranslation(casesI18n);
@@ -187,16 +208,19 @@ export default function Cases() {
               submitCasesFilters={navigateCasesList}
               filterValues={filters}
             >
-              <div className="flex justify-end gap-4">
-                <CasesFiltersMenu filterNames={casesFilterNames}>
-                  <FiltersButton />
-                </CasesFiltersMenu>
-                <CaseRightPanel.Trigger asChild data={{ inboxId }}>
-                  <Button>
-                    <Icon icon="plus" className="size-5" />
-                    {t('cases:case.new_case')}
-                  </Button>
-                </CaseRightPanel.Trigger>
+              <div className="flex justify-between">
+                <SearchByName />
+                <div className="flex gap-4">
+                  <CasesFiltersMenu filterNames={casesFilterNames}>
+                    <FiltersButton />
+                  </CasesFiltersMenu>
+                  <CaseRightPanel.Trigger asChild data={{ inboxId }}>
+                    <Button>
+                      <Icon icon="plus" className="size-5" />
+                      {t('cases:case.new_case')}
+                    </Button>
+                  </CaseRightPanel.Trigger>
+                </div>
               </div>
               <CasesFiltersBar />
               <CasesList
