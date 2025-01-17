@@ -15,6 +15,10 @@ const checkbox = cva(
         purple: 'border-purple-82 focus:border-purple-65',
         red: 'focus:border-red-43 border-red-47',
       },
+      circle: {
+        true: 'rounded-full',
+        false: null,
+      },
     },
   },
 );
@@ -23,31 +27,18 @@ export const Checkbox = forwardRef<
   HTMLButtonElement,
   Omit<CheckboxProps, 'asChild'> & {
     color?: 'purple' | 'red';
+    circle?: boolean;
   }
->(function Checkbox({ className, color = 'purple', checked, ...props }, ref) {
+>(function Checkbox({ className, color = 'purple', circle, checked, ...props }, ref) {
   return (
-    <Root
-      ref={ref}
-      className={checkbox({ color, className: `group ${className}` })}
-      checked={checked}
-      {...props}
-    >
+    <Root ref={ref} className={checkbox({ color, circle, className: `group ${className}` })} checked={checked} {...props}>
       <Indicator className="size-6" asChild>
         {checked === undefined ? (
-          <Icon
-            icon="tick"
-            className="text-grey-100 group-disabled:text-grey-50"
-          />
+          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50" />
         ) : checked === true ? (
-          <Icon
-            icon="tick"
-            className="text-grey-100 group-disabled:text-grey-50"
-          />
+          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50" />
         ) : checked === 'indeterminate' ? (
-          <Icon
-            icon="check-indeterminate-small"
-            className="group-disabled:text-grey-50 text-purple-65"
-          />
+          <Icon icon="check-indeterminate-small" className="group-disabled:text-grey-50 text-purple-65" />
         ) : null}
       </Indicator>
     </Root>

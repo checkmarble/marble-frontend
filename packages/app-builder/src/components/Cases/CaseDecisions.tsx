@@ -6,13 +6,13 @@ import {
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type Decision,
-  type DecisionDetail,
   type RuleExecution,
 } from '@app-builder/models/decision';
 import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type RuleSnoozeWithRuleId } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
+import { type SanctionCheck } from '@app-builder/utils/faker/case-sanction';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -22,12 +22,14 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import {
+  Button,
   CollapsibleV2,
   MenuButton,
   MenuItem,
   MenuPopover,
   MenuRoot,
   Switch,
+  Tag,
   Tooltip,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -61,11 +63,14 @@ interface DecisionsDetailWithContext {
 }
 
 export function CaseDecisions({
+  caseId,
   decisions,
   featureAccess,
   entitlements,
   caseDecisionsPromise,
+  sanctionChecks,
 }: {
+  caseId: string;
   decisions: Decision[];
   featureAccess: {
     isReadSnoozeAvailable: boolean;
@@ -75,6 +80,7 @@ export function CaseDecisions({
   caseDecisionsPromise: Promise<
     [TableModel[], CustomList[], DecisionsDetailWithContext[]]
   >;
+  sanctionChecks: SanctionCheck[];
 }) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
@@ -99,6 +105,10 @@ export function CaseDecisions({
         </div>
       </div>
       {decisions.map((row) => {
+        const sanctionCheck = sanctionChecks.find(
+          (sc) => sc.decisionId === row.id,
+        );
+
         return (
           <CollapsibleV2.Provider
             key={row.id}
@@ -152,12 +162,14 @@ export function CaseDecisions({
                       return (
                         <DecisionDetail
                           key={row.id}
+                          caseId={caseId}
                           decision={row}
                           decisionsDetail={decisionsDetail}
                           dataModel={dataModel}
                           customLists={customLists}
                           entitlements={entitlements}
                           featureAccess={featureAccess}
+                          sanctionCheck={sanctionCheck ?? null}
                         />
                       );
                     }}
@@ -262,13 +274,16 @@ function DecisionActions({ decision }: { decision: Decision }) {
 }
 
 function DecisionDetail({
+  caseId,
   decision,
   decisionsDetail,
   dataModel,
   customLists,
   entitlements,
   featureAccess,
+  sanctionCheck,
 }: {
+  caseId: string;
   decision: Decision;
   decisionsDetail: DecisionsDetailWithContext[];
   dataModel: TableModel[];
@@ -278,6 +293,7 @@ function DecisionDetail({
     isReadSnoozeAvailable: boolean;
     isCreateSnoozeAvailable: boolean;
   };
+  sanctionCheck: SanctionCheck | null;
 }) {
   const { t } = useTranslation(casesI18n);
   const decisionDetail = React.useMemo(
@@ -330,6 +346,45 @@ function DecisionDetail({
             onCheckedChange={setShowHitOnly}
           />
         </div>
+
+        {sanctionCheck ? (
+          <>
+            <div className="text-s text-grey-50">Check sanction</div>
+            <div className="bg-grey-98 grid h-fit grid-cols-[1fr_max-content] items-center gap-2 rounded-lg px-4 py-3">
+              <span className="text-s line-clamp-1 text-start font-semibold">
+                Some sanction check rule name
+              </span>
+              <div className="inline-flex items-center gap-2">
+                <Tag color="orange" border="square" className="h-8">
+                  {sanctionCheck.status}
+                </Tag>
+                <Link
+                  to={getRoute('/cases/:caseId/sanctions/:decisionId', {
+                    caseId: fromUUID(caseId),
+                    decisionId: fromUUID(decision.id),
+                  })}
+                >
+                  <Button>
+                    <Icon icon="case-manager" className="size-5" />
+                    Start reviewing
+                  </Button>
+                </Link>
+              </div>
+              {/* <CollapsibleV2.Provider>
+                <div
+                  className={clsx(
+                    'bg-grey-98 col-span-full grid grid-cols-subgrid gap-2 overflow-hidden rounded-lg p-2',
+                  )}
+                >
+                  <div className="bg-grey-98 group col-span-full grid grid-cols-subgrid items-center outline-none">
+                  </CollapsibleV2.Title>
+                </div>
+              </CollapsibleV2.Provider> */}
+            </div>
+          </>
+        ) : null}
+
+        <div className="text-s text-grey-50">Hits</div>
         <RulesExecutionsContainer className="h-fit">
           {filteredRuleExecutions.map((ruleExecution) => {
             const ruleSnoozes = decisionDetail.ruleSnoozes.filter(

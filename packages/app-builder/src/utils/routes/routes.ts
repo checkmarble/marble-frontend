@@ -77,6 +77,23 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout",
+            "path": "cases/:caseId/sanctions/:decisionId",
+            "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_index",
+                "index": true,
+                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_index.tsx"
+              },
+              {
+                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits",
+                "path": "hits",
+                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits.tsx"
+              }
+            ]
+          },
+          {
             "id": "routes/_builder+/cases+/_index",
             "index": true,
             "path": "cases/",
@@ -349,6 +366,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/review-decision",
         "path": "ressources/cases/review-decision",
         "file": "routes/ressources+/cases+/review-decision.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/review-sanction-match",
+        "path": "ressources/cases/review-sanction-match",
+        "file": "routes/ressources+/cases+/review-sanction-match.tsx"
       },
       {
         "id": "routes/ressources+/cases+/upload-file",

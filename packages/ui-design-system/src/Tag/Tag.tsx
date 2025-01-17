@@ -9,10 +9,7 @@ export interface TagProps extends React.ComponentProps<'span'> {
   size?: (typeof tagSize)[number];
 }
 
-export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
-  { size = 'small', border = 'rounded', color = 'purple', className, ...props },
-  ref,
-) {
+export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag({ size = 'small', border = 'rounded', color = 'purple', className, ...props }, ref) {
   return (
     <span
       ref={ref}
@@ -24,7 +21,7 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
           'bg-yellow-90 text-yellow-50': color === 'yellow',
           'bg-orange-95 text-orange-50': color === 'orange',
           'bg-red-95 text-red-47': color === 'red',
-          'bg-grey-95 text-grey-00': color === 'grey',
+          'bg-grey-95 text-grey-50': color === 'grey',
           'bg-grey-100 text-grey-00': color === 'grey-light',
         },
         {

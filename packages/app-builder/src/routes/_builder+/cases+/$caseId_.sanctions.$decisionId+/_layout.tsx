@@ -14,13 +14,8 @@ import {
   RightSidebarTabContent,
 } from '@app-builder/components/Cases/CaseHistory/RightSidebar';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-status';
 import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
-import {
-  isCreateSnoozeAvailable,
-  isReadSnoozeAvailable,
-} from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getSanctionCheckForDecision } from '@app-builder/utils/faker/case-sanction';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
@@ -50,78 +45,29 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const {
-    user,
-    entitlements,
-    cases,
-    inbox,
-    dataModelRepository,
-    customListsRepository,
-    decision,
-    scenario,
-    editor,
-  } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { user, entitlements, cases, dataModelRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const caseId = fromParams(params, 'caseId');
+  const decisionId = fromParams(params, 'decisionId');
+
   try {
     const caseDetail = await cases.getCase({ caseId });
-    const currentInbox = await inbox.getInbox(caseDetail.inboxId);
+    const decision = caseDetail.decisions.find((d) => d.id === decisionId);
 
-    const dataModelPromise = dataModelRepository.getDataModel();
-    const customListsPromise = customListsRepository.listCustomLists();
-
-    const featureAccess = {
-      isReadSnoozeAvailable: isReadSnoozeAvailable(user, entitlements),
-      isCreateSnoozeAvailable: isCreateSnoozeAvailable(user, entitlements),
-    };
-
-    const decisionsDetailPromise = Promise.all(
-      caseDetail.decisions.map(async ({ id }) => {
-        const decisionDetail = await decision.getDecisionById(id);
-        const pivotsPromise = dataModelRepository.listPivots({});
-        const rulesPromise = scenario
-          .getScenarioIteration({
-            iterationId: decisionDetail.scenario.scenarioIterationId,
-          })
-          .then((iteration) => iteration.rules);
-        const accessorsPromise = editor.listAccessors({
-          scenarioId: decisionDetail.scenario.id,
-        });
-
-        const ruleSnoozesPromise = decision
-          .getDecisionActiveSnoozes(id)
-          .then(({ ruleSnoozes }) => ruleSnoozes);
-
-        return {
-          decisionId: id,
-          ruleExecutions: decisionDetail.rules,
-          triggerObjectType: decisionDetail.triggerObjectType,
-          pivots: await pivotsPromise,
-          rules: await rulesPromise,
-          accessors: await accessorsPromise,
-          ruleSnoozes: await ruleSnoozesPromise,
-        };
-      }),
-    );
+    if (!decision) {
+      throw new Response(null, { status: 404, statusText: 'Not Found' });
+    }
 
     return defer({
       caseDetail,
-      inbox: currentInbox,
+      decision,
       user,
       entitlements,
-      featureAccess,
-      caseDecisionsPromise: Promise.all([
-        dataModelPromise,
-        customListsPromise,
-        decisionsDetailPromise,
-      ]),
-      sanctionChecks: [
-        ...(caseDetail.decisions[0]
-          ? [getSanctionCheckForDecision(caseDetail.decisions[0]?.id)]
-          : []),
-      ],
+      sanctionCheck: getSanctionCheckForDecision(decision.id),
+      pivots: await dataModelRepository.listPivots({}),
     });
   } catch (error) {
     // On purpuse catch 403 errors to display a 404 page
@@ -135,11 +81,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export function useCurrentCase() {
   return useRouteLoaderData(
-    'routes/_builder+/cases+/$caseId._layout' satisfies RouteID,
+    'routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout' satisfies RouteID,
   ) as SerializeFrom<typeof loader>;
 }
 
-export default function CasePage() {
+export default function CaseSanctionReviewPage() {
   const { t } = useTranslation(handle.i18n);
   const { caseDetail } = useLoaderData<typeof loader>();
 
@@ -148,8 +94,8 @@ export default function CasePage() {
       <Page.Header className="justify-between gap-8">
         <div className="flex flex-row items-center gap-4">
           <Page.BackLink
-            to={getRoute('/cases/inboxes/:inboxId', {
-              inboxId: fromUUID(caseDetail.inboxId),
+            to={getRoute('/cases/:caseId', {
+              caseId: fromUUID(caseDetail.id),
             })}
           />
           <span className="line-clamp-2 text-start">{caseDetail.name}</span>
@@ -166,19 +112,12 @@ export default function CasePage() {
           <Page.Container>
             <Page.Content className="max-w-screen-xl">
               <nav>
-                <ul className="flex flex-row gap-2">
+                <ul className="bg-grey-100 border-grey-90 inline-flex flex-row gap-2 rounded-lg border p-1">
                   <li>
                     <TabLink
-                      labelTKey="navigation:case_manager.information"
-                      to="./information"
+                      labelTKey="navigation:case_manager.hits"
+                      to="./hits"
                       Icon={(props) => <Icon {...props} icon="tip" />}
-                    />
-                  </li>
-                  <li>
-                    <TabLink
-                      labelTKey="navigation:case_manager.decisions"
-                      to="./decisions"
-                      Icon={(props) => <Icon {...props} icon="decision" />}
                     />
                   </li>
                   <li>
@@ -209,8 +148,7 @@ export default function CasePage() {
             </RightSidebarDisclosureContent>
           </RightSidebarProvider>
         </div>
-        <div className="bg-grey-100 border-t-grey-90 flex shrink-0 flex-row items-center gap-4 border-t p-4">
-          <AddComment caseId={caseDetail.id} />
+        <div className="bg-grey-100 border-t-grey-90 flex shrink-0 flex-row items-center justify-end gap-4 border-t p-4">
           <UploadFile caseDetail={caseDetail}>
             <Button
               className="h-14 w-fit whitespace-nowrap"
@@ -231,6 +169,8 @@ export function ErrorBoundary() {
   const { t } = useTranslation(['common']);
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
+
+  console.log(error);
 
   if (isRouteErrorResponse(error) && error.status === 404) {
     return (

@@ -116,5 +116,9 @@
   "drop_file_cta": "Drop any file here to attach it to the case. The following extensions are supported:",
   "drop_file_accepted_types": "jpg, png, pdf, zip, doc, docx, xls, xlsx",
   "pick_file_cta": "Pick a file",
-  "add_file": "Add a file"
+  "add_file": "Add a file",
+  "sanctions.callout.role.pep": "{{name}} is a politically exposed person. They are a person of interest by virtue of their position and the influence they may hold. They have not been found on international sanctions lists.",
+  "sanctions.match.status.pending": "To review",
+  "sanctions.match.status.no_hit": "No match",
+  "sanctions.match.status.confirmed_hit": "Match confirmed"
 }

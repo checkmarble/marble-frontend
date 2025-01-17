@@ -1,6 +1,7 @@
 import { vitePlugin as remix } from '@remix-run/dev';
 import { installGlobals } from '@remix-run/node';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
+import { remixDevTools } from 'remix-development-tools';
 import { flatRoutes } from 'remix-flat-routes';
 import { defineConfig, type PluginOption } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
@@ -16,6 +17,7 @@ const plugins: PluginOption[] = [];
 
 if (!isVitest) {
   plugins.push(
+    remixDevTools(),
     remix({
       serverModuleFormat: 'esm',
       appDirectory,
@@ -32,12 +34,7 @@ if (!isVitest) {
       routes: (defineRoutes) => {
         return flatRoutes('routes', defineRoutes, {
           appDir: appDirectory,
-          ignoredRouteFiles: [
-            '.*',
-            '**/*.css',
-            '**/*.test.{js,jsx,ts,tsx}',
-            '**/__*.*',
-          ],
+          ignoredRouteFiles: ['.*', '**/*.css', '**/*.test.{js,jsx,ts,tsx}', '**/__*.*'],
         });
       },
     }),

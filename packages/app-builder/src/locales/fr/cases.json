@@ -116,5 +116,6 @@
   "case_detail.rules_execution.show_hit_only": "Afficher uniquement les hits",
   "case_detail.trigger_object": "Objet déclencheur",
   "case_detail.add_rule_snooze.nudge": "Désactivez temporairement une règle afin d'éviter les faux positifs",
-  "search.placeholder": "Rechercher par nom"
+  "search.placeholder": "Rechercher par nom",
+  "sanctions.callout.role.pep": "{{name}} est une personne politiquement exposée. \nIls sont des personnes d’intérêt de par leur position et l’influence qu’ils peuvent exercer. \nIls ne figurent pas sur les listes de sanctions internationales."
 }
