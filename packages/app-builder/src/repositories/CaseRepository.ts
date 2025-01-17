@@ -20,6 +20,7 @@ import { Temporal } from 'temporal-polyfill';
 
 export type CaseFilters = {
   statuses?: CaseStatus[];
+  name?: string;
   dateRange?:
     | {
         type: 'static';
