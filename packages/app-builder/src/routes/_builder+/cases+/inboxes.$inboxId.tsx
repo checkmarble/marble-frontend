@@ -47,6 +47,7 @@ export const buildQueryParams = (
 ) => {
   return {
     statuses: filters.statuses ?? [],
+    name: filters.name,
     dateRange: filters.dateRange
       ? filters.dateRange.type === 'static'
         ? {
@@ -60,7 +61,7 @@ export const buildQueryParams = (
           }
       : {},
     offsetId,
-    order,
+    ...(order && { order }),
   };
 };
 
@@ -110,6 +111,8 @@ export default function Cases() {
     pagination: initialPagination,
   } = useLoaderData<typeof loader>();
   const inboxId = useParam('inboxId');
+
+  console.log('Filters', filters);
 
   const { data, next, previous, reset } = useCursorPaginatedFetcher<
     typeof loader,
