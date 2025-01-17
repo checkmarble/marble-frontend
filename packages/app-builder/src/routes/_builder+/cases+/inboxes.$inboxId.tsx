@@ -103,9 +103,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
-const SearchByName = () => {
+const SearchByName = ({
+  initialValue,
+  onClear,
+  onChange,
+}: {
+  initialValue?: string;
+  onChange: (value?: string) => void;
+  onClear: () => void;
+}) => {
   const { t } = useTranslation(['cases', 'common']);
-  const [value, setValue] = useState<string>();
+  const [value, setValue] = useState(initialValue);
 
   return (
     <div className="flex gap-1">
@@ -113,11 +121,14 @@ const SearchByName = () => {
         type="search"
         aria-label={t('cases:search.placeholder')}
         placeholder={t('cases:search.placeholder')}
-        value={value ?? ''}
-        onChange={(e) => setValue(e.target.value)}
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          if (!e.target.value) onClear();
+        }}
         startAdornment="search"
       />
-      <Button type="submit" disabled={!value}>
+      <Button onClick={() => onChange(value)} disabled={!value}>
         {t('common:search')}
       </Button>
     </div>
@@ -175,7 +186,6 @@ export default function Cases() {
         previous();
       }
       if (!pagination.order) {
-        console.log('resetting');
         reset();
       }
       if (pagination.order) {
@@ -209,7 +219,15 @@ export default function Cases() {
               filterValues={filters}
             >
               <div className="flex justify-between">
-                <SearchByName />
+                <SearchByName
+                  initialValue={filters.name}
+                  onClear={() => {
+                    navigateCasesList({ ...filters, name: undefined });
+                  }}
+                  onChange={(value) => {
+                    navigateCasesList({ ...filters, name: value });
+                  }}
+                />
                 <div className="flex gap-4">
                   <CasesFiltersMenu filterNames={casesFilterNames}>
                     <FiltersButton />
