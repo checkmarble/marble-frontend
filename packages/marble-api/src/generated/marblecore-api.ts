@@ -463,6 +463,60 @@ export type SnoozesOfIterationDto = {
     iteration_id: string;
     rule_snoozes: RuleSnoozeInformationDto[];
 };
+export type SanctionCheckEntityDto = "Thing" | "Person" | "Company";
+export type SanctionCheckRequestDto = {
+    threshold: number;
+    limit: number;
+    search_input: {
+        queries: {
+            [key: string]: {
+                schema: SanctionCheckEntityDto;
+                properties: {
+                    [key: string]: string[];
+                };
+            };
+        };
+    };
+};
+export type SanctionCheckMatchPayloadDto = {
+    id: string;
+    match: boolean;
+    score: number;
+    schema: SanctionCheckEntityDto;
+    caption: string;
+    properties: {
+        [key: string]: string[];
+    };
+};
+export type SanctionCheckMatchDto = {
+    id: string;
+    entity_id: string;
+    query_ids: string[];
+    status: "pending" | "confirmed_hit" | "no_hit";
+    datasets: any;
+    payload: SanctionCheckMatchPayloadDto;
+    comments: {
+        id: string;
+        author_id: string;
+        comment: string;
+        created_at: string;
+    }[];
+};
+export type SanctionCheckDto = {
+    id: string;
+    decision_id: string;
+    status: "in_review" | "confirmed_hit" | "no_hit" | "error";
+    request: SanctionCheckRequestDto;
+    partial: boolean;
+    count: number;
+    is_manual: boolean;
+    matches: SanctionCheckMatchDto[];
+};
+export type UpdateSanctionCheckMatchDto = {
+    status: "confirmed_hit" | "no_hit";
+    comment?: string;
+};
+export type SanctionCheckRefineDto = object;
 export type UpdateScenarioIterationRuleBodyDto = {
     display_order?: number;
     name?: string;
@@ -1761,6 +1815,69 @@ export function commitScenarioIteration(scenarioIterationId: string, opts?: Oaza
         ...opts,
         method: "POST"
     }));
+}
+/**
+ * List sanction checks for a decision
+ */
+export function listSanctionChecks(decisionId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckDto[];
+    }>(`/sanction-checks${QS.query(QS.explode({
+        decision_id: decisionId
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * List sanction checks for a decision
+ */
+export function getSanctionCheck(sanctionCheckId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: object;
+    }>(`/sanction-checks/${encodeURIComponent(sanctionCheckId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Update the status of a sanction check match
+ */
+export function updateSanctionCheckMatch(matchId: string, updateSanctionCheckMatchDto: UpdateSanctionCheckMatchDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckMatchDto;
+    }>(`/sanction-checks/matches/${encodeURIComponent(matchId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateSanctionCheckMatchDto
+    })));
+}
+/**
+ * Search possible matches
+ */
+export function searchSanctionCheckMatches(sanctionCheckRefineDto?: SanctionCheckRefineDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckMatchPayloadDto[];
+    }>("/sanction-checks/search", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: sanctionCheckRefineDto
+    })));
+}
+/**
+ * Try refine the search
+ */
+export function refineSanctionCheck(sanctionCheckRefineDto?: SanctionCheckRefineDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckDto;
+    }>("/sanction-checks/refine", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: sanctionCheckRefineDto
+    })));
 }
 /**
  * List rules

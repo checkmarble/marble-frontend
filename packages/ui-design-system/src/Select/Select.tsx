@@ -139,20 +139,22 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
   },
 );
 
-const SelectValue = forwardRef<HTMLDivElement, SelectValueProps>(
-  function SelectValue({ className, ...props }, ref) {
-    return (
-      <span
-        className={clsx(
-          'w-full text-center group-data-[border=rounded]/trigger:px-2',
-          className,
-        )}
-      >
-        <Value ref={ref} {...props} />
-      </span>
-    );
-  },
-);
+const SelectValue = forwardRef<
+  HTMLDivElement,
+  SelectValueProps & { align?: 'center' | 'start' }
+>(function SelectValue({ className, align = 'center', ...props }, ref) {
+  return (
+    <span
+      className={clsx(
+        'w-full group-data-[border=rounded]/trigger:px-2',
+        { 'text-center': align === 'center', 'text-start': align === 'start' },
+        className,
+      )}
+    >
+      <Value ref={ref} {...props} />
+    </span>
+  );
+});
 
 const SelectArrow = () => (
   <SelectIcon

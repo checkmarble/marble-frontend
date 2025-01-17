@@ -15,6 +15,10 @@ const checkbox = cva(
         purple: 'border-purple-82 focus:border-purple-65',
         red: 'focus:border-red-43 border-red-47',
       },
+      circle: {
+        true: 'rounded-full',
+        false: null,
+      },
     },
   },
 );
@@ -23,12 +27,16 @@ export const Checkbox = forwardRef<
   HTMLButtonElement,
   Omit<CheckboxProps, 'asChild'> & {
     color?: 'purple' | 'red';
+    circle?: boolean;
   }
->(function Checkbox({ className, color = 'purple', checked, ...props }, ref) {
+>(function Checkbox(
+  { className, color = 'purple', circle, checked, ...props },
+  ref,
+) {
   return (
     <Root
       ref={ref}
-      className={checkbox({ color, className: `group ${className}` })}
+      className={checkbox({ color, circle, className: `group ${className}` })}
       checked={checked}
       {...props}
     >

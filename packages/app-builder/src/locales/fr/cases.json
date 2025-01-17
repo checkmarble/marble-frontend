@@ -116,5 +116,6 @@
   "case_detail.rules_execution.show_hit_only": "Afficher uniquement les hits",
   "case_detail.trigger_object": "Objet déclencheur",
   "case_detail.add_rule_snooze.nudge": "Désactivez temporairement une règle afin d'éviter les faux positifs",
-  "search.placeholder": "Rechercher par nom"
+  "search.placeholder": "Rechercher par nom",
+  "case.page_title": "Investigation"
 }

@@ -39,6 +39,7 @@ export default function CasePage() {
 
   return (
     <CaseDecisions
+      caseId={caseDetail.id}
       decisions={caseDetail.decisions}
       featureAccess={featureAccess}
       entitlements={entitlements}

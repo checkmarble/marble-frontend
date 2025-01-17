@@ -109,6 +109,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     decision,
     scenario,
     editor,
+    sanctionCheck,
   } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -139,6 +140,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
           scenarioId: decisionDetail.scenario.id,
         });
 
+        const sanctionChecksPromise = sanctionCheck.listSanctionChecks({
+          decisionId: id,
+        });
         const ruleSnoozesPromise = decision
           .getDecisionActiveSnoozes(id)
           .then(({ ruleSnoozes }) => ruleSnoozes);
@@ -151,6 +155,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
           rules: await rulesPromise,
           accessors: await accessorsPromise,
           ruleSnoozes: await ruleSnoozesPromise,
+          sanctionChecks: await sanctionChecksPromise,
         };
       }),
     );
