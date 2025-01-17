@@ -45,7 +45,6 @@ type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
  */
 const SecretEnvVarsSchema = z.object({
   SESSION_SECRET: z.string(),
-  LICENSE_KEY: z.string(),
 });
 type SecretEnvVars = z.infer<typeof SecretEnvVarsSchema>;
 
@@ -87,7 +86,6 @@ interface ServerEnvVars {
   SENTRY_ENVIRONMENT?: string;
   SEGMENT_WRITE_KEY?: string;
   SESSION_SECRET: string;
-  LICENSE_KEY: string;
 }
 
 /**
