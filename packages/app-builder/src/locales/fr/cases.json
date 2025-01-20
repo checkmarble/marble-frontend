@@ -115,5 +115,6 @@
   "case_detail.pivot_values.snooze_from_to": "De {{de}} -> À {{à}}",
   "case_detail.rules_execution.show_hit_only": "Afficher uniquement les hits",
   "case_detail.trigger_object": "Objet déclencheur",
-  "case_detail.add_rule_snooze.nudge": "Désactivez temporairement une règle afin d'éviter les faux positifs"
+  "case_detail.add_rule_snooze.nudge": "Désactivez temporairement une règle afin d'éviter les faux positifs",
+  "search.placeholder": "Rechercher par nom"
 }

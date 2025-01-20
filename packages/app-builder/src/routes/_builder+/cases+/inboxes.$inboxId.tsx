@@ -30,9 +30,10 @@ import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { omit } from 'remeda';
+import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -42,9 +43,11 @@ export const handle = {
 export const buildQueryParams = (
   filters: CasesFilters,
   offsetId: string | null,
+  order: 'ASC' | 'DESC' | null,
 ) => {
   return {
     statuses: filters.statuses ?? [],
+    name: filters.name,
     dateRange: filters.dateRange
       ? filters.dateRange.type === 'static'
         ? {
@@ -58,6 +61,7 @@ export const buildQueryParams = (
           }
       : {},
     offsetId,
+    ...(order && { order }),
   };
 };
 
@@ -75,16 +79,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId }));
   }
 
-  const filters = parsedQuery.data;
   const filtersForBackend: CaseFilters = {
     ...parsedQuery.data,
     ...parsedPaginationQuery.data,
     inboxIds: [inboxId],
   };
+
   try {
     const caseList = await cases.listCases(filtersForBackend);
 
-    return json({ casesData: caseList, filters });
+    return json({
+      casesData: caseList,
+      filters: parsedQuery.data,
+      pagination: parsedPaginationQuery.data,
+    });
   } catch (error) {
     // if inbox is deleted or user no longer have access, the user is redirected
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
@@ -95,10 +103,45 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
+const SearchByName = ({
+  initialValue,
+  onClear,
+  onChange,
+}: {
+  initialValue?: string;
+  onChange: (value?: string) => void;
+  onClear: () => void;
+}) => {
+  const { t } = useTranslation(['cases', 'common']);
+  const [value, setValue] = useState(initialValue);
+
+  return (
+    <div className="flex gap-1">
+      <Input
+        type="search"
+        aria-label={t('cases:search.placeholder')}
+        placeholder={t('cases:search.placeholder')}
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          if (!e.target.value) onClear();
+        }}
+        startAdornment="search"
+      />
+      <Button onClick={() => onChange(value)} disabled={!value}>
+        {t('common:search')}
+      </Button>
+    </div>
+  );
+};
+
 export default function Cases() {
   const { t } = useTranslation(casesI18n);
-  const { casesData: initialCasesData, filters } =
-    useLoaderData<typeof loader>();
+  const {
+    casesData: initialCasesData,
+    filters,
+    pagination: initialPagination,
+  } = useLoaderData<typeof loader>();
   const inboxId = useParam('inboxId');
 
   const { data, next, previous, reset } = useCursorPaginatedFetcher<
@@ -107,9 +150,13 @@ export default function Cases() {
   >({
     transform: (fetcherData) => fetcherData.casesData,
     initialData: initialCasesData,
-    getQueryParams: (cursor) => buildQueryParams(filters, cursor),
+    getQueryParams: (cursor) =>
+      buildQueryParams(filters, cursor, initialPagination.order ?? null),
     validateData: (data) => data.items.length > 0,
   });
+
+  let hasAlreadyOrdered = false;
+
   const { items: cases, ...pagination } = data;
 
   const navigate = useNavigate();
@@ -122,7 +169,7 @@ export default function Cases() {
             pathname: getRoute('/cases/inboxes/:inboxId', {
               inboxId: fromUUID(inboxId),
             }),
-            search: qs.stringify(buildQueryParams(casesFilters, null), {
+            search: qs.stringify(buildQueryParams(casesFilters, null, null), {
               addQueryPrefix: true,
               skipNulls: true,
             }),
@@ -138,6 +185,26 @@ export default function Cases() {
       if (pagination.previous) {
         previous();
       }
+      if (!pagination.order) {
+        reset();
+      }
+      if (pagination.order) {
+        navigate(
+          {
+            pathname: getRoute('/cases/inboxes/:inboxId', {
+              inboxId: fromUUID(inboxId),
+            }),
+            search: qs.stringify(
+              buildQueryParams(casesFilters, null, pagination.order),
+              {
+                addQueryPrefix: true,
+                skipNulls: true,
+              },
+            ),
+          },
+          { replace: true },
+        );
+      }
     },
     [navigate, inboxId, next, previous, reset],
   );
@@ -151,19 +218,45 @@ export default function Cases() {
               submitCasesFilters={navigateCasesList}
               filterValues={filters}
             >
-              <div className="flex justify-end gap-4">
-                <CasesFiltersMenu filterNames={casesFilterNames}>
-                  <FiltersButton />
-                </CasesFiltersMenu>
-                <CaseRightPanel.Trigger asChild data={{ inboxId }}>
-                  <Button>
-                    <Icon icon="plus" className="size-5" />
-                    {t('cases:case.new_case')}
-                  </Button>
-                </CaseRightPanel.Trigger>
+              <div className="flex justify-between">
+                <SearchByName
+                  initialValue={filters.name}
+                  onClear={() => {
+                    navigateCasesList({ ...filters, name: undefined });
+                  }}
+                  onChange={(value) => {
+                    navigateCasesList({ ...filters, name: value });
+                  }}
+                />
+                <div className="flex gap-4">
+                  <CasesFiltersMenu filterNames={casesFilterNames}>
+                    <FiltersButton />
+                  </CasesFiltersMenu>
+                  <CaseRightPanel.Trigger asChild data={{ inboxId }}>
+                    <Button>
+                      <Icon icon="plus" className="size-5" />
+                      {t('cases:case.new_case')}
+                    </Button>
+                  </CaseRightPanel.Trigger>
+                </div>
               </div>
               <CasesFiltersBar />
-              <CasesList cases={cases} className="max-h-[60dvh]" />
+              <CasesList
+                cases={cases}
+                className="max-h-[60dvh]"
+                onSortingChange={(state) => {
+                  const paginationParams: PaginationParams = {
+                    ...omit(initialPagination, ['order']),
+                    ...(state.length > 0 && {
+                      order: state[0]?.desc ? 'DESC' : 'ASC',
+                    }),
+                  };
+
+                  if (hasAlreadyOrdered)
+                    navigateCasesList(filters, paginationParams);
+                  hasAlreadyOrdered = true;
+                }}
+              />
               <CursorPaginationButtons
                 items={cases}
                 onPaginationChange={(paginationParams: PaginationParams) =>

@@ -20,6 +20,7 @@ import { type CasesFilterName, casesFilterNames } from './filters';
 export const casesFiltersSchema = z.object({
   statuses: z.array(z.enum(caseStatuses)).optional(),
   dateRange: dateRangeSchema.optional(),
+  name: z.string().optional(),
 });
 
 export type CasesFilters = z.infer<typeof casesFiltersSchema>;
@@ -37,7 +38,9 @@ const CasesFiltersContext = createSimpleContext<CasesFiltersContextValue>(
 export type CasesFiltersForm = {
   statuses: CaseStatus[];
   dateRange: DateRangeFilterForm;
+  name?: string;
 };
+
 const emptyCasesFilters: CasesFiltersForm = {
   statuses: [],
   dateRange: null,
@@ -131,6 +134,15 @@ export function useDateRangeFilter() {
   return { dateRange, setDateRange };
 }
 
+export function useNameFilter() {
+  const { field } = useController<CasesFiltersForm, 'name'>({
+    name: 'name',
+  });
+  const name = field.value;
+  const setName = field.onChange;
+  return { name, setName };
+}
+
 /**
  * Split cases filters in two partitions:
  * - undefinedCasesFilterNames: filter values are undefined
@@ -148,6 +160,7 @@ export function useCasesFiltersPartition() {
       return R.isNullish(value);
     }),
   );
+
   return {
     undefinedCasesFilterNames,
     definedCasesFilterNames,

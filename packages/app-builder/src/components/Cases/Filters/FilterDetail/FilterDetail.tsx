@@ -1,16 +1,11 @@
-import { assertNever } from 'typescript-utils';
+import { match } from 'ts-pattern';
 
 import { type CasesFilterName } from '../filters';
 import { CasesDateRangeFilter } from './CasesDateRangeFilter';
 import { StatusesFilter } from './StatusesFilter';
 
-export function FilterDetail({ filterName }: { filterName: CasesFilterName }) {
-  switch (filterName) {
-    case 'dateRange':
-      return <CasesDateRangeFilter />;
-    case 'statuses':
-      return <StatusesFilter />;
-    default:
-      assertNever('[CasesFilter] unknown filter:', filterName);
-  }
-}
+export const FilterDetail = ({ filterName }: { filterName: CasesFilterName }) =>
+  match(filterName)
+    .with('dateRange', () => <CasesDateRangeFilter />)
+    .with('statuses', () => <StatusesFilter />)
+    .exhaustive();

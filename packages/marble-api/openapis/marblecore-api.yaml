@@ -273,6 +273,12 @@ paths:
             type: string
             enum:
               - created_at
+        - name: name
+          description: the field used to sort the items
+          in: query
+          required: false
+          schema:
+            type: string
         - $ref: '#/components/parameters/offset_id'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/order'
