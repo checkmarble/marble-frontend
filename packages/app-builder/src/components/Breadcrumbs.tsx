@@ -41,8 +41,6 @@ export const BreadCrumbs = () => {
   const matches = useMatches();
   const [links, setLinks] = useState<Links>([]);
 
-  console.log('Matches', matches);
-
   useEffect(() => {
     Future.all(
       matches.map(({ id, pathname }) =>
