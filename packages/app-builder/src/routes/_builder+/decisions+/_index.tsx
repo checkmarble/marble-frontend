@@ -14,6 +14,7 @@ import {
   useDecisionRightPanelContext,
   useSelectedDecisionIds,
 } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
@@ -118,7 +119,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Decisions() {
-  const { t } = useTranslation(handle.i18n);
   const {
     decisionsData: initialDecisionsData,
     filters,
@@ -173,8 +173,7 @@ export default function Decisions() {
     <DecisionRightPanel.Root>
       <Page.Main>
         <Page.Header>
-          <Icon icon="decision" className="me-2 size-6" />
-          {t('navigation:decisions')}
+          <BreadCrumbs />
         </Page.Header>
 
         <Page.Container>

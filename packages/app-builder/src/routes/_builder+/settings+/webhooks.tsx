@@ -47,6 +47,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 const columnHelper = createColumnHelper<Webhook>();
 
+export const BreadCrumb = () => {
+  const { t } = useTranslation(['settings']);
+  return <span>{t('settings:webhooks')}</span>;
+};
+
 export default function Webhooks() {
   const { t } = useTranslation(['settings']);
   const { webhooks, isCreateWebhookAvailable, webhooksStatus } =

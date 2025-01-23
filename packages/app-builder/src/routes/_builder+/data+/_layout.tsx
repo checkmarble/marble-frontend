@@ -1,4 +1,5 @@
 import { Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import {
   isCreateDataModelFieldAvailable,
@@ -45,6 +46,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
+export const BreadCrumb = () => {
+  const { t } = useTranslation(['navigation']);
+
+  return (
+    <div className="flex items-center">
+      <Icon icon="harddrive" className="me-2 size-6" />
+      {t('navigation:data')}
+    </div>
+  );
+};
+
 export default function Data() {
   const { t } = useTranslation(handle.i18n);
   const { dataModel, dataModelFeatureAccess } = useLoaderData<typeof loader>();
@@ -52,10 +64,7 @@ export default function Data() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <div className="flex flex-row items-center">
-          <Icon icon="harddrive" className="me-2 size-6" />
-          {t('navigation:data')}
-        </div>
+        <BreadCrumbs />
       </Page.Header>
       <DataModelContextProvider
         dataModel={dataModel}

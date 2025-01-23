@@ -1,4 +1,5 @@
 import { Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { type CurrentUser } from '@app-builder/models';
 import {
   isReadAllInboxesAvailable,
@@ -82,6 +83,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return { sections, entitlements };
 }
 
+export const BreadCrumb = () => {
+  const { t } = useTranslation(['navigation']);
+
+  return (
+    <div className="flex items-center">
+      <Icon icon="settings" className="me-2 size-6" />
+      {t('navigation:settings')}
+    </div>
+  );
+};
+
 export default function Settings() {
   const { t } = useTranslation(handle.i18n);
   const { sections } = useLoaderData<typeof loader>();
@@ -89,8 +101,7 @@ export default function Settings() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="settings" className="me-2 size-6" />
-        {t('navigation:settings')}
+        <BreadCrumbs />
       </Page.Header>
       <div className="flex size-full flex-row overflow-hidden">
         <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-e p-4">

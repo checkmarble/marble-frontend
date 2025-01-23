@@ -1,4 +1,5 @@
 import { Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { serverServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
@@ -39,6 +40,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({ openapi });
 }
 
+export const BreadCrumb = () => {
+  const { t } = useTranslation(['navigation']);
+
+  return (
+    <div className="flex items-center">
+      <Icon icon="world" className="me-2 size-6" />
+      <span className="line-clamp-1 text-start">{t('navigation:api')}</span>
+    </div>
+  );
+};
+
 export default function Api() {
   const { t } = useTranslation(handle.i18n);
   const { openapi } = useLoaderData<typeof loader>();
@@ -46,10 +58,7 @@ export default function Api() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <div className="flex flex-row items-center">
-          <Icon icon="world" className="me-2 size-6" />
-          <span className="line-clamp-1 text-start">{t('navigation:api')}</span>
-        </div>
+        <BreadCrumbs />
       </Page.Header>
       <Page.Container>
         <Page.Content>

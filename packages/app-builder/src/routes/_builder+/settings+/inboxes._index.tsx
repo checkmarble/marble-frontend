@@ -38,6 +38,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 const columnHelper = createColumnHelper<InboxWithCasesCount>();
 
+export const BreadCrumb = () => {
+  const { t } = useTranslation(['settings']);
+  return <span>{t('settings:inboxes')}</span>;
+};
+
 export default function Inboxes() {
   const { t } = useTranslation(['settings']);
   const { inboxes, isCreateInboxAvailable } = useLoaderData<typeof loader>();

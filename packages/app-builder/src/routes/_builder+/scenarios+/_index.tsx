@@ -1,4 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CreateScenario } from '@app-builder/routes/ressources+/scenarios+/create';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -33,8 +34,7 @@ export default function ScenariosPage() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="scenarios" className="me-2 size-6" />
-        {t('navigation:scenarios')}
+        <BreadCrumbs />
       </Page.Header>
       <Page.Container>
         <Page.Description>

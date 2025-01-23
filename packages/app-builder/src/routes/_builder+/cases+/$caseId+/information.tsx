@@ -7,7 +7,7 @@ import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { useCurrentCase } from './$caseId._layout';
+import { useCurrentCase } from './_layout';
 
 export const handle = {
   i18n: ['common', 'navigation', ...casesI18n] satisfies Namespace,

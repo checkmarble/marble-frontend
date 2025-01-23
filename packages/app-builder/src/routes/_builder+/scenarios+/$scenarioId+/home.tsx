@@ -1,4 +1,5 @@
 import { CopyToClipboardButton } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
@@ -10,7 +11,6 @@ import {
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
 import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { WorkflowNudge } from '@app-builder/components/Scenario/Workflow/WorkflowNudge';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type ScheduledExecution } from '@app-builder/models/decision';
@@ -148,36 +148,28 @@ export default function ScenarioHome() {
 
   return (
     <Page.Main>
-      <Page.Header className="justify-between gap-4">
-        <div className="flex w-full flex-row items-center justify-between gap-4">
-          <div className="flex flex-row items-center gap-4">
-            <Page.BackLink to={getRoute('/scenarios/')} />
-            <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-            <TriggerObjectTag>
-              {currentScenario.triggerObjectType}
-            </TriggerObjectTag>
-            {featureAccess.isEditScenarioAvailable ? (
-              <div className="flex flex-row gap-4">
-                <UpdateScenario
-                  defaultValue={{
-                    name: currentScenario.name,
-                    scenarioId: currentScenario.id,
-                    description: currentScenario.description,
-                  }}
-                >
-                  <Button
-                    variant="secondary"
-                    className="isolate h-10 w-fit"
-                    disabled={!hydrated}
-                  >
-                    <Icon icon="edit-square" className="size-6" />
-                    <p>{t('scenarios:update_scenario.title')}</p>
-                  </Button>
-                </UpdateScenario>
-              </div>
-            ) : null}
+      <Page.Header className="justify-between">
+        <BreadCrumbs />
+        {featureAccess.isEditScenarioAvailable ? (
+          <div className="flex flex-row gap-4">
+            <UpdateScenario
+              defaultValue={{
+                name: currentScenario.name,
+                scenarioId: currentScenario.id,
+                description: currentScenario.description,
+              }}
+            >
+              <Button
+                variant="secondary"
+                className="isolate h-10 w-fit"
+                disabled={!hydrated}
+              >
+                <Icon icon="edit-square" className="size-6" />
+                <p>{t('scenarios:update_scenario.title')}</p>
+              </Button>
+            </UpdateScenario>
           </div>
-        </div>
+        ) : null}
       </Page.Header>
       <Page.Container>
         {currentScenario.description ? (

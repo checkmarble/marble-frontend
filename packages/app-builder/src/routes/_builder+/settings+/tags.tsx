@@ -38,6 +38,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 const columnHelper = createColumnHelper<Tag>();
 
+export const BreadCrumb = () => {
+  const { t } = useTranslation(['settings']);
+  return <span>{t('settings:tags')}</span>;
+};
+
 export default function Tags() {
   const { t } = useTranslation(['settings']);
   const {

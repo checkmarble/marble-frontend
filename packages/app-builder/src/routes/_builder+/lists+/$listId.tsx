@@ -1,4 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { DeleteList } from '@app-builder/routes/ressources+/lists+/delete';
 import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
@@ -79,6 +80,12 @@ type CustomListValue = {
 
 const columnHelper = createColumnHelper<CustomListValue>();
 
+export const BreadCrumb = () => {
+  const { customList } = useLoaderData<typeof loader>();
+
+  return <span className="line-clamp-2 text-start">{customList.name}</span>;
+};
+
 export default function Lists() {
   const { customList, listFeatureAccess } = useLoaderData<typeof loader>();
   const listValues = customList.values ?? [];
@@ -137,17 +144,14 @@ export default function Lists() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <div className="flex w-full flex-row items-center gap-4">
-          <Page.BackButton />
-          <span className="line-clamp-2 text-start">{customList.name}</span>
-          {listFeatureAccess.isEditListAvailable ? (
-            <EditList
-              listId={customList.id}
-              name={customList.name}
-              description={customList.description}
-            />
-          ) : null}
-        </div>
+        <BreadCrumbs />
+        {listFeatureAccess.isEditListAvailable ? (
+          <EditList
+            listId={customList.id}
+            name={customList.name}
+            description={customList.description}
+          />
+        ) : null}
       </Page.Header>
       <Page.Container>
         {customList.description ? (
