@@ -1,4 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { CreateList } from '@app-builder/routes/ressources+/lists+/create';
 import { isCreateListAvailable } from '@app-builder/services/feature-access';
@@ -17,7 +18,6 @@ import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
@@ -82,8 +82,7 @@ export default function ListsPage() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="lists" className="me-2 size-6" />
-        {t('navigation:lists')}
+        <BreadCrumbs />
       </Page.Header>
       <Page.Container>
         <Page.Content className="max-w-screen-xl">

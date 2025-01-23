@@ -5,7 +5,7 @@ import { Link } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useCurrentCase } from './$caseId._layout';
+import { useCurrentCase } from './_layout';
 
 export const handle = {
   i18n: ['common', 'navigation', 'data', ...casesI18n] satisfies Namespace,
@@ -27,7 +27,7 @@ export default function CasePage() {
               Link: (
                 <Link
                   className="hover:text-purple-65 text-purple-82 hover:underline"
-                  to={getRoute('/decisions/')}
+                  to={getRoute('/decisions')}
                 />
               ),
             }}

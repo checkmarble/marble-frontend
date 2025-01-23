@@ -1,6 +1,6 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { DetailPanel } from '@app-builder/components/Scenario/Workflow/DetailPanel/DetailPanel';
 import {
   adaptScenarioUpdateWorkflowInput,
@@ -33,6 +33,7 @@ import {
 import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 import { useCurrentScenario } from './_layout';
 
@@ -164,6 +165,14 @@ export async function action({ request, params }: LoaderFunctionArgs) {
   );
 }
 
+export const BreadCrumb = () => {
+  const { t } = useTranslation(['scenarios']);
+
+  return (
+    <p className="line-clamp-2 text-start">{t('scenarios:home.workflow')}</p>
+  );
+};
+
 export default function Workflow() {
   const {
     scenarios,
@@ -198,14 +207,7 @@ export default function Workflow() {
   return (
     <Page.Main>
       <Page.Header className="gap-4">
-        <Page.BackLink
-          to={getRoute('/scenarios/:scenarioId/home', {
-            scenarioId: fromUUID(currentScenario.id),
-          })}
-        />
-        <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-
-        <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
+        <BreadCrumbs />
       </Page.Header>
       <WorkflowProvider
         data={{

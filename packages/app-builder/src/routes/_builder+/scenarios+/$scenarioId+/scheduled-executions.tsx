@@ -1,19 +1,25 @@
 import { ErrorComponent, Page, scenarioI18n } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { ScheduledExecutionsList } from '@app-builder/components/Scenario/ScheduledExecutionsList';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { useCurrentScenario } from './_layout';
-
 export const handle = {
   i18n: [...scenarioI18n] satisfies Namespace,
+};
+
+export const BreadCrumb = () => {
+  const { t } = useTranslation(handle.i18n);
+
+  return (
+    <p className="line-clamp-2 text-start">{t('scenarios:home.execution')}</p>
+  );
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -36,19 +42,10 @@ export default function ScheduledExecutions() {
   const { t } = useTranslation(handle.i18n);
   const { scheduledExecutions } = useLoaderData<typeof loader>();
 
-  const currentScenario = useCurrentScenario();
-
   return (
     <Page.Main>
       <Page.Header className="gap-4">
-        <Page.BackLink
-          to={getRoute('/scenarios/:scenarioId/home', {
-            scenarioId: fromUUID(currentScenario.id),
-          })}
-        />
-        <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-
-        <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
+        <BreadCrumbs />
       </Page.Header>
 
       <Page.Container>

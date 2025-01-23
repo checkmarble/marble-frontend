@@ -1,4 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { FiltersButton } from '@app-builder/components/Filters';
 import {
   type TestRunsFilters,
@@ -8,7 +9,6 @@ import {
 } from '@app-builder/components/Scenario/TestRun/Filters';
 import { testRunsFilterNames } from '@app-builder/components/Scenario/TestRun/Filters/filters';
 import { TestRunSelector } from '@app-builder/components/Scenario/TestRun/TestRunSelector';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import {
   isForbiddenHttpError,
   isNotFoundHttpError,
@@ -19,7 +19,7 @@ import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scena
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -114,13 +114,7 @@ export default function TestRuns() {
   return (
     <Page.Main>
       <Page.Header className="gap-4">
-        <Page.BackLink
-          to={getRoute('/scenarios/:scenarioId/home', {
-            scenarioId: fromUUID(currentScenario.id),
-          })}
-        />
-        <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-        <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
+        <BreadCrumbs />
       </Page.Header>
 
       <Page.Container>
