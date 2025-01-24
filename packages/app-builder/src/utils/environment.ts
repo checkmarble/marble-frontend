@@ -27,11 +27,11 @@ const PublicEnvVarsSchema = z.object({
 
   FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
   FIREBASE_API_KEY: z.string(),
-  FIREBASE_APP_ID: z.string(),
-  FIREBASE_AUTH_DOMAIN: z.string(),
-  FIREBASE_MESSAGING_SENDER_ID: z.string(),
+  FIREBASE_APP_ID: z.string().optional(),
+  FIREBASE_AUTH_DOMAIN: z.string().optional(),
+  FIREBASE_MESSAGING_SENDER_ID: z.string().optional(),
   FIREBASE_PROJECT_ID: z.string(),
-  FIREBASE_STORAGE_BUCKET: z.string(),
+  FIREBASE_STORAGE_BUCKET: z.string().optional(),
 
   SENTRY_DSN: z.string().optional(),
   SENTRY_ENVIRONMENT: z.string().optional(),
