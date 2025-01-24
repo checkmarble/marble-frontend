@@ -251,16 +251,16 @@ export function useMarbleCoreResources() {
 
   const location = useLocation();
   const defaultTab = React.useMemo(() => {
-    if (location.pathname.startsWith(getRoute('/scenarios/')))
+    if (location.pathname.startsWith(getRoute('/scenarios')))
       return t('navigation:scenarios');
-    if (location.pathname.startsWith(getRoute('/lists/')))
+    if (location.pathname.startsWith(getRoute('/lists')))
       return t('navigation:lists');
     if (location.pathname.includes('/workflow')) return 'Workflows';
     if (location.pathname.startsWith(getRoute('/data')))
       return t('navigation:data');
     if (location.pathname.startsWith(getRoute('/settings')))
       return t('navigation:settings');
-    if (location.pathname.startsWith(getRoute('/cases/')))
+    if (location.pathname.startsWith(getRoute('/cases')))
       return t('navigation:case_manager');
 
     return t('navigation:scenarios');

@@ -89,7 +89,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
 
   if (!parsedFilterQuery.success || !parsedPaginationQuery.success) {
-    return redirect(getRoute('/decisions/'));
+    return redirect(getRoute('/decisions'));
   }
 
   const { outcomeAndReviewStatus, ...filters } = parsedFilterQuery.data;
@@ -145,7 +145,7 @@ export default function Decisions() {
         reset();
         navigate(
           {
-            pathname: getRoute('/decisions/'),
+            pathname: getRoute('/decisions'),
             search: qs.stringify(buildQueryParams(decisionFilters, null), {
               skipNulls: true,
               addQueryPrefix: true,
