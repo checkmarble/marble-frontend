@@ -27,7 +27,7 @@ export async function action({ request }: ActionFunctionArgs) {
     );
 
     return redirectBack(request, {
-      fallback: getRoute('/scenarios/'),
+      fallback: getRoute('/scenarios'),
       headers: {
         'Set-Cookie': cookie,
       },

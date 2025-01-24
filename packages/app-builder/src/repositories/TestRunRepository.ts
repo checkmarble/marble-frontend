@@ -14,6 +14,7 @@ import {
 } from '@app-builder/models/testrun';
 import { toUUID } from '@app-builder/utils/short-uuid';
 import { addDays } from 'date-fns';
+import { sleep } from 'radash';
 import { randomInteger } from 'remeda';
 import short from 'short-uuid';
 
@@ -30,13 +31,13 @@ export interface TestRunRepository {
 
 const testruns: TestRun[] = [
   {
-    id: '989ed5e4-c7ca-4685-9535-a3e1ab9dfc75',
-    refIterationId: '6f6fe0d8-9a1a-4d5a-bdd7-fa7fcda1b4e3',
-    scenarioId: '6f6fe0d8-0804-4500-ae68-f4e56ea780d7',
-    testIterationId: '6f6fe0d8-bbc8-4df3-a913-c0064ed99e4e',
+    id: '84386e82-2da2-493a-a08f-0e6456756193',
+    refIterationId: '84386e82-45cf-4fdf-9112-9fab1a55e8be',
+    scenarioId: '84386e82-a26f-4317-b1e3-373efdf6f6b1',
+    testIterationId: '84386e82-4d57-4aea-9c62-d60d496319a6',
     startDate: new Date().toISOString(),
     endDate: addDays(new Date(), 1).toISOString(),
-    creatorId: '96762987-8895-4af2-9c0a-2dffde09985c',
+    creatorId: '34c74c92-4570-4623-9ea8-fa9374d11e4b',
     status: 'up',
   },
 ];
@@ -176,8 +177,15 @@ export const makeGetTestRunRepository2 = () => {
       return Promise.resolve();
     },
     listTestRuns: () => Promise.resolve(testruns),
-    listDecisions: () => Promise.resolve(testrunDecisions),
-    listRuleExecutions: () => Promise.resolve(testrunRuleExecutions),
+    listDecisions: async () => {
+      await sleep(1500);
+      return testrunDecisions;
+    },
+    listRuleExecutions: async () => {
+      await sleep(4000);
+      //throw new Error('Some Timeout');
+      return testrunRuleExecutions;
+    },
     launchTestRun: (args: TestRunCreateInput) => {
       const testRun: TestRun = {
         id: toUUID(short.generate()),

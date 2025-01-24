@@ -9,6 +9,7 @@ import {
   RulesDetail,
   useDecisionRightPanelContext,
 } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
@@ -94,9 +95,24 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
+export const BreadCrumb = () => {
+  const { t } = useTranslation(['decisions']);
+  const { decision } = useLoaderData<typeof loader>();
+
+  return (
+    <div className="flex items-center gap-4">
+      <span className="line-clamp-1 text-start">{t('decisions:decision')}</span>
+      <CopyToClipboardButton toCopy={decision.id}>
+        <span className="text-s line-clamp-1 max-w-40 font-normal">
+          <span className="font-medium">ID</span> {decision.id}
+        </span>
+      </CopyToClipboardButton>
+    </div>
+  );
+};
+
 export default function DecisionPage() {
   const { decision, pivots, astRuleData } = useLoaderData<typeof loader>();
-  const { t } = useTranslation(decisionsI18n);
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -119,18 +135,8 @@ export default function DecisionPage() {
   return (
     <DecisionRightPanel.Root>
       <Page.Main>
-        <Page.Header className="justify-between gap-8">
-          <div className="flex flex-row items-center gap-4">
-            <Page.BackButton />
-            <span className="line-clamp-1 text-start">
-              {t('decisions:decision')}
-            </span>
-            <CopyToClipboardButton toCopy={decision.id}>
-              <span className="text-s line-clamp-1 max-w-40 font-normal">
-                <span className="font-medium">ID</span> {decision.id}
-              </span>
-            </CopyToClipboardButton>
-          </div>
+        <Page.Header className="justify-between">
+          <BreadCrumbs />
           {!decision.case ? <AddToCase decisionIds={[decision.id]} /> : null}
         </Page.Header>
         <Page.Container>

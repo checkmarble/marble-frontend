@@ -1,17 +1,17 @@
-import { Page } from '@app-builder/components';
+import { CopyToClipboardButton, Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
 import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
 import { type Versions } from '@app-builder/components/Scenario/TestRun/Graphs/HamburgerGraph';
 import { DistributionOfDecisionChartSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/DistributionOfDecicionSkeleton';
 import { FilterTransactionByDecisionSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/FilterTransactionByDecicionSkeleton';
 import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { CancelTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense, useMemo } from 'react';
@@ -20,7 +20,7 @@ import { mapToObj, pick } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { useCurrentScenario, useScenarioIterations } from '../_layout';
+import { useCurrentScenario, useScenarioIterations } from '../../_layout';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
@@ -34,6 +34,22 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const run = await testRun.getTestRun({ testRunId });
 
   return defer({ run, decisionsPromise, rulesPromise });
+}
+
+export function BreadCrumb() {
+  const { run } = useLoaderData<typeof loader>();
+  const { t } = useTranslation(['scenarios']);
+
+  return (
+    <div className="flex items-center gap-4">
+      <p className="line-clamp-2 text-start">{t('scenarios:home.testrun')}</p>
+      <CopyToClipboardButton toCopy={run.id}>
+        <span className="text-s line-clamp-1 max-w-40 font-normal">
+          <span className="font-medium">ID</span> {run.id}
+        </span>
+      </CopyToClipboardButton>
+    </div>
+  );
 }
 
 export default function TestRun() {
@@ -78,14 +94,8 @@ export default function TestRun() {
 
   return (
     <Page.Main>
-      <Page.Header className="gap-4">
-        <Page.BackLink
-          to={getRoute('/scenarios/:scenarioId/test-run/', {
-            scenarioId: fromUUID(currentScenario.id),
-          })}
-        />
-        <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-        <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
+      <Page.Header className="justify-between">
+        <BreadCrumbs />
         {run.status === 'up' ? (
           <CancelTestRun testRunId={run.id}>
             <Button

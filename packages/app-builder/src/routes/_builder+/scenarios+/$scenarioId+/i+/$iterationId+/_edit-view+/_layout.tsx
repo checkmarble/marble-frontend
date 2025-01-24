@@ -1,11 +1,11 @@
 import { navigationI18n, Page, TabLink } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CornerPing } from '@app-builder/components/Ping';
 import {
   getFormattedLive,
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import {
   useCurrentScenario,
@@ -75,6 +75,26 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 }
 
+export const BreadCrumb = () => {
+  const scenarioIterations = useScenarioIterations();
+  const iterationId = useParam('iterationId');
+
+  const currentIteration = React.useMemo(() => {
+    const currentIteration = scenarioIterations.find(
+      ({ id }) => id === iterationId,
+    );
+    invariant(currentIteration, 'currentIteration is required');
+    return currentIteration;
+  }, [iterationId, scenarioIterations]);
+
+  return (
+    <VersionSelect
+      currentIteration={currentIteration}
+      scenarioIterations={scenarioIterations}
+    />
+  );
+};
+
 export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
@@ -107,19 +127,8 @@ export default function ScenarioEditLayout() {
     <Page.Main>
       <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
-          <Page.BackLink
-            to={getRoute('/scenarios/:scenarioId/home', {
-              scenarioId: fromUUID(currentScenario.id),
-            })}
-          />
-          <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-          <TriggerObjectTag>
-            {currentScenario.triggerObjectType}
-          </TriggerObjectTag>
-          <VersionSelect
-            currentIteration={currentIteration}
-            scenarioIterations={scenarioIterations}
-          />
+          <BreadCrumbs />
+
           {withEditTag ? (
             <Tag size="big" border="square">
               {t('common:edit')}

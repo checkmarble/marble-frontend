@@ -160,5 +160,5 @@ function getDecisionRoute(
   decisionFilters: Pick<DecisionFilters, 'pivotValue'>,
 ) {
   const searchParams = new URLSearchParams(decisionFilters);
-  return `${getRoute('/decisions/')}?${searchParams.toString()}`;
+  return `${getRoute('/decisions')}?${searchParams.toString()}`;
 }

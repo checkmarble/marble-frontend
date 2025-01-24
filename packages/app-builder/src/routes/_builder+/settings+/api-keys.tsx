@@ -55,6 +55,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 const columnHelper = createColumnHelper<ApiKey>();
 
+export const BreadCrumb = () => {
+  const { t } = useTranslation(['settings']);
+  return <span>{t('settings:api_keys')}</span>;
+};
+
 export default function ApiKeys() {
   const { t } = useTranslation(['settings']);
   const {

@@ -1,4 +1,5 @@
 import { ErrorComponent } from '@app-builder/components';
+import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
@@ -49,9 +50,21 @@ export function useCurrentScenario() {
   return currentScenario;
 }
 
+export const BreadCrumb = () => {
+  const currentScenario = useCurrentScenario();
+
+  return (
+    <div className="flex flex-row items-center gap-4">
+      <p className="line-clamp-2 text-start">{currentScenario.name}</p>
+      <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
+    </div>
+  );
+};
+
 export default function CurrentScenarioLayout() {
   return <Outlet />;
 }
+
 export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);

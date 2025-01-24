@@ -4,6 +4,7 @@ import {
   Page,
   TabLink,
 } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CaseHistory } from '@app-builder/components/Cases/CaseHistory/CaseHistory';
 import {
@@ -23,7 +24,7 @@ import {
 } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams } from '@app-builder/utils/short-uuid';
 import {
   defer,
   type LoaderFunctionArgs,
@@ -129,9 +130,24 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export function useCurrentCase() {
   return useRouteLoaderData(
-    'routes/_builder+/cases+/$caseId._layout' satisfies RouteID,
+    'routes/_builder+/cases+/$caseId+/_layout' satisfies RouteID,
   ) as SerializeFrom<typeof loader>;
 }
+
+export const BreadCrumb = () => {
+  const { caseDetail } = useLoaderData<typeof loader>();
+
+  return (
+    <div className="flex items-center gap-4">
+      <span className="line-clamp-2 text-start">{caseDetail.name}</span>
+      <CopyToClipboardButton toCopy={caseDetail.id}>
+        <span className="text-s line-clamp-1 max-w-40 font-normal">
+          <span className="font-medium">ID</span> {caseDetail.id}
+        </span>
+      </CopyToClipboardButton>
+    </div>
+  );
+};
 
 export default function CasePage() {
   const { t } = useTranslation(handle.i18n);
@@ -139,20 +155,8 @@ export default function CasePage() {
 
   return (
     <Page.Main>
-      <Page.Header className="justify-between gap-8">
-        <div className="flex flex-row items-center gap-4">
-          <Page.BackLink
-            to={getRoute('/cases/inboxes/:inboxId', {
-              inboxId: fromUUID(caseDetail.inboxId),
-            })}
-          />
-          <span className="line-clamp-2 text-start">{caseDetail.name}</span>
-          <CopyToClipboardButton toCopy={caseDetail.id}>
-            <span className="text-s line-clamp-1 max-w-40 font-normal">
-              <span className="font-medium">ID</span> {caseDetail.id}
-            </span>
-          </CopyToClipboardButton>
-        </div>
+      <Page.Header className="justify-between">
+        <BreadCrumbs />
         <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">

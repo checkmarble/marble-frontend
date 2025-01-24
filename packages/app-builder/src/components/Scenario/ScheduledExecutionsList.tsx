@@ -166,5 +166,5 @@ const getStatusTKey = (status: string): ParseKeys<['scenarios']> => {
 function getDecisionRoute(
   decisionFilters: Pick<DecisionFilters, 'scheduledExecutionId'>,
 ) {
-  return `${getRoute('/decisions/')}?${qs.stringify(decisionFilters)}`;
+  return `${getRoute('/decisions')}?${qs.stringify(decisionFilters)}`;
 }

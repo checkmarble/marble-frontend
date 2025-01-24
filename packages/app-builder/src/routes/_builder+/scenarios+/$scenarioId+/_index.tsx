@@ -12,7 +12,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { scenarioId } = params;
   if (!scenarioId) {
     return {
-      redirect: getRoute('/scenarios/'),
+      redirect: getRoute('/scenarios'),
     };
   }
 

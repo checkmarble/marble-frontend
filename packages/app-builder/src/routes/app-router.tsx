@@ -32,7 +32,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 
   if (isMarbleCoreUser(user)) {
-    return redirect(getRoute('/scenarios/'));
+    return redirect(getRoute('/scenarios'));
   }
   if (isTransferCheckUser(user)) {
     return redirect(getRoute('/transfercheck'));

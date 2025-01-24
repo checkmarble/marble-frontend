@@ -22,7 +22,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   try {
     await testRun.cancelTestRun({ testRunId });
     return redirect(
-      getRoute('/scenarios/:scenarioId/test-run/', {
+      getRoute('/scenarios/:scenarioId/test-run', {
         scenarioId: fromUUID(scenarioId),
       }),
     );
