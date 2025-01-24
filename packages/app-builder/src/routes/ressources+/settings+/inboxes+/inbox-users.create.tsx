@@ -147,7 +147,7 @@ export function CreateInboxUserContent({
 
   const [form, fields] = useForm({
     shouldRevalidate: 'onInput',
-    defaultValue: { userId: '', inboxId: currentInboxId, role: 'member' },
+    defaultValue: { userId: '', inboxId: currentInboxId, role: 'admin' },
     lastResult: fetcher.data,
     constraint: getZodConstraint(schema),
     onValidate({ formData }) {

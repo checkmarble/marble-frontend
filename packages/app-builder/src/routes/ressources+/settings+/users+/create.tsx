@@ -156,7 +156,7 @@ function CreateUserContent({
     firstName: '',
     lastName: '',
     email: '',
-    role: 'VIEWER',
+    role: 'ADMIN',
     organizationId: orgId,
   };
 
