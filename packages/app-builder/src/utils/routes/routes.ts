@@ -87,14 +87,15 @@ export const routes = [
                 "file": "routes/_builder+/cases+/_index.tsx"
               },
               {
-                "id": "routes/_builder+/cases+/inboxes._layout",
+                "id": "routes/_builder+/cases+/inboxes+/_layout",
                 "path": "inboxes",
-                "file": "routes/_builder+/cases+/inboxes._layout.tsx",
+                "file": "routes/_builder+/cases+/inboxes+/_layout.tsx",
                 "children": [
                   {
-                    "id": "routes/_builder+/cases+/inboxes.$inboxId",
-                    "path": ":inboxId",
-                    "file": "routes/_builder+/cases+/inboxes.$inboxId.tsx"
+                    "id": "routes/_builder+/cases+/inboxes+/$inboxId+/index",
+                    "index": true,
+                    "path": ":inboxId/",
+                    "file": "routes/_builder+/cases+/inboxes+/$inboxId+/index.tsx"
                   }
                 ]
               }

@@ -31,17 +31,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['navigation', 'cases']);
-
-  return (
-    <div className="flex items-center">
-      <Icon icon="case-manager" className="me-2 size-6" />
-      <span className="text-s">{t('navigation:case_manager')}</span>
-    </div>
-  );
-};
-
 export default function Cases() {
   const { t } = useTranslation(handle.i18n);
   const { inboxes, isCreateInboxAvailable } = useLoaderData<typeof loader>();
@@ -71,7 +60,7 @@ export default function Cases() {
                             : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
                         )
                       }
-                      to={getRoute('/cases/inboxes/:inboxId', {
+                      to={getRoute('/cases/inboxes/:inboxId/', {
                         inboxId: fromUUID(inbox.id),
                       })}
                     >

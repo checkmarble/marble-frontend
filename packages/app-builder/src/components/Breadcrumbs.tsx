@@ -9,10 +9,16 @@ import {
 } from 'react';
 import { filter } from 'remeda';
 
+import { Page } from './Page';
+
 type Links = {
-  Element: FunctionComponent | undefined;
+  Element: FunctionComponent<BreadCrumbProps> | undefined;
   pathname: string;
 }[];
+
+export type BreadCrumbProps = {
+  isLast: boolean;
+};
 
 const Separator = () => (
   <span className="text-s text-grey-80 font-bold">/</span>
@@ -60,13 +66,14 @@ export const BreadCrumbs = () => {
 
   return (
     <div className="flex flex-row items-center gap-4">
+      {links.length > 1 ? <Page.BackLink to={links.at(-2)!.pathname} /> : null}
       {links.map(({ Element, pathname }, i) => {
         const isLast = i === links.length - 1;
 
         return Element ? (
           <div className="text-s flex items-center gap-4 font-bold" key={i}>
             <LinkWrapper isLast={isLast} pathname={pathname}>
-              <Element />
+              <Element isLast={isLast} />
             </LinkWrapper>
             {!isLast ? <Separator /> : null}
           </div>

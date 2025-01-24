@@ -24,10 +24,19 @@ import {
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
-import { getRoute } from '@app-builder/utils/routes';
+import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import {
+  json,
+  type LoaderFunctionArgs,
+  redirect,
+  type SerializeFrom,
+} from '@remix-run/node';
+import {
+  useLoaderData,
+  useNavigate,
+  useRouteLoaderData,
+} from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
 import { useCallback, useState } from 'react';
@@ -35,6 +44,8 @@ import { useTranslation } from 'react-i18next';
 import { omit } from 'remeda';
 import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+import { type loader as layoutLoader } from '../_layout';
 
 export const handle = {
   i18n: ['navigation', ...casesI18n] satisfies Namespace,
@@ -76,7 +87,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
   if (!parsedQuery.success || !parsedPaginationQuery.success) {
-    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId }));
+    return redirect(getRoute('/cases/inboxes/:inboxId/', { inboxId }));
   }
 
   const filtersForBackend: CaseFilters = {
@@ -92,6 +103,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       casesData: caseList,
       filters: parsedQuery.data,
       pagination: parsedPaginationQuery.data,
+      inboxId,
     });
   } catch (error) {
     // if inbox is deleted or user no longer have access, the user is redirected
@@ -135,6 +147,19 @@ const SearchByName = ({
   );
 };
 
+export const BreadCrumb = () => {
+  const { inboxes } = useLoaderData<typeof layoutLoader>();
+  const { inboxId } = useRouteLoaderData(
+    'routes/_builder+/cases+/inboxes+/$inboxId+/index' as RouteID,
+  ) as SerializeFrom<typeof loader>;
+
+  return (
+    <span className="text-s">
+      {inboxes.find((i) => i.id === inboxId)?.name}
+    </span>
+  );
+};
+
 export default function Cases() {
   const { t } = useTranslation(casesI18n);
   const {
@@ -166,7 +191,7 @@ export default function Cases() {
         reset();
         navigate(
           {
-            pathname: getRoute('/cases/inboxes/:inboxId', {
+            pathname: getRoute('/cases/inboxes/:inboxId/', {
               inboxId: fromUUID(inboxId),
             }),
             search: qs.stringify(buildQueryParams(casesFilters, null, null), {
@@ -194,7 +219,7 @@ export default function Cases() {
       if (pagination.order) {
         navigate(
           {
-            pathname: getRoute('/cases/inboxes/:inboxId', {
+            pathname: getRoute('/cases/inboxes/:inboxId/', {
               inboxId: fromUUID(inboxId),
             }),
             search: qs.stringify(
