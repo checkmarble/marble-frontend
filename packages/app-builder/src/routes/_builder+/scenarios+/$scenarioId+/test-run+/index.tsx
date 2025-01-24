@@ -43,7 +43,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   } catch (error) {
     // if scenario is deleted or user no longer have access, the user is redirected
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
-      return redirect(getRoute('/scenarios/'));
+      return redirect(getRoute('/scenarios'));
     } else {
       throw error;
     }
