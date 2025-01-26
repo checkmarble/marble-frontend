@@ -1,9 +1,4 @@
-import {
-  CopyToClipboardButton,
-  ErrorComponent,
-  Page,
-  TabLink,
-} from '@app-builder/components';
+import { ErrorComponent, Page, TabLink } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CaseHistory } from '@app-builder/components/Cases/CaseHistory/CaseHistory';
@@ -130,24 +125,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export function useCurrentCase() {
   return useRouteLoaderData(
-    'routes/_builder+/cases+/$caseId+/_layout' satisfies RouteID,
+    'routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._layout' satisfies RouteID,
   ) as SerializeFrom<typeof loader>;
 }
-
-export const BreadCrumb = () => {
-  const { caseDetail } = useLoaderData<typeof loader>();
-
-  return (
-    <div className="flex items-center gap-4">
-      <span className="line-clamp-2 text-start">{caseDetail.name}</span>
-      <CopyToClipboardButton toCopy={caseDetail.id}>
-        <span className="text-s line-clamp-1 max-w-40 font-normal">
-          <span className="font-medium">ID</span> {caseDetail.id}
-        </span>
-      </CopyToClipboardButton>
-    </div>
-  );
-};
 
 export default function CasePage() {
   const { t } = useTranslation(handle.i18n);
@@ -168,21 +148,21 @@ export default function CasePage() {
                   <li>
                     <TabLink
                       labelTKey="navigation:case_manager.information"
-                      to="./information"
+                      to="./$caseId.information.tsx"
                       Icon={(props) => <Icon {...props} icon="tip" />}
                     />
                   </li>
                   <li>
                     <TabLink
                       labelTKey="navigation:case_manager.decisions"
-                      to="./decisions"
+                      to="./$caseId.decisions.tsx"
                       Icon={(props) => <Icon {...props} icon="decision" />}
                     />
                   </li>
                   <li>
                     <TabLink
                       labelTKey="navigation:case_manager.files"
-                      to="./files"
+                      to="./$caseId.files.tsx"
                       Icon={(props) => <Icon {...props} icon="attachment" />}
                     />
                   </li>

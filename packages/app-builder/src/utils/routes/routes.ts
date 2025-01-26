@@ -50,58 +50,6 @@ export const routes = [
             "file": "routes/_builder+/api.tsx"
           },
           {
-            "id": "routes/_builder+/cases+/_layout",
-            "path": "cases",
-            "file": "routes/_builder+/cases+/_layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/cases+/$caseId+/_layout",
-                "path": ":caseId",
-                "file": "routes/_builder+/cases+/$caseId+/_layout.tsx",
-                "children": [
-                  {
-                    "id": "routes/_builder+/cases+/$caseId+/_index",
-                    "index": true,
-                    "file": "routes/_builder+/cases+/$caseId+/_index.tsx"
-                  },
-                  {
-                    "id": "routes/_builder+/cases+/$caseId+/decisions",
-                    "path": "decisions",
-                    "file": "routes/_builder+/cases+/$caseId+/decisions.tsx"
-                  },
-                  {
-                    "id": "routes/_builder+/cases+/$caseId+/files",
-                    "path": "files",
-                    "file": "routes/_builder+/cases+/$caseId+/files.tsx"
-                  },
-                  {
-                    "id": "routes/_builder+/cases+/$caseId+/information",
-                    "path": "information",
-                    "file": "routes/_builder+/cases+/$caseId+/information.tsx"
-                  }
-                ]
-              },
-              {
-                "id": "routes/_builder+/cases+/_index",
-                "index": true,
-                "file": "routes/_builder+/cases+/_index.tsx"
-              },
-              {
-                "id": "routes/_builder+/cases+/inboxes+/_layout",
-                "path": "inboxes",
-                "file": "routes/_builder+/cases+/inboxes+/_layout.tsx",
-                "children": [
-                  {
-                    "id": "routes/_builder+/cases+/inboxes+/$inboxId+/index",
-                    "index": true,
-                    "path": ":inboxId/",
-                    "file": "routes/_builder+/cases+/inboxes+/$inboxId+/index.tsx"
-                  }
-                ]
-              }
-            ]
-          },
-          {
             "id": "routes/_builder+/data+/_layout",
             "path": "data",
             "file": "routes/_builder+/data+/_layout.tsx",
@@ -137,6 +85,51 @@ export const routes = [
                 "id": "routes/_builder+/decisions+/_index",
                 "index": true,
                 "file": "routes/_builder+/decisions+/_index.tsx"
+              }
+            ]
+          },
+          {
+            "id": "routes/_builder+/inboxes+/_layout",
+            "path": "inboxes",
+            "file": "routes/_builder+/inboxes+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/inboxes+/$inboxId+/_index",
+                "index": true,
+                "path": ":inboxId/",
+                "file": "routes/_builder+/inboxes+/$inboxId+/_index.tsx"
+              },
+              {
+                "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._layout",
+                "path": ":inboxId/cases/:caseId",
+                "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._layout.tsx",
+                "children": [
+                  {
+                    "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._index",
+                    "index": true,
+                    "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._index.tsx"
+                  },
+                  {
+                    "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.decisions",
+                    "path": "decisions",
+                    "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.decisions.tsx"
+                  },
+                  {
+                    "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.files",
+                    "path": "files",
+                    "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.files.tsx"
+                  },
+                  {
+                    "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.information",
+                    "path": "information",
+                    "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.information.tsx"
+                  }
+                ]
+              },
+              {
+                "id": "routes/_builder+/inboxes+/_index",
+                "index": true,
+                "file": "routes/_builder+/inboxes+/_index.tsx"
               }
             ]
           },

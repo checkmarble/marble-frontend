@@ -5,7 +5,7 @@ import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
 import { type Namespace } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useCurrentCase } from './_layout';
+import { useCurrentCase } from './$caseId._layout';
 
 export const handle = {
   i18n: ['common', 'navigation', ...casesI18n] satisfies Namespace,

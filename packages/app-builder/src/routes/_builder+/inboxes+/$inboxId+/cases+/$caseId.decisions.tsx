@@ -5,7 +5,7 @@ import { Link } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useCurrentCase } from './_layout';
+import { useCurrentCase } from './$caseId._layout';
 
 export const handle = {
   i18n: ['common', 'navigation', 'data', ...casesI18n] satisfies Namespace,

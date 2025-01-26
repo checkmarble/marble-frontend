@@ -20,7 +20,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (R.hasAtLeast(inboxes, 1)) {
     return redirect(
-      getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxes[0].id) }),
+      getRoute('/inboxes/:inboxId/', {
+        inboxId: fromUUID(inboxes[0].id),
+      }),
     );
   }
 
