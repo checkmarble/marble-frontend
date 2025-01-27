@@ -76,7 +76,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
   if (!parsedQuery.success || !parsedPaginationQuery.success) {
-    return redirect(getRoute('/inboxes/:inboxId/', { inboxId }));
+    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId }));
   }
 
   const filtersForBackend: CaseFilters = {
@@ -92,12 +92,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       casesData: caseList,
       filters: parsedQuery.data,
       pagination: parsedPaginationQuery.data,
-      inboxId,
     });
   } catch (error) {
     // if inbox is deleted or user no longer have access, the user is redirected
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
-      return redirect(getRoute('/inboxes'));
+      return redirect(getRoute('/cases/'));
     } else {
       throw error;
     }
@@ -167,7 +166,7 @@ export default function Cases() {
         reset();
         navigate(
           {
-            pathname: getRoute('/inboxes/:inboxId/', {
+            pathname: getRoute('/cases/inboxes/:inboxId', {
               inboxId: fromUUID(inboxId),
             }),
             search: qs.stringify(buildQueryParams(casesFilters, null, null), {
@@ -195,7 +194,7 @@ export default function Cases() {
       if (pagination.order) {
         navigate(
           {
-            pathname: getRoute('/inboxes/:inboxId/', {
+            pathname: getRoute('/cases/inboxes/:inboxId', {
               inboxId: fromUUID(inboxId),
             }),
             search: qs.stringify(

@@ -124,7 +124,7 @@ export default function Builder() {
                   <li>
                     <SidebarLink
                       labelTKey="navigation:case_manager"
-                      to={getRoute('/inboxes')}
+                      to={getRoute('/cases/')}
                       Icon={(props) => <Icon icon="case-manager" {...props} />}
                     />
                   </li>

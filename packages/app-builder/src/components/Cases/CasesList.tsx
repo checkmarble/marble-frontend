@@ -119,11 +119,10 @@ export function CasesList({
     },
     manualSorting: true,
     onSortingChange: setSorting,
-    rowLink: ({ id, inboxId }) => (
+    rowLink: ({ id }) => (
       <Link
-        to={getRoute('/inboxes/:inboxId/cases/:caseId/', {
+        to={getRoute('/cases/:caseId', {
           caseId: fromUUID(id),
-          inboxId: fromUUID(inboxId),
         })}
       />
     ),

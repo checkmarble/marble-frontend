@@ -7,18 +7,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
 
   const caseId = fromParams(params, 'caseId');
-  const inboxId = fromParams(params, 'inboxId');
-  if (!caseId || !inboxId) {
+  if (!caseId) {
     return {
-      redirect: getRoute('/inboxes'),
+      redirect: getRoute('/cases/inboxes'),
     };
   }
 
   await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
-    successRedirect: getRoute('/inboxes/:inboxId/cases/:caseId', {
+    successRedirect: getRoute('/cases/:caseId/decisions', {
       caseId: fromUUID(caseId),
-      inboxId: fromUUID(inboxId),
     }),
   });
 }

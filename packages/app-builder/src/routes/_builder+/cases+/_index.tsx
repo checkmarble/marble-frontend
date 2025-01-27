@@ -1,5 +1,4 @@
 import { Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
@@ -9,6 +8,7 @@ import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
@@ -20,9 +20,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (R.hasAtLeast(inboxes, 1)) {
     return redirect(
-      getRoute('/inboxes/:inboxId/', {
-        inboxId: fromUUID(inboxes[0].id),
-      }),
+      getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxes[0].id) }),
     );
   }
 
@@ -38,7 +36,8 @@ export default function Cases() {
   return (
     <Page.Main>
       <Page.Header>
-        <BreadCrumbs />
+        <Icon icon="case-manager" className="me-2 size-6" />
+        {t('navigation:case_manager')}
       </Page.Header>
       <Page.Container>
         <Page.Content>

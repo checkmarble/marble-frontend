@@ -1,5 +1,4 @@
 import { Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
@@ -31,16 +30,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
-export const BreadCrumb = () => {
-  const { t } = useTranslation(handle.i18n);
-  return (
-    <div className="flex flex-row items-center">
-      <Icon icon="case-manager" className="me-2 size-6" />
-      {t('navigation:case_manager')}
-    </div>
-  );
-};
-
 export default function Cases() {
   const { t } = useTranslation(handle.i18n);
   const { inboxes, isCreateInboxAvailable } = useLoaderData<typeof loader>();
@@ -48,7 +37,8 @@ export default function Cases() {
   return (
     <Page.Main>
       <Page.Header>
-        <BreadCrumbs />
+        <Icon icon="case-manager" className="me-2 size-6" />
+        {t('navigation:case_manager')}
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
         <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">
@@ -70,7 +60,7 @@ export default function Cases() {
                             : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
                         )
                       }
-                      to={getRoute('/inboxes/:inboxId/', {
+                      to={getRoute('/cases/inboxes/:inboxId', {
                         inboxId: fromUUID(inbox.id),
                       })}
                     >

@@ -50,6 +50,51 @@ export const routes = [
             "file": "routes/_builder+/api.tsx"
           },
           {
+            "id": "routes/_builder+/cases+/$caseId._layout",
+            "path": "cases/:caseId",
+            "file": "routes/_builder+/cases+/$caseId._layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/cases+/$caseId._index",
+                "index": true,
+                "file": "routes/_builder+/cases+/$caseId._index.tsx"
+              },
+              {
+                "id": "routes/_builder+/cases+/$caseId.decisions",
+                "path": "decisions",
+                "file": "routes/_builder+/cases+/$caseId.decisions.tsx"
+              },
+              {
+                "id": "routes/_builder+/cases+/$caseId.files",
+                "path": "files",
+                "file": "routes/_builder+/cases+/$caseId.files.tsx"
+              },
+              {
+                "id": "routes/_builder+/cases+/$caseId.information",
+                "path": "information",
+                "file": "routes/_builder+/cases+/$caseId.information.tsx"
+              }
+            ]
+          },
+          {
+            "id": "routes/_builder+/cases+/_index",
+            "index": true,
+            "path": "cases/",
+            "file": "routes/_builder+/cases+/_index.tsx"
+          },
+          {
+            "id": "routes/_builder+/cases+/inboxes._layout",
+            "path": "cases/inboxes",
+            "file": "routes/_builder+/cases+/inboxes._layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/cases+/inboxes.$inboxId",
+                "path": ":inboxId",
+                "file": "routes/_builder+/cases+/inboxes.$inboxId.tsx"
+              }
+            ]
+          },
+          {
             "id": "routes/_builder+/data+/_layout",
             "path": "data",
             "file": "routes/_builder+/data+/_layout.tsx",
@@ -85,49 +130,6 @@ export const routes = [
                 "id": "routes/_builder+/decisions+/_index",
                 "index": true,
                 "file": "routes/_builder+/decisions+/_index.tsx"
-              }
-            ]
-          },
-          {
-            "id": "routes/_builder+/inboxes+/_layout",
-            "path": "inboxes",
-            "file": "routes/_builder+/inboxes+/_layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/inboxes+/$inboxId+/_index",
-                "index": true,
-                "path": ":inboxId/",
-                "file": "routes/_builder+/inboxes+/$inboxId+/_index.tsx"
-              },
-              {
-                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId._index",
-                "index": true,
-                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId._index.tsx"
-              },
-              {
-                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId._layout",
-                "path": ":inboxId",
-                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId._layout.tsx"
-              },
-              {
-                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.decisions",
-                "path": ":inboxId",
-                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.decisions.tsx"
-              },
-              {
-                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.files",
-                "path": ":inboxId",
-                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.files.tsx"
-              },
-              {
-                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.information",
-                "path": ":inboxId",
-                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.information.tsx"
-              },
-              {
-                "id": "routes/_builder+/inboxes+/_index",
-                "index": true,
-                "file": "routes/_builder+/inboxes+/_index.tsx"
               }
             ]
           },
