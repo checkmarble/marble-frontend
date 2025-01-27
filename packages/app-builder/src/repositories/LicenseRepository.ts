@@ -25,11 +25,10 @@ export const makeGetLicenseRepository =
               workflows: 'allowed',
               testRun: 'allowed',
               analytics: 'allowed',
-              webhooks: 'allowed',
+              webhooks: 'restricted',
             };
 
       if (isDev) {
-        accesses.webhooks = 'restricted';
         accesses.analytics = 'restricted';
       }
 

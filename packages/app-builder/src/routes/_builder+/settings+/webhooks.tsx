@@ -32,16 +32,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
       failureRedirect: getRoute('/sign-in'),
     });
 
-  if (!isReadWebhookAvailable(user, entitlements))
-    return redirect(getRoute('/'));
+  if (!isReadWebhookAvailable(user)) return redirect(getRoute('/'));
 
   const webhooks = await webhookRepository.listWebhooks();
 
   return json({
     webhooks,
-    isCreateWebhookAvailable: isCreateWebhookAvailable(user, entitlements),
-    isEditWebhookAvailable: isEditWebhookAvailable(user, entitlements),
-    isDeleteWebhookAvailable: isDeleteWebhookAvailable(user, entitlements),
+    isCreateWebhookAvailable: isCreateWebhookAvailable(user),
+    isEditWebhookAvailable: isEditWebhookAvailable(user),
+    isDeleteWebhookAvailable: isDeleteWebhookAvailable(user),
+    webhooksStatus: entitlements.webhooks,
   });
 }
 
@@ -49,7 +49,8 @@ const columnHelper = createColumnHelper<Webhook>();
 
 export default function Webhooks() {
   const { t } = useTranslation(['settings']);
-  const { webhooks, isCreateWebhookAvailable } = useLoaderData<typeof loader>();
+  const { webhooks, isCreateWebhookAvailable, webhooksStatus } =
+    useLoaderData<typeof loader>();
 
   const columns = React.useMemo(() => {
     return [
@@ -102,7 +103,7 @@ export default function Webhooks() {
               // Necessary to prevent click events from propagating to the Collapsible
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <span onClick={(e) => e.stopPropagation()}>
-                <CreateWebhook>
+                <CreateWebhook webhookStatus={webhooksStatus}>
                   <Button>
                     <Icon icon="plus" className="size-6" />
                     {t('settings:webhooks.new_webhook')}

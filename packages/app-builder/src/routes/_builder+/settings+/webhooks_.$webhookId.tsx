@@ -37,8 +37,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       failureRedirect: getRoute('/sign-in'),
     });
 
-  if (!isReadWebhookAvailable(user, entitlements))
-    return redirect(getRoute('/'));
+  if (!isReadWebhookAvailable(user)) return redirect(getRoute('/'));
 
   const webhookId = params['webhookId'];
   invariant(webhookId, `webhookId is required`);
@@ -46,15 +45,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({
     webhook,
-    isEditWebhookAvailable: isEditWebhookAvailable(user, entitlements),
-    isDeleteWebhookAvailable: isDeleteWebhookAvailable(user, entitlements),
+    isEditWebhookAvailable: isEditWebhookAvailable(user),
+    isDeleteWebhookAvailable: isDeleteWebhookAvailable(user),
+    webhookStatus: entitlements.webhooks,
   });
 }
 
 export default function WebhookDetail() {
   const { t } = useTranslation(['settings']);
-  const { webhook, isEditWebhookAvailable, isDeleteWebhookAvailable } =
-    useLoaderData<typeof loader>();
+  const {
+    webhook,
+    isEditWebhookAvailable,
+    isDeleteWebhookAvailable,
+    webhookStatus,
+  } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -66,7 +70,10 @@ export default function WebhookDetail() {
               // Necessary to prevent click events from propagating to the Collapsible
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <span onClick={(e) => e.stopPropagation()}>
-                <UpdateWebhook defaultValue={webhook}>
+                <UpdateWebhook
+                  defaultValue={webhook}
+                  webhookStatus={webhookStatus}
+                >
                   <Button>
                     <Icon icon="plus" className="size-6" />
                     {t('settings:webhooks.update_webhook')}
