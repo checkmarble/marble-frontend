@@ -102,7 +102,7 @@ export function getPageViewNameAndProps(
     case 'routes/_builder+/cases+/_index': {
       return { name: 'Cases', properties: undefined };
     }
-    case 'routes/_builder+/cases+/$caseId+/information': {
+    case 'routes/_builder+/cases+/$caseId.information': {
       const safeParseProperties = z
         .object({
           caseId: shortUUIDSchema,
@@ -117,7 +117,7 @@ export function getPageViewNameAndProps(
         },
       };
     }
-    case 'routes/_builder+/cases+/$caseId+/decisions': {
+    case 'routes/_builder+/cases+/$caseId.decisions': {
       const safeParseProperties = z
         .object({
           caseId: shortUUIDSchema,
@@ -132,7 +132,7 @@ export function getPageViewNameAndProps(
         },
       };
     }
-    case 'routes/_builder+/cases+/$caseId+/files': {
+    case 'routes/_builder+/cases+/$caseId.files': {
       const safeParseProperties = z
         .object({
           caseId: shortUUIDSchema,

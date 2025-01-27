@@ -260,7 +260,7 @@ export function useMarbleCoreResources() {
       return t('navigation:data');
     if (location.pathname.startsWith(getRoute('/settings')))
       return t('navigation:settings');
-    if (location.pathname.startsWith(getRoute('/cases')))
+    if (location.pathname.startsWith(getRoute('/cases/')))
       return t('navigation:case_manager');
 
     return t('navigation:scenarios');
