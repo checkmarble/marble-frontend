@@ -109,7 +109,7 @@
   "scenario_default_timezone.no_match": "لا توجد منطقة زمنية تطابق بحثك",
   "scenario_default_timezone.not_set": "لم يتم ضبطه",
   "users.role.nudge": "قم بتعيين الأدوار وتبسيط سير عمل فريقك بسهولة",
-  "webhooks.nudge": "استخدم Webhooks لتلقي إشعارات في الوقت الفعلي عند حدوث أحداث في مثيل Marble الخاص بك",
   "webhooks.configuration_error": "خطأ في التكوين",
-  "webhooks.convoy_error": "يبدو أن Convoy لم يتم تكوينه بشكل صحيح على Marble Backend. \nلمزيد من المعلومات حول خطافات الويب، يرجى الرجوع إلى <DocLink>الوثائق</DocLink>."
+  "webhooks.convoy_error": "يبدو أن Convoy لم يتم تكوينه بشكل صحيح على Marble Backend. \nلمزيد من المعلومات حول خطافات الويب، يرجى الرجوع إلى <DocLink>الوثائق</DocLink>.",
+  "webhooks.nudge": "الترقية من أجل الوصول إلى جميع أنواع الأحداث."
 }

@@ -109,7 +109,7 @@
   "scenario_default_timezone.more_results_other": "{{count}} fuseaux horaires supplémentaires.\n\nAffinez votre recherche pour les voir.",
   "scenario_default_timezone.not_set": "Non défini",
   "users.role.nudge": "Attribuez des rôles et rationalisez facilement le flux de travail de votre équipe",
-  "webhooks.nudge": "Utilisez des Webhooks pour recevoir des notifications en temps réel chaque fois que des événements se produisent dans votre instance Marble",
   "webhooks.configuration_error": "Erreur de configuration",
-  "webhooks.convoy_error": "Convoy ne semble pas être correctement configuré sur le backend Marble. \nPour plus d'informations sur les WebHooks, veuillez vous référer à <coclink> la documentation </cocLink>."
+  "webhooks.convoy_error": "Convoy ne semble pas être correctement configuré sur le backend Marble. \nPour plus d'informations sur les WebHooks, veuillez vous référer à <coclink> la documentation </cocLink>.",
+  "webhooks.nudge": "Mettre à niveau afin d'avoir accès à tous les types d'événements."
 }

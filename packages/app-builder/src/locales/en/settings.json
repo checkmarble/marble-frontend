@@ -77,7 +77,7 @@
   "tags.cases": "Cases",
   "api": "API",
   "webhooks": "Webhooks",
-  "webhooks.nudge": "Use Webhooks to receive realt-time notifications whenever events happen in your Marble instance",
+  "webhooks.nudge": "Upgrade in order to get access to all kind of events.",
   "webhook_details": "Webhook details",
   "webhook_secrets": "Webhook secrets",
   "webhooks.new_webhook": "New webhook",

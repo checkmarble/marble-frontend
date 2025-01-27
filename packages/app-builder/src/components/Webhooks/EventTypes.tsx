@@ -56,7 +56,8 @@ export function FormSelectEvents({
               key={event}
               value={event}
               disabled={
-                webhookStatus === 'restricted' ? event.includes('case') : false
+                // eslint-disable-next-line react/jsx-no-leaked-render
+                webhookStatus === 'restricted' && !event.includes('decision.')
               }
             >
               <EventType>
