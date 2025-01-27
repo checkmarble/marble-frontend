@@ -102,6 +102,8 @@
   "webhooks.secret.value": "Value",
   "webhooks.setup_documentation": "For more information on webhooks, please refer to <DocLink>the documentation</DocLink>.",
   "webhooks.events_documentation": "For more information on events, please refer to <DocLink>the documentation</DocLink>.",
+  "webhooks.configuration_error": "Configuration Error",
+  "webhooks.convoy_error": "Convoy doesn't seem to be properly configured on Marble Backend. For more information on webhooks, please refer to <DocLink>the documentation</DocLink>.",
   "scenarios": "Scenarios",
   "scenenario_execution": "Scenario execution settings",
   "scenario_default_timezone.label": "Default timezone for timestamp interpretation",

@@ -143,9 +143,63 @@ export default function Webhooks() {
 export function ErrorBoundary() {
   const { t } = useTranslation(['settings']);
 
+  const columns = useMemo(() => {
+    return [
+      columnHelper.accessor((row) => row.url, {
+        id: 'url',
+        header: t('settings:webhooks.url'),
+        size: 200,
+      }),
+      columnHelper.accessor((row) => row.eventTypes, {
+        id: 'eventTypes',
+        header: t('settings:webhooks.event_types'),
+        size: 200,
+        cell: ({ getValue }) => {
+          const eventTypes = getValue();
+          if (eventTypes.length === 0) {
+            return (
+              <span className="text-grey-80 text-s">
+                {t('settings:webhooks.event_types.placeholder')}
+              </span>
+            );
+          }
+          return <EventTypes eventTypes={eventTypes} />;
+        },
+      }),
+    ];
+  }, [t]);
+
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
+    data: [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    enableSorting: false,
+    enableColumnResizing: false,
+  });
+
   return (
     <Page.Container>
-      <Page.Content className="max-w-screen-xl">
+      <Page.Content className="relative max-w-screen-xl">
+        <div className="bg-grey-00/20 absolute z-50 flex size-full items-center justify-center p-4 backdrop-blur-[2px] transition-all">
+          <div className="bg-grey-100 border-grey-90 flex max-w-[500px] flex-col items-center rounded border shadow-md">
+            <h1 className="bg-grey-95 text-grey-00 w-full p-8 text-center font-semibold">
+              {t('settings:webhooks.configuration_error')}
+            </h1>
+            <div className="w-full p-12">
+              <Callout variant="outlined">
+                <p className="whitespace-pre text-wrap">
+                  <Trans
+                    t={t}
+                    i18nKey="settings:webhooks.convoy_error"
+                    components={{
+                      DocLink: <ExternalLink href={webhooksSetupDocHref} />,
+                    }}
+                  />
+                </p>
+              </Callout>
+            </div>
+          </div>
+        </div>
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:webhooks')}</span>
@@ -166,6 +220,15 @@ export function ErrorBoundary() {
                 />
               </p>
             </Callout>
+
+            <Table.Container {...getContainerProps()} className="max-h-96">
+              <Table.Header headerGroups={table.getHeaderGroups()} />
+              <Table.Body {...getBodyProps()}>
+                {rows.map((row) => {
+                  return <Table.Row key={row.id} row={row} />;
+                })}
+              </Table.Body>
+            </Table.Container>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
       </Page.Content>
