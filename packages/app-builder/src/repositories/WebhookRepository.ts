@@ -4,7 +4,6 @@ import {
   adaptWebhookRegisterBodyDto,
   adaptWebhookUpdateBodyDto,
   adaptWebhookWithSecret,
-  eventTypes,
   type Webhook,
   type WebhookCreateBody,
   type WebhookUpdateBody,
@@ -27,16 +26,9 @@ export interface WebhookRepository {
 export function makeGetWebhookRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): WebhookRepository => ({
     listWebhooks: async () => {
-      // const { webhooks } = await marbleCoreApiClient.listWebhooks();
+      const { webhooks } = await marbleCoreApiClient.listWebhooks();
 
-      // return webhooks.map(adaptWebhook);
-      return Promise.resolve(
-        eventTypes.map((id) => ({
-          id,
-          eventTypes: [id],
-          url: `https://fake.webhook.com/${id}`,
-        })) satisfies Webhook[],
-      );
+      return webhooks.map(adaptWebhook);
     },
     createWebhook: async ({ webhookCreateBody }) => {
       const { webhook } = await marbleCoreApiClient.createWebhook(
