@@ -181,12 +181,15 @@ export default function Cases() {
 
       if (pagination.next && pagination.offsetId) {
         next(pagination.offsetId);
+        return;
       }
       if (pagination.previous) {
         previous();
+        return;
       }
       if (!pagination.order) {
         reset();
+        return;
       }
       if (pagination.order) {
         navigate(
