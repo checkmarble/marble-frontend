@@ -16,7 +16,7 @@ import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
-import * as React from 'react';
+import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -52,7 +52,7 @@ export default function Webhooks() {
   const { webhooks, isCreateWebhookAvailable, webhooksStatus } =
     useLoaderData<typeof loader>();
 
-  const columns = React.useMemo(() => {
+  const columns = useMemo(() => {
     return [
       columnHelper.accessor((row) => row.url, {
         id: 'url',
@@ -133,6 +133,39 @@ export default function Webhooks() {
                 })}
               </Table.Body>
             </Table.Container>
+          </CollapsiblePaper.Content>
+        </CollapsiblePaper.Container>
+      </Page.Content>
+    </Page.Container>
+  );
+}
+
+export function ErrorBoundary() {
+  const { t } = useTranslation(['settings']);
+
+  return (
+    <Page.Container>
+      <Page.Content className="max-w-screen-xl">
+        <CollapsiblePaper.Container>
+          <CollapsiblePaper.Title>
+            <span className="flex-1">{t('settings:webhooks')}</span>
+            <Button disabled>
+              <Icon icon="plus" className="size-6" />
+              {t('settings:webhooks.new_webhook')}
+            </Button>
+          </CollapsiblePaper.Title>
+          <CollapsiblePaper.Content>
+            <Callout className="mb-4 lg:mb-6" variant="outlined">
+              <p className="whitespace-pre text-wrap">
+                <Trans
+                  t={t}
+                  i18nKey="settings:webhooks.setup_documentation"
+                  components={{
+                    DocLink: <ExternalLink href={webhooksSetupDocHref} />,
+                  }}
+                />
+              </p>
+            </Callout>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
       </Page.Content>
