@@ -1,5 +1,4 @@
 import { Page } from '@app-builder/components';
-import { Nudge } from '@app-builder/components/Nudge';
 import { type CurrentUser } from '@app-builder/models';
 import {
   isReadAllInboxesAvailable,
@@ -15,7 +14,6 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -86,7 +84,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Settings() {
   const { t } = useTranslation(handle.i18n);
-  const { sections, entitlements } = useLoaderData<typeof loader>();
+  const { sections } = useLoaderData<typeof loader>();
 
   return (
     <Page.Main>
@@ -114,80 +112,22 @@ export default function Settings() {
                     <p className="font-bold">{t(`settings:${section}`)}</p>
                   </div>
                   <ul className="flex flex-col gap-1 pb-6">
-                    {settings.map((setting) =>
-                      setting.title === 'webhooks' ? (
-                        match(entitlements.webhooks)
-                          .with('allowed', () => (
-                            <NavLink
-                              key={setting.title}
-                              className={({ isActive }) =>
-                                clsx(
-                                  'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
-                                  isActive
-                                    ? 'bg-purple-96 text-purple-65'
-                                    : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
-                                )
-                              }
-                              to={setting.to}
-                            >
-                              {t(`settings:${setting.title}`)}
-                            </NavLink>
-                          ))
-                          .with('restricted', () => (
-                            <div
-                              key={setting.title}
-                              className="text-grey-80 flex w-full flex-row gap-2 p-2"
-                            >
-                              <span className="text-s font-medium first-letter:capitalize">
-                                {t(`settings:${setting.title}`)}
-                              </span>
-                              <Nudge
-                                className="size-6"
-                                content={t(`settings:${setting.title}.nudge`)}
-                                link="https://docs.checkmarble.com/docs/introduction-3"
-                              />
-                            </div>
-                          ))
-                          .with('test', () => (
-                            <NavLink
-                              key={setting.title}
-                              className={({ isActive }) =>
-                                clsx(
-                                  'text-s flex w-full cursor-pointer flex-row gap-2 rounded p-2 font-medium first-letter:capitalize',
-                                  isActive
-                                    ? 'bg-purple-96 text-purple-65'
-                                    : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
-                                )
-                              }
-                              to={setting.to}
-                            >
-                              {t(`settings:${setting.title}`)}
-                              <Nudge
-                                className="size-6"
-                                content={t(`settings:${setting.title}.nudge`)}
-                                link="https://docs.checkmarble.com/docs/introduction-3"
-                                kind="test"
-                              />
-                            </NavLink>
-                          ))
-                          .exhaustive()
-                      ) : (
-                        <NavLink
-                          key={setting.title}
-                          className={({ isActive }) =>
-                            clsx(
-                              'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
-                              isActive
-                                ? 'bg-purple-96 text-purple-65'
-                                : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
-                            )
-                          }
-                          to={setting.to}
-                        >
-                          {t(`settings:${setting.title}`)}
-                        </NavLink>
-                      ),
-                    )}
+                    {settings.map((setting) => (
+                      <NavLink
+                        key={setting.title}
+                        className={({ isActive }) =>
+                          clsx(
+                            'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
+                            isActive
+                              ? 'bg-purple-96 text-purple-65'
+                              : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                          )
+                        }
+                        to={setting.to}
+                      >
+                        {t(`settings:${setting.title}`)}
+                      </NavLink>
+                    ))}
                   </ul>
                 </nav>
               );

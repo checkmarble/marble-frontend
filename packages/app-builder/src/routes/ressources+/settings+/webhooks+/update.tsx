@@ -15,6 +15,7 @@ import { FormProvider, getFormProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
@@ -74,9 +75,11 @@ export async function action({ request }: ActionFunctionArgs) {
 export function UpdateWebhook({
   defaultValue,
   children,
+  webhookStatus,
 }: {
   defaultValue: UpdateWebhookForm;
   children: React.ReactElement;
+  webhookStatus: FeatureAccessDto;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -84,7 +87,11 @@ export function UpdateWebhook({
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
-        <UpdateWebhookContent defaultValue={defaultValue} setOpen={setOpen} />
+        <UpdateWebhookContent
+          defaultValue={defaultValue}
+          webhookStatus={webhookStatus}
+          setOpen={setOpen}
+        />
       </ModalV2.Content>
     </ModalV2.Root>
   );
@@ -93,9 +100,11 @@ export function UpdateWebhook({
 function UpdateWebhookContent({
   defaultValue,
   setOpen,
+  webhookStatus,
 }: {
   defaultValue: UpdateWebhookForm;
   setOpen: (open: boolean) => void;
+  webhookStatus: FeatureAccessDto;
 }) {
   const { t } = useTranslation(['common', 'settings']);
 
@@ -152,6 +161,7 @@ function UpdateWebhookContent({
                 <FormSelectEvents
                   selectedEventTypes={selectedValue}
                   className="w-full"
+                  webhookStatus={webhookStatus}
                 />
               )}
             />

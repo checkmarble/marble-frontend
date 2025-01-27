@@ -18,10 +18,8 @@ export const isReadTagAvailable = ({ role }: CurrentUser) =>
 export const isReadApiKeyAvailable = ({ permissions }: CurrentUser) =>
   permissions.canReadApiKey;
 
-export const isReadWebhookAvailable = (
-  { permissions }: CurrentUser,
-  entitlements: LicenseEntitlements,
-) => entitlements.webhooks !== 'restricted' && permissions.canManageWebhooks;
+export const isReadWebhookAvailable = ({ permissions }: CurrentUser) =>
+  permissions.canManageWebhooks;
 
 export const isCreateInboxAvailable = ({ permissions }: CurrentUser) =>
   permissions.canEditInboxes;
@@ -140,17 +138,11 @@ export const isEditUserAvailable = ({ permissions }: CurrentUser) =>
 export const isDeleteUserAvailable = ({ permissions }: CurrentUser) =>
   permissions.canDeleteUser;
 
-export const isCreateWebhookAvailable = (
-  { permissions }: CurrentUser,
-  entitlements: LicenseEntitlements,
-) => entitlements.webhooks !== 'restricted' && permissions.canManageWebhooks;
+export const isCreateWebhookAvailable = ({ permissions }: CurrentUser) =>
+  permissions.canManageWebhooks;
 
-export const isEditWebhookAvailable = (
-  { permissions }: CurrentUser,
-  entitlements: LicenseEntitlements,
-) => entitlements.webhooks !== 'restricted' && permissions.canManageWebhooks;
+export const isEditWebhookAvailable = ({ permissions }: CurrentUser) =>
+  permissions.canManageWebhooks;
 
-export const isDeleteWebhookAvailable = (
-  { permissions }: CurrentUser,
-  entitlements: LicenseEntitlements,
-) => entitlements.webhooks !== 'restricted' && permissions.canManageWebhooks;
+export const isDeleteWebhookAvailable = ({ permissions }: CurrentUser) =>
+  permissions.canManageWebhooks;

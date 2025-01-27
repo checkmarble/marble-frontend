@@ -1,6 +1,7 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { eventTypes } from '@app-builder/models/webhook';
 import clsx from 'clsx';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,9 +12,11 @@ import { FormSelectWithCombobox } from '../Form/FormSelectWithCombobox';
 export function FormSelectEvents({
   selectedEventTypes,
   className,
+  webhookStatus,
 }: {
   selectedEventTypes: string[];
   className?: string;
+  webhookStatus: FeatureAccessDto;
 }) {
   const { t } = useTranslation(['settings']);
 
@@ -49,7 +52,13 @@ export function FormSelectEvents({
         />
         <FormSelectWithCombobox.ComboboxList>
           {matches.map((event) => (
-            <FormSelectWithCombobox.ComboboxItem key={event} value={event}>
+            <FormSelectWithCombobox.ComboboxItem
+              key={event}
+              value={event}
+              disabled={
+                webhookStatus === 'restricted' ? event.includes('case') : false
+              }
+            >
               <EventType>
                 <Highlight text={event} query={deferredSearchValue} />
               </EventType>

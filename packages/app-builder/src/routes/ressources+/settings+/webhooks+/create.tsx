@@ -15,6 +15,7 @@ import { FormProvider, getFormProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
@@ -72,20 +73,30 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function CreateWebhook({ children }: { children: React.ReactElement }) {
+export function CreateWebhook({
+  children,
+  webhookStatus,
+}: {
+  children: React.ReactElement;
+  webhookStatus: FeatureAccessDto;
+}) {
   const [open, setOpen] = React.useState(false);
 
   return (
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
-        <CreateWebhookContent />
+        <CreateWebhookContent webhookStatus={webhookStatus} />
       </ModalV2.Content>
     </ModalV2.Root>
   );
 }
 
-function CreateWebhookContent() {
+function CreateWebhookContent({
+  webhookStatus,
+}: {
+  webhookStatus: FeatureAccessDto;
+}) {
   const { t } = useTranslation(['common', 'settings']);
 
   const fetcher = useFetcher<typeof action>();
@@ -146,6 +157,7 @@ function CreateWebhookContent() {
                 <FormSelectEvents
                   selectedEventTypes={selectedValue}
                   className="w-full"
+                  webhookStatus={webhookStatus}
                 />
               )}
             />
