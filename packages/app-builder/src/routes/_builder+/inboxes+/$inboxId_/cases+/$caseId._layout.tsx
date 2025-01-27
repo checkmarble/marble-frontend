@@ -125,7 +125,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export function useCurrentCase() {
   return useRouteLoaderData(
-    'routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._layout' satisfies RouteID,
+    'routes/_builder+/inboxes+/$inboxId+_/cases+/$caseId._layout' satisfies RouteID,
   ) as SerializeFrom<typeof loader>;
 }
 

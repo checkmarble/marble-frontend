@@ -100,31 +100,29 @@ export const routes = [
                 "file": "routes/_builder+/inboxes+/$inboxId+/_index.tsx"
               },
               {
-                "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._layout",
-                "path": ":inboxId/cases/:caseId",
-                "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._layout.tsx",
-                "children": [
-                  {
-                    "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._index",
-                    "index": true,
-                    "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId._index.tsx"
-                  },
-                  {
-                    "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.decisions",
-                    "path": "decisions",
-                    "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.decisions.tsx"
-                  },
-                  {
-                    "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.files",
-                    "path": "files",
-                    "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.files.tsx"
-                  },
-                  {
-                    "id": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.information",
-                    "path": "information",
-                    "file": "routes/_builder+/inboxes+/$inboxId+/cases+/$caseId.information.tsx"
-                  }
-                ]
+                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId._index",
+                "index": true,
+                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId._index.tsx"
+              },
+              {
+                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId._layout",
+                "path": ":inboxId",
+                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId._layout.tsx"
+              },
+              {
+                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.decisions",
+                "path": ":inboxId",
+                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.decisions.tsx"
+              },
+              {
+                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.files",
+                "path": ":inboxId",
+                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.files.tsx"
+              },
+              {
+                "id": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.information",
+                "path": ":inboxId",
+                "file": "routes/_builder+/inboxes+/$inboxId_/cases+/$caseId.information.tsx"
               },
               {
                 "id": "routes/_builder+/inboxes+/_index",
