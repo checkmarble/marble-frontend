@@ -5,6 +5,7 @@ import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { Nudge } from '@app-builder/components/Nudge';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { FormSelectEvents } from '@app-builder/components/Webhooks/EventTypes';
 import { eventTypes } from '@app-builder/models/webhook';
@@ -18,6 +19,7 @@ import { useFetcher } from '@remix-run/react';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button, ModalV2 } from 'ui-design-system';
 import { z } from 'zod';
 
@@ -149,7 +151,26 @@ function CreateWebhookContent({
               </span>
             }
           >
-            <FormLabel>{t('settings:webhooks.event_types')}</FormLabel>
+            <FormLabel className="flex items-center gap-2">
+              {t('settings:webhooks.event_types')}
+              {match(webhookStatus)
+                .with('allowed', () => null)
+                .with('restricted', () => (
+                  <Nudge
+                    kind="restricted"
+                    content={t('settings:webhooks.nudge')}
+                    className="size-6"
+                  />
+                ))
+                .with('test', () => (
+                  <Nudge
+                    kind="test"
+                    content={t('settings:webhooks.nudge')}
+                    className="size-6"
+                  />
+                ))
+                .exhaustive()}
+            </FormLabel>
             <FormSelectWithCombobox.Control
               multiple
               options={eventTypes}
