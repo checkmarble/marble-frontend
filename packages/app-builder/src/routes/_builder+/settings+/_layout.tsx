@@ -1,5 +1,9 @@
 import { Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { type CurrentUser } from '@app-builder/models';
 import {
   isReadAllInboxesAvailable,
@@ -19,6 +23,18 @@ import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'settings'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+
+      return (
+        <BreadCrumbLink to={getRoute('/settings')} isLast={isLast}>
+          <Icon icon="settings" className="me-2 size-6" />
+          {t('navigation:settings')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export function getSettings(user: CurrentUser) {
@@ -82,17 +98,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return { sections, entitlements };
 }
-
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['navigation']);
-
-  return (
-    <div className="flex items-center">
-      <Icon icon="settings" className="me-2 size-6" />
-      {t('navigation:settings')}
-    </div>
-  );
-};
 
 export default function Settings() {
   const { t } = useTranslation(handle.i18n);

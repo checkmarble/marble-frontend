@@ -1,16 +1,25 @@
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+} from '@app-builder/components/Breadcrumbs';
+import { getRoute } from '@app-builder/utils/routes';
 import { Outlet } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['navigation']);
+export const handle = {
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
 
-  return (
-    <div className="flex flex-row items-center">
-      <Icon icon="scenarios" className="me-2 size-6" />
-      <span>{t('navigation:scenarios')}</span>
-    </div>
-  );
+      return (
+        <BreadCrumbLink to={getRoute('/scenarios')} isLast={isLast}>
+          <Icon icon="scenarios" className="me-2 size-6" />
+          <span>{t('navigation:scenarios')}</span>
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export default function ScenarioLayout() {

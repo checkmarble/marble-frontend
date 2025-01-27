@@ -58,11 +58,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 const columnHelper = createColumnHelper<User>();
 
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['settings']);
-  return <span>{t('settings:users')}</span>;
-};
-
 export default function Users() {
   const { t } = useTranslation(['settings', 'cases']);
   const {

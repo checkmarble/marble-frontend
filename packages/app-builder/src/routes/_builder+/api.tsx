@@ -1,5 +1,9 @@
 import { Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { serverServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
@@ -21,6 +25,18 @@ const SwaggerUI = React.lazy(() => import('swagger-ui-react'));
 
 export const handle = {
   i18n: ['common', 'navigation', 'api'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+
+      return (
+        <BreadCrumbLink to={getRoute('/api')} isLast={isLast}>
+          <Icon icon="world" className="me-2 size-6" />
+          <span className="line-clamp-1 text-start">{t('navigation:api')}</span>
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export const links: LinksFunction = () =>
@@ -39,17 +55,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   delete openapi.components?.securitySchemes;
   return json({ openapi });
 }
-
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['navigation']);
-
-  return (
-    <div className="flex items-center">
-      <Icon icon="world" className="me-2 size-6" />
-      <span className="line-clamp-1 text-start">{t('navigation:api')}</span>
-    </div>
-  );
-};
 
 export default function Api() {
   const { t } = useTranslation(handle.i18n);

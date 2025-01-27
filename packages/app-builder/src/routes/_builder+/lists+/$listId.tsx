@@ -1,5 +1,9 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { DeleteList } from '@app-builder/routes/ressources+/lists+/delete';
 import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
@@ -71,6 +75,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export const handle = {
   i18n: ['lists', 'common'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { customList } = useLoaderData<typeof loader>();
+
+      return (
+        <BreadCrumbLink
+          to={getRoute('/lists/:listId', { listId: customList.id })}
+          isLast={isLast}
+        >
+          {customList.name}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 type CustomListValue = {
@@ -79,12 +97,6 @@ type CustomListValue = {
 };
 
 const columnHelper = createColumnHelper<CustomListValue>();
-
-export const BreadCrumb = () => {
-  const { customList } = useLoaderData<typeof loader>();
-
-  return <span className="line-clamp-2 text-start">{customList.name}</span>;
-};
 
 export default function Lists() {
   const { customList, listFeatureAccess } = useLoaderData<typeof loader>();

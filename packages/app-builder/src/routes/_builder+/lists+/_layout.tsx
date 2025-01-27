@@ -1,16 +1,25 @@
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+} from '@app-builder/components/Breadcrumbs';
+import { getRoute } from '@app-builder/utils/routes';
 import { Outlet } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['navigation']);
+export const handle = {
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
 
-  return (
-    <div className="flex items-center">
-      <Icon icon="lists" className="me-2 size-6" />
-      {t('navigation:lists')}
-    </div>
-  );
+      return (
+        <BreadCrumbLink to={getRoute('/lists')} isLast={isLast}>
+          <Icon icon="lists" className="me-2 size-6" />
+          {t('navigation:lists')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export default function ListsLayout() {

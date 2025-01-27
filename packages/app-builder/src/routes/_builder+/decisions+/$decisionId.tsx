@@ -9,7 +9,11 @@ import {
   RulesDetail,
   useDecisionRightPanelContext,
 } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
@@ -20,6 +24,7 @@ import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
+import { fromUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   isRouteErrorResponse,
@@ -37,6 +42,32 @@ import * as z from 'zod';
 
 export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['decisions']);
+      const { decision } = useLoaderData<typeof loader>();
+
+      return (
+        <div className="flex items-center gap-4">
+          <BreadCrumbLink
+            isLast={isLast}
+            to={getRoute('/decisions/:decisionId', {
+              decisionId: fromUUID(decision.id),
+            })}
+          >
+            <span className="line-clamp-1 text-start">
+              {t('decisions:decision')}
+            </span>
+          </BreadCrumbLink>
+          <CopyToClipboardButton toCopy={decision.id}>
+            <span className="text-s line-clamp-1 max-w-40 font-normal">
+              <span className="font-medium">ID</span> {decision.id}
+            </span>
+          </CopyToClipboardButton>
+        </div>
+      );
+    },
+  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -94,22 +125,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }
   }
 }
-
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['decisions']);
-  const { decision } = useLoaderData<typeof loader>();
-
-  return (
-    <div className="flex items-center gap-4">
-      <span className="line-clamp-1 text-start">{t('decisions:decision')}</span>
-      <CopyToClipboardButton toCopy={decision.id}>
-        <span className="text-s line-clamp-1 max-w-40 font-normal">
-          <span className="font-medium">ID</span> {decision.id}
-        </span>
-      </CopyToClipboardButton>
-    </div>
-  );
-};
 
 export default function DecisionPage() {
   const { decision, pivots, astRuleData } = useLoaderData<typeof loader>();

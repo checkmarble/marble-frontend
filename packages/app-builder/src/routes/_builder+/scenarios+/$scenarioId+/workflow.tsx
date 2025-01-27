@@ -1,5 +1,9 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { DetailPanel } from '@app-builder/components/Scenario/Workflow/DetailPanel/DetailPanel';
 import {
@@ -39,6 +43,23 @@ import { useCurrentScenario } from './_layout';
 
 export const handle = {
   i18n: workflowI18n satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['scenarios']);
+      const currentScenario = useCurrentScenario();
+
+      return (
+        <BreadCrumbLink
+          isLast={isLast}
+          to={getRoute('/scenarios/:scenarioId/workflow', {
+            scenarioId: fromUUID(currentScenario.id),
+          })}
+        >
+          {t('scenarios:home.workflow')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export const links: LinksFunction = () => [
@@ -164,14 +185,6 @@ export async function action({ request, params }: LoaderFunctionArgs) {
     },
   );
 }
-
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['scenarios']);
-
-  return (
-    <p className="line-clamp-2 text-start">{t('scenarios:home.workflow')}</p>
-  );
-};
 
 export default function Workflow() {
   const {

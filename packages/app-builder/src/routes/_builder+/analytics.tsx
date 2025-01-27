@@ -1,5 +1,9 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { notFound } from '@app-builder/utils/http/http-responses';
@@ -13,6 +17,20 @@ import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'data'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+
+      return (
+        <BreadCrumbLink to={getRoute('/analytics')} isLast={isLast}>
+          <Icon icon="analytics" className="me-2 size-6" />
+          <span className="line-clamp-1 text-start">
+            {t('navigation:analytics')}
+          </span>
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -41,19 +59,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     },
   });
 }
-
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['navigation']);
-
-  return (
-    <div className="flex items-center">
-      <Icon icon="analytics" className="me-2 size-6" />
-      <span className="line-clamp-1 text-start">
-        {t('navigation:analytics')}
-      </span>
-    </div>
-  );
-};
 
 export default function Analytics() {
   const { globalDashbord } = useLoaderData<typeof loader>();

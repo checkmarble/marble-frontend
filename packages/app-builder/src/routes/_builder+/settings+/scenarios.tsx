@@ -22,11 +22,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['settings']);
-  return <span>{t('settings:scenarios')}</span>;
-};
-
 export default function Users() {
   const { t } = useTranslation(['settings']);
   const { organization, user } = useLoaderData<typeof loader>();

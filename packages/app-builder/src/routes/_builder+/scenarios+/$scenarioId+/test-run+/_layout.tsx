@@ -1,15 +1,32 @@
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+} from '@app-builder/components/Breadcrumbs';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Outlet } from '@remix-run/react';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['scenarios']);
+import { useCurrentScenario } from '../_layout';
 
-  return (
-    <div className={clsx('flex flex-row items-center gap-4')}>
-      <p className="line-clamp-2 text-start">{t('scenarios:testrun.home')}</p>
-    </div>
-  );
+export const handle = {
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['scenarios']);
+      const currentScenario = useCurrentScenario();
+
+      return (
+        <BreadCrumbLink
+          isLast={isLast}
+          to={getRoute('/scenarios/:scenarioId/test-run', {
+            scenarioId: fromUUID(currentScenario.id),
+          })}
+        >
+          {t('scenarios:testrun.home')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export const TestRunLayout = () => {

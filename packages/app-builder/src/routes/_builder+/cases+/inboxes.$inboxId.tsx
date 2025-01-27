@@ -26,7 +26,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
@@ -88,11 +88,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   try {
     const caseList = await cases.listCases(filtersForBackend);
 
-    return json({
+    return {
       casesData: caseList,
       filters: parsedQuery.data,
       pagination: parsedPaginationQuery.data,
-    });
+    };
   } catch (error) {
     // if inbox is deleted or user no longer have access, the user is redirected
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {

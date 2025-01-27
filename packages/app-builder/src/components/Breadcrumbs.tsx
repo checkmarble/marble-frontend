@@ -1,83 +1,85 @@
 import { Link, useMatches } from '@remix-run/react';
-import { Future } from '@swan-io/boxed';
 import clsx from 'clsx';
-import {
-  type FunctionComponent,
-  type PropsWithChildren,
-  useEffect,
-  useState,
-} from 'react';
-import { filter } from 'remeda';
+import { select } from 'radash';
+import { type FunctionComponent, type PropsWithChildren, useMemo } from 'react';
 
 import { Page } from './Page';
-
-type Links = {
-  Element: FunctionComponent<BreadCrumbProps> | undefined;
-  pathname: string;
-}[];
 
 export type BreadCrumbProps = {
   isLast: boolean;
 };
 
-const Separator = () => (
-  <span className="text-s text-grey-80 font-bold">/</span>
-);
+export type HandleWithBreadCrumbs = {
+  BreadCrumbs?: FunctionComponent<BreadCrumbProps>[];
+};
 
-const LinkWrapper = ({
+export const BreadCrumbLink = ({
   isLast,
   children,
-  pathname,
-}: PropsWithChildren<{ isLast: boolean; pathname: string }>) => {
-  return isLast ? (
-    children
-  ) : (
-    <Link
-      to={pathname}
-      className={clsx('transition-colors', {
-        'text-grey-50 hover:text-grey-00': !isLast,
-      })}
-    >
-      {children}
-    </Link>
-  );
-};
+  to,
+  className,
+}: PropsWithChildren<{
+  isLast: boolean;
+  to: string;
+  className?: string;
+}>) => (
+  <Link
+    to={to}
+    className={clsx(
+      'text-s flex items-center font-bold transition-colors',
+      { 'text-grey-50 hover:text-grey-00': !isLast },
+      className,
+    )}
+  >
+    {children}
+  </Link>
+);
 
 export const BreadCrumbs = () => {
   const matches = useMatches();
-  const [links, setLinks] = useState<Links>([]);
 
-  useEffect(() => {
-    Future.all(
-      matches.map(({ id, pathname }) =>
-        Future.fromPromise(
-          import(/* @vite-ignore */ `../${id}`) as Promise<{
-            BreadCrumb?: FunctionComponent;
-          }>,
-        ).map((result) => ({
-          Element: result.isOk() ? result.value.BreadCrumb : undefined,
+  const links = useMemo(
+    () =>
+      select(
+        matches,
+        ({ pathname, handle }) => ({
+          Elements: (handle as HandleWithBreadCrumbs)?.BreadCrumbs?.filter(
+            Boolean,
+          ),
           pathname,
-        })),
+        }),
+        ({ handle }) => Boolean((handle as HandleWithBreadCrumbs)?.BreadCrumbs),
       ),
-    )
-      .map(filter((r) => r.Element !== undefined))
-      .then(setLinks);
-  }, [matches]);
+    [matches],
+  );
 
   return (
     <div className="flex flex-row items-center gap-4">
       {links.length > 1 ? <Page.BackLink to={links.at(-2)!.pathname} /> : null}
-      {links.map(({ Element, pathname }, i) => {
-        const isLast = i === links.length - 1;
+      {links.map(({ Elements, pathname }, linkIndex) => {
+        const isLastLink = linkIndex === links.length - 1;
 
-        return Element ? (
-          <div className="text-s flex items-center gap-4 font-bold" key={i}>
-            <LinkWrapper isLast={isLast} pathname={pathname}>
-              <Element isLast={isLast} />
-            </LinkWrapper>
-            {!isLast ? <Separator /> : null}
-          </div>
-        ) : null;
+        return Elements
+          ? Elements.map((Element, elementIndex) => {
+              const isLastElement = elementIndex === Elements.length - 1;
+
+              return (
+                <div
+                  className="flex items-center gap-4"
+                  key={`${pathname}-${elementIndex}`}
+                >
+                  <Element
+                    key={pathname}
+                    // eslint-disable-next-line react/jsx-no-leaked-render
+                    isLast={isLastElement && isLastLink}
+                  />
+                  {!(isLastElement && isLastLink) ? (
+                    <span className="text-s text-grey-80 font-bold">/</span>
+                  ) : null}
+                </div>
+              );
+            })
+          : null;
       })}
     </div>
   );

@@ -1,5 +1,9 @@
 import { CopyToClipboardButton, Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
 import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
 import { type Versions } from '@app-builder/components/Scenario/TestRun/Graphs/HamburgerGraph';
@@ -11,7 +15,7 @@ import { CancelTestRun } from '@app-builder/routes/ressources+/scenarios+/$scena
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense, useMemo } from 'react';
@@ -21,6 +25,34 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { useCurrentScenario, useScenarioIterations } from '../../_layout';
+
+export const handle = {
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { run } = useLoaderData<typeof loader>();
+      const { t } = useTranslation(['scenarios']);
+
+      return (
+        <div className="flex items-center gap-4">
+          <BreadCrumbLink
+            isLast={isLast}
+            to={getRoute('/scenarios/:scenarioId/test-run/:testRunId/', {
+              scenarioId: fromUUID(run.scenarioId),
+              testRunId: fromUUID(run.id),
+            })}
+          >
+            {t('scenarios:home.testrun')}
+          </BreadCrumbLink>
+          <CopyToClipboardButton toCopy={run.id}>
+            <span className="text-s line-clamp-1 max-w-40 font-normal">
+              <span className="font-medium">ID</span> {run.id}
+            </span>
+          </CopyToClipboardButton>
+        </div>
+      );
+    },
+  ],
+};
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
@@ -34,22 +66,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const run = await testRun.getTestRun({ testRunId });
 
   return defer({ run, decisionsPromise, rulesPromise });
-}
-
-export function BreadCrumb() {
-  const { run } = useLoaderData<typeof loader>();
-  const { t } = useTranslation(['scenarios']);
-
-  return (
-    <div className="flex items-center gap-4">
-      <p className="line-clamp-2 text-start">{t('scenarios:home.testrun')}</p>
-      <CopyToClipboardButton toCopy={run.id}>
-        <span className="text-s line-clamp-1 max-w-40 font-normal">
-          <span className="font-medium">ID</span> {run.id}
-        </span>
-      </CopyToClipboardButton>
-    </div>
-  );
 }
 
 export default function TestRun() {

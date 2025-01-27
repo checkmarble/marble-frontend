@@ -1,16 +1,25 @@
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+} from '@app-builder/components/Breadcrumbs';
+import { getRoute } from '@app-builder/utils/routes';
 import { Outlet } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-export const BreadCrumb = () => {
-  const { t } = useTranslation(['navigation']);
+export const handle = {
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
 
-  return (
-    <div className="flex items-center">
-      <Icon icon="decision" className="me-2 size-6" />
-      {t('navigation:decisions')}
-    </div>
-  );
+      return (
+        <BreadCrumbLink to={getRoute('/decisions')} isLast={isLast}>
+          <Icon icon="decision" className="me-2 size-6" />
+          {t('navigation:decisions')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export const DecisionLayout = () => {

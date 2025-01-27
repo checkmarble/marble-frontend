@@ -1,4 +1,9 @@
 import { Page } from '@app-builder/components';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
@@ -14,6 +19,18 @@ import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'cases', 'settings', ...casesI18n] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+
+      return (
+        <BreadCrumbLink to={getRoute('/cases/')} isLast={isLast}>
+          <Icon icon="case-manager" className="me-2 size-6" />
+          {t('navigation:case_manager')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -37,8 +54,7 @@ export default function Cases() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="case-manager" className="me-2 size-6" />
-        {t('navigation:case_manager')}
+        <BreadCrumbs />
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
         <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">

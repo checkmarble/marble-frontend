@@ -46,6 +46,27 @@ import { useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
+  BreadCrumbs: [
+    () => {
+      const scenarioIterations = useScenarioIterations();
+      const iterationId = useParam('iterationId');
+
+      const currentIteration = React.useMemo(() => {
+        const currentIteration = scenarioIterations.find(
+          ({ id }) => id === iterationId,
+        );
+        invariant(currentIteration, 'currentIteration is required');
+        return currentIteration;
+      }, [iterationId, scenarioIterations]);
+
+      return (
+        <VersionSelect
+          currentIteration={currentIteration}
+          scenarioIterations={scenarioIterations}
+        />
+      );
+    },
+  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -74,26 +95,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     publicationPreparationStatus,
   });
 }
-
-export const BreadCrumb = () => {
-  const scenarioIterations = useScenarioIterations();
-  const iterationId = useParam('iterationId');
-
-  const currentIteration = React.useMemo(() => {
-    const currentIteration = scenarioIterations.find(
-      ({ id }) => id === iterationId,
-    );
-    invariant(currentIteration, 'currentIteration is required');
-    return currentIteration;
-  }, [iterationId, scenarioIterations]);
-
-  return (
-    <VersionSelect
-      currentIteration={currentIteration}
-      scenarioIterations={scenarioIterations}
-    />
-  );
-};
 
 export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
