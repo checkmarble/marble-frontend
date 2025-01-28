@@ -205,7 +205,7 @@ function AndOperand({
               evaluation.skipped
                 ? 'grey'
                 : value === null
-                  ? 'green'
+                  ? 'orange'
                   : value
                     ? 'green'
                     : 'red'
