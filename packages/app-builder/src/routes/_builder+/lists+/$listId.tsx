@@ -1,4 +1,9 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { DeleteList } from '@app-builder/routes/ressources+/lists+/delete';
 import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
@@ -70,6 +75,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export const handle = {
   i18n: ['lists', 'common'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { customList } = useLoaderData<typeof loader>();
+
+      return (
+        <BreadCrumbLink
+          to={getRoute('/lists/:listId', { listId: customList.id })}
+          isLast={isLast}
+        >
+          {customList.name}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 type CustomListValue = {
@@ -137,17 +156,14 @@ export default function Lists() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <div className="flex w-full flex-row items-center gap-4">
-          <Page.BackButton />
-          <span className="line-clamp-2 text-start">{customList.name}</span>
-          {listFeatureAccess.isEditListAvailable ? (
-            <EditList
-              listId={customList.id}
-              name={customList.name}
-              description={customList.description}
-            />
-          ) : null}
-        </div>
+        <BreadCrumbs />
+        {listFeatureAccess.isEditListAvailable ? (
+          <EditList
+            listId={customList.id}
+            name={customList.name}
+            description={customList.description}
+          />
+        ) : null}
       </Page.Header>
       <Page.Container>
         {customList.description ? (

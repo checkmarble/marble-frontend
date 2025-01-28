@@ -27,7 +27,7 @@ export default function CasePage() {
               Link: (
                 <Link
                   className="hover:text-purple-65 text-purple-82 hover:underline"
-                  to={getRoute('/decisions/')}
+                  to={getRoute('/decisions')}
                 />
               ),
             }}

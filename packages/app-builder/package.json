@@ -107,6 +107,7 @@
     "ui-design-system": "workspace:*",
     "ui-icons": "workspace:*",
     "zod": "^3.23.8",
-    "zustand": "^5.0.0"
+    "zustand": "^5.0.0",
+    "@swan-io/boxed": "^3.2.0"
   }
 }

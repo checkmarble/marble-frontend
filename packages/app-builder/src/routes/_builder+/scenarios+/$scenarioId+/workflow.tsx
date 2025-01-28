@@ -1,6 +1,10 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { DetailPanel } from '@app-builder/components/Scenario/Workflow/DetailPanel/DetailPanel';
 import {
   adaptScenarioUpdateWorkflowInput,
@@ -33,11 +37,29 @@ import {
 import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 import { useCurrentScenario } from './_layout';
 
 export const handle = {
   i18n: workflowI18n satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['scenarios']);
+      const currentScenario = useCurrentScenario();
+
+      return (
+        <BreadCrumbLink
+          isLast={isLast}
+          to={getRoute('/scenarios/:scenarioId/workflow', {
+            scenarioId: fromUUID(currentScenario.id),
+          })}
+        >
+          {t('scenarios:home.workflow')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export const links: LinksFunction = () => [
@@ -198,14 +220,7 @@ export default function Workflow() {
   return (
     <Page.Main>
       <Page.Header className="gap-4">
-        <Page.BackLink
-          to={getRoute('/scenarios/:scenarioId/home', {
-            scenarioId: fromUUID(currentScenario.id),
-          })}
-        />
-        <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-
-        <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
+        <BreadCrumbs />
       </Page.Header>
       <WorkflowProvider
         data={{

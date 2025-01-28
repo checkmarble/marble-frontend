@@ -1,4 +1,9 @@
 import { Page } from '@app-builder/components';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { serverServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
@@ -20,6 +25,18 @@ const SwaggerUI = React.lazy(() => import('swagger-ui-react'));
 
 export const handle = {
   i18n: ['common', 'navigation', 'api'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+
+      return (
+        <BreadCrumbLink to={getRoute('/api')} isLast={isLast}>
+          <Icon icon="world" className="me-2 size-6" />
+          <span className="line-clamp-1 text-start">{t('navigation:api')}</span>
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export const links: LinksFunction = () =>
@@ -46,10 +63,7 @@ export default function Api() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <div className="flex flex-row items-center">
-          <Icon icon="world" className="me-2 size-6" />
-          <span className="line-clamp-1 text-start">{t('navigation:api')}</span>
-        </div>
+        <BreadCrumbs />
       </Page.Header>
       <Page.Container>
         <Page.Content>

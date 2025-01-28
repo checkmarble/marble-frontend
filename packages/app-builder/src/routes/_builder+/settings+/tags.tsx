@@ -18,6 +18,13 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
+export const handle = {
+  BreadCumb: () => {
+    const { t } = useTranslation(['settings']);
+    return <span>{t('settings:tags')}</span>;
+  },
+};
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const { organization, user } = await authService.isAuthenticated(request, {
