@@ -201,9 +201,19 @@ function AndOperand({
           <Tag
             border="square"
             className="w-full"
-            color={value === null ? 'orange' : value ? 'green' : 'red'}
+            color={
+              evaluation.skipped
+                ? 'grey'
+                : value === null
+                  ? 'orange'
+                  : value
+                    ? 'green'
+                    : 'red'
+            }
           >
-            {t(`common:${value === null ? 'null' : value}`)}
+            {t(
+              `common:${evaluation.skipped ? 'skipped' : value === null ? 'null' : value}`,
+            )}
           </Tag>
         </div>
       );

@@ -63,5 +63,6 @@
   "premium": "ميزة متميزة",
   "upgrade": "قم بالترقية الآن",
   "errors.backend_unvailable": "لا يمكن لتطبيق Marble التواصل مع الواجهة الخلفية لـ Marble. \nقم إما بالتحقق من التكوين الخاص بك أو حاول مرة أخرى لاحقًا.",
-  "errors.firebase_network_error": "يواجه الرخام بعض الصعوبات في الاتصال بـ Firebase. \nقم إما بالتحقق من تكوين Firebase أو حاول مرة أخرى لاحقًا."
+  "errors.firebase_network_error": "يواجه الرخام بعض الصعوبات في الاتصال بـ Firebase. \nقم إما بالتحقق من تكوين Firebase أو حاول مرة أخرى لاحقًا.",
+  "skipped": "تخطي"
 }

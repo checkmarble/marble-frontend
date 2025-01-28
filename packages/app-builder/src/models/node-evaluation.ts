@@ -47,6 +47,7 @@ export interface NodeEvaluation {
   errors: EvaluationError[];
   children: NodeEvaluation[];
   namedChildren: Record<string, NodeEvaluation>;
+  skipped?: boolean;
 }
 
 export function NewNodeEvaluation(): NodeEvaluation {
@@ -55,6 +56,7 @@ export function NewNodeEvaluation(): NodeEvaluation {
     errors: [],
     children: [],
     namedChildren: {},
+    skipped: false,
   };
 }
 
@@ -79,5 +81,6 @@ export function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
     namedChildren: dto.named_children
       ? R.mapValues(dto.named_children, adaptNodeEvaluation)
       : {},
+    skipped: dto.skipped,
   };
 }
