@@ -535,6 +535,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/sanctions/create",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule",
         "path": "ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule.tsx"

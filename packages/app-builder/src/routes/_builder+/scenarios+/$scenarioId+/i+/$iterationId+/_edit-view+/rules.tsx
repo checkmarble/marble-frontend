@@ -11,6 +11,7 @@ import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
+import { CreateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -21,7 +22,8 @@ import {
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import {
   type ColumnFiltersState,
@@ -31,10 +33,18 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Input, Table, Tag, useVirtualTable } from 'ui-design-system';
+import {
+  CtaClassName,
+  Input,
+  Table,
+  Tag,
+  useVirtualTable,
+} from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { useCurrentScenarioValidation } from '../_layout';
 
@@ -44,12 +54,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
-    request,
-    {
+  const { scenarioIterationRuleRepository, entitlements } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    },
-  );
+    });
 
   const scenarioIterationId = fromParams(params, 'iterationId');
 
@@ -64,10 +72,40 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     R.unique(),
   );
 
-  return json({ rules, ruleGroups });
+  return { rules, ruleGroups, isSanctionAvailable: entitlements.sanctions };
 }
 
 const columnHelper = createColumnHelper<ScenarioIterationRule>();
+
+const AddRuleOrSanction = ({
+  scenarioId,
+  iterationId,
+  isSanctionAvailable,
+}: {
+  scenarioId: string;
+  iterationId: string;
+  isSanctionAvailable: FeatureAccessDto;
+}) => (
+  <DropdownMenu.Root>
+    <DropdownMenu.Trigger
+      className={CtaClassName({ variant: 'primary', color: 'purple' })}
+    >
+      <Icon icon="plus" className="size-6" />
+      Add
+    </DropdownMenu.Trigger>
+    <DropdownMenu.Content
+      align="end"
+      className="bg-grey-100 border-grey-90 z-10 mt-2 flex flex-col gap-2 rounded border p-2"
+    >
+      <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
+      <CreateSanction
+        scenarioId={scenarioId}
+        iterationId={iterationId}
+        isSanctionAvailable={isSanctionAvailable}
+      />
+    </DropdownMenu.Content>
+  </DropdownMenu.Root>
+);
 
 export default function Rules() {
   const { t } = useTranslation(handle.i18n);
@@ -77,7 +115,8 @@ export default function Rules() {
   const scenarioId = useParam('scenarioId');
   const editorMode = useEditorMode();
 
-  const { rules, ruleGroups } = useLoaderData<typeof loader>();
+  const { rules, ruleGroups, isSanctionAvailable } =
+    useLoaderData<typeof loader>();
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
@@ -239,7 +278,11 @@ export default function Rules() {
               <FiltersButton />
             </RulesFiltersMenu>
             {editorMode === 'edit' ? (
-              <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
+              <AddRuleOrSanction
+                scenarioId={scenarioId}
+                iterationId={iterationId}
+                isSanctionAvailable={isSanctionAvailable}
+              />
             ) : null}
           </div>
         </div>
