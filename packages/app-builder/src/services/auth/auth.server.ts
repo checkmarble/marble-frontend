@@ -229,21 +229,7 @@ export function makeAuthenticationServerService({
         { baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER') },
       );
 
-      const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(
-        getTokenService(marbleToken.access_token),
-      );
-      const licenseApiClient = getLicenseAPIClientWithAuth(
-        getTokenService(marbleToken.access_token),
-      );
-      const user =
-        await getUserRepository(marbleCoreApiClient).getCurrentUser();
-      const entitlements = await getLicenseRepository(
-        licenseApiClient,
-      ).getEntitlements(user.organizationId);
-
       authSession.set('authToken', marbleToken);
-      authSession.set('user', user);
-      authSession.set('entitlements', entitlements);
       redirectUrl = options.successRedirect;
     } catch (error) {
       authSession.flash('authError', { message: adaptAuthErrors(error) });
@@ -286,21 +272,7 @@ export function makeAuthenticationServerService({
         { baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER') },
       );
 
-      const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(
-        getTokenService(marbleToken.access_token),
-      );
-      const licenseApiClient = getLicenseAPIClientWithAuth(
-        getTokenService(marbleToken.access_token),
-      );
-      const user =
-        await getUserRepository(marbleCoreApiClient).getCurrentUser();
-      const entitlements = await getLicenseRepository(
-        licenseApiClient,
-      ).getEntitlements(user.organizationId);
-
       authSession.set('authToken', marbleToken);
-      authSession.set('user', user);
-      authSession.set('entitlements', entitlements);
 
       if (options?.successRedirect) {
         throw redirect(options.successRedirect, {
@@ -352,25 +324,33 @@ export function makeAuthenticationServerService({
     const authSession = await authSessionService.getSession(request);
 
     const marbleToken = authSession.get('authToken');
-    const user = authSession.get('user');
-    const entitlements = authSession.get('entitlements');
 
-    if (
-      !marbleToken ||
-      marbleToken.expires_at < new Date().toISOString() ||
-      !user ||
-      !entitlements
-    ) {
+    if (!marbleToken || marbleToken.expires_at < new Date().toISOString()) {
+      if (options.failureRedirect) throw redirect(options.failureRedirect);
+      else return null;
+    }
+
+    const tokenService = getTokenService(marbleToken.access_token);
+    const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(tokenService);
+    const licenseApiClient = getLicenseAPIClientWithAuth(
+      getTokenService(marbleToken.access_token),
+    );
+    const transfercheckAPIClient =
+      getTransfercheckAPIClientWithAuth(tokenService);
+
+    let user: CurrentUser;
+    let entitlements: LicenseEntitlements;
+    try {
+      user = await getUserRepository(marbleCoreApiClient).getCurrentUser();
+      entitlements = await getLicenseRepository(
+        licenseApiClient,
+      ).getEntitlements(user.organizationId);
+    } catch (err) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
     }
 
     if (options.successRedirect) throw redirect(options.successRedirect);
-
-    const tokenService = getTokenService(marbleToken.access_token);
-    const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(tokenService);
-    const transfercheckAPIClient =
-      getTransfercheckAPIClientWithAuth(tokenService);
 
     return {
       apiClient: marbleCoreApiClient,
