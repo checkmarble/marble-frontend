@@ -206,6 +206,7 @@ export default function Rules() {
     getSortedRowModel: getSortedRowModel(),
     rowLink: ({ id }) => <Link to={`./${fromUUID(id)}`} />,
   });
+  const columnLength = table.getHeaderGroups()[0]?.headers.length ?? 1;
 
   return (
     <div className="flex flex-col gap-4">
@@ -252,7 +253,7 @@ export default function Rules() {
             rows.map((row) => <Table.Row key={row.id} row={row} />)
           ) : (
             <tr className="h-28">
-              <td colSpan={columns.length}>
+              <td colSpan={columnLength}>
                 <p className="text-center">{t('scenarios:rules.empty')}</p>
               </td>
             </tr>
