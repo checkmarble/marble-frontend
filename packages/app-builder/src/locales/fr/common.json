@@ -1,5 +1,6 @@
 {
   "null": "Nul",
+  "skipped": "Omis",
   "auth.logout": "Se déconnecter",
   "cancel": "Annuler",
   "error_one": "erreur",

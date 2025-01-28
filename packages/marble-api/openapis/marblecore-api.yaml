@@ -5174,6 +5174,9 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/NodeEvaluationDto'
+        skipped:
+          type: boolean
+          default: false
     ScenarioValidationErrorDto:
       type: object
       required:

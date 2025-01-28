@@ -119,6 +119,7 @@ export type NodeEvaluationDto = {
     named_children?: {
         [key: string]: NodeEvaluationDto;
     };
+    skipped?: boolean;
 };
 export type RuleExecutionDto = {
     error?: Error;

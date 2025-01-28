@@ -1,5 +1,6 @@
 {
   "null": "Null",
+  "skipped": "Skipped",
   "true": "True",
   "false": "False",
   "from_to": "From <Date>{{start_date}}</Date> to <Date>{{end_date}}</Date>",
