@@ -456,14 +456,19 @@ function RealTimeSection({
               }}
             />
           </span>
-          <span className="text-grey-00 text-s inline-flex items-center whitespace-pre font-semibold">
+          <span
+            className={clsx(
+              'text-grey-00 text-s inline-flex items-center font-semibold',
+              { 'whitespace-pre': isLive },
+            )}
+          >
             {isLive ? (
               <Trans
                 t={t}
                 i18nKey="scenarios:home.execution.real_time.callout.scenario_id"
                 components={{
                   CopyScenarioId: (
-                    <CopyToClipboardButton toCopy={scenarioId}>
+                    <CopyToClipboardButton toCopy={scenarioId} className="ml-1">
                       <code>scenario_id</code>
                     </CopyToClipboardButton>
                   ),
