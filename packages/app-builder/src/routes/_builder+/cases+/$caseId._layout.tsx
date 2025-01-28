@@ -4,6 +4,11 @@ import {
   Page,
   TabLink,
 } from '@app-builder/components';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CaseHistory } from '@app-builder/components/Cases/CaseHistory/CaseHistory';
 import {
@@ -45,6 +50,51 @@ import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'navigation', ...casesI18n] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+
+      return (
+        <BreadCrumbLink to={getRoute('/cases/')} isLast={isLast}>
+          <Icon icon="case-manager" className="me-2 size-6" />
+          {t('navigation:case_manager')}
+        </BreadCrumbLink>
+      );
+    },
+    ({ isLast }: BreadCrumbProps) => {
+      const { inbox } = useLoaderData<typeof loader>();
+
+      return (
+        <BreadCrumbLink
+          to={getRoute('/cases/inboxes/:inboxId', {
+            inboxId: fromUUID(inbox.id),
+          })}
+          isLast={isLast}
+        >
+          {inbox.name}
+        </BreadCrumbLink>
+      );
+    },
+    ({ isLast }: BreadCrumbProps) => {
+      const { caseDetail } = useLoaderData<typeof loader>();
+
+      return (
+        <div className="flex items-center gap-4">
+          <BreadCrumbLink
+            to={getRoute('/cases/:caseId', { caseId: fromUUID(caseDetail.id) })}
+            isLast={isLast}
+          >
+            <span className="line-clamp-2 text-start">{caseDetail.name}</span>
+          </BreadCrumbLink>
+          <CopyToClipboardButton toCopy={caseDetail.id}>
+            <span className="text-s line-clamp-1 max-w-40 font-normal">
+              <span className="font-medium">ID</span> {caseDetail.id}
+            </span>
+          </CopyToClipboardButton>
+        </div>
+      );
+    },
+  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -139,20 +189,8 @@ export default function CasePage() {
 
   return (
     <Page.Main>
-      <Page.Header className="justify-between gap-8">
-        <div className="flex flex-row items-center gap-4">
-          <Page.BackLink
-            to={getRoute('/cases/inboxes/:inboxId', {
-              inboxId: fromUUID(caseDetail.inboxId),
-            })}
-          />
-          <span className="line-clamp-2 text-start">{caseDetail.name}</span>
-          <CopyToClipboardButton toCopy={caseDetail.id}>
-            <span className="text-s line-clamp-1 max-w-40 font-normal">
-              <span className="font-medium">ID</span> {caseDetail.id}
-            </span>
-          </CopyToClipboardButton>
-        </div>
+      <Page.Header className="justify-between">
+        <BreadCrumbs />
         <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">

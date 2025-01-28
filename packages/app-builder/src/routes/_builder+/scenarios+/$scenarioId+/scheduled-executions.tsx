@@ -1,6 +1,10 @@
 import { ErrorComponent, Page, scenarioI18n } from '@app-builder/components';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { ScheduledExecutionsList } from '@app-builder/components/Scenario/ScheduledExecutionsList';
-import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -14,6 +18,23 @@ import { useCurrentScenario } from './_layout';
 
 export const handle = {
   i18n: [...scenarioI18n] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(handle.i18n);
+      const currentScenario = useCurrentScenario();
+
+      return (
+        <BreadCrumbLink
+          to={getRoute('/scenarios/:scenarioId/scheduled-executions', {
+            scenarioId: fromUUID(currentScenario.id),
+          })}
+          isLast={isLast}
+        >
+          {t('scenarios:home.execution')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -36,19 +57,10 @@ export default function ScheduledExecutions() {
   const { t } = useTranslation(handle.i18n);
   const { scheduledExecutions } = useLoaderData<typeof loader>();
 
-  const currentScenario = useCurrentScenario();
-
   return (
     <Page.Main>
       <Page.Header className="gap-4">
-        <Page.BackLink
-          to={getRoute('/scenarios/:scenarioId/home', {
-            scenarioId: fromUUID(currentScenario.id),
-          })}
-        />
-        <p className="line-clamp-2 text-start">{currentScenario.name}</p>
-
-        <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
+        <BreadCrumbs />
       </Page.Header>
 
       <Page.Container>

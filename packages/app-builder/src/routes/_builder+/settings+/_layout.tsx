@@ -1,4 +1,9 @@
 import { Page } from '@app-builder/components';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
 import { type CurrentUser } from '@app-builder/models';
 import {
   isReadAllInboxesAvailable,
@@ -18,6 +23,18 @@ import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['navigation', 'settings'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+
+      return (
+        <BreadCrumbLink to={getRoute('/settings')} isLast={isLast}>
+          <Icon icon="settings" className="me-2 size-6" />
+          {t('navigation:settings')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export function getSettings(user: CurrentUser) {
@@ -89,8 +106,7 @@ export default function Settings() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="settings" className="me-2 size-6" />
-        {t('navigation:settings')}
+        <BreadCrumbs />
       </Page.Header>
       <div className="flex size-full flex-row overflow-hidden">
         <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-e p-4">

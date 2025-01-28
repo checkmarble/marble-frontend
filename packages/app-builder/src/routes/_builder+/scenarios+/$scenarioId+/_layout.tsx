@@ -1,8 +1,13 @@
 import { ErrorComponent } from '@app-builder/components';
+import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+} from '@app-builder/components/Breadcrumbs';
+import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import { Outlet, useRouteError, useRouteLoaderData } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -10,6 +15,27 @@ import { type Namespace } from 'i18next';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const currentScenario = useCurrentScenario();
+
+      return (
+        <div className="flex flex-row items-center gap-4">
+          <BreadCrumbLink
+            isLast={isLast}
+            to={getRoute('/scenarios/:scenarioId', {
+              scenarioId: fromUUID(currentScenario.id),
+            })}
+          >
+            {currentScenario.name}
+          </BreadCrumbLink>
+          <TriggerObjectTag>
+            {currentScenario.triggerObjectType}
+          </TriggerObjectTag>
+        </div>
+      );
+    },
+  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -52,6 +78,7 @@ export function useCurrentScenario() {
 export default function CurrentScenarioLayout() {
   return <Outlet />;
 }
+
 export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);

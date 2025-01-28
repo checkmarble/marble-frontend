@@ -103,21 +103,21 @@ export default function Builder() {
                   <li>
                     <SidebarLink
                       labelTKey="navigation:scenarios"
-                      to={getRoute('/scenarios/')}
+                      to={getRoute('/scenarios')}
                       Icon={(props) => <Icon icon="scenarios" {...props} />}
                     />
                   </li>
                   <li>
                     <SidebarLink
                       labelTKey="navigation:lists"
-                      to={getRoute('/lists/')}
+                      to={getRoute('/lists')}
                       Icon={(props) => <Icon icon="lists" {...props} />}
                     />
                   </li>
                   <li>
                     <SidebarLink
                       labelTKey="navigation:decisions"
-                      to={getRoute('/decisions/')}
+                      to={getRoute('/decisions')}
                       Icon={(props) => <Icon icon="decision" {...props} />}
                     />
                   </li>

@@ -1,5 +1,9 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+} from '@app-builder/components/Breadcrumbs';
+import {
   type InboxUser,
   tKeyForInboxUserRole,
 } from '@app-builder/models/inbox';
@@ -18,10 +22,15 @@ import {
 } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromParams } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { getRoute, type RouteID } from '@app-builder/utils/routes';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import {
+  json,
+  type LoaderFunctionArgs,
+  redirect,
+  type SerializeFrom,
+} from '@remix-run/node';
+import { useLoaderData, useRouteLoaderData } from '@remix-run/react';
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -34,6 +43,32 @@ import { Table, Tooltip, useTable } from 'ui-design-system';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['settings']);
+      return (
+        <BreadCrumbLink to={getRoute('/settings/inboxes/')} isLast={isLast}>
+          {t('settings:inboxes')}
+        </BreadCrumbLink>
+      );
+    },
+    ({ isLast }: BreadCrumbProps) => {
+      const { inbox } = useRouteLoaderData(
+        'routes/_builder+/settings+/inboxes.$inboxId' satisfies RouteID,
+      ) as SerializeFrom<typeof loader>;
+
+      return (
+        <BreadCrumbLink
+          isLast={isLast}
+          to={getRoute('/settings/inboxes/:inboxId', {
+            inboxId: fromUUID(inbox.id),
+          })}
+        >
+          {inbox.name}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
