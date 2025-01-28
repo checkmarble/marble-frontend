@@ -1,6 +1,7 @@
 import { vitePlugin as remix } from '@remix-run/dev';
 import { installGlobals } from '@remix-run/node';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
+import { remixDevTools } from 'remix-development-tools';
 import { flatRoutes } from 'remix-flat-routes';
 import { defineConfig, type PluginOption } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
@@ -16,6 +17,17 @@ const plugins: PluginOption[] = [];
 
 if (!isVitest) {
   plugins.push(
+    remixDevTools({
+      client: {
+        maxHeight: 400,
+        liveUrls: [
+          { name: 'staging', url: 'https://app.staging.checkmarble.com' },
+          { name: 'production', url: 'https://app.checkmarble.com' },
+        ],
+        routeBoundaryGradient: 'gotham',
+        showBreakpointIndicator: false,
+      },
+    }),
     remix({
       serverModuleFormat: 'esm',
       appDirectory,

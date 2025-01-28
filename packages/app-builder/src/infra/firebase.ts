@@ -50,7 +50,9 @@ export function initializeFirebaseClient(
   const clientAuth = getAuth(app);
 
   if (config.withEmulator) {
-    connectAuthEmulator(clientAuth, config.authEmulatorUrl);
+    connectAuthEmulator(clientAuth, config.authEmulatorUrl, {
+      disableWarnings: process.env.NODE_ENV !== 'production',
+    });
   }
 
   const googleAuthProvider = new GoogleAuthProvider();
