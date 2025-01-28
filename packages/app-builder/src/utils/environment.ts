@@ -29,9 +29,7 @@ const PublicEnvVarsSchema = z.object({
   FIREBASE_API_KEY: z.string(),
   FIREBASE_APP_ID: z.string().optional(),
   FIREBASE_AUTH_DOMAIN: z.string().optional(),
-  FIREBASE_MESSAGING_SENDER_ID: z.string().optional(),
   FIREBASE_PROJECT_ID: z.string(),
-  FIREBASE_STORAGE_BUCKET: z.string().optional(),
 
   SENTRY_DSN: z.string().optional(),
   SENTRY_ENVIRONMENT: z.string().optional(),
@@ -152,8 +150,6 @@ function parseFirebaseConfigFromEnv(): FirebaseConfig {
     apiKey: getEnv('FIREBASE_API_KEY'),
     authDomain: getEnv('FIREBASE_AUTH_DOMAIN'),
     projectId: getEnv('FIREBASE_PROJECT_ID'),
-    storageBucket: getEnv('FIREBASE_STORAGE_BUCKET'),
-    messagingSenderId: getEnv('FIREBASE_MESSAGING_SENDER_ID'),
     appId: getEnv('FIREBASE_APP_ID'),
   };
 
