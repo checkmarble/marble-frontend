@@ -19,13 +19,13 @@ export const makeGetLicenseRepository =
               (await client.getEntitlements(organizationId)).feature_access,
             )
           : {
-              sanctions: 'allowed',
-              ruleSnoozes: 'allowed',
-              userRoles: 'allowed',
-              workflows: 'allowed',
-              testRun: 'allowed',
-              analytics: 'allowed',
-              webhooks: 'allowed',
+              sanctions: 'test',
+              ruleSnoozes: 'test',
+              userRoles: 'test',
+              workflows: 'test',
+              testRun: 'test',
+              analytics: 'test',
+              webhooks: 'test',
             };
 
       if (isDev) {
