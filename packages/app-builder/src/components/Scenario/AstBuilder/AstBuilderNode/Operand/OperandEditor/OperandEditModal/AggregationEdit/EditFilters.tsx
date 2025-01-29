@@ -163,12 +163,14 @@ export function EditFilters({
               <div className="col-start-4 flex flex-col gap-2 px-2">
                 <div className="flex flex-row items-center gap-2">
                   <EditDataModelField
+                    disabled={!aggregatedField?.tableName}
                     placeholder={t('scenarios:edit_aggregation.select_a_field')}
                     value={filter.filteredField}
                     options={filteredDataModalFieldOptions}
                     onChange={(filteredField) =>
                       onFilterChange({ filteredField }, filterIndex)
                     }
+                    tableName={aggregatedField?.tableName}
                     errors={filter.errors.filteredField}
                   />
                   <Operator

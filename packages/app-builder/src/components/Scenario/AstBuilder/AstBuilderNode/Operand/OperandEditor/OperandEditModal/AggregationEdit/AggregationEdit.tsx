@@ -333,66 +333,63 @@ export function AggregationEdit({
               ).map(getNodeEvaluationErrorMessage)}
             />
           </div>
-          <div className="flex flex-col gap-2">
-            {t('scenarios:edit_aggregation.function_title')}
-            <div className="grid grid-cols-[150px_1fr] gap-2">
-              <div className="flex flex-col gap-2">
-                <Operator
-                  value={aggregation.aggregator}
-                  setValue={(aggregator) =>
-                    setAggregation({
-                      ...aggregation,
-                      aggregator,
-                      errors: {
-                        ...aggregation.errors,
-                        aggregator: [],
-                      },
-                    })
-                  }
-                  validationStatus={
-                    aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'
-                  }
-                  operators={aggregatorOperators}
-                />
-                <EvaluationErrors
-                  errors={adaptEvaluationErrorViewModels(
-                    aggregation.errors.aggregator,
-                  ).map(getNodeEvaluationErrorMessage)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <EditDataModelField
-                  placeholder={t('scenarios:edit_aggregation.select_a_field')}
-                  value={aggregation.aggregatedField}
-                  options={dataModelFieldOptions}
-                  onChange={(aggregatedField) =>
-                    setAggregation({
-                      ...aggregation,
-                      aggregatedField,
-                      errors: {
-                        ...aggregation.errors,
-                        aggregatedField: [],
-                      },
-                    })
-                  }
-                  errors={aggregation.errors.aggregatedField}
-                />
-                <EvaluationErrors
-                  errors={adaptEvaluationErrorViewModels(
-                    aggregation.errors.aggregatedField,
-                  ).map(getNodeEvaluationErrorMessage)}
-                />
-              </div>
+          <div className="grid grid-cols-[150px_1fr] gap-2">
+            <div>{t('scenarios:edit_aggregation.function_title')}</div>
+            <div>{t('scenarios:edit_aggregation.object_field_title')}</div>
+            <div className="flex flex-col gap-2">
+              <Operator
+                value={aggregation.aggregator}
+                setValue={(aggregator) =>
+                  setAggregation({
+                    ...aggregation,
+                    aggregator,
+                    errors: {
+                      ...aggregation.errors,
+                      aggregator: [],
+                    },
+                  })
+                }
+                validationStatus={
+                  aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'
+                }
+                operators={aggregatorOperators}
+              />
+              <EvaluationErrors
+                errors={adaptEvaluationErrorViewModels(
+                  aggregation.errors.aggregator,
+                ).map(getNodeEvaluationErrorMessage)}
+              />
             </div>
-            <EditFilters
-              aggregatedField={aggregation.aggregatedField}
-              value={aggregation.filters}
-              dataModelFieldOptions={dataModelFieldOptions}
-              onChange={(filters) =>
-                setAggregation({ ...aggregation, filters })
-              }
-            />
+            <div className="flex flex-col gap-2">
+              <EditDataModelField
+                placeholder={t('scenarios:edit_aggregation.select_a_field')}
+                value={aggregation.aggregatedField}
+                options={dataModelFieldOptions}
+                onChange={(aggregatedField) =>
+                  setAggregation({
+                    ...aggregation,
+                    aggregatedField,
+                    errors: {
+                      ...aggregation.errors,
+                      aggregatedField: [],
+                    },
+                  })
+                }
+                errors={aggregation.errors.aggregatedField}
+              />
+              <EvaluationErrors
+                errors={adaptEvaluationErrorViewModels(
+                  aggregation.errors.aggregatedField,
+                ).map(getNodeEvaluationErrorMessage)}
+              />
+            </div>
           </div>
+          <EditFilters
+            aggregatedField={aggregation.aggregatedField}
+            value={aggregation.filters}
+            dataModelFieldOptions={dataModelFieldOptions}
+            onChange={(filters) => setAggregation({ ...aggregation, filters })}
+          />
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <ModalV2.Close

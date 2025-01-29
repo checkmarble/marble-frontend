@@ -26,6 +26,8 @@ if (!isVitest) {
         ],
         routeBoundaryGradient: 'gotham',
         showBreakpointIndicator: false,
+        requireUrlFlag: true,
+        urlFlag: 'devTools',
       },
     }),
     remix({
