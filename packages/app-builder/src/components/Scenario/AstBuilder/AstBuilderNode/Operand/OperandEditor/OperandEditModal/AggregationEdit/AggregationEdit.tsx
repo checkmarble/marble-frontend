@@ -30,9 +30,11 @@ import {
   type AstNodeErrors,
   computeValidationForNamedChildren,
 } from '@app-builder/services/validation/ast-node-validation';
+import { type Tree } from '@app-builder/utils/tree';
 import { type Namespace } from 'i18next';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { groupBy, mapValues, pipe } from 'remeda';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 import { Logo } from 'ui-icons';
 
@@ -102,6 +104,7 @@ export const adaptAggregationViewModel = (
     tableName: initialAggregationAstNode.namedChildren.tableName.constant,
     fieldName: initialAggregationAstNode.namedChildren.fieldName.constant,
   };
+
   const initialFiltersAstNodeErrors = initialAstNodeErrors.namedChildren[
     'filters'
   ] ?? {
@@ -109,15 +112,50 @@ export const adaptAggregationViewModel = (
     children: [],
     namedChildren: {},
   };
+  const globalFiltersAstNodeErrors = initialAstNodeErrors.errors.filter(
+    (error) => error.argumentName?.startsWith('filters'),
+  );
   const filters = initialAggregationAstNode.namedChildren.filters.children.map(
     (filterAstNode, index) => {
-      const initialFilterAstNodeErrors = initialFiltersAstNodeErrors.children[
-        index
-      ] ?? {
-        errors: [],
-        children: [],
-        namedChildren: {},
-      };
+      const globalErrors = globalFiltersAstNodeErrors.filter((err) =>
+        err.argumentName?.startsWith(`filters.${index}`),
+      );
+
+      const initialErrorForFilter = initialFiltersAstNodeErrors.children[index];
+
+      const errorsGroupedByField = pipe(
+        globalErrors,
+        groupBy((err) => {
+          return err.argumentName?.replace(`filters.${index}.`, '') ?? '';
+        }),
+        mapValues((errors, key) => {
+          const initialErrorForField: Tree<{ errors: EvaluationError[] }> =
+            initialErrorForFilter?.namedChildren[key] ?? {
+              errors: [],
+              children: [],
+              namedChildren: {},
+            };
+          return {
+            ...initialErrorForField,
+            errors: [...(initialErrorForField.errors ?? []), ...errors],
+          };
+        }),
+      );
+
+      const initialFilterAstNodeErrors = initialErrorForFilter
+        ? {
+            ...initialErrorForFilter,
+            namedChildren: {
+              ...initialErrorForFilter.namedChildren,
+              ...errorsGroupedByField,
+            },
+          }
+        : {
+            errors: [],
+            children: [],
+            namedChildren: errorsGroupedByField,
+          };
+
       return adaptFilterViewModel(filterAstNode, initialFilterAstNodeErrors);
     },
   );
@@ -289,7 +327,7 @@ export function AggregationEdit({
           </div>
         </div>
       </ModalV2.Title>
-      <div className="flex max-h-[70dvh] flex-col gap-6 overflow-auto p-6">
+      <div className="flex max-h-[70dvh] flex-col gap-10 overflow-auto p-6">
         <div className="flex flex-1 flex-col gap-4">
           <Callout variant="outlined">
             <ModalV2.Description className="whitespace-pre text-wrap">
@@ -333,68 +371,64 @@ export function AggregationEdit({
               ).map(getNodeEvaluationErrorMessage)}
             />
           </div>
-          <div className="flex flex-col gap-2">
-            {t('scenarios:edit_aggregation.function_title')}
-            <div className="grid grid-cols-[150px_1fr] gap-2">
-              <div className="flex flex-col gap-2">
-                <Operator
-                  value={aggregation.aggregator}
-                  setValue={(aggregator) =>
-                    setAggregation({
-                      ...aggregation,
-                      aggregator,
-                      errors: {
-                        ...aggregation.errors,
-                        aggregator: [],
-                      },
-                    })
-                  }
-                  validationStatus={
-                    aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'
-                  }
-                  operators={aggregatorOperators}
-                />
-                <EvaluationErrors
-                  errors={adaptEvaluationErrorViewModels(
-                    aggregation.errors.aggregator,
-                  ).map(getNodeEvaluationErrorMessage)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <EditDataModelField
-                  placeholder={t('scenarios:edit_aggregation.select_a_field')}
-                  value={aggregation.aggregatedField}
-                  options={dataModelFieldOptions}
-                  onChange={(aggregatedField) =>
-                    setAggregation({
-                      ...aggregation,
-                      aggregatedField,
-                      errors: {
-                        ...aggregation.errors,
-                        aggregatedField: [],
-                      },
-                    })
-                  }
-                  errors={aggregation.errors.aggregatedField}
-                />
-                <EvaluationErrors
-                  errors={adaptEvaluationErrorViewModels(
-                    aggregation.errors.aggregatedField,
-                  ).map(getNodeEvaluationErrorMessage)}
-                />
-              </div>
+          <div className="grid grid-cols-[150px_1fr] gap-2">
+            <div>{t('scenarios:edit_aggregation.function_title')}</div>
+            <div>{t('scenarios:edit_aggregation.object_field_title')}</div>
+            <div className="flex flex-col gap-2">
+              <Operator
+                value={aggregation.aggregator}
+                setValue={(aggregator) =>
+                  setAggregation({
+                    ...aggregation,
+                    aggregator,
+                    errors: {
+                      ...aggregation.errors,
+                      aggregator: [],
+                    },
+                  })
+                }
+                validationStatus={
+                  aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'
+                }
+                operators={aggregatorOperators}
+              />
+              <EvaluationErrors
+                errors={adaptEvaluationErrorViewModels(
+                  aggregation.errors.aggregator,
+                ).map(getNodeEvaluationErrorMessage)}
+              />
             </div>
-            <EditFilters
-              aggregatedField={aggregation.aggregatedField}
-              value={aggregation.filters}
-              dataModelFieldOptions={dataModelFieldOptions}
-              onChange={(filters) =>
-                setAggregation({ ...aggregation, filters })
-              }
-            />
+            <div className="flex flex-col gap-2">
+              <EditDataModelField
+                placeholder={t('scenarios:edit_aggregation.select_a_field')}
+                value={aggregation.aggregatedField}
+                options={dataModelFieldOptions}
+                onChange={(aggregatedField) =>
+                  setAggregation({
+                    ...aggregation,
+                    aggregatedField,
+                    errors: {
+                      ...aggregation.errors,
+                      aggregatedField: [],
+                    },
+                  })
+                }
+              />
+              <EvaluationErrors
+                errors={adaptEvaluationErrorViewModels(
+                  aggregation.errors.aggregatedField,
+                ).map(getNodeEvaluationErrorMessage)}
+              />
+            </div>
           </div>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
+        <EditFilters
+          aggregatedField={aggregation.aggregatedField}
+          value={aggregation.filters}
+          dataModelFieldOptions={dataModelFieldOptions}
+          onChange={(filters) => setAggregation({ ...aggregation, filters })}
+        />
+        <div className="mt-2 flex flex-1 flex-row gap-2">
           <ModalV2.Close
             render={
               <Button className="flex-1" variant="secondary" name="cancel" />
