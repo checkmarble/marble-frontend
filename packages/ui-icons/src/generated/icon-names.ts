@@ -83,6 +83,7 @@ export const iconNames = [
   'upload',
   'users',
   'version',
+  'visibility-on',
   'visibility',
   'visibility_off',
   'warning',

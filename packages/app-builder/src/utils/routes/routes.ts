@@ -113,6 +113,18 @@ export const routes = [
                 "id": "routes/_builder+/data+/schema",
                 "path": "schema",
                 "file": "routes/_builder+/data+/schema.tsx"
+              },
+              {
+                "id": "routes/_builder+/data+/view",
+                "path": "view",
+                "file": "routes/_builder+/data+/view.tsx",
+                "children": [
+                  {
+                    "id": "routes/_builder+/data+/view.$tableName.$objectId",
+                    "path": ":tableName/:objectId",
+                    "file": "routes/_builder+/data+/view.$tableName.$objectId.tsx"
+                  }
+                ]
               }
             ]
           },

@@ -344,3 +344,8 @@ export function getConstantDataTypeTKey(
       return undefined;
   }
 }
+
+export type DataModelObject = {
+  data: Record<string, unknown>;
+  metadata: Record<string, unknown>;
+};

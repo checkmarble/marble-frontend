@@ -58,6 +58,13 @@ export default function Data() {
                   Icon={(props) => <Icon {...props} icon="tree-schema" />}
                 />
               </li>
+              <li>
+                <TabLink
+                  labelTKey="navigation:data.viewer"
+                  to={getRoute('/data/view')}
+                  Icon={(props) => <Icon {...props} icon="visibility" />}
+                />
+              </li>
             </ul>
           </nav>
         </div>

@@ -1269,6 +1269,29 @@ export function getIngestionUploadLogs(objectType: string, opts?: Oazapfts.Reque
     }));
 }
 /**
+ * Get an ingested object based on the tableId and objectId passed
+ */
+export function getIngestedObject(tableName: string, objectId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            data?: object;
+            metadata?: object;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/ingestion/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}`, {
+        ...opts
+    }));
+}
+/**
  * List custom list
  */
 export function listCustomLists(opts?: Oazapfts.RequestOpts) {
