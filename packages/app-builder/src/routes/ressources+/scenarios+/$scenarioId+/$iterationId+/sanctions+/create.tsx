@@ -12,32 +12,31 @@ import { Icon } from 'ui-icons';
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
-  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
-    request,
-    {
+  const { scenarioIterationSanctionRepository } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    },
-  );
+    });
   const t = await i18nextService.getFixedT(request, 'scenarios');
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
   try {
-    const rule = await scenarioIterationRuleRepository.createRule({
+    const sanction = await scenarioIterationSanctionRepository.createSanction({
       scenarioIterationId: iterationId,
       displayOrder: 1,
-      formula: null,
-      name: t('create_rule.default_name'),
+      trigger: null,
+      name: t('create_sanction.default_name'),
       description: '',
       ruleGroup: '',
       scoreModifier: 0,
+      forcedOutcome: 'approve',
     });
 
     return redirect(
-      getRoute('/scenarios/:scenarioId/i/:iterationId/rules/:ruleId', {
+      getRoute('/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId', {
         scenarioId: fromUUID(scenarioId),
         iterationId: fromUUID(iterationId),
-        ruleId: fromUUID(rule.id),
+        sanctionId: fromUUID(sanction.id),
       }),
     );
   } catch (error) {
@@ -78,20 +77,22 @@ export function CreateSanction({
         disabled={
           fetcher.state === 'submitting' || isSanctionAvailable === 'restricted'
         }
-        className="w-full gap-2"
+        className="w-full"
       >
-        <Icon icon="plus" className="size-5" />
-        <div className="flex w-full flex-col items-start">
-          <span className="text-s font-normal">
-            {t('scenarios:create_sanction.title')}
-          </span>
-          <span
-            className={clsx('text-grey-50 font-normal', {
-              'text-grey-80': isSanctionAvailable === 'restricted',
-            })}
-          >
-            {t('scenarios:create_sanction.description')}
-          </span>
+        <div className="flex items-center gap-2">
+          <Icon icon="plus" className="size-5" />
+          <div className="flex w-full flex-col items-start">
+            <span className="text-s font-normal">
+              {t('scenarios:create_sanction.title')}
+            </span>
+            <span
+              className={clsx('text-grey-50 font-normal', {
+                'text-grey-80': isSanctionAvailable === 'restricted',
+              })}
+            >
+              {t('scenarios:create_sanction.description')}
+            </span>
+          </div>
         </div>
         {isSanctionAvailable !== 'allowed' ? (
           <Nudge
