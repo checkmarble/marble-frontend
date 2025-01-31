@@ -6,6 +6,9 @@ import {
 } from '@app-builder/models/scenario-iteration-sanction';
 
 export interface ScenarioIterationSanctionRepository {
+  listSanctions(args: {
+    scenarioIterationId: string;
+  }): Promise<ScenarioIterationSanction[]>;
   getSanction(args: { sanctionId: string }): Promise<ScenarioIterationSanction>;
   createSanction(
     args: CreateScenarioIterationSanctionInput,
@@ -20,6 +23,11 @@ export function makeGetScenarioIterationSanctionRepository() {
   const sanctions: ScenarioIterationSanction[] = [];
 
   return (_: MarbleCoreApi): ScenarioIterationSanctionRepository => ({
+    listSanctions: async ({ scenarioIterationId }) => {
+      return Promise.resolve(
+        sanctions.filter((s) => s.scenarioIterationId === scenarioIterationId),
+      );
+    },
     getSanction: async ({ sanctionId }) => {
       const sanction = sanctions.find((s) => s.id === sanctionId);
       return sanction
@@ -30,10 +38,11 @@ export function makeGetScenarioIterationSanctionRepository() {
       const sanction = {
         id: args.scenarioIterationId,
         scenarioIterationId: args.scenarioIterationId,
+        displayOrder: args.displayOrder,
         name: args.name,
         description: args.description,
         ruleGroup: args.ruleGroup,
-        trigger: args.trigger,
+        formula: args.formula,
         createdAt: new Date().toISOString(),
       };
       sanctions.push(sanction);
@@ -53,8 +62,8 @@ export function makeGetScenarioIterationSanctionRepository() {
       if (args.ruleGroup !== undefined) {
         sanction.ruleGroup = args.ruleGroup;
       }
-      if (args.trigger !== undefined) {
-        sanction.trigger = args.trigger;
+      if (args.formula !== undefined) {
+        sanction.formula = args.formula;
       }
       return Promise.resolve(sanction);
     },

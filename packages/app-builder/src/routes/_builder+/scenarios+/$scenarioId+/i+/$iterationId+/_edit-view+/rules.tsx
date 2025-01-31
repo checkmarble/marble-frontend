@@ -1,3 +1,4 @@
+import { OutcomeTag } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
@@ -9,11 +10,14 @@ import {
 } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersContext';
 import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersMenu';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type KnownOutcome } from '@app-builder/models/outcome';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import { type ScenarioIterationSanction } from '@app-builder/models/scenario-iteration-sanction';
 import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
 import { CreateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import {
   findRuleValidation,
   hasRuleErrors,
@@ -34,7 +38,7 @@ import {
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
-import * as React from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import {
@@ -54,10 +58,13 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { scenarioIterationRuleRepository, entitlements } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const {
+    scenarioIterationRuleRepository,
+    scenarioIterationSanctionRepository,
+    entitlements,
+  } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const scenarioIterationId = fromParams(params, 'iterationId');
 
@@ -65,17 +72,33 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenarioIterationId,
   });
 
+  const sanctions = await scenarioIterationSanctionRepository.listSanctions({
+    scenarioIterationId,
+  });
+
+  const items = [
+    ...rules.map((r) => ({ ...r, type: 'rule' as const })),
+    ...sanctions.map((s) => ({ ...s, type: 'sanction' as const })),
+  ];
+
   const ruleGroups = R.pipe(
-    rules,
-    R.map((rule) => rule.ruleGroup),
+    items,
+    R.map((i) => i.ruleGroup),
     R.filter((val) => !R.isEmpty(val)),
     R.unique(),
   );
 
-  return { rules, ruleGroups, isSanctionAvailable: entitlements.sanctions };
+  return {
+    items,
+    ruleGroups,
+    isSanctionAvailable: entitlements.sanctions,
+  };
 }
 
-const columnHelper = createColumnHelper<ScenarioIterationRule>();
+const columnHelper = createColumnHelper<
+  | (ScenarioIterationRule & { type: 'rule' })
+  | (ScenarioIterationSanction & { type: 'sanction' })
+>();
 
 const AddRuleOrSanction = ({
   scenarioId,
@@ -108,19 +131,20 @@ const AddRuleOrSanction = ({
 );
 
 export default function Rules() {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['scenarios', 'decisions', 'common']);
   const language = useFormatLanguage();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
   const editorMode = useEditorMode();
 
-  const { rules, ruleGroups, isSanctionAvailable } =
+  const { items, ruleGroups, isSanctionAvailable } =
     useLoaderData<typeof loader>();
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
+  const organization = useOrganizationDetails();
 
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row.name, {
         id: 'name',
@@ -132,9 +156,12 @@ export default function Rules() {
             typeof tableState.globalFilter === 'string'
               ? tableState.globalFilter
               : '';
-          const hasErrors = hasRuleErrors(
-            findRuleValidation(scenarioValidation, row.original.id),
-          );
+          const hasErrors =
+            row.original.type === 'rule'
+              ? hasRuleErrors(
+                  findRuleValidation(scenarioValidation, row.original.id),
+                )
+              : false;
 
           return (
             <span className="flex items-center gap-2">
@@ -177,41 +204,56 @@ export default function Rules() {
           return <Tag>{value}</Tag>;
         },
       }),
-      columnHelper.accessor((row) => row.scoreModifier, {
-        id: 'score',
-        cell: ({ getValue }) => {
-          const scoreModifier = getValue();
-          if (!scoreModifier) return '';
-          return (
-            <span
-              className={scoreModifier < 0 ? 'text-green-38' : 'text-red-47'}
-            >
-              {formatNumber(scoreModifier, {
-                language,
-                signDisplay: 'exceptZero',
-              })}
-            </span>
-          );
+      columnHelper.accessor(
+        (row) => (row.type === 'rule' ? row.scoreModifier : undefined),
+        {
+          id: 'score',
+          cell: ({ getValue }) => {
+            const scoreModifier = getValue();
+            if (!scoreModifier) return '';
+            return (
+              <span
+                className={scoreModifier < 0 ? 'text-green-38' : 'text-red-47'}
+              >
+                {formatNumber(scoreModifier, {
+                  language,
+                  signDisplay: 'exceptZero',
+                })}
+              </span>
+            );
+          },
+          header: t('scenarios:rules.score'),
+          size: 100,
         },
-        header: t('scenarios:rules.score'),
+      ),
+      columnHelper.accessor(() => undefined, {
+        id: 'outcome',
+        cell: ({ row }) =>
+          row.original.type === 'sanction' ? (
+            <OutcomeTag
+              outcome={
+                organization.org.sanctionCheck.forcedOutcome as KnownOutcome
+              }
+            />
+          ) : undefined,
+        header: t('decisions:outcome'),
         size: 100,
       }),
     ],
-    [language, scenarioValidation, t],
+    [language, scenarioValidation, t, organization],
   );
 
-  const hasRules = rules.length > 0;
+  const hasItems = items.length > 0;
 
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const filterValues = R.pullObject(
     columnFilters,
     R.prop('id'),
     R.prop('value'),
   );
-  const submitRulesFilters = React.useCallback((filters: RulesFilters) => {
+
+  const submitRulesFilters = useCallback((filters: RulesFilters) => {
     const nextColumnFilters = R.pipe(
       filters,
       R.entries(),
@@ -226,10 +268,10 @@ export default function Rules() {
   }, []);
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
-    data: rules,
+    data: items,
     columns,
     columnResizeMode: 'onChange',
-    enableSorting: hasRules,
+    enableSorting: hasItems,
     initialState: {
       sorting: [
         {
@@ -243,8 +285,23 @@ export default function Rules() {
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    rowLink: ({ id }) => <Link to={`./${fromUUID(id)}`} />,
+    rowLink: ({ id, type }) =>
+      type === 'rule' ? (
+        <Link to={`./${fromUUID(id)}`} />
+      ) : (
+        <Link
+          to={getRoute(
+            '/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId',
+            {
+              scenarioId: fromUUID(scenarioId),
+              iterationId: fromUUID(iterationId),
+              sanctionId: fromUUID(id),
+            },
+          )}
+        />
+      ),
   });
+
   const columnLength = table.getHeaderGroups()[0]?.headers.length ?? 1;
 
   return (
@@ -262,7 +319,7 @@ export default function Rules() {
           <form className="flex grow items-center">
             <Input
               className="w-full max-w-xl"
-              disabled={rules.length === 0}
+              disabled={!hasItems}
               type="search"
               aria-label={t('common:search')}
               placeholder={t('common:search')}
@@ -292,7 +349,7 @@ export default function Rules() {
       <Table.Container {...getContainerProps()} className="bg-grey-100">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
-          {hasRules ? (
+          {hasItems ? (
             rows.map((row) => <Table.Row key={row.id} row={row} />)
           ) : (
             <tr className="h-28">

@@ -23,9 +23,14 @@ import { NewEmptyTriggerAstNode } from '@app-builder/models';
 import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
 import { DuplicateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/duplicate';
+import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import { useEditorMode } from '@app-builder/services/editor';
-import { useAstNodeEditor } from '@app-builder/services/editor/ast-editor';
+import {
+  useAstNodeEditor,
+  useValidateAstNode,
+} from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
@@ -47,6 +52,11 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 import { useCurrentScenario } from '../../_layout';
+import {
+  useCurrentScenarioIteration,
+  useCurrentScenarioValidation,
+  useRuleGroups,
+} from './_layout';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -152,7 +162,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const formData = await request.formData();
   const session = await getSession(request);
-  const { scenarioIterationSanctionRepository } =
+  const { scenarioIterationSanctionRepository, organization, user } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -173,14 +183,18 @@ export async function action({ request, params }: ActionFunctionArgs) {
       name: formValues.name,
       description: formValues.description,
       ruleGroup: formValues.ruleGroup,
-      trigger: formValues.trigger,
+      formula: formValues.trigger,
     });
 
-    // await organization.updateOrganization({
-    //   organizationId: user.organizationId,
-    //   forcedOutcoume: formValues.forcedOutcome,
-    //   similarityScore: formValues.similarityScore,
-    // })
+    await organization.updateOrganization({
+      organizationId: user.organizationId,
+      changes: {
+        sanctionCheck: {
+          forcedOutcome: formValues.forcedOutcome,
+          similarityScore: formValues.similarityScore,
+        },
+      },
+    });
 
     setToastMessage(session, {
       type: 'success',
@@ -214,36 +228,44 @@ export default function SanctionDetail() {
   const iterationId = useParam('iterationId');
   const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
+  const scenarioValidation = useCurrentScenarioValidation();
+  const scenarioIteration = useCurrentScenarioIteration();
+  const defaultRuleGroups = useRuleGroups();
+  const ruleGroups = useMemo(
+    () => [...defaultRuleGroups, 'Sanction check'],
+    [defaultRuleGroups],
+  );
+  const {
+    org: { sanctionCheck },
+  } = useOrganizationDetails();
 
   const formRef = useRef<HTMLFormElement>(null);
   const [form, fields] = useForm<EditSanctionFormValues>({
     lastResult: fetcher.data,
     constraint: getZodConstraint(editSanctionFormSchema),
-    shouldValidate: 'onBlur',
     shouldRevalidate: 'onInput',
     defaultValue: {
       name: sanction.name,
       description: sanction.description,
       ruleGroup: 'Sanction check',
-      forcedOutcome: 'block_and_review',
+      forcedOutcome: sanctionCheck.forcedOutcome as KnownOutcome,
       similarityScore: 0,
     },
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: editSanctionFormSchema });
-    },
+    onValidate: ({ formData }) =>
+      parseWithZod(formData, { schema: editSanctionFormSchema }),
   });
+
+  const { validate, validation } = useTriggerValidationFetcher(
+    scenarioIteration.scenarioId,
+    scenarioIteration.id,
+  );
 
   const astEditorStore = useAstNodeEditor({
-    initialAstNode: sanction.trigger ?? NewEmptyTriggerAstNode(),
+    initialAstNode: sanction.formula ?? NewEmptyTriggerAstNode(),
+    initialEvaluation: scenarioValidation.trigger.triggerEvaluation,
   });
 
-  const options = {
-    databaseAccessors,
-    payloadAccessors,
-    dataModel,
-    customLists,
-    triggerObjectType: scenario.triggerObjectType,
-  };
+  useValidateAstNode(astEditorStore, validate, validation);
 
   return (
     <Page.Main>
@@ -292,7 +314,7 @@ export default function SanctionDetail() {
                       <FormLabel className="text-m">
                         {t('common:description')}
                       </FormLabel>
-                      <Input
+                      <FormInput
                         type="text"
                         placeholder={t(
                           'scenarios:edit_rule.description_placeholder',
@@ -309,12 +331,12 @@ export default function SanctionDetail() {
                       </FormLabel>
                       <FormSelectWithCombobox.Control
                         multiple={false}
-                        options={[]}
+                        options={ruleGroups}
                         render={({ selectedValue }) => (
                           <RuleGroup
                             disabled
-                            selectedRuleGroup={selectedValue ?? ''}
-                            ruleGroups={[]}
+                            selectedRuleGroup={selectedValue}
+                            ruleGroups={ruleGroups}
                           />
                         )}
                       />
@@ -359,7 +381,7 @@ export default function SanctionDetail() {
                       <FormLabel className="text-m">
                         {t('scenarios:edit_sanction.similarity_score')}
                       </FormLabel>
-                      <Input
+                      <FormInput
                         type="number"
                         endAdornment="number"
                         placeholder={t(
@@ -390,15 +412,17 @@ export default function SanctionDetail() {
                       />
                     </p>
                   </Callout>
-                  <FormField
-                    name={fields.trigger.name}
-                    className="flex flex-col gap-2"
-                  >
+                  <FormField name={fields.trigger.name}>
                     <AstBuilder
-                      options={options}
                       astEditorStore={astEditorStore}
+                      options={{
+                        databaseAccessors,
+                        payloadAccessors,
+                        dataModel,
+                        customLists,
+                        triggerObjectType: scenario.triggerObjectType,
+                      }}
                     />
-                    <FormErrorOrDescription />
                   </FormField>
                 </Collapsible.Content>
               </Collapsible.Container>
@@ -445,12 +469,10 @@ const RuleGroup = ({
   selectedRuleGroup,
   ruleGroups,
   disabled,
-  onOpenChange,
 }: {
   selectedRuleGroup?: string;
   ruleGroups: string[];
   disabled?: boolean;
-  onOpenChange?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation(['scenarios']);
   const [searchValue, setSearchValue] = useState('');
@@ -466,7 +488,6 @@ const RuleGroup = ({
       selectedValue={selectedRuleGroup}
       searchValue={searchValue}
       onSearchValueChange={setSearchValue}
-      onOpenChange={onOpenChange}
     >
       <FormSelectWithCombobox.Select disabled={disabled} className="w-full">
         <span className={clsx({ 'text-grey-80': disabled })}>

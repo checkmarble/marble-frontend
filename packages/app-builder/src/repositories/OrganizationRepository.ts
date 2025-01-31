@@ -3,6 +3,7 @@ import { adaptUser, type User } from '@app-builder/models';
 import {
   adaptOrganizationDto,
   type Organization,
+  type OrganizationUpdateInput,
 } from '@app-builder/models/organization';
 import { type Tag } from 'marble-api';
 
@@ -12,11 +13,16 @@ export interface OrganizationRepository {
   listTags(args?: { withCaseCount: boolean }): Promise<Tag[]>;
   updateOrganization(args: {
     organizationId: string;
-    defaultScenarioTimezone: string;
+    changes: OrganizationUpdateInput;
   }): Promise<Organization>;
 }
 
 export function makeGetOrganizationRepository() {
+  const sanctionCheckSettings: Organization['sanctionCheck'] = {
+    forcedOutcome: 'block_and_review',
+    similarityScore: 60,
+  };
+
   return (
     marbleCoreApiClient: MarbleCoreApi,
     organizationId: string,
@@ -25,7 +31,13 @@ export function makeGetOrganizationRepository() {
       const { organization } =
         await marbleCoreApiClient.getOrganization(organizationId);
 
-      return adaptOrganizationDto(organization);
+      return adaptOrganizationDto({
+        ...organization,
+        sanction_check: {
+          forced_outcome: sanctionCheckSettings.forcedOutcome,
+          similarity_score: sanctionCheckSettings.similarityScore,
+        },
+      });
     },
     listUsers: async () => {
       const { users } =
@@ -38,11 +50,25 @@ export function makeGetOrganizationRepository() {
       return tags;
     },
     updateOrganization: async (args) => {
-      const { organization: updatedOrganization } =
-        await marbleCoreApiClient.updateOrganization(organizationId, {
-          default_scenario_timezone: args.defaultScenarioTimezone,
-        });
-      return adaptOrganizationDto(updatedOrganization);
+      const { organization } = await marbleCoreApiClient.updateOrganization(
+        organizationId,
+        {
+          default_scenario_timezone: args.changes.defaultScenarioTimezone,
+        },
+      );
+      if (args.changes.sanctionCheck?.forcedOutcome)
+        sanctionCheckSettings.forcedOutcome =
+          args.changes.sanctionCheck.forcedOutcome;
+      if (args.changes.sanctionCheck?.similarityScore)
+        sanctionCheckSettings.similarityScore =
+          args.changes.sanctionCheck.similarityScore;
+      return adaptOrganizationDto({
+        ...organization,
+        sanction_check: {
+          forced_outcome: sanctionCheckSettings.forcedOutcome,
+          similarity_score: sanctionCheckSettings.similarityScore,
+        },
+      });
     },
   });
 }

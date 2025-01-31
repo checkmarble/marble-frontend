@@ -24,7 +24,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const sanction = await scenarioIterationSanctionRepository.createSanction({
       scenarioIterationId: iterationId,
       displayOrder: 1,
-      trigger: null,
+      formula: null,
       name: t('create_sanction.default_name'),
       description: '',
       ruleGroup: '',
