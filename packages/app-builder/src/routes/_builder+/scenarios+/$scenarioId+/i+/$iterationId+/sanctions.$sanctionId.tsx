@@ -251,7 +251,7 @@ export default function SanctionDetail() {
       description: sanction.description,
       ruleGroup: 'Sanction check',
       forcedOutcome: sanctionCheck.forcedOutcome as KnownOutcome,
-      similarityScore: 0,
+      similarityScore: sanctionCheck.similarityScore,
     },
     onValidate: ({ formData }) =>
       parseWithZod(formData, { schema: editSanctionFormSchema }),
