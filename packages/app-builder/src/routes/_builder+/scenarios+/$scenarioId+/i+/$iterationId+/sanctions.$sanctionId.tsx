@@ -22,7 +22,6 @@ import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { NewEmptyTriggerAstNode } from '@app-builder/models';
 import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
-import { DuplicateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/duplicate';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import { useEditorMode } from '@app-builder/services/editor';
 import {
@@ -149,7 +148,7 @@ const editSanctionFormSchema = z.object({
   ruleGroup: z.string(),
   similarityScore: z.coerce.number().int().min(0).max(100),
   forcedOutcome: z.enum(['review', 'decline', 'block_and_review']),
-  trigger: z.undefined(),
+  trigger: z.any(),
 });
 
 type EditSanctionFormValues = z.infer<typeof editSanctionFormSchema>;
@@ -170,6 +169,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const submission = parseWithZod(formData, { schema: editSanctionFormSchema });
 
   if (submission.status !== 'success') {
+    console.log('Error when submission', submission.error);
     return submission.reply();
   }
 
@@ -209,6 +209,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
+
+    console.log('Error when saving sanction', error);
 
     return json(submission.reply(), {
       headers: { 'Set-Cookie': await commitSession(session) },
@@ -280,10 +282,11 @@ export default function SanctionDetail() {
               ref={formRef}
               method="post"
               action={getRoute(
-                '/ressources/scenarios/:scenarioId/:iterationId/sanctions/create',
+                '/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId',
                 {
                   scenarioId: fromUUID(scenario.id),
                   iterationId: fromUUID(iterationId),
+                  sanctionId: fromUUID(sanction.id),
                 },
               )}
               {...getFormProps(form)}
@@ -439,17 +442,6 @@ export default function SanctionDetail() {
                       {t('common:delete')}
                     </Button>
                   </DeleteSanction>
-
-                  <DuplicateSanction
-                    sanctionId={sanction.id}
-                    iterationId={sanction.scenarioIterationId}
-                    scenarioId={scenario.id}
-                  >
-                    <Button variant="secondary" className="w-fit">
-                      <Icon icon="copy" className="size-5" aria-hidden />
-                      {t('scenarios:clone_rule.button')}
-                    </Button>
-                  </DuplicateSanction>
 
                   <Button type="submit" className="flex-1">
                     <Icon icon="save" className="size-5" aria-hidden />

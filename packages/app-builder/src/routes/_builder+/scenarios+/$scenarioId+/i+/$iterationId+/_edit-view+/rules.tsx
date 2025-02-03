@@ -104,10 +104,12 @@ const AddRuleOrSanction = ({
   scenarioId,
   iterationId,
   isSanctionAvailable,
+  hasAlreadyASanction,
 }: {
   scenarioId: string;
   iterationId: string;
   isSanctionAvailable: FeatureAccessDto;
+  hasAlreadyASanction: boolean;
 }) => (
   <DropdownMenu.Root>
     <DropdownMenu.Trigger
@@ -125,6 +127,7 @@ const AddRuleOrSanction = ({
         scenarioId={scenarioId}
         iterationId={iterationId}
         isSanctionAvailable={isSanctionAvailable}
+        hasAlreadyASanction={hasAlreadyASanction}
       />
     </DropdownMenu.Content>
   </DropdownMenu.Root>
@@ -143,6 +146,10 @@ export default function Rules() {
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
   const organization = useOrganizationDetails();
+  const hasAlreadyASanction = useMemo(
+    () => items.some((i) => i.type === 'sanction'),
+    [items],
+  );
 
   const columns = useMemo(
     () => [
@@ -339,6 +346,7 @@ export default function Rules() {
                 scenarioId={scenarioId}
                 iterationId={iterationId}
                 isSanctionAvailable={isSanctionAvailable}
+                hasAlreadyASanction={hasAlreadyASanction}
               />
             ) : null}
           </div>

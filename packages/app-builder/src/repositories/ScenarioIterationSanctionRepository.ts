@@ -4,6 +4,7 @@ import {
   type ScenarioIterationSanction,
   type UpdateScenarioIterationSanctionInput,
 } from '@app-builder/models/scenario-iteration-sanction';
+import shortUuid from 'short-uuid';
 
 export interface ScenarioIterationSanctionRepository {
   listSanctions(args: {
@@ -36,7 +37,7 @@ export function makeGetScenarioIterationSanctionRepository() {
     },
     createSanction: async (args) => {
       const sanction = {
-        id: args.scenarioIterationId,
+        id: shortUuid.uuid(),
         scenarioIterationId: args.scenarioIterationId,
         displayOrder: args.displayOrder,
         name: args.name,

@@ -81,10 +81,10 @@ export function DeleteSanction({
                 <Icon icon="delete" className="text-red-47 size-16" />
               </div>
               <h1 className="text-l font-semibold">
-                {t('scenarios:delete_rule.title')}
+                {t('scenarios:delete_sanction.title')}
               </h1>
               <p className="text-center">
-                {t('scenarios:delete_rule.content')}
+                {t('scenarios:delete_sanction.content')}
               </p>
             </div>
             <div className="flex flex-1 flex-row gap-2">

@@ -12,13 +12,13 @@ import { Icon } from 'ui-icons';
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
+  const t = await i18nextService.getFixedT(request, 'scenarios');
+  const scenarioId = fromParams(params, 'scenarioId');
+  const iterationId = fromParams(params, 'iterationId');
   const { scenarioIterationSanctionRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
-  const t = await i18nextService.getFixedT(request, 'scenarios');
-  const scenarioId = fromParams(params, 'scenarioId');
-  const iterationId = fromParams(params, 'iterationId');
 
   try {
     const sanction = await scenarioIterationSanctionRepository.createSanction({
@@ -27,9 +27,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       formula: null,
       name: t('create_sanction.default_name'),
       description: '',
-      ruleGroup: '',
-      scoreModifier: 0,
-      forcedOutcome: 'approve',
+      ruleGroup: 'Sanction check',
     });
 
     return redirect(
@@ -51,10 +49,12 @@ export function CreateSanction({
   scenarioId,
   iterationId,
   isSanctionAvailable,
+  hasAlreadyASanction,
 }: {
   scenarioId: string;
   iterationId: string;
   isSanctionAvailable: FeatureAccessDto;
+  hasAlreadyASanction: boolean;
 }) {
   const { t } = useTranslation(['scenarios']);
   const fetcher = useFetcher<typeof action>();
@@ -75,11 +75,13 @@ export function CreateSanction({
         variant="dropdown"
         size="dropdown"
         disabled={
-          fetcher.state === 'submitting' || isSanctionAvailable === 'restricted'
+          fetcher.state === 'submitting' ||
+          hasAlreadyASanction ||
+          isSanctionAvailable === 'restricted'
         }
         className="w-full"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <Icon icon="plus" className="size-5" />
           <div className="flex w-full flex-col items-start">
             <span className="text-s font-normal">
@@ -87,10 +89,13 @@ export function CreateSanction({
             </span>
             <span
               className={clsx('text-grey-50 font-normal', {
-                'text-grey-80': isSanctionAvailable === 'restricted',
+                'text-grey-80':
+                  isSanctionAvailable === 'restricted' || hasAlreadyASanction,
               })}
             >
-              {t('scenarios:create_sanction.description')}
+              {hasAlreadyASanction
+                ? t('scenarios:already_one_sanction')
+                : t('scenarios:create_sanction.description')}
             </span>
           </div>
         </div>

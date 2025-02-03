@@ -52,9 +52,11 @@ export function makeGetOrganizationRepository() {
     updateOrganization: async (args) => {
       const { organization } = await marbleCoreApiClient.updateOrganization(
         organizationId,
-        {
-          default_scenario_timezone: args.changes.defaultScenarioTimezone,
-        },
+        args.changes.defaultScenarioTimezone
+          ? {
+              default_scenario_timezone: args.changes.defaultScenarioTimezone,
+            }
+          : {},
       );
       if (args.changes.sanctionCheck?.forcedOutcome)
         sanctionCheckSettings.forcedOutcome =
