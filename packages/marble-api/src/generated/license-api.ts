@@ -14,7 +14,7 @@ const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
     localDevlopmentServer: "http://localhost:8080"
 };
-export type FeatureAccessDto = "allowed" | "restricted" | "test";
+export type FeatureAccessDto = "allowed" | "restricted" | "test" | "missing_configuration";
 export type LicenseEntitlementsDto = {
     workflows: FeatureAccessDto;
     analytics: FeatureAccessDto;
