@@ -19,7 +19,13 @@ import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectW
 import { Highlight } from '@app-builder/components/Highlight';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { NewEmptyTriggerAstNode } from '@app-builder/models';
+import { Operand } from '@app-builder/components/Scenario/AstBuilder/AstBuilderNode/Operand';
+import {
+  type AstNode,
+  astNodeSchema,
+  NewEmptyTriggerAstNode,
+  NewUndefinedAstNode,
+} from '@app-builder/models';
 import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
@@ -28,6 +34,11 @@ import {
   useAstNodeEditor,
   useValidateAstNode,
 } from '@app-builder/services/editor/ast-editor';
+import {
+  OptionsProvider,
+  useGetAstNodeOperandProps,
+  useOperandOptions,
+} from '@app-builder/services/editor/options';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { getRoute } from '@app-builder/utils/routes';
@@ -46,7 +57,13 @@ import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
-import { Button, Collapsible, Input, Tag } from 'ui-design-system';
+import {
+  Button,
+  Collapsible,
+  CollapsibleV2,
+  Input,
+  Tag,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -148,7 +165,8 @@ const editSanctionFormSchema = z.object({
   ruleGroup: z.string(),
   similarityScore: z.coerce.number().int().min(0).max(100),
   forcedOutcome: z.enum(['review', 'decline', 'block_and_review']),
-  trigger: z.any(),
+  formula: astNodeSchema,
+  matches: z.array(astNodeSchema),
 });
 
 type EditSanctionFormValues = z.infer<typeof editSanctionFormSchema>;
@@ -183,7 +201,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       name: formValues.name,
       description: formValues.description,
       ruleGroup: formValues.ruleGroup,
-      formula: formValues.trigger,
+      formula: formValues.formula,
     });
 
     await organization.updateOrganization({
@@ -218,6 +236,21 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 }
 
+const MatchOperand = ({ node }: { node: AstNode }) => {
+  const getOperandAstNodeOperandProps = useGetAstNodeOperandProps();
+  const options = useOperandOptions();
+
+  return (
+    <Operand
+      {...getOperandAstNodeOperandProps(node)}
+      placeholder="Select the First name or Full Name"
+      options={options.filter((o) => o.dataType === 'String')}
+      validationStatus="valid"
+      onSave={(astNode) => console.log(astNode)}
+    />
+  );
+};
+
 export default function SanctionDetail() {
   const { t } = useTranslation(['scenarios', 'common', 'decisions']);
   const {
@@ -241,6 +274,20 @@ export default function SanctionDetail() {
     org: { sanctionCheck },
   } = useOrganizationDetails();
 
+  const { validate, validation } = useTriggerValidationFetcher(
+    scenarioIteration.scenarioId,
+    scenarioIteration.id,
+  );
+
+  const astEditorStore = useAstNodeEditor({
+    initialAstNode: sanction.formula ?? NewEmptyTriggerAstNode(),
+    initialEvaluation: scenarioValidation.trigger.triggerEvaluation,
+  });
+
+  const [nodes, setNodes] = useState<AstNode[]>([NewUndefinedAstNode()]);
+
+  useValidateAstNode(astEditorStore, validate, validation);
+
   const formRef = useRef<HTMLFormElement>(null);
   const [form, fields] = useForm<EditSanctionFormValues>({
     lastResult: fetcher.data,
@@ -252,22 +299,12 @@ export default function SanctionDetail() {
       ruleGroup: 'Sanction check',
       forcedOutcome: sanctionCheck.forcedOutcome as KnownOutcome,
       similarityScore: sanctionCheck.similarityScore,
+      formula: sanction.formula,
+      matches: sanction.matches,
     },
     onValidate: ({ formData }) =>
       parseWithZod(formData, { schema: editSanctionFormSchema }),
   });
-
-  const { validate, validation } = useTriggerValidationFetcher(
-    scenarioIteration.scenarioId,
-    scenarioIteration.id,
-  );
-
-  const astEditorStore = useAstNodeEditor({
-    initialAstNode: sanction.formula ?? NewEmptyTriggerAstNode(),
-    initialEvaluation: scenarioValidation.trigger.triggerEvaluation,
-  });
-
-  useValidateAstNode(astEditorStore, validate, validation);
 
   return (
     <Page.Main>
@@ -415,7 +452,7 @@ export default function SanctionDetail() {
                       />
                     </p>
                   </Callout>
-                  <FormField name={fields.trigger.name}>
+                  <FormField name={fields.formula.name}>
                     <AstBuilder
                       astEditorStore={astEditorStore}
                       options={{
@@ -426,6 +463,60 @@ export default function SanctionDetail() {
                         triggerObjectType: scenario.triggerObjectType,
                       }}
                     />
+                  </FormField>
+                </Collapsible.Content>
+              </Collapsible.Container>
+
+              <Collapsible.Container className="bg-grey-100 max-w-3xl">
+                <Collapsible.Title>
+                  {t('scenarios:sanction.match_settings.title')}
+                </Collapsible.Title>
+                <Collapsible.Content>
+                  <Callout variant="outlined" className="mb-4 lg:mb-6">
+                    <p className="whitespace-pre text-wrap">
+                      {t('scenarios:sanction.match_settings.callout')}
+                    </p>
+                  </Callout>
+                  <FormField name={fields.matches.name}>
+                    <div className="flex gap-2">
+                      <OptionsProvider
+                        customLists={customLists}
+                        dataModel={dataModel}
+                        databaseAccessors={databaseAccessors}
+                        payloadAccessors={payloadAccessors}
+                        triggerObjectType={scenario.triggerObjectType}
+                      >
+                        {nodes.map((n, i) => (
+                          <>
+                            <MatchOperand key={i} node={n} />
+                            {i === nodes.length - 1 ? null : (
+                              <Button variant="secondary">
+                                <Icon icon="plus" className="size-5" />
+                              </Button>
+                            )}
+                          </>
+                        ))}
+                      </OptionsProvider>
+                    </div>
+                  </FormField>
+                </Collapsible.Content>
+              </Collapsible.Container>
+
+              <Collapsible.Container className="bg-grey-100 max-w-3xl">
+                <Collapsible.Title>
+                  {t('scenarios:sanction.lists.title')}
+                </Collapsible.Title>
+                <Collapsible.Content>
+                  <Callout variant="outlined" className="mb-4 lg:mb-6">
+                    <p className="whitespace-pre text-wrap">
+                      {t('scenarios:sanction.lists.callout')}
+                    </p>
+                  </Callout>
+                  <FormField name={fields.formula.name}>
+                    <CollapsibleV2.Provider>
+                      <CollapsibleV2.Title>Global</CollapsibleV2.Title>
+                      <CollapsibleV2.Content>TATATATATA</CollapsibleV2.Content>
+                    </CollapsibleV2.Provider>
                   </FormField>
                 </Collapsible.Content>
               </Collapsible.Container>

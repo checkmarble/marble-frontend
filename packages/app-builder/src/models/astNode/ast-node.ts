@@ -1,21 +1,41 @@
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
+import { z } from 'zod';
 
-// AST node general types
-export type AstNode = {
-  name: string | null;
-  constant?: ConstantType;
+const baseConstantTypeSchema = z.union([
+  z.number(),
+  z.string(),
+  z.boolean(),
+  z.null(),
+]);
+
+export type ConstantType =
+  | z.infer<typeof baseConstantTypeSchema>
+  | Array<ConstantType>
+  | { [key: string]: ConstantType };
+
+export const constantTypeSchema: z.ZodType<ConstantType> =
+  baseConstantTypeSchema.or(
+    z.union([
+      z.lazy(() => z.array(constantTypeSchema)),
+      z.lazy(() => z.record(z.string(), constantTypeSchema)),
+    ]),
+  );
+
+const baseAstNodeSchema = z.object({
+  name: z.string().nullable(),
+  constant: z.optional(constantTypeSchema),
+});
+
+export type AstNode = z.infer<typeof baseAstNodeSchema> & {
   children: AstNode[];
   namedChildren: Record<string, AstNode>;
 };
 
-export type ConstantType =
-  | number
-  | string
-  | boolean
-  | null
-  | Array<ConstantType>
-  | { [key: string]: ConstantType };
+export const astNodeSchema: z.ZodType<AstNode> = baseAstNodeSchema.extend({
+  children: z.lazy(() => z.array(astNodeSchema)),
+  namedChildren: z.lazy(() => z.record(z.string(), astNodeSchema)),
+});
 
 export function NewAstNode({
   name,

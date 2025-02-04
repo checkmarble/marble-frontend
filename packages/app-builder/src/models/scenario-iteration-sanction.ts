@@ -8,6 +8,7 @@ export interface ScenarioIterationSanction {
   description: string;
   ruleGroup: string;
   formula: AstNode | null;
+  matches: AstNode[];
   createdAt: string;
 }
 
@@ -18,6 +19,7 @@ export interface CreateScenarioIterationSanctionInput {
   description: string;
   ruleGroup: string;
   formula: AstNode | null;
+  matches: AstNode[];
 }
 
 export interface UpdateScenarioIterationSanctionInput {
@@ -27,4 +29,5 @@ export interface UpdateScenarioIterationSanctionInput {
   description?: string;
   ruleGroup?: string;
   formula?: AstNode | null;
+  matches?: AstNode[];
 }

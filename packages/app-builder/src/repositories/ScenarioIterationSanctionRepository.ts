@@ -44,6 +44,7 @@ export function makeGetScenarioIterationSanctionRepository() {
         description: args.description,
         ruleGroup: args.ruleGroup,
         formula: args.formula,
+        matches: args.matches,
         createdAt: new Date().toISOString(),
       };
       sanctions.push(sanction);
@@ -65,6 +66,9 @@ export function makeGetScenarioIterationSanctionRepository() {
       }
       if (args.formula !== undefined) {
         sanction.formula = args.formula;
+      }
+      if (args.matches !== undefined) {
+        sanction.matches = args.matches;
       }
       return Promise.resolve(sanction);
     },
