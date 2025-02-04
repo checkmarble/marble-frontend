@@ -35,14 +35,12 @@ import { makeGetUserRepository } from './UserRepository';
 import { makeGetWebhookRepository } from './WebhookRepository';
 
 export function makeServerRepositories({
-  devEnvironment,
   sessionStorageRepositoryOptions,
   getLicenseApiClientWithoutAuth,
   getLicenseAPIClientWithAuth,
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
 }: {
-  devEnvironment: boolean;
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
   getLicenseApiClientWithoutAuth: () => LicenseApi;
   getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
@@ -86,7 +84,7 @@ export function makeServerRepositories({
     getWebhookRepository: makeGetWebhookRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
-    getLicenseRepository: makeGetLicenseRepository(devEnvironment),
+    getLicenseRepository: makeGetLicenseRepository(),
   };
 }
 

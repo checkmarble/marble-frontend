@@ -59,7 +59,7 @@ components:
   schemas:
     FeatureAccessDto:
       type: string
-      enum: ['allowed', 'restricted', 'test']
+      enum: ['allowed', 'restricted', 'test', 'missing_configuration']
     LicenseEntitlementsDto:
       type: object
       properties:
