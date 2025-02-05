@@ -3,11 +3,13 @@ import {
   adaptCreatePivotInputDto,
   adaptCreateTableFieldDto,
   adaptDataModel,
+  adaptDataModelObject,
   adaptPivot,
   adaptUpdateFieldDto,
   type CreateFieldInput,
   type CreatePivotInput,
   type DataModel,
+  type DataModelObject,
   type Pivot,
   type UpdateFieldInput,
 } from '@app-builder/models';
@@ -26,6 +28,10 @@ export interface DataModelRepository {
   ): Promise<void>;
   listPivots(args: { tableId?: string }): Promise<Pivot[]>;
   createPivot(pivot: CreatePivotInput): Promise<Pivot>;
+  getIngestedObject(
+    tableName: string,
+    objectId: string,
+  ): Promise<DataModelObject>;
 }
 
 export function makeGetDataModelRepository() {
@@ -63,6 +69,11 @@ export function makeGetDataModelRepository() {
       );
 
       return adaptPivot(pivot);
+    },
+    getIngestedObject: async (tableName, objectId) => {
+      return adaptDataModelObject(
+        await marbleCoreApiClient.getIngestedObject(tableName, objectId),
+      );
     },
   });
 }

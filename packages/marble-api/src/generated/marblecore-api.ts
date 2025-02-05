@@ -304,6 +304,14 @@ export type UploadLog = {
     lines_processed: number;
     num_rows_ingested: number;
 };
+export type DataModelObjectDto = {
+    data: {
+        [key: string]: any;
+    };
+    metadata: {
+        valid_from: string;
+    };
+};
 export type CustomListDto = {
     id: string;
     name: string;
@@ -1265,6 +1273,26 @@ export function getIngestionUploadLogs(objectType: string, opts?: Oazapfts.Reque
         status: 404;
         data: string;
     }>(`/ingestion/${encodeURIComponent(objectType)}/upload-logs`, {
+        ...opts
+    }));
+}
+/**
+ * Get an ingested object based on the tableId and objectId passed
+ */
+export function getIngestedObject(tableName: string, objectId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: DataModelObjectDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/ingestion/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}`, {
         ...opts
     }));
 }

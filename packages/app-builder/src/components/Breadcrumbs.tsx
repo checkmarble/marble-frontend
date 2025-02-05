@@ -5,8 +5,9 @@ import { type FunctionComponent, type PropsWithChildren, useMemo } from 'react';
 
 import { Page } from './Page';
 
-export type BreadCrumbProps = {
+export type BreadCrumbProps<T = unknown> = {
   isLast: boolean;
+  data: T;
 };
 
 export type HandleWithBreadCrumbs = {
@@ -42,11 +43,12 @@ export const BreadCrumbs = () => {
     () =>
       select(
         matches,
-        ({ pathname, handle }) => ({
+        ({ pathname, handle, data }) => ({
           Elements: (handle as HandleWithBreadCrumbs)?.BreadCrumbs?.filter(
             Boolean,
           ),
           pathname,
+          data,
         }),
         ({ handle }) => Boolean((handle as HandleWithBreadCrumbs)?.BreadCrumbs),
       ),
@@ -56,7 +58,7 @@ export const BreadCrumbs = () => {
   return (
     <div className="flex flex-row items-center gap-4">
       {links.length > 1 ? <Page.BackLink to={links.at(-2)!.pathname} /> : null}
-      {links.map(({ Elements, pathname }, linkIndex) => {
+      {links.map(({ Elements, pathname, data }, linkIndex) => {
         const isLastLink = linkIndex === links.length - 1;
 
         return Elements
@@ -72,6 +74,7 @@ export const BreadCrumbs = () => {
                     key={pathname}
                     // eslint-disable-next-line react/jsx-no-leaked-render
                     isLast={isLastElement && isLastLink}
+                    data={data}
                   />
                   {!(isLastElement && isLastLink) ? (
                     <span className="text-s text-grey-80 font-bold">/</span>

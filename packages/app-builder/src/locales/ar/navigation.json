@@ -29,5 +29,6 @@
   "transfercheck.alerts": "التنبيهات",
   "transfercheck.alerts.received": "التنبيهات المستلمة",
   "transfercheck.alerts.sent": "التنبيهات المرسلة",
-  "analytics.nudge": "تحليل قراراتك"
+  "analytics.nudge": "تحليل قراراتك",
+  "data.viewer": "عارض البيانات المبتلع"
 }

@@ -62,5 +62,8 @@
   "upload_data": "تحميل البيانات",
   "required": "متطلب",
   "nullable": "يمكن أن يكون الحقل فارغ",
-  "unique.col_header": "فريد"
+  "unique.col_header": "فريد",
+  "viewer.no_object_found": "لم يتم العثور على كائن للمعرف {{objectId}} في {{tableName}}",
+  "viewer.object_id": "معرف الكائن",
+  "viewer.object_type": "نوع الكائن"
 }

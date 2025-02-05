@@ -62,5 +62,8 @@
   "view_pivot.table": "Table",
   "view_pivot.title": "Détails du pivot",
   "view_pivot.type": "Type",
-  "your_data_callout": "Voici la liste de tous les objets que vous pouvez envoyer à Marble, ainsi que leurs propriétés. \nContactez l'équipe Marble si vous souhaitez apporter des modifications à votre modèle de données."
+  "your_data_callout": "Voici la liste de tous les objets que vous pouvez envoyer à Marble, ainsi que leurs propriétés. \nContactez l'équipe Marble si vous souhaitez apporter des modifications à votre modèle de données.",
+  "viewer.no_object_found": "Aucun objet trouvé pour l'id {{objectId}} dans {{tableName}}",
+  "viewer.object_id": "ID d'objet",
+  "viewer.object_type": "Type d'objet"
 }

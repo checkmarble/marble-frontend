@@ -3,6 +3,7 @@ import {
   type CreatePivotInputDto,
   type CreateTableFieldDto,
   type DataModelDto,
+  type DataModelObjectDto,
   type FieldDto,
   type LinkToSingleDto,
   type PivotDto,
@@ -343,4 +344,20 @@ export function getConstantDataTypeTKey(
     default:
       return undefined;
   }
+}
+
+export type DataModelObject = {
+  data: Record<string, unknown>;
+  metadata: {
+    validFrom: string;
+  };
+};
+
+export function adaptDataModelObject(dto: DataModelObjectDto): DataModelObject {
+  return {
+    data: dto.data,
+    metadata: {
+      validFrom: dto.metadata.valid_from,
+    },
+  };
 }

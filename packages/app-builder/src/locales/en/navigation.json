@@ -12,6 +12,7 @@
   "data": "Your Data",
   "data.list": "Data Model List",
   "data.schema": "Data Model Schema",
+  "data.viewer": "Ingested data viewer",
   "expand": "Expand",
   "collapse": "Collapse",
   "api": "Marble API",

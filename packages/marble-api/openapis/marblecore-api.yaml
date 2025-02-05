@@ -969,6 +969,39 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /ingestion/{tableName}/{objectId}:
+    get:
+      tags:
+        - Data Model
+      summary: Get an ingested object based on the tableId and objectId passed
+      operationId: getIngestedObject
+      parameters:
+        - name: tableName
+          description: ID of the table from which we want the object
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: objectId
+          description: ID of the object we want the object
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The ingested object wanted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataModelObjectDto'
+        '404':
+          $ref: '#/components/responses/404'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /custom-lists:
     get:
       tags:
@@ -5265,6 +5298,23 @@ components:
           type: integer
         num_rows_ingested:
           type: integer
+    DataModelObjectDto:
+      type: object
+      required:
+        - data
+        - metadata
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+        metadata:
+          type: object
+          required:
+            - valid_from
+          properties:
+            valid_from:
+              type: string
+              format: date-time
     Pagination:
       type: object
       required:

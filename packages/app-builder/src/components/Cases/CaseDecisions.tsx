@@ -1,4 +1,8 @@
-import { type Pivot, type TableModel } from '@app-builder/models';
+import {
+  type DataModelObject,
+  type Pivot,
+  type TableModel,
+} from '@app-builder/models';
 import {
   type DatabaseAccessAstNode,
   type PayloadAstNode,
@@ -6,7 +10,6 @@ import {
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   type Decision,
-  type DecisionDetail,
   type RuleExecution,
 } from '@app-builder/models/decision';
 import { type LicenseEntitlements } from '@app-builder/models/license';
@@ -17,7 +20,7 @@ import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
-import { Await, Link } from '@remix-run/react';
+import { Await, Link, useFetcher } from '@remix-run/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -27,11 +30,13 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
+  ModalV2,
   Switch,
   Tooltip,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { IngestedObjectDetail } from '../Data/IngestedObjectDetail';
 import { RuleExecutionDetail } from '../Decisions';
 import { OutcomeAndReviewStatus } from '../Decisions/OutcomeAndReviewStatus';
 import {
@@ -284,6 +289,10 @@ function DecisionDetail({
     () => decisionsDetail.find((detail) => decision.id === detail.decisionId),
     [decision.id, decisionsDetail],
   );
+  const [objectLink, setObjectLink] = React.useState<{
+    tableName: string;
+    objectId: string;
+  } | null>(null);
 
   const pivotValues = React.useMemo(() => {
     return R.pipe(
@@ -396,11 +405,77 @@ function DecisionDetail({
           </div>
           <CaseDetailTriggerObject
             className="h-fit max-h-[50dvh] overflow-auto"
+            dataModel={dataModel}
             triggerObject={decision.triggerObject}
+            triggerObjectType={decision.triggerObjectType}
+            onLinkClicked={(tableName, objectId) =>
+              setObjectLink({ tableName, objectId })
+            }
           />
+          {objectLink ? (
+            <IngestedObjectDetailModal
+              dataModel={dataModel}
+              tableName={objectLink.tableName}
+              objectId={objectLink.objectId}
+              onClose={() => setObjectLink(null)}
+            />
+          ) : null}
         </div>
       </div>
     </div>
+  );
+}
+
+function IngestedObjectDetailModal({
+  dataModel,
+  tableName,
+  objectId,
+  onClose,
+}: {
+  dataModel: TableModel[];
+  tableName: string;
+  objectId: string;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation(['data']);
+  const {
+    load: fetcherLoad,
+    data,
+    state: fetchState,
+  } = useFetcher<{ object: DataModelObject | null }>();
+
+  React.useEffect(() => {
+    fetcherLoad(
+      getRoute('/data/view/:tableName/:objectId', {
+        tableName,
+        objectId,
+      }),
+    );
+  }, [fetcherLoad, tableName, objectId]);
+
+  if (fetchState === 'loading' || !data) {
+    return null;
+  }
+
+  return (
+    <ModalV2.Content open onClose={onClose} size="large">
+      <ModalV2.Title>{tableName}</ModalV2.Title>
+      {data.object ? (
+        <IngestedObjectDetail
+          light
+          bordered={false}
+          withLinks={false}
+          dataModel={dataModel}
+          tableName={tableName}
+          objectId={objectId}
+          object={data.object}
+        />
+      ) : (
+        <div className="p-4 text-center">
+          {t('data:viewer.no_object_found', { tableName, objectId })}
+        </div>
+      )}
+    </ModalV2.Content>
   );
 }
 
