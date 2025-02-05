@@ -3,6 +3,7 @@ import {
   adaptCreatePivotInputDto,
   adaptCreateTableFieldDto,
   adaptDataModel,
+  adaptDataModelObject,
   adaptPivot,
   adaptUpdateFieldDto,
   type CreateFieldInput,
@@ -70,10 +71,9 @@ export function makeGetDataModelRepository() {
       return adaptPivot(pivot);
     },
     getIngestedObject: async (tableName, objectId) => {
-      return (await marbleCoreApiClient.getIngestedObject(
-        tableName,
-        objectId,
-      )) as DataModelObject;
+      return adaptDataModelObject(
+        await marbleCoreApiClient.getIngestedObject(tableName, objectId),
+      );
     },
   });
 }

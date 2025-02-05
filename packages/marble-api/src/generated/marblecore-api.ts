@@ -304,6 +304,14 @@ export type UploadLog = {
     lines_processed: number;
     num_rows_ingested: number;
 };
+export type DataModelObjectDto = {
+    data: {
+        [key: string]: any;
+    };
+    metadata: {
+        valid_from: string;
+    };
+};
 export type CustomListDto = {
     id: string;
     name: string;
@@ -1274,10 +1282,7 @@ export function getIngestionUploadLogs(objectType: string, opts?: Oazapfts.Reque
 export function getIngestedObject(tableName: string, objectId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: {
-            data?: object;
-            metadata?: object;
-        };
+        data: DataModelObjectDto;
     } | {
         status: 401;
         data: string;

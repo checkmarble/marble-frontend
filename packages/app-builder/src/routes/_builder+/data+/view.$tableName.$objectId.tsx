@@ -6,6 +6,7 @@ import { IngestedObjectDetail } from '@app-builder/components/Data/IngestedObjec
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
+import { HttpError } from '@oazapfts/runtime';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
@@ -40,15 +41,23 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const tableName = params['tableName'] ?? '';
   const objectId = params['objectId'] ?? '';
 
-  const object = await dataModelRepository
-    .getIngestedObject(tableName, objectId)
-    .catch(() => null);
+  try {
+    const object = await dataModelRepository.getIngestedObject(
+      tableName,
+      objectId,
+    );
 
-  return {
-    tableName,
-    objectId,
-    object,
-  };
+    return {
+      tableName,
+      objectId,
+      object,
+    };
+  } catch (err) {
+    if (err instanceof HttpError && err.status === 404) {
+      return { tableName, objectId, object: null };
+    }
+    throw err;
+  }
 }
 
 export default function DataSearchObjectPage() {

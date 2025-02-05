@@ -70,7 +70,7 @@ export const IngestedObjectDetail = ({
         </span>
         <span className="bg-grey-100 border-grey-50 text-grey-50 rounded border px-2 py-1">
           last ingestion at:{' '}
-          {formatDateTime(object.metadata['valid_from'] as string, {
+          {formatDateTime(object.metadata.validFrom, {
             language,
           })}
         </span>
