@@ -1,7 +1,6 @@
 import {
   Callout,
   CalloutV2,
-  OutcomeTag,
   Page,
   scenarioI18n,
 } from '@app-builder/components';
@@ -16,29 +15,25 @@ import { FormField } from '@app-builder/components/Form/FormField';
 import { FormInput } from '@app-builder/components/Form/FormInput';
 import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
-import { Highlight } from '@app-builder/components/Highlight';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { Operand } from '@app-builder/components/Scenario/AstBuilder/AstBuilderNode/Operand';
 import {
-  type AstNode,
-  astNodeSchema,
-  NewEmptyTriggerAstNode,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
+  AstBuilder,
+  type AstBuilderProps,
+} from '@app-builder/components/Scenario/AstBuilder';
+import { FieldMatches } from '@app-builder/components/Scenario/Sanction/FieldMatches';
+import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
+import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
+import { astNodeSchema, NewEmptyTriggerAstNode } from '@app-builder/models';
 import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import { useEditorMode } from '@app-builder/services/editor';
 import {
   useAstNodeEditor,
+  useSaveAstNode,
   useValidateAstNode,
 } from '@app-builder/services/editor/ast-editor';
-import {
-  OptionsProvider,
-  useGetAstNodeOperandProps,
-  useOperandOptions,
-} from '@app-builder/services/editor/options';
+import { OptionsProvider } from '@app-builder/services/editor/options';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { getRoute } from '@app-builder/utils/routes';
@@ -51,28 +46,16 @@ import {
   type LoaderFunctionArgs,
 } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { matchSorter } from 'match-sorter';
-import { useDeferredValue, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
-import {
-  Button,
-  Collapsible,
-  CollapsibleV2,
-  Input,
-  Tag,
-} from 'ui-design-system';
+import { Button, Collapsible, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 import { useCurrentScenario } from '../../_layout';
-import {
-  useCurrentScenarioIteration,
-  useCurrentScenarioValidation,
-  useRuleGroups,
-} from './_layout';
+import { useRuleGroups } from './_layout';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -165,11 +148,12 @@ const editSanctionFormSchema = z.object({
   ruleGroup: z.string(),
   similarityScore: z.coerce.number().int().min(0).max(100),
   forcedOutcome: z.enum(['review', 'decline', 'block_and_review']),
-  formula: astNodeSchema,
-  matches: z.array(astNodeSchema),
+  formula: z.optional(astNodeSchema),
+  counterPartyName: z.array(astNodeSchema).min(1),
+  transactionLabel: z.array(astNodeSchema).min(1),
 });
 
-type EditSanctionFormValues = z.infer<typeof editSanctionFormSchema>;
+type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
@@ -177,39 +161,35 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const formData = await request.formData();
   const session = await getSession(request);
+  const { formData } = (await request.json()) as {
+    formData: z.infer<typeof editSanctionFormSchema>;
+  };
+
   const { scenarioIterationSanctionRepository, organization, user } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
 
-  const submission = parseWithZod(formData, { schema: editSanctionFormSchema });
-
-  if (submission.status !== 'success') {
-    console.log('Error when submission', submission.error);
-    return submission.reply();
-  }
-
-  const formValues = submission.value;
-
   try {
+    editSanctionFormSchema.parse(formData);
+
     const sanctionId = fromParams(params, 'sanctionId');
 
     await scenarioIterationSanctionRepository.updateSanction({
       sanctionId,
-      name: formValues.name,
-      description: formValues.description,
-      ruleGroup: formValues.ruleGroup,
-      formula: formValues.formula,
+      name: formData.name,
+      description: formData.description,
+      ruleGroup: formData.ruleGroup,
+      formula: formData.formula,
     });
 
     await organization.updateOrganization({
       organizationId: user.organizationId,
       changes: {
         sanctionCheck: {
-          forcedOutcome: formValues.forcedOutcome,
-          similarityScore: formValues.similarityScore,
+          forcedOutcome: formData.forcedOutcome,
+          similarityScore: formData.similarityScore,
         },
       },
     });
@@ -219,37 +199,26 @@ export async function action({ request, params }: ActionFunctionArgs) {
       messageKey: 'common:success.save',
     });
 
-    return json(submission.reply(), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error' },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
 
-    console.log('Error when saving sanction', error);
-
-    return json(submission.reply(), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error' },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
-
-const MatchOperand = ({ node }: { node: AstNode }) => {
-  const getOperandAstNodeOperandProps = useGetAstNodeOperandProps();
-  const options = useOperandOptions();
-
-  return (
-    <Operand
-      {...getOperandAstNodeOperandProps(node)}
-      placeholder="Select the First name or Full Name"
-      options={options.filter((o) => o.dataType === 'String')}
-      validationStatus="valid"
-      onSave={(astNode) => console.log(astNode)}
-    />
-  );
-};
 
 export default function SanctionDetail() {
   const { t } = useTranslation(['scenarios', 'common', 'decisions']);
@@ -263,8 +232,6 @@ export default function SanctionDetail() {
   const iterationId = useParam('iterationId');
   const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
-  const scenarioValidation = useCurrentScenarioValidation();
-  const scenarioIteration = useCurrentScenarioIteration();
   const defaultRuleGroups = useRuleGroups();
   const ruleGroups = useMemo(
     () => [...defaultRuleGroups, 'Sanction check'],
@@ -274,25 +241,28 @@ export default function SanctionDetail() {
     org: { sanctionCheck },
   } = useOrganizationDetails();
 
-  const { validate, validation } = useTriggerValidationFetcher(
-    scenarioIteration.scenarioId,
-    scenarioIteration.id,
-  );
-
   const astEditorStore = useAstNodeEditor({
     initialAstNode: sanction.formula ?? NewEmptyTriggerAstNode(),
-    initialEvaluation: scenarioValidation.trigger.triggerEvaluation,
   });
 
-  const [nodes, setNodes] = useState<AstNode[]>([NewUndefinedAstNode()]);
+  const { validate, validation } = useTriggerValidationFetcher(
+    scenario.id,
+    iterationId,
+  );
+
+  const [counterPartyName, setCounterPartyName] = useState(
+    sanction.counterPartyName,
+  );
+  const [transactionLabel, setTransactionLabel] = useState(
+    sanction.transactionLabel,
+  );
 
   useValidateAstNode(astEditorStore, validate, validation);
 
-  const formRef = useRef<HTMLFormElement>(null);
-  const [form, fields] = useForm<EditSanctionFormValues>({
-    lastResult: fetcher.data,
+  const [form, fields] = useForm<EditSanctionForm>({
     constraint: getZodConstraint(editSanctionFormSchema),
     shouldRevalidate: 'onInput',
+    shouldValidate: 'onInput',
     defaultValue: {
       name: sanction.name,
       description: sanction.description,
@@ -300,11 +270,46 @@ export default function SanctionDetail() {
       forcedOutcome: sanctionCheck.forcedOutcome as KnownOutcome,
       similarityScore: sanctionCheck.similarityScore,
       formula: sanction.formula,
-      matches: sanction.matches,
+      transactionLabel: sanction.transactionLabel,
+      counterPartyName: sanction.counterPartyName,
     },
-    onValidate: ({ formData }) =>
-      parseWithZod(formData, { schema: editSanctionFormSchema }),
+    onValidate: ({ formData }) => {
+      const sub = parseWithZod(formData, { schema: editSanctionFormSchema });
+      console.log('Submission', sub);
+      return sub;
+    },
   });
+
+  const handleSave = useSaveAstNode(astEditorStore, (astNode) => {
+    console.log('Is Form valid ?', form.valid);
+
+    if (!form.valid) return;
+
+    const formData = {
+      ...form.value,
+      formula: astNode,
+      counterPartyName,
+      transactionLabel,
+    };
+
+    console.log('FormData', formData);
+
+    fetcher.submit(
+      { formData },
+      {
+        method: 'PATCH',
+        encType: 'application/json',
+      },
+    );
+  });
+
+  const options: AstBuilderProps['options'] = {
+    databaseAccessors,
+    payloadAccessors,
+    dataModel,
+    customLists,
+    triggerObjectType: scenario.triggerObjectType,
+  };
 
   return (
     <Page.Main>
@@ -316,16 +321,6 @@ export default function SanctionDetail() {
           <FormProvider context={form.context}>
             <fetcher.Form
               className="flex flex-col gap-8"
-              ref={formRef}
-              method="post"
-              action={getRoute(
-                '/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId',
-                {
-                  scenarioId: fromUUID(scenario.id),
-                  iterationId: fromUUID(iterationId),
-                  sanctionId: fromUUID(sanction.id),
-                },
-              )}
               {...getFormProps(form)}
             >
               <Collapsible.Container className="bg-grey-100 max-w-3xl">
@@ -373,7 +368,7 @@ export default function SanctionDetail() {
                         multiple={false}
                         options={ruleGroups}
                         render={({ selectedValue }) => (
-                          <RuleGroup
+                          <FieldRuleGroup
                             disabled
                             selectedRuleGroup={selectedValue}
                             ruleGroups={ruleGroups}
@@ -406,7 +401,7 @@ export default function SanctionDetail() {
                         multiple={false}
                         options={difference(knownOutcomes, ['approve'])}
                         render={({ selectedValue }) => (
-                          <Outcomes
+                          <FieldOutcomes
                             selectedOutcome={selectedValue as KnownOutcome}
                             outcomes={difference(knownOutcomes, ['approve'])}
                           />
@@ -455,14 +450,9 @@ export default function SanctionDetail() {
                   <FormField name={fields.formula.name}>
                     <AstBuilder
                       astEditorStore={astEditorStore}
-                      options={{
-                        databaseAccessors,
-                        payloadAccessors,
-                        dataModel,
-                        customLists,
-                        triggerObjectType: scenario.triggerObjectType,
-                      }}
+                      options={options}
                     />
+                    <FormErrorOrDescription />
                   </FormField>
                 </Collapsible.Content>
               </Collapsible.Container>
@@ -477,32 +467,39 @@ export default function SanctionDetail() {
                       {t('scenarios:sanction.match_settings.callout')}
                     </p>
                   </Callout>
-                  <FormField name={fields.matches.name}>
-                    <div className="flex gap-2">
-                      <OptionsProvider
-                        customLists={customLists}
-                        dataModel={dataModel}
-                        databaseAccessors={databaseAccessors}
-                        payloadAccessors={payloadAccessors}
-                        triggerObjectType={scenario.triggerObjectType}
+                  <OptionsProvider {...options}>
+                    <div className="flex flex-col gap-6">
+                      <FormField
+                        className="flex flex-col gap-4"
+                        name={fields.counterPartyName.name}
                       >
-                        {nodes.map((n, i) => (
-                          <>
-                            <MatchOperand key={i} node={n} />
-                            {i === nodes.length - 1 ? null : (
-                              <Button variant="secondary">
-                                <Icon icon="plus" className="size-5" />
-                              </Button>
-                            )}
-                          </>
-                        ))}
-                      </OptionsProvider>
+                        <FormLabel>Counterparty name</FormLabel>
+                        <FieldMatches
+                          placeholder="Select the First name or Full Name"
+                          initialValue={counterPartyName}
+                          onChange={(nodes) => setCounterPartyName(nodes)}
+                        />
+                        <FormErrorOrDescription />
+                      </FormField>
+                      <FormField
+                        className="flex flex-col gap-4"
+                        name={fields.transactionLabel.name}
+                      >
+                        <FormLabel>Transaction Label</FormLabel>
+                        <FieldMatches
+                          placeholder="Select the transaction label"
+                          initialValue={transactionLabel}
+                          limit={1}
+                          onChange={(nodes) => setTransactionLabel(nodes)}
+                        />
+                        <FormErrorOrDescription />
+                      </FormField>
                     </div>
-                  </FormField>
+                  </OptionsProvider>
                 </Collapsible.Content>
               </Collapsible.Container>
 
-              <Collapsible.Container className="bg-grey-100 max-w-3xl">
+              {/* <Collapsible.Container className="bg-grey-100 max-w-3xl">
                 <Collapsible.Title>
                   {t('scenarios:sanction.lists.title')}
                 </Collapsible.Title>
@@ -519,7 +516,7 @@ export default function SanctionDetail() {
                     </CollapsibleV2.Provider>
                   </FormField>
                 </Collapsible.Content>
-              </Collapsible.Container>
+              </Collapsible.Container> */}
 
               <div className="sticky bottom-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6">
                 <div className="bg-grey-100 border-grey-90 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
@@ -534,7 +531,7 @@ export default function SanctionDetail() {
                     </Button>
                   </DeleteSanction>
 
-                  <Button type="submit" className="flex-1">
+                  <Button onClick={handleSave} className="flex-1">
                     <Icon icon="save" className="size-5" aria-hidden />
                     {t('common:save')}
                   </Button>
@@ -547,104 +544,3 @@ export default function SanctionDetail() {
     </Page.Main>
   );
 }
-
-const RuleGroup = ({
-  selectedRuleGroup,
-  ruleGroups,
-  disabled,
-}: {
-  selectedRuleGroup?: string;
-  ruleGroups: string[];
-  disabled?: boolean;
-}) => {
-  const { t } = useTranslation(['scenarios']);
-  const [searchValue, setSearchValue] = useState('');
-  const deferredSearchValue = useDeferredValue(searchValue);
-
-  const matches = useMemo(
-    () => matchSorter(ruleGroups, deferredSearchValue),
-    [ruleGroups, deferredSearchValue],
-  );
-
-  return (
-    <FormSelectWithCombobox.Root
-      selectedValue={selectedRuleGroup}
-      searchValue={searchValue}
-      onSearchValueChange={setSearchValue}
-    >
-      <FormSelectWithCombobox.Select disabled={disabled} className="w-full">
-        <span className={clsx({ 'text-grey-80': disabled })}>
-          {selectedRuleGroup}
-        </span>
-        {disabled ? null : <FormSelectWithCombobox.Arrow />}
-      </FormSelectWithCombobox.Select>
-      <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
-        <FormSelectWithCombobox.Combobox
-          render={<Input className="shrink-0" />}
-          autoSelect
-          autoFocus
-        />
-        <FormSelectWithCombobox.ComboboxList>
-          {matches.map((group) => (
-            <FormSelectWithCombobox.ComboboxItem key={group} value={group}>
-              <Highlight text={group} query={deferredSearchValue} />
-            </FormSelectWithCombobox.ComboboxItem>
-          ))}
-          {matches.length === 0 ? (
-            <p className="text-grey-50 text-xs">
-              {t('scenarios:edit_rule.rule_group.empty_matches')}
-            </p>
-          ) : null}
-        </FormSelectWithCombobox.ComboboxList>
-      </FormSelectWithCombobox.Popover>
-    </FormSelectWithCombobox.Root>
-  );
-};
-
-const Outcomes = ({
-  selectedOutcome,
-  outcomes,
-  onOpenChange,
-}: {
-  selectedOutcome?: KnownOutcome;
-  outcomes: KnownOutcome[];
-  onOpenChange?: (open: boolean) => void;
-}) => {
-  const [searchValue, setSearchValue] = useState('');
-  const deferredSearchValue = useDeferredValue(searchValue);
-
-  const matches = useMemo(
-    () => matchSorter(outcomes, deferredSearchValue),
-    [outcomes, deferredSearchValue],
-  );
-
-  return (
-    <FormSelectWithCombobox.Root
-      selectedValue={selectedOutcome}
-      searchValue={searchValue}
-      onSearchValueChange={setSearchValue}
-      onOpenChange={onOpenChange}
-    >
-      <FormSelectWithCombobox.Select className="w-full">
-        {selectedOutcome ? (
-          <OutcomeTag border="square" outcome={selectedOutcome} />
-        ) : null}
-        <FormSelectWithCombobox.Arrow />
-      </FormSelectWithCombobox.Select>
-      <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
-        <FormSelectWithCombobox.Combobox
-          render={<Input className="shrink-0" />}
-          autoSelect
-          autoFocus
-        />
-        <FormSelectWithCombobox.ComboboxList>
-          {matches.map((outcome) => (
-            <FormSelectWithCombobox.ComboboxItem key={outcome} value={outcome}>
-              <OutcomeTag border="square" outcome={outcome} />
-            </FormSelectWithCombobox.ComboboxItem>
-          ))}
-        </FormSelectWithCombobox.ComboboxList>
-      </FormSelectWithCombobox.Popover>
-    </FormSelectWithCombobox.Root>
-  );
-};

@@ -23,7 +23,7 @@ export const constantTypeSchema: z.ZodType<ConstantType> =
   );
 
 const baseAstNodeSchema = z.object({
-  name: z.string().nullable(),
+  name: z.string().nullish(),
   constant: z.optional(constantTypeSchema),
 });
 
@@ -44,7 +44,7 @@ export function NewAstNode({
   namedChildren,
 }: Partial<AstNode> = {}): AstNode {
   return {
-    name: name ?? null,
+    name: name ?? undefined,
     constant: constant,
     children: children ?? [],
     namedChildren: namedChildren ?? {},
@@ -88,7 +88,7 @@ export function NewEmptyRuleAstNode(): AstNode {
 // DTO adapter functions
 export function adaptAstNode(nodeDto: NodeDto): AstNode {
   return {
-    name: nodeDto.name === undefined ? null : nodeDto.name,
+    name: nodeDto.name,
     constant: nodeDto.constant,
     children: (nodeDto.children ?? []).map(adaptAstNode),
     namedChildren: R.mapValues(nodeDto.named_children ?? {}, adaptAstNode),

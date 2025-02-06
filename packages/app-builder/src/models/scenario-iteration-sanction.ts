@@ -8,7 +8,8 @@ export interface ScenarioIterationSanction {
   description: string;
   ruleGroup: string;
   formula: AstNode | null;
-  matches: AstNode[];
+  counterPartyName: AstNode[];
+  transactionLabel: AstNode[];
   createdAt: string;
 }
 
@@ -19,7 +20,8 @@ export interface CreateScenarioIterationSanctionInput {
   description: string;
   ruleGroup: string;
   formula: AstNode | null;
-  matches: AstNode[];
+  counterPartyName: AstNode[];
+  transationLabel: AstNode[];
 }
 
 export interface UpdateScenarioIterationSanctionInput {
@@ -29,5 +31,6 @@ export interface UpdateScenarioIterationSanctionInput {
   description?: string;
   ruleGroup?: string;
   formula?: AstNode | null;
-  matches?: AstNode[];
+  counterPartyName?: AstNode[];
+  transactionLabel?: AstNode[];
 }

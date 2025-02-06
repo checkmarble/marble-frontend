@@ -13,7 +13,7 @@ import { OptionsProvider } from '@app-builder/services/editor/options';
 
 import { RootAstBuilderNode } from './RootAstBuilderNode/RootAstBuilderNode';
 
-interface AstBuilderProps {
+export interface AstBuilderProps {
   options: {
     databaseAccessors: DatabaseAccessAstNode[];
     payloadAccessors: PayloadAstNode[];

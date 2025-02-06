@@ -36,7 +36,7 @@ export function makeGetScenarioIterationSanctionRepository() {
         : Promise.reject(new Error('Sanction not found'));
     },
     createSanction: async (args) => {
-      const sanction = {
+      const sanction: ScenarioIterationSanction = {
         id: shortUuid.uuid(),
         scenarioIterationId: args.scenarioIterationId,
         displayOrder: args.displayOrder,
@@ -44,7 +44,8 @@ export function makeGetScenarioIterationSanctionRepository() {
         description: args.description,
         ruleGroup: args.ruleGroup,
         formula: args.formula,
-        matches: args.matches,
+        counterPartyName: args.counterPartyName,
+        transactionLabel: args.transationLabel,
         createdAt: new Date().toISOString(),
       };
       sanctions.push(sanction);
@@ -54,6 +55,9 @@ export function makeGetScenarioIterationSanctionRepository() {
       const sanction = sanctions.find((s) => s.id === args.sanctionId);
       if (!sanction) {
         return Promise.reject(new Error('Sanction not found'));
+      }
+      if (args.displayOrder !== undefined) {
+        sanction.displayOrder = args.displayOrder;
       }
       if (args.name !== undefined) {
         sanction.name = args.name;
@@ -67,8 +71,11 @@ export function makeGetScenarioIterationSanctionRepository() {
       if (args.formula !== undefined) {
         sanction.formula = args.formula;
       }
-      if (args.matches !== undefined) {
-        sanction.matches = args.matches;
+      if (args.counterPartyName !== undefined) {
+        sanction.counterPartyName = args.counterPartyName;
+      }
+      if (args.transactionLabel !== undefined) {
+        sanction.transactionLabel = args.transactionLabel;
       }
       return Promise.resolve(sanction);
     },

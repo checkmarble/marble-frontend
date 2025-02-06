@@ -5,7 +5,7 @@ import {
   type Organization,
   type OrganizationUpdateInput,
 } from '@app-builder/models/organization';
-import { type Tag } from 'marble-api';
+import { type OrganizationDto, type Tag } from 'marble-api';
 
 export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
@@ -50,14 +50,18 @@ export function makeGetOrganizationRepository() {
       return tags;
     },
     updateOrganization: async (args) => {
-      const { organization } = await marbleCoreApiClient.updateOrganization(
-        organizationId,
-        args.changes.defaultScenarioTimezone
-          ? {
-              default_scenario_timezone: args.changes.defaultScenarioTimezone,
-            }
-          : {},
-      );
+      let organizationDto: OrganizationDto;
+      if (args.changes.defaultScenarioTimezone) {
+        const { organization } = await marbleCoreApiClient.updateOrganization(
+          organizationId,
+          { default_scenario_timezone: args.changes.defaultScenarioTimezone },
+        );
+        organizationDto = organization;
+      } else {
+        const { organization } =
+          await marbleCoreApiClient.getOrganization(organizationId);
+        organizationDto = organization;
+      }
       if (args.changes.sanctionCheck?.forcedOutcome)
         sanctionCheckSettings.forcedOutcome =
           args.changes.sanctionCheck.forcedOutcome;
@@ -65,7 +69,7 @@ export function makeGetOrganizationRepository() {
         sanctionCheckSettings.similarityScore =
           args.changes.sanctionCheck.similarityScore;
       return adaptOrganizationDto({
-        ...organization,
+        ...organizationDto,
         sanction_check: {
           forced_outcome: sanctionCheckSettings.forcedOutcome,
           similarity_score: sanctionCheckSettings.similarityScore,
