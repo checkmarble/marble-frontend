@@ -5,14 +5,14 @@ import {
   useOperandOptions,
 } from '@app-builder/services/editor/options';
 import {
-  unstable_useControl,
+  type FieldMetadata,
   useField,
   useInputControl,
 } from '@conform-to/react';
 import { nanoid } from 'nanoid';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { entries, omit, values } from 'remeda';
-import { Button, HiddenInputs } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { Operand } from '../AstBuilder/AstBuilderNode/Operand';
@@ -41,23 +41,18 @@ const MatchOperand = ({
 };
 
 export function FieldMatches({
-  initialValue,
-  onChange = () => ({}),
   limit,
   placeholder,
 }: {
-  initialValue: AstNode[];
-  onChange?: (nodes: AstNode[]) => void;
   limit?: number;
   placeholder?: string;
 }) {
-  // const inputRef = useRef<HTMLInputElement>(null);
-  // const { name } = useFieldName();
-  // const [meta] = useField<string[]>(name);
-  // const controls = unstable_useControl(meta);
+  const { name } = useFieldName();
+  const [meta] = useField<AstNode[]>(name);
+  const controls = useInputControl(meta as unknown as FieldMetadata<string[]>);
 
   const [nodes, setNodes] = useState<Record<string, AstNode>>(
-    (initialValue ?? [NewUndefinedAstNode()]).reduce(
+    (meta.initialValue as AstNode[]).reduce(
       (acc, node) => {
         acc[nanoid()] = node;
         return acc;
@@ -69,29 +64,32 @@ export function FieldMatches({
   const matches = useMemo(() => entries(nodes), [nodes]);
 
   useEffect(() => {
-    onChange(values(nodes));
-  }, [nodes, onChange]);
+    controls.change(JSON.stringify(values(nodes)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes]);
 
   return (
     <div className="flex flex-wrap gap-2">
-      {/* <input
+      <input
+        name={meta.name}
         className="sr-only"
-        defaultValue={meta.initialValue as string}
         tabIndex={-1}
-        onFocus={() => inputRef.current?.focus()}
-      /> */}
+        onFocus={controls.focus}
+        onBlur={controls.blur}
+      />
       {matches.map(([id, match], i) => (
         <div key={id} className="flex gap-2">
           <MatchOperand
             node={match}
             placeholder={placeholder}
-            onSave={(node) =>
+            onSave={(node) => {
               setNodes((nodes) =>
                 node.name === 'Undefined' && matches.length > 1
                   ? omit(nodes, [id])
                   : { ...nodes, [id]: node },
-              )
-            }
+              );
+              controls.blur();
+            }}
           />
           {match.name === 'Undefined' || (limit && i === limit - 1) ? null : (
             <Button

@@ -23,14 +23,17 @@ import {
 import { FieldMatches } from '@app-builder/components/Scenario/Sanction/FieldMatches';
 import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
-import { astNodeSchema, NewEmptyTriggerAstNode } from '@app-builder/models';
+import {
+  astNodeSchema,
+  NewEmptyTriggerAstNode,
+  NewUndefinedAstNode,
+} from '@app-builder/models';
 import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import { useEditorMode } from '@app-builder/services/editor';
 import {
   useAstNodeEditor,
-  useSaveAstNode,
   useValidateAstNode,
 } from '@app-builder/services/editor/ast-editor';
 import { OptionsProvider } from '@app-builder/services/editor/options';
@@ -47,10 +50,16 @@ import {
 } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
-import { Button, Collapsible, Tag } from 'ui-design-system';
+import {
+  Button,
+  Checkbox,
+  Collapsible,
+  CollapsibleV2,
+  Tag,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -149,11 +158,24 @@ const editSanctionFormSchema = z.object({
   similarityScore: z.coerce.number().int().min(0).max(100),
   forcedOutcome: z.enum(['review', 'decline', 'block_and_review']),
   formula: z.optional(astNodeSchema),
-  counterPartyName: z.array(astNodeSchema).min(1),
-  transactionLabel: z.array(astNodeSchema).min(1),
+  counterPartyName: z.preprocess(
+    (v) => JSON.parse(v as string),
+    z.array(astNodeSchema).max(5),
+  ),
+  transactionLabel: z.preprocess(
+    (v) => JSON.parse(v as string),
+    z.array(astNodeSchema).max(1).optional(),
+  ),
 });
 
-type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
+const formDataSchema = editSanctionFormSchema
+  .omit({ counterPartyName: true, transactionLabel: true })
+  .extend({
+    counterPartyName: z.array(z.string()).max(5),
+    transactionLabel: z.array(z.string()).max(1),
+  });
+
+type FormDataForm = z.infer<typeof formDataSchema>;
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
@@ -162,9 +184,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
   } = serverServices;
 
   const session = await getSession(request);
-  const { formData } = (await request.json()) as {
-    formData: z.infer<typeof editSanctionFormSchema>;
-  };
+  const formData = await request.formData();
+  const submission = parseWithZod(formData, { schema: editSanctionFormSchema });
+
+  if (submission.status !== 'success') {
+    return json(submission.reply());
+  }
 
   const { scenarioIterationSanctionRepository, organization, user } =
     await authService.isAuthenticated(request, {
@@ -172,24 +197,24 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
   try {
-    editSanctionFormSchema.parse(formData);
-
     const sanctionId = fromParams(params, 'sanctionId');
 
     await scenarioIterationSanctionRepository.updateSanction({
       sanctionId,
-      name: formData.name,
-      description: formData.description,
-      ruleGroup: formData.ruleGroup,
-      formula: formData.formula,
+      name: submission.value.name,
+      description: submission.value.description,
+      ruleGroup: submission.value.ruleGroup,
+      formula: submission.value.formula,
+      counterPartyName: submission.value.counterPartyName,
+      transactionLabel: submission.value.transactionLabel,
     });
 
     await organization.updateOrganization({
       organizationId: user.organizationId,
       changes: {
         sanctionCheck: {
-          forcedOutcome: formData.forcedOutcome,
-          similarityScore: formData.similarityScore,
+          forcedOutcome: submission.value.forcedOutcome,
+          similarityScore: submission.value.similarityScore,
         },
       },
     });
@@ -250,19 +275,12 @@ export default function SanctionDetail() {
     iterationId,
   );
 
-  const [counterPartyName, setCounterPartyName] = useState(
-    sanction.counterPartyName,
-  );
-  const [transactionLabel, setTransactionLabel] = useState(
-    sanction.transactionLabel,
-  );
-
   useValidateAstNode(astEditorStore, validate, validation);
 
-  const [form, fields] = useForm<EditSanctionForm>({
+  const [form, fields] = useForm<FormDataForm>({
     constraint: getZodConstraint(editSanctionFormSchema),
     shouldRevalidate: 'onInput',
-    shouldValidate: 'onInput',
+    shouldValidate: 'onBlur',
     defaultValue: {
       name: sanction.name,
       description: sanction.description,
@@ -270,37 +288,13 @@ export default function SanctionDetail() {
       forcedOutcome: sanctionCheck.forcedOutcome as KnownOutcome,
       similarityScore: sanctionCheck.similarityScore,
       formula: sanction.formula,
-      transactionLabel: sanction.transactionLabel,
-      counterPartyName: sanction.counterPartyName,
+      // @ts-expect-error ConformTo auto submit form if we use Zod Preprocessing
+      transactionLabel: sanction.transactionLabel ?? [NewUndefinedAstNode()],
+      // @ts-expect-error ConformTo auto submit form if we use Zod Preprocessing
+      counterPartyName: sanction.counterPartyName ?? [NewUndefinedAstNode()],
     },
-    onValidate: ({ formData }) => {
-      const sub = parseWithZod(formData, { schema: editSanctionFormSchema });
-      console.log('Submission', sub);
-      return sub;
-    },
-  });
-
-  const handleSave = useSaveAstNode(astEditorStore, (astNode) => {
-    console.log('Is Form valid ?', form.valid);
-
-    if (!form.valid) return;
-
-    const formData = {
-      ...form.value,
-      formula: astNode,
-      counterPartyName,
-      transactionLabel,
-    };
-
-    console.log('FormData', formData);
-
-    fetcher.submit(
-      { formData },
-      {
-        method: 'PATCH',
-        encType: 'application/json',
-      },
-    );
+    onValidate: ({ formData }) =>
+      parseWithZod(formData, { schema: formDataSchema }),
   });
 
   const options: AstBuilderProps['options'] = {
@@ -321,6 +315,15 @@ export default function SanctionDetail() {
           <FormProvider context={form.context}>
             <fetcher.Form
               className="flex flex-col gap-8"
+              method="POST"
+              action={getRoute(
+                '/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId',
+                {
+                  scenarioId: fromUUID(scenario.id),
+                  iterationId: fromUUID(iterationId),
+                  sanctionId: fromUUID(sanction.id),
+                },
+              )}
               {...getFormProps(form)}
             >
               <Collapsible.Container className="bg-grey-100 max-w-3xl">
@@ -476,8 +479,7 @@ export default function SanctionDetail() {
                         <FormLabel>Counterparty name</FormLabel>
                         <FieldMatches
                           placeholder="Select the First name or Full Name"
-                          initialValue={counterPartyName}
-                          onChange={(nodes) => setCounterPartyName(nodes)}
+                          limit={5}
                         />
                         <FormErrorOrDescription />
                       </FormField>
@@ -488,9 +490,7 @@ export default function SanctionDetail() {
                         <FormLabel>Transaction Label</FormLabel>
                         <FieldMatches
                           placeholder="Select the transaction label"
-                          initialValue={transactionLabel}
                           limit={1}
-                          onChange={(nodes) => setTransactionLabel(nodes)}
                         />
                         <FormErrorOrDescription />
                       </FormField>
@@ -499,7 +499,7 @@ export default function SanctionDetail() {
                 </Collapsible.Content>
               </Collapsible.Container>
 
-              {/* <Collapsible.Container className="bg-grey-100 max-w-3xl">
+              <Collapsible.Container className="bg-grey-100 max-w-3xl">
                 <Collapsible.Title>
                   {t('scenarios:sanction.lists.title')}
                 </Collapsible.Title>
@@ -509,14 +509,48 @@ export default function SanctionDetail() {
                       {t('scenarios:sanction.lists.callout')}
                     </p>
                   </Callout>
-                  <FormField name={fields.formula.name}>
+                  <FormField
+                    className="flex flex-col gap-2"
+                    name={fields.formula.name}
+                  >
                     <CollapsibleV2.Provider>
-                      <CollapsibleV2.Title>Global</CollapsibleV2.Title>
-                      <CollapsibleV2.Content>TATATATATA</CollapsibleV2.Content>
+                      <div className="w-full overflow-hidden rounded-lg">
+                        <div className="bg-grey-98 flex w-full items-center justify-between p-4">
+                          <CollapsibleV2.Title className="flex flex-row items-center gap-2">
+                            <Icon
+                              icon="arrow-right"
+                              className="size-5 rotate-90"
+                            />
+                            <span className="text-s font-semibold">Global</span>
+                          </CollapsibleV2.Title>
+                          <div className="flex items-center gap-4">
+                            <span className="text-grey-50 text-xs">
+                              Select all
+                            </span>
+                            <Checkbox />
+                          </div>
+                        </div>
+                        <CollapsibleV2.Content className="bg-grey-98 w-full p-4">
+                          <div className="border-grey-90 bg-grey-100 rounded-lg border">
+                            <div className="flex items-center gap-4 p-4">
+                              <Checkbox />
+                              <span className="text-s">
+                                UN Security Council 1718 Designated Vessels List
+                              </span>
+                            </div>
+                            <div className="bg-grey-98 flex items-center gap-4 p-4">
+                              <Checkbox />
+                              <span className="text-s">
+                                UN Security Council Consolidated Sanctions
+                              </span>
+                            </div>
+                          </div>
+                        </CollapsibleV2.Content>
+                      </div>
                     </CollapsibleV2.Provider>
                   </FormField>
                 </Collapsible.Content>
-              </Collapsible.Container> */}
+              </Collapsible.Container>
 
               <div className="sticky bottom-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6">
                 <div className="bg-grey-100 border-grey-90 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
@@ -531,7 +565,7 @@ export default function SanctionDetail() {
                     </Button>
                   </DeleteSanction>
 
-                  <Button onClick={handleSave} className="flex-1">
+                  <Button type="submit" className="flex-1">
                     <Icon icon="save" className="size-5" aria-hidden />
                     {t('common:save')}
                   </Button>
