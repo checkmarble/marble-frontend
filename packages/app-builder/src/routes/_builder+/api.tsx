@@ -17,6 +17,7 @@ import { type Namespace } from 'i18next';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import swaggercss from 'swagger-ui-react/swagger-ui.css?url';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -49,16 +50,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 
   const openapi = await dataModelRepository.getOpenApiSpec();
-  // Remove those parts, because they are part of the proper openapi spec but we do not want them as input to SwaggerUI
-  delete openapi.info;
-  delete openapi.components?.securitySchemes;
-  delete openapi.components?.securitySchemes;
   return json({ openapi });
 }
 
 export default function Api() {
   const { t } = useTranslation(handle.i18n);
   const { openapi } = useLoaderData<typeof loader>();
+
+  // Remove those parts, because they are part of the proper openapi spec but we do not want them as input to SwaggerUI
+  const openapiWithoutSomeParts = React.useMemo(() => {
+    const openapiWithoutSomeParts = R.clone(openapi);
+    delete openapiWithoutSomeParts.info;
+    delete openapiWithoutSomeParts.components?.securitySchemes;
+    return openapiWithoutSomeParts;
+  }, [openapi]);
 
   return (
     <Page.Main>
@@ -90,7 +95,7 @@ export default function Api() {
             <React.Suspense fallback={t('common:loading')}>
               {/* Issue with UNSAFE_componentWillReceiveProps: https://github.com/swagger-api/swagger-ui/issues/5729 */}
               <SwaggerUI
-                spec={openapi}
+                spec={openapiWithoutSomeParts}
                 supportedSubmitMethods={[]}
                 defaultModelExpandDepth={5}
                 defaultModelsExpandDepth={4}
