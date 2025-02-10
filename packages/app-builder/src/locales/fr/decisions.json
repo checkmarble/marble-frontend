@@ -57,5 +57,6 @@
   "rules.status.no_hit": "non déclenchée",
   "rules.status.snoozed": "mis en veille",
   "rules.title": "Règles",
-  "scenario.version": "Version"
+  "scenario.version": "Version",
+  "sanction_check.title": "Contrôle de sanction"
 }
