@@ -10,6 +10,7 @@ export interface ScenarioIterationSanction {
   formula: AstNode | null;
   counterPartyName: AstNode[];
   transactionLabel: AstNode[];
+  lists: string[];
   createdAt: string;
 }
 
@@ -22,6 +23,7 @@ export interface CreateScenarioIterationSanctionInput {
   formula: AstNode | null;
   counterPartyName: AstNode[];
   transationLabel: AstNode[];
+  lists: string[];
 }
 
 export interface UpdateScenarioIterationSanctionInput {
@@ -33,4 +35,5 @@ export interface UpdateScenarioIterationSanctionInput {
   formula?: AstNode | null;
   counterPartyName?: AstNode[];
   transactionLabel?: AstNode[];
+  lists?: string[];
 }

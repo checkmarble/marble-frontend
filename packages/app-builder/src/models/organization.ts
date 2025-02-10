@@ -1,13 +1,13 @@
 import { type OrganizationDto } from 'marble-api';
 
-import { type KnownOutcome } from './outcome';
+import { type KnownOutcome, type SanctionOutcome } from './outcome';
 
 export interface Organization {
   id: string;
   name: string;
   defaultScenarioTimezone: string | null;
   sanctionCheck: {
-    forcedOutcome: Omit<KnownOutcome, 'approve'>;
+    forcedOutcome: SanctionOutcome;
     similarityScore: number;
   };
 }
@@ -26,8 +26,7 @@ export const adaptOrganizationDto = (
     ? organizationDto.default_scenario_timezone
     : null,
   sanctionCheck: {
-    forcedOutcome: organizationDto.sanction_check
-      .forced_outcome as KnownOutcome,
+    forcedOutcome: organizationDto.sanction_check.forced_outcome,
     similarityScore: organizationDto.sanction_check.similarity_score,
   },
 });

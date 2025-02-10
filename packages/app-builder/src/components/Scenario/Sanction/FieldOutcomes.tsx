@@ -1,18 +1,21 @@
 import { OutcomeTag } from '@app-builder/components/Decisions';
-import { FormSelectWithCombobox } from '@app-builder/components/Form/FormSelectWithCombobox';
-import { type KnownOutcome } from '@app-builder/models/outcome';
+import { type SanctionOutcome } from '@app-builder/models/outcome';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
-import { Input } from 'ui-design-system';
+import { Input, SelectWithCombobox } from 'ui-design-system';
 
 export const FieldOutcomes = ({
   selectedOutcome,
   outcomes,
-  onOpenChange,
+  name,
+  onChange,
+  onBlur,
 }: {
-  selectedOutcome?: KnownOutcome;
-  outcomes: KnownOutcome[];
-  onOpenChange?: (open: boolean) => void;
+  selectedOutcome?: SanctionOutcome;
+  outcomes: SanctionOutcome[];
+  name?: string;
+  onChange?: (value: SanctionOutcome) => void;
+  onBlur?: () => void;
 }) => {
   const [searchValue, setSearchValue] = useState('');
   const deferredSearchValue = useDeferredValue(searchValue);
@@ -23,32 +26,32 @@ export const FieldOutcomes = ({
   );
 
   return (
-    <FormSelectWithCombobox.Root
+    <SelectWithCombobox.Root
       selectedValue={selectedOutcome}
       searchValue={searchValue}
       onSearchValueChange={setSearchValue}
-      onOpenChange={onOpenChange}
+      onSelectedValueChange={onChange}
     >
-      <FormSelectWithCombobox.Select className="w-full">
+      <SelectWithCombobox.Select name={name} onBlur={onBlur} className="w-full">
         {selectedOutcome ? (
           <OutcomeTag border="square" outcome={selectedOutcome} />
         ) : null}
-        <FormSelectWithCombobox.Arrow />
-      </FormSelectWithCombobox.Select>
-      <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
-        <FormSelectWithCombobox.Combobox
+        <SelectWithCombobox.Arrow />
+      </SelectWithCombobox.Select>
+      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+        <SelectWithCombobox.Combobox
           render={<Input className="shrink-0" />}
           autoSelect
           autoFocus
         />
-        <FormSelectWithCombobox.ComboboxList>
+        <SelectWithCombobox.ComboboxList>
           {matches.map((outcome) => (
-            <FormSelectWithCombobox.ComboboxItem key={outcome} value={outcome}>
+            <SelectWithCombobox.ComboboxItem key={outcome} value={outcome}>
               <OutcomeTag border="square" outcome={outcome} />
-            </FormSelectWithCombobox.ComboboxItem>
+            </SelectWithCombobox.ComboboxItem>
           ))}
-        </FormSelectWithCombobox.ComboboxList>
-      </FormSelectWithCombobox.Popover>
-    </FormSelectWithCombobox.Root>
+        </SelectWithCombobox.ComboboxList>
+      </SelectWithCombobox.Popover>
+    </SelectWithCombobox.Root>
   );
 };

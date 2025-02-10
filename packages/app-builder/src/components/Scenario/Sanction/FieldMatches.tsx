@@ -1,16 +1,10 @@
-import { useFieldName } from '@app-builder/components/Form/FormField';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   useGetAstNodeOperandProps,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
-import {
-  type FieldMetadata,
-  useField,
-  useInputControl,
-} from '@conform-to/react';
 import { nanoid } from 'nanoid';
-import { useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { entries, omit, values } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -41,18 +35,24 @@ const MatchOperand = ({
 };
 
 export function FieldMatches({
+  name,
+  value,
   limit,
+  onBlur,
+  onChange,
   placeholder,
 }: {
+  value: AstNode[];
   limit?: number;
   placeholder?: string;
+  name?: string;
+  onChange?: (nodes: AstNode[]) => void;
+  onBlur?: () => void;
 }) {
-  const { name } = useFieldName();
-  const [meta] = useField<AstNode[]>(name);
-  const controls = useInputControl(meta as unknown as FieldMetadata<string[]>);
+  const ref = useRef<HTMLInputElement>(null);
 
   const [nodes, setNodes] = useState<Record<string, AstNode>>(
-    (meta.initialValue as AstNode[]).reduce(
+    value.reduce(
       (acc, node) => {
         acc[nanoid()] = node;
         return acc;
@@ -63,19 +63,37 @@ export function FieldMatches({
 
   const matches = useMemo(() => entries(nodes), [nodes]);
 
+  // Thx React... https://github.com/facebook/react/issues/27283
   useEffect(() => {
-    controls.change(JSON.stringify(values(nodes)));
+    if (ref.current) {
+      ref.current.onchange = (e) => {
+        onChange?.(
+          JSON.parse(
+            (e as unknown as ChangeEvent<HTMLInputElement>).currentTarget
+              ?.value,
+          ),
+        );
+      };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.value = JSON.stringify(values(nodes));
+      ref.current?.dispatchEvent(new Event('change'));
+    }
   }, [nodes]);
 
   return (
     <div className="flex flex-wrap gap-2">
       <input
-        name={meta.name}
+        name={name}
+        ref={ref}
+        defaultValue={JSON.stringify(value)}
         className="sr-only"
         tabIndex={-1}
-        onFocus={controls.focus}
-        onBlur={controls.blur}
+        onBlur={onBlur}
       />
       {matches.map(([id, match], i) => (
         <div key={id} className="flex gap-2">
@@ -88,7 +106,6 @@ export function FieldMatches({
                   ? omit(nodes, [id])
                   : { ...nodes, [id]: node },
               );
-              controls.blur();
             }}
           />
           {match.name === 'Undefined' || (limit && i === limit - 1) ? null : (
