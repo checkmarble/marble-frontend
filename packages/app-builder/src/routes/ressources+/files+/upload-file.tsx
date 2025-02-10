@@ -1,4 +1,3 @@
-import { type CaseDetail } from '@app-builder/models/cases';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
 import { useNavigation, useRevalidator } from '@remix-run/react';
@@ -16,10 +15,10 @@ const MAX_FILE_SIZE_MB = 20;
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export function UploadFile({
-  caseDetail,
+  uploadFileEndpoint,
   children,
 }: {
-  caseDetail: CaseDetail;
+  uploadFileEndpoint: string;
   children: React.ReactElement;
 }) {
   const [open, setOpen] = useState(false);
@@ -35,17 +34,20 @@ export function UploadFile({
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
-        <UploadFileContent caseDetail={caseDetail} setOpen={setOpen} />
+        <UploadFileContent
+          uploadFileEndpoint={uploadFileEndpoint}
+          setOpen={setOpen}
+        />
       </ModalV2.Content>
     </ModalV2.Root>
   );
 }
 
 function UploadFileContent({
-  caseDetail,
+  uploadFileEndpoint,
   setOpen,
 }: {
-  caseDetail: CaseDetail;
+  uploadFileEndpoint: string;
   setOpen: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);
@@ -94,16 +96,13 @@ function UploadFileContent({
         formData.append('file[]', file);
       });
 
-      const response = await fetch(
-        `${backendUrl}/cases/${caseDetail.id}/files`,
-        {
-          method: 'POST',
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${tokenResponse.accessToken}`,
-          },
+      const response = await fetch(`${backendUrl}${uploadFileEndpoint}`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${tokenResponse.accessToken}`,
         },
-      );
+      });
       if (!response.ok) {
         Sentry.captureException(await response.text());
         toast.error('An error occurred while trying to upload the file.');

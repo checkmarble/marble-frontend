@@ -1,10 +1,12 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
+  adapatSanctionCheckFile,
   adapatSanctionCheckMatchPayload,
   adaptSanctionCheck,
   adaptSanctionCheckMatch,
   type SanctionCheck,
   type SanctionCheckEntitySchema,
+  type SanctionCheckFile,
   type SanctionCheckMatch,
   type SanctionCheckMatchPayload,
   type SanctionCheckMatchStatus,
@@ -28,6 +30,9 @@ export interface SanctionCheckRepository {
     entityType: SanctionCheckEntitySchema;
     fields: Record<string, string>;
   }): Promise<SanctionCheck>;
+  listSanctionCheckFiles(args: {
+    sanctionCheckId: string;
+  }): Promise<SanctionCheckFile[]>;
 }
 
 export function makeGetSanctionCheckRepository() {
@@ -67,6 +72,12 @@ export function makeGetSanctionCheckRepository() {
       };
       return adaptSanctionCheck(
         await marbleCoreApiClient.refineSanctionCheck(dto),
+      );
+    },
+    listSanctionCheckFiles: async ({ sanctionCheckId }) => {
+      return R.map(
+        await marbleCoreApiClient.listSanctionCheckFiles(sanctionCheckId),
+        adapatSanctionCheckFile,
       );
     },
   });

@@ -21,12 +21,13 @@ import {
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-status';
-import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
+import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import {
   isCreateSnoozeAvailable,
   isReadSnoozeAvailable,
 } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
+import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import {
@@ -248,7 +249,9 @@ export default function CasePage() {
         </div>
         <div className="bg-grey-100 border-t-grey-90 flex shrink-0 flex-row items-center gap-4 border-t p-4">
           <AddComment caseId={caseDetail.id} />
-          <UploadFile caseDetail={caseDetail}>
+          <UploadFile
+            uploadFileEndpoint={getCaseFileUploadEndpoint(caseDetail)}
+          >
             <Button
               className="h-14 w-fit whitespace-nowrap"
               variant="secondary"

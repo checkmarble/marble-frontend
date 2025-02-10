@@ -1,5 +1,6 @@
 import {
   type SanctionCheckDto,
+  type SanctionCheckFileDto,
   type SanctionCheckMatchDto,
   type SanctionCheckMatchPayloadDto,
   type SanctionCheckRequestDto,
@@ -113,3 +114,19 @@ export function adaptSanctionCheck(dto: SanctionCheckDto): SanctionCheck {
     matches: R.map(dto.matches, adaptSanctionCheckMatch),
   };
 }
+
+export function adapatSanctionCheckFile(
+  dto: SanctionCheckFileDto,
+): SanctionCheckFile {
+  return {
+    id: dto.id,
+    fileName: dto.filename,
+    createdAt: dto.created_at,
+  };
+}
+
+export type SanctionCheckFile = {
+  id: string;
+  fileName: string;
+  createdAt: string;
+};
