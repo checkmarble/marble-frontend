@@ -1716,15 +1716,15 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SanctionCheckDto'
-  /sanction-checks/{sanctionCheckId}:
+  /sanction-checks/{sanctionCheckId}/files:
     get:
       tags:
         - Sanction Check
-      summary: List sanction checks for a decision
-      operationId: getSanctionCheck
+      summary: List files for sanction check
+      operationId: listSanctionCheckFiles
       parameters:
         - name: sanctionCheckId
-          description: ID of the sanction Check
+          description: ID of the sanction check
           in: path
           required: true
           schema:
@@ -1732,11 +1732,13 @@ paths:
             format: uuid
       responses:
         '200':
-          description: The sanction check
+          description: The list of the files
           content:
             application/json:
               schema:
-                type: object
+                type: array
+                items:
+                  $ref: '#/components/schemas/SanctionCheckFileDto'
   /sanction-checks/matches/{matchId}:
     patch:
       tags:
@@ -4981,6 +4983,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SanctionCheckMatchDto'
+    SanctionCheckFileDto:
+      type: object
+      required:
+        - id
+        - filename
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        filename:
+          type: string
+        created_at:
+          type: string
+          format: date-time
     SanctionCheckMatchPayloadDto:
       type: object
       required:

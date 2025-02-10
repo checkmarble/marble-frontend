@@ -15,8 +15,9 @@ import {
 } from '@app-builder/components/Cases/CaseHistory/RightSidebar';
 import { SanctionStatusTag } from '@app-builder/components/Sanctions/SanctionStatusTag';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { UploadFile } from '@app-builder/routes/ressources+/cases+/upload-file';
+import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import { serverServices } from '@app-builder/services/init.server';
+import { getSanctionCheckFileUploadEndpoint } from '@app-builder/utils/files';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import {
@@ -166,7 +167,7 @@ export function useCurrentCase() {
 
 export default function CaseSanctionReviewPage() {
   const { t } = useTranslation(handle.i18n);
-  const { caseDetail } = useLoaderData<typeof loader>();
+  const { caseDetail, sanctionCheck } = useLoaderData<typeof loader>();
 
   return (
     <Page.Main>
@@ -215,7 +216,11 @@ export default function CaseSanctionReviewPage() {
           </RightSidebarProvider>
         </div>
         <div className="bg-grey-100 border-t-grey-90 flex shrink-0 flex-row items-center justify-end gap-4 border-t p-4">
-          <UploadFile caseDetail={caseDetail}>
+          <UploadFile
+            uploadFileEndpoint={getSanctionCheckFileUploadEndpoint(
+              sanctionCheck,
+            )}
+          >
             <Button
               className="h-14 w-fit whitespace-nowrap"
               variant="secondary"

@@ -300,7 +300,7 @@ function Row<TData extends RowData>({
           );
         }
         return (
-          <td key={cell.id} className="text-s w-full px-4 font-normal">
+          <td key={cell.id} className="text-s w-full truncate px-4 font-normal">
             {flexRender(cell.column.columnDef.cell, context)}
           </td>
         );

@@ -512,6 +512,11 @@ export type SanctionCheckDto = {
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
 };
+export type SanctionCheckFileDto = {
+    id: string;
+    filename: string;
+    created_at: string;
+};
 export type UpdateSanctionCheckMatchDto = {
     status: "confirmed_hit" | "no_hit";
     comment?: string;
@@ -1830,13 +1835,13 @@ export function listSanctionChecks(decisionId: string, opts?: Oazapfts.RequestOp
     }));
 }
 /**
- * List sanction checks for a decision
+ * List files for sanction check
  */
-export function getSanctionCheck(sanctionCheckId: string, opts?: Oazapfts.RequestOpts) {
+export function listSanctionCheckFiles(sanctionCheckId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: object;
-    }>(`/sanction-checks/${encodeURIComponent(sanctionCheckId)}`, {
+        data: SanctionCheckFileDto[];
+    }>(`/sanction-checks/${encodeURIComponent(sanctionCheckId)}/files`, {
         ...opts
     }));
 }
