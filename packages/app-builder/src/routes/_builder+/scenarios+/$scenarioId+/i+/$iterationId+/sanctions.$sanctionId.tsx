@@ -272,7 +272,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 const editSanctionFormSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
-  ruleGroup: z.string(),
+  ruleGroup: z.string().min(1),
   forcedOutcome: z.union([
     z.literal('review'),
     z.literal('decline'),
@@ -311,11 +311,15 @@ export default function SanctionDetail() {
   } = useOrganizationDetails();
 
   const form = useForm<EditSanctionForm>({
+    onSubmit: ({ value }) => fetcher.submit(value),
     validators: {
       onChange: editSanctionFormSchema,
+      onBlur: editSanctionFormSchema,
+      onSubmit: editSanctionFormSchema,
     },
     defaultValues: {
       name: sanction.name,
+      lists: sanction.lists,
       description: sanction.description,
       ruleGroup: sanction.ruleGroup ?? 'Sanction check',
       forcedOutcome: sanctionCheck.forcedOutcome,
@@ -324,7 +328,6 @@ export default function SanctionDetail() {
         transactionLabel: sanction.transactionLabel ?? [NewUndefinedAstNode()],
         counterPartyName: sanction.counterPartyName ?? [NewUndefinedAstNode()],
       },
-      lists: sanction.lists,
     },
   });
 
@@ -345,15 +348,14 @@ export default function SanctionDetail() {
         <Page.Content>
           <fetcher.Form
             className="flex flex-col gap-8"
-            method="POST"
-            action={getRoute(
-              '/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId',
-              {
-                scenarioId: fromUUID(scenario.id),
-                iterationId: fromUUID(iterationId),
-                sanctionId: fromUUID(sanction.id),
-              },
-            )}
+            // action={getRoute(
+            //   '/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId',
+            //   {
+            //     scenarioId: fromUUID(scenario.id),
+            //     iterationId: fromUUID(iterationId),
+            //     sanctionId: fromUUID(sanction.id),
+            //   },
+            // )}
           >
             <Collapsible.Container className="bg-grey-100 max-w-3xl">
               <Collapsible.Title>
