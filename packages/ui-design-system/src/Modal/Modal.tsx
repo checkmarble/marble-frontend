@@ -2,10 +2,10 @@ import * as Ariakit from '@ariakit/react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
-import { forwardRef } from 'react';
+import { forwardRef, type ReactNode } from 'react';
 
 const modalContentClassnames = cva(
-  'bg-grey-100 fixed left-1/2 top-[10vh] flex h-fit w-full -translate-x-1/2 flex-col rounded-lg drop-shadow-xl overflow-hidden',
+  'bg-grey-100 top-[10vh] flex h-fit w-full flex-col rounded-lg drop-shadow-xl overflow-hidden',
   {
     variants: {
       size: {
@@ -29,7 +29,10 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
         <Dialog.Content
           ref={ref}
           {...props}
-          className={modalContentClassnames({ size, className })}
+          className={modalContentClassnames({
+            size,
+            className: clsx('fixed left-1/2 -translate-x-1/2', className),
+          })}
         />
       </Dialog.Portal>
     );
@@ -78,6 +81,12 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
           />
         }
         unmountOnHide
+        render={({ className, ...p }) => (
+          <div
+            className={clsx(className, 'fixed left-1/2 -translate-x-1/2')}
+            {...p}
+          />
+        )}
         {...props}
       />
     );
@@ -93,6 +102,10 @@ export function ModalTitleV2(props: Ariakit.DialogHeadingProps) {
   );
 }
 
+export function ModalFooterV2({ children }: { children: ReactNode }) {
+  return <div className="sticky bottom-0">{children}</div>;
+}
+
 export const ModalV2 = {
   Root: Ariakit.DialogProvider,
   Trigger: Ariakit.DialogDisclosure,
@@ -100,4 +113,5 @@ export const ModalV2 = {
   Description: Ariakit.DialogDescription,
   Content: ModalContentV2,
   Title: ModalTitleV2,
+  Footer: ModalFooterV2,
 };

@@ -68,6 +68,7 @@
     "@segment/snippet": "^5.2.1",
     "@sentry/remix": "^8.52.0",
     "@swan-io/boxed": "^3.2.0",
+    "@tanstack/react-form": "^0.41.3",
     "@tanstack/react-table": "^8.20.5",
     "@tanstack/react-virtual": "3.10.8",
     "autosuggest-highlight": "^3.3.4",
@@ -85,6 +86,7 @@
     "marble-api": "workspace:*",
     "match-sorter": "^6.3.4",
     "nanoid": "^5.0.9",
+    "object-to-formdata": "^4.5.1",
     "pretty-cache-header": "^1.0.0",
     "qs": "^6.13.0",
     "radash": "^12.1.0",
@@ -108,7 +110,7 @@
     "typescript-utils": "workspace:*",
     "ui-design-system": "workspace:*",
     "ui-icons": "workspace:*",
-    "zod": "^3.23.8",
+    "zod": "^3.24.1",
     "zustand": "^5.0.0"
   }
 }

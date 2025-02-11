@@ -1,5 +1,6 @@
 export const tagColors = [
   'purple',
+  'blue',
   'green',
   'red',
   'yellow',
