@@ -13,10 +13,11 @@ import { StatusTag } from './StatusTag';
 
 type MatchCardProps = {
   match: SanctionCheckMatch;
-  readonly: boolean;
+  readonly?: boolean;
+  disabled?: boolean;
 };
 
-export const MatchCard = ({ match, readonly }: MatchCardProps) => {
+export const MatchCard = ({ match, readonly, disabled }: MatchCardProps) => {
   const { t } = useTranslation(sanctionsI18n);
   const [isInReview, setIsInReview] = useState(false);
 
@@ -51,14 +52,14 @@ export const MatchCard = ({ match, readonly }: MatchCardProps) => {
               </Tag>
             </div>
             <div className="inline-flex h-8">
-              {readonly ? (
+              {disabled ? (
                 <Tag border="square" color="grey">
                   {t('sanctions:match.not_reviewed')}
                 </Tag>
               ) : (
                 <StatusTag
                   status={match.status}
-                  disabled={match.status !== 'pending'}
+                  disabled={match.status !== 'pending' || readonly}
                   onClick={handleMatchReview}
                 />
               )}

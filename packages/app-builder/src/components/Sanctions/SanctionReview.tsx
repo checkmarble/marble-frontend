@@ -62,7 +62,7 @@ export function SanctionReviewSection({
           <MatchCard
             key={sanctionMatch.id}
             match={sanctionMatch}
-            readonly={needsRefine}
+            disabled={needsRefine}
           />
         ))}
       </div>
