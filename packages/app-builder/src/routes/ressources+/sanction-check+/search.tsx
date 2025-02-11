@@ -1,7 +1,7 @@
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { parseWithZod } from '@conform-to/zod';
 import type { ActionFunctionArgs } from '@remix-run/node';
+import { decode as decodeFormdata } from 'decode-formdata';
 import { z } from 'zod';
 
 export const refineSearchSchema = z.discriminatedUnion('entityType', [
@@ -53,15 +53,15 @@ export async function action({ request }: ActionFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema: refineSearchSchema });
+  const data = decodeFormdata(await request.formData());
+  const submission = refineSearchSchema.safeParse(data);
 
-  if (submission.status === 'success') {
+  if (submission.success) {
     return {
-      status: 'searchResults',
-      value: await sanctionCheck.searchSanctionCheckMatches(submission.value),
+      success: true,
+      data: await sanctionCheck.searchSanctionCheckMatches(submission.data),
     } as const;
   }
 
-  return submission.reply();
+  return { success: false, error: submission.error } as const;
 }

@@ -33,7 +33,10 @@ export function SanctionReviewSection({
         <div className="flex items-center gap-2">
           <span className="text-m font-semibold">Potential matches</span>
           <span className="text-grey-50 text-s">
-            {matchesToReviewCount}/{sanctionCheck.matches.length} to review
+            {t('sanctions:callout.needs_review', {
+              toReview: matchesToReviewCount,
+              totalMatches: sanctionCheck.matches.length,
+            })}
           </span>
           {needsRefine ? (
             <Button
@@ -52,7 +55,7 @@ export function SanctionReviewSection({
           <div className="text-s bg-red-95 text-red-47 flex items-center gap-2 rounded p-2">
             <Icon icon="error" className="size-5 shrink-0" />
             {t('sanctions:callout.needs_refine', {
-              matchCount: matchesToReviewCount,
+              matchCount: sanctionCheck.request.limit,
             })}
           </div>
         )}
@@ -63,6 +66,7 @@ export function SanctionReviewSection({
             key={sanctionMatch.id}
             match={sanctionMatch}
             disabled={needsRefine}
+            defaultOpen={sanctionCheck.matches.length === 1}
           />
         ))}
       </div>

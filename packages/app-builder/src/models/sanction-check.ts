@@ -89,6 +89,7 @@ export type SanctionCheckQuery = {
 
 export type SanctionCheckRequest = {
   threshold: number;
+  limit: number;
   queries: {
     [key: string]: SanctionCheckQuery;
   };
@@ -108,6 +109,7 @@ export function adaptSanctionCheckRequest(
 ): SanctionCheckRequest {
   return {
     threshold: dto.threshold,
+    limit: dto.limit,
     queries: adaptQueries(dto.search_input.queries),
   };
 }

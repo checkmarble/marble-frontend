@@ -203,7 +203,11 @@ export function createPropertyTransformer(ctx: {
       case 'url':
         return <ExternalLink href={value}>{value}</ExternalLink>;
       case 'country':
-        return <span>{intlCountry.of(value.toUpperCase())}</span>;
+        try {
+          return <span>{intlCountry.of(value.toUpperCase())}</span>;
+        } catch {
+          return value.toUpperCase();
+        }
       case 'date':
         return <time dateTime={value}>{intlDate.format(new Date(value))}</time>;
     }

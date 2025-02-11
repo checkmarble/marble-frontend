@@ -5100,6 +5100,7 @@ components:
           'Succession',
           'UnknownLink',
           'Vessel',
+          'Vehicle',
         ]
     SanctionCheckRequestDto:
       type: object

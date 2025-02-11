@@ -46,6 +46,7 @@ import {
 } from '../Decisions/RulesExecutions/RulesExecutions';
 import { Score } from '../Decisions/Score';
 import { CaseDetailTriggerObject } from '../Decisions/TriggerObjectDetail';
+import { SanctionStatusTag } from '../Sanctions/SanctionStatusTag';
 import { CasePivotValues } from './CasePivotValues';
 import { casesI18n } from './cases-i18n';
 import { RuleSnoozes } from './RuleSnoozes';
@@ -146,8 +147,25 @@ export function CaseDecisions({
                   </Tooltip.Default>
                 </div>
                 <Score score={row.score} />
-                <OutcomeAndReviewStatusWithModal decision={row} />
-                <DecisionActions decision={row} />
+                <Await resolve={caseDecisionsPromise}>
+                  {([_dataModel, _customLists, decisionsDetail]) => {
+                    const sanctionCheck = decisionsDetail.find(
+                      (detail) => row.id === detail.decisionId,
+                    )?.sanctionChecks[0];
+                    return (
+                      <>
+                        <OutcomeAndReviewStatusWithModal
+                          decision={row}
+                          sanctionCheck={sanctionCheck}
+                        />
+                        <DecisionActions
+                          decision={row}
+                          sanctionCheck={sanctionCheck}
+                        />
+                      </>
+                    );
+                  }}
+                </Await>
               </div>
               <CollapsibleV2.Content className="col-span-full">
                 <React.Suspense fallback={<DecisionDetailSkeleton />}>
@@ -184,7 +202,13 @@ function isPendingBlockAndReview(decision: Decision) {
   );
 }
 
-function OutcomeAndReviewStatusWithModal({ decision }: { decision: Decision }) {
+function OutcomeAndReviewStatusWithModal({
+  decision,
+  sanctionCheck,
+}: {
+  decision: Decision;
+  sanctionCheck: SanctionCheck | undefined;
+}) {
   const reviewDecisionModalStore = Ariakit.useDialogStore();
   const withReviewDecisionModal = isPendingBlockAndReview(decision);
 
@@ -201,6 +225,7 @@ function OutcomeAndReviewStatusWithModal({ decision }: { decision: Decision }) {
         <ReviewDecisionModal
           decisionId={decision.id}
           store={reviewDecisionModalStore}
+          sanctionCheck={sanctionCheck}
         />
       </>
     );
@@ -213,7 +238,13 @@ function OutcomeAndReviewStatusWithModal({ decision }: { decision: Decision }) {
   );
 }
 
-function DecisionActions({ decision }: { decision: Decision }) {
+function DecisionActions({
+  decision,
+  sanctionCheck,
+}: {
+  decision: Decision;
+  sanctionCheck: SanctionCheck | undefined;
+}) {
   const { t, i18n } = useTranslation(casesI18n);
 
   const reviewDecisionModalStore = Ariakit.useDialogStore();
@@ -260,6 +291,7 @@ function DecisionActions({ decision }: { decision: Decision }) {
         <ReviewDecisionModal
           decisionId={decision.id}
           store={reviewDecisionModalStore}
+          sanctionCheck={sanctionCheck}
         />
       ) : null}
     </>
@@ -352,20 +384,20 @@ function DecisionDetail({
                 Some sanction check rule name
               </span>
               <div className="inline-flex items-center gap-2">
-                <Tag color="orange" border="square" className="h-8">
-                  {sanctionCheck.status}
-                </Tag>
-                <Link
-                  to={getRoute('/cases/:caseId/sanctions/:decisionId', {
-                    caseId: fromUUID(caseId),
-                    decisionId: fromUUID(decision.id),
-                  })}
-                >
-                  <Button>
-                    <Icon icon="case-manager" className="size-5" />
-                    {t('sanctions:start_reviewing')}
-                  </Button>
-                </Link>
+                <SanctionState sanctionCheck={sanctionCheck} />
+                {sanctionCheck.status === 'in_review' ? (
+                  <Link
+                    to={getRoute('/cases/:caseId/sanctions/:decisionId', {
+                      caseId: fromUUID(caseId),
+                      decisionId: fromUUID(decision.id),
+                    })}
+                  >
+                    <Button>
+                      <Icon icon="case-manager" className="size-5" />
+                      {t('sanctions:start_reviewing')}
+                    </Button>
+                  </Link>
+                ) : null}
               </div>
             </div>
           </>
@@ -456,6 +488,25 @@ function DecisionDetail({
         </div>
       </div>
     </div>
+  );
+}
+
+function SanctionState({ sanctionCheck }: { sanctionCheck: SanctionCheck }) {
+  const { t } = useTranslation(['cases']);
+  if (sanctionCheck.partial) {
+    return (
+      <Tag color="red" border="square" className="h-8">
+        {t('cases:sanction.state.refine_needed')}
+      </Tag>
+    );
+  }
+
+  return (
+    <SanctionStatusTag
+      border="square"
+      status={sanctionCheck.status}
+      className="h-8"
+    />
   );
 }
 
