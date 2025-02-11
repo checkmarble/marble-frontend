@@ -2,7 +2,6 @@ import { Callout } from '@app-builder/components/Callout';
 import { type PropertyForSchema } from '@app-builder/constants/sanction-check-entity';
 import {
   type SanctionCheck,
-  type SanctionCheckEntitySchema,
   type SanctionCheckMatchPayload,
 } from '@app-builder/models/sanction-check';
 import { type action as refineAction } from '@app-builder/routes/ressources+/sanction-check+/refine';
@@ -35,24 +34,18 @@ function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   return additionalFields;
 }
 
-type SearchableSchema = Exclude<SanctionCheckEntitySchema, 'Thing'>;
+type SearchableSchema = 'Thing' | 'Person' | 'Organization' | 'Vehicle';
 
 const SEARCH_ENTITIES = {
-  LegalEntity: { fields: ['email'] },
+  Thing: { fields: ['name'] },
   Person: {
     fields: ['name', 'birthDate', 'nationality', 'idNumber', 'address'],
   },
-  Company: {
-    fields: [
-      'name',
-      'jurisdiction',
-      'registrationNumber',
-      'address',
-      'incorporationDate',
-    ],
-  },
   Organization: {
     fields: ['name', 'country', 'registrationNumber', 'address'],
+  },
+  Vehicle: {
+    fields: ['name', 'registrationNumber'],
   },
 } satisfies { [k in SearchableSchema]: { fields: PropertyForSchema<k>[] } };
 
@@ -149,12 +142,12 @@ export function RefineSearchModal({
       open={open}
       onClose={onClose}
       size="medium"
-      className={clsx({ 'h-[80vh]': !searchResults })}
+      className={clsx({ 'h-[80vh]': !searchResults }, 'max-h-[80vh]')}
     >
       <ModalV2.Title>{t('sanctions:refine_modal.title')}</ModalV2.Title>
       {searchResults ? (
         <>
-          <div className="flex flex-col gap-8 p-6">
+          <div className="flex flex-col gap-8 overflow-y-scroll p-6">
             {searchResults.length > 0 ? (
               <>
                 <Field label={t('sanctions:refine_modal.result_label')}>
@@ -184,7 +177,9 @@ export function RefineSearchModal({
                 </Callout>
               </>
             )}
-            <div className="flex gap-2">
+          </div>
+          <ModalV2.Footer>
+            <div className="bg-grey-100 flex gap-2 p-8">
               <Button
                 className="flex-1"
                 variant="secondary"
@@ -197,11 +192,12 @@ export function RefineSearchModal({
                 className="flex-1"
                 variant="primary"
                 onClick={handleRefine}
+                disabled={searchResults.length > sanctionCheck.request.limit}
               >
                 {t('sanctions:refine_modal.apply_search')}
               </Button>
             </div>
-          </div>
+          </ModalV2.Footer>
         </>
       ) : (
         <searchFetcher.Form onSubmit={handleSubmit(form)} className="contents">

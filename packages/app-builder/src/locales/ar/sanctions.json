@@ -83,7 +83,7 @@
   "refine_modal.refine_callout": "من خلال تطبيق هذا البحث ، سيتم تحديث فحص العقوبات لعرضه فقط في المباراة المحتملة المرئية أعلاه.",
   "refine_modal.result_label": "المباريات الممكنة مع بحثك:",
   "refine_modal.schema.company": "شركة",
-  "refine_modal.schema.legalentity": "لا أعرف",
+  "refine_modal.schema.thing": "لا أعرف",
   "refine_modal.schema.organization": "منظمة",
   "refine_modal.schema.person": "شخص",
   "refine_modal.search_by": "البحث عن طريق:",
@@ -100,5 +100,12 @@
   "review_modal.comment_label": "أضف تعليقًا",
   "review_modal.status_label": "اختر حالة",
   "review_modal.title": "تغيير حالة المباراة",
-  "review_modal.whitelist_label": "لا تنبه مرة أخرى إذا كان هذا الملف الشخصي مرتبطًا بـ:"
+  "review_modal.whitelist_label": "لا تنبه مرة أخرى إذا كان هذا الملف الشخصي مرتبطًا بـ:",
+  "callout.needs_review": "{{toreview}}/{{TotalMatches}} للمراجعة",
+  "entity.schema.vehicle": "عربة",
+  "refine_modal.no_match_callout": "وبتطبيق هذا البحث فإن ضوابط العقوبات سوف تتحدد على النحو التالي: <Status />",
+  "refine_modal.no_match_label": "لم يتم العثور على مباريات محتملة مع بحثك.",
+  "refine_modal.schema.vehicle": "عربة",
+  "entity.schema.airplane": "طائرة",
+  "entity.schema.vessel": "إناء"
 }

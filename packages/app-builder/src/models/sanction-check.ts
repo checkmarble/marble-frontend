@@ -13,6 +13,9 @@ const entitySchemas = [
   'Person',
   'Organization',
   'Company',
+  'Vehicle',
+  'Airplane',
+  'Vessel',
 ] as const;
 
 export type SanctionCheckStatus =
