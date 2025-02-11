@@ -10,15 +10,12 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type AstBuilderProps } from '@app-builder/components/Scenario/AstBuilder';
-import { FieldMatches } from '@app-builder/components/Scenario/Sanction/FieldMatches';
+import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
+import { FieldMatches } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
 import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldSanction } from '@app-builder/components/Scenario/Sanction/FieldSanction';
 import { FieldTrigger } from '@app-builder/components/Scenario/Sanction/FieldTrigger';
-import {
-  NewEmptyTriggerAstNode,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
 import {
   knownOutcomes,
   type SanctionOutcome,
@@ -96,13 +93,12 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
+  const scenarioId = fromParams(params, 'scenarioId');
   const { authService } = serverServices;
   const { customListsRepository, editor, dataModelRepository, sanctionCheck } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
-
-  const scenarioId = fromParams(params, 'scenarioId');
 
   const [
     { databaseAccessors, payloadAccessors },
@@ -135,14 +131,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const iterationId = fromParams(params, 'iterationId');
 
-  console.log('Form Data Keys', formData.keys().toArray());
-  console.log('Form Data Values', formData.values().toArray());
-
   const submission = parseWithZod(formData, { schema: editSanctionFormSchema });
+
+  console.log('Submission Payload', submission.payload);
 
   if (submission.status !== 'success') {
     return json(submission.reply());
   }
+
+  console.log('Submission Values', submission.value);
 
   const { scenarioIterationSanctionRepository } =
     await authService.isAuthenticated(request, {
@@ -153,7 +150,25 @@ export async function action({ request, params }: ActionFunctionArgs) {
     await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
       iterationId,
       changes: {
-        //TODO: add form data
+        ...submission.value,
+        datasets: submission.value.datasets
+          ? JSON.parse(submission.value.datasets)
+          : [],
+        triggerRule: submission.value.triggerRule
+          ? JSON.parse(submission.value.triggerRule)
+          : undefined,
+        query: {
+          // name: submission.value.query.name
+          //   ? JSON.parse(submission.value.query.name)
+          //   : undefined,
+          name: { name: 'StringConcat', children: [] },
+          label: submission.value.query.label
+            ? JSON.parse(submission.value.query.label)
+            : undefined,
+        },
+        counterPartyId: submission.value.counterPartyId
+          ? JSON.parse(submission.value.counterPartyId)
+          : undefined,
       },
     });
 
@@ -163,7 +178,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return json(
-      { status: 'error' },
+      { status: 'success' },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
@@ -185,7 +200,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 const editSanctionFormSchema = z.object({
   name: z.string().min(1),
-  description: z.string(),
+  description: z.string().optional(),
   ruleGroup: z.string().min(1),
   datasets: z.array(z.string()).min(1),
   forceOutcome: z.union([
@@ -193,7 +208,7 @@ const editSanctionFormSchema = z.object({
     z.literal('decline'),
     z.literal('block_and_review'),
   ]),
-  scoremModifier: z.number().min(0),
+  scoreModifier: z.number().min(0),
   triggerRule: z.any().nullish(),
   query: z.object({
     name: z.any().nullish(),
@@ -225,7 +240,6 @@ export default function SanctionDetail() {
   );
 
   const form = useForm<EditSanctionForm>({
-    onSubmit: ({ value }) => fetcher.submit(value),
     validators: {
       onChange: editSanctionFormSchema,
       onBlur: editSanctionFormSchema,
@@ -238,14 +252,13 @@ export default function SanctionDetail() {
       datasets: sanctionCheckConfig?.datasets ?? [],
       forceOutcome:
         (sanctionCheckConfig?.forceOutcome as SanctionOutcome) ?? 'decline',
-      scoremModifier: sanctionCheckConfig?.scoreModifier ?? 0,
-      triggerRule: sanctionCheckConfig?.triggerRule ?? NewEmptyTriggerAstNode(),
+      scoreModifier: sanctionCheckConfig?.scoreModifier ?? 0,
+      triggerRule: sanctionCheckConfig?.triggerRule,
       query: {
-        name: sanctionCheckConfig?.query?.name ?? NewUndefinedAstNode(),
-        label: sanctionCheckConfig?.query?.label ?? NewUndefinedAstNode(),
+        name: sanctionCheckConfig?.query?.name,
+        label: sanctionCheckConfig?.query?.label,
       },
-      counterPartyId:
-        sanctionCheckConfig?.counterPartyId ?? NewUndefinedAstNode(),
+      counterPartyId: sanctionCheckConfig?.counterPartyId,
     },
   });
 
@@ -264,7 +277,14 @@ export default function SanctionDetail() {
       </Page.Header>
       <Page.Container>
         <Page.Content>
-          <fetcher.Form className="flex flex-col gap-8">
+          <fetcher.Form
+            className="flex flex-col gap-8"
+            method="PATCH"
+            action={getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
+              scenarioId: fromUUID(scenario.id),
+              iterationId: fromUUID(iterationId),
+            })}
+          >
             <Collapsible.Container className="bg-grey-100 max-w-3xl">
               <Collapsible.Title>
                 {t('scenarios:edit_rule.informations')}
@@ -320,6 +340,35 @@ export default function SanctionDetail() {
                           }
                           placeholder={t(
                             'scenarios:edit_rule.description_placeholder',
+                          )}
+                          valid={field.state.meta.errors.length === 0}
+                        />
+                        <FormErrorOrDescription
+                          errors={field.state.meta.errors}
+                        />
+                      </div>
+                    )}
+                  </form.Field>
+                  <form.Field name="scoreModifier">
+                    {(field) => (
+                      <div className="flex flex-col gap-2">
+                        <FormLabel
+                          name={field.name}
+                          className="text-m"
+                          valid={field.state.meta.errors.length === 0}
+                        >
+                          {t('scenarios:edit_rule.score')}
+                        </FormLabel>
+                        <FormInput
+                          defaultValue={field.state.value}
+                          type="number"
+                          name={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) =>
+                            field.handleChange(+e.currentTarget.value)
+                          }
+                          placeholder={t(
+                            'scenarios:edit_rule.score_placeholder',
                           )}
                           valid={field.state.meta.errors.length === 0}
                         />
@@ -409,7 +458,9 @@ export default function SanctionDetail() {
                       iterationId={iterationId}
                       options={options}
                       onBlur={field.handleBlur}
-                      onChange={field.handleChange}
+                      onChange={(node) =>
+                        form.setFieldValue('triggerRule', node)
+                      }
                       name={field.name}
                       trigger={field.state.value}
                     />
@@ -430,6 +481,25 @@ export default function SanctionDetail() {
                 </Callout>
                 <OptionsProvider {...options}>
                   <div className="flex flex-col gap-6">
+                    <form.Field name="counterPartyId">
+                      {(field) => (
+                        <div className="flex flex-col gap-4">
+                          <FormLabel name={field.name}>
+                            Counterparty ID
+                          </FormLabel>
+                          <FieldNode
+                            name={field.name}
+                            value={field.state.value}
+                            onChange={field.handleChange}
+                            onBlur={field.handleBlur}
+                            placeholder="Select the transaction ID"
+                          />
+                          <FormErrorOrDescription
+                            errors={field.state.meta.errors}
+                          />
+                        </div>
+                      )}
+                    </form.Field>
                     <form.Field name="query.name">
                       {(field) => (
                         <div className="flex flex-col gap-4">
@@ -456,13 +526,12 @@ export default function SanctionDetail() {
                           <FormLabel name={field.name}>
                             Transaction Label
                           </FormLabel>
-                          <FieldMatches
+                          <FieldNode
                             name={field.name}
                             value={field.state.value}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
                             placeholder="Select the transaction label"
-                            limit={1}
                           />
                           <FormErrorOrDescription
                             errors={field.state.meta.errors}

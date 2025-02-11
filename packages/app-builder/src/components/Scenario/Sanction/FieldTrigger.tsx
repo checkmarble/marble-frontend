@@ -20,7 +20,7 @@ export const FieldTrigger = ({
 }: {
   name?: string;
   trigger?: AstNode;
-  onChange?: (node: string) => void;
+  onChange?: (node: AstNode) => void;
   onBlur?: () => void;
   scenarioId: string;
   iterationId: string;
@@ -44,7 +44,10 @@ export const FieldTrigger = ({
     if (ref.current) {
       ref.current.onchange = (e) => {
         onChange?.(
-          (e as unknown as ChangeEvent<HTMLInputElement>).currentTarget?.value,
+          JSON.parse(
+            (e as unknown as ChangeEvent<HTMLInputElement>).currentTarget
+              ?.value,
+          ),
         );
       };
     }

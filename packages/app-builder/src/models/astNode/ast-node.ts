@@ -99,7 +99,7 @@ export function adaptNodeDto(astNode: AstNode): NodeDto {
   return {
     name: astNode.name ?? undefined,
     constant: astNode.constant,
-    children: astNode.children.map(adaptNodeDto),
+    children: (astNode.children ?? []).map(adaptNodeDto),
     named_children: R.mapValues(astNode.namedChildren ?? {}, adaptNodeDto),
   };
 }

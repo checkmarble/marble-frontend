@@ -137,7 +137,7 @@ export const FieldSanction = ({
       <input
         name={name}
         ref={ref}
-        defaultValue={defaultValue}
+        defaultValue={JSON.stringify(defaultValue)}
         className="sr-only"
         tabIndex={-1}
         onBlur={onBlur}

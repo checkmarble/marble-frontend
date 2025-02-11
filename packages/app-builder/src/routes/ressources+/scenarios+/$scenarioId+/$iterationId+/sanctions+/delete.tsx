@@ -15,7 +15,6 @@ export const handle = {
 };
 
 const deleteSanctionFormSchema = z.object({
-  sanctionId: z.string().uuid(),
   scenarioId: z.string().uuid(),
   iterationId: z.string().uuid(),
 });
