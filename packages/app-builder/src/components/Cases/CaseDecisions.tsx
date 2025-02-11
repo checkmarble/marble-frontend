@@ -1,8 +1,4 @@
-import {
-  type DataModelObject,
-  type Pivot,
-  type TableModel,
-} from '@app-builder/models';
+import { type Pivot, type TableModel } from '@app-builder/models';
 import {
   type DatabaseAccessAstNode,
   type PayloadAstNode,
@@ -14,29 +10,31 @@ import {
 } from '@app-builder/models/decision';
 import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type RuleSnoozeWithRuleId } from '@app-builder/models/rule-snooze';
+import { type SanctionCheck } from '@app-builder/models/sanction-check';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
-import { Await, Link, useFetcher } from '@remix-run/react';
+import { Await, Link } from '@remix-run/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import {
+  Button,
   CollapsibleV2,
   MenuButton,
   MenuItem,
   MenuPopover,
   MenuRoot,
-  ModalV2,
   Switch,
+  Tag,
   Tooltip,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { IngestedObjectDetail } from '../Data/IngestedObjectDetail';
+import { IngestedObjectDetailModal } from '../Data/IngestedObjectDetailModal';
 import { RuleExecutionDetail } from '../Decisions';
 import { OutcomeAndReviewStatus } from '../Decisions/OutcomeAndReviewStatus';
 import {
@@ -63,14 +61,17 @@ interface DecisionsDetailWithContext {
     payloadAccessors: PayloadAstNode[];
   };
   ruleSnoozes: RuleSnoozeWithRuleId[];
+  sanctionChecks: SanctionCheck[];
 }
 
 export function CaseDecisions({
+  caseId,
   decisions,
   featureAccess,
   entitlements,
   caseDecisionsPromise,
 }: {
+  caseId: string;
   decisions: Decision[];
   featureAccess: {
     isReadSnoozeAvailable: boolean;
@@ -135,9 +136,7 @@ export function CaseDecisions({
                       {row.scenario.name}
                     </Link>
                   </Tooltip.Default>
-                  <div className="border-grey-90 text-grey-00 rounded-full border px-3 py-1 font-semibold">
-                    {`V${row.scenario.version}`}
-                  </div>
+                  <div className="border-grey-90 text-grey-00 rounded-full border px-3 py-1 font-semibold">{`V${row.scenario.version}`}</div>
                 </div>
                 <div>
                   <Tooltip.Default content={row.triggerObjectType}>
@@ -157,6 +156,7 @@ export function CaseDecisions({
                       return (
                         <DecisionDetail
                           key={row.id}
+                          caseId={caseId}
                           decision={row}
                           decisionsDetail={decisionsDetail}
                           dataModel={dataModel}
@@ -267,6 +267,7 @@ function DecisionActions({ decision }: { decision: Decision }) {
 }
 
 function DecisionDetail({
+  caseId,
   decision,
   decisionsDetail,
   dataModel,
@@ -274,6 +275,7 @@ function DecisionDetail({
   entitlements,
   featureAccess,
 }: {
+  caseId: string;
   decision: Decision;
   decisionsDetail: DecisionsDetailWithContext[];
   dataModel: TableModel[];
@@ -325,6 +327,8 @@ function DecisionDetail({
     return null;
   }
 
+  const sanctionCheck = decisionDetail.sanctionChecks[0] ?? null;
+
   return (
     <div className="flex flex-row gap-6 p-4">
       <div className="flex h-fit flex-[2] flex-col gap-2">
@@ -339,6 +343,35 @@ function DecisionDetail({
             onCheckedChange={setShowHitOnly}
           />
         </div>
+
+        {sanctionCheck ? (
+          <>
+            <div className="text-s text-grey-50">Check sanction</div>
+            <div className="bg-grey-98 grid h-fit grid-cols-[1fr_max-content] items-center gap-2 rounded-lg px-4 py-3">
+              <span className="text-s line-clamp-1 text-start font-semibold">
+                Some sanction check rule name
+              </span>
+              <div className="inline-flex items-center gap-2">
+                <Tag color="orange" border="square" className="h-8">
+                  {sanctionCheck.status}
+                </Tag>
+                <Link
+                  to={getRoute('/cases/:caseId/sanctions/:decisionId', {
+                    caseId: fromUUID(caseId),
+                    decisionId: fromUUID(decision.id),
+                  })}
+                >
+                  <Button>
+                    <Icon icon="case-manager" className="size-5" />
+                    {t('sanctions:start_reviewing')}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </>
+        ) : null}
+
+        <div className="text-s text-grey-50">Hits</div>
         <RulesExecutionsContainer className="h-fit">
           {filteredRuleExecutions.map((ruleExecution) => {
             const ruleSnoozes = decisionDetail.ruleSnoozes.filter(
@@ -423,59 +456,6 @@ function DecisionDetail({
         </div>
       </div>
     </div>
-  );
-}
-
-function IngestedObjectDetailModal({
-  dataModel,
-  tableName,
-  objectId,
-  onClose,
-}: {
-  dataModel: TableModel[];
-  tableName: string;
-  objectId: string;
-  onClose: () => void;
-}) {
-  const { t } = useTranslation(['data']);
-  const {
-    load: fetcherLoad,
-    data,
-    state: fetchState,
-  } = useFetcher<{ object: DataModelObject | null }>();
-
-  React.useEffect(() => {
-    fetcherLoad(
-      getRoute('/data/view/:tableName/:objectId', {
-        tableName,
-        objectId,
-      }),
-    );
-  }, [fetcherLoad, tableName, objectId]);
-
-  if (fetchState === 'loading' || !data) {
-    return null;
-  }
-
-  return (
-    <ModalV2.Content open onClose={onClose} size="large">
-      <ModalV2.Title>{tableName}</ModalV2.Title>
-      {data.object ? (
-        <IngestedObjectDetail
-          light
-          bordered={false}
-          withLinks={false}
-          dataModel={dataModel}
-          tableName={tableName}
-          objectId={objectId}
-          object={data.object}
-        />
-      ) : (
-        <div className="p-4 text-center">
-          {t('data:viewer.no_object_found', { tableName, objectId })}
-        </div>
-      )}
-    </ModalV2.Content>
   );
 }
 
