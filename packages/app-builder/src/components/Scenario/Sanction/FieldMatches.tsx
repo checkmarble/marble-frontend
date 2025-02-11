@@ -42,7 +42,7 @@ export function FieldMatches({
   onChange,
   placeholder,
 }: {
-  value: AstNode[];
+  value: AstNode;
   limit?: number;
   placeholder?: string;
   name?: string;
@@ -52,7 +52,7 @@ export function FieldMatches({
   const ref = useRef<HTMLInputElement>(null);
 
   const [nodes, setNodes] = useState<Record<string, AstNode>>(
-    value.reduce(
+    (value.children ?? [NewUndefinedAstNode()]).reduce(
       (acc, node) => {
         acc[nanoid()] = node;
         return acc;

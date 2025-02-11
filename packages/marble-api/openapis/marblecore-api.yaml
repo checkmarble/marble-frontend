@@ -1693,6 +1693,55 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
+  /scenario-iterations/{scenarioIterationId}/sanction-check:
+    delete:
+      tags:
+        - Scenario Iterations
+      summary: Delete a sanction check for a scenario iteration
+      operationId: deleteSanctionCheckConfig
+      parameters:
+        - name: scenarioIterationId
+          description: ID of the scenario iteration
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: The sanction check has been deleted
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    patch:
+      tags:
+        - Scenario Iterations
+      summary: Upsert a sanction check for a scenario iteration
+      operationId: upsertSanctionCheckConfig
+      parameters:
+        - name: scenarioIterationId
+          description: ID of the scenario iteration
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: The SanctionCheckConfig to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SanctionCheckConfigDto'
+      responses:
+        '200':
+          description: The upserted SanctionCheckConfig
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SanctionCheckConfigDto'
   /sanction-checks:
     get:
       tags:
@@ -1716,6 +1765,19 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SanctionCheckDto'
+  /sanction-checks/datasets:
+    get:
+      tags:
+        - Sanction Check
+      summary: List Open Sanction Dataset
+      operationId: listOpenSanctionDatasets
+      responses:
+        '200':
+          description: The list of datasets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenSanctionsCatalogDto'
   /sanction-checks/{sanctionCheckId}/files:
     get:
       tags:
@@ -3683,6 +3745,8 @@ components:
       required:
         - id
         - name
+        - sanction_threshold
+        - sanction_limit
       properties:
         id:
           type: string
@@ -3693,6 +3757,12 @@ components:
         default_scenario_timezone:
           type: string
           description: Timezone (IANA format) used by default for scenarios of this organization, when interpreting timestamps as datetimes.
+        sanction_threshold:
+          type: number
+          description: Threshold for sanction checks
+        sanction_limit:
+          type: number
+          description: Limit for sanction checks
     CreateOrganizationBodyDto:
       type: object
       required:
@@ -3705,6 +3775,10 @@ components:
       properties:
         default_scenario_timezone:
           type: string
+        sanction_threshold:
+          type: number
+        sanction_limit:
+          type: number
     UserDto:
       type: object
       required:
@@ -4950,6 +5024,68 @@ components:
         - description
         - name
         - trigger_object_type
+    OpenSanctionsCatalogDataset:
+      type: object
+      required:
+        - name
+        - title
+      properties:
+        name:
+          type: string
+        title:
+          type: string
+    OpenSanctionsCatalogSection:
+      type: object
+      required:
+        - name
+        - title
+        - datasets
+      properties:
+        name:
+          type: string
+        title:
+          type: string
+        datasets:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpenSanctionsCatalogDataset'
+    OpenSanctionsCatalogDto:
+      type: object
+      required:
+        - sections
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpenSanctionsCatalogSection'
+    SanctionCheckConfigDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        rule_group:
+          type: string
+        datasets:
+          type: array
+          items:
+            type: string
+        force_outcome:
+          $ref: '#/components/schemas/OutcomeDto'
+        score_modifier:
+          type: number
+        trigger_rule:
+          $ref: '#/components/schemas/NodeDto'
+        query:
+          type: object
+          properties:
+            name:
+              $ref: '#/components/schemas/NodeDto'
+            label:
+              $ref: '#/components/schemas/NodeDto'
+        counterparty_id:
+          $ref: '#/components/schemas/NodeDto'
     SanctionCheckDto:
       type: object
       required:
@@ -5202,6 +5338,10 @@ components:
               required:
                 - rules
               properties:
+                sanction_check_config:
+                  nullable: true
+                  allOf:
+                    - $ref: '#/components/schemas/SanctionCheckConfigDto'
                 trigger_condition_ast_expression:
                   nullable: true
                   allOf:

@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { diff, toggle } from 'radash';
 import {
   type ChangeEvent,
@@ -12,29 +13,20 @@ import {
 import { Checkbox, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export type SanctionCategory = {
-  id: string;
-  name: string;
-  lists: {
-    id: string;
-    name: string;
-  }[];
-};
-
 const FieldCategory = ({
-  category,
+  section,
   selectedIds,
   updateSelectedIds,
 }: {
-  category: SanctionCategory;
+  section: OpenSanctionsCatalogSection;
   selectedIds: string[];
   updateSelectedIds: Dispatch<SetStateAction<string[]>>;
 }) => {
   const [open, setOpen] = useState(false);
 
   const defaultListIds = useMemo(
-    () => category.lists.map((list) => list.id),
-    [category.lists],
+    () => section.datasets.map((dataset) => dataset.name),
+    [section.datasets],
   );
 
   const isAllSelected = useMemo(
@@ -44,7 +36,7 @@ const FieldCategory = ({
 
   return (
     <CollapsibleV2.Provider defaultOpen={open}>
-      <div key={category.id} className="w-full overflow-hidden rounded-lg">
+      <div key={section.name} className="w-full overflow-hidden rounded-lg">
         <div className="bg-grey-98 flex w-full items-center justify-between p-4">
           <CollapsibleV2.Title
             onClick={() => setOpen(!open)}
@@ -56,7 +48,7 @@ const FieldCategory = ({
                 'rotate-90': open,
               })}
             />
-            <span className="text-s font-semibold">{category.name}</span>
+            <span className="text-s font-semibold">{section.name}</span>
           </CollapsibleV2.Title>
           <div className="flex items-center gap-4">
             <span className="text-grey-50 text-xs">Select all</span>
@@ -81,15 +73,15 @@ const FieldCategory = ({
         </div>
         <CollapsibleV2.Content className="bg-grey-98 w-full p-4">
           <div className="border-grey-90 bg-grey-100 rounded-lg border">
-            {category.lists.map((list) => (
-              <div key={list.id} className="flex items-center gap-4 p-4">
+            {section.datasets.map((dataset) => (
+              <div key={dataset.name} className="flex items-center gap-4 p-4">
                 <Checkbox
-                  checked={selectedIds.includes(list.id)}
+                  checked={selectedIds.includes(dataset.name)}
                   onCheckedChange={() => {
-                    updateSelectedIds((prev) => toggle(prev, list.id));
+                    updateSelectedIds((prev) => toggle(prev, dataset.name));
                   }}
                 />
-                <span className="text-s">{list.name}</span>
+                <span className="text-s">{dataset.title}</span>
               </div>
             ))}
           </div>
@@ -103,11 +95,11 @@ export const FieldSanction = ({
   name,
   onChange,
   onBlur,
-  categories,
+  sections,
   defaultValue,
 }: {
   defaultValue?: string[];
-  categories: SanctionCategory[];
+  sections: OpenSanctionsCatalogSection[];
   name?: string;
   onChange?: (value: string[]) => void;
   onBlur?: () => void;
@@ -150,10 +142,10 @@ export const FieldSanction = ({
         tabIndex={-1}
         onBlur={onBlur}
       />
-      {categories.map((category) => (
+      {sections.map((section) => (
         <FieldCategory
-          key={category.id}
-          category={category}
+          key={section.name}
+          section={section}
           selectedIds={selectedIds}
           updateSelectedIds={updateSelectedIds}
         />

@@ -382,6 +382,20 @@ export type ScenarioIterationDto = {
     created_at: string;
     updated_at: string;
 };
+export type SanctionCheckConfigDto = {
+    name?: string;
+    description?: string;
+    rule_group?: string;
+    datasets?: string[];
+    force_outcome?: OutcomeDto;
+    score_modifier?: number;
+    trigger_rule?: NodeDto;
+    query?: {
+        name?: NodeDto;
+        label?: NodeDto;
+    };
+    counterparty_id?: NodeDto;
+};
 export type ScenarioIterationRuleDto = {
     id: string;
     scenario_iteration_id: string;
@@ -395,6 +409,7 @@ export type ScenarioIterationRuleDto = {
 };
 export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
+        sanction_check_config?: (SanctionCheckConfigDto) | null;
         trigger_condition_ast_expression?: (NodeDto) | null;
         score_review_threshold?: number;
         score_block_and_review_threshold?: number;
@@ -510,6 +525,18 @@ export type SanctionCheckDto = {
     partial: boolean;
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
+};
+export type OpenSanctionsCatalogDataset = {
+    name: string;
+    title: string;
+};
+export type OpenSanctionsCatalogSection = {
+    name: string;
+    title: string;
+    datasets: OpenSanctionsCatalogDataset[];
+};
+export type OpenSanctionsCatalogDto = {
+    sections: OpenSanctionsCatalogSection[];
 };
 export type SanctionCheckFileDto = {
     id: string;
@@ -683,12 +710,18 @@ export type OrganizationDto = {
     name: string;
     /** Timezone (IANA format) used by default for scenarios of this organization, when interpreting timestamps as datetimes. */
     default_scenario_timezone?: string;
+    /** Threshold for sanction checks */
+    sanction_threshold: number;
+    /** Limit for sanction checks */
+    sanction_limit: number;
 };
 export type CreateOrganizationBodyDto = {
     name: string;
 };
 export type UpdateOrganizationBodyDto = {
     default_scenario_timezone?: string;
+    sanction_threshold?: number;
+    sanction_limit?: number;
 };
 export type InboxUserDto = {
     id: string;
@@ -1821,6 +1854,39 @@ export function commitScenarioIteration(scenarioIterationId: string, opts?: Oaza
     }));
 }
 /**
+ * Delete a sanction check for a scenario iteration
+ */
+export function deleteSanctionCheckConfig(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Upsert a sanction check for a scenario iteration
+ */
+export function upsertSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckConfigDto;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: sanctionCheckConfigDto
+    })));
+}
+/**
  * List sanction checks for a decision
  */
 export function listSanctionChecks(decisionId: string, opts?: Oazapfts.RequestOpts) {
@@ -1830,6 +1896,17 @@ export function listSanctionChecks(decisionId: string, opts?: Oazapfts.RequestOp
     }>(`/sanction-checks${QS.query(QS.explode({
         decision_id: decisionId
     }))}`, {
+        ...opts
+    }));
+}
+/**
+ * List Open Sanction Dataset
+ */
+export function listOpenSanctionDatasets(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: OpenSanctionsCatalogDto;
+    }>("/sanction-checks/datasets", {
         ...opts
     }));
 }

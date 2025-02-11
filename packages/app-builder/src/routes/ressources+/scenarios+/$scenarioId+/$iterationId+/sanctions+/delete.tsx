@@ -32,8 +32,10 @@ export async function action({ request }: ActionFunctionArgs) {
     // TODO check error
     return null;
   }
-  const { sanctionId, scenarioId, iterationId } = parsedForm.data;
-  await scenarioIterationSanctionRepository.deleteSanction({ sanctionId });
+  const { scenarioId, iterationId } = parsedForm.data;
+  await scenarioIterationSanctionRepository.deleteSanctioncheckConfig({
+    iterationId,
+  });
   return redirect(
     getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
       scenarioId: fromUUID(scenarioId),
@@ -43,12 +45,10 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export function DeleteSanction({
-  sanctionId,
   scenarioId,
   iterationId,
   children,
 }: {
-  sanctionId: string;
   scenarioId: string;
   iterationId: string;
   children: React.ReactElement;
@@ -70,11 +70,7 @@ export function DeleteSanction({
             },
           )}
         >
-          <HiddenInputs
-            sanctionId={sanctionId}
-            scenarioId={scenarioId}
-            iterationId={iterationId}
-          />
+          <HiddenInputs scenarioId={scenarioId} iterationId={iterationId} />
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
               <div className="bg-red-95 mb-6 box-border rounded-[90px] p-4">
