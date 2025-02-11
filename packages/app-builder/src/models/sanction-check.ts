@@ -7,18 +7,21 @@ import {
 } from 'marble-api';
 import * as R from 'remeda';
 
+const entitySchemas = [
+  'Thing',
+  'LegalEntity',
+  'Person',
+  'Organization',
+  'Company',
+] as const;
+
 export type SanctionCheckStatus =
   | 'in_review'
   | 'confirmed_hit'
   | 'no_hit'
   | 'error';
 export type SanctionCheckMatchStatus = 'pending' | 'confirmed_hit' | 'no_hit';
-export type SanctionCheckEntitySchema =
-  | 'Thing'
-  | 'LegalEntity'
-  | 'Person'
-  | 'Organization'
-  | 'Company';
+export type SanctionCheckEntitySchema = (typeof entitySchemas)[number];
 
 export type SanctionCheckMatchPayload = {
   id: string;
@@ -29,10 +32,19 @@ export type SanctionCheckMatchPayload = {
   properties: Record<string, string[]>;
 };
 
+function isKnownEntitySchema(
+  schema: string,
+): schema is SanctionCheckEntitySchema {
+  return (entitySchemas as ReadonlyArray<string>).includes(schema);
+}
+
 export function adapatSanctionCheckMatchPayload(
   dto: SanctionCheckMatchPayloadDto,
 ): SanctionCheckMatchPayload {
-  return dto;
+  return {
+    ...dto,
+    schema: isKnownEntitySchema(dto.schema) ? dto.schema : 'Thing',
+  };
 }
 
 export type SanctionCheckMatch = {
@@ -82,12 +94,21 @@ export type SanctionCheckRequest = {
   };
 };
 
+function adaptQueries(dto: SanctionCheckRequestDto['search_input']['queries']) {
+  return R.mapValues(dto, (value) => {
+    return {
+      schema: isKnownEntitySchema(value.schema) ? value.schema : 'Thing',
+      properties: value.properties,
+    };
+  });
+}
+
 export function adaptSanctionCheckRequest(
   dto: SanctionCheckRequestDto,
 ): SanctionCheckRequest {
   return {
     threshold: dto.threshold,
-    queries: dto.search_input.queries,
+    queries: adaptQueries(dto.search_input.queries),
   };
 }
 
@@ -97,7 +118,6 @@ export type SanctionCheck = {
   status: SanctionCheckStatus;
   request: SanctionCheckRequest;
   partial: boolean;
-  count: number;
   isManual: boolean;
   matches: SanctionCheckMatch[];
 };
@@ -109,7 +129,6 @@ export function adaptSanctionCheck(dto: SanctionCheckDto): SanctionCheck {
     status: dto.status,
     request: adaptSanctionCheckRequest(dto.request),
     partial: dto.partial,
-    count: dto.count,
     isManual: dto.is_manual,
     matches: R.map(dto.matches, adaptSanctionCheckMatch),
   };

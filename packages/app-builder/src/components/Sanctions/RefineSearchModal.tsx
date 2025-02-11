@@ -10,17 +10,13 @@ import {
   type action as searchAction,
   refineSearchSchema,
 } from '@app-builder/routes/ressources+/sanction-check+/search';
+import { handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
-import {
-  type FormEvent,
-  type ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { serialize as objectToFormData } from 'object-to-formdata';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Input, ModalV2, Select } from 'ui-design-system';
@@ -92,20 +88,11 @@ export function RefineSearchModal({
       onChange: refineSearchSchema,
     },
     onSubmit: ({ value }) => {
-      const formData = new FormData();
+      formDataRef.current = objectToFormData(value, {
+        dotsForObjectNotation: true,
+      });
 
-      formData.append('entityType', value.entityType);
-      formData.append('decisionId', value.decisionId);
-      for (const k in value.fields) {
-        formData.append(
-          `fields.${k}`,
-          value.fields[k as keyof typeof value.fields] ?? '',
-        );
-      }
-
-      formDataRef.current = formData;
-
-      searchFetcher.submit(formData, {
+      searchFetcher.submit(formDataRef.current, {
         method: 'POST',
         action: getRoute('/ressources/sanction-check/search'),
       });
@@ -128,12 +115,6 @@ export function RefineSearchModal({
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
   const additionalFields = entityType ? SEARCH_ENTITIES[entityType].fields : [];
-
-  const handleFormSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    form.handleSubmit();
-  };
 
   const onSearchEntityChange = ({ value }: { value: SearchableSchema }) => {
     if (value) {
@@ -205,7 +186,7 @@ export function RefineSearchModal({
           </div>
         </>
       ) : (
-        <searchFetcher.Form onSubmit={handleFormSubmit}>
+        <searchFetcher.Form onSubmit={handleSubmit(form)}>
           <div className="flex flex-col gap-3 p-6 pb-3">
             <Field label="Search covers the following fields:">
               {searchInputs.map((input, i) => (

@@ -4958,7 +4958,6 @@ components:
         - status
         - request
         - partial
-        - count
         - is_manual
         - matches
       properties:
@@ -4975,8 +4974,6 @@ components:
           $ref: '#/components/schemas/SanctionCheckRequestDto'
         partial:
           type: boolean
-        count:
-          type: number
         is_manual:
           type: boolean
         matches:
@@ -5073,7 +5070,37 @@ components:
                 format: date-time
     SanctionCheckEntityDto:
       type: string
-      enum: ['Thing', 'Person', 'Company']
+      enum:
+        [
+          'Thing',
+          'Address',
+          'Airplane',
+          'Asset',
+          'Associate',
+          'Company',
+          'CryptoWallet',
+          'Debt',
+          'Directorship',
+          'Employment',
+          'Family',
+          'Identification',
+          'LegalEntity',
+          'Membership',
+          'Occupancy',
+          'Organization',
+          'Ownership',
+          'Passport',
+          'Payment',
+          'Person',
+          'Position',
+          'PublicBody',
+          'Representation',
+          'Sanction',
+          'Security',
+          'Succession',
+          'UnknownLink',
+          'Vessel',
+        ]
     SanctionCheckRequestDto:
       type: object
       required:

@@ -73,7 +73,6 @@
   "entity.schema.organization": "منظمة",
   "entity.schema.person": "شخص",
   "entity.schema.thing": "شيء",
-  "match.callout.role.pep": "{{name}} هو شخص مكشوف سياسيا. \nإنهم شخص يهمهم بفضل موقفهم والتأثير الذي قد يحملونه. \nلم يتم العثور عليها في قوائم العقوبات الدولية.",
   "match.not_reviewed": "لم تتم مراجعتها",
   "match.similarity": "التشابه {{٪}} ٪",
   "match.status.confirmed_hit": "أكد المباراة",
@@ -96,5 +95,10 @@
   "status.confirmed_hit": "ضربة مؤكدة",
   "status.error": "خطأ",
   "status.in_review": "ضربات للمراجعة",
-  "status.no_hit": "لا تطابق"
+  "status.no_hit": "لا تطابق",
+  "review_modal.callout_confirmed_hit": "من خلال اختيار تأكيد هذه المباراة ، سيتم تغيير حالة فحص العقوبات هذا تلقائيًا لضرب مؤكد",
+  "review_modal.comment_label": "أضف تعليقًا",
+  "review_modal.status_label": "اختر حالة",
+  "review_modal.title": "تغيير حالة المباراة",
+  "review_modal.whitelist_label": "لا تنبه مرة أخرى إذا كان هذا الملف الشخصي مرتبطًا بـ:"
 }

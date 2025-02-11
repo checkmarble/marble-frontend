@@ -10,7 +10,7 @@ import { useFetcher } from '@remix-run/react';
 import { type UpdateSanctionCheckMatchDto } from 'marble-api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ModalV2, Switch, TextArea } from 'ui-design-system';
+import { Button, ModalV2, TextArea } from 'ui-design-system';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -68,7 +68,7 @@ export const SanctionCheckReviewModal = ({
   onClose: () => void;
   sanctionMatchId: string;
 }) => {
-  const { t } = useTranslation(['common', 'cases']);
+  const { t } = useTranslation(['common', 'sanctions']);
   const [currentStatus, setCurrentStatus] = useState<
     UpdateSanctionCheckMatchDto['status'] | null
   >(null);
@@ -92,7 +92,7 @@ export const SanctionCheckReviewModal = ({
       onClose={onClose}
       size="small"
     >
-      <ModalV2.Title>Change match status</ModalV2.Title>
+      <ModalV2.Title>{t('sanctions:review_modal.title')}</ModalV2.Title>
       <fetcher.Form
         className="flex flex-col gap-8 p-8"
         method="post"
@@ -100,39 +100,34 @@ export const SanctionCheckReviewModal = ({
       >
         <input name="matchId" type="hidden" value={sanctionMatchId} />
         <div className="flex flex-col gap-2">
-          <div className="text-m">Choose a status</div>
+          <div className="text-m">
+            {t('sanctions:review_modal.status_label')}
+          </div>
           <StatusRadioGroup value={currentStatus} onChange={setCurrentStatus} />
           {currentStatus === 'confirmed_hit' ? (
             <Callout>
-              By choosing to confirm this match, the status of this sanction
-              check will automatically changed for Confirmed hit
+              {t('sanctions:review_modal.callout_confirmed_hit')}
             </Callout>
           ) : null}
-          {/* <div className="grid grid-cols-2 gap-2">
-              {(['confirmed_hit', 'no_hit'] as const).map((status) => (
-                <div key={status} className="border-grey-90 flex items-center gap-2 rounded border p-2">
-                  <Icon className="text-grey-90 size-6" icon={status === match.status ? 'radio-selected' : 'radio-unselected'} />
-                  <StatusTag status={status} disabled />
-                </div>
-              ))}
-            </div> */}
         </div>
         <div className="flex flex-col gap-2">
-          <div className="text-m">Add a comment</div>
+          <div className="text-m">
+            {t('sanctions:review_modal.comment_label')}
+          </div>
           <TextArea name="comment" />
         </div>
-        {currentStatus === 'no_hit' ? (
+        {/* TODO: Whitelisting */}
+        {/* {currentStatus === 'no_hit' ? (
           <div className="flex flex-col gap-2">
             <span className="flex items-center gap-2">
-              <Switch name="whitelist" /> Do not alert again if this profile is
-              associated with:
+              <Switch name="whitelist" /> {t('sanctions:review_modal.whitelist_label')}
             </span>
             <div className="border-grey-90 bg-grey-98 flex flex-col gap-2 rounded border p-2">
               <span className="font-semibold">IBAN</span>
               <span>FR76 4061 8801 5200 0500 9263 912</span>
             </div>
           </div>
-        ) : null}
+        ) : null} */}
         <div className="flex flex-1 flex-row gap-2">
           <ModalV2.Close
             render={

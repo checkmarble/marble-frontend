@@ -463,7 +463,7 @@ export type SnoozesOfIterationDto = {
     iteration_id: string;
     rule_snoozes: RuleSnoozeInformationDto[];
 };
-export type SanctionCheckEntityDto = "Thing" | "Person" | "Company";
+export type SanctionCheckEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel";
 export type SanctionCheckRequestDto = {
     threshold: number;
     limit: number;
@@ -508,7 +508,6 @@ export type SanctionCheckDto = {
     status: "in_review" | "confirmed_hit" | "no_hit" | "error";
     request: SanctionCheckRequestDto;
     partial: boolean;
-    count: number;
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
 };
