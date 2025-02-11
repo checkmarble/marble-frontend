@@ -232,7 +232,7 @@ export default function SanctionDetail() {
       onSubmit: editSanctionFormSchema,
     },
     defaultValues: {
-      name: sanctionCheckConfig?.name ?? '',
+      name: sanctionCheckConfig?.name ?? 'Sanction Check',
       description: sanctionCheckConfig?.description ?? '',
       ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Sanction check',
       datasets: sanctionCheckConfig?.datasets ?? [],

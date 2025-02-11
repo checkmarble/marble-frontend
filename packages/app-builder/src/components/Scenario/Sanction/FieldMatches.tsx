@@ -52,7 +52,7 @@ export function FieldMatches({
   const ref = useRef<HTMLInputElement>(null);
 
   const [nodes, setNodes] = useState<Record<string, AstNode>>(
-    (value.children ?? [NewUndefinedAstNode()]).reduce(
+    (value.children?.length ? value.children : [NewUndefinedAstNode()]).reduce(
       (acc, node) => {
         acc[nanoid()] = node;
         return acc;
