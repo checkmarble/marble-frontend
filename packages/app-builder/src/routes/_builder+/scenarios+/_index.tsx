@@ -69,9 +69,11 @@ export default function ScenariosPage() {
                             </Tag>
                           ) : null}
                         </div>
-                        <p className="text-s line-clamp-2 font-medium">
-                          {scenario.description}
-                        </p>
+                        {scenario.description ? (
+                          <p className="text-s line-clamp-2 font-medium">
+                            {scenario.description}
+                          </p>
+                        ) : null}
                       </div>
                     </Link>
                   );
