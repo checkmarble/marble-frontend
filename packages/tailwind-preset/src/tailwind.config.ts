@@ -265,6 +265,12 @@ export default {
         '.scrollbar-gutter-stable': {
           'scrollbar-gutter': 'stable',
         },
+        '.text-rtl': {
+          direction: 'rtl',
+        },
+        '.text-ltr': {
+          direction: 'ltr',
+        },
       });
     },
   ],

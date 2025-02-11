@@ -57,5 +57,6 @@
   "rules.error.division_by_zero": "Division by zero",
   "rules.description": "Description",
   "rules.error.not_found": "The associated rule info could not be found. Please try again or contact your admin.",
-  "rules.show_contextual_values": "Show contextual values"
+  "rules.show_contextual_values": "Show contextual values",
+  "sanction_check.title": "Sanction check"
 }

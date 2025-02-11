@@ -26,8 +26,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     expectedReturnType: body.expectedReturnType,
   });
 
-  console.dir(res, { depth: null });
-
   return res;
 }
 
