@@ -84,6 +84,7 @@
   "refine_modal.result_label": "Matchs possibles avec votre recherche:",
   "refine_modal.schema.company": "Entreprise",
   "refine_modal.schema.legalentity": "Je ne sais pas",
+  "refine_modal.schema.thing": "Je ne sais pas",
   "refine_modal.schema.organization": "Organisation",
   "refine_modal.schema.person": "Personne",
   "refine_modal.search_by": "Recherche par:",
@@ -100,5 +101,12 @@
   "review_modal.comment_label": "Ajouter un commentaire",
   "review_modal.status_label": "Choisissez un statut",
   "review_modal.title": "Modifier l'état de la correspondance",
-  "review_modal.whitelist_label": "Ne plus alerter si ce profil est associé à:"
+  "review_modal.whitelist_label": "Ne plus alerter si ce profil est associé à:",
+  "callout.needs_review": "{{toreview}} / {{totalmatches}} à examiner",
+  "entity.schema.vehicle": "Véhicule",
+  "refine_modal.no_match_callout": "En appliquant cette recherche, le contrôle de sanction sera défini comme suit: <Statut />",
+  "refine_modal.no_match_label": "Aucune correspondance possible n'a été trouvée avec votre recherche.",
+  "refine_modal.schema.vehicle": "Véhicule",
+  "entity.schema.airplane": "Avion",
+  "entity.schema.vessel": "Navire"
 }

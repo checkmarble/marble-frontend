@@ -11,6 +11,7 @@ import { decisionsI18n } from './decisions-i18n';
 
 export interface OutcomeProps extends Omit<TagProps, 'color'> {
   reviewStatus: ReviewStatus;
+  disabled?: boolean;
 }
 
 const reviewStatusMapping: Record<
@@ -38,13 +39,17 @@ export function useReviewStatuses() {
   );
 }
 
-export function ReviewStatusTag({ reviewStatus, ...tagProps }: OutcomeProps) {
+export function ReviewStatusTag({
+  reviewStatus,
+  disabled,
+  ...tagProps
+}: OutcomeProps) {
   const { t } = useTranslation(decisionsI18n);
 
   const { color, tKey } = reviewStatusMapping[reviewStatus];
 
   return (
-    <Tag {...tagProps} color={color}>
+    <Tag {...tagProps} color={disabled ? 'grey' : color}>
       <span className="text-center capitalize">{t(tKey)}</span>
     </Tag>
   );

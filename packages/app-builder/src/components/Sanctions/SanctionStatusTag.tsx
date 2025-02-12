@@ -18,9 +18,21 @@ const sanctionStatusMapping = {
   }
 >;
 
-export function SanctionStatusTag({ status }: { status: SanctionCheckStatus }) {
+export function SanctionStatusTag({
+  status,
+  border,
+  className,
+}: {
+  status: SanctionCheckStatus;
+  border?: 'rounded' | 'square';
+  className?: string;
+}) {
   const { t } = useTranslation(sanctionsI18n);
   const sanctionStatus = sanctionStatusMapping[status];
 
-  return <Tag color={sanctionStatus.color}>{t(sanctionStatus.tKey)}</Tag>;
+  return (
+    <Tag border={border} color={sanctionStatus.color} className={className}>
+      {t(sanctionStatus.tKey)}
+    </Tag>
+  );
 }

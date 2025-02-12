@@ -1,5 +1,6 @@
 {
   "callout.review": "There are matches between the beneficiary information and the sanctions check. Check if it is the same beneficiary or not.",
+<<<<<<< HEAD
   "callout.needs_refine": "There are too many potential matches (>{{matchCount}}). To get more relevant results, please refine your search.",
   "refine_modal.apply_search": "Apply changes",
   "refine_modal.back_search": "Back to search",
@@ -9,6 +10,21 @@
   "refine_modal.schema.person": "Person",
   "refine_modal.schema.company": "Company",
   "refine_modal.schema.organization": "Organization",
+=======
+  "callout.needs_review": "{{toReview}}/{{totalMatches}} to review",
+  "callout.needs_refine": "There are too many potential matches (>{{matchCount}}). To get more relevant results, please refine your search.",
+  "refine_modal.apply_search": "Apply changes",
+  "refine_modal.back_search": "Back to search",
+  "refine_modal.no_match_callout": "By applying this search, the sanction check will be set as: <Status />",
+  "refine_modal.no_match_label": "No possible matches were found with your search.",
+  "refine_modal.refine_callout": "By applying this search, the sanction check will be updated to only display on the possible match visible above.",
+  "refine_modal.result_label": "Possible matches with your search:",
+  "refine_modal.schema.thing": "I don't know",
+  "refine_modal.schema.person": "Person",
+  "refine_modal.schema.company": "Company",
+  "refine_modal.schema.organization": "Organization",
+  "refine_modal.schema.vehicle": "Vehicle",
+>>>>>>> sanction-check
   "refine_modal.search_by": "Search by:",
   "refine_modal.test_search": "Test this search",
   "refine_modal.title": "Refine search",
@@ -96,9 +112,19 @@
   "entity.property.hairColor": "Hair color",
   "entity.property.appearance": "Appearance",
   "entity.property.political": "Political association",
+<<<<<<< HEAD
+=======
+  "entity.schema.airplane": "Airplane",
+>>>>>>> sanction-check
   "entity.schema.company": "Company",
   "entity.schema.person": "Person",
   "entity.schema.thing": "Thing",
   "entity.schema.organization": "Organization",
+<<<<<<< HEAD
   "entity.schema.legalentity": "Legal Entity"
+=======
+  "entity.schema.legalentity": "Legal Entity",
+  "entity.schema.vehicle": "Vehicle",
+  "entity.schema.vessel": "Vessel"
+>>>>>>> sanction-check
 }

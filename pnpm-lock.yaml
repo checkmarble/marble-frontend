@@ -160,6 +160,9 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      decode-formdata:
+        specifier: ^0.8.0
+        version: 0.8.0
       dinero.js:
         specifier: 2.0.0-alpha.14
         version: 2.0.0-alpha.14
@@ -231,7 +234,7 @@ importers:
         version: 6.4.1(@remix-run/node@2.15.1(typescript@5.6.3))(@remix-run/react@2.15.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.3))(i18next@23.16.2)(react-i18next@15.0.3(i18next@23.16.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       remix-utils:
         specifier: ^7.7.0
-        version: 7.7.0(@remix-run/node@2.15.1(typescript@5.6.3))(@remix-run/react@2.15.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.3))(@remix-run/router@1.21.0)(crypto-js@4.2.0)(react@18.3.1)(zod@3.24.1)
+        version: 7.7.0(@remix-run/node@2.15.1(typescript@5.6.3))(@remix-run/react@2.15.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.3))(@remix-run/router@1.21.1)(crypto-js@4.2.0)(react@18.3.1)(zod@3.24.1)
       short-uuid:
         specifier: ^5.2.0
         version: 5.2.0
@@ -17318,7 +17321,7 @@ snapshots:
     optionalDependencies:
       '@remix-run/node': 2.15.1(typescript@5.6.3)
 
-  remix-utils@7.7.0(@remix-run/node@2.15.1(typescript@5.6.3))(@remix-run/react@2.15.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.3))(@remix-run/router@1.21.0)(crypto-js@4.2.0)(react@18.3.1)(zod@3.24.1):
+  remix-utils@7.7.0(@remix-run/node@2.15.1(typescript@5.6.3))(@remix-run/react@2.15.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.3))(@remix-run/router@1.21.1)(crypto-js@4.2.0)(react@18.3.1)(zod@3.24.1):
     dependencies:
       type-fest: 4.26.1
     optionalDependencies:
