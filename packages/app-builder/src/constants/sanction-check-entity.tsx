@@ -86,6 +86,9 @@ export const schemaProperties = {
   ] as const,
   Organization: [] as const,
   Company: [] as const,
+  Vehicle: ['registrationNumber'] as const,
+  Airplane: [] as const,
+  Vessel: [] as const,
 } satisfies Record<SanctionCheckEntitySchema, string[]>;
 
 export type SanctionCheckEntityProperty =
@@ -97,6 +100,9 @@ const schemaInheritence = {
   Person: 'LegalEntity',
   Organization: 'LegalEntity',
   Company: 'Organization',
+  Vehicle: 'Thing',
+  Vessel: 'Vehicle',
+  Airplane: 'Vehicle',
 } satisfies Record<SanctionCheckEntitySchema, SanctionCheckEntitySchema | null>;
 
 const propertyMetadata = {
@@ -203,7 +209,11 @@ export function createPropertyTransformer(ctx: {
       case 'url':
         return <ExternalLink href={value}>{value}</ExternalLink>;
       case 'country':
-        return <span>{intlCountry.of(value.toUpperCase())}</span>;
+        try {
+          return <span>{intlCountry.of(value.toUpperCase())}</span>;
+        } catch {
+          return value.toUpperCase();
+        }
       case 'date':
         return <time dateTime={value}>{intlDate.format(new Date(value))}</time>;
     }
