@@ -44,7 +44,7 @@ export function NewAstNode({
   namedChildren,
 }: Partial<AstNode> = {}): AstNode {
   return {
-    name: name ?? undefined,
+    name: name ?? null,
     constant: constant,
     children: children ?? [],
     namedChildren: namedChildren ?? {},
