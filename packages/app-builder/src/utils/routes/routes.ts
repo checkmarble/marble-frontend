@@ -77,6 +77,23 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout",
+            "path": "cases/:caseId/sanctions/:decisionId",
+            "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_index",
+                "index": true,
+                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_index.tsx"
+              },
+              {
+                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits",
+                "path": "hits",
+                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits.tsx"
+              }
+            ]
+          },
+          {
             "id": "routes/_builder+/cases+/_index",
             "index": true,
             "path": "cases/",
@@ -388,6 +405,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/review-decision.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/review-sanction-match",
+        "path": "ressources/cases/review-sanction-match",
+        "file": "routes/ressources+/cases+/review-sanction-match.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/upload-file",
         "path": "ressources/cases/upload-file",
         "file": "routes/ressources+/cases+/upload-file.tsx"
@@ -461,6 +483,16 @@ export const routes = [
         "id": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId",
         "path": "ressources/rule-snoozes/read/:ruleSnoozeId",
         "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
+      },
+      {
+        "id": "routes/ressources+/sanction-check+/refine",
+        "path": "ressources/sanction-check/refine",
+        "file": "routes/ressources+/sanction-check+/refine.tsx"
+      },
+      {
+        "id": "routes/ressources+/sanction-check+/search",
+        "path": "ressources/sanction-check/search",
+        "file": "routes/ressources+/sanction-check+/search.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate",

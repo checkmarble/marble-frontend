@@ -30,5 +30,6 @@
   "transfercheck.alerts.received": "التنبيهات المستلمة",
   "transfercheck.alerts.sent": "التنبيهات المرسلة",
   "analytics.nudge": "تحليل قراراتك",
-  "data.viewer": "عارض البيانات المبتلع"
+  "data.viewer": "عارض البيانات المبتلع",
+  "case_manager.hits": "المراسلات"
 }

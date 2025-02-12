@@ -9,6 +9,7 @@ import { FormTextArea } from '@app-builder/components/Form/FormTextArea';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { nonPendingReviewStatuses } from '@app-builder/models/decision';
+import { type SanctionCheck } from '@app-builder/models/sanction-check';
 import { blockingReviewDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -75,23 +76,32 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export function ReviewDecisionModal({
   decisionId,
+  sanctionCheck,
   store,
 }: {
   decisionId: string;
+  sanctionCheck: SanctionCheck | undefined;
   store: Ariakit.DialogStore;
 }) {
+  console.log(sanctionCheck);
   return (
     <ModalV2.Content store={store}>
-      <ReviewDecisionContent setOpen={store.setOpen} decisionId={decisionId} />
+      <ReviewDecisionContent
+        setOpen={store.setOpen}
+        decisionId={decisionId}
+        sanctionCheck={sanctionCheck}
+      />
     </ModalV2.Content>
   );
 }
 
 function ReviewDecisionContent({
   decisionId,
+  sanctionCheck,
   setOpen,
 }: {
   decisionId: string;
+  sanctionCheck: SanctionCheck | undefined;
   setOpen: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);
@@ -159,16 +169,38 @@ function ReviewDecisionContent({
               placeholder={t(
                 'cases:case_detail.review_decision.review_status.placeholder',
               )}
+              contentClassName="max-w-[var(--radix-select-trigger-width)]"
             >
-              {nonPendingReviewStatuses.map((reviewStatus) => (
-                <FormSelect.DefaultItem key={reviewStatus} value={reviewStatus}>
-                  <ReviewStatusTag
-                    border="square"
-                    size="big"
-                    reviewStatus={reviewStatus}
-                  />
-                </FormSelect.DefaultItem>
-              ))}
+              {nonPendingReviewStatuses.map((reviewStatus) => {
+                const disabled =
+                  sanctionCheck && sanctionCheck.status === 'in_review';
+
+                return disabled && reviewStatus === 'approve' ? (
+                  <div className="flex flex-col items-start gap-2 p-1">
+                    <ReviewStatusTag
+                      key={reviewStatus}
+                      disabled
+                      border="square"
+                      size="big"
+                      reviewStatus={reviewStatus}
+                    />
+                    <span className="text-grey-50 text-xs">
+                      {t('cases:case_detail.review_decision.disabled_approve')}
+                    </span>
+                  </div>
+                ) : (
+                  <FormSelect.DefaultItem
+                    key={reviewStatus}
+                    value={reviewStatus}
+                  >
+                    <ReviewStatusTag
+                      border="square"
+                      size="big"
+                      reviewStatus={reviewStatus}
+                    />
+                  </FormSelect.DefaultItem>
+                );
+              })}
             </FormSelect.Default>
             <FormErrorOrDescription />
           </FormField>

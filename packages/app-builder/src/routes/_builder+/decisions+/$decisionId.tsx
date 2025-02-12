@@ -15,6 +15,7 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
+import { SanctionCheckDetail } from '@app-builder/components/Decisions/SanctionCheckDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { isNotFoundHttpError } from '@app-builder/models';
@@ -78,6 +79,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     customListsRepository,
     scenario,
     dataModelRepository,
+    sanctionCheck,
   } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -115,6 +117,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return defer({
       decision: currentDecision,
       pivots: await pivotsPromise,
+      sanctionCheck: (
+        await sanctionCheck.listSanctionChecks({ decisionId })
+      )?.[0],
       astRuleData,
     });
   } catch (error) {
@@ -127,7 +132,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function DecisionPage() {
-  const { decision, pivots, astRuleData } = useLoaderData<typeof loader>();
+  const { decision, pivots, astRuleData, sanctionCheck } =
+    useLoaderData<typeof loader>();
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -168,6 +174,9 @@ export default function DecisionPage() {
                   triggerObjectType={decision.triggerObjectType}
                   astRuleData={astRuleData}
                 />
+                {sanctionCheck ? (
+                  <SanctionCheckDetail sanctionCheck={sanctionCheck} />
+                ) : null}
               </div>
               <div className="flex flex-col gap-4 lg:gap-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">

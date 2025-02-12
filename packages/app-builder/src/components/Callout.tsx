@@ -20,6 +20,10 @@ const callout = cva(
         purple: 'border-s-2 border-s-purple-65',
         red: 'border-s-2 border-s-red-47',
       },
+      bordered: {
+        true: 'border border-grey-90',
+        false: null,
+      },
     },
   },
 );
@@ -33,12 +37,16 @@ export function Callout({
   className,
   color = 'purple',
   variant = 'soft',
+  bordered,
   ...otherProps
 }: CalloutProps) {
   if (!children) return null;
 
   return (
-    <div className={callout({ color, variant, className })} {...otherProps}>
+    <div
+      className={callout({ color, variant, className, bordered })}
+      {...otherProps}
+    >
       <Icon icon="lightbulb" className="size-6 shrink-0" />
       {children}
     </div>

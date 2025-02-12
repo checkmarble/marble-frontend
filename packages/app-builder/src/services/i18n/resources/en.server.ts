@@ -7,6 +7,7 @@ import decisions from '@app-builder/locales/en/decisions.json';
 import filters from '@app-builder/locales/en/filters.json';
 import lists from '@app-builder/locales/en/lists.json';
 import navigation from '@app-builder/locales/en/navigation.json';
+import sanctions from '@app-builder/locales/en/sanctions.json';
 import scenarios from '@app-builder/locales/en/scenarios.json';
 import settings from '@app-builder/locales/en/settings.json';
 import transfercheck from '@app-builder/locales/en/transfercheck.json';
@@ -23,6 +24,7 @@ export const en = {
   navigation,
   lists,
   auth,
+  sanctions,
   scenarios,
   settings,
   transfercheck,

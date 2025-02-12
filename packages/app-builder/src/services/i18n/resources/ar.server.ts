@@ -7,6 +7,7 @@ import decisions from '@app-builder/locales/ar/decisions.json';
 import filters from '@app-builder/locales/ar/filters.json';
 import lists from '@app-builder/locales/ar/lists.json';
 import navigation from '@app-builder/locales/ar/navigation.json';
+import sanctions from '@app-builder/locales/ar/sanctions.json';
 import scenarios from '@app-builder/locales/ar/scenarios.json';
 import settings from '@app-builder/locales/ar/settings.json';
 import transfercheck from '@app-builder/locales/ar/transfercheck.json';
@@ -23,6 +24,7 @@ export const ar = {
   navigation,
   lists,
   auth,
+  sanctions,
   scenarios,
   settings,
   transfercheck,

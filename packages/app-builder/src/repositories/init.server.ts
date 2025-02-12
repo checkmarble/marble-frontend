@@ -17,6 +17,7 @@ import { makeGetLicenseRepository } from './LicenseRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
 import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
+import { makeGetSanctionCheckRepository } from './SanctionCheckRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
 import { makeGetScenarioRepository } from './ScenarioRepository';
 import {
@@ -67,6 +68,7 @@ export function makeServerRepositories({
     getEditorRepository: makeGetEditorRepository(),
     getDecisionRepository: makeGetDecisionRepository(),
     getCaseRepository: makeGetCaseRepository(),
+    getSanctionCheckRepository: makeGetSanctionCheckRepository(),
     getCustomListRepository: makeGetCustomListRepository(),
     getScenarioRepository: makeGetScenarioRepository(),
     getScenarioIterationRuleRepository:

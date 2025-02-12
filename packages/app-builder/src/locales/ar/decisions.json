@@ -57,5 +57,6 @@
   "review_status.approve": "يعتمد",
   "review_status.decline": "انخفاض",
   "review_status.pending": "قيد الانتظار",
-  "rules.status.snoozed": "مؤجلة"
+  "rules.status.snoozed": "مؤجلة",
+  "sanction_check.title": "فحص العقوبة"
 }

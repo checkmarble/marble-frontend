@@ -6,6 +6,7 @@ import {
   useField,
 } from '@conform-to/react';
 import { type SelectValueProps } from '@radix-ui/react-select';
+import clsx from 'clsx';
 import * as React from 'react';
 import { Select } from 'ui-design-system';
 
@@ -100,11 +101,14 @@ const FormSelectTrigger = React.forwardRef<
 
 export type SelectProps = React.ComponentProps<typeof FormSelectRoot> &
   Pick<SelectValueProps, 'placeholder'> &
-  Pick<React.ComponentProps<typeof FormSelectTrigger>, 'border' | 'className'>;
+  Pick<
+    React.ComponentProps<typeof FormSelectTrigger>,
+    'border' | 'className'
+  > & { contentClassName?: string };
 
 const FormSelectDefault = React.forwardRef<HTMLButtonElement, SelectProps>(
   function SelectDefault(
-    { children, placeholder, border, className, ...props },
+    { children, placeholder, border, className, contentClassName, ...props },
     triggerRef,
   ) {
     return (
@@ -118,7 +122,10 @@ const FormSelectDefault = React.forwardRef<HTMLButtonElement, SelectProps>(
           <Select.Arrow />
         </FormSelectTrigger>
         <Select.Content
-          className="max-h-60 min-w-[var(--radix-select-trigger-width)]"
+          className={clsx(
+            'max-h-60 min-w-[var(--radix-select-trigger-width)]',
+            contentClassName,
+          )}
           align={border === 'rounded' ? 'center' : 'start'}
         >
           <Select.Viewport>{children}</Select.Viewport>

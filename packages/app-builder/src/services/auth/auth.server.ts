@@ -26,6 +26,7 @@ import { type makeGetLicenseRepository } from '@app-builder/repositories/License
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { type PartnerRepository } from '@app-builder/repositories/PartnerRepository';
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
+import { type SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type TestRunRepository } from '@app-builder/repositories/TestRunRepository';
@@ -52,6 +53,7 @@ interface AuthenticatedInfo {
   editor: EditorRepository;
   decision: DecisionRepository;
   cases: CaseRepository;
+  sanctionCheck: SanctionCheckRepository;
   customListsRepository: CustomListsRepository;
   dataModelRepository: DataModelRepository;
   apiKey: ApiKeyRepository;
@@ -123,6 +125,9 @@ interface MakeAuthenticationServerServiceArgs {
     marbleCoreApiClient: MarbleCoreApi,
   ) => DecisionRepository;
   getCaseRepository: (marbleCoreApiClient: MarbleCoreApi) => CaseRepository;
+  getSanctionCheckRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => SanctionCheckRepository;
   getCustomListRepository: (
     marbleCoreApiClient: MarbleCoreApi,
   ) => CustomListsRepository;
@@ -180,6 +185,7 @@ export function makeAuthenticationServerService({
   getEditorRepository,
   getDecisionRepository,
   getCaseRepository,
+  getSanctionCheckRepository,
   getCustomListRepository,
   getOrganizationRepository,
   getScenarioRepository,
@@ -357,6 +363,7 @@ export function makeAuthenticationServerService({
       editor: getEditorRepository(marbleCoreApiClient),
       decision: getDecisionRepository(marbleCoreApiClient),
       cases: getCaseRepository(marbleCoreApiClient),
+      sanctionCheck: getSanctionCheckRepository(marbleCoreApiClient),
       customListsRepository: getCustomListRepository(marbleCoreApiClient),
       scenario: getScenarioRepository(marbleCoreApiClient),
       scenarioIterationRuleRepository:

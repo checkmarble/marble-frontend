@@ -1,24 +1,64 @@
-import { type CaseFile } from '@app-builder/models/cases';
 import {
   AlreadyDownloadingError,
   AuthRequestError,
-  useDownloadCaseFiles,
-} from '@app-builder/services/DownloadCaseFilesService';
+  useDownloadFile,
+} from '@app-builder/services/DownloadFilesService';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Table, useVirtualTable } from 'ui-design-system';
 
-import { casesI18n } from './cases-i18n';
+import { AddYourFirstFile } from './AddYourFirstFile';
 
-const columnHelper = createColumnHelper<CaseFile>();
+const columnHelper = createColumnHelper<FilesListFile>();
 
-export function FilesList({ files }: { files: CaseFile[] }) {
-  const { t } = useTranslation(casesI18n);
+export type FilesListFile = {
+  id: string;
+  fileName: string;
+  createdAt: string;
+};
+
+export type FilesListProps = {
+  files: FilesListFile[];
+  downloadEnpoint: (id: string) => string;
+  uploadEnpoint: string;
+};
+
+export function FilesList({
+  files,
+  downloadEnpoint,
+  uploadEnpoint,
+}: FilesListProps) {
+  const { t } = useTranslation(['cases']);
+
+  if (files.length === 0) {
+    return (
+      <div className="bg-grey-100 border-grey-90 rounded-lg border p-4">
+        <span className="text-grey-50 text-s whitespace-pre">
+          <Trans
+            t={t}
+            i18nKey="cases:case_detail.no_files"
+            components={{
+              Button: <AddYourFirstFile uploadFileEndpoint={uploadEnpoint} />,
+            }}
+          />
+        </span>
+      </div>
+    );
+  }
+
+  return <FilesListTable downloadEnpoint={downloadEnpoint} files={files} />;
+}
+
+export function FilesListTable({
+  files,
+  downloadEnpoint,
+}: Omit<FilesListProps, 'uploadEnpoint'>) {
+  const { t } = useTranslation(['cases']);
   const language = useFormatLanguage();
 
   const columns = useMemo(() => {
@@ -54,12 +94,12 @@ export function FilesList({ files }: { files: CaseFile[] }) {
         header: t('cases:case.file.download'),
         size: 40,
         cell: ({ getValue }) => {
-          return <FileLink caseFileId={getValue()} />;
+          return <FileLink endpoint={downloadEnpoint(getValue())} />;
         },
       }),
     ];
     return columns;
-  }, [language, t]);
+  }, [language, t, downloadEnpoint]);
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: files,
@@ -81,23 +121,20 @@ export function FilesList({ files }: { files: CaseFile[] }) {
   );
 }
 
-function FileLink({ caseFileId }: { caseFileId: string }) {
-  const { downloadCaseFile, downloadingCaseFile } = useDownloadCaseFiles(
-    caseFileId,
-    {
-      onError: (e) => {
-        if (e instanceof AlreadyDownloadingError) {
-          // Already downloading, do nothing
-          return;
-        } else if (e instanceof AuthRequestError) {
-          toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
-        } else {
-          toast.error(t('cases:case.file.errors.downloading_link.unknown'));
-        }
-      },
+function FileLink({ endpoint }: { endpoint: string }) {
+  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(endpoint, {
+    onError: (e) => {
+      if (e instanceof AlreadyDownloadingError) {
+        // Already downloading, do nothing
+        return;
+      } else if (e instanceof AuthRequestError) {
+        toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
+      } else {
+        toast.error(t('cases:case.file.errors.downloading_link.unknown'));
+      }
     },
-  );
-  const { t } = useTranslation(casesI18n);
+  });
+  const { t } = useTranslation(['cases']);
 
   return (
     <ClientOnly>

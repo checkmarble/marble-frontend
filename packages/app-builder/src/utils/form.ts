@@ -1,3 +1,6 @@
+import type { FormApi } from '@tanstack/react-form';
+import type { FormEvent } from 'react';
+
 export const submitOnBlur: React.FocusEventHandler<
   HTMLInputElement | HTMLTextAreaElement
 > = (event) => {
@@ -16,4 +19,13 @@ export function adaptToStringArray(
     return [value];
   }
   return value.filter((val) => val !== undefined);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function handleSubmit(form: FormApi<any>) {
+  return (e: FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    form.handleSubmit();
+  };
 }

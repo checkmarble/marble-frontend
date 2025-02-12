@@ -20,8 +20,8 @@ const fileDownloadUrlSchema = z.object({
   url: z.string(),
 });
 
-export function useDownloadCaseFiles(
-  caseFileId: string,
+export function useDownloadFile(
+  endpoint: string,
   { onError }: { onError?: (error: DownloadFileError) => void } = {},
 ) {
   const [downloading, setDownloading] = useState(false);
@@ -43,9 +43,7 @@ export function useDownloadCaseFiles(
         throw new AuthRequestError();
       }
 
-      const downloadLink = `${backendUrl}/cases/files/${encodeURIComponent(
-        caseFileId,
-      )}/download_link`;
+      const downloadLink = `${backendUrl}${endpoint}`;
       const response = await fetch(downloadLink, {
         method: 'GET',
         headers: {
