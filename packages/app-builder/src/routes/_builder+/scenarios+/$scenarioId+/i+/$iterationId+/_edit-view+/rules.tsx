@@ -1,3 +1,4 @@
+import { OutcomeTag } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
@@ -9,8 +10,10 @@ import {
 } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersContext';
 import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersMenu';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { type SanctionCheckConfig } from '@app-builder/models/sanction-check-config';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
+import { CreateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
 import { useEditorMode } from '@app-builder/services/editor';
 import { serverServices } from '@app-builder/services/init.server';
 import {
@@ -21,7 +24,8 @@ import {
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import {
   type ColumnFiltersState,
@@ -31,10 +35,18 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
-import * as React from 'react';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Input, Table, Tag, useVirtualTable } from 'ui-design-system';
+import {
+  CtaClassName,
+  Input,
+  Table,
+  Tag,
+  useVirtualTable,
+} from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { useCurrentScenarioValidation } from '../_layout';
 
@@ -44,44 +56,103 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
-    request,
-    {
+  const { scenarioIterationRuleRepository, entitlements, scenario } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    },
-  );
+    });
 
   const scenarioIterationId = fromParams(params, 'iterationId');
 
-  const rules = await scenarioIterationRuleRepository.listRules({
-    scenarioIterationId,
-  });
+  const [iteration, rules] = await Promise.all([
+    scenario.getScenarioIteration({ iterationId: scenarioIterationId }),
+    scenarioIterationRuleRepository.listRules({
+      scenarioIterationId,
+    }),
+  ]);
+
+  const sanctions = iteration.sanctionCheckConfig
+    ? [iteration.sanctionCheckConfig]
+    : [];
+
+  const items = [
+    ...rules.map((r) => ({ ...r, type: 'rule' as const })),
+    ...sanctions.map((s) => ({ ...s, type: 'sanction' as const })),
+  ];
 
   const ruleGroups = R.pipe(
-    rules,
-    R.map((rule) => rule.ruleGroup),
+    items,
+    R.map((i) => i.ruleGroup),
     R.filter((val) => !R.isEmpty(val)),
     R.unique(),
   );
 
-  return json({ rules, ruleGroups });
+  return {
+    items,
+    ruleGroups,
+    isSanctionAvailable: entitlements.sanctions,
+  };
 }
 
-const columnHelper = createColumnHelper<ScenarioIterationRule>();
+const columnHelper = createColumnHelper<
+  | (ScenarioIterationRule & { type: 'rule' })
+  | (SanctionCheckConfig & { type: 'sanction' })
+>();
+
+const AddRuleOrSanction = ({
+  scenarioId,
+  iterationId,
+  isSanctionAvailable,
+  hasAlreadyASanction,
+}: {
+  scenarioId: string;
+  iterationId: string;
+  isSanctionAvailable: FeatureAccessDto;
+  hasAlreadyASanction: boolean;
+}) => {
+  const { t } = useTranslation(['common', 'scenarios']);
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger
+        className={CtaClassName({ variant: 'primary', color: 'purple' })}
+      >
+        <Icon icon="plus" className="size-6" />
+        {t('common:add')}
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content
+        align="end"
+        className="bg-grey-100 border-grey-90 z-10 mt-2 flex flex-col gap-2 rounded border p-2"
+      >
+        <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
+        <CreateSanction
+          scenarioId={scenarioId}
+          iterationId={iterationId}
+          isSanctionAvailable={isSanctionAvailable}
+          hasAlreadyASanction={hasAlreadyASanction}
+        />
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+};
 
 export default function Rules() {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(['scenarios', 'decisions', 'common']);
   const language = useFormatLanguage();
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
   const editorMode = useEditorMode();
 
-  const { rules, ruleGroups } = useLoaderData<typeof loader>();
+  const { items, ruleGroups, isSanctionAvailable } =
+    useLoaderData<typeof loader>();
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
+  const hasAlreadyASanction = useMemo(
+    () => items.some((i) => i.type === 'sanction'),
+    [items],
+  );
 
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row.name, {
         id: 'name',
@@ -93,9 +164,12 @@ export default function Rules() {
             typeof tableState.globalFilter === 'string'
               ? tableState.globalFilter
               : '';
-          const hasErrors = hasRuleErrors(
-            findRuleValidation(scenarioValidation, row.original.id),
-          );
+          const hasErrors =
+            row.original.type === 'rule'
+              ? hasRuleErrors(
+                  findRuleValidation(scenarioValidation, row.original.id),
+                )
+              : false;
 
           return (
             <span className="flex items-center gap-2">
@@ -105,7 +179,7 @@ export default function Rules() {
                 ) : null}
               </span>
               <Highlight
-                text={getValue()}
+                text={getValue() ?? ''}
                 query={query}
                 className="hyphens-auto"
               />
@@ -124,7 +198,7 @@ export default function Rules() {
               ? tableState.globalFilter
               : '';
 
-          return <Highlight text={getValue()} query={query} />;
+          return <Highlight text={getValue() ?? ''} query={query} />;
         },
       }),
       columnHelper.accessor((row) => row.ruleGroup, {
@@ -157,22 +231,34 @@ export default function Rules() {
         header: t('scenarios:rules.score'),
         size: 100,
       }),
+      columnHelper.accessor(
+        (row) => (row.type === 'sanction' ? row.forceOutcome : undefined),
+        {
+          id: 'outcome',
+          cell: ({ getValue }) => {
+            const outcome = getValue();
+            if (!outcome) return '';
+            return <OutcomeTag outcome={outcome} />;
+          },
+          header: t('decisions:outcome'),
+          size: 100,
+        },
+      ),
     ],
     [language, scenarioValidation, t],
   );
 
-  const hasRules = rules.length > 0;
+  const hasItems = items.length > 0;
 
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const filterValues = R.pullObject(
     columnFilters,
     R.prop('id'),
     R.prop('value'),
   );
-  const submitRulesFilters = React.useCallback((filters: RulesFilters) => {
+
+  const submitRulesFilters = useCallback((filters: RulesFilters) => {
     const nextColumnFilters = R.pipe(
       filters,
       R.entries(),
@@ -187,10 +273,10 @@ export default function Rules() {
   }, []);
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
-    data: rules,
+    data: items,
     columns,
     columnResizeMode: 'onChange',
-    enableSorting: hasRules,
+    enableSorting: hasItems,
     initialState: {
       sorting: [
         {
@@ -204,8 +290,19 @@ export default function Rules() {
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    rowLink: ({ id }) => <Link to={`./${fromUUID(id)}`} />,
+    rowLink: (row) =>
+      row.type === 'rule' ? (
+        <Link to={`./${fromUUID(row.id)}`} />
+      ) : (
+        <Link
+          to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
+            scenarioId: fromUUID(scenarioId),
+            iterationId: fromUUID(iterationId),
+          })}
+        />
+      ),
   });
+
   const columnLength = table.getHeaderGroups()[0]?.headers.length ?? 1;
 
   return (
@@ -223,7 +320,7 @@ export default function Rules() {
           <form className="flex grow items-center">
             <Input
               className="w-full max-w-xl"
-              disabled={rules.length === 0}
+              disabled={!hasItems}
               type="search"
               aria-label={t('common:search')}
               placeholder={t('common:search')}
@@ -239,7 +336,12 @@ export default function Rules() {
               <FiltersButton />
             </RulesFiltersMenu>
             {editorMode === 'edit' ? (
-              <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
+              <AddRuleOrSanction
+                scenarioId={scenarioId}
+                iterationId={iterationId}
+                isSanctionAvailable={isSanctionAvailable}
+                hasAlreadyASanction={hasAlreadyASanction}
+              />
             ) : null}
           </div>
         </div>
@@ -249,7 +351,7 @@ export default function Rules() {
       <Table.Container {...getContainerProps()} className="bg-grey-100">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
-          {hasRules ? (
+          {hasItems ? (
             rows.map((row) => <Table.Row key={row.id} row={row} />)
           ) : (
             <tr className="h-28">

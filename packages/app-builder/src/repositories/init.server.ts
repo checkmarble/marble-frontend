@@ -19,6 +19,7 @@ import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
 import { makeGetSanctionCheckRepository } from './SanctionCheckRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
+import { makeGetScenarioIterationSanctionRepository } from './ScenarioIterationSanctionRepository';
 import { makeGetScenarioRepository } from './ScenarioRepository';
 import {
   getAuthStorageRepository,
@@ -73,6 +74,8 @@ export function makeServerRepositories({
     getScenarioRepository: makeGetScenarioRepository(),
     getScenarioIterationRuleRepository:
       makeGetScenarioIterationRuleRepository(),
+    getScenarioIterationSanctionRepository:
+      makeGetScenarioIterationSanctionRepository(),
     getOrganizationRepository: makeGetOrganizationRepository(),
     getDataModelRepository: makeGetDataModelRepository(),
     getApiKeyRepository: makeGetApiKeyRepository(),

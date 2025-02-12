@@ -64,5 +64,8 @@
   "premium": "Fonctionnalité Premium",
   "upgrade": "Mettre à niveau maintenant",
   "errors.backend_unvailable": "L'application Marble ne peut pas communiquer avec le backend Marble. \nVérifiez votre configuration ou réessayez ultérieurement.",
-  "errors.firebase_network_error": "Marble a quelques difficultés à se connecter à Firebase. \nVérifiez la configuration de Firebase ou réessayez ultérieurement."
+  "errors.firebase_network_error": "Marble a quelques difficultés à se connecter à Firebase. \nVérifiez la configuration de Firebase ou réessayez ultérieurement.",
+  "add": "Ajouter",
+  "no_name": "Pas de nom",
+  "select_all": "Sélectionnez tout"
 }

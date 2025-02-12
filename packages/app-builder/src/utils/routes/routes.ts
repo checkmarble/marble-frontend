@@ -87,6 +87,11 @@ export const routes = [
                 "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_index.tsx"
               },
               {
+                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/files",
+                "path": "files",
+                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/files.tsx"
+              },
+              {
                 "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits",
                 "path": "hits",
                 "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits.tsx"
@@ -234,6 +239,11 @@ export const routes = [
                         "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId",
                         "path": "rules/:ruleId",
                         "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId.tsx"
+                      },
+                      {
+                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanction",
+                        "path": "sanction",
+                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanction.tsx"
                       }
                     ]
                   },
@@ -410,11 +420,6 @@ export const routes = [
         "file": "routes/ressources+/cases+/review-sanction-match.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/upload-file",
-        "path": "ressources/cases/upload-file",
-        "file": "routes/ressources+/cases+/upload-file.tsx"
-      },
-      {
         "id": "routes/ressources+/data+/create-pivot",
         "path": "ressources/data/create-pivot",
         "file": "routes/ressources+/data+/create-pivot.tsx"
@@ -448,6 +453,11 @@ export const routes = [
         "id": "routes/ressources+/decisions+/list-scheduled-execution",
         "path": "ressources/decisions/list-scheduled-execution",
         "file": "routes/ressources+/decisions+/list-scheduled-execution.tsx"
+      },
+      {
+        "id": "routes/ressources+/files+/upload-file",
+        "path": "ressources/files/upload-file",
+        "file": "routes/ressources+/files+/upload-file.tsx"
       },
       {
         "id": "routes/ressources+/lists+/create",
@@ -533,6 +543,16 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate",
         "path": "ressources/scenarios/:scenarioId/:iterationId/rules/duplicate",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/sanctions/create",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/sanctions/delete",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule",

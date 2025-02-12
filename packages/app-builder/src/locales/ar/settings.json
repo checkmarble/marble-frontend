@@ -111,5 +111,11 @@
   "users.role.nudge": "قم بتعيين الأدوار وتبسيط سير عمل فريقك بسهولة",
   "webhooks.configuration_error": "خطأ في التكوين",
   "webhooks.convoy_error": "يبدو أن Convoy لم يتم تكوينه بشكل صحيح على Marble Backend. \nلمزيد من المعلومات حول خطافات الويب، يرجى الرجوع إلى <DocLink>الوثائق</DocLink>.",
-  "webhooks.nudge": "الترقية من أجل الوصول إلى جميع أنواع الأحداث."
+  "webhooks.nudge": "الترقية من أجل الوصول إلى جميع أنواع الأحداث.",
+  "scenario_sanction_callout": "سيؤثر تغيير هذه القيمة على الفور على جميع إصدارات السيناريو المباشر",
+  "scenario_sanction_limit": "الحد من الضرب قبل التحسين",
+  "scenario_sanction_limit_placeholder": "5",
+  "scenario_sanction_settings": "إعدادات العقوبات",
+  "scenario_sanction_threshold": "الحد الأدنى لدرجة التشابه (٪)",
+  "scenario_sanction_threshold_placeholder": "80"
 }

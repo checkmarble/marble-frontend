@@ -6,6 +6,10 @@ import {
 
 import { adaptAstNode, adaptNodeDto, type AstNode } from './astNode/ast-node';
 import {
+  adaptSanctionCheckConfig,
+  type SanctionCheckConfig,
+} from './sanction-check-config';
+import {
   adaptScenarioIterationRule,
   type ScenarioIterationRule,
 } from './scenario-iteration-rule';
@@ -30,6 +34,7 @@ export interface ScenarioIteration {
   rules: ScenarioIterationRule[];
   schedule?: string;
   trigger: AstNode | null;
+  sanctionCheckConfig: SanctionCheckConfig | null;
 }
 
 export interface ScenarioIterationWithType extends ScenarioIteration {
@@ -80,6 +85,7 @@ export function adaptScenarioIteration(
 ): ScenarioIteration {
   const triggerDto =
     scenarioIterationWithBody.body.trigger_condition_ast_expression;
+  const configDto = scenarioIterationWithBody.body.sanction_check_config;
 
   return {
     id: scenarioIterationWithBody.id,
@@ -95,6 +101,7 @@ export function adaptScenarioIteration(
     rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),
     schedule: scenarioIterationWithBody.body.schedule,
     trigger: triggerDto ? adaptAstNode(triggerDto) : null,
+    sanctionCheckConfig: configDto ? adaptSanctionCheckConfig(configDto) : null,
   };
 }
 

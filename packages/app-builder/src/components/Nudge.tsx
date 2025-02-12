@@ -43,7 +43,7 @@ export const Nudge = ({
       <Hovercard
         portal
         gutter={8}
-        className="bg-grey-100 border-purple-82 flex w-60 flex-col items-center gap-6 rounded border p-4 shadow-lg"
+        className="bg-grey-100 border-purple-82 z-50 flex w-60 flex-col items-center gap-6 rounded border p-4 shadow-lg"
       >
         <span className="text-m font-bold">{t('common:premium')}</span>
         <div className="flex w-full flex-col items-center gap-2">

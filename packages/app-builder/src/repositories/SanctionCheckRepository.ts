@@ -11,10 +11,15 @@ import {
   type SanctionCheckMatchPayload,
   type SanctionCheckMatchStatus,
 } from '@app-builder/models/sanction-check';
+import {
+  adaptOpenSanctionsCatalog,
+  type OpenSanctionsCatalog,
+} from '@app-builder/models/sanction-check-dataset';
 import * as R from 'remeda';
 
 export interface SanctionCheckRepository {
   listSanctionChecks(args: { decisionId: string }): Promise<SanctionCheck[]>;
+  listDatasets(): Promise<OpenSanctionsCatalog>;
   updateMatchStatus(args: {
     matchId: string;
     status: Exclude<SanctionCheckMatchStatus, 'pending'>;
@@ -37,6 +42,11 @@ export interface SanctionCheckRepository {
 
 export function makeGetSanctionCheckRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): SanctionCheckRepository => ({
+    listDatasets: async () => {
+      return adaptOpenSanctionsCatalog(
+        await marbleCoreApiClient.listOpenSanctionDatasets(),
+      );
+    },
     listSanctionChecks: async ({ decisionId }) => {
       return R.map(
         await marbleCoreApiClient.listSanctionChecks(decisionId),
