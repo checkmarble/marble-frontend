@@ -4,8 +4,8 @@ export interface Organization {
   id: string;
   name: string;
   defaultScenarioTimezone: string | null;
-  sanctionThreshold: number;
-  sanctionLimit: number;
+  sanctionThreshold?: number;
+  sanctionLimit?: number;
 }
 
 export const adaptOrganizationDto = (
@@ -16,8 +16,8 @@ export const adaptOrganizationDto = (
   defaultScenarioTimezone: organizationDto.default_scenario_timezone
     ? organizationDto.default_scenario_timezone
     : null,
-  sanctionLimit: organizationDto.sanction_limit,
-  sanctionThreshold: organizationDto.sanction_threshold,
+  sanctionLimit: organizationDto.sanctions_limit,
+  sanctionThreshold: organizationDto.sanctions_threshold,
 });
 
 export interface OrganizationUpdateInput {

@@ -30,9 +30,7 @@ export const FormErrorOrDescription = React.forwardRef<
         )}
         {...props}
       >
-        {props.errors.map((e, i) => (
-          <span key={i}>{e}</span>
-        ))}
+        <span>{props.errors[0]}</span>
       </p>
     );
   }

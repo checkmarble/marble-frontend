@@ -43,8 +43,8 @@ export function makeGetOrganizationRepository() {
         organizationId,
         {
           default_scenario_timezone: args.changes.defaultScenarioTimezone,
-          sanction_limit: args.changes.sanctionLimit,
-          sanction_threshold: args.changes.sanctionThreshold,
+          sanctions_limit: args.changes.sanctionLimit,
+          sanctions_threshold: args.changes.sanctionThreshold,
         },
       );
 

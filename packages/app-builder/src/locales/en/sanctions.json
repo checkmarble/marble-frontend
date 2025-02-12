@@ -107,5 +107,6 @@
   "entity.schema.organization": "Organization",
   "entity.schema.legalentity": "Legal Entity",
   "entity.schema.vehicle": "Vehicle",
-  "entity.schema.vessel": "Vessel"
+  "entity.schema.vessel": "Vessel",
+  "refine_modal.schema.legalentity": "Legal Entity"
 }

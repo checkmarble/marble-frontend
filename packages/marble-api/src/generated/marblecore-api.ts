@@ -711,17 +711,17 @@ export type OrganizationDto = {
     /** Timezone (IANA format) used by default for scenarios of this organization, when interpreting timestamps as datetimes. */
     default_scenario_timezone?: string;
     /** Threshold for sanction checks */
-    sanction_threshold: number;
+    sanctions_threshold?: number;
     /** Limit for sanction checks */
-    sanction_limit: number;
+    sanctions_limit?: number;
 };
 export type CreateOrganizationBodyDto = {
     name: string;
 };
 export type UpdateOrganizationBodyDto = {
     default_scenario_timezone?: string;
-    sanction_threshold?: number;
-    sanction_limit?: number;
+    sanctions_threshold?: number;
+    sanctions_limit?: number;
 };
 export type InboxUserDto = {
     id: string;
