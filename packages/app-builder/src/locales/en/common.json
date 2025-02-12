@@ -1,4 +1,7 @@
 {
+  "add": "Add",
+  "select_all": "Select all",
+  "no_name": "No name",
   "null": "Null",
   "skipped": "Skipped",
   "true": "True",

@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Checkbox, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -22,6 +23,7 @@ const FieldCategory = ({
   selectedIds: string[];
   updateSelectedIds: Dispatch<SetStateAction<string[]>>;
 }) => {
+  const { t } = useTranslation(['common']);
   const [open, setOpen] = useState(false);
 
   const defaultListIds = useMemo(
@@ -51,7 +53,9 @@ const FieldCategory = ({
             <span className="text-s font-semibold">{section.title}</span>
           </CollapsibleV2.Title>
           <div className="flex items-center gap-4">
-            <span className="text-grey-50 text-xs">Select all</span>
+            <span className="text-grey-50 text-xs">
+              {t('common:select_all')}
+            </span>
             <Checkbox
               checked={isAllSelected}
               onCheckedChange={(state) => {

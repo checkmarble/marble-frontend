@@ -81,7 +81,7 @@ export const handle = {
               iterationId: fromUUID(iteration.id),
             })}
           >
-            {iteration.sanctionCheckConfig?.name}
+            {iteration.sanctionCheckConfig?.name ?? t('common:no_name')}
           </BreadCrumbLink>
           {editorMode === 'edit' ? (
             <Tag size="big" border="square">
@@ -156,14 +156,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const submission = parseWithZod(formData, { schema: editSanctionFormSchema });
 
-  console.log('Submission Payload', submission.payload);
-
   if (submission.status !== 'success') {
-    console.log(submission.error);
     return json(submission.reply());
   }
-
-  console.log('Submission Values', submission.value);
 
   const { scenarioIterationSanctionRepository } =
     await authService.isAuthenticated(request, {
@@ -232,14 +227,14 @@ export default function SanctionDetail() {
 
   const form = useForm<EditSanctionForm>({
     onSubmit: ({ value, formApi }) => {
-      console.log('Form Status', formApi.state);
-      console.log('Submimtted Value', value);
-      const formData = objectToFormData(value, {
-        dotsForObjectNotation: true,
-        indices: true,
-      });
-      console.log('Submitted FormData', Object.fromEntries(formData));
-      if (formApi.state.isValid) fetcher.submit(formData, { method: 'PATCH' });
+      if (formApi.state.isValid)
+        fetcher.submit(
+          objectToFormData(value, {
+            dotsForObjectNotation: true,
+            indices: true,
+          }),
+          { method: 'PATCH' },
+        );
     },
     validators: {
       onChange: editSanctionFormSchema,
@@ -484,7 +479,7 @@ export default function SanctionDetail() {
                       {(field) => (
                         <div className="flex flex-col gap-4">
                           <FormLabel name={field.name}>
-                            Counterparty ID
+                            {t('scenarios:sanction_counterparty_id')}
                           </FormLabel>
                           <FieldNode
                             name={field.name}
@@ -503,7 +498,7 @@ export default function SanctionDetail() {
                       {(field) => (
                         <div className="flex flex-col gap-4">
                           <FormLabel name={field.name}>
-                            Counterparty name
+                            {t('scenarios:sanction_counterparty_name')}
                           </FormLabel>
                           <FieldMatches
                             name={field.name}
@@ -523,7 +518,7 @@ export default function SanctionDetail() {
                       {(field) => (
                         <div className="flex flex-col gap-4">
                           <FormLabel name={field.name}>
-                            Transaction Label
+                            {t('scenarios:sanction_transaction_label')}
                           </FormLabel>
                           <FieldNode
                             name={field.name}

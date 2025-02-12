@@ -109,13 +109,15 @@ const AddRuleOrSanction = ({
   isSanctionAvailable: FeatureAccessDto;
   hasAlreadyASanction: boolean;
 }) => {
+  const { t } = useTranslation(['common', 'scenarios']);
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         className={CtaClassName({ variant: 'primary', color: 'purple' })}
       >
         <Icon icon="plus" className="size-6" />
-        Add
+        {t('common:add')}
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
         align="end"
