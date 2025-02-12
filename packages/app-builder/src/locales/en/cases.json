@@ -105,6 +105,7 @@
   "case_detail.review_decision.comment.placeholder": "Explain why you are choosing this review status",
   "case_detail.review_decision.review_status.label": "Review status",
   "case_detail.review_decision.review_status.placeholder": "Select a review status",
+  "case_detail.review_decision.disabled_approve": "This status cannot be chosen because there is a sanction check to review for this decision.",
   "case_detail.review_decision": "Review",
   "search.placeholder": "Search by name",
   "filters.date_range.title": "creation date is:",
@@ -117,5 +118,6 @@
   "drop_file_cta": "Drop any file here to attach it to the case. The following extensions are supported:",
   "drop_file_accepted_types": "jpg, png, pdf, zip, doc, docx, xls, xlsx",
   "pick_file_cta": "Pick a file",
-  "add_file": "Add a file"
+  "add_file": "Add a file",
+  "sanction.state.refine_needed": "Refine needed"
 }

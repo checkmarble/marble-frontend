@@ -5,13 +5,17 @@ import clsx from 'clsx';
 import { forwardRef, type ReactNode } from 'react';
 
 const modalContentClassnames = cva(
-  'bg-grey-100 top-[10vh] flex h-fit w-full flex-col rounded-lg drop-shadow-xl overflow-hidden',
+  'bg-grey-100 top-[10vh] flex w-full flex-col rounded-lg drop-shadow-xl overflow-hidden',
   {
     variants: {
       size: {
         small: 'max-w-lg',
         medium: 'max-w-2xl',
         large: 'max-w-5xl',
+      },
+      fixedHeight: {
+        true: null,
+        false: 'h-fit',
       },
     },
   },
@@ -62,12 +66,16 @@ export interface ModalContentV2Props
     VariantProps<typeof modalContentClassnames> {}
 
 export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
-  function ModalContentV2({ className, size = 'small', ...props }, ref) {
+  function ModalContentV2(
+    { className, size = 'small', fixedHeight, ...props },
+    ref,
+  ) {
     return (
       <Ariakit.Dialog
         ref={ref}
         className={modalContentClassnames({
           size,
+          fixedHeight,
           className: clsx(
             'scale-95 opacity-0 transition-all data-[enter]:scale-100 data-[enter]:opacity-100',
             className,
@@ -103,7 +111,7 @@ export function ModalTitleV2(props: Ariakit.DialogHeadingProps) {
 }
 
 export function ModalFooterV2({ children }: { children: ReactNode }) {
-  return <div className="sticky bottom-0">{children}</div>;
+  return <div className="shadow-sticky-bottom sticky bottom-0">{children}</div>;
 }
 
 export const ModalV2 = {

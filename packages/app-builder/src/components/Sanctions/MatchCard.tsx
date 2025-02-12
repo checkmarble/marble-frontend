@@ -15,9 +15,15 @@ type MatchCardProps = {
   match: SanctionCheckMatch;
   readonly?: boolean;
   disabled?: boolean;
+  defaultOpen?: boolean;
 };
 
-export const MatchCard = ({ match, readonly, disabled }: MatchCardProps) => {
+export const MatchCard = ({
+  match,
+  readonly,
+  disabled,
+  defaultOpen,
+}: MatchCardProps) => {
   const { t } = useTranslation(sanctionsI18n);
   const [isInReview, setIsInReview] = useState(false);
 
@@ -32,25 +38,25 @@ export const MatchCard = ({ match, readonly, disabled }: MatchCardProps) => {
 
   return (
     <div className="grid grid-cols-[max-content_1fr_max-content] gap-x-6 gap-y-2">
-      <CollapsibleV2.Provider>
+      <CollapsibleV2.Provider defaultOpen={defaultOpen}>
         <div className="bg-grey-98 col-span-full grid grid-cols-subgrid rounded-md">
-          <div className="col-span-full grid grid-cols-subgrid items-center px-4 py-3">
-            <CollapsibleV2.Title className="focus-visible:text-purple-65 group rounded outline-none transition-colors">
+          <div className="col-span-full flex items-center justify-between px-4 py-3">
+            <CollapsibleV2.Title className="focus-visible:text-purple-65 group flex grow items-center gap-2 rounded outline-none transition-colors">
               <Icon
                 icon="smallarrow-up"
                 aria-hidden
                 className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180 rtl:-rotate-90 rtl:group-aria-expanded:-rotate-180 rtl:group-data-[initial]:-rotate-180"
               />
+              <div className="text-s flex items-center gap-2">
+                <span className="font-semibold">{entity.caption}</span>
+                <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
+                <Tag color="grey">
+                  {t('sanctions:match.similarity', {
+                    percent: Math.round(match.payload.score * 100),
+                  })}
+                </Tag>
+              </div>
             </CollapsibleV2.Title>
-            <div className="text-s flex items-center gap-2">
-              <span className="font-semibold">{entity.caption}</span>
-              <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
-              <Tag color="grey">
-                {t('sanctions:match.similarity', {
-                  percent: Math.round(match.payload.score * 100),
-                })}
-              </Tag>
-            </div>
             <div className="inline-flex h-8">
               {disabled ? (
                 <Tag border="square" color="grey">

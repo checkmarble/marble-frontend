@@ -2,7 +2,6 @@ import { Callout } from '@app-builder/components/Callout';
 import { type PropertyForSchema } from '@app-builder/constants/sanction-check-entity';
 import {
   type SanctionCheck,
-  type SanctionCheckEntitySchema,
   type SanctionCheckMatchPayload,
 } from '@app-builder/models/sanction-check';
 import { type action as refineAction } from '@app-builder/routes/ressources+/sanction-check+/refine';
@@ -15,15 +14,17 @@ import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
+import clsx from 'clsx';
 import { serialize as objectToFormData } from 'object-to-formdata';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Input, ModalV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MatchResult } from './MatchResult';
 import { sanctionsI18n } from './sanctions-i18n';
+import { SanctionStatusTag } from './SanctionStatusTag';
 
 function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   const additionalFields = {} as Record<string, string>;
@@ -33,24 +34,18 @@ function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   return additionalFields;
 }
 
-type SearchableSchema = Exclude<SanctionCheckEntitySchema, 'Thing'>;
+type SearchableSchema = 'Thing' | 'Person' | 'Organization' | 'Vehicle';
 
 const SEARCH_ENTITIES = {
-  LegalEntity: { fields: ['email'] },
+  Thing: { fields: ['name'] },
   Person: {
     fields: ['name', 'birthDate', 'nationality', 'idNumber', 'address'],
   },
-  Company: {
-    fields: [
-      'name',
-      'jurisdiction',
-      'registrationNumber',
-      'address',
-      'incorporationDate',
-    ],
-  },
   Organization: {
     fields: ['name', 'country', 'registrationNumber', 'address'],
+  },
+  Vehicle: {
+    fields: ['name', 'registrationNumber'],
   },
 } satisfies { [k in SearchableSchema]: { fields: PropertyForSchema<k>[] } };
 
@@ -103,12 +98,12 @@ export function RefineSearchModal({
     SanctionCheckMatchPayload[] | null
   >(null);
   useEffect(() => {
-    if (searchFetcher.data?.status === 'searchResults') {
-      setSearchResults(searchFetcher.data.value);
+    if (searchFetcher.data?.success) {
+      setSearchResults(searchFetcher.data.data);
     }
   }, [searchFetcher.data]);
   useEffect(() => {
-    if (refineFetcher.data && 'id' in refineFetcher.data) {
+    if (refineFetcher.data?.success) {
       onClose();
     }
   }, [refineFetcher.data, onClose]);
@@ -143,30 +138,48 @@ export function RefineSearchModal({
 
   return (
     <ModalV2.Content
+      fixedHeight={!searchResults}
       open={open}
       onClose={onClose}
       size="medium"
-      render={(props) => (
-        <div className="fixed inset-0 flex justify-center overflow-auto p-12">
-          <div {...props} />
-        </div>
-      )}
+      className={clsx({ 'h-[80vh]': !searchResults }, 'max-h-[80vh]')}
     >
       <ModalV2.Title>{t('sanctions:refine_modal.title')}</ModalV2.Title>
       {searchResults ? (
         <>
-          <div className="flex flex-col gap-8 p-6">
-            <Field label={t('sanctions:refine_modal.result_label')}>
-              <div className="flex grow flex-col gap-2">
-                {searchResults.map((match) => {
-                  return <MatchResult key={match.id} entity={match} />;
-                })}
-              </div>
-            </Field>
-            <Callout bordered>
-              {t('sanctions:refine_modal.refine_callout')}
-            </Callout>
-            <div className="flex gap-2">
+          <div className="flex flex-col gap-8 overflow-y-scroll p-6">
+            {searchResults.length > 0 ? (
+              <>
+                <Field label={t('sanctions:refine_modal.result_label')}>
+                  <div className="flex grow flex-col gap-2">
+                    {searchResults.map((match) => {
+                      return <MatchResult key={match.id} entity={match} />;
+                    })}
+                  </div>
+                </Field>
+                <Callout bordered>
+                  {t('sanctions:refine_modal.refine_callout')}
+                </Callout>
+              </>
+            ) : (
+              <>
+                <span>{t('sanctions:refine_modal.no_match_label')}</span>
+                <Callout bordered>
+                  <div className="flex flex-col items-start gap-2">
+                    <Trans
+                      t={t}
+                      i18nKey="sanctions:refine_modal.no_match_callout"
+                      components={{
+                        Status: <SanctionStatusTag status="no_hit" />,
+                      }}
+                    />
+                  </div>
+                </Callout>
+              </>
+            )}
+          </div>
+          <ModalV2.Footer>
+            <div className="bg-grey-100 flex gap-2 p-8">
               <Button
                 className="flex-1"
                 variant="secondary"
@@ -179,15 +192,16 @@ export function RefineSearchModal({
                 className="flex-1"
                 variant="primary"
                 onClick={handleRefine}
+                disabled={searchResults.length > sanctionCheck.request.limit}
               >
                 {t('sanctions:refine_modal.apply_search')}
               </Button>
             </div>
-          </div>
+          </ModalV2.Footer>
         </>
       ) : (
-        <searchFetcher.Form onSubmit={handleSubmit(form)}>
-          <div className="flex flex-col gap-3 p-6 pb-3">
+        <searchFetcher.Form onSubmit={handleSubmit(form)} className="contents">
+          <div className="flex h-full flex-col gap-6 overflow-y-scroll p-8">
             <Field label="Search covers the following fields:">
               {searchInputs.map((input, i) => (
                 <div
@@ -231,7 +245,7 @@ export function RefineSearchModal({
             ))}
           </div>
           <ModalV2.Footer>
-            <div className="bg-grey-100 flex gap-2 p-6 pt-3">
+            <div className="bg-grey-100 flex gap-2 p-8">
               <ModalV2.Close
                 render={
                   <Button

@@ -223,6 +223,9 @@ export default {
         slideUp: 'slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1)',
         overflow: 'overflow linear',
       },
+      boxShadow: {
+        'sticky-bottom': '0 -8px 24px rgba(8,5,37,0.06)',
+      },
     },
   },
   plugins: [
