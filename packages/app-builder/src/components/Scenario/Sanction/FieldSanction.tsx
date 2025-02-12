@@ -48,20 +48,18 @@ const FieldCategory = ({
                 'rotate-90': open,
               })}
             />
-            <span className="text-s font-semibold">{section.name}</span>
+            <span className="text-s font-semibold">{section.title}</span>
           </CollapsibleV2.Title>
           <div className="flex items-center gap-4">
             <span className="text-grey-50 text-xs">Select all</span>
             <Checkbox
               checked={isAllSelected}
               onCheckedChange={(state) => {
-                console.log('All Selected changed', state);
                 updateSelectedIds((prev) => {
                   let result: string[] = [...prev];
                   const idsToToggle = state
                     ? diff(defaultListIds, result)
                     : defaultListIds.filter((id) => result.includes(id));
-                  console.log('Ids to toggle', idsToToggle);
                   for (const id of idsToToggle) {
                     result = toggle(result, id);
                   }

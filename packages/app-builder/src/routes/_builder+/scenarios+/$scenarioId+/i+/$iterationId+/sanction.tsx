@@ -16,6 +16,7 @@ import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOu
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldSanction } from '@app-builder/components/Scenario/Sanction/FieldSanction';
 import { FieldTrigger } from '@app-builder/components/Scenario/Sanction/FieldTrigger';
+import { type AstNode } from '@app-builder/models';
 import {
   knownOutcomes,
   type SanctionOutcome,
@@ -35,6 +36,7 @@ import {
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
+import { serialize as objectToFormData } from 'object-to-formdata';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
@@ -121,6 +123,27 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
 }
 
+const editSanctionFormSchema = z.object({
+  name: z.string().nonempty(),
+  description: z.string().optional(),
+  scoreModifier: z.number(),
+  ruleGroup: z.string().nonempty(),
+  forceOutcome: z.union([
+    z.literal('review'),
+    z.literal('decline'),
+    z.literal('block_and_review'),
+  ]),
+  triggerRule: z.any().nullish(),
+  query: z.object({
+    name: z.any(),
+    label: z.any().nullish(),
+  }),
+  counterPartyId: z.any().nullish(),
+  datasets: z.array(z.string()),
+});
+
+type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
+
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
     authService,
@@ -136,6 +159,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   console.log('Submission Payload', submission.payload);
 
   if (submission.status !== 'success') {
+    console.log(submission.error);
     return json(submission.reply());
   }
 
@@ -151,24 +175,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
       iterationId,
       changes: {
         ...submission.value,
-        datasets: submission.value.datasets
-          ? JSON.parse(submission.value.datasets)
-          : [],
-        triggerRule: submission.value.triggerRule
-          ? JSON.parse(submission.value.triggerRule)
-          : undefined,
+        counterPartyId: submission.value.counterPartyId as AstNode | undefined,
+        triggerRule: submission.value.triggerRule as AstNode | undefined,
         query: {
-          // name: submission.value.query.name
-          //   ? JSON.parse(submission.value.query.name)
-          //   : undefined,
-          name: { name: 'StringConcat', children: [] },
-          label: submission.value.query.label
-            ? JSON.parse(submission.value.query.label)
-            : undefined,
+          name: submission.value.query.name as AstNode,
+          label: submission.value.query.label as AstNode | undefined,
         },
-        counterPartyId: submission.value.counterPartyId
-          ? JSON.parse(submission.value.counterPartyId)
-          : undefined,
       },
     });
 
@@ -198,27 +210,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 }
 
-const editSanctionFormSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().optional(),
-  ruleGroup: z.string().min(1),
-  datasets: z.array(z.string()).min(1),
-  forceOutcome: z.union([
-    z.literal('review'),
-    z.literal('decline'),
-    z.literal('block_and_review'),
-  ]),
-  scoreModifier: z.number().min(0),
-  triggerRule: z.any().nullish(),
-  query: z.object({
-    name: z.any().nullish(),
-    label: z.any().nullish(),
-  }),
-  counterPartyId: z.any().nullish(),
-});
-
-type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
-
 export default function SanctionDetail() {
   const { t } = useTranslation(['scenarios', 'common', 'decisions']);
   const {
@@ -240,6 +231,16 @@ export default function SanctionDetail() {
   );
 
   const form = useForm<EditSanctionForm>({
+    onSubmit: ({ value, formApi }) => {
+      console.log('Form Status', formApi.state);
+      console.log('Submimtted Value', value);
+      const formData = objectToFormData(value, {
+        dotsForObjectNotation: true,
+        indices: true,
+      });
+      console.log('Submitted FormData', Object.fromEntries(formData));
+      if (formApi.state.isValid) fetcher.submit(formData, { method: 'PATCH' });
+    },
     validators: {
       onChange: editSanctionFormSchema,
       onBlur: editSanctionFormSchema,
@@ -277,13 +278,13 @@ export default function SanctionDetail() {
       </Page.Header>
       <Page.Container>
         <Page.Content>
-          <fetcher.Form
+          <form
             className="flex flex-col gap-8"
-            method="PATCH"
-            action={getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
-              scenarioId: fromUUID(scenario.id),
-              iterationId: fromUUID(iterationId),
-            })}
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
           >
             <Collapsible.Container className="bg-grey-100 max-w-3xl">
               <Collapsible.Title>
@@ -458,9 +459,7 @@ export default function SanctionDetail() {
                       iterationId={iterationId}
                       options={options}
                       onBlur={field.handleBlur}
-                      onChange={(node) =>
-                        form.setFieldValue('triggerRule', node)
-                      }
+                      onChange={field.handleChange}
                       name={field.name}
                       trigger={field.state.value}
                     />
@@ -591,7 +590,7 @@ export default function SanctionDetail() {
                 </Button>
               </div>
             </div>
-          </fetcher.Form>
+          </form>
         </Page.Content>
       </Page.Container>
     </Page.Main>

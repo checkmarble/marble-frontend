@@ -3,20 +3,20 @@ import { type SanctionCheckConfigDto } from 'marble-api';
 import { adaptAstNode, adaptNodeDto, type AstNode } from './astNode/ast-node';
 import { type Outcome } from './outcome';
 
-export type SanctionCheckConfig = Partial<{
-  name: string;
-  description: string;
-  ruleGroup: string;
-  datasets: string[];
-  forceOutcome: Outcome;
-  scoreModifier: number;
-  triggerRule: AstNode;
-  query: Partial<{
+export type SanctionCheckConfig = {
+  name?: string;
+  description?: string;
+  ruleGroup?: string;
+  datasets?: string[];
+  forceOutcome?: Outcome;
+  scoreModifier?: number;
+  triggerRule?: AstNode;
+  query: {
     name: AstNode;
-    label: AstNode;
-  }>;
-  counterPartyId: AstNode;
-}>;
+    label?: AstNode;
+  };
+  counterPartyId?: AstNode;
+};
 
 export function adaptSanctionCheckConfig(
   dto: SanctionCheckConfigDto,
@@ -30,11 +30,11 @@ export function adaptSanctionCheckConfig(
     scoreModifier: dto.score_modifier,
     triggerRule: dto.trigger_rule ? adaptAstNode(dto.trigger_rule) : undefined,
     query: {
-      name: dto.query?.name ? adaptAstNode(dto.query.name) : undefined,
+      name: adaptAstNode(dto.query.name),
       label: dto.query?.label ? adaptAstNode(dto.query.label) : undefined,
     },
-    counterPartyId: dto.counterparty_id
-      ? adaptAstNode(dto.counterparty_id)
+    counterPartyId: dto.counterparty_id_expression
+      ? adaptAstNode(dto.counterparty_id_expression)
       : undefined,
   };
 }
@@ -53,10 +53,10 @@ export function adaptSanctionCheckConfigDto(
       ? adaptNodeDto(config.triggerRule)
       : undefined,
     query: {
-      name: config.query?.name ? adaptNodeDto(config.query.name) : undefined,
+      name: adaptNodeDto(config.query.name),
       label: config.query?.label ? adaptNodeDto(config.query.label) : undefined,
     },
-    counterparty_id: config.counterPartyId
+    counterparty_id_expression: config.counterPartyId
       ? adaptNodeDto(config.counterPartyId)
       : undefined,
   };

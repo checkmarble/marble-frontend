@@ -20,7 +20,7 @@ export const FieldTrigger = ({
 }: {
   name?: string;
   trigger?: AstNode;
-  onChange?: (node: AstNode) => void;
+  onChange?: (node: AstNode | undefined) => void;
   onBlur?: () => void;
   scenarioId: string;
   iterationId: string;
@@ -39,16 +39,20 @@ export const FieldTrigger = ({
     iterationId,
   );
 
+  useValidateAstNode(astEditorStore, validate, validation);
+
   // Thx React... https://github.com/facebook/react/issues/27283
   useEffect(() => {
     if (ref.current) {
       ref.current.onchange = (e) => {
-        onChange?.(
-          JSON.parse(
-            (e as unknown as ChangeEvent<HTMLInputElement>).currentTarget
-              ?.value,
-          ),
-        );
+        const node = JSON.parse(
+          (e as unknown as ChangeEvent<HTMLInputElement>).currentTarget?.value,
+        ) as AstNode;
+
+        const isDefaultAnd =
+          node && node.name === 'And' && !node.children?.length;
+
+        onChange?.(isDefaultAnd ? undefined : node);
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,14 +65,12 @@ export const FieldTrigger = ({
     }
   }, [astNode]);
 
-  useValidateAstNode(astEditorStore, validate, validation);
-
   return (
     <>
       <input
         name={name}
         ref={ref}
-        defaultValue={JSON.stringify(trigger)}
+        defaultValue={trigger ? JSON.stringify(trigger) : undefined}
         className="sr-only"
         tabIndex={-1}
         onBlur={onBlur}

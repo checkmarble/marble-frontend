@@ -390,11 +390,11 @@ export type SanctionCheckConfigDto = {
     force_outcome?: OutcomeDto;
     score_modifier?: number;
     trigger_rule?: NodeDto;
-    query?: {
-        name?: NodeDto;
+    query: {
+        name: NodeDto;
         label?: NodeDto;
     };
-    counterparty_id?: NodeDto;
+    counterparty_id_expression?: NodeDto;
 };
 export type ScenarioIterationRuleDto = {
     id: string;
