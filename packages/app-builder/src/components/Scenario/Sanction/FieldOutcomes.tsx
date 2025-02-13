@@ -7,12 +7,14 @@ import { Input, SelectWithCombobox } from 'ui-design-system';
 export const FieldOutcomes = ({
   selectedOutcome,
   outcomes,
+  disabled,
   name,
   onChange,
   onBlur,
 }: {
   selectedOutcome?: SanctionOutcome;
   outcomes: SanctionOutcome[];
+  disabled?: boolean;
   name?: string;
   onChange?: (value: SanctionOutcome) => void;
   onBlur?: () => void;
@@ -32,7 +34,12 @@ export const FieldOutcomes = ({
       onSearchValueChange={setSearchValue}
       onSelectedValueChange={onChange}
     >
-      <SelectWithCombobox.Select name={name} onBlur={onBlur} className="w-full">
+      <SelectWithCombobox.Select
+        name={name}
+        disabled={disabled}
+        onBlur={onBlur}
+        className="w-full"
+      >
         {selectedOutcome ? (
           <OutcomeTag border="square" outcome={selectedOutcome} />
         ) : null}

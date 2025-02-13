@@ -11,10 +11,12 @@ export const MatchOperand = memo(function MatchOperand({
   node,
   onSave,
   placeholder,
+  viewOnly,
 }: {
   node: AstNode;
   onSave?: (astNode: AstNode) => void;
   placeholder?: string;
+  viewOnly?: boolean;
 }) {
   const getOperandAstNodeOperandProps = useGetAstNodeOperandProps();
   const options = useOperandOptions();
@@ -26,6 +28,7 @@ export const MatchOperand = memo(function MatchOperand({
       options={options.filter((o) => o.dataType === 'String')}
       validationStatus="valid"
       onSave={onSave}
+      viewOnly={viewOnly}
     />
   );
 });

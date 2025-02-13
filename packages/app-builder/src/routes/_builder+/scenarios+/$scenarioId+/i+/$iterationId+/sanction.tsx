@@ -215,6 +215,7 @@ export default function SanctionDetail() {
     customLists,
     sections,
   } = useLoaderData<typeof loader>();
+  const editor = useEditorMode();
   const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
   const defaultRuleGroups = useRuleGroups();
@@ -299,6 +300,7 @@ export default function SanctionDetail() {
                           {t('common:name')}
                         </FormLabel>
                         <FormInput
+                          disabled={editor === 'view'}
                           defaultValue={field.state.value}
                           type="text"
                           name={field.name}
@@ -328,6 +330,7 @@ export default function SanctionDetail() {
                           {t('common:description')}
                         </FormLabel>
                         <FormInput
+                          disabled={editor === 'view'}
                           defaultValue={field.state.value}
                           type="text"
                           name={field.name}
@@ -357,6 +360,7 @@ export default function SanctionDetail() {
                           {t('scenarios:edit_rule.score')}
                         </FormLabel>
                         <FormInput
+                          disabled={editor === 'view'}
                           defaultValue={field.state.value}
                           type="number"
                           name={field.name}
@@ -410,6 +414,7 @@ export default function SanctionDetail() {
                           {t('decisions:outcome')}
                         </FormLabel>
                         <FieldOutcomes
+                          disabled={editor === 'view'}
                           name={field.name}
                           onChange={field.handleChange}
                           onBlur={field.handleBlur}
@@ -482,6 +487,7 @@ export default function SanctionDetail() {
                             {t('scenarios:sanction_counterparty_id')}
                           </FormLabel>
                           <FieldNode
+                            viewOnly={editor === 'view'}
                             value={field.state.value}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
@@ -500,6 +506,7 @@ export default function SanctionDetail() {
                             {t('scenarios:sanction_counterparty_name')}
                           </FormLabel>
                           <FieldNodeConcat
+                            viewOnly={editor === 'view'}
                             value={field.state.value}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
@@ -519,6 +526,7 @@ export default function SanctionDetail() {
                             {t('scenarios:sanction_transaction_label')}
                           </FormLabel>
                           <FieldNode
+                            viewOnly={editor === 'view'}
                             value={field.state.value}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
@@ -563,24 +571,26 @@ export default function SanctionDetail() {
               </Collapsible.Content>
             </Collapsible.Container>
 
-            <div className="sticky bottom-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6">
-              <div className="bg-grey-100 border-grey-90 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
-                <DeleteSanction
-                  iterationId={iterationId}
-                  scenarioId={scenario.id}
-                >
-                  <Button color="red" className="w-fit">
-                    <Icon icon="delete" className="size-5" aria-hidden />
-                    {t('common:delete')}
-                  </Button>
-                </DeleteSanction>
+            {editor === 'edit' ? (
+              <div className="sticky bottom-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6">
+                <div className="bg-grey-100 border-grey-90 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
+                  <DeleteSanction
+                    iterationId={iterationId}
+                    scenarioId={scenario.id}
+                  >
+                    <Button color="red" className="w-fit">
+                      <Icon icon="delete" className="size-5" aria-hidden />
+                      {t('common:delete')}
+                    </Button>
+                  </DeleteSanction>
 
-                <Button type="submit" className="flex-1">
-                  <Icon icon="save" className="size-5" aria-hidden />
-                  {t('common:save')}
-                </Button>
+                  <Button type="submit" className="flex-1">
+                    <Icon icon="save" className="size-5" aria-hidden />
+                    {t('common:save')}
+                  </Button>
+                </div>
               </div>
-            </div>
+            ) : null}
           </form>
         </Page.Content>
       </Page.Container>

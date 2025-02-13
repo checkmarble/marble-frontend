@@ -12,6 +12,7 @@ export function FieldNodeConcat({
   limit,
   onBlur,
   onChange,
+  viewOnly,
   placeholder,
 }: {
   value?: AstNode;
@@ -19,6 +20,7 @@ export function FieldNodeConcat({
   placeholder?: string;
   onChange?: (nodes: AstNode) => void;
   onBlur?: () => void;
+  viewOnly?: boolean;
 }) {
   const [nodes, setNodes] = useState<Record<string, AstNode>>(
     (value?.children?.length ? value.children : []).reduce(
@@ -52,6 +54,7 @@ export function FieldNodeConcat({
         ([id, match], i) => (
           <div key={id} className="flex gap-2">
             <MatchOperand
+              viewOnly={viewOnly}
               node={match}
               placeholder={placeholder}
               onSave={(node) => {
@@ -64,6 +67,7 @@ export function FieldNodeConcat({
             />
             {match.name === 'Undefined' || (limit && i === limit - 1) ? null : (
               <Button
+                disabled={viewOnly}
                 variant="secondary"
                 onClick={() =>
                   setNodes((nodes) => ({

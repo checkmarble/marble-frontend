@@ -1,3 +1,4 @@
+import { useEditorMode } from '@app-builder/services/editor';
 import clsx from 'clsx';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { diff, toggle } from 'radash';
@@ -24,6 +25,7 @@ const FieldCategory = memo(function FieldCategory({
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const [open, setOpen] = useState(false);
+  const editor = useEditorMode();
 
   const defaultListIds = useMemo(
     () => section.datasets.map((dataset) => dataset.name),
@@ -68,6 +70,7 @@ const FieldCategory = memo(function FieldCategory({
               {t('common:select_all')}
             </span>
             <Checkbox
+              disabled={editor === 'view'}
               checked={isAllSelected}
               onCheckedChange={(state) => {
                 updateSelectedIds((prev) => {
@@ -89,6 +92,7 @@ const FieldCategory = memo(function FieldCategory({
             {section.datasets.map((dataset) => (
               <div key={dataset.name} className="flex items-center gap-4 p-4">
                 <Checkbox
+                  disabled={editor === 'view'}
                   checked={selectedIds.includes(dataset.name)}
                   onCheckedChange={() => {
                     updateSelectedIds((prev) => toggle(prev, dataset.name));

@@ -5,6 +5,7 @@ import { MatchOperand } from './MatchOperand';
 export const FieldNode = ({
   value,
   placeholder,
+  viewOnly,
   onChange,
   onBlur,
 }: {
@@ -12,16 +13,14 @@ export const FieldNode = ({
   onChange?: (value: AstNode) => void;
   onBlur?: () => void;
   placeholder?: string;
+  viewOnly?: boolean;
 }) => (
   <div onBlur={onBlur}>
     <MatchOperand
+      viewOnly={viewOnly}
       node={value ?? NewUndefinedAstNode()}
       placeholder={placeholder}
       onSave={(node) => {
-        // if (ref.current) {
-        //   ref.current.value = JSON.stringify(node);
-        //   ref.current?.dispatchEvent(new Event('change'));
-        // }
         onChange?.(node);
       }}
     />
