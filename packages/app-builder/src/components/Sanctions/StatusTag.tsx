@@ -1,7 +1,7 @@
 import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Tag } from 'ui-design-system';
+import { Tag, type TagProps } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { sanctionsI18n } from './sanctions-i18n';
@@ -10,7 +10,8 @@ const statusTagColors = {
   pending: 'orange',
   no_hit: 'grey',
   confirmed_hit: 'red',
-} as const;
+  skipped: 'grey',
+} satisfies Record<SanctionCheckMatch['status'], TagProps['color']>;
 
 export type StatusTagProps = {
   status: SanctionCheckMatch['status'];
