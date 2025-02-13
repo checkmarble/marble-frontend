@@ -1,4 +1,5 @@
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import { NewStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { nanoid } from 'nanoid';
 import { useEffect, useMemo, useState } from 'react';
 import { entries, omit, values } from 'remeda';
@@ -38,13 +39,9 @@ export function FieldNodeConcat({
 
   useEffect(() => {
     if (matches.length !== 0) {
-      onChange?.({
-        name: 'StringConcat',
-        children: values(nodes),
-        namedChildren: {
-          with_separator: { constant: true, namedChildren: {}, children: [] },
-        },
-      });
+      onChange?.(
+        NewStringConcatAstNode(values(nodes), { withSeparator: true }),
+      );
     }
   }, [nodes, matches.length, onChange]);
 
