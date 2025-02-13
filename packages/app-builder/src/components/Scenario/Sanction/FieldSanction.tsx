@@ -8,11 +8,12 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-const FieldCategory = ({
+const FieldCategory = memo(function FieldCategory({
   section,
   selectedIds,
   updateSelectedIds,
@@ -20,8 +21,8 @@ const FieldCategory = ({
   section: OpenSanctionsCatalogSection;
   selectedIds: string[];
   updateSelectedIds: Dispatch<SetStateAction<string[]>>;
-}) => {
-  const { t } = useTranslation(['common']);
+}) {
+  const { t } = useTranslation(['common', 'scenarios']);
   const [open, setOpen] = useState(false);
 
   const defaultListIds = useMemo(
@@ -31,6 +32,11 @@ const FieldCategory = ({
 
   const isAllSelected = useMemo(
     () => diff(defaultListIds, selectedIds).length === 0,
+    [selectedIds, defaultListIds],
+  );
+
+  const nbSelected = useMemo(
+    () => selectedIds.filter((id) => defaultListIds.includes(id)).length,
     [selectedIds, defaultListIds],
   );
 
@@ -49,6 +55,13 @@ const FieldCategory = ({
               })}
             />
             <span className="text-s font-semibold">{section.title}</span>
+            {!isAllSelected && nbSelected ? (
+              <span className="text-s text-purple-65 font-semibold">
+                {t('scenarios:sanction.lists.nb_selected', {
+                  count: nbSelected,
+                })}
+              </span>
+            ) : null}
           </CollapsibleV2.Title>
           <div className="flex items-center gap-4">
             <span className="text-grey-50 text-xs">
@@ -89,10 +102,9 @@ const FieldCategory = ({
       </div>
     </CollapsibleV2.Provider>
   );
-};
+});
 
 export const FieldSanction = ({
-  name,
   onChange,
   onBlur,
   sections,
@@ -100,7 +112,6 @@ export const FieldSanction = ({
 }: {
   defaultValue?: string[];
   sections: OpenSanctionsCatalogSection[];
-  name?: string;
   onChange?: (value: string[]) => void;
   onBlur?: () => void;
 }) => {
@@ -113,8 +124,7 @@ export const FieldSanction = ({
   }, [selectedIds, onChange]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <input name={name} className="sr-only" tabIndex={-1} onBlur={onBlur} />
+    <div onBlur={onBlur} className="flex flex-col gap-4">
       {sections.map((section) => (
         <FieldCategory
           key={section.name}

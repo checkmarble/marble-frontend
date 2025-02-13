@@ -3,10 +3,11 @@ import {
   useGetAstNodeOperandProps,
   useOperandOptions,
 } from '@app-builder/services/editor/options';
+import { memo } from 'react';
 
 import { Operand } from '../AstBuilder/AstBuilderNode/Operand';
 
-export const MatchOperand = ({
+export const MatchOperand = memo(function MatchOperand({
   node,
   onSave,
   placeholder,
@@ -14,7 +15,7 @@ export const MatchOperand = ({
   node: AstNode;
   onSave?: (astNode: AstNode) => void;
   placeholder?: string;
-}) => {
+}) {
   const getOperandAstNodeOperandProps = useGetAstNodeOperandProps();
   const options = useOperandOptions();
 
@@ -27,4 +28,4 @@ export const MatchOperand = ({
       onSave={onSave}
     />
   );
-};
+});
