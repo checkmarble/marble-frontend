@@ -3,6 +3,7 @@ import { adaptUser, type User } from '@app-builder/models';
 import {
   adaptOrganizationDto,
   type Organization,
+  type OrganizationUpdateInput,
 } from '@app-builder/models/organization';
 import { type Tag } from 'marble-api';
 
@@ -12,7 +13,7 @@ export interface OrganizationRepository {
   listTags(args?: { withCaseCount: boolean }): Promise<Tag[]>;
   updateOrganization(args: {
     organizationId: string;
-    defaultScenarioTimezone: string;
+    changes: OrganizationUpdateInput;
   }): Promise<Organization>;
 }
 
@@ -38,11 +39,16 @@ export function makeGetOrganizationRepository() {
       return tags;
     },
     updateOrganization: async (args) => {
-      const { organization: updatedOrganization } =
-        await marbleCoreApiClient.updateOrganization(organizationId, {
-          default_scenario_timezone: args.defaultScenarioTimezone,
-        });
-      return adaptOrganizationDto(updatedOrganization);
+      const { organization } = await marbleCoreApiClient.updateOrganization(
+        organizationId,
+        {
+          default_scenario_timezone: args.changes.defaultScenarioTimezone,
+          sanctions_limit: args.changes.sanctionLimit,
+          sanctions_threshold: args.changes.sanctionThreshold,
+        },
+      );
+
+      return adaptOrganizationDto(organization);
     },
   });
 }

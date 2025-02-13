@@ -28,6 +28,7 @@ import { type PartnerRepository } from '@app-builder/repositories/PartnerReposit
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
 import { type SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
+import { type ScenarioIterationSanctionRepository } from '@app-builder/repositories/ScenarioIterationSanctionRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type TestRunRepository } from '@app-builder/repositories/TestRunRepository';
 import { type TransferAlertRepository } from '@app-builder/repositories/TransferAlertRepository';
@@ -67,6 +68,7 @@ interface AuthenticatedInfo {
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   scenarioIterationRuleRepository: ScenarioIterationRuleRepository;
+  scenarioIterationSanctionRepository: ScenarioIterationSanctionRepository;
   user: CurrentUser;
   entitlements: LicenseEntitlements;
   inbox: InboxRepository;
@@ -141,6 +143,9 @@ interface MakeAuthenticationServerServiceArgs {
   getScenarioIterationRuleRepository: (
     marbleCoreApiClient: MarbleCoreApi,
   ) => ScenarioIterationRuleRepository;
+  getScenarioIterationSanctionRepository: (
+    marbleCoreApiClient: MarbleCoreApi,
+  ) => ScenarioIterationSanctionRepository;
   getDataModelRepository: (
     marbleCoreApiClient: MarbleCoreApi,
   ) => DataModelRepository;
@@ -190,6 +195,7 @@ export function makeAuthenticationServerService({
   getOrganizationRepository,
   getScenarioRepository,
   getScenarioIterationRuleRepository,
+  getScenarioIterationSanctionRepository,
   getDataModelRepository,
   getApiKeyRepository,
   getAnalyticsRepository,
@@ -368,6 +374,8 @@ export function makeAuthenticationServerService({
       scenario: getScenarioRepository(marbleCoreApiClient),
       scenarioIterationRuleRepository:
         getScenarioIterationRuleRepository(marbleCoreApiClient),
+      scenarioIterationSanctionRepository:
+        getScenarioIterationSanctionRepository(marbleCoreApiClient),
       organization: getOrganizationRepository(
         marbleCoreApiClient,
         user.organizationId,

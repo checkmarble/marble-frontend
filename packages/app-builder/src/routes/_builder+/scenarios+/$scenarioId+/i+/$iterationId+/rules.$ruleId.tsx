@@ -1,5 +1,10 @@
 import { Callout, Page, Paper, scenarioI18n } from '@app-builder/components';
 import {
+  BreadCrumbLink,
+  type BreadCrumbProps,
+  BreadCrumbs,
+} from '@app-builder/components/Breadcrumbs';
+import {
   FormControl,
   FormError,
   FormField,
@@ -72,6 +77,55 @@ import {
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+      const scenarioId = useParam('scenarioId');
+      const iterationId = useParam('iterationId');
+
+      return (
+        <BreadCrumbLink
+          isLast={isLast}
+          to={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
+            scenarioId: fromUUID(scenarioId),
+            iterationId: fromUUID(iterationId),
+          })}
+        >
+          {t('navigation:scenario.rules')}
+        </BreadCrumbLink>
+      );
+    },
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['common']);
+      const rule = useCurrentScenarioIterationRule();
+      const scenarioId = useParam('scenarioId');
+      const iterationId = useParam('iterationId');
+      const editorMode = useEditorMode();
+
+      return (
+        <div className="flex items-center gap-2">
+          <BreadCrumbLink
+            isLast={isLast}
+            to={getRoute(
+              '/scenarios/:scenarioId/i/:iterationId/rules/:ruleId',
+              {
+                scenarioId: fromUUID(scenarioId),
+                iterationId: fromUUID(iterationId),
+                ruleId: fromUUID(rule.id),
+              },
+            )}
+          >
+            {rule.name ?? fromUUID(rule.id)}
+          </BreadCrumbLink>
+          {editorMode === 'edit' ? (
+            <Tag size="big" border="square">
+              {t('common:edit')}
+            </Tag>
+          ) : null}
+        </div>
+      );
+    },
+  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -175,8 +229,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function RuleDetail() {
-  const { t } = useTranslation(handle.i18n);
-
   const { databaseAccessors, payloadAccessors, dataModel, customLists } =
     useLoaderData<typeof loader>();
 
@@ -213,18 +265,8 @@ export default function RuleDetail() {
 
   return (
     <Page.Main>
-      <Page.Header className="justify-between">
-        <div className="flex flex-row items-center gap-4">
-          <Page.BackButton />
-          <span className="line-clamp-2 text-start">
-            {rule.name ?? fromUUID(ruleId)}
-          </span>
-          {editorMode === 'edit' ? (
-            <Tag size="big" border="square">
-              {t('common:edit')}
-            </Tag>
-          ) : null}
-        </div>
+      <Page.Header>
+        <BreadCrumbs />
       </Page.Header>
       <Page.Container>
         {editorMode === 'view' ? (
