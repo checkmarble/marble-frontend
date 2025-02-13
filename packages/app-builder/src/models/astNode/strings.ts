@@ -167,3 +167,46 @@ export function isStringTemplateAstNode(
 ): node is StringTemplateAstNode {
   return node.name === stringTemplateAstNodeName;
 }
+
+////////////////////////
+// String Concat     ///
+////////////////////////
+
+export const stringConcatAstNodeName = 'StringConcat';
+export interface StringConcatAstNode {
+  name: typeof stringConcatAstNodeName;
+  constant?: undefined;
+  children: AstNode[];
+  namedChildren: {
+    with_separator?: ConstantAstNode<boolean>;
+    separator?: ConstantAstNode<string>;
+  };
+}
+
+export function NewStringConcatAstNode(
+  children: AstNode[],
+  {
+    withSeparator,
+    separator,
+  }: { withSeparator?: boolean; separator?: string } = {},
+): StringConcatAstNode {
+  return {
+    name: stringConcatAstNodeName,
+    constant: undefined,
+    children,
+    namedChildren: {
+      with_separator: withSeparator
+        ? NewConstantAstNode({ constant: withSeparator })
+        : undefined,
+      separator: separator
+        ? NewConstantAstNode({ constant: separator })
+        : undefined,
+    },
+  };
+}
+
+export function isStringConcatAstNode(
+  node: AstNode,
+): node is StringConcatAstNode {
+  return node.name === stringConcatAstNodeName;
+}
