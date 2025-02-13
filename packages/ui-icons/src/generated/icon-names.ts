@@ -56,6 +56,7 @@ export const iconNames = [
   'openinnew',
   'parentheses',
   'paste',
+  'percentage',
   'person',
   'play',
   'plus',

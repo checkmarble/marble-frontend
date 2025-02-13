@@ -71,9 +71,22 @@ export function CreateRule({
         },
       )}
     >
-      <Button type="submit" disabled={fetcher.state === 'submitting'}>
-        <Icon icon="plus" className="size-6" />
-        {t('scenarios:create_rule.title')}
+      <Button
+        type="submit"
+        variant="tertiary"
+        size="dropdown"
+        disabled={fetcher.state === 'submitting'}
+        className="w-full gap-2"
+      >
+        <Icon icon="plus" className="text-grey-00 size-5" />
+        <div className="flex w-full flex-col items-start">
+          <span className="text-grey-00 text-s font-normal">
+            {t('scenarios:create_rule.title')}
+          </span>
+          <span className="text-grey-50 font-normal">
+            {t('scenarios:create_rule.description')}
+          </span>
+        </div>
       </Button>
     </fetcher.Form>
   );

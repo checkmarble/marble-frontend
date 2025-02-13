@@ -107,5 +107,6 @@
   "refine_modal.no_match_label": "لم يتم العثور على مباريات محتملة مع بحثك.",
   "refine_modal.schema.vehicle": "عربة",
   "entity.schema.airplane": "طائرة",
-  "entity.schema.vessel": "إناء"
+  "entity.schema.vessel": "إناء",
+  "refine_modal.schema.legalentity": "الكيان القانوني"
 }

@@ -83,6 +83,7 @@
   "refine_modal.refine_callout": "En appliquant cette recherche, le chèque de sanction sera mis à jour pour afficher uniquement la correspondance possible visible ci-dessus.",
   "refine_modal.result_label": "Matchs possibles avec votre recherche:",
   "refine_modal.schema.company": "Entreprise",
+  "refine_modal.schema.legalentity": "Entité légale",
   "refine_modal.schema.thing": "Je ne sais pas",
   "refine_modal.schema.organization": "Organisation",
   "refine_modal.schema.person": "Personne",

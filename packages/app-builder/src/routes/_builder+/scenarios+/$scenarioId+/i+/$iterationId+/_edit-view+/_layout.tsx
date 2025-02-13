@@ -2,12 +2,6 @@ import { navigationI18n, Page, TabLink } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CornerPing } from '@app-builder/components/Ping';
 import {
-  getFormattedLive,
-  getFormattedVersion,
-  ScenarioIterationMenu,
-} from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
-import {
   useCurrentScenario,
   useScenarioIterations,
 } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
@@ -27,46 +21,21 @@ import {
   hasRulesErrors,
   hasTriggerErrors,
 } from '@app-builder/services/validation';
-import {
-  formatDateRelative,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromParams, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Outlet, useLoaderData, useLocation } from '@remix-run/react';
+import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
-import { MenuButton, Tag } from 'ui-design-system';
+import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
-  BreadCrumbs: [
-    () => {
-      const scenarioIterations = useScenarioIterations();
-      const iterationId = useParam('iterationId');
-
-      const currentIteration = React.useMemo(() => {
-        const currentIteration = scenarioIterations.find(
-          ({ id }) => id === iterationId,
-        );
-        invariant(currentIteration, 'currentIteration is required');
-        return currentIteration;
-      }, [iterationId, scenarioIterations]);
-
-      return (
-        <VersionSelect
-          currentIteration={currentIteration}
-          scenarioIterations={scenarioIterations}
-        />
-      );
-    },
-  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -222,65 +191,6 @@ export default function ScenarioEditLayout() {
         </Page.Content>
       </Page.Container>
     </Page.Main>
-  );
-}
-
-function VersionSelect({
-  currentIteration,
-  scenarioIterations,
-}: {
-  currentIteration: ScenarioIterationWithType;
-  scenarioIterations: ScenarioIterationWithType[];
-}) {
-  const { t } = useTranslation(['scenarios']);
-  const location = useLocation();
-  const language = useFormatLanguage();
-
-  const labelledScenarioIteration = React.useMemo(
-    () =>
-      scenarioIterations.map((si) => ({
-        id: si.id,
-        type: si.type,
-        version: si.version,
-        updatedAt: si.updatedAt,
-        linkTo: location.pathname.replace(
-          fromUUID(currentIteration.id),
-          fromUUID(si.id),
-        ),
-        formattedVersion: getFormattedVersion(si, t),
-        formattedLive: getFormattedLive(si, t),
-        formattedUpdatedAt: formatDateRelative(si.updatedAt, {
-          language,
-        }),
-      })),
-    [currentIteration.id, language, location.pathname, scenarioIterations, t],
-  );
-
-  const currentFormattedVersion = getFormattedVersion(currentIteration, t);
-  const currentFormattedLive = getFormattedLive(currentIteration, t);
-
-  return (
-    <ScenarioIterationMenu
-      labelledScenarioIteration={labelledScenarioIteration}
-    >
-      <MenuButton className="text-s text-grey-00 border-grey-90 focus:border-purple-65 flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-none">
-        <p className="text-s ml-2 flex flex-row gap-1 font-semibold">
-          <span className="text-grey-00 capitalize">
-            {currentFormattedVersion}
-          </span>
-          {currentFormattedLive ? (
-            <span className="text-purple-65 capitalize">
-              {currentFormattedLive}
-            </span>
-          ) : null}
-        </p>
-        <Icon
-          aria-hidden
-          icon="arrow-2-down"
-          className="text-grey-00 size-6 shrink-0"
-        />
-      </MenuButton>
-    </ScenarioIterationMenu>
   );
 }
 
