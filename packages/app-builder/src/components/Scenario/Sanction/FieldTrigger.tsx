@@ -1,5 +1,6 @@
 import { type AstNode, NewEmptyTriggerAstNode } from '@app-builder/models';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
+import { useEditorMode } from '@app-builder/services/editor';
 import {
   useAstNodeEditor,
   useValidateAstNode,
@@ -24,6 +25,8 @@ export const FieldTrigger = ({
   iterationId: string;
   options: AstBuilderProps['options'];
 }) => {
+  const editor = useEditorMode();
+
   const astEditorStore = useAstNodeEditor({
     initialAstNode: trigger ?? NewEmptyTriggerAstNode(),
   });
@@ -43,7 +46,11 @@ export const FieldTrigger = ({
 
   return (
     <div onBlur={onBlur}>
-      <AstBuilder astEditorStore={astEditorStore} options={options} />
+      <AstBuilder
+        viewOnly={editor === 'view'}
+        astEditorStore={astEditorStore}
+        options={options}
+      />
     </div>
   );
 };
