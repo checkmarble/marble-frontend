@@ -108,5 +108,7 @@
   "refine_modal.no_match_label": "Aucune correspondance possible n'a été trouvée avec votre recherche.",
   "refine_modal.schema.vehicle": "Véhicule",
   "entity.schema.airplane": "Avion",
-  "entity.schema.vessel": "Navire"
+  "entity.schema.vessel": "Navire",
+  "match.status.skipped": "Sauté",
+  "match.unique_counterparty_identifier": "Identifiant unique de contrepartie"
 }

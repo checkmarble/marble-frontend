@@ -23,7 +23,11 @@ export type SanctionCheckStatus =
   | 'confirmed_hit'
   | 'no_hit'
   | 'error';
-export type SanctionCheckMatchStatus = 'pending' | 'confirmed_hit' | 'no_hit';
+export type SanctionCheckMatchStatus =
+  | 'pending'
+  | 'confirmed_hit'
+  | 'no_hit'
+  | 'skipped';
 export type SanctionCheckEntitySchema = (typeof entitySchemas)[number];
 
 export type SanctionCheckMatchPayload = {
@@ -56,6 +60,7 @@ export type SanctionCheckMatch = {
   queryIds: string[];
   status: SanctionCheckMatchStatus;
   // datasets: unknown[];
+  uniqueCounterpartyIdentifier?: string;
   payload: SanctionCheckMatchPayload;
   comments: {
     id: string;
@@ -74,6 +79,7 @@ export function adaptSanctionCheckMatch(
     queryIds: dto.query_ids,
     status: dto.status,
     payload: adapatSanctionCheckMatchPayload(dto.payload),
+    uniqueCounterpartyIdentifier: dto.unique_counterparty_identifier,
     comments: R.map(dto.comments, (comment) => ({
       id: comment.id,
       authorId: comment.author_id,

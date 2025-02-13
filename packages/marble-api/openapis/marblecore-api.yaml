@@ -5182,9 +5182,11 @@ components:
             type: string
         status:
           type: string
-          enum: ['pending', 'confirmed_hit', 'no_hit']
+          enum: ['pending', 'confirmed_hit', 'no_hit', 'skipped']
         datasets:
           type: array
+        unique_counterparty_identifier:
+          type: string
         payload:
           $ref: '#/components/schemas/SanctionCheckMatchPayloadDto'
         comments:
@@ -5404,6 +5406,8 @@ components:
           enum: ['confirmed_hit', 'no_hit']
         comment:
           type: string
+        whitelist:
+          type: boolean
     UpdateScenarioIterationBody:
       type: object
       properties:

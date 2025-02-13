@@ -1,6 +1,7 @@
 import { Callout } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { StatusRadioGroup } from '@app-builder/components/Sanctions/StatusRadioGroup';
+import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import { serverServices } from '@app-builder/services/init.server';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
@@ -10,7 +11,7 @@ import { useFetcher } from '@remix-run/react';
 import { type UpdateSanctionCheckMatchDto } from 'marble-api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ModalV2, TextArea } from 'ui-design-system';
+import { Button, ModalV2, Switch, TextArea } from 'ui-design-system';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -62,11 +63,11 @@ export async function action({ request }: ActionFunctionArgs) {
 export const SanctionCheckReviewModal = ({
   open,
   onClose: _onClose,
-  sanctionMatchId,
+  sanctionMatch,
 }: {
   open: boolean;
   onClose: () => void;
-  sanctionMatchId: string;
+  sanctionMatch: SanctionCheckMatch;
 }) => {
   const { t } = useTranslation(['common', 'sanctions']);
   const [currentStatus, setCurrentStatus] = useState<
@@ -98,7 +99,7 @@ export const SanctionCheckReviewModal = ({
         method="post"
         action={getRoute('/ressources/cases/review-sanction-match')}
       >
-        <input name="matchId" type="hidden" value={sanctionMatchId} />
+        <input name="matchId" type="hidden" value={sanctionMatch.id} />
         <div className="flex flex-col gap-2">
           <div className="text-m">
             {t('sanctions:review_modal.status_label')}
@@ -117,17 +118,21 @@ export const SanctionCheckReviewModal = ({
           <TextArea name="comment" />
         </div>
         {/* TODO: Whitelisting */}
-        {/* {currentStatus === 'no_hit' ? (
+        {currentStatus === 'no_hit' &&
+        !!sanctionMatch.uniqueCounterpartyIdentifier ? (
           <div className="flex flex-col gap-2">
             <span className="flex items-center gap-2">
-              <Switch name="whitelist" /> {t('sanctions:review_modal.whitelist_label')}
+              <Switch name="whitelist" />{' '}
+              {t('sanctions:review_modal.whitelist_label')}
             </span>
             <div className="border-grey-90 bg-grey-98 flex flex-col gap-2 rounded border p-2">
-              <span className="font-semibold">IBAN</span>
-              <span>FR76 4061 8801 5200 0500 9263 912</span>
+              <span className="font-semibold">
+                {t('sanctions:match.unique_counterparty_identifier')}
+              </span>
+              <span>{sanctionMatch.uniqueCounterpartyIdentifier}</span>
             </div>
           </div>
-        ) : null} */}
+        ) : null}
         <div className="flex flex-1 flex-row gap-2">
           <ModalV2.Close
             render={

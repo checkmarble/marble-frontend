@@ -22,8 +22,9 @@ export interface SanctionCheckRepository {
   listDatasets(): Promise<OpenSanctionsCatalog>;
   updateMatchStatus(args: {
     matchId: string;
-    status: Exclude<SanctionCheckMatchStatus, 'pending'>;
+    status: Extract<SanctionCheckMatchStatus, 'no_hit' | 'confirmed_hit'>;
     comment?: string;
+    whitelist?: boolean;
   }): Promise<SanctionCheckMatch>;
   searchSanctionCheckMatches(args: {
     decisionId: string;
@@ -53,11 +54,12 @@ export function makeGetSanctionCheckRepository() {
         adaptSanctionCheck,
       );
     },
-    updateMatchStatus: async ({ matchId, status, comment }) => {
+    updateMatchStatus: async ({ matchId, status, comment, whitelist }) => {
       return adaptSanctionCheckMatch(
         await marbleCoreApiClient.updateSanctionCheckMatch(matchId, {
           status,
           comment,
+          whitelist,
         }),
       );
     },

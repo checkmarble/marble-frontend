@@ -507,8 +507,9 @@ export type SanctionCheckMatchDto = {
     id: string;
     entity_id: string;
     query_ids: string[];
-    status: "pending" | "confirmed_hit" | "no_hit";
+    status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
     datasets: any;
+    unique_counterparty_identifier?: string;
     payload: SanctionCheckMatchPayloadDto;
     comments: {
         id: string;
@@ -546,6 +547,7 @@ export type SanctionCheckFileDto = {
 export type UpdateSanctionCheckMatchDto = {
     status: "confirmed_hit" | "no_hit";
     comment?: string;
+    whitelist?: boolean;
 };
 export type SanctionCheckRefineDto = object;
 export type UpdateScenarioIterationRuleBodyDto = {

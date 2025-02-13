@@ -1,6 +1,7 @@
 import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
+import { getFullName } from '@app-builder/services/user';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -85,7 +86,7 @@ export const MatchCard = ({
       <SanctionCheckReviewModal
         open={isInReview}
         onClose={() => setIsInReview(false)}
-        sanctionMatchId={match.id}
+        sanctionMatch={match}
       />
     </div>
   );
@@ -99,6 +100,7 @@ function CommentLine({
   const language = useFormatLanguage();
   const { getOrgUserById } = useOrganizationUsers();
   const user = getOrgUserById(comment.authorId);
+  const fullName = getFullName(user);
 
   return (
     <div key={comment.id} className="flex flex-col gap-2">
@@ -109,7 +111,7 @@ function CommentLine({
           lastName={user?.lastName}
         />
         <span className="flex items-baseline gap-1">
-          Roger Grand
+          {fullName}
           <time className="text-grey-50 text-xs" dateTime={comment.createdAt}>
             {formatDateTime(comment.createdAt, { language })}
           </time>

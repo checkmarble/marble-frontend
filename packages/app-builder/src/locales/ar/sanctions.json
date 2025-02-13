@@ -108,5 +108,7 @@
   "refine_modal.schema.vehicle": "عربة",
   "entity.schema.airplane": "طائرة",
   "entity.schema.vessel": "إناء",
-  "refine_modal.schema.legalentity": "الكيان القانوني"
+  "refine_modal.schema.legalentity": "الكيان القانوني",
+  "match.status.skipped": "تخطي",
+  "match.unique_counterparty_identifier": "معرف فريد للطرف المقابل"
 }

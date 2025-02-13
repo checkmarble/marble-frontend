@@ -33,6 +33,8 @@
   "match.status.pending": "To review",
   "match.status.no_hit": "No match",
   "match.status.confirmed_hit": "Match confirmed",
+  "match.status.skipped": "Skipped",
+  "match.unique_counterparty_identifier": "Unique counterpary Identifier",
   "entity.property.name": "Name",
   "entity.property.position": "Position",
   "entity.property.religion": "Religion",
