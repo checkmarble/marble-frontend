@@ -4,7 +4,7 @@ import {
   useAstNodeEditor,
   useValidateAstNode,
 } from '@app-builder/services/editor/ast-editor';
-import { type ChangeEvent, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useStore } from 'zustand';
 
 import { AstBuilder, type AstBuilderProps } from '../AstBuilder';
@@ -26,8 +26,6 @@ export const FieldTrigger = ({
   iterationId: string;
   options: AstBuilderProps['options'];
 }) => {
-  const ref = useRef<HTMLInputElement>(null);
-
   const astEditorStore = useAstNodeEditor({
     initialAstNode: trigger ?? NewEmptyTriggerAstNode(),
   });
@@ -41,40 +39,13 @@ export const FieldTrigger = ({
 
   useValidateAstNode(astEditorStore, validate, validation);
 
-  // Thx React... https://github.com/facebook/react/issues/27283
   useEffect(() => {
-    if (ref.current) {
-      ref.current.onchange = (e) => {
-        const node = JSON.parse(
-          (e as unknown as ChangeEvent<HTMLInputElement>).currentTarget?.value,
-        ) as AstNode;
-
-        const isDefaultAnd =
-          node && node.name === 'And' && !node.children?.length;
-
-        onChange?.(isDefaultAnd ? undefined : node);
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.value = JSON.stringify(astNode);
-      ref.current?.dispatchEvent(new Event('change'));
-    }
-  }, [astNode]);
+    onChange?.(astNode);
+  }, [astNode, onChange]);
 
   return (
     <>
-      <input
-        name={name}
-        ref={ref}
-        defaultValue={trigger ? JSON.stringify(trigger) : undefined}
-        className="sr-only"
-        tabIndex={-1}
-        onBlur={onBlur}
-      />
+      <input name={name} className="sr-only" tabIndex={-1} onBlur={onBlur} />
       <AstBuilder astEditorStore={astEditorStore} options={options} />
     </>
   );

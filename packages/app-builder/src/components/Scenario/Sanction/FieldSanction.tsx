@@ -2,12 +2,10 @@ import clsx from 'clsx';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { diff, toggle } from 'radash';
 import {
-  type ChangeEvent,
   type Dispatch,
   type SetStateAction,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -106,44 +104,17 @@ export const FieldSanction = ({
   onChange?: (value: string[]) => void;
   onBlur?: () => void;
 }) => {
-  const ref = useRef<HTMLInputElement>(null);
-
   const [selectedIds, updateSelectedIds] = useState<string[]>(
     defaultValue ?? [],
   );
 
-  // Thx React... https://github.com/facebook/react/issues/27283
   useEffect(() => {
-    if (ref.current) {
-      ref.current.onchange = (e) => {
-        onChange?.(
-          JSON.parse(
-            (e as unknown as ChangeEvent<HTMLInputElement>).currentTarget
-              ?.value,
-          ),
-        );
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.value = JSON.stringify(selectedIds);
-      ref.current?.dispatchEvent(new Event('change'));
-    }
-  }, [selectedIds]);
+    onChange?.(selectedIds);
+  }, [selectedIds, onChange]);
 
   return (
     <div className="flex flex-col gap-4">
-      <input
-        name={name}
-        ref={ref}
-        defaultValue={JSON.stringify(defaultValue)}
-        className="sr-only"
-        tabIndex={-1}
-        onBlur={onBlur}
-      />
+      <input name={name} className="sr-only" tabIndex={-1} onBlur={onBlur} />
       {sections.map((section) => (
         <FieldCategory
           key={section.name}

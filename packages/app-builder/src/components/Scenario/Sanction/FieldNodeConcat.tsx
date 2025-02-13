@@ -1,6 +1,6 @@
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { nanoid } from 'nanoid';
-import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { entries, omit, values } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -19,11 +19,9 @@ export function FieldMatches({
   limit?: number;
   placeholder?: string;
   name?: string;
-  onChange?: (nodes: AstNode[]) => void;
+  onChange?: (nodes: AstNode) => void;
   onBlur?: () => void;
 }) {
-  const ref = useRef<HTMLInputElement>(null);
-
   const [nodes, setNodes] = useState<Record<string, AstNode>>(
     (value?.children?.length ? value.children : []).reduce(
       (acc, node) => {
@@ -38,41 +36,19 @@ export function FieldMatches({
 
   const defaultMatches: [string, AstNode][] = [['', NewUndefinedAstNode()]];
 
-  // Thx React... https://github.com/facebook/react/issues/27283
   useEffect(() => {
-    if (ref.current) {
-      ref.current.onchange = (e) => {
-        onChange?.(
-          JSON.parse(
-            (e as unknown as ChangeEvent<HTMLInputElement>).currentTarget
-              ?.value,
-          ),
-        );
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (ref.current && matches.length !== 0) {
-      ref.current.value = JSON.stringify({
+    if (matches.length !== 0) {
+      onChange?.({
         name: 'StringConcat',
         children: values(nodes),
+        namedChildren: {},
       });
-      ref.current?.dispatchEvent(new Event('change'));
     }
-  }, [nodes, matches.length]);
+  }, [nodes, matches.length, onChange]);
 
   return (
     <div className="flex flex-wrap gap-2">
-      <input
-        name={name}
-        ref={ref}
-        defaultValue={value ? JSON.stringify(value) : undefined}
-        className="sr-only"
-        tabIndex={-1}
-        onBlur={onBlur}
-      />
+      <input name={name} className="sr-only" tabIndex={-1} onBlur={onBlur} />
       {(matches.length === 0 ? defaultMatches : matches).map(
         ([id, match], i) => (
           <div key={id} className="flex gap-2">
