@@ -42,7 +42,7 @@ export function FieldNodeConcat({
         name: 'StringConcat',
         children: values(nodes),
         namedChildren: {
-          withSeparator: { constant: true, namedChildren: {}, children: [] },
+          with_separator: { constant: true, namedChildren: {}, children: [] },
         },
       });
     }
