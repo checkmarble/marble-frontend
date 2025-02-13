@@ -7,8 +7,7 @@ import { Icon } from 'ui-icons';
 
 import { MatchOperand } from './MatchOperand';
 
-export function FieldMatches({
-  name,
+export function FieldNodeConcat({
   value,
   limit,
   onBlur,
@@ -18,7 +17,6 @@ export function FieldMatches({
   value?: AstNode;
   limit?: number;
   placeholder?: string;
-  name?: string;
   onChange?: (nodes: AstNode) => void;
   onBlur?: () => void;
 }) {
@@ -41,14 +39,15 @@ export function FieldMatches({
       onChange?.({
         name: 'StringConcat',
         children: values(nodes),
-        namedChildren: {},
+        namedChildren: {
+          withSeparator: { constant: true, namedChildren: {}, children: [] },
+        },
       });
     }
   }, [nodes, matches.length, onChange]);
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <input name={name} className="sr-only" tabIndex={-1} onBlur={onBlur} />
+    <div onBlur={onBlur} className="flex flex-wrap gap-2">
       {(matches.length === 0 ? defaultMatches : matches).map(
         ([id, match], i) => (
           <div key={id} className="flex gap-2">

@@ -8,10 +8,10 @@ import { isAdmin } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { UTC, validTimezones } from '@app-builder/utils/validTimezones';
-import { parseWithZod } from '@conform-to/zod';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
+import { decode as formDataToObject } from 'decode-formdata';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { z } from 'zod';
@@ -32,8 +32,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 const editOrganizationSchema = z.object({
   organizationId: z.string().min(1),
   defaultScenarioTimezone: z.string(),
-  sanctionThreshold: z.number().min(0).max(100),
-  sanctionLimit: z.number().min(0),
+  sanctionThreshold: z.coerce.number().min(0).max(100),
+  sanctionLimit: z.coerce.number().min(0),
 });
 
 type EditOrganizationForm = z.infer<typeof editOrganizationSchema>;
@@ -44,24 +44,22 @@ export async function action({ request }: LoaderFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const session = await getSession(request);
-  const formData = await request.formData();
+  const [session, formData, { organization: repository }] = await Promise.all([
+    getSession(request),
+    request.formData(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-  const submission = parseWithZod(formData, { schema: editOrganizationSchema });
-
-  if (submission.status !== 'success') {
-    return json(submission.reply());
-  }
-
-  const { organization: repository } = await authService.isAuthenticated(
-    request,
-    { failureRedirect: getRoute('/sign-in') },
-  );
+  const formDataDecoded = formDataToObject(formData);
 
   try {
+    const data = editOrganizationSchema.parse(formDataDecoded);
+
     await repository.updateOrganization({
-      organizationId: submission.value.organizationId,
-      changes: submission.value,
+      organizationId: data.organizationId,
+      changes: data,
     });
 
     setToastMessage(session, {

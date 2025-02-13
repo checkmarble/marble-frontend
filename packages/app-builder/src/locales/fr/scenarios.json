@@ -393,5 +393,7 @@
   "sanction.nudge": "Améliorez vos règles avec un chèque de sanction basé sur l'OpenSacntion API",
   "sanction_counterparty_id": "Identifiant de contrepartie",
   "sanction_counterparty_name": "Nom de contrepartie",
-  "sanction_transaction_label": "Étiquette de transaction"
+  "sanction_transaction_label": "Étiquette de transaction",
+  "sanction.lists.nb_selected_one": "({{count}} sélectionnée)",
+  "sanction.lists.nb_selected_other": "({{count}} sélectionnées)"
 }

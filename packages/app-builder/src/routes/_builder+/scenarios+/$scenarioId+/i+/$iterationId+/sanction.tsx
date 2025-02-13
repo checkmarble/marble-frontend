@@ -11,7 +11,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type AstBuilderProps } from '@app-builder/components/Scenario/AstBuilder';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
-import { FieldMatches } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
+import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
 import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldSanction } from '@app-builder/components/Scenario/Sanction/FieldSanction';
@@ -27,7 +27,6 @@ import { OptionsProvider } from '@app-builder/services/editor/options';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import { parseWithZod } from '@conform-to/zod';
 import {
   type ActionFunctionArgs,
   json,
@@ -35,6 +34,7 @@ import {
 } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
+import { decode as formDataToObject } from 'decode-formdata';
 import { type Namespace } from 'i18next';
 import { serialize as objectToFormData } from 'object-to-formdata';
 import { useMemo } from 'react';
@@ -126,7 +126,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const editSanctionFormSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().optional(),
-  scoreModifier: z.number(),
+  scoreModifier: z.coerce.number(),
   ruleGroup: z.string().nonempty(),
   forceOutcome: z.union([
     z.literal('review'),
@@ -150,31 +150,32 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const session = await getSession(request);
-  const formData = await request.formData();
+  const [session, formData, { scenarioIterationSanctionRepository }] =
+    await Promise.all([
+      getSession(request),
+      request.formData(),
+      authService.isAuthenticated(request, {
+        failureRedirect: getRoute('/sign-in'),
+      }),
+    ]);
+
   const iterationId = fromParams(params, 'iterationId');
-
-  const submission = parseWithZod(formData, { schema: editSanctionFormSchema });
-
-  if (submission.status !== 'success') {
-    return json(submission.reply());
-  }
-
-  const { scenarioIterationSanctionRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const formDataDecoded = formDataToObject(formData, {
+    arrays: ['datasets'],
+  });
 
   try {
+    const data = editSanctionFormSchema.parse(formDataDecoded);
+
     await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
       iterationId,
       changes: {
-        ...submission.value,
-        counterPartyId: submission.value.counterPartyId as AstNode | undefined,
-        triggerRule: submission.value.triggerRule as AstNode | undefined,
+        ...data,
+        counterPartyId: data.counterPartyId as AstNode | undefined,
+        triggerRule: data.triggerRule as AstNode | undefined,
         query: {
-          name: submission.value.query.name as AstNode,
-          label: submission.value.query.label as AstNode | undefined,
+          name: data.query.name as AstNode,
+          label: data.query.label as AstNode | undefined,
         },
       },
     });
@@ -455,7 +456,6 @@ export default function SanctionDetail() {
                       options={options}
                       onBlur={field.handleBlur}
                       onChange={field.handleChange}
-                      name={field.name}
                       trigger={field.state.value}
                     />
                   )}
@@ -482,7 +482,6 @@ export default function SanctionDetail() {
                             {t('scenarios:sanction_counterparty_id')}
                           </FormLabel>
                           <FieldNode
-                            name={field.name}
                             value={field.state.value}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
@@ -500,8 +499,7 @@ export default function SanctionDetail() {
                           <FormLabel name={field.name}>
                             {t('scenarios:sanction_counterparty_name')}
                           </FormLabel>
-                          <FieldMatches
-                            name={field.name}
+                          <FieldNodeConcat
                             value={field.state.value}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
@@ -521,7 +519,6 @@ export default function SanctionDetail() {
                             {t('scenarios:sanction_transaction_label')}
                           </FormLabel>
                           <FieldNode
-                            name={field.name}
                             value={field.state.value}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
@@ -552,7 +549,6 @@ export default function SanctionDetail() {
                   {(field) => (
                     <div className="flex flex-col gap-2">
                       <FieldSanction
-                        name={field.name}
                         defaultValue={field.state.value}
                         onChange={field.handleChange}
                         onBlur={field.handleBlur}

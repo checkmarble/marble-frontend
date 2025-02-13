@@ -10,7 +10,6 @@ import { useStore } from 'zustand';
 import { AstBuilder, type AstBuilderProps } from '../AstBuilder';
 
 export const FieldTrigger = ({
-  name,
   trigger,
   scenarioId,
   iterationId,
@@ -18,7 +17,6 @@ export const FieldTrigger = ({
   onChange,
   onBlur,
 }: {
-  name?: string;
   trigger?: AstNode;
   onChange?: (node: AstNode | undefined) => void;
   onBlur?: () => void;
@@ -44,9 +42,8 @@ export const FieldTrigger = ({
   }, [astNode, onChange]);
 
   return (
-    <>
-      <input name={name} className="sr-only" tabIndex={-1} onBlur={onBlur} />
+    <div onBlur={onBlur}>
       <AstBuilder astEditorStore={astEditorStore} options={options} />
-    </>
+    </div>
   );
 };

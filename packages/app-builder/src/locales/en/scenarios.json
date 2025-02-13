@@ -182,6 +182,8 @@
   "sanction.match_settings.callout": "Choose information that should be checked.",
   "sanction.lists.title": "Sanction lists",
   "sanction.lists.callout": "Select lists that are relevant to your business",
+  "sanction.lists.nb_selected_one": "({{count}} selected)",
+  "sanction.lists.nb_selected_other": "({{count}} selected)",
   "sanction_transaction_label": "Transaction Label",
   "sanction_counterparty_id": "Counterparty ID",
   "sanction_counterparty_name": "Counterparty name",

@@ -393,5 +393,7 @@
   "sanction.nudge": "تحسين قواعدك من خلال فحص العقوبات بناءً على واجهة برمجة تطبيقات OpenSacntion",
   "sanction_counterparty_id": "معرف الطرف المقابل",
   "sanction_counterparty_name": "اسم الطرف المقابل",
-  "sanction_transaction_label": "تسمية المعاملة"
+  "sanction_transaction_label": "تسمية المعاملة",
+  "sanction.lists.nb_selected_one": "({{count}} المحدد)",
+  "sanction.lists.nb_selected_other": "({{count}} المحدد)"
 }
