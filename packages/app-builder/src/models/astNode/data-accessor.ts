@@ -19,7 +19,7 @@ export function isDatabaseAccess(node: AstNode): node is DatabaseAccessAstNode {
 
 export const payloadAstNodeName = 'Payload';
 export interface PayloadAstNode {
-  name?: typeof payloadAstNodeName;
+  name: typeof payloadAstNodeName;
   constant?: undefined;
   children: [ConstantAstNode<string>];
   namedChildren: Record<string, never>;
