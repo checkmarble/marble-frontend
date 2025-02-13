@@ -292,7 +292,35 @@ export default function SanctionDetail() {
               form.handleSubmit();
             }}
           >
-            <Collapsible.Container className="bg-grey-100 max-w-3xl">
+            <div className="flex max-w-3xl flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <input
+                  type="text"
+                  className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
+                  placeholder="Sanction Check title..."
+                />
+                <div className="flex items-center gap-2">
+                  <DeleteSanction
+                    iterationId={iterationId}
+                    scenarioId={scenario.id}
+                  >
+                    <Button color="red" className="w-fit">
+                      <Icon icon="delete" className="size-5" aria-hidden />
+                      {t('common:delete')}
+                    </Button>
+                  </DeleteSanction>
+                  <Button type="submit" className="flex-1">
+                    <Icon icon="save" className="size-5" aria-hidden />
+                    {t('common:save')}
+                  </Button>
+                </div>
+              </div>
+              <textarea
+                className="text-grey-50 text-s h-fit w-full border-none bg-transparent font-medium outline-none"
+                placeholder="Add a description..."
+              />
+            </div>
+            {/* <Collapsible.Container className="bg-grey-100 max-w-3xl">
               <Collapsible.Title>
                 {t('scenarios:edit_rule.informations')}
               </Collapsible.Title>
@@ -411,7 +439,7 @@ export default function SanctionDetail() {
                   </form.Field>
                 </div>
               </Collapsible.Content>
-            </Collapsible.Container>
+            </Collapsible.Container> */}
 
             <Collapsible.Container className="bg-grey-100 max-w-3xl">
               <Collapsible.Title>
