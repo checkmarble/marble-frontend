@@ -3,7 +3,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-type AddLogicalOperatorButtonProps = React.ComponentProps<'button'> & {
+type AddLogicalOperatorButtonProps = Omit<
+  React.ComponentProps<'button'>,
+  'type'
+> & {
   operator: 'and' | 'or';
 };
 
@@ -14,6 +17,7 @@ export const AddLogicalOperatorButton = React.forwardRef<
   const { t } = useTranslation(['scenarios']);
   return (
     <button
+      type="button"
       className={clsx(
         'flex size-fit flex-row items-center justify-center gap-1 rounded border-none px-4 py-2 outline-none',
         'text-grey-80 disabled:text-grey-50 hover:text-purple-65 text-xs font-semibold',
