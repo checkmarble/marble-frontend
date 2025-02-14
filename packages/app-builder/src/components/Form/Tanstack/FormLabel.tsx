@@ -14,13 +14,13 @@ interface FormLabelProps
 export const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   FormLabelProps
->(function FormLabel({ className, ...props }, ref) {
+>(function FormLabel({ className, valid, name, ...props }, ref) {
   return (
     <LabelPrimitive.Root
       ref={ref}
-      htmlFor={props.name}
+      htmlFor={name}
       className={clsx(className, {
-        'text-red-47': props.valid !== undefined && !props.valid,
+        'text-red-47': valid !== undefined && !valid,
       })}
       {...props}
     />
