@@ -302,7 +302,7 @@
   "edit_aggregation.add_filter": "New Filter",
   "edit_aggregation.add_filter.callout": "Add filters to restrict the computation to a subset of your data and ensure good performance.",
   "edit_aggregation.filters": "Filters",
-  "edit_aggregation.filter_in": "Filter in <strong>{{tableName}}</strong>",
+  "edit_aggregation.filters_in": "Filters in <strong>{{tableName}}</strong>",
   "edit_aggregation.aggregator_average": "Average",
   "edit_aggregation.select_a_field": "Select a field...",
   "edit_aggregation.filter_field_label": "Where",
