@@ -48,7 +48,7 @@ import { useCurrentScenario } from '../../_layout';
 import { useCurrentScenarioIteration, useRuleGroups } from './_layout';
 
 export const handle = {
-  i18n: [...scenarioI18n, 'common'] satisfies Namespace,
+  i18n: [...scenarioI18n, 'common', 'decisions'] satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
       const { t } = useTranslation(['navigation']);
@@ -207,7 +207,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function SanctionDetail() {
-  const { t } = useTranslation(['scenarios', 'common', 'decisions']);
+  const { t } = useTranslation(handle.i18n);
   const {
     databaseAccessors,
     payloadAccessors,

@@ -51,7 +51,7 @@ import { Icon } from 'ui-icons';
 import { useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
-  i18n: ['common', 'scenarios'] satisfies Namespace,
+  i18n: ['common', 'scenarios', 'decisions'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -109,7 +109,7 @@ const AddRuleOrSanction = ({
   isSanctionAvailable: FeatureAccessDto;
   hasAlreadyASanction: boolean;
 }) => {
-  const { t } = useTranslation(['common', 'scenarios']);
+  const { t } = useTranslation(handle.i18n);
 
   return (
     <DropdownMenu.Root>
@@ -136,7 +136,7 @@ const AddRuleOrSanction = ({
 };
 
 export default function Rules() {
-  const { t } = useTranslation(['scenarios', 'decisions', 'common']);
+  const { t } = useTranslation(handle.i18n);
   const language = useFormatLanguage();
 
   const iterationId = useParam('iterationId');
@@ -190,7 +190,7 @@ export default function Rules() {
       columnHelper.accessor((row) => row.description, {
         id: 'description',
         header: t('scenarios:rules.description'),
-        size: 400,
+        size: 360,
         cell: ({ getValue, table }) => {
           const tableState = table.getState();
           const query =
@@ -204,7 +204,7 @@ export default function Rules() {
       columnHelper.accessor((row) => row.ruleGroup, {
         id: 'ruleGroup',
         header: t('scenarios:rules.rule_group'),
-        size: 100,
+        size: 120,
         filterFn: 'arrIncludesSome',
         cell: ({ getValue }) => {
           const value = getValue();
@@ -241,7 +241,7 @@ export default function Rules() {
             return <OutcomeTag outcome={outcome} />;
           },
           header: t('decisions:outcome'),
-          size: 100,
+          size: 120,
         },
       ),
     ],
