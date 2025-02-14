@@ -7,6 +7,7 @@ import { isOperatorOption } from './operator-options';
 export function getOperatorName(
   t: TFunction<['common', 'scenarios'], undefined>,
   operatorName: string,
+  isAggregationFilter?: boolean,
 ) {
   if (isOperatorOption(operatorName)) {
     switch (operatorName) {
@@ -15,42 +16,62 @@ export function getOperatorName(
       case '-':
         return '-';
       case '<':
-        return '<';
+        return isAggregationFilter ? t('scenarios:operator.filter_lt') : '<';
       case '=':
-        return '=';
+        return isAggregationFilter ? t('scenarios:operator.filter_eq') : '=';
       case '≠':
       case '!=':
-        return '≠';
+        return isAggregationFilter ? t('scenarios:operator.filter_neq') : '≠';
       case '>':
-        return '>';
+        return isAggregationFilter ? t('scenarios:operator.filter_gt') : '>';
       case '>=':
-        return '≥';
+        return isAggregationFilter ? t('scenarios:operator.filter_gte') : '≥';
       case '<=':
-        return '≤';
+        return isAggregationFilter ? t('scenarios:operator.filter_lte') : '≤';
       case '*':
         return '×';
       case '/':
         return '÷';
       case 'IsInList':
-        return t('scenarios:operator.is_in');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_is_in')
+          : t('scenarios:operator.is_in');
       case 'IsEmpty':
-        return t('scenarios:operator.is_empty');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_is_empty')
+          : t('scenarios:operator.is_empty');
       case 'IsNotEmpty':
-        return t('scenarios:operator.is_not_empty');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_is_not_empty')
+          : t('scenarios:operator.is_not_empty');
       case 'IsNotInList':
-        return t('scenarios:operator.is_not_in');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_is_not_in')
+          : t('scenarios:operator.is_not_in');
       case 'StringContains':
-        return t('scenarios:operator.contains');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_contains')
+          : t('scenarios:operator.contains');
       case 'StringNotContain':
-        return t('scenarios:operator.does_not_contain');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_does_not_contain')
+          : t('scenarios:operator.does_not_contain');
       case 'StringStartsWith':
-        return t('scenarios:operator.starts_with');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_starts_with')
+          : t('scenarios:operator.starts_with');
       case 'StringEndsWith':
-        return t('scenarios:operator.ends_with');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_ends_with')
+          : t('scenarios:operator.ends_with');
       case 'ContainsAnyOf':
-        return t('scenarios:operator.contains_any_of');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_contains_any_of')
+          : t('scenarios:operator.contains_any_of');
       case 'ContainsNoneOf':
-        return t('scenarios:operator.contains_none_of');
+        return isAggregationFilter
+          ? t('scenarios:operator.filter_contains_none_of')
+          : t('scenarios:operator.contains_none_of');
       case 'AVG':
         return t('scenarios:aggregator.average');
       case 'COUNT':

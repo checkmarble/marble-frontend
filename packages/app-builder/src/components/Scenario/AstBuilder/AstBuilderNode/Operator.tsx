@@ -52,6 +52,7 @@ interface OperatorProps<T extends OperatorOption>
   setValue: (operator: T) => void;
   operators: readonly T[];
   viewOnly?: boolean;
+  isFilter?: boolean;
   'aria-labelledby'?: string;
 }
 
@@ -66,6 +67,7 @@ export function Operator<T extends OperatorOption>({
   operators,
   validationStatus,
   viewOnly,
+  isFilter,
   ...rest
 }: OperatorProps<T>) {
   const { t } = useTranslation(['common', 'scenarios']);
@@ -92,7 +94,7 @@ export function Operator<T extends OperatorOption>({
               >
                 <Select.ItemText>
                   <span className="text-s text-grey-00 font-semibold">
-                    {getOperatorName(t, operator)}
+                    {getOperatorName(t, operator, isFilter)}
                   </span>
                 </Select.ItemText>
               </Select.Item>

@@ -1,7 +1,6 @@
 import { Callout } from '@app-builder/components';
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { RemoveButton } from '@app-builder/components/Scenario/AstBuilder/RemoveButton';
-import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
@@ -24,15 +23,17 @@ import {
 } from '@app-builder/services/validation/ast-node-validation';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import { Fragment } from 'react/jsx-runtime';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Trans, useTranslation } from 'react-i18next';
+import { Button, MenuButton, MenuRoot } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { Operator } from '../../../../Operator';
 import { Operand } from '../../../Operand';
 import { type FilterViewModel, isBinaryFilterModel } from './AggregationEdit';
-import { type DataModelField, EditDataModelField } from './EditDataModelField';
+import {
+  type DataModelField,
+  EditDataModelFieldTableMenu,
+} from './EditDataModelField';
 
 const newFilterValidation = () => ({
   filter: [],
@@ -54,14 +55,13 @@ export function EditFilters({
 }) {
   const { t } = useTranslation(scenarioI18n);
 
+  const tableName = aggregatedField?.tableName;
   const filteredDataModalFieldOptions = useMemo(
     () =>
-      aggregatedField?.tableName
-        ? dataModelFieldOptions.filter(
-            ({ tableName }) => tableName == aggregatedField?.tableName,
-          )
+      tableName
+        ? dataModelFieldOptions.filter(({ tableName: tb }) => tb == tableName)
         : dataModelFieldOptions,
-    [aggregatedField?.tableName, dataModelFieldOptions],
+    [tableName, dataModelFieldOptions],
   );
 
   const onFilterChange = (
@@ -112,12 +112,12 @@ export function EditFilters({
     );
   };
 
-  const addNewFilter = () => {
+  const addNewFilter = (field: DataModelField) => {
     onChange([
       ...value,
       {
         operator: null,
-        filteredField: null,
+        filteredField: field,
         value: { astNode: NewUndefinedAstNode() },
         errors: newFilterValidation(),
       },
@@ -131,94 +131,146 @@ export function EditFilters({
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
 
   return (
-    <div>
-      <div className="grid grid-cols-[8px_16px_max-content_1fr_max-content]">
-        {value.map((filter, filterIndex) => {
-          const isFirstCondition = filterIndex === 0;
-          const isLastCondition = filterIndex === value.length - 1;
-          const binaryFilter = isBinaryFilterModel(filter);
-
-          return (
-            <Fragment key={filterIndex}>
-              {/* Row 1 */}
-              <div
-                className={clsx(
-                  'border-grey-90 col-span-5 w-2 border-e',
-                  isFirstCondition ? 'h-4' : 'h-2',
-                )}
-              />
-
-              {/* Row 2 */}
-              <div
-                className={clsx(
-                  'border-grey-90 col-start-1 border-e',
-                  isLastCondition && 'h-5',
-                )}
-              />
-              <div className="border-grey-90 col-start-2 h-5 border-b" />
-              <LogicalOperatorLabel
-                operator={isFirstCondition ? 'where' : 'and'}
-                type="contained"
-              />
-              <div className="col-start-4 flex flex-col gap-2 px-2">
-                <div className="flex flex-row items-center gap-2">
-                  <EditDataModelField
-                    placeholder={t('scenarios:edit_aggregation.select_a_field')}
-                    value={filter.filteredField}
-                    options={filteredDataModalFieldOptions}
-                    onChange={(filteredField) =>
-                      onFilterChange({ filteredField }, filterIndex)
-                    }
-                    errors={filter.errors.filteredField}
-                  />
-                  <Operator
-                    value={
-                      filter.operator &&
-                      isAggregationFilterOperator(filter.operator)
-                        ? filter.operator
-                        : undefined
-                    }
-                    setValue={(operator) =>
-                      onFilterChange({ operator }, filterIndex)
-                    }
-                    validationStatus={
-                      filter.errors.operator.length > 0 ? 'error' : 'valid'
-                    }
-                    operators={aggregationFilterOperators}
-                  />
-                  {binaryFilter ? (
-                    <FilterValue
-                      filterValue={filter.value.astNode}
-                      onSave={(astNode) =>
-                        onFilterChange({ value: { astNode } }, filterIndex)
-                      }
-                      astNodeErrors={filter.value.astNodeErrors}
-                      validationStatus={
-                        filter.errors.value.length > 0 ? 'error' : 'valid'
-                      }
-                    />
-                  ) : null}
-                </div>
-                <EvaluationErrors
-                  errors={adaptEvaluationErrorViewModels([
-                    ...filter.errors.filter,
-                    ...(isBinaryFilterModel(filter) ? filter.errors.value : []),
-                  ]).map(getNodeEvaluationErrorMessage)}
-                />
-              </div>
-              <div className="col-start-5 flex h-10 flex-col items-center justify-center">
-                <RemoveButton onClick={() => removeFilter(filterIndex)} />
-              </div>
-            </Fragment>
-          );
-        })}
+    <div className="flex flex-col gap-4">
+      <div className="text-m font-semibold">
+        {t('scenarios:edit_aggregation.filters')}
       </div>
-      <div className="my-4 flex flex-row justify-start gap-2">
-        <Button className="h-fit" onClick={addNewFilter}>
-          <Icon icon="plus" className="size-6" />
-          {t('scenarios:edit_aggregation.add_filter')}
-        </Button>
-        <Callout>{t('scenarios:edit_aggregation.add_filter.callout')}</Callout>
+      {value.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          {value.map((filter, filterIndex) => {
+            const binaryFilter = isBinaryFilterModel(filter);
+            const hasFilteredFieldError =
+              filter.errors.filteredField.length > 0;
+            const isLastFilter = filterIndex === value.length - 1;
+
+            return (
+              <>
+                <div
+                  key={filterIndex}
+                  className="border-grey-90 flex flex-col gap-4 rounded-md border p-2 pb-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-grey-50 text-xs">
+                      <Trans
+                        t={t}
+                        i18nKey="scenarios:edit_aggregation.filter_in"
+                        values={{ tableName: filter.filteredField?.tableName }}
+                      />
+                    </span>
+                    <RemoveButton onClick={() => removeFilter(filterIndex)} />
+                  </div>
+                  <div className="text-grey-50 flex items-center gap-2 pl-2 text-xs">
+                    <span>
+                      {t('scenarios:edit_aggregation.filter_field_label')}
+                    </span>
+                    <MenuRoot>
+                      <MenuButton
+                        disabled={!tableName}
+                        render={
+                          <div
+                            className={clsx(
+                              'text-s aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded border px-2',
+                              {
+                                'border-grey-90': !hasFilteredFieldError,
+                                'border-red-47': hasFilteredFieldError,
+                              },
+                            )}
+                          />
+                        }
+                      >
+                        {filter.filteredField?.fieldName}
+                        <Icon icon="arrow-2-down" className="size-5" />
+                      </MenuButton>
+                      {tableName ? (
+                        <EditDataModelFieldTableMenu
+                          tableName={tableName}
+                          onChange={(filteredField) => {
+                            onFilterChange({ filteredField }, filterIndex);
+                          }}
+                          fields={filteredDataModalFieldOptions}
+                        />
+                      ) : null}
+                    </MenuRoot>
+                    <span>
+                      {t('scenarios:edit_aggregation.filter_operator_label')}
+                    </span>
+                    <Operator
+                      isFilter
+                      value={
+                        filter.operator &&
+                        isAggregationFilterOperator(filter.operator)
+                          ? filter.operator
+                          : undefined
+                      }
+                      setValue={(operator) =>
+                        onFilterChange({ operator }, filterIndex)
+                      }
+                      validationStatus={
+                        filter.errors.operator.length > 0 ? 'error' : 'valid'
+                      }
+                      operators={aggregationFilterOperators}
+                    />
+                    {binaryFilter && filter.operator ? (
+                      <>
+                        <span>
+                          {t('scenarios:edit_aggregation.filter_value_label')}
+                        </span>
+                        <FilterValue
+                          filterValue={filter.value.astNode}
+                          onSave={(astNode) =>
+                            onFilterChange({ value: { astNode } }, filterIndex)
+                          }
+                          astNodeErrors={filter.value.astNodeErrors}
+                          validationStatus={
+                            filter.errors.value.length > 0 ? 'error' : 'valid'
+                          }
+                        />
+                      </>
+                    ) : null}
+                  </div>
+                  <EvaluationErrors
+                    errors={adaptEvaluationErrorViewModels([
+                      ...filter.errors.filter,
+                      ...filter.errors.filteredField,
+                    ]).map(getNodeEvaluationErrorMessage)}
+                  />
+                </div>
+                {!isLastFilter ? (
+                  <div>{t('scenarios:logical_operator.and')}</div>
+                ) : null}
+              </>
+            );
+          })}
+        </div>
+      ) : null}
+      <div className="flex flex-row justify-start gap-2">
+        <MenuRoot>
+          <MenuButton
+            disabled={!tableName}
+            render={
+              <Button
+                className="h-fit"
+                variant="secondary"
+                disabled={!tableName}
+              />
+            }
+          >
+            <Icon icon="plus" className="size-6" />
+            {t('scenarios:edit_aggregation.add_filter')}
+          </MenuButton>
+          {tableName ? (
+            <EditDataModelFieldTableMenu
+              tableName={tableName}
+              fields={filteredDataModalFieldOptions}
+              onChange={addNewFilter}
+            />
+          ) : null}
+        </MenuRoot>
+        {value.length === 0 ? (
+          <Callout>
+            {t('scenarios:edit_aggregation.add_filter.callout')}
+          </Callout>
+        ) : null}
       </div>
     </div>
   );
@@ -236,7 +288,9 @@ function FilterValue({
   onSave: (astNode: AstNode) => void;
 }) {
   // TODO: try to get enum values from the left operand
-  const filterOptions = useOperandOptions([]);
+  const filterOptions = useOperandOptions([]).filter(
+    (opt) => opt.operandType !== 'Modeling',
+  );
   const coerceToConstant = useDefaultCoerceToConstant();
   const getAstNodeOperandProps = useGetAstNodeOperandProps();
 

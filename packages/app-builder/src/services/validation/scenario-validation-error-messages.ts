@@ -37,7 +37,7 @@ export type EvaluationErrorViewModel =
       count: number;
     }
   | {
-      error: 'WRONG_NUMBER_OF_ARGUMENTS';
+      error: 'WRONG_NUMBER_OF_ARGUMENTS' | 'FILTERS_TABLE_NOT_MATCH';
     };
 
 export function adaptEvaluationErrorViewModels(
@@ -145,6 +145,10 @@ const commonErrorMessages =
       case 'WRONG_NUMBER_OF_ARGUMENTS':
         return t(
           'scenarios:validation.evaluation_error.wrong_number_of_arguments',
+        );
+      case 'FILTERS_TABLE_NOT_MATCH':
+        return t(
+          'scenarios:validation.evaluation_error.filters_table_not_match',
         );
       case 'MISSING_NAMED_ARGUMENT':
         return t(
