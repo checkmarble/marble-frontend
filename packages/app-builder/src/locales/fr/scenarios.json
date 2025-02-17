@@ -422,5 +422,6 @@
   "edit_aggregation.field_in_table": "<strong>{{fieldName}}</strong> dans {{tableName}}",
   "edit_aggregation.filter_field_label": "Où",
   "sanction_counterparty_id.tooltip": "Choisissez une valeur d'identifiant unique (comme Iban, numéro de téléphone), qui peut être liste blanche en cas de faux match.",
-  "sanction_counterparty_name.tooltip": "Sélectionnez le nom de famille du prénom ou le nom complet."
+  "sanction_counterparty_name.tooltip": "Sélectionnez le nom de famille du prénom ou le nom complet.",
+  "sanction_counterparty_id_placeholder": "Sélectionnez un identifiant de contrepartie unique"
 }

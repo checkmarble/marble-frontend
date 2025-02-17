@@ -422,5 +422,6 @@
   "edit_aggregation.field_in_table": "<strong>{{fieldName}}</strong> في {{tableName}}",
   "edit_aggregation.filter_field_label": "أين",
   "sanction_counterparty_id.tooltip": "اختر قيمة معرف فريدة من نوعها (مثل IBAN ، رقم الهاتف) ، والتي يمكن أن تكون قائمة بيضاء في حالة وجود تطابق كاذب.",
-  "sanction_counterparty_name.tooltip": "حدد الاسم الأول الاسم الأخير أو الاسم الكامل."
+  "sanction_counterparty_name.tooltip": "حدد الاسم الأول الاسم الأخير أو الاسم الكامل.",
+  "sanction_counterparty_id_placeholder": "حدد معرف طرف مقابل فريد"
 }

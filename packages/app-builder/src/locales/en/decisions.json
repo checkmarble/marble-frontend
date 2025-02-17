@@ -16,6 +16,7 @@
   "filters.date_range.title": "creation date is:",
   "score": "Score",
   "outcome": "Outcome",
+  "forced_outcome": "Forced outcome",
   "created_at": "Date",
   "outcome.approve": "Approve",
   "outcome.review": "Review",

@@ -203,6 +203,7 @@
   "sanction_transaction_label": "Transaction Label",
   "sanction_counterparty_id": "Counterparty ID",
   "sanction_counterparty_id.tooltip": "Choose a unique identifier value (like IBAN, phone number), which can be whitelisted in case of a false match.",
+  "sanction_counterparty_id_placeholder": "Select a unique counterparty identifier",
   "sanction_counterparty_name": "Counterparty name",
   "sanction_counterparty_name.tooltip": "Select first name + last name or full name.",
   "create_sanction.title": "Add a sanction check",
