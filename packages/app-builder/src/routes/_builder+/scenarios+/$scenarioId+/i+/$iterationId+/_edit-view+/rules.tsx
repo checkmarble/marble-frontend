@@ -235,7 +235,7 @@ export default function Rules() {
         },
       ),
       columnHelper.accessor(
-        (row) => (row.type === 'sanction' ? row.forceOutcome : undefined),
+        (row) => (row.type === 'sanction' ? row.forcedOutcome : undefined),
         {
           id: 'outcome',
           cell: ({ getValue }) => {

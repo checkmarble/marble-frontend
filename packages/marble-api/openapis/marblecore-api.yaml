@@ -5060,8 +5060,6 @@ components:
             $ref: '#/components/schemas/OpenSanctionsCatalogSection'
     SanctionCheckConfigDto:
       type: object
-      required:
-        - query
       properties:
         name:
           type: string
@@ -5073,16 +5071,12 @@ components:
           type: array
           items:
             type: string
-        force_outcome:
+        forced_outcome:
           $ref: '#/components/schemas/OutcomeDto'
-        score_modifier:
-          type: number
         trigger_rule:
           $ref: '#/components/schemas/NodeDto'
         query:
           type: object
-          required:
-            - name
           properties:
             name:
               $ref: '#/components/schemas/NodeDto'
