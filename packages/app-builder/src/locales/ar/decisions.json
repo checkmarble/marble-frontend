@@ -11,6 +11,7 @@
   "filters.date_range.title": "أنشئت في:",
   "score": "الدرجة",
   "outcome": "النتيجة",
+  "forced_outcome": "النتيجة المفروضة",
   "created_at": "التاريخ",
   "outcome.approve": "الموافقة",
   "outcome.review": "تدقيق",

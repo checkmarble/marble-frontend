@@ -412,7 +412,7 @@ export default function SanctionDetail() {
                           className="text-m"
                           valid={field.state.meta.errors.length === 0}
                         >
-                          {t('decisions:outcome')}
+                          {t('decisions:forced_outcome')}
                         </FormLabel>
                         <FieldOutcomes
                           disabled={editor === 'view'}
@@ -498,7 +498,9 @@ export default function SanctionDetail() {
                             value={field.state.value}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
-                            placeholder="Select the transaction ID"
+                            placeholder={t(
+                              'scenarios:sanction_counterparty_id_placeholder',
+                            )}
                           />
                           <FormErrorOrDescription
                             errors={field.state.meta.errors}
