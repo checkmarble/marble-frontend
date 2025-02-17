@@ -129,7 +129,7 @@ const editSanctionFormSchema = z.object({
   description: z.string().optional(),
   scoreModifier: z.coerce.number(),
   ruleGroup: z.string().nonempty(),
-  forceOutcome: z.union([
+  forcedOutcome: z.union([
     z.literal('review'),
     z.literal('decline'),
     z.literal('block_and_review'),
@@ -249,8 +249,8 @@ export default function SanctionDetail() {
       description: sanctionCheckConfig?.description ?? '',
       ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Sanction check',
       datasets: sanctionCheckConfig?.datasets ?? [],
-      forceOutcome:
-        (sanctionCheckConfig?.forceOutcome as SanctionOutcome) ?? 'decline',
+      forcedOutcome:
+        (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ?? 'decline',
       scoreModifier: sanctionCheckConfig?.scoreModifier ?? 0,
       triggerRule: sanctionCheckConfig?.triggerRule,
       query: {
@@ -404,7 +404,7 @@ export default function SanctionDetail() {
                       </div>
                     )}
                   </form.Field>
-                  <form.Field name="forceOutcome">
+                  <form.Field name="forcedOutcome">
                     {(field) => (
                       <div className="flex flex-col gap-2">
                         <FormLabel

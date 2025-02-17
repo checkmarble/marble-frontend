@@ -5073,7 +5073,7 @@ components:
           type: array
           items:
             type: string
-        force_outcome:
+        forced_outcome:
           $ref: '#/components/schemas/OutcomeDto'
         score_modifier:
           type: number

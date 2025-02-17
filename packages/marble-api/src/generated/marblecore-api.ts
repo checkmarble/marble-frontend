@@ -387,7 +387,7 @@ export type SanctionCheckConfigDto = {
     description?: string;
     rule_group?: string;
     datasets?: string[];
-    force_outcome?: OutcomeDto;
+    forced_outcome?: OutcomeDto;
     score_modifier?: number;
     trigger_rule?: NodeDto;
     query: {
