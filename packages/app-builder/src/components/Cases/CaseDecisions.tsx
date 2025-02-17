@@ -387,19 +387,23 @@ function DecisionDetail({
               </span>
               <div className="inline-flex items-center gap-2">
                 <SanctionState sanctionCheck={sanctionCheck} />
-                {sanctionCheck.status === 'in_review' ? (
-                  <Link
-                    to={getRoute('/cases/:caseId/sanctions/:decisionId', {
-                      caseId: fromUUID(caseId),
-                      decisionId: fromUUID(decision.id),
-                    })}
-                  >
-                    <Button>
-                      <Icon icon="case-manager" className="size-5" />
-                      {t('sanctions:start_reviewing')}
-                    </Button>
-                  </Link>
-                ) : null}
+                <Link
+                  to={getRoute('/cases/:caseId/sanctions/:decisionId', {
+                    caseId: fromUUID(caseId),
+                    decisionId: fromUUID(decision.id),
+                  })}
+                >
+                  <Button>
+                    {sanctionCheck.status === 'in_review' ? (
+                      <>
+                        <Icon icon="case-manager" className="size-5" />
+                        {t('sanctions:start_reviewing')}
+                      </>
+                    ) : (
+                      t('sanctions:see_details')
+                    )}
+                  </Button>
+                </Link>
               </div>
             </div>
           </>

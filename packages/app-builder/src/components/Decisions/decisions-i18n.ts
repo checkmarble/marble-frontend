@@ -7,5 +7,6 @@ export const decisionsI18n = [
   'common',
   'scenarios',
   'cases',
+  'sanctions',
   ...filtersI18n,
 ] satisfies Namespace;

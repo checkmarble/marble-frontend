@@ -173,7 +173,7 @@ function ReviewDecisionContent({
             >
               {nonPendingReviewStatuses.map((reviewStatus) => {
                 const disabled =
-                  sanctionCheck && sanctionCheck.status === 'in_review';
+                  sanctionCheck && sanctionCheck.status !== 'no_hit';
 
                 return disabled && reviewStatus === 'approve' ? (
                   <div className="flex flex-col items-start gap-2 p-1">
