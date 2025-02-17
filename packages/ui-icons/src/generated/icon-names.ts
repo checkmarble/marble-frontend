@@ -27,6 +27,7 @@ export const iconNames = [
   'delete',
   'download',
   'draft',
+  'drag',
   'edit-square',
   'edit',
   'enum',

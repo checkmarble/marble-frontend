@@ -44,6 +44,7 @@
     "@conform-to/zod": "^1.2.2",
     "@dagrejs/dagre": "^1.1.4",
     "@dinero.js/currencies": "2.0.0-alpha.14",
+    "@hello-pangea/dnd": "^18.0.1",
     "@hookform/devtools": "^4.3.1",
     "@hookform/resolvers": "^3.9.0",
     "@lottiefiles/react-lottie-player": "^3.5.4",
