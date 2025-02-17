@@ -6,6 +6,7 @@ import {
   useValidateAstNode,
 } from '@app-builder/services/editor/ast-editor';
 import { useEffect } from 'react';
+import { hasSubObject } from 'remeda';
 import { useStore } from 'zustand';
 
 import { AstBuilder, type AstBuilderProps } from '../AstBuilder';
@@ -19,7 +20,7 @@ export const FieldTrigger = ({
   onBlur,
 }: {
   trigger?: AstNode;
-  onChange?: (node: AstNode | undefined) => void;
+  onChange?: (node?: AstNode) => void;
   onBlur?: () => void;
   scenarioId: string;
   iterationId: string;
@@ -41,7 +42,9 @@ export const FieldTrigger = ({
   useValidateAstNode(astEditorStore, validate, validation);
 
   useEffect(() => {
-    onChange?.(astNode);
+    onChange?.(
+      hasSubObject(NewEmptyTriggerAstNode(), astNode) ? undefined : astNode,
+    );
   }, [astNode, onChange]);
 
   return (

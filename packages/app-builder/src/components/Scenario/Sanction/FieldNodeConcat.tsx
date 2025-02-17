@@ -9,7 +9,7 @@ import {
 import { nanoid } from 'nanoid';
 import { replace } from 'radash';
 import { useEffect, useState } from 'react';
-import { omit, splice } from 'remeda';
+import { hasSubObject, omit, splice } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -37,7 +37,7 @@ export function FieldNodeConcat({
   value?: AstNode;
   limit?: number;
   placeholder?: string;
-  onChange?: (node: AstNode) => void;
+  onChange?: (node?: AstNode) => void;
   onBlur?: () => void;
   viewOnly?: boolean;
 }) {
@@ -48,12 +48,20 @@ export function FieldNodeConcat({
   );
 
   useEffect(() => {
-    if (nodes.length !== 0) {
-      onChange?.(
-        NewStringConcatAstNode(nodes.map(omit(['id'])), {
-          withSeparator: true,
-        }),
+    if (nodes.length) {
+      const finalNodes = nodes.filter(
+        (n) => !hasSubObject(NewUndefinedAstNode() as AstNode, omit(n, ['id'])),
       );
+
+      onChange?.(
+        finalNodes.length !== 0
+          ? NewStringConcatAstNode(finalNodes.map(omit(['id'])), {
+              withSeparator: true,
+            })
+          : undefined,
+      );
+    } else {
+      onChange?.(undefined);
     }
   }, [nodes, onChange]);
 
