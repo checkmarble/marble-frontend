@@ -390,7 +390,7 @@
   "sanction.lists.title": "قوائم العقوبات",
   "sanction.match_settings.callout": "اختر المعلومات التي يجب فحصها.",
   "sanction.match_settings.title": "إعدادات المطابقة",
-  "sanction.nudge": "تحسين قواعدك من خلال فحص العقوبات بناءً على واجهة برمجة تطبيقات OpenSacntion",
+  "sanction.nudge": "تحسين قواعدك من خلال فحص العقوبات بناءً على واجهة برمجة تطبيقات OpenSanction",
   "sanction_counterparty_id": "معرف الطرف المقابل",
   "sanction_counterparty_name": "اسم الطرف المقابل",
   "sanction_transaction_label": "تسمية المعاملة",

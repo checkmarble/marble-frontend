@@ -193,7 +193,7 @@
   "trigger_object.description": "The central object that initiates the decision-making process. Provided as a payload when requesting a decision.",
   "update_scenario.title": "Edit Scenario",
   "already_one_sanction": "Only 1 possible per scenario iteration",
-  "sanction.nudge": "Improve your rules with a sanction check based on OpenSacntion API",
+  "sanction.nudge": "Improve your rules with a sanction check based on OpenSanction API",
   "sanction.match_settings.title": "Matching settings",
   "sanction.match_settings.callout": "Choose information that should be checked.",
   "sanction.lists.title": "Sanction lists",
