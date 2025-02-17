@@ -15,6 +15,7 @@ import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/Field
 import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldSanction } from '@app-builder/components/Scenario/Sanction/FieldSanction';
+import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
 import { FieldTrigger } from '@app-builder/components/Scenario/Sanction/FieldTrigger';
 import { type AstNode } from '@app-builder/models';
 import {
@@ -483,8 +484,14 @@ export default function SanctionDetail() {
                     <form.Field name="counterPartyId">
                       {(field) => (
                         <div className="flex flex-col gap-4">
-                          <FormLabel name={field.name}>
+                          <FormLabel
+                            className="inline-flex items-center gap-1"
+                            name={field.name}
+                          >
                             {t('scenarios:sanction_counterparty_id')}
+                            <FieldToolTip>
+                              {t('scenarios:sanction_counterparty_id.tooltip')}
+                            </FieldToolTip>
                           </FormLabel>
                           <FieldNode
                             viewOnly={editor === 'view'}
@@ -502,8 +509,16 @@ export default function SanctionDetail() {
                     <form.Field name="query.name">
                       {(field) => (
                         <div className="flex flex-col gap-4">
-                          <FormLabel name={field.name}>
+                          <FormLabel
+                            className="inline-flex items-center gap-1"
+                            name={field.name}
+                          >
                             {t('scenarios:sanction_counterparty_name')}
+                            <FieldToolTip>
+                              {t(
+                                'scenarios:sanction_counterparty_name.tooltip',
+                              )}
+                            </FieldToolTip>
                           </FormLabel>
                           <FieldNodeConcat
                             viewOnly={editor === 'view'}

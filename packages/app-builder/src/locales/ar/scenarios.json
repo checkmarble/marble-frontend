@@ -420,5 +420,7 @@
   "edit_aggregation.filters": "المرشحات",
   "edit_aggregation.available_fields": "الحقول المتاحة لـ <strong>{{tableName}}</strong>",
   "edit_aggregation.field_in_table": "<strong>{{fieldName}}</strong> في {{tableName}}",
-  "edit_aggregation.filter_field_label": "أين"
+  "edit_aggregation.filter_field_label": "أين",
+  "sanction_counterparty_id.tooltip": "اختر قيمة معرف فريدة من نوعها (مثل IBAN ، رقم الهاتف) ، والتي يمكن أن تكون قائمة بيضاء في حالة وجود تطابق كاذب.",
+  "sanction_counterparty_name.tooltip": "حدد الاسم الأول الاسم الأخير أو الاسم الكامل."
 }
