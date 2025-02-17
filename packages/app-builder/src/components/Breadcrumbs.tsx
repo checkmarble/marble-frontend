@@ -36,7 +36,7 @@ export const BreadCrumbLink = ({
   </Link>
 );
 
-export const BreadCrumbs = () => {
+export const BreadCrumbs = ({ back }: { back?: string }) => {
   const matches = useMatches();
 
   const links = useMemo(
@@ -57,7 +57,11 @@ export const BreadCrumbs = () => {
 
   return (
     <div className="flex flex-row items-center gap-4">
-      {links.length > 1 ? <Page.BackLink to={links.at(-2)!.pathname} /> : null}
+      {back ? (
+        <Page.BackLink to={back} />
+      ) : links.length > 1 ? (
+        <Page.BackLink to={links.at(-2)!.pathname} />
+      ) : null}
       {links.map(({ Elements, pathname, data }, linkIndex) => {
         const isLastLink = linkIndex === links.length - 1;
 
