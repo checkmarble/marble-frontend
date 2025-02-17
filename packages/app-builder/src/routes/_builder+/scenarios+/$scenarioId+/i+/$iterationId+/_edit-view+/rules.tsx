@@ -212,25 +212,28 @@ export default function Rules() {
           return <Tag>{value}</Tag>;
         },
       }),
-      columnHelper.accessor((row) => row.scoreModifier, {
-        id: 'score',
-        cell: ({ getValue }) => {
-          const scoreModifier = getValue();
-          if (!scoreModifier) return '';
-          return (
-            <span
-              className={scoreModifier < 0 ? 'text-green-38' : 'text-red-47'}
-            >
-              {formatNumber(scoreModifier, {
-                language,
-                signDisplay: 'exceptZero',
-              })}
-            </span>
-          );
+      columnHelper.accessor(
+        (row) => (row.type === 'rule' ? row.scoreModifier : undefined),
+        {
+          id: 'score',
+          cell: ({ getValue }) => {
+            const scoreModifier = getValue();
+            if (!scoreModifier) return '';
+            return (
+              <span
+                className={scoreModifier < 0 ? 'text-green-38' : 'text-red-47'}
+              >
+                {formatNumber(scoreModifier, {
+                  language,
+                  signDisplay: 'exceptZero',
+                })}
+              </span>
+            );
+          },
+          header: t('scenarios:rules.score'),
+          size: 100,
         },
-        header: t('scenarios:rules.score'),
-        size: 100,
-      }),
+      ),
       columnHelper.accessor(
         (row) => (row.type === 'sanction' ? row.forceOutcome : undefined),
         {

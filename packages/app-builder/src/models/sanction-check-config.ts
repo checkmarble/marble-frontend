@@ -9,7 +9,6 @@ export type SanctionCheckConfig = {
   ruleGroup?: string;
   datasets?: string[];
   forceOutcome?: Outcome;
-  scoreModifier?: number;
   triggerRule?: AstNode;
   query: {
     name: AstNode;
@@ -27,7 +26,6 @@ export function adaptSanctionCheckConfig(
     ruleGroup: dto.rule_group,
     datasets: dto.datasets,
     forceOutcome: dto.force_outcome,
-    scoreModifier: dto.score_modifier,
     triggerRule: dto.trigger_rule ? adaptAstNode(dto.trigger_rule) : undefined,
     query: {
       name: adaptAstNode(dto.query.name),
@@ -48,7 +46,6 @@ export function adaptSanctionCheckConfigDto(
     rule_group: config.ruleGroup,
     datasets: config.datasets,
     force_outcome: config.forceOutcome,
-    score_modifier: config.scoreModifier,
     trigger_rule: config.triggerRule
       ? adaptNodeDto(config.triggerRule)
       : undefined,

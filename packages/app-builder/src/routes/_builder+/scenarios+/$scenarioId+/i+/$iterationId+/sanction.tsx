@@ -127,7 +127,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const editSanctionFormSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().optional(),
-  scoreModifier: z.coerce.number(),
   ruleGroup: z.string().nonempty(),
   forceOutcome: z.union([
     z.literal('review'),
@@ -251,7 +250,6 @@ export default function SanctionDetail() {
       datasets: sanctionCheckConfig?.datasets ?? [],
       forceOutcome:
         (sanctionCheckConfig?.forceOutcome as SanctionOutcome) ?? 'decline',
-      scoreModifier: sanctionCheckConfig?.scoreModifier ?? 0,
       triggerRule: sanctionCheckConfig?.triggerRule,
       query: {
         name: sanctionCheckConfig?.query?.name,
@@ -341,36 +339,6 @@ export default function SanctionDetail() {
                           }
                           placeholder={t(
                             'scenarios:edit_rule.description_placeholder',
-                          )}
-                          valid={field.state.meta.errors.length === 0}
-                        />
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
-                      </div>
-                    )}
-                  </form.Field>
-                  <form.Field name="scoreModifier">
-                    {(field) => (
-                      <div className="flex flex-col gap-2">
-                        <FormLabel
-                          name={field.name}
-                          className="text-m"
-                          valid={field.state.meta.errors.length === 0}
-                        >
-                          {t('scenarios:edit_rule.score')}
-                        </FormLabel>
-                        <FormInput
-                          disabled={editor === 'view'}
-                          defaultValue={field.state.value}
-                          type="number"
-                          name={field.name}
-                          onBlur={field.handleBlur}
-                          onChange={(e) =>
-                            field.handleChange(+e.currentTarget.value)
-                          }
-                          placeholder={t(
-                            'scenarios:edit_rule.score_placeholder',
                           )}
                           valid={field.state.meta.errors.length === 0}
                         />
