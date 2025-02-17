@@ -390,7 +390,7 @@
   "sanction.lists.title": "Listes de sanctions",
   "sanction.match_settings.callout": "Choisissez des informations qui doivent être vérifiées.",
   "sanction.match_settings.title": "Paramètres correspondants",
-  "sanction.nudge": "Améliorez vos règles avec un chèque de sanction basé sur l'OpenSacntion API",
+  "sanction.nudge": "Améliorez vos règles avec un chèque de sanction basé sur l'OpenSanction API",
   "sanction_counterparty_id": "Identifiant de contrepartie",
   "sanction_counterparty_name": "Nom de contrepartie",
   "sanction_transaction_label": "Étiquette de transaction",
