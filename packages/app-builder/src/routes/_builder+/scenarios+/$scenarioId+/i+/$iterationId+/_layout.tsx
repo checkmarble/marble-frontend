@@ -33,7 +33,7 @@ import {
   useRouteLoaderData,
 } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import invariant from 'tiny-invariant';
@@ -154,17 +154,21 @@ export function useCurrentScenarioIterationRule() {
 }
 
 export const useRuleGroups = () => {
-  const { rules } = useCurrentScenarioIteration();
+  const { rules, sanctionCheckConfig } = useCurrentScenarioIteration();
 
-  return React.useMemo(
+  return useMemo(
     () =>
       R.pipe(
-        rules,
-        R.map((rule) => rule.ruleGroup),
+        [
+          ...rules.map((r) => r.ruleGroup),
+          ...(sanctionCheckConfig?.ruleGroup
+            ? [sanctionCheckConfig.ruleGroup]
+            : []),
+        ],
         R.filter((val) => !R.isEmpty(val)),
         R.unique(),
       ),
-    [rules],
+    [rules, sanctionCheckConfig],
   );
 };
 
