@@ -265,7 +265,12 @@ export default function SanctionDetail() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <BreadCrumbs />
+        <BreadCrumbs
+          back={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
+            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUID(scenario.id),
+          })}
+        />
       </Page.Header>
       <Page.Container>
         <Page.Content>
