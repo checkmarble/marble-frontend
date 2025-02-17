@@ -38,7 +38,6 @@ import { useForm } from '@tanstack/react-form';
 import { decode as formDataToObject } from 'decode-formdata';
 import { type Namespace } from 'i18next';
 import { serialize as objectToFormData } from 'object-to-formdata';
-import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { Button, Collapsible, Tag } from 'ui-design-system';
@@ -218,14 +217,9 @@ export default function SanctionDetail() {
   const editor = useEditorMode();
   const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
-  const defaultRuleGroups = useRuleGroups();
+  const ruleGroups = useRuleGroups();
   const { id: iterationId, sanctionCheckConfig } =
     useCurrentScenarioIteration();
-
-  const ruleGroups = useMemo(
-    () => [...defaultRuleGroups, 'Sanction check'],
-    [defaultRuleGroups],
-  );
 
   const form = useForm<EditSanctionForm>({
     onSubmit: ({ value, formApi }) => {
@@ -246,10 +240,11 @@ export default function SanctionDetail() {
     defaultValues: {
       name: sanctionCheckConfig?.name ?? 'Sanction Check',
       description: sanctionCheckConfig?.description ?? '',
-      ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Sanction check',
+      ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Sanction Check',
       datasets: sanctionCheckConfig?.datasets ?? [],
       forcedOutcome:
-        (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ?? 'decline',
+        (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ??
+        'block_and_review',
       triggerRule: sanctionCheckConfig?.triggerRule,
       query: {
         name: sanctionCheckConfig?.query?.name,
@@ -359,7 +354,6 @@ export default function SanctionDetail() {
                           {t('scenarios:rules.rule_group')}
                         </FormLabel>
                         <FieldRuleGroup
-                          disabled
                           name={field.name}
                           onChange={field.handleChange}
                           onBlur={field.handleBlur}

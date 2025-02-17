@@ -30,7 +30,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       changes: {
         name: 'Sanction Check',
         ruleGroup: 'Sanction Check',
-        forcedOutcome: 'decline',
+        forcedOutcome: 'block_and_review',
       },
     });
 
