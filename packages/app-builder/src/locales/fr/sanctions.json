@@ -1,6 +1,6 @@
 {
   "callout.needs_refine": "Il y a trop de correspondances potentielles (> {{MatchCount}}). \nPour obtenir des résultats plus pertinents, veuillez affiner votre recherche.",
-  "callout.review": "Il existe des correspondances entre les informations sur les bénéficiaires et le chèque des sanctions. \nVérifiez si c'est le même bénéficiaire ou non.",
+  "callout.review": "Il existe des correspondances entre les informations sur les bénéficiaires et le contrôle des sanctions. \nVérifiez si c'est le même bénéficiaire ou non.",
   "entity.property.address": "Adresse",
   "entity.property.alias": "Alias",
   "entity.property.appearance": "Apparence",
@@ -80,7 +80,7 @@
   "match.status.pending": "Pour examiner",
   "refine_modal.apply_search": "Appliquer les modifications",
   "refine_modal.back_search": "Retour à la recherche",
-  "refine_modal.refine_callout": "En appliquant cette recherche, le chèque de sanction sera mis à jour pour afficher uniquement la correspondance possible visible ci-dessus.",
+  "refine_modal.refine_callout": "En appliquant cette recherche, le contrôle des sanction sera mis à jour pour afficher uniquement la correspondance possible visible ci-dessus.",
   "refine_modal.result_label": "Matchs possibles avec votre recherche:",
   "refine_modal.schema.company": "Entreprise",
   "refine_modal.schema.legalentity": "Entité légale",
@@ -110,5 +110,6 @@
   "entity.schema.airplane": "Avion",
   "entity.schema.vessel": "Navire",
   "match.status.skipped": "Sauté",
-  "match.unique_counterparty_identifier": "Identifiant unique de contrepartie"
+  "match.unique_counterparty_identifier": "Identifiant unique de contrepartie",
+  "sanction_check": "Contrôle des sanction"
 }

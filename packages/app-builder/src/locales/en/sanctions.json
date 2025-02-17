@@ -1,4 +1,5 @@
 {
+  "sanction_check": "Sanction check",
   "callout.review": "There are matches between the beneficiary information and the sanctions check. Check if it is the same beneficiary or not.",
   "callout.needs_review": "{{toReview}}/{{totalMatches}} to review",
   "callout.needs_refine": "There are too many potential matches (>{{matchCount}}). To get more relevant results, please refine your search.",

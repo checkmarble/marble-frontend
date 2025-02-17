@@ -378,7 +378,9 @@ function DecisionDetail({
 
         {sanctionCheck ? (
           <>
-            <div className="text-s text-grey-50">Check sanction</div>
+            <div className="text-s text-grey-50">
+              {t('sanctions:sanction_check')}
+            </div>
             <div className="bg-grey-98 grid h-fit grid-cols-[1fr_max-content] items-center gap-2 rounded-lg px-4 py-3">
               <span className="text-s line-clamp-1 text-start font-semibold">
                 Some sanction check rule name

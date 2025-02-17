@@ -110,5 +110,6 @@
   "entity.schema.vessel": "إناء",
   "refine_modal.schema.legalentity": "الكيان القانوني",
   "match.status.skipped": "تخطي",
-  "match.unique_counterparty_identifier": "معرف فريد للطرف المقابل"
+  "match.unique_counterparty_identifier": "معرف فريد للطرف المقابل",
+  "sanction_check": "فحص العقوبة"
 }
