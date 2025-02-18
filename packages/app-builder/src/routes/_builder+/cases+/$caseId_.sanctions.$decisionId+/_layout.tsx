@@ -172,7 +172,12 @@ export default function CaseSanctionReviewPage() {
   return (
     <Page.Main>
       <Page.Header className="justify-between gap-8">
-        <BreadCrumbs />
+        <div className="flex gap-4">
+          <Page.BackLink
+            to={getRoute('/cases/:caseId', { caseId: fromUUID(caseDetail.id) })}
+          />
+          <BreadCrumbs />
+        </div>
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">
         <div className="flex flex-1 flex-row overflow-hidden">

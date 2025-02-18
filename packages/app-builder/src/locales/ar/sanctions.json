@@ -111,5 +111,6 @@
   "refine_modal.schema.legalentity": "الكيان القانوني",
   "match.status.skipped": "تخطي",
   "match.unique_counterparty_identifier": "معرف فريد للطرف المقابل",
-  "sanction_check": "فحص العقوبة"
+  "sanction_check": "فحص العقوبة",
+  "see_details": "انظر التفاصيل"
 }
