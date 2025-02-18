@@ -36,7 +36,7 @@ import {
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { decode as formDataToObject } from 'decode-formdata';
-import { type Namespace } from 'i18next';
+import { type Namespace, t as rawT } from 'i18next';
 import { serialize as objectToFormData } from 'object-to-formdata';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
@@ -133,8 +133,22 @@ const editSanctionFormSchema = z.object({
     z.literal('block_and_review'),
   ]),
   triggerRule: z.any().nullish(),
-  counterPartyName: z.any().nullish(),
-  counterPartyLabel: z.any().nullish(),
+  query: z
+    .object({
+      name: z.any().nullish(),
+      label: z.any().nullish(),
+    })
+    .superRefine((arg, ctx) => {
+      if (!arg.name && !arg.label) {
+        ctx.addIssue({
+          code: 'invalid_arguments',
+          path: ['label'],
+          message: rawT('scenarios:sanction.match_settings.no_empty'),
+          argumentsError: rawT('scenarios:sanction.match_settings.no_empty'),
+        });
+      }
+      return true;
+    }),
   counterPartyId: z.any().nullish(),
   datasets: z.array(z.string()),
 });
@@ -161,22 +175,27 @@ export async function action({ request, params }: ActionFunctionArgs) {
     arrays: ['datasets'],
   });
 
+  const result = editSanctionFormSchema.safeParse(formDataDecoded);
+
+  if (!result.success) {
+    return json(
+      { status: 'error', errors: result.error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
+  }
+
   try {
-    console.log('Form Data', formDataDecoded);
-
-    const data = editSanctionFormSchema.parse(formDataDecoded);
-
-    console.log('Data', formDataDecoded);
-
     await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
       iterationId,
       changes: {
-        ...data,
-        counterPartyId: data.counterPartyId as AstNode | undefined,
-        triggerRule: data.triggerRule as AstNode | undefined,
+        ...result.data,
+        counterPartyId: result.data.counterPartyId as AstNode | undefined,
+        triggerRule: result.data.triggerRule as AstNode | undefined,
         query: {
-          name: data.counterPartyName as AstNode | undefined,
-          label: data.counterPartyLabel as AstNode | undefined,
+          name: result.data.query?.name as AstNode | undefined,
+          label: result.data.query?.label as AstNode | undefined,
         },
       },
     });
@@ -187,21 +206,19 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return json(
-      { status: 'success' },
+      { status: 'success', errors: [] },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
     );
   } catch (error) {
-    console.log('Error', error);
-
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
 
     return json(
-      { status: 'error' },
+      { status: 'error', errors: [] },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
@@ -251,8 +268,10 @@ export default function SanctionDetail() {
         (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ??
         'block_and_review',
       triggerRule: sanctionCheckConfig?.triggerRule,
-      counterPartyName: sanctionCheckConfig?.query?.name,
-      counterPartyLabel: sanctionCheckConfig?.query?.label,
+      query: {
+        name: sanctionCheckConfig?.query?.name,
+        label: sanctionCheckConfig?.query?.label,
+      },
       counterPartyId: sanctionCheckConfig?.counterPartyId,
     },
   });
@@ -307,8 +326,8 @@ export default function SanctionDetail() {
                           type="text"
                           name={field.name}
                           onBlur={field.handleBlur}
-                          onChange={(e) =>
-                            field.handleChange(e.currentTarget.value)
+                          onChange={({ currentTarget: { value } }) =>
+                            field.handleChange(value)
                           }
                           placeholder={t(
                             'scenarios:edit_rule.name_placeholder',
@@ -440,6 +459,43 @@ export default function SanctionDetail() {
             </Collapsible.Container>
 
             <Collapsible.Container className="bg-grey-100 max-w-3xl">
+              <Collapsible.Title className="mb-2">
+                {t('scenarios:sanction_counterparty_id')}
+              </Collapsible.Title>
+              <Collapsible.Content>
+                <form.Field name="counterPartyId">
+                  {(field) => (
+                    <div className="flex flex-col gap-4">
+                      <FormLabel
+                        className="inline-flex items-center gap-1"
+                        name={field.name}
+                      >
+                        {t('scenarios:sanction_counterparty_id')}
+                        <FieldToolTip>
+                          {t('scenarios:sanction_counterparty_id.tooltip')}
+                        </FieldToolTip>
+                      </FormLabel>
+                      <OptionsProvider {...options}>
+                        <FieldNode
+                          viewOnly={editor === 'view'}
+                          value={field.state.value}
+                          onChange={field.handleChange}
+                          onBlur={field.handleBlur}
+                          placeholder={t(
+                            'scenarios:sanction_counterparty_id_placeholder',
+                          )}
+                        />
+                      </OptionsProvider>
+                      <FormErrorOrDescription
+                        errors={field.state.meta.errors}
+                      />
+                    </div>
+                  )}
+                </form.Field>
+              </Collapsible.Content>
+            </Collapsible.Container>
+
+            <Collapsible.Container className="bg-grey-100 max-w-3xl">
               <Collapsible.Title>
                 {t('scenarios:sanction.match_settings.title')}
               </Collapsible.Title>
@@ -450,36 +506,7 @@ export default function SanctionDetail() {
                   </p>
                 </Callout>
                 <div className="flex flex-col gap-6">
-                  <form.Field name="counterPartyId">
-                    {(field) => (
-                      <div className="flex flex-col gap-4">
-                        <FormLabel
-                          className="inline-flex items-center gap-1"
-                          name={field.name}
-                        >
-                          {t('scenarios:sanction_counterparty_id')}
-                          <FieldToolTip>
-                            {t('scenarios:sanction_counterparty_id.tooltip')}
-                          </FieldToolTip>
-                        </FormLabel>
-                        <OptionsProvider {...options}>
-                          <FieldNode
-                            viewOnly={editor === 'view'}
-                            value={field.state.value}
-                            onChange={field.handleChange}
-                            onBlur={field.handleBlur}
-                            placeholder={t(
-                              'scenarios:sanction_counterparty_id_placeholder',
-                            )}
-                          />
-                        </OptionsProvider>
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
-                      </div>
-                    )}
-                  </form.Field>
-                  <form.Field name="counterPartyName">
+                  <form.Field name="query.name">
                     {(field) => (
                       <div className="flex flex-col gap-4">
                         <FormLabel
@@ -494,7 +521,7 @@ export default function SanctionDetail() {
                         <OptionsProvider {...options}>
                           <FieldNodeConcat
                             viewOnly={editor === 'view'}
-                            value={field.state.value}
+                            value={sanctionCheckConfig?.query?.name}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
                             placeholder="Select the First name or Full Name"
@@ -507,7 +534,7 @@ export default function SanctionDetail() {
                       </div>
                     )}
                   </form.Field>
-                  <form.Field name="counterPartyLabel">
+                  <form.Field name="query.label">
                     {(field) => (
                       <div className="flex flex-col gap-4">
                         <FormLabel name={field.name}>

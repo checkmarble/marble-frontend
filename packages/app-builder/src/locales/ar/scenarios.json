@@ -423,5 +423,6 @@
   "edit_aggregation.filters_in": "المرشحات في <strong>{{tableName}}</strong>",
   "sanction_counterparty_id.tooltip": "اختر قيمة معرف فريدة من نوعها (مثل IBAN ، رقم الهاتف) ، والتي يمكن أن تكون قائمة بيضاء في حالة وجود تطابق كاذب.",
   "sanction_counterparty_name.tooltip": "حدد الاسم الأول الاسم الأخير أو الاسم الكامل.",
-  "sanction_counterparty_id_placeholder": "حدد معرف طرف مقابل فريد"
+  "sanction_counterparty_id_placeholder": "حدد معرف طرف مقابل فريد",
+  "sanction.match_settings.no_empty": "تحتاج إلى تحديد اسم أو تسمية واحدة على الأقل"
 }

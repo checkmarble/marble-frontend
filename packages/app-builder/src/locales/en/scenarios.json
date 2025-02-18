@@ -196,6 +196,7 @@
   "sanction.nudge": "Improve your rules with a sanction check based on OpenSanction API",
   "sanction.match_settings.title": "Matching settings",
   "sanction.match_settings.callout": "Choose information that should be checked.",
+  "sanction.match_settings.no_empty": "You need to select at least one name or label",
   "sanction.lists.title": "Sanction lists",
   "sanction.lists.callout": "Select lists that are relevant to your business",
   "sanction.lists.nb_selected_one": "({{count}} selected)",

@@ -1,4 +1,4 @@
-import { type AstNode } from '@app-builder/models';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   useGetAstNodeOperandProps,
   useOperandOptions,
@@ -13,7 +13,7 @@ export const MatchOperand = memo(function MatchOperand({
   placeholder,
   viewOnly,
 }: {
-  node: AstNode;
+  node?: AstNode;
   onSave?: (astNode: AstNode) => void;
   placeholder?: string;
   viewOnly?: boolean;
@@ -23,7 +23,7 @@ export const MatchOperand = memo(function MatchOperand({
 
   return (
     <Operand
-      {...getOperandAstNodeOperandProps(node)}
+      {...getOperandAstNodeOperandProps(node ?? NewUndefinedAstNode())}
       placeholder={placeholder}
       options={options.filter((o) => o.dataType === 'String')}
       validationStatus="valid"
