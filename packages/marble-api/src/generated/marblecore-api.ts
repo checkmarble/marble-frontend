@@ -387,11 +387,10 @@ export type SanctionCheckConfigDto = {
     description?: string;
     rule_group?: string;
     datasets?: string[];
-    force_outcome?: OutcomeDto;
-    score_modifier?: number;
+    forced_outcome?: OutcomeDto;
     trigger_rule?: NodeDto;
-    query: {
-        name: NodeDto;
+    query?: {
+        name?: NodeDto;
         label?: NodeDto;
     };
     counterparty_id_expression?: NodeDto;

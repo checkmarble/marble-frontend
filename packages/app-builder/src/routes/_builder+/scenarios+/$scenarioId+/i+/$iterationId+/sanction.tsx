@@ -35,10 +35,7 @@ import {
 } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { decode as formDataToObject } from 'decode-formdata';
-import { type Namespace } from 'i18next';
-import { serialize as objectToFormData } from 'object-to-formdata';
-import { useMemo } from 'react';
+import { type Namespace, t as rawT } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { Button, Collapsible, Tag } from 'ui-design-system';
@@ -127,18 +124,29 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const editSanctionFormSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().optional(),
-  scoreModifier: z.coerce.number(),
   ruleGroup: z.string().nonempty(),
-  forceOutcome: z.union([
+  forcedOutcome: z.union([
     z.literal('review'),
     z.literal('decline'),
     z.literal('block_and_review'),
   ]),
   triggerRule: z.any().nullish(),
-  query: z.object({
-    name: z.any(),
-    label: z.any().nullish(),
-  }),
+  query: z
+    .object({
+      name: z.any().nullish(),
+      label: z.any().nullish(),
+    })
+    .superRefine((arg, ctx) => {
+      if (!arg.name && !arg.label) {
+        ctx.addIssue({
+          code: 'invalid_arguments',
+          path: ['label'],
+          message: rawT('scenarios:sanction.match_settings.no_empty'),
+          argumentsError: rawT('scenarios:sanction.match_settings.no_empty'),
+        });
+      }
+      return true;
+    }),
   counterPartyId: z.any().nullish(),
   datasets: z.array(z.string()),
 });
@@ -151,32 +159,37 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const [session, formData, { scenarioIterationSanctionRepository }] =
+  const [session, data, { scenarioIterationSanctionRepository }] =
     await Promise.all([
       getSession(request),
-      request.formData(),
+      request.json(),
       authService.isAuthenticated(request, {
         failureRedirect: getRoute('/sign-in'),
       }),
     ]);
 
   const iterationId = fromParams(params, 'iterationId');
-  const formDataDecoded = formDataToObject(formData, {
-    arrays: ['datasets'],
-  });
+  const result = editSanctionFormSchema.safeParse(data);
+
+  if (!result.success) {
+    return json(
+      { status: 'error', errors: result.error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
+  }
 
   try {
-    const data = editSanctionFormSchema.parse(formDataDecoded);
-
     await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
       iterationId,
       changes: {
-        ...data,
-        counterPartyId: data.counterPartyId as AstNode | undefined,
-        triggerRule: data.triggerRule as AstNode | undefined,
+        ...result.data,
+        counterPartyId: result.data.counterPartyId as AstNode | undefined,
+        triggerRule: result.data.triggerRule as AstNode | undefined,
         query: {
-          name: data.query.name as AstNode,
-          label: data.query.label as AstNode | undefined,
+          name: result.data.query?.name as AstNode | undefined,
+          label: result.data.query?.label as AstNode | undefined,
         },
       },
     });
@@ -187,7 +200,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return json(
-      { status: 'success' },
+      { status: 'success', errors: [] },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
@@ -199,7 +212,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return json(
-      { status: 'error' },
+      { status: 'error', errors: [] },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
@@ -219,39 +232,29 @@ export default function SanctionDetail() {
   const editor = useEditorMode();
   const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
-  const defaultRuleGroups = useRuleGroups();
+  const ruleGroups = useRuleGroups();
   const { id: iterationId, sanctionCheckConfig } =
     useCurrentScenarioIteration();
 
-  const ruleGroups = useMemo(
-    () => [...defaultRuleGroups, 'Sanction check'],
-    [defaultRuleGroups],
-  );
-
   const form = useForm<EditSanctionForm>({
     onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid)
-        fetcher.submit(
-          objectToFormData(value, {
-            dotsForObjectNotation: true,
-            indices: true,
-          }),
-          { method: 'PATCH' },
-        );
+      if (formApi.state.isValid) {
+        fetcher.submit(value, { method: 'PATCH', encType: 'application/json' });
+      }
     },
     validators: {
-      onChange: editSanctionFormSchema,
-      onBlur: editSanctionFormSchema,
-      onSubmit: editSanctionFormSchema,
+      onChangeAsync: editSanctionFormSchema,
+      onBlurAsync: editSanctionFormSchema,
+      onSubmitAsync: editSanctionFormSchema,
     },
     defaultValues: {
       name: sanctionCheckConfig?.name ?? 'Sanction Check',
       description: sanctionCheckConfig?.description ?? '',
-      ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Sanction check',
+      ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Sanction Check',
       datasets: sanctionCheckConfig?.datasets ?? [],
-      forceOutcome:
-        (sanctionCheckConfig?.forceOutcome as SanctionOutcome) ?? 'decline',
-      scoreModifier: sanctionCheckConfig?.scoreModifier ?? 0,
+      forcedOutcome:
+        (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ??
+        'block_and_review',
       triggerRule: sanctionCheckConfig?.triggerRule,
       query: {
         name: sanctionCheckConfig?.query?.name,
@@ -272,7 +275,12 @@ export default function SanctionDetail() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <BreadCrumbs />
+        <BreadCrumbs
+          back={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
+            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUID(scenario.id),
+          })}
+        />
       </Page.Header>
       <Page.Container>
         <Page.Content>
@@ -306,8 +314,8 @@ export default function SanctionDetail() {
                           type="text"
                           name={field.name}
                           onBlur={field.handleBlur}
-                          onChange={(e) =>
-                            field.handleChange(e.currentTarget.value)
+                          onChange={({ currentTarget: { value } }) =>
+                            field.handleChange(value)
                           }
                           placeholder={t(
                             'scenarios:edit_rule.name_placeholder',
@@ -350,36 +358,6 @@ export default function SanctionDetail() {
                       </div>
                     )}
                   </form.Field>
-                  <form.Field name="scoreModifier">
-                    {(field) => (
-                      <div className="flex flex-col gap-2">
-                        <FormLabel
-                          name={field.name}
-                          className="text-m"
-                          valid={field.state.meta.errors.length === 0}
-                        >
-                          {t('scenarios:edit_rule.score')}
-                        </FormLabel>
-                        <FormInput
-                          disabled={editor === 'view'}
-                          defaultValue={field.state.value}
-                          type="number"
-                          name={field.name}
-                          onBlur={field.handleBlur}
-                          onChange={(e) =>
-                            field.handleChange(+e.currentTarget.value)
-                          }
-                          placeholder={t(
-                            'scenarios:edit_rule.score_placeholder',
-                          )}
-                          valid={field.state.meta.errors.length === 0}
-                        />
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
-                      </div>
-                    )}
-                  </form.Field>
                   <form.Field name="ruleGroup">
                     {(field) => (
                       <div className="flex flex-col gap-2">
@@ -391,7 +369,6 @@ export default function SanctionDetail() {
                           {t('scenarios:rules.rule_group')}
                         </FormLabel>
                         <FieldRuleGroup
-                          disabled
                           name={field.name}
                           onChange={field.handleChange}
                           onBlur={field.handleBlur}
@@ -404,7 +381,7 @@ export default function SanctionDetail() {
                       </div>
                     )}
                   </form.Field>
-                  <form.Field name="forceOutcome">
+                  <form.Field name="forcedOutcome">
                     {(field) => (
                       <div className="flex flex-col gap-2">
                         <FormLabel
@@ -470,6 +447,43 @@ export default function SanctionDetail() {
             </Collapsible.Container>
 
             <Collapsible.Container className="bg-grey-100 max-w-3xl">
+              <Collapsible.Title className="mb-2">
+                {t('scenarios:sanction_counterparty_id')}
+              </Collapsible.Title>
+              <Collapsible.Content>
+                <form.Field name="counterPartyId">
+                  {(field) => (
+                    <div className="flex flex-col gap-4">
+                      <FormLabel
+                        className="inline-flex items-center gap-1"
+                        name={field.name}
+                      >
+                        {t('scenarios:sanction_counterparty_id')}
+                        <FieldToolTip>
+                          {t('scenarios:sanction_counterparty_id.tooltip')}
+                        </FieldToolTip>
+                      </FormLabel>
+                      <OptionsProvider {...options}>
+                        <FieldNode
+                          viewOnly={editor === 'view'}
+                          value={field.state.value}
+                          onChange={field.handleChange}
+                          onBlur={field.handleBlur}
+                          placeholder={t(
+                            'scenarios:sanction_counterparty_id_placeholder',
+                          )}
+                        />
+                      </OptionsProvider>
+                      <FormErrorOrDescription
+                        errors={field.state.meta.errors}
+                      />
+                    </div>
+                  )}
+                </form.Field>
+              </Collapsible.Content>
+            </Collapsible.Container>
+
+            <Collapsible.Container className="bg-grey-100 max-w-3xl">
               <Collapsible.Title>
                 {t('scenarios:sanction.match_settings.title')}
               </Collapsible.Title>
@@ -479,69 +493,42 @@ export default function SanctionDetail() {
                     {t('scenarios:sanction.match_settings.callout')}
                   </p>
                 </Callout>
-                <OptionsProvider {...options}>
-                  <div className="flex flex-col gap-6">
-                    <form.Field name="counterPartyId">
-                      {(field) => (
-                        <div className="flex flex-col gap-4">
-                          <FormLabel
-                            className="inline-flex items-center gap-1"
-                            name={field.name}
-                          >
-                            {t('scenarios:sanction_counterparty_id')}
-                            <FieldToolTip>
-                              {t('scenarios:sanction_counterparty_id.tooltip')}
-                            </FieldToolTip>
-                          </FormLabel>
-                          <FieldNode
-                            viewOnly={editor === 'view'}
-                            value={field.state.value}
-                            onChange={field.handleChange}
-                            onBlur={field.handleBlur}
-                            placeholder={t(
-                              'scenarios:sanction_counterparty_id_placeholder',
-                            )}
-                          />
-                          <FormErrorOrDescription
-                            errors={field.state.meta.errors}
-                          />
-                        </div>
-                      )}
-                    </form.Field>
-                    <form.Field name="query.name">
-                      {(field) => (
-                        <div className="flex flex-col gap-4">
-                          <FormLabel
-                            className="inline-flex items-center gap-1"
-                            name={field.name}
-                          >
-                            {t('scenarios:sanction_counterparty_name')}
-                            <FieldToolTip>
-                              {t(
-                                'scenarios:sanction_counterparty_name.tooltip',
-                              )}
-                            </FieldToolTip>
-                          </FormLabel>
+                <div className="flex flex-col gap-6">
+                  <form.Field name="query.name">
+                    {(field) => (
+                      <div className="flex flex-col gap-4">
+                        <FormLabel
+                          className="inline-flex items-center gap-1"
+                          name={field.name}
+                        >
+                          {t('scenarios:sanction_counterparty_name')}
+                          <FieldToolTip>
+                            {t('scenarios:sanction_counterparty_name.tooltip')}
+                          </FieldToolTip>
+                        </FormLabel>
+                        <OptionsProvider {...options}>
                           <FieldNodeConcat
                             viewOnly={editor === 'view'}
-                            value={field.state.value}
+                            value={sanctionCheckConfig?.query?.name}
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
                             placeholder="Select the First name or Full Name"
                             limit={5}
                           />
-                          <FormErrorOrDescription
-                            errors={field.state.meta.errors}
-                          />
-                        </div>
-                      )}
-                    </form.Field>
-                    <form.Field name="query.label">
-                      {(field) => (
-                        <div className="flex flex-col gap-4">
-                          <FormLabel name={field.name}>
-                            {t('scenarios:sanction_transaction_label')}
-                          </FormLabel>
+                        </OptionsProvider>
+                        <FormErrorOrDescription
+                          errors={field.state.meta.errors}
+                        />
+                      </div>
+                    )}
+                  </form.Field>
+                  <form.Field name="query.label">
+                    {(field) => (
+                      <div className="flex flex-col gap-4">
+                        <FormLabel name={field.name}>
+                          {t('scenarios:sanction_transaction_label')}
+                        </FormLabel>
+                        <OptionsProvider {...options}>
                           <FieldNode
                             viewOnly={editor === 'view'}
                             value={field.state.value}
@@ -549,14 +536,14 @@ export default function SanctionDetail() {
                             onBlur={field.handleBlur}
                             placeholder="Select the transaction label"
                           />
-                          <FormErrorOrDescription
-                            errors={field.state.meta.errors}
-                          />
-                        </div>
-                      )}
-                    </form.Field>
-                  </div>
-                </OptionsProvider>
+                        </OptionsProvider>
+                        <FormErrorOrDescription
+                          errors={field.state.meta.errors}
+                        />
+                      </div>
+                    )}
+                  </form.Field>
+                </div>
               </Collapsible.Content>
             </Collapsible.Container>
 

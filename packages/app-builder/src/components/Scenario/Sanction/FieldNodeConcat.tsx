@@ -9,7 +9,7 @@ import {
 import { nanoid } from 'nanoid';
 import { replace } from 'radash';
 import { useEffect, useState } from 'react';
-import { omit, splice } from 'remeda';
+import { hasSubObject, omit, splice } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -37,7 +37,7 @@ export function FieldNodeConcat({
   value?: AstNode;
   limit?: number;
   placeholder?: string;
-  onChange?: (node: AstNode) => void;
+  onChange?: (node: AstNode | null) => void;
   onBlur?: () => void;
   viewOnly?: boolean;
 }) {
@@ -48,13 +48,18 @@ export function FieldNodeConcat({
   );
 
   useEffect(() => {
-    if (nodes.length !== 0) {
-      onChange?.(
-        NewStringConcatAstNode(nodes.map(omit(['id'])), {
-          withSeparator: true,
-        }),
-      );
-    }
+    const finalNodes = nodes.filter(
+      (n) => !hasSubObject(NewUndefinedAstNode() as AstNode, omit(n, ['id'])),
+    );
+
+    const result =
+      finalNodes.length !== 0
+        ? NewStringConcatAstNode(finalNodes.map(omit(['id'])), {
+            withSeparator: true,
+          })
+        : null;
+
+    onChange?.(result);
   }, [nodes, onChange]);
 
   const onDragEnd: OnDragEndResponder<string> = (result): void => {
@@ -99,27 +104,23 @@ export function FieldNodeConcat({
                     >
                       {!viewOnly ? (
                         <div className="flex flex-row">
+                          <div
+                            key={node.id}
+                            className="hover:bg-grey-95 flex size-6 items-center justify-center rounded"
+                            {...dragProvided.dragHandleProps}
+                          >
+                            <Icon icon="drag" className="text-grey-80 size-3" />
+                          </div>
                           {nodes.length > 1 ? (
-                            <>
-                              <div
-                                className="hover:bg-grey-95 flex size-6 items-center justify-center rounded"
-                                {...dragProvided.dragHandleProps}
-                              >
-                                <Icon
-                                  icon="drag"
-                                  className="text-grey-80 size-3"
-                                />
-                              </div>
-                              <Button
-                                size="icon"
-                                variant="tertiary"
-                                onClick={() =>
-                                  setNodes((prev) => splice(prev, index, 1, []))
-                                }
-                              >
-                                <Icon icon="cross" className="size-4" />
-                              </Button>
-                            </>
+                            <Button
+                              size="icon"
+                              variant="tertiary"
+                              onClick={() =>
+                                setNodes((prev) => splice(prev, index, 1, []))
+                              }
+                            >
+                              <Icon icon="cross" className="size-4" />
+                            </Button>
                           ) : null}
                           {!limit || nodes.length < limit ? (
                             <Button

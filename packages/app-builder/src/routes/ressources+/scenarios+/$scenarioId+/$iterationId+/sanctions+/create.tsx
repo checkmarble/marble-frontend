@@ -1,12 +1,53 @@
 import { Nudge } from '@app-builder/components/Nudge';
+import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@remix-run/react';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
+import { useFetcher } from '@remix-run/react';
 import clsx from 'clsx';
+import { type Namespace } from 'i18next';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+export const handle = {
+  i18n: ['scenarios'] satisfies Namespace,
+};
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const { authService } = serverServices;
+  const { scenarioIterationSanctionRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
+  const scenarioId = fromParams(params, 'scenarioId');
+  const iterationId = fromParams(params, 'iterationId');
+
+  try {
+    await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
+      iterationId,
+      changes: {
+        name: 'Sanction Check',
+        ruleGroup: 'Sanction Check',
+        forcedOutcome: 'block_and_review',
+      },
+    });
+
+    return redirect(
+      getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
+        scenarioId: fromUUID(scenarioId),
+        iterationId: fromUUID(iterationId),
+      }),
+    );
+  } catch (error) {
+    console.log('Error', error);
+    return json({
+      success: false as const,
+      error: error,
+    });
+  }
+}
 
 export function CreateSanction({
   scenarioId,
@@ -20,15 +61,21 @@ export function CreateSanction({
   hasAlreadyASanction: boolean;
 }) {
   const { t } = useTranslation(['scenarios']);
+  const fetcher = useFetcher<typeof action>();
 
   return (
-    <Link
-      to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
-        scenarioId: fromUUID(scenarioId),
-        iterationId: fromUUID(iterationId),
-      })}
+    <fetcher.Form
+      method="POST"
+      action={getRoute(
+        '/ressources/scenarios/:scenarioId/:iterationId/sanctions/create',
+        {
+          scenarioId: fromUUID(scenarioId),
+          iterationId: fromUUID(iterationId),
+        },
+      )}
     >
       <Button
+        type="submit"
         variant="dropdown"
         size="dropdown"
         disabled={hasAlreadyASanction || isSanctionAvailable === 'restricted'}
@@ -60,6 +107,6 @@ export function CreateSanction({
           />
         ) : null}
       </Button>
-    </Link>
+    </fetcher.Form>
   );
 }

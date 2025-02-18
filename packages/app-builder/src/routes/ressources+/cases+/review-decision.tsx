@@ -83,7 +83,6 @@ export function ReviewDecisionModal({
   sanctionCheck: SanctionCheck | undefined;
   store: Ariakit.DialogStore;
 }) {
-  console.log(sanctionCheck);
   return (
     <ModalV2.Content store={store}>
       <ReviewDecisionContent
