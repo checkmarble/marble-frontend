@@ -1,3 +1,9 @@
+import {
+  type DataModel,
+  type DataModelField,
+  getDataTypeIcon,
+} from '@app-builder/models';
+import * as Ariakit from '@ariakit/react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import {
@@ -6,18 +12,18 @@ import {
   MenuItem,
   MenuPopover,
   MenuRoot,
-  ScrollAreaV2,
   SubMenuButton,
   SubMenuRoot,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export type DataModelField = {
+export type DataModelFieldOption = {
   tableName: string;
   fieldName: string;
+  field: DataModelField;
 };
 
-function getDataModelFieldLabel(dataModelField: DataModelField | null) {
+function getDataModelFieldLabel(dataModelField: DataModelFieldOption | null) {
   if (!dataModelField?.fieldName || !dataModelField.tableName) {
     return { rawValue: null, value: null };
   }
@@ -33,10 +39,10 @@ function getDataModelFieldLabel(dataModelField: DataModelField | null) {
 export type EditDataModelFieldProps = {
   disabled?: boolean;
   tableName?: string;
-  value: DataModelField | null;
-  options: DataModelField[];
+  value: DataModelFieldOption | null;
+  dataModel: DataModel;
   defaultOpen?: boolean;
-  onChange: (value: DataModelField) => void;
+  onChange: (value: DataModelFieldOption) => void;
   placeholder?: string;
 };
 
@@ -44,11 +50,18 @@ export const EditDataModelField = ({
   disabled,
   tableName,
   value,
-  options,
+  dataModel,
   onChange,
   placeholder,
 }: EditDataModelFieldProps) => {
   const { t } = useTranslation(['scenarios']);
+  const options = dataModel.flatMap((table) =>
+    table.fields.map((field) => ({
+      tableName: table.name,
+      fieldName: field.name,
+      field,
+    })),
+  );
   const groups = R.groupBy(options, (option) => option.tableName ?? '');
   const optionsEntries = R.entries(groups);
 
@@ -60,7 +73,7 @@ export const EditDataModelField = ({
       <MenuButton
         disabled={disabled}
         render={
-          <div className="border-grey-90 text-s aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded border px-2" />
+          <div className="border-grey-90 text-s bg-grey-100 aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded border px-2" />
         }
       >
         {showPlaceholder ? (
@@ -77,9 +90,9 @@ export const EditDataModelField = ({
         <Icon icon="arrow-2-down" className="size-5" />
       </MenuButton>
       {!tableName ? (
-        <MenuPopover gutter={4} className="text-s flex w-72 flex-col gap-2 p-2">
+        <MenuPopover gutter={4} className="text-s flex w-72 flex-col gap-2">
           <MenuContent>
-            <ScrollAreaV2 type="auto">
+            <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pe-[var(--scrollbar-width)]">
               {optionsEntries.map(([tableName, fields]) => {
                 return (
                   <SubMenuRoot key={tableName}>
@@ -95,7 +108,7 @@ export const EditDataModelField = ({
                   </SubMenuRoot>
                 );
               })}
-            </ScrollAreaV2>
+            </div>
           </MenuContent>
         </MenuPopover>
       ) : (
@@ -111,8 +124,8 @@ export const EditDataModelField = ({
 
 type EditDataModelFieldTableMenuProps = {
   tableName: string;
-  fields: DataModelField[];
-  onChange: (field: DataModelField) => void;
+  fields: DataModelFieldOption[];
+  onChange: (field: DataModelFieldOption) => void;
 };
 
 export const EditDataModelFieldTableMenu = ({
@@ -122,8 +135,8 @@ export const EditDataModelFieldTableMenu = ({
 }: EditDataModelFieldTableMenuProps) => {
   const { t } = useTranslation(['scenarios']);
   return (
-    <MenuPopover gutter={12}>
-      <MenuContent className="text-s flex w-72 flex-col gap-2 p-2">
+    <MenuPopover gutter={14}>
+      <MenuContent className="text-s flex w-72 flex-col gap-2">
         <div className="text-grey-50 items-center px-4 py-2 text-xs">
           <Trans
             t={t}
@@ -131,20 +144,58 @@ export const EditDataModelFieldTableMenu = ({
             values={{ tableName }}
           />
         </div>
-        <ScrollAreaV2 type="auto">
+        <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pe-[var(--scrollbar-width)]">
           {fields.map((field) => {
+            const typeIcon = getDataTypeIcon(field.field.dataType);
             return (
               <MenuItem
                 key={field.fieldName}
-                className="data-[active-item]:bg-purple-98 grid w-full select-none gap-1 rounded-sm p-2 outline-none"
+                className="data-[active-item]:bg-purple-98 group grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
                 onClick={() => onChange(field)}
               >
-                {field.fieldName}
+                {typeIcon ? (
+                  <Icon
+                    icon={typeIcon}
+                    className="col-start-1 size-5 shrink-0"
+                  />
+                ) : null}
+                <div className="col-start-2 flex items-center justify-between">
+                  <span>{field.fieldName}</span>
+                  <FieldInfo field={field.field} />
+                </div>
               </MenuItem>
             );
           })}
-        </ScrollAreaV2>
+        </div>
       </MenuContent>
     </MenuPopover>
   );
 };
+
+function FieldInfo({ field }: { field: DataModelField }) {
+  const { i18n } = useTranslation();
+
+  return (
+    <Ariakit.HovercardProvider
+      showTimeout={0}
+      hideTimeout={0}
+      placement={i18n.dir() === 'ltr' ? 'right-start' : 'left-start'}
+    >
+      <Ariakit.HovercardAnchor tabIndex={-1}>
+        <Icon
+          icon="tip"
+          className="group-hover:hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent transition-colors"
+        />
+      </Ariakit.HovercardAnchor>
+      <Ariakit.Hovercard
+        unmountOnHide
+        gutter={24}
+        shift={-8}
+        portal
+        className="bg-grey-100 border-grey-90 flex max-h-[min(var(--popover-available-height),_400px)] max-w-[var(--popover-available-width)] rounded border shadow-md"
+      >
+        <div className="p-4">{field.description}</div>
+      </Ariakit.Hovercard>
+    </Ariakit.HovercardProvider>
+  );
+}

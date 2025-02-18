@@ -414,7 +414,7 @@
   "operator.filter_neq": "pas égal à",
   "operator.filter_starts_with": "commencé par",
   "validation.evaluation_error.filters_table_not_match": "Le filtre doit être appliqué sur la même table que l'agrégat",
-  "edit_aggregation.filter_in": "Filtre dans <strong>{{tableName}}</strong>",
+  "edit_aggregation.filters_in": "Filtres dans <strong>{{tableName}}</strong>",
   "edit_aggregation.filter_operator_label": "sont",
   "edit_aggregation.filter_value_label": "la valeur",
   "edit_aggregation.filters": "Filtres",

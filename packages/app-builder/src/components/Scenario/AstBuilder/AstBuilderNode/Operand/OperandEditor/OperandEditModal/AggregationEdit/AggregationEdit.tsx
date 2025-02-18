@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { type AstNode } from '@app-builder/models';
+import { type AstNode, type DataModel } from '@app-builder/models';
 import {
   type AggregationAstNode,
   aggregationAstNodeName,
@@ -20,6 +20,8 @@ import {
   aggregatorOperators,
 } from '@app-builder/models/modale-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
+import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import { useAstValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import { useDataModel } from '@app-builder/services/editor/options';
 import {
@@ -32,14 +34,17 @@ import {
 } from '@app-builder/services/validation/ast-node-validation';
 import { type Tree } from '@app-builder/utils/tree';
 import { type Namespace } from 'i18next';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { groupBy, mapValues, pipe } from 'remeda';
 import { Button, Input, ModalV2 } from 'ui-design-system';
 import { Logo } from 'ui-icons';
 
 import { Operator } from '../../../../Operator';
-import { type DataModelField, EditDataModelField } from './EditDataModelField';
+import {
+  type DataModelFieldOption,
+  EditDataModelField,
+} from './EditDataModelField';
 import { EditFilters } from './EditFilters';
 
 export const handle = {
@@ -49,7 +54,7 @@ export const handle = {
 export interface AggregationViewModel {
   label: string;
   aggregator: AggregatorOperator;
-  aggregatedField: DataModelField | null;
+  aggregatedField: DataModelFieldOption | null;
   filters: FilterViewModel[];
   errors: {
     label: EvaluationError[];
@@ -61,7 +66,7 @@ export type FilterViewModel<
   T extends AggregationFilterOperator = AggregationFilterOperator,
 > = {
   operator: T | null;
-  filteredField: DataModelField | null;
+  filteredField: DataModelFieldOption | null;
   errors: {
     filter: EvaluationError[];
     operator: EvaluationError[];
@@ -97,13 +102,22 @@ export const isBinaryFilterModel = (
 };
 
 export const adaptAggregationViewModel = (
+  dataModel: DataModel,
   initialAggregationAstNode: AggregationAstNode,
   initialAstNodeErrors: AstNodeErrors,
 ): AggregationViewModel => {
-  const aggregatedField: DataModelField = {
-    tableName: initialAggregationAstNode.namedChildren.tableName.constant,
-    fieldName: initialAggregationAstNode.namedChildren.fieldName.constant,
-  };
+  const { tableName, fieldName } = initialAggregationAstNode.namedChildren;
+  const dataModelField = dataModel
+    .find((t) => t.name === tableName.constant)
+    ?.fields.find((f) => f.name === fieldName.constant);
+
+  const aggregatedField: DataModelFieldOption | null = dataModelField
+    ? {
+        tableName: tableName.constant,
+        fieldName: fieldName.constant,
+        field: dataModelField,
+      }
+    : null;
 
   const initialFiltersAstNodeErrors = initialAstNodeErrors.namedChildren[
     'filters'
@@ -292,24 +306,34 @@ export function AggregationEdit({
   onSave: (astNode: AstNode) => void;
 }) {
   const { t } = useTranslation(handle.i18n);
-  const [aggregation, setAggregation] = useState(() =>
-    adaptAggregationViewModel(initialAggregationAstNode, initialAstNodeErrors),
-  );
-
   const dataModel = useDataModel();
-  const dataModelFieldOptions = useMemo(
-    () =>
-      dataModel.flatMap((table) =>
-        table.fields.map((field) => ({
-          tableName: table.name,
-          fieldName: field.name,
-        })),
-      ),
-    [dataModel],
+  const [aggregation, setAggregation] = useState(() =>
+    adaptAggregationViewModel(
+      dataModel,
+      initialAggregationAstNode,
+      initialAstNodeErrors,
+    ),
   );
+  const currentScenario = useCurrentScenario();
+  const { validation, validate } = useAstValidationFetcher(currentScenario.id);
+
+  useEffect(() => {
+    if (validation) {
+      setAggregation((agg) => {
+        const node = adaptAggregationAstNode(agg);
+        return adaptAggregationViewModel(dataModel, node, validation);
+      });
+    }
+  }, [validation, dataModel]);
 
   const handleSave = () => {
     onSave(adaptAggregationAstNode(aggregation));
+  };
+
+  const handleChange = (agg: AggregationViewModel) => {
+    const astNode = adaptAggregationAstNode(agg);
+    setAggregation(agg);
+    validate(astNode);
   };
 
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
@@ -350,7 +374,7 @@ export function AggregationEdit({
               placeholder={t('scenarios:edit_aggregation.label_placeholder')}
               value={aggregation.label}
               onChange={(e) =>
-                setAggregation({
+                handleChange({
                   ...aggregation,
                   label: e.target.value,
                   errors: {
@@ -378,7 +402,7 @@ export function AggregationEdit({
               <Operator
                 value={aggregation.aggregator}
                 setValue={(aggregator) =>
-                  setAggregation({
+                  handleChange({
                     ...aggregation,
                     aggregator,
                     errors: {
@@ -402,9 +426,9 @@ export function AggregationEdit({
               <EditDataModelField
                 placeholder={t('scenarios:edit_aggregation.select_a_field')}
                 value={aggregation.aggregatedField}
-                options={dataModelFieldOptions}
+                dataModel={dataModel}
                 onChange={(aggregatedField) =>
-                  setAggregation({
+                  handleChange({
                     ...aggregation,
                     aggregatedField,
                     errors: {
@@ -425,10 +449,12 @@ export function AggregationEdit({
         <EditFilters
           aggregatedField={aggregation.aggregatedField}
           value={aggregation.filters}
-          dataModelFieldOptions={dataModelFieldOptions}
-          onChange={(filters) => setAggregation({ ...aggregation, filters })}
+          dataModel={dataModel}
+          onChange={(filters) => handleChange({ ...aggregation, filters })}
         />
-        <div className="mt-2 flex flex-1 flex-row gap-2">
+      </div>
+      <ModalV2.Footer>
+        <div className="flex flex-1 flex-row gap-2 p-4">
           <ModalV2.Close
             render={
               <Button className="flex-1" variant="secondary" name="cancel" />
@@ -445,7 +471,7 @@ export function AggregationEdit({
             {t('common:save')}
           </Button>
         </div>
-      </div>
+      </ModalV2.Footer>
     </>
   );
 }

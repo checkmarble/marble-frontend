@@ -2,7 +2,11 @@ import { Callout } from '@app-builder/components';
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { RemoveButton } from '@app-builder/components/Scenario/AstBuilder/RemoveButton';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import {
+  type AstNode,
+  type DataModel,
+  NewUndefinedAstNode,
+} from '@app-builder/models';
 import {
   aggregationFilterOperators,
   isAggregationFilterOperator,
@@ -22,7 +26,7 @@ import {
   type ValidationStatus,
 } from '@app-builder/services/validation/ast-node-validation';
 import clsx from 'clsx';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, MenuButton, MenuRoot } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -31,7 +35,7 @@ import { Operator } from '../../../../Operator';
 import { Operand } from '../../../Operand';
 import { type FilterViewModel, isBinaryFilterModel } from './AggregationEdit';
 import {
-  type DataModelField,
+  type DataModelFieldOption,
   EditDataModelFieldTableMenu,
 } from './EditDataModelField';
 
@@ -44,25 +48,25 @@ const newFilterValidation = () => ({
 
 export function EditFilters({
   aggregatedField,
-  dataModelFieldOptions,
+  dataModel,
   onChange,
   value,
 }: {
-  aggregatedField: DataModelField | null;
-  dataModelFieldOptions: DataModelField[];
+  aggregatedField: DataModelFieldOption | null;
+  dataModel: DataModel;
   onChange: (value: FilterViewModel[]) => void;
   value: FilterViewModel[];
 }) {
   const { t } = useTranslation(scenarioI18n);
 
   const tableName = aggregatedField?.tableName;
-  const filteredDataModalFieldOptions = useMemo(
-    () =>
-      tableName
-        ? dataModelFieldOptions.filter(({ tableName: tb }) => tb == tableName)
-        : dataModelFieldOptions,
-    [tableName, dataModelFieldOptions],
-  );
+  const options = useMemo(() => {
+    return tableName
+      ? dataModel
+          .find((t) => t.name === tableName)
+          ?.fields.map((f) => ({ tableName, fieldName: f.name, field: f }))
+      : null;
+  }, [tableName, dataModel]);
 
   const onFilterChange = (
     newFieldValue: Partial<FilterViewModel>,
@@ -112,7 +116,7 @@ export function EditFilters({
     );
   };
 
-  const addNewFilter = (field: DataModelField) => {
+  const addNewFilter = (field: DataModelFieldOption) => {
     onChange([
       ...value,
       {
@@ -132,8 +136,16 @@ export function EditFilters({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-m font-semibold">
-        {t('scenarios:edit_aggregation.filters')}
+      <div className="text-m">
+        <Trans
+          t={t}
+          i18nKey={
+            tableName
+              ? 'scenarios:edit_aggregation.filters_in'
+              : 'scenarios:edit_aggregation.filters'
+          }
+          values={{ tableName }}
+        />
       </div>
       {value.length > 0 ? (
         <div className="flex flex-col gap-2">
@@ -144,89 +156,82 @@ export function EditFilters({
             const isLastFilter = filterIndex === value.length - 1;
 
             return (
-              <>
-                <div
-                  key={filterIndex}
-                  className="border-grey-90 flex flex-col gap-4 rounded-md border p-2 pb-4"
-                >
+              <Fragment key={filterIndex}>
+                <div className="border-grey-90 flex flex-col gap-4 rounded-md border-[0.5px] p-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-grey-50 text-xs">
-                      <Trans
-                        t={t}
-                        i18nKey="scenarios:edit_aggregation.filter_in"
-                        values={{ tableName: filter.filteredField?.tableName }}
-                      />
-                    </span>
-                    <RemoveButton onClick={() => removeFilter(filterIndex)} />
-                  </div>
-                  <div className="text-grey-50 flex items-center gap-2 pl-2 text-xs">
-                    <span>
-                      {t('scenarios:edit_aggregation.filter_field_label')}
-                    </span>
-                    <MenuRoot>
-                      <MenuButton
-                        disabled={!tableName}
-                        render={
-                          <div
-                            className={clsx(
-                              'text-s aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded border px-2',
-                              {
-                                'border-grey-90': !hasFilteredFieldError,
-                                'border-red-47': hasFilteredFieldError,
-                              },
-                            )}
+                    <div className="text-grey-50 flex items-center gap-2 pl-2 text-xs">
+                      <span>
+                        {t('scenarios:edit_aggregation.filter_field_label')}
+                      </span>
+                      <MenuRoot>
+                        <MenuButton
+                          disabled={!tableName}
+                          render={
+                            <div
+                              className={clsx(
+                                'text-s aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded border px-2',
+                                {
+                                  'border-grey-90': !hasFilteredFieldError,
+                                  'border-red-47': hasFilteredFieldError,
+                                },
+                              )}
+                            />
+                          }
+                        >
+                          {filter.filteredField?.fieldName}
+                          <Icon icon="arrow-2-down" className="size-5" />
+                        </MenuButton>
+                        {tableName && options ? (
+                          <EditDataModelFieldTableMenu
+                            tableName={tableName}
+                            onChange={(filteredField) => {
+                              onFilterChange({ filteredField }, filterIndex);
+                            }}
+                            fields={options}
                           />
+                        ) : null}
+                      </MenuRoot>
+                      <span>
+                        {t('scenarios:edit_aggregation.filter_operator_label')}
+                      </span>
+                      <Operator
+                        isFilter
+                        value={
+                          filter.operator &&
+                          isAggregationFilterOperator(filter.operator)
+                            ? filter.operator
+                            : undefined
                         }
-                      >
-                        {filter.filteredField?.fieldName}
-                        <Icon icon="arrow-2-down" className="size-5" />
-                      </MenuButton>
-                      {tableName ? (
-                        <EditDataModelFieldTableMenu
-                          tableName={tableName}
-                          onChange={(filteredField) => {
-                            onFilterChange({ filteredField }, filterIndex);
-                          }}
-                          fields={filteredDataModalFieldOptions}
-                        />
+                        setValue={(operator) =>
+                          onFilterChange({ operator }, filterIndex)
+                        }
+                        validationStatus={
+                          filter.errors.operator.length > 0 ? 'error' : 'valid'
+                        }
+                        operators={aggregationFilterOperators}
+                      />
+                      {binaryFilter && filter.operator ? (
+                        <>
+                          <span>
+                            {t('scenarios:edit_aggregation.filter_value_label')}
+                          </span>
+                          <FilterValue
+                            filterValue={filter.value.astNode}
+                            onSave={(astNode) =>
+                              onFilterChange(
+                                { value: { astNode } },
+                                filterIndex,
+                              )
+                            }
+                            astNodeErrors={filter.value.astNodeErrors}
+                            validationStatus={
+                              filter.errors.value.length > 0 ? 'error' : 'valid'
+                            }
+                          />
+                        </>
                       ) : null}
-                    </MenuRoot>
-                    <span>
-                      {t('scenarios:edit_aggregation.filter_operator_label')}
-                    </span>
-                    <Operator
-                      isFilter
-                      value={
-                        filter.operator &&
-                        isAggregationFilterOperator(filter.operator)
-                          ? filter.operator
-                          : undefined
-                      }
-                      setValue={(operator) =>
-                        onFilterChange({ operator }, filterIndex)
-                      }
-                      validationStatus={
-                        filter.errors.operator.length > 0 ? 'error' : 'valid'
-                      }
-                      operators={aggregationFilterOperators}
-                    />
-                    {binaryFilter && filter.operator ? (
-                      <>
-                        <span>
-                          {t('scenarios:edit_aggregation.filter_value_label')}
-                        </span>
-                        <FilterValue
-                          filterValue={filter.value.astNode}
-                          onSave={(astNode) =>
-                            onFilterChange({ value: { astNode } }, filterIndex)
-                          }
-                          astNodeErrors={filter.value.astNodeErrors}
-                          validationStatus={
-                            filter.errors.value.length > 0 ? 'error' : 'valid'
-                          }
-                        />
-                      </>
-                    ) : null}
+                    </div>
+                    <RemoveButton onClick={() => removeFilter(filterIndex)} />
                   </div>
                   <EvaluationErrors
                     errors={adaptEvaluationErrorViewModels([
@@ -236,9 +241,11 @@ export function EditFilters({
                   />
                 </div>
                 {!isLastFilter ? (
-                  <div>{t('scenarios:logical_operator.and')}</div>
+                  <div className="text-grey-50 text-xs">
+                    {t('scenarios:logical_operator.and')}
+                  </div>
                 ) : null}
-              </>
+              </Fragment>
             );
           })}
         </div>
@@ -258,10 +265,10 @@ export function EditFilters({
             <Icon icon="plus" className="size-6" />
             {t('scenarios:edit_aggregation.add_filter')}
           </MenuButton>
-          {tableName ? (
+          {tableName && options ? (
             <EditDataModelFieldTableMenu
               tableName={tableName}
-              fields={filteredDataModalFieldOptions}
+              fields={options}
               onChange={addNewFilter}
             />
           ) : null}
