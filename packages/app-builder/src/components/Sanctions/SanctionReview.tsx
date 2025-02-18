@@ -38,16 +38,14 @@ export function SanctionReviewSection({
               totalMatches: sanctionCheck.matches.length,
             })}
           </span>
-          {needsRefine ? (
-            <Button
-              className="ml-auto"
-              variant="secondary"
-              onClick={() => setIsRefining(true)}
-            >
-              <Icon icon="restart-alt" className="size-5" />
-              {t('sanctions:refine_search')}
-            </Button>
-          ) : null}
+          <Button
+            className="ml-auto"
+            variant="secondary"
+            onClick={() => setIsRefining(true)}
+          >
+            <Icon icon="restart-alt" className="size-5" />
+            {t('sanctions:refine_search')}
+          </Button>
         </div>
         {!needsRefine ? (
           <Callout bordered>{t('sanctions:callout.review')}</Callout>
@@ -70,7 +68,7 @@ export function SanctionReviewSection({
           />
         ))}
       </div>
-      {needsRefine && isRefining ? (
+      {isRefining ? (
         <RefineSearchModal
           decisionId={decisionId}
           sanctionCheck={sanctionCheck}

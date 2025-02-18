@@ -101,6 +101,7 @@
   "review_modal.comment_label": "Ajouter un commentaire",
   "review_modal.status_label": "Choisissez un statut",
   "review_modal.title": "Modifier l'état de la correspondance",
+  "review_modal.confirmation": "Confirmation",
   "review_modal.whitelist_label": "Ne plus alerter si ce profil est associé à:",
   "callout.needs_review": "{{toreview}} / {{totalmatches}} à examiner",
   "entity.schema.vehicle": "Véhicule",
