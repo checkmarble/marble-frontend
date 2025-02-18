@@ -11,7 +11,7 @@ export const FieldNode = ({
   onBlur,
 }: {
   value?: AstNode;
-  onChange?: (value?: AstNode) => void;
+  onChange?: (value: AstNode | null) => void;
   onBlur?: () => void;
   placeholder?: string;
   viewOnly?: boolean;
@@ -19,13 +19,11 @@ export const FieldNode = ({
   <div onBlur={onBlur}>
     <MatchOperand
       viewOnly={viewOnly}
-      node={value ?? NewUndefinedAstNode()}
+      node={value}
       placeholder={placeholder}
       onSave={(node) => {
         onChange?.(
-          hasSubObject(NewUndefinedAstNode() as AstNode, node)
-            ? undefined
-            : node,
+          hasSubObject(NewUndefinedAstNode() as AstNode, node) ? null : node,
         );
       }}
     />
