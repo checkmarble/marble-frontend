@@ -35,9 +35,7 @@ import {
 } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { decode as formDataToObject } from 'decode-formdata';
 import { type Namespace, t as rawT } from 'i18next';
-import { serialize as objectToFormData } from 'object-to-formdata';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { Button, Collapsible, Tag } from 'ui-design-system';
@@ -161,21 +159,17 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const [session, formData, { scenarioIterationSanctionRepository }] =
+  const [session, data, { scenarioIterationSanctionRepository }] =
     await Promise.all([
       getSession(request),
-      request.formData(),
+      request.json(),
       authService.isAuthenticated(request, {
         failureRedirect: getRoute('/sign-in'),
       }),
     ]);
 
   const iterationId = fromParams(params, 'iterationId');
-  const formDataDecoded = formDataToObject(formData, {
-    arrays: ['datasets'],
-  });
-
-  const result = editSanctionFormSchema.safeParse(formDataDecoded);
+  const result = editSanctionFormSchema.safeParse(data);
 
   if (!result.success) {
     return json(
@@ -245,13 +239,7 @@ export default function SanctionDetail() {
   const form = useForm<EditSanctionForm>({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(
-          objectToFormData(value, {
-            dotsForObjectNotation: true,
-            indices: true,
-          }),
-          { method: 'PATCH' },
-        );
+        fetcher.submit(value, { method: 'PATCH', encType: 'application/json' });
       }
     },
     validators: {
