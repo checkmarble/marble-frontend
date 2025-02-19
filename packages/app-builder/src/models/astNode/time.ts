@@ -1,5 +1,10 @@
+import { v7 as uuidv7 } from 'uuid';
+
+import { type timeAddOperators } from '../modale-operators';
 import {
   type AstNode,
+  type CheckNodeId,
+  type IdLessAstNode,
   isUndefinedAstNode,
   NewUndefinedAstNode,
   type UndefinedAstNode,
@@ -9,26 +14,28 @@ import { type DataAccessorAstNode, isDataAccessorAstNode } from './data-accessor
 
 export const timeAddAstNodeName = 'TimeAdd';
 export interface TimeAddAstNode {
+  id: string;
   name: typeof timeAddAstNodeName;
   constant?: undefined;
   children: [];
   namedChildren: {
     timestampField: TimestampFieldAstNode;
-    sign: ConstantAstNode<string>;
+    sign: ConstantAstNode<(typeof timeAddOperators)[number] | null>;
     duration: ConstantAstNode<string>;
   };
 }
 
 export function NewTimeAddAstNode(
   timestampFieldAstNode: TimestampFieldAstNode = NewUndefinedAstNode(),
-  signAstNode: ConstantAstNode<string> = NewConstantAstNode({
-    constant: '',
+  signAstNode: TimeAddAstNode['namedChildren']['sign'] = NewConstantAstNode({
+    constant: null,
   }),
   durationAstNode: ConstantAstNode<string> = NewConstantAstNode({
     constant: '',
   }),
 ): TimeAddAstNode {
   return {
+    id: uuidv7(),
     name: timeAddAstNodeName,
     constant: undefined,
     children: [],
@@ -42,6 +49,7 @@ export function NewTimeAddAstNode(
 
 export const timeNowAstNodeName = 'TimeNow';
 export interface TimeNowAstNode {
+  id: string;
   name: typeof timeNowAstNodeName;
   constant?: undefined;
   children: [];
@@ -50,6 +58,7 @@ export interface TimeNowAstNode {
 
 export function NewTimeNowAstNode(): TimeNowAstNode {
   return {
+    id: uuidv7(),
     name: timeNowAstNodeName,
     constant: undefined,
     children: [],
@@ -69,15 +78,21 @@ export function isTimestampFieldAstNode(node: AstNode): node is TimestampFieldAs
   );
 }
 
-export function isTimeAdd(node: AstNode): node is TimeAddAstNode {
+export function isTimeAdd(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<TimeAddAstNode, typeof node> {
   return node.name === timeAddAstNodeName;
 }
 
-export function isTimestampExtract(node: AstNode): node is TimestampExtractAstNode {
+export function isTimestampExtract(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<TimestampExtractAstNode, typeof node> {
   return node.name === timestampExtractAstNodeName;
 }
 
-export function isTimeNow(node: AstNode): node is TimeNowAstNode {
+export function isTimeNow(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<TimeNowAstNode, typeof node> {
   return node.name === timeNowAstNodeName;
 }
 
@@ -92,6 +107,7 @@ export const validTimestampExtractParts = [
 export type ValidTimestampExtractParts = (typeof validTimestampExtractParts)[number];
 
 export interface TimestampExtractAstNode {
+  id: string;
   name: typeof timestampExtractAstNodeName;
   constant?: undefined;
   children: [];
@@ -107,6 +123,7 @@ export function NewTimestampExtractAstNode(
   }),
 ): TimestampExtractAstNode {
   return {
+    id: uuidv7(),
     name: timestampExtractAstNodeName,
     constant: undefined,
     children: [],

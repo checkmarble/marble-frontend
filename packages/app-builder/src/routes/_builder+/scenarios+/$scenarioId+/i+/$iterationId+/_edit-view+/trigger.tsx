@@ -1,7 +1,8 @@
 import { Callout, scenarioI18n } from '@app-builder/components';
+import { AstBuilder } from '@app-builder/components/AstBuilder';
+import { type AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
 import {
@@ -11,17 +12,11 @@ import {
   NewUndefinedAstNode,
 } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
-import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import {
   createDecisionDocHref,
   executeAScenarioDocHref,
 } from '@app-builder/services/documentation-href';
-import { useEditorMode } from '@app-builder/services/editor';
-import {
-  useAstNodeEditor,
-  useSaveAstNode,
-  useValidateAstNode,
-} from '@app-builder/services/editor/ast-editor';
+import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { serverServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -30,7 +25,7 @@ import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipbo
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Collapsible } from 'ui-design-system';
 
@@ -42,21 +37,17 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { customListsRepository, editor, dataModelRepository } = await authService.isAuthenticated(
-    request,
-    {
+  const { customListsRepository, editor, dataModelRepository, scenario } =
+    await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
-    },
-  );
+    });
 
   const scenarioId = fromParams(params, 'scenarioId');
-
-  const [accessors, dataModel, customLists] = await Promise.all([
-    editor.listAccessors({
-      scenarioId,
-    }),
-    dataModelRepository.getDataModel(),
+  const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
+    scenario.getScenario({ scenarioId }),
     customListsRepository.listCustomLists(),
+    dataModelRepository.getDataModel(),
+    editor.listAccessors({ scenarioId }),
   ]);
 
   return json({
@@ -64,6 +55,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     payloadAccessors: accessors.payloadAccessors,
     dataModel,
     customLists,
+    triggerObjectType: currentScenario.triggerObjectType,
   });
 }
 
@@ -126,35 +118,29 @@ export default function Trigger() {
   const scenarioIteration = useCurrentScenarioIteration();
   const scenarioValidation = useCurrentScenarioValidation();
 
-  const { databaseAccessors, payloadAccessors, dataModel, customLists } =
-    useLoaderData<typeof loader>();
+  const builderOptions = useLoaderData<typeof loader>();
 
   const fetcher = useFetcher<typeof action>();
   const editorMode = useEditorMode();
 
   const [schedule, setSchedule] = useState(scenarioIteration.schedule ?? '');
 
-  const { validate, validation } = useTriggerValidationFetcher(
-    scenarioIteration.scenarioId,
-    scenarioIteration.id,
-  );
-
   const scenario = useCurrentScenario();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
-  const astEditorStore = useAstNodeEditor({
-    initialAstNode: scenarioIteration.trigger ?? NewUndefinedAstNode(),
-    initialEvaluation: scenarioValidation.trigger.triggerEvaluation,
-  });
-  const isTriggerNull = isUndefinedAstNode(astEditorStore.getState().rootAstNode);
+  const [trigger, setTrigger] = useState(scenarioIteration.trigger ?? NewUndefinedAstNode());
+  const isTriggerNull = isUndefinedAstNode(trigger);
+  const nodeStoreRef = useRef<AstBuilderNodeStore | null>(null);
 
-  useValidateAstNode(astEditorStore, validate, validation);
+  const handleSave = () => {
+    const node = nodeStoreRef.current
+      ? nodeStoreRef.current.select((s) => s.$node).peek()
+      : NewUndefinedAstNode();
 
-  const handleSave = useSaveAstNode(astEditorStore, (astNode) => {
     fetcher.submit(
       {
         action: 'save',
-        astNode,
+        astNode: node,
         schedule,
       },
       {
@@ -162,18 +148,14 @@ export default function Trigger() {
         encType: 'application/json',
       },
     );
-  });
+  };
 
   const handleAddTrigger = () => {
-    astEditorStore.setState({
-      rootAstNode: NewEmptyTriggerAstNode(),
-    });
+    setTrigger(NewEmptyTriggerAstNode());
   };
 
   const handleDeleteTrigger = () => {
-    astEditorStore.setState({
-      rootAstNode: NewUndefinedAstNode(),
-    });
+    setTrigger(NewUndefinedAstNode());
   };
 
   const getCopyToClipboardProps = useGetCopyToClipboard();
@@ -270,17 +252,19 @@ export default function Trigger() {
                 </span>
               </div>
             ) : (
-              <AstBuilder
-                options={{
-                  databaseAccessors,
-                  payloadAccessors,
-                  dataModel,
-                  customLists,
-                  triggerObjectType: scenario.triggerObjectType,
-                }}
-                viewOnly={editorMode === 'view'}
-                astEditorStore={astEditorStore}
-              />
+              <AstBuilder.Provider
+                scenarioId={scenario.id}
+                initialData={{ ...builderOptions }}
+                mode={editorMode}
+              >
+                <AstBuilder.Root
+                  node={trigger}
+                  onStoreChange={(nodeStore) => {
+                    nodeStoreRef.current = nodeStore;
+                  }}
+                  returnType="bool"
+                />
+              </AstBuilder.Provider>
             )}
 
             {editorMode === 'edit' ? (

@@ -3,6 +3,7 @@ import {
   type DataModelField,
   findDataModelField,
   findDataModelTable,
+  type IdLessAstNode,
   type TableModel,
 } from '@app-builder/models';
 import {
@@ -13,7 +14,7 @@ import {
 import { assertNever } from 'typescript-utils';
 
 export function getDataAccessorAstNodeField(
-  astNode: DataAccessorAstNode,
+  astNode: IdLessAstNode<DataAccessorAstNode>,
   context: {
     triggerObjectTable: TableModel;
     dataModel: DataModel;

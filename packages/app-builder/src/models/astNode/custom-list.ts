@@ -1,10 +1,13 @@
-import { type AstNode } from './ast-node';
+import { v7 as uuidv7 } from 'uuid';
+
+import { type AstNode, type CheckNodeId, type IdLessAstNode } from './ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
 export const customListAccessAstNodeName = 'CustomListAccess';
 export interface CustomListAccessAstNode {
+  id: string;
   name: typeof customListAccessAstNodeName;
-  constant: undefined;
+  constant?: undefined;
   children: [];
   namedChildren: {
     customListId: ConstantAstNode<string>;
@@ -13,8 +16,8 @@ export interface CustomListAccessAstNode {
 
 export function NewCustomListAstNode(customListId: string): CustomListAccessAstNode {
   return {
+    id: uuidv7(),
     name: customListAccessAstNodeName,
-    constant: undefined,
     children: [],
     namedChildren: {
       customListId: NewConstantAstNode({ constant: customListId }),
@@ -22,6 +25,8 @@ export function NewCustomListAstNode(customListId: string): CustomListAccessAstN
   };
 }
 
-export function isCustomListAccess(node: AstNode): node is CustomListAccessAstNode {
+export function isCustomListAccess(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<CustomListAccessAstNode, typeof node> {
   return node.name === customListAccessAstNodeName;
 }

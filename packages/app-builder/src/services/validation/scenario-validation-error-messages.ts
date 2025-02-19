@@ -137,7 +137,7 @@ export function useGetOrAndNodeEvaluationErrorMessage() {
   );
 }
 
-const commonErrorMessages =
+export const commonErrorMessages =
   (t: TFunction<['scenarios']>) => (evaluationError: EvaluationErrorViewModel) => {
     switch (evaluationError.error) {
       case 'UNDEFINED_FUNCTION':

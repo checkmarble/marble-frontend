@@ -24,7 +24,9 @@
       "typescript-utils": ["packages/typescript-utils/src/index.ts"],
       "ui-icons": ["packages/ui-icons/src/index.ts"],
       "ui-design-system": ["packages/ui-design-system/src/index.ts"],
-      "@app-builder/*": ["packages/app-builder/src/*"]
+      "@app-builder/*": ["packages/app-builder/src/*"],
+      "@ast-builder/*": ["packages/app-builder/src/components/AstBuilder/*"],
+      "@marble/shared": ["packages/shared/src/index.ts"]
     },
     "pretty": true
   },

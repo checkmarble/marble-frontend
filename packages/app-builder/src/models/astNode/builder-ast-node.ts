@@ -1,3 +1,5 @@
+import { v7 as uuidv7 } from 'uuid';
+
 import { type AggregationAstNode, isAggregation } from './aggregation';
 import { type AstNode, isUndefinedAstNode, type UndefinedAstNode } from './ast-node';
 import {
@@ -10,7 +12,7 @@ import {
 } from './builder-ast-node-node-operator';
 import { type ConstantAstNode, isConstant } from './constant';
 import { type CustomListAccessAstNode, isCustomListAccess } from './custom-list';
-import { type DatabaseAccessAstNode, isDataAccessorAstNode } from './data-accessor';
+import { type DataAccessorAstNode, isDataAccessorAstNode } from './data-accessor';
 import { isIsMultipleOf, type IsMultipleOfAstNode } from './multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
@@ -64,7 +66,7 @@ export type KnownOperandAstNode =
   | UndefinedAstNode
   | ConstantAstNode
   | CustomListAccessAstNode
-  | DatabaseAccessAstNode
+  | DataAccessorAstNode
   | LeafOperandAstNode;
 
 /**
@@ -74,7 +76,7 @@ export type KnownOperandAstNode =
  */
 export function isKnownOperandAstNode(node: AstNode): node is KnownOperandAstNode {
   return (
-    isUndefinedAstNode(node) ||
+    (isUndefinedAstNode(node) && node.children.length === 0) ||
     isConstant(node) ||
     isCustomListAccess(node) ||
     isDataAccessorAstNode(node) ||
@@ -83,10 +85,22 @@ export function isKnownOperandAstNode(node: AstNode): node is KnownOperandAstNod
 }
 
 export interface AndAstNode {
+  id: string;
   name: 'And';
-  constant: undefined;
+  constant?: undefined;
   children: AstNode[];
   namedChildren: Record<string, never>;
+}
+
+export function NewAndAstNode({
+  children = [],
+}: Partial<Pick<AndAstNode, 'children'>> = {}): AndAstNode {
+  return {
+    id: uuidv7(),
+    name: 'And',
+    children,
+    namedChildren: {},
+  };
 }
 
 export function isAndAstNode(astNode: AstNode): astNode is AndAstNode {
@@ -98,10 +112,22 @@ export function isAndAstNode(astNode: AstNode): astNode is AndAstNode {
 }
 
 export interface OrWithAndAstNode {
+  id: string;
   name: 'Or';
-  constant: undefined;
+  constant?: undefined;
   children: AndAstNode[];
   namedChildren: Record<string, never>;
+}
+
+export function NewOrWithAndAstNode({
+  children = [],
+}: Partial<Pick<OrWithAndAstNode, 'children'>> = {}): OrWithAndAstNode {
+  return {
+    id: uuidv7(),
+    name: 'Or',
+    children,
+    namedChildren: {},
+  };
 }
 
 export function isOrWithAndAstNode(astNode: AstNode): astNode is OrWithAndAstNode {
@@ -118,6 +144,7 @@ export function isOrWithAndAstNode(astNode: AstNode): astNode is OrWithAndAstNod
 }
 
 export interface MainAstNode {
+  id: string;
   name: MainAstOperatorFunction;
   constant: undefined;
   children: AstNode[];
@@ -125,6 +152,7 @@ export interface MainAstNode {
 }
 
 export interface MainAstBinaryNode {
+  id: string;
   name: BinaryMainAstOperatorFunction;
   constant: undefined;
   children: [AstNode, AstNode];
@@ -132,6 +160,7 @@ export interface MainAstBinaryNode {
 }
 
 export interface MainAstUnaryNode {
+  id: string;
   name: UnaryMainAstOperatorFunction;
   constant: undefined;
   children: [AstNode];
